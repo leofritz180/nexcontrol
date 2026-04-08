@@ -81,7 +81,10 @@ export default function MetaPage() {
     await supabase.from('metas').update({status:newStatus})
       .eq('id',meta.id)
       .neq('status_fechamento','fechada')
-    if (newStatus==='finalizada') notifyMetaFinalized(meta?.tenant_id||profile?.tenant_id, getName(profile), meta.titulo)
+    if (newStatus==='finalizada') {
+      const liq = remessas.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
+      notifyMetaFinalized(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.quantidade_contas, meta?.rede, liq)
+    }
     fetchData()
   }
 

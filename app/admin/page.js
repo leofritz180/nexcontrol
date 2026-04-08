@@ -47,7 +47,7 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
     setSaving(false)
     if (err) { setError(err.message); return }
     if (!updated||updated.length===0) { setError('Meta ja foi fechada por outro usuario.'); return }
-    notifyMetaClosed(meta.tenant_id, meta.titulo, lucroFinal)
+    notifyMetaClosed(meta.tenant_id, meta.quantidade_contas, meta.rede, lucroFinal)
     onSaved(); onClose()
   }
 

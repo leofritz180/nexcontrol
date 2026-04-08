@@ -153,7 +153,7 @@ export default function OperatorPage() {
     setSaving(false)
     if (err) { setError(err.message); return }
     setTitulo(''); setObs(''); setContas('10'); setPlataforma(''); setRede(''); setShowForm(false)
-    notifyMetaCreated(profile?.tenant_id, getName(profile), data.titulo, data.rede)
+    notifyMetaCreated(profile?.tenant_id, getName(profile), data.quantidade_contas, data.rede)
     router.push(`/meta/${data.id}`)
   }
 

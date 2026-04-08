@@ -60,7 +60,7 @@ function MetricCard({ iconType, label, value, sub, color, badge, animClass='a1',
 
   const [h, setH] = useState(false)
   const isNeg = String(value).includes('-')
-  const num = parseFloat(String(value).replace(/[^0-9.-]/g,''))
+  const num = parseFloat(String(value).replace(/[R$\s]/g,'').replace(/\./g,'').replace(',','.'))
   const hasCurrency = String(value).includes('R$')
 
   return (

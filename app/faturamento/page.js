@@ -354,34 +354,23 @@ export default function FaturamentoPage() {
                   <CountUp value={stats.lucroFinal} prefix="R$ "/>
                 </p>
               </div>
-              <p style={{fontSize:14,color:'var(--t3)',marginBottom:32}}>{stats.fechadas} metas fechadas · {stats.total} remessas · {operators.length} operadores</p>
-
-              {/* Sub KPIs */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:14}}>
-                {[
-                  {label:'Lucro bruto',value:stats.lucro,prefix:'R$ ',color:'#05d98c',sub:'Total das remessas',rgb:'5,217,140'},
-                  {label:'Prejuizo total',value:stats.prej,prefix:'R$ ',color:'#f03d6b',sub:`${stats.total-stats.pos} remessas negativas`,rgb:'240,61,107'},
-                  {label:'Resultado liquido',value:Math.abs(stats.liq),prefix:stats.liq>=0?'+R$ ':'-R$ ',color:stats.liq>=0?'#05d98c':'#f03d6b',sub:stats.liq>=0?'Positivo':'Negativo',rgb:stats.liq>=0?'5,217,140':'240,61,107'},
-                  {label:'ROI estimado',value:null,color:stats.roi>=0?'#6b84ff':'#f03d6b',sub:`Taxa acerto: ${stats.taxa}%`,rgb:'79,110,247'},
-                ].map((kpi,i)=>(
-                  <div key={i} style={{
-                    background:`linear-gradient(145deg, rgba(${kpi.rgb},0.06), rgba(255,255,255,0.02))`,
-                    border:`1px solid rgba(${kpi.rgb},0.1)`,borderRadius:16,padding:'20px 22px',
-                    backdropFilter:'blur(12px)',
-                    transition:'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-                  }}
-                    onMouseEnter={e=>{e.currentTarget.style.borderColor=`rgba(${kpi.rgb},0.25)`;e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow=`0 8px 30px rgba(${kpi.rgb},0.1)`}}
-                    onMouseLeave={e=>{e.currentTarget.style.borderColor=`rgba(${kpi.rgb},0.1)`;e.currentTarget.style.transform='';e.currentTarget.style.boxShadow=''}}
-                  >
-                    <p className="t-label" style={{marginBottom:10}}>{kpi.label}</p>
-                    <p className="t-num" style={{fontSize:26,fontWeight:800,color:kpi.color}}>
-                      {kpi.value!==null ? <CountUp value={kpi.value} prefix={kpi.prefix}/> : <>{stats.roi>=0?'+':''}{fmt(stats.roi)}%</>}
-                    </p>
-                    <p className="t-small" style={{marginTop:8}}>{kpi.sub}</p>
-                  </div>
-                ))}
-              </div>
+              <p style={{fontSize:14,color:'var(--t3)',marginBottom:0}}>{stats.fechadas} metas fechadas · {stats.total} remessas · {operators.length} operadores</p>
             </div>
+          </div>
+
+          {/* KPIs */}
+          <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
+            {[
+              {l:'Lucro bruto',v:`R$ ${fmt(stats.lucro)}`,c:'var(--profit)'},
+              {l:'Prejuizo total',v:`R$ ${fmt(stats.prej)}`,c:'var(--loss)'},
+              {l:'Resultado liquido',v:`${stats.liq>=0?'+':'-'}R$ ${fmt(Math.abs(stats.liq))}`,c:stats.liq>=0?'var(--profit)':'var(--loss)'},
+              {l:'Taxa de acerto',v:`${stats.taxa}%`,c:stats.taxa>=50?'var(--profit)':'var(--warn)'},
+            ].map(({l,v,c})=>(
+              <div key={l} style={{background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:14,padding:'16px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                <span style={{fontSize:12,color:'var(--t2)'}}>{l}</span>
+                <span className="t-num" style={{fontSize:18,fontWeight:800,color:c}}>{v}</span>
+              </div>
+            ))}
           </div>
 
           {/* Predictions + Goal */}

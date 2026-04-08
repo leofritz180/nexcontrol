@@ -474,73 +474,24 @@ export default function AdminPage() {
                 </div>
                 )}
 
-                {/* Pre-config salario/custo for active metas */}
-                {!fechada && (
-                  <div style={{marginTop:20,padding:'20px 22px',background:'var(--surface)',border:'1px solid var(--brand-border)',borderRadius:16}}>
+                {/* ── UNIFIED SALARY/COSTS PANEL — works for ALL states ── */}
+                {(()=>{
+                  const liqCalc = focusRem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
+                  const isActive = !fechada && m.status!=='finalizada'
+                  const isFinalizedNotClosed = !fechada && m.status==='finalizada'
+                  const newLucro = liqCalc + Number(m.salario||0) - Number(m.custo_fixo||0) - Number(m.taxa_agente||0)
+                  const [saving,setSaving2] = [false,()=>{}] // inline state not needed, use async
+
+                  return (
+                  <div style={{marginTop:20,padding:'20px 22px',background:'var(--surface)',border:`1px solid ${fechada?'var(--b1)':'var(--brand-border)'}`,borderRadius:16}}>
                     <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                       <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>Salario e custos</span>
-                      <span className="t-small" style={{marginLeft:4}}>Pre-configure para fechamento automatico</span>
+                      {isActive && <span className="t-small" style={{marginLeft:4}}>Pre-configure para fechamento automatico</span>}
+                      {isFinalizedNotClosed && <span style={{fontSize:10,fontWeight:600,color:'var(--warn)',marginLeft:4}}>Operador finalizou — defina valores e feche</span>}
+                      {fechada && <span style={{fontSize:10,fontWeight:600,color:'var(--profit)',marginLeft:4}}>Meta fechada — ajuste se necessario</span>}
                     </div>
-                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,alignItems:'flex-end'}}>
-                      <div>
-                        <label className="t-label" style={{display:'block',marginBottom:6}}>Salario (R$)</label>
-                        <input className="input" type="number" step="0.01" min="0" defaultValue={m.salario||''} placeholder="0,00"
-                          onBlur={async e=>{
-                            const val=Number(e.target.value||0)
-                            await supabase.from('metas').update({salario:val}).eq('id',m.id)
-                            setFocusMeta(prev=>({...prev,salario:val}))
-                          }}
-                          style={{padding:'10px 12px',fontSize:14}}/>
-                      </div>
-                      <div>
-                        <label className="t-label" style={{display:'block',marginBottom:6}}>Custo fixo (R$)</label>
-                        <input className="input" type="number" step="0.01" min="0" defaultValue={m.custo_fixo||''} placeholder="0,00"
-                          onBlur={async e=>{
-                            const val=Number(e.target.value||0)
-                            await supabase.from('metas').update({custo_fixo:val}).eq('id',m.id)
-                            setFocusMeta(prev=>({...prev,custo_fixo:val}))
-                          }}
-                          style={{padding:'10px 12px',fontSize:14}}/>
-                      </div>
-                      <div>
-                        <label className="t-label" style={{display:'block',marginBottom:6}}>Taxa agente (R$)</label>
-                        <input className="input" type="number" step="0.01" min="0" defaultValue={m.taxa_agente||''} placeholder="0,00"
-                          onBlur={async e=>{
-                            const val=Number(e.target.value||0)
-                            await supabase.from('metas').update({taxa_agente:val}).eq('id',m.id)
-                            setFocusMeta(prev=>({...prev,taxa_agente:val}))
-                          }}
-                          style={{padding:'10px 12px',fontSize:14}}/>
-                      </div>
-                    </div>
-                    <button onClick={async()=>{
-                      const sal=Number(m.salario||0),cst=Number(m.custo_fixo||0),tax=Number(m.taxa_agente||0)
-                      await supabase.from('metas').update({salario:sal,custo_fixo:cst,taxa_agente:tax}).eq('id',m.id)
-                      setFocusMeta(prev=>({...prev,salario:sal,custo_fixo:cst,taxa_agente:tax}))
-                    }} className="btn btn-profit btn-sm" style={{width:'100%',justifyContent:'center',marginTop:12}}>
-                      <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                      Salvar configuracao
-                    </button>
-                    {(m.salario>0||m.custo_fixo>0||m.taxa_agente>0) && (
-                      <div style={{marginTop:10,padding:'10px 14px',background:'var(--profit-dim)',border:'1px solid var(--profit-border)',borderRadius:10,display:'flex',alignItems:'center',gap:8}}>
-                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        <span style={{fontSize:12,color:'var(--profit)'}}>Pre-configurado. Quando o operador finalizar, a meta fecha automaticamente.</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Editar valores pos-fechamento */}
-                {fechada && (()=>{
-                  const liqCalc = focusRem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
-                  return (
-                  <div style={{marginTop:20,padding:'20px 22px',background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:16}}>
-                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
-                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                      <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>Ajustar valores</span>
-                    </div>
-                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:12}}>
+                    <div className="g-form" style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:12}}>
                       <div>
                         <label className="t-label" style={{display:'block',marginBottom:6}}>Salario (R$)</label>
                         <input className="input" type="number" step="0.01" min="0" defaultValue={m.salario||''} placeholder="0,00"
@@ -560,27 +511,39 @@ export default function AdminPage() {
                           style={{padding:'10px 12px',fontSize:14}}/>
                       </div>
                     </div>
-                    {(()=>{
-                      const newLucro = liqCalc + Number(m.salario||0) - Number(m.custo_fixo||0) - Number(m.taxa_agente||0)
-                      return (
-                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderRadius:12,background:newLucro>=0?'rgba(5,217,140,0.08)':'rgba(240,61,107,0.06)',border:`1px solid ${newLucro>=0?'rgba(5,217,140,0.15)':'rgba(240,61,107,0.12)'}`,marginBottom:12}}>
-                        <span style={{fontSize:12,color:'var(--t2)'}}>Lucro final recalculado</span>
-                        <span className="t-num" style={{fontSize:20,fontWeight:800,color:newLucro>=0?'var(--profit)':'var(--loss)'}}>{newLucro>=0?'+':''}R$ {fmt(newLucro)}</span>
+
+                    {/* Live calculation */}
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderRadius:12,background:newLucro>=0?'rgba(5,217,140,0.08)':'rgba(240,61,107,0.06)',border:`1px solid ${newLucro>=0?'rgba(5,217,140,0.15)':'rgba(240,61,107,0.12)'}`,marginBottom:12}}>
+                      <div>
+                        <span style={{fontSize:12,fontWeight:600,color:'var(--t2)'}}>Lucro final</span>
+                        <p className="t-small" style={{margin:'2px 0 0'}}>Resultado ({fmt(liqCalc)}) + Sal ({fmt(Number(m.salario||0))}) - Custo ({fmt(Number(m.custo_fixo||0))}) - Taxa ({fmt(Number(m.taxa_agente||0))})</p>
                       </div>
-                      )
-                    })()}
-                    <button onClick={async()=>{
-                      const newLucro = liqCalc + Number(m.salario||0) - Number(m.custo_fixo||0) - Number(m.taxa_agente||0)
-                      await supabase.from('metas').update({
-                        salario:Number(m.salario||0), custo_fixo:Number(m.custo_fixo||0),
-                        taxa_agente:Number(m.taxa_agente||0), lucro_final:newLucro,
-                      }).eq('id',m.id)
-                      openMetaDetail({...m,lucro_final:newLucro})
+                      <span className="t-num" style={{fontSize:22,fontWeight:800,color:newLucro>=0?'var(--profit)':'var(--loss)'}}>{newLucro>=0?'+':''}R$ {fmt(newLucro)}</span>
+                    </div>
+
+                    {/* Save button — uses API route with service_role */}
+                    <button onClick={async(e)=>{
+                      const btn=e.currentTarget; btn.disabled=true; btn.textContent='Salvando...'
+                      const sal=Number(m.salario||0),cst=Number(m.custo_fixo||0),tax=Number(m.taxa_agente||0)
+                      const lf=liqCalc+sal-cst-tax
+                      const isClosed=fechada||isFinalizedNotClosed
+                      await fetch('/api/meta/update-costs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+                        meta_id:m.id,salario:sal,custo_fixo:cst,taxa_agente:tax,
+                        close:isClosed,lucro_final:isClosed?lf:undefined,
+                      })})
+                      openMetaDetail({...m,salario:sal,custo_fixo:cst,taxa_agente:tax,lucro_final:isClosed?lf:m.lucro_final,status_fechamento:isClosed?'fechada':m.status_fechamento})
                       loadAll()
-                    }} className="btn btn-profit btn-sm" style={{width:'100%',justifyContent:'center'}}>
+                    }} className={`btn ${isFinalizedNotClosed?'btn-profit':'btn-brand'} btn-sm`} style={{width:'100%',justifyContent:'center'}}>
                       <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                      Salvar ajustes
+                      {isActive?'Salvar configuracao':isFinalizedNotClosed?'Salvar e fechar meta':'Salvar ajustes'}
                     </button>
+
+                    {isActive && (m.salario>0||m.custo_fixo>0||m.taxa_agente>0) && (
+                      <div style={{marginTop:10,padding:'10px 14px',background:'var(--profit-dim)',border:'1px solid var(--profit-border)',borderRadius:10,display:'flex',alignItems:'center',gap:8}}>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span style={{fontSize:12,color:'var(--profit)'}}>Pre-configurado. Quando o operador finalizar, a meta fecha automaticamente.</span>
+                      </div>
+                    )}
                   </div>
                   )
                 })()}

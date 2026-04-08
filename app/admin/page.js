@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Header from '../../components/Header'
 import TrialBanner, { ConversionModal } from '../../components/TrialBanner'
 import { supabase } from '../../lib/supabase/client'
+import { notifyMetaClosed } from '../../lib/notify'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -46,6 +47,7 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
     setSaving(false)
     if (err) { setError(err.message); return }
     if (!updated||updated.length===0) { setError('Meta ja foi fechada por outro usuario.'); return }
+    notifyMetaClosed(meta.tenant_id, meta.titulo, lucroFinal)
     onSaved(); onClose()
   }
 

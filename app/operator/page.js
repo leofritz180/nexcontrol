@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '../../components/Header'
 import { supabase } from '../../lib/supabase/client'
+import { notifyMetaCreated } from '../../lib/notify'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -152,6 +153,7 @@ export default function OperatorPage() {
     setSaving(false)
     if (err) { setError(err.message); return }
     setTitulo(''); setObs(''); setContas('10'); setPlataforma(''); setRede(''); setShowForm(false)
+    notifyMetaCreated(profile?.tenant_id, getName(profile), data.titulo, data.rede)
     router.push(`/meta/${data.id}`)
   }
 

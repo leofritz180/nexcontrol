@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Header from '../../../components/Header'
 import { supabase } from '../../../lib/supabase/client'
+import { notifyRemessaCreated, notifyMetaFinalized } from '../../../lib/notify'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -70,14 +71,17 @@ export default function MetaPage() {
     setSalvando(false)
     if (err) { setError(err.message); return }
     setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq('')
+    notifyRemessaCreated(profile?.tenant_id, getName(profile), meta?.rede||'', diff)
     fetchData()
   }
 
   async function toggleStatus() {
     if (!meta || meta.status_fechamento==='fechada') return
-    await supabase.from('metas').update({status:meta.status==='finalizada'?'ativa':'finalizada'})
+    const newStatus = meta.status==='finalizada'?'ativa':'finalizada'
+    await supabase.from('metas').update({status:newStatus})
       .eq('id',meta.id)
       .is('status_fechamento', null)
+    if (newStatus==='finalizada') notifyMetaFinalized(profile?.tenant_id, getName(profile), meta.titulo)
     fetchData()
   }
 

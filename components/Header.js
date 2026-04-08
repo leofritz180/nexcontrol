@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase/client'
 import { TrialStatusBadge } from './TrialBanner'
+import dynamic from 'next/dynamic'
+const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
 function AnimatedLogo() {
   return (
@@ -58,14 +60,14 @@ function AnimatedLogo() {
   )
 }
 
-export default function Header({ userName, userEmail, isAdmin, tenant, subscription }) {
+export default function Header({ userName, userEmail, isAdmin, tenant, subscription, userId, tenantId }) {
   const pathname = usePathname()
   const router = useRouter()
   async function logout() { await supabase.auth.signOut(); router.push('/login') }
   const name = userName || userEmail?.split('@')[0] || '?'
   const initial = name[0].toUpperCase()
 
-  return (
+  return (<>
     <header style={{ position:'sticky', top:0, zIndex:200, height:58, background:'rgba(6,11,20,0.88)', backdropFilter:'blur(28px) saturate(180%)', WebkitBackdropFilter:'blur(28px) saturate(180%)', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'0 28px', height:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
         {/* Logo */}
@@ -111,5 +113,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
         </div>
       </div>
     </header>
+    <PushManager userId={userId} tenantId={tenantId}/>
+    </>
   )
 }

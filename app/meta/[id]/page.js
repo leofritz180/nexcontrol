@@ -93,7 +93,7 @@ export default function MetaPage() {
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role==='admin'}/>
+      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role==='admin'} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
         {/* Header */}

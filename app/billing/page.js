@@ -135,14 +135,14 @@ export default function BillingPage() {
 
   if(loading) return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true}/>
+      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}/>
       <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}><div className="spinner" style={{width:28,height:28,borderTopColor:'var(--brand-bright)'}}/></div>
     </main>
   )
 
   return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true}/>
+      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{maxWidth:1100,margin:'0 auto',padding:'40px 28px'}}>
         {/* Header */}

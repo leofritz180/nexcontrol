@@ -3,8 +3,25 @@ import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
 const DynamicBackground = dynamic(() => import('../components/DynamicBackground'), { ssr: false })
 const SubscriptionGate = dynamic(() => import('../components/SubscriptionGate'), { ssr: false })
-export const metadata = { title: 'NexControl', description: 'Sistema de gestão operacional' }
-export const viewport = { width: 'device-width', initialScale: 1, maximumScale: 1 }
+
+export const metadata = {
+  title: 'NexControl',
+  description: 'Gestão inteligente de metas, operadores e faturamento',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'NexControl',
+  },
+  icons: {
+    icon: '/icons/icon-192.png',
+    apple: '/icons/icon-192.png',
+  },
+  themeColor: '#4f6ef7',
+}
+
+export const viewport = { width: 'device-width', initialScale: 1, maximumScale: 1, viewportFit: 'cover' }
+
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">

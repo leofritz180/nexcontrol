@@ -256,7 +256,7 @@ export default function FaturamentoPage() {
 
   if(loading) return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true}/>
+      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}/>
       <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}>
         <div className="spinner" style={{width:28,height:28,borderTopColor:'var(--brand-bright)'}}/>
       </div>
@@ -265,7 +265,7 @@ export default function FaturamentoPage() {
 
   return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true}/>
+      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{maxWidth:1380,margin:'0 auto',padding:'32px 28px'}}>
         {/* Header */}

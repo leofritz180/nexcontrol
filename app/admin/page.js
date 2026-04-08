@@ -480,7 +480,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub}/>
+      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
         {/* Header */}

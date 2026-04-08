@@ -82,11 +82,11 @@ export default function MetaPage() {
 
     if (newStatus==='finalizada') {
       const liq = remessas.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
-      const hasSalario = Number(meta?.salario||0) > 0 || Number(meta?.custo_fixo||0) > 0
+      const hasSalario = Number(meta?.salario||0) > 0 || Number(meta?.custo_fixo||0) > 0 || Number(meta?.taxa_agente||0) > 0
 
       if (hasSalario) {
-        // Auto-close: admin already pre-configured salary/costs
-        const lucroFinal = liq + Number(meta.salario||0) - Number(meta.custo_fixo||0)
+        // Auto-close: admin already pre-configured salary/costs/agent fee
+        const lucroFinal = liq + Number(meta.salario||0) - Number(meta.custo_fixo||0) - Number(meta.taxa_agente||0)
         await supabase.from('metas').update({
           status:'finalizada', status_fechamento:'fechada',
           lucro_final: lucroFinal, fechada_em: new Date().toISOString(),

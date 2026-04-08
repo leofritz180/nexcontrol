@@ -30,17 +30,17 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
   const liqRem   = lucroRem-prejRem
   const [salario,setSalario]=useState(String(meta.salario||''))
   const [custo,  setCusto]  =useState(String(meta.custo_fixo||''))
+  const [taxa,   setTaxa]   =useState(String(meta.taxa_agente||''))
   const [saving, setSaving] =useState(false)
   const [error,  setError]  =useState('')
 
-  const lucroFinal = useMemo(()=>liqRem+Number(salario||0)-Number(custo||0),[salario,custo,liqRem])
+  const lucroFinal = useMemo(()=>liqRem+Number(salario||0)-Number(custo||0)-Number(taxa||0),[salario,custo,taxa,liqRem])
 
   async function save() {
     if (saving) return
     setSaving(true); setError('')
-    // Conditional update: only if not already fechada (prevent double-close)
     const { data:updated, error:err } = await supabase.from('metas').update({
-      salario:Number(salario||0), custo_fixo:Number(custo||0),
+      salario:Number(salario||0), custo_fixo:Number(custo||0), taxa_agente:Number(taxa||0),
       lucro_final:lucroFinal, status:'finalizada',
       status_fechamento:'fechada', fechada_em:new Date().toISOString(),
     }).eq('id',meta.id).neq('status_fechamento','fechada').select()
@@ -97,11 +97,16 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
             <p className="t-small" style={{ margin:'0 0 8px' }}>Salário do operador + despesas — deduzido (−)</p>
             <input className="input" type="number" step="0.01" min="0" value={custo} onChange={e=>setCusto(e.target.value)} placeholder="0,00"/>
           </div>
+          <div>
+            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Taxa agente/blogueira (R$)</label>
+            <p className="t-small" style={{ margin:'0 0 8px' }}>Comissao paga ao agente, blogueira ou parceiro — deduzido (−)</p>
+            <input className="input" type="number" step="0.01" min="0" value={taxa} onChange={e=>setTaxa(e.target.value)} placeholder="0,00"/>
+          </div>
 
           <div style={{ background:lucroFinal>=0?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${lucroFinal>=0?'var(--profit-border)':'var(--loss-border)'}`,borderRadius:12,padding:'18px 22px',display:'flex',justifyContent:'space-between',alignItems:'center' }}>
             <div>
               <p className="t-label" style={{ marginBottom:4 }}>Lucro final da meta</p>
-              <p className="t-small">Resultado + salário − custo fixo</p>
+              <p className="t-small">Resultado + salario − custo − taxa agente</p>
             </div>
             <p className="t-num" style={{ fontSize:28,fontWeight:800,color:lucroFinal>=0?'var(--profit)':'var(--loss)' }}>
               {lucroFinal>=0?'+':''}R$ {fmt(lucroFinal)}
@@ -477,7 +482,7 @@ export default function AdminPage() {
                       <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>Salario e custos</span>
                       <span className="t-small" style={{marginLeft:4}}>Pre-configure para fechamento automatico</span>
                     </div>
-                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,alignItems:'flex-end'}}>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,alignItems:'flex-end'}}>
                       <div>
                         <label className="t-label" style={{display:'block',marginBottom:6}}>Salario (R$)</label>
                         <input className="input" type="number" step="0.01" min="0" defaultValue={m.salario||''} placeholder="0,00"
@@ -498,8 +503,18 @@ export default function AdminPage() {
                           }}
                           style={{padding:'10px 12px',fontSize:14}}/>
                       </div>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Taxa agente (R$)</label>
+                        <input className="input" type="number" step="0.01" min="0" defaultValue={m.taxa_agente||''} placeholder="0,00"
+                          onBlur={async e=>{
+                            const val=Number(e.target.value||0)
+                            await supabase.from('metas').update({taxa_agente:val}).eq('id',m.id)
+                            setFocusMeta(prev=>({...prev,taxa_agente:val}))
+                          }}
+                          style={{padding:'10px 12px',fontSize:14}}/>
+                      </div>
                     </div>
-                    {(m.salario>0||m.custo_fixo>0) && (
+                    {(m.salario>0||m.custo_fixo>0||m.taxa_agente>0) && (
                       <div style={{marginTop:12,padding:'10px 14px',background:'var(--profit-dim)',border:'1px solid var(--profit-border)',borderRadius:10,display:'flex',alignItems:'center',gap:8}}>
                         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                         <span style={{fontSize:12,color:'var(--profit)'}}>Pre-configurado. Quando o operador finalizar, a meta fecha automaticamente.</span>

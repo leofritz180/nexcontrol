@@ -80,7 +80,7 @@ export default function MetaPage() {
     const newStatus = meta.status==='finalizada'?'ativa':'finalizada'
     await supabase.from('metas').update({status:newStatus})
       .eq('id',meta.id)
-      .is('status_fechamento', null)
+      .neq('status_fechamento','fechada')
     if (newStatus==='finalizada') notifyMetaFinalized(meta?.tenant_id||profile?.tenant_id, getName(profile), meta.titulo)
     fetchData()
   }

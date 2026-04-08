@@ -514,8 +514,16 @@ export default function AdminPage() {
                           style={{padding:'10px 12px',fontSize:14}}/>
                       </div>
                     </div>
+                    <button onClick={async()=>{
+                      const sal=Number(m.salario||0),cst=Number(m.custo_fixo||0),tax=Number(m.taxa_agente||0)
+                      await supabase.from('metas').update({salario:sal,custo_fixo:cst,taxa_agente:tax}).eq('id',m.id)
+                      setFocusMeta(prev=>({...prev,salario:sal,custo_fixo:cst,taxa_agente:tax}))
+                    }} className="btn btn-profit btn-sm" style={{width:'100%',justifyContent:'center',marginTop:12}}>
+                      <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      Salvar configuracao
+                    </button>
                     {(m.salario>0||m.custo_fixo>0||m.taxa_agente>0) && (
-                      <div style={{marginTop:12,padding:'10px 14px',background:'var(--profit-dim)',border:'1px solid var(--profit-border)',borderRadius:10,display:'flex',alignItems:'center',gap:8}}>
+                      <div style={{marginTop:10,padding:'10px 14px',background:'var(--profit-dim)',border:'1px solid var(--profit-border)',borderRadius:10,display:'flex',alignItems:'center',gap:8}}>
                         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                         <span style={{fontSize:12,color:'var(--profit)'}}>Pre-configurado. Quando o operador finalizar, a meta fecha automaticamente.</span>
                       </div>

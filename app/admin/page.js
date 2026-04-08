@@ -477,7 +477,7 @@ export default function AdminPage() {
                       <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>Salario e custos</span>
                       <span className="t-small" style={{marginLeft:4}}>Pre-configure para fechamento automatico</span>
                     </div>
-                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr auto',gap:10,alignItems:'flex-end'}}>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,alignItems:'flex-end'}}>
                       <div>
                         <label className="t-label" style={{display:'block',marginBottom:6}}>Salario (R$)</label>
                         <input className="input" type="number" step="0.01" min="0" defaultValue={m.salario||''} placeholder="0,00"
@@ -498,7 +498,6 @@ export default function AdminPage() {
                           }}
                           style={{padding:'10px 12px',fontSize:14}}/>
                       </div>
-                      <button onClick={()=>{setFocusMeta(null);setModalMeta(m)}} className="btn btn-brand btn-sm" style={{height:44}}>Fechar meta</button>
                     </div>
                     {(m.salario>0||m.custo_fixo>0) && (
                       <div style={{marginTop:12,padding:'10px 14px',background:'var(--profit-dim)',border:'1px solid var(--profit-border)',borderRadius:10,display:'flex',alignItems:'center',gap:8}}>

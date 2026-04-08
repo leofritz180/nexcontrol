@@ -71,7 +71,7 @@ export default function MetaPage() {
     setSalvando(false)
     if (err) { setError(err.message); return }
     setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq('')
-    notifyRemessaCreated(profile?.tenant_id, getName(profile), meta?.rede||'', diff)
+    notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
     fetchData()
   }
 
@@ -81,7 +81,7 @@ export default function MetaPage() {
     await supabase.from('metas').update({status:newStatus})
       .eq('id',meta.id)
       .is('status_fechamento', null)
-    if (newStatus==='finalizada') notifyMetaFinalized(profile?.tenant_id, getName(profile), meta.titulo)
+    if (newStatus==='finalizada') notifyMetaFinalized(meta?.tenant_id||profile?.tenant_id, getName(profile), meta.titulo)
     fetchData()
   }
 

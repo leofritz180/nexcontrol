@@ -16,15 +16,18 @@ export default function PushManager({ userId, tenantId }) {
     setSaving(true)
     try {
       const permission = await Notification.requestPermission()
-      setState(permission)
-      if (permission !== 'granted') { setSaving(false); return }
+      if (permission !== 'granted') { setState(permission); setSaving(false); return }
 
       const reg = await registerSW()
       if (!reg) { setState('error'); setSaving(false); return }
 
       const sub = await subscribePush(reg)
       const saved = await savePushSubscription(sub, userId, tenantId)
-      if (!saved) setState('error')
+      if (saved) {
+        setState('granted')
+      } else {
+        setState('error')
+      }
     } catch (err) {
       console.error('Push setup failed:', err)
       setState('error')

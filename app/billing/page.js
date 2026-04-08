@@ -101,18 +101,24 @@ export default function BillingPage() {
       expires_at: isPaid?expires.toISOString():now.toISOString(),
     }).select().single()
 
-    // Create payment record
-    await supabase.from('payments').insert({
+    // Create payment record — check for errors before updating tenant
+    const {error:payErr} = await supabase.from('payments').insert({
       tenant_id: tenant.id,
       subscription_id: newSub?.id,
       amount: c.total,
       status,
       payment_method: 'mock',
-      external_id: `mock_pay_${Date.now()}`,
+      external_id: `mock_pay_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,
       description: `${billing.currentPlan.name} — ${status==='paid'?'Aprovado':status==='pending'?'Pendente':'Recusado'}`,
     })
 
-    // Update tenant status
+    if (payErr) {
+      // Rollback: delete orphan subscription
+      if (newSub?.id) await supabase.from('subscriptions').delete().eq('id',newSub.id)
+      setSimulating(false); setSimMsg('Erro ao registrar pagamento. Tente novamente.'); return
+    }
+
+    // Only update tenant status AFTER payment confirmed
     const newStatus = isPaid?'active':status==='pending'?'trial':'trial'
     await supabase.from('tenants').update({subscription_status:newStatus}).eq('id',tenant.id)
     setTenant(t=>({...t,subscription_status:newStatus}))

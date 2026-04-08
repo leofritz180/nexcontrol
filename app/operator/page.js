@@ -122,12 +122,13 @@ export default function OperatorPage() {
     const u = s?.session?.user
     if (!u) { router.push('/login'); return }
     setUser(u)
-    const [{ data:p },{ data:m },{ data:r }] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id',u.id).maybeSingle(),
+    const { data:p } = await supabase.from('profiles').select('*').eq('id',u.id).maybeSingle()
+    setProfile(p)
+    const [{ data:m },{ data:r }] = await Promise.all([
       supabase.from('metas').select('*').eq('operator_id',u.id).order('created_at',{ascending:false}),
-      supabase.from('remessas').select('lucro,prejuizo,meta_id,created_at').order('created_at',{ascending:false}),
+      supabase.from('remessas').select('lucro,prejuizo,meta_id,created_at').eq('tenant_id',p?.tenant_id).order('created_at',{ascending:false}),
     ])
-    setProfile(p); setMetas(m||[])
+    setMetas(m||[])
     const ids = new Set((m||[]).map(x=>x.id))
     setRemessas((r||[]).filter(x=>ids.has(x.meta_id)))
     setLoading(false)

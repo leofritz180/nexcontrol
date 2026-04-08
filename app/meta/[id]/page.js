@@ -55,7 +55,8 @@ export default function MetaPage() {
 
   async function handleAdd(e) {
     e.preventDefault()
-    if (!dep||!saq) return
+    if (!dep||!saq||salvando) return
+    if (meta?.status==='finalizada'||meta?.status_fechamento==='fechada') { setError('Meta finalizada. Nao e possivel registrar.'); return }
     setSalvando(true); setError('')
     const d=Number(dep),s=Number(saq),si=Number(saldoIni||0),diff=s-d
     const { error:err } = await supabase.from('remessas').insert({
@@ -73,8 +74,10 @@ export default function MetaPage() {
   }
 
   async function toggleStatus() {
-    if (!meta) return
-    await supabase.from('metas').update({status:meta.status==='finalizada'?'ativa':'finalizada'}).eq('id',meta.id)
+    if (!meta || meta.status_fechamento==='fechada') return
+    await supabase.from('metas').update({status:meta.status==='finalizada'?'ativa':'finalizada'})
+      .eq('id',meta.id)
+      .is('status_fechamento', null)
     fetchData()
   }
 

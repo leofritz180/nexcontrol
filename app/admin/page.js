@@ -35,14 +35,17 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
   const lucroFinal = useMemo(()=>liqRem+Number(salario||0)-Number(custo||0),[salario,custo,liqRem])
 
   async function save() {
+    if (saving) return
     setSaving(true); setError('')
-    const { error:err } = await supabase.from('metas').update({
+    // Conditional update: only if not already fechada (prevent double-close)
+    const { data:updated, error:err } = await supabase.from('metas').update({
       salario:Number(salario||0), custo_fixo:Number(custo||0),
       lucro_final:lucroFinal, status:'finalizada',
       status_fechamento:'fechada', fechada_em:new Date().toISOString(),
-    }).eq('id',meta.id)
+    }).eq('id',meta.id).neq('status_fechamento','fechada').select()
     setSaving(false)
     if (err) { setError(err.message); return }
+    if (!updated||updated.length===0) { setError('Meta ja foi fechada por outro usuario.'); return }
     onSaved(); onClose()
   }
 

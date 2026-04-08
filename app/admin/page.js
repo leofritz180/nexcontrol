@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '../../components/Header'
 import TrialBanner, { ConversionModal } from '../../components/TrialBanner'
@@ -142,6 +142,8 @@ export default function AdminPage() {
   const [focusMeta, setFocusMeta] = useState(null)
   const [focusRem,  setFocusRem]  = useState([])
   const [focusLogs, setFocusLogs] = useState([])
+  const [notification, setNotification] = useState(null)
+  const prevRemCount = useRef(0)
   const [focusLoad, setFocusLoad] = useState(false)
 
   useEffect(()=>{ checkAndLoad() },[])
@@ -168,7 +170,26 @@ export default function AdminPage() {
       supabase.from('tenants').select('*').eq('id',profile?.tenant_id).maybeSingle(),
       supabase.from('subscriptions').select('*').eq('tenant_id',profile?.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
     ])
-    setOperators(ops||[]); setMetas(ms||[]); setRemessas(rs||[]); setInvites(inv||[])
+    // Detect new remessas for notification
+    const newRs = rs||[]
+    if (prevRemCount.current > 0 && newRs.length > prevRemCount.current) {
+      const latest = newRs[0]
+      const latestMeta = (ms||[]).find(x=>x.id===latest?.meta_id)
+      const latestOp = (ops||[]).find(o=>o.id===latestMeta?.operator_id)
+      const val = Number(latest?.resultado||0)
+      const pos = val >= 0
+      setNotification({
+        op: getName(latestOp),
+        rede: latestMeta?.rede || '',
+        val: Math.abs(val),
+        pos,
+        time: Date.now(),
+      })
+      setTimeout(()=>setNotification(null), 5000)
+    }
+    prevRemCount.current = newRs.length
+
+    setOperators(ops||[]); setMetas(ms||[]); setRemessas(newRs); setInvites(inv||[])
     if(t) setTenant(t); if(s2) setSub(s2)
     setLoading(false)
   }
@@ -535,25 +556,42 @@ export default function AdminPage() {
                   <p className="t-small">Tempo real · todas as operações</p>
                 </div>
               </div>
-              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-                {remessas.slice(0,10).map((r,i)=>{
+              <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                {remessas.slice(0,12).map((r,i)=>{
                   const m   = metas.find(x=>x.id===r.meta_id)
                   const op  = operators.find(o=>o.id===m?.operator_id)
                   const pos = Number(r.resultado||0)>=0
+                  const val = Math.abs(Number(r.resultado||0))
+                  const rede = m?.rede
+                  const isNew = (Date.now()-new Date(r.created_at).getTime())<300000
                   return (
-                    <div key={r.id} className="data-row a1" style={{ animationDelay:`${i*20}ms` }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:10, flex:1, minWidth:0 }}>
-                        <div style={{ width:30, height:30, borderRadius:8, background:pos?'var(--profit-dim)':'var(--loss-dim)', border:`1px solid ${pos?'var(--profit-border)':'var(--loss-border)'}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={pos?'var(--profit)':'var(--loss)'} strokeWidth="3" strokeLinecap="round"><polyline points={pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>
-                        </div>
-                        <div style={{ minWidth:0 }}>
-                          <p style={{ fontSize:12, fontWeight:600, color:'var(--t1)', margin:'0 0 2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.titulo||'Remessa'}</p>
-                          <p className="t-small">{getName(op)} · {new Date(r.created_at).toLocaleString('pt-BR')}</p>
-                        </div>
+                    <div key={r.id} className="a1" style={{
+                      animationDelay:`${i*25}ms`,
+                      padding:'12px 14px', borderRadius:12,
+                      background:pos?'rgba(5,217,140,0.04)':'rgba(240,61,107,0.04)',
+                      border:`1px solid ${pos?'rgba(5,217,140,0.1)':'rgba(240,61,107,0.1)'}`,
+                      display:'flex', alignItems:'center', gap:12,
+                      transition:'all 0.2s',
+                    }}>
+                      {/* Operator avatar */}
+                      <div style={{ width:36, height:36, borderRadius:10, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <span style={{ fontSize:13, fontWeight:800, color:'white' }}>{getName(op)[0]?.toUpperCase()}</span>
                       </div>
-                      <p className="t-num" style={{ fontSize:14, fontWeight:700, color:pos?'var(--profit)':'var(--loss)', flexShrink:0 }}>
-                        {pos?'+':'−'}R$ {fmt(Math.abs(Number(r.resultado||0)))}
-                      </p>
+                      {/* Info */}
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3 }}>
+                          <span style={{ fontSize:13, fontWeight:700, color:'var(--t1)' }}>{getName(op)}</span>
+                          {rede && <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:6, background:'rgba(79,110,247,0.12)', color:'var(--brand-bright)', border:'1px solid rgba(79,110,247,0.2)' }}>{rede}</span>}
+                          {isNew && <span style={{ fontSize:8, fontWeight:700, padding:'2px 6px', borderRadius:6, background:'rgba(5,217,140,0.15)', color:'var(--profit)', border:'1px solid rgba(5,217,140,0.25)', animation:'breathe 2s ease-in-out infinite' }}>NOVO</span>}
+                        </div>
+                        <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{r.titulo||'Remessa'} · {new Date(r.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</p>
+                      </div>
+                      {/* Value */}
+                      <div style={{ textAlign:'right', flexShrink:0 }}>
+                        <p className="t-num" style={{ fontSize:16, fontWeight:800, color:pos?'var(--profit)':'var(--loss)', margin:0 }}>
+                          {pos?'+':'-'}R$ {fmt(val)}
+                        </p>
+                      </div>
                     </div>
                   )
                 })}
@@ -1000,6 +1038,34 @@ export default function AdminPage() {
           </div>
         )}
       </div>
+
+      {/* Notification toast */}
+      {notification && (
+        <div style={{
+          position:'fixed', bottom:24, right:24, zIndex:10001,
+          padding:'16px 20px', borderRadius:16, maxWidth:360,
+          background:notification.pos?'rgba(5,217,140,0.12)':'rgba(240,61,107,0.12)',
+          border:`1px solid ${notification.pos?'rgba(5,217,140,0.25)':'rgba(240,61,107,0.25)'}`,
+          backdropFilter:'blur(20px)',
+          boxShadow:`0 12px 40px rgba(0,0,0,0.4), 0 0 20px ${notification.pos?'rgba(5,217,140,0.1)':'rgba(240,61,107,0.1)'}`,
+          animation:'fade-up 0.3s cubic-bezier(0.33,1,0.68,1) both',
+          display:'flex', alignItems:'center', gap:12,
+        }}>
+          <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <span style={{fontSize:13,fontWeight:800,color:'white'}}>{notification.op[0]?.toUpperCase()}</span>
+          </div>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
+              <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>{notification.op}</span>
+              {notification.rede && <span style={{fontSize:9,fontWeight:700,padding:'2px 6px',borderRadius:5,background:'rgba(79,110,247,0.12)',color:'var(--brand-bright)'}}>{notification.rede}</span>}
+            </div>
+            <p style={{fontSize:11,color:'var(--t3)',margin:0}}>Nova remessa registrada</p>
+          </div>
+          <span className="t-num" style={{fontSize:16,fontWeight:800,color:notification.pos?'var(--profit)':'var(--loss)',flexShrink:0}}>
+            {notification.pos?'+':'-'}R$ {fmt(notification.val)}
+          </span>
+        </div>
+      )}
     </main>
   )
 }

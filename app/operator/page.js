@@ -163,12 +163,17 @@ export default function OperatorPage() {
   const stats = useMemo(()=>{
     const lucro = remessas.reduce((a,r)=>a+Number(r.lucro||0),0)
     const prej  = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
-    const now = new Date()
-    const todayStr = now.toLocaleDateString('pt-BR')
-    const remHoje = remessas.filter(r=>new Date(r.created_at).toLocaleDateString('pt-BR')===todayStr)
-    const lucroHoje = remHoje.reduce((a,r)=>a+Number(r.resultado||Number(r.lucro||0)-Number(r.prejuizo||0)),0)
+    const today = new Date().toISOString().slice(0,10) // YYYY-MM-DD
+    const remHoje = remessas.filter(r=>(r.created_at||'').slice(0,10)===today)
+    const lucroHoje = remHoje.reduce((a,r)=>{
+      const res = r.resultado != null ? Number(r.resultado) : (Number(r.lucro||0) - Number(r.prejuizo||0))
+      return a + res
+    },0)
     const ativas = metas.filter(m=>(m.status||'ativa')==='ativa').length
-    const positivas = remessas.filter(r=>Number(r.resultado||Number(r.lucro||0)-Number(r.prejuizo||0))>0).length
+    const positivas = remessas.filter(r=>{
+      const res = r.resultado != null ? Number(r.resultado) : (Number(r.lucro||0) - Number(r.prejuizo||0))
+      return res > 0
+    }).length
     const taxa = remessas.length>0?Math.round((positivas/remessas.length)*100):0
     return { lucro, prej, liq:lucro-prej, lucroHoje, ativas, taxa, total:metas.length, nRem:remessas.length }
   },[metas,remessas])

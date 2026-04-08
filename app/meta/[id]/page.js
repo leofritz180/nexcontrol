@@ -81,19 +81,24 @@ export default function MetaPage() {
     const tid = meta?.tenant_id||profile?.tenant_id
 
     if (newStatus==='finalizada') {
+      // Fetch fresh meta from DB (admin may have updated salary/costs after page load)
+      const {data:freshMeta} = await supabase.from('metas').select('salario,custo_fixo,taxa_agente,quantidade_contas,rede').eq('id',meta.id).single()
+      const sal = Number(freshMeta?.salario||0)
+      const cst = Number(freshMeta?.custo_fixo||0)
+      const tax = Number(freshMeta?.taxa_agente||0)
       const liq = remessas.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
-      const hasSalario = Number(meta?.salario||0) > 0 || Number(meta?.custo_fixo||0) > 0 || Number(meta?.taxa_agente||0) > 0
+      const hasPre = sal > 0 || cst > 0 || tax > 0
 
-      if (hasSalario) {
-        // Auto-close: admin already pre-configured salary/costs/agent fee
-        const lucroFinal = liq + Number(meta.salario||0) - Number(meta.custo_fixo||0) - Number(meta.taxa_agente||0)
+      if (hasPre) {
+        // Auto-close: admin pre-configured salary/costs
+        const lucroFinal = liq + sal - cst - tax
         await supabase.from('metas').update({
           status:'finalizada', status_fechamento:'fechada',
           lucro_final: lucroFinal, fechada_em: new Date().toISOString(),
         }).eq('id',meta.id).neq('status_fechamento','fechada')
-        notifyMetaClosed(tid, meta?.quantidade_contas, meta?.rede, lucroFinal)
+        notifyMetaClosed(tid, freshMeta?.quantidade_contas||meta?.quantidade_contas, freshMeta?.rede||meta?.rede, lucroFinal)
       } else {
-        // Normal finalize (admin will close later)
+        // Normal finalize (admin closes later)
         await supabase.from('metas').update({status:newStatus}).eq('id',meta.id).neq('status_fechamento','fechada')
         notifyMetaFinalized(tid, getName(profile), meta?.quantidade_contas, meta?.rede, liq)
       }

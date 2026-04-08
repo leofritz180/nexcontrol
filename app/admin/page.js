@@ -469,12 +469,50 @@ export default function AdminPage() {
                 </div>
                 )}
 
-                {/* Meta info footer */}
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:20,padding:'12px 0',borderTop:'1px solid var(--b1)'}}>
-                  <p className="t-small">Criada em {fmtDate(m.created_at)}{m.fechada_em?` · Fechada em ${fmtDate(m.fechada_em)}`:''}{m.observacoes?` · ${m.observacoes}`:''}</p>
-                  <div style={{display:'flex',gap:8}}>
-                    <button onClick={()=>{setFocusMeta(null);setModalMeta(m)}} className="btn btn-brand btn-sm">{fechada?'Editar fechamento':'Fechar meta'}</button>
+                {/* Pre-config salario/custo for active metas */}
+                {!fechada && (
+                  <div style={{marginTop:20,padding:'20px 22px',background:'var(--surface)',border:'1px solid var(--brand-border)',borderRadius:16}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                      <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>Salario e custos</span>
+                      <span className="t-small" style={{marginLeft:4}}>Pre-configure para fechamento automatico</span>
+                    </div>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr auto',gap:10,alignItems:'flex-end'}}>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Salario (R$)</label>
+                        <input className="input" type="number" step="0.01" min="0" defaultValue={m.salario||''} placeholder="0,00"
+                          onBlur={async e=>{
+                            const val=Number(e.target.value||0)
+                            await supabase.from('metas').update({salario:val}).eq('id',m.id)
+                            setFocusMeta(prev=>({...prev,salario:val}))
+                          }}
+                          style={{padding:'10px 12px',fontSize:14}}/>
+                      </div>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Custo fixo (R$)</label>
+                        <input className="input" type="number" step="0.01" min="0" defaultValue={m.custo_fixo||''} placeholder="0,00"
+                          onBlur={async e=>{
+                            const val=Number(e.target.value||0)
+                            await supabase.from('metas').update({custo_fixo:val}).eq('id',m.id)
+                            setFocusMeta(prev=>({...prev,custo_fixo:val}))
+                          }}
+                          style={{padding:'10px 12px',fontSize:14}}/>
+                      </div>
+                      <button onClick={()=>{setFocusMeta(null);setModalMeta(m)}} className="btn btn-brand btn-sm" style={{height:44}}>Fechar meta</button>
+                    </div>
+                    {(m.salario>0||m.custo_fixo>0) && (
+                      <div style={{marginTop:12,padding:'10px 14px',background:'var(--profit-dim)',border:'1px solid var(--profit-border)',borderRadius:10,display:'flex',alignItems:'center',gap:8}}>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span style={{fontSize:12,color:'var(--profit)'}}>Pre-configurado. Quando o operador finalizar, a meta fecha automaticamente.</span>
+                      </div>
+                    )}
                   </div>
+                )}
+
+                {/* Meta info footer */}
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:16,padding:'12px 0',borderTop:'1px solid var(--b1)'}}>
+                  <p className="t-small">Criada em {fmtDate(m.created_at)}{m.fechada_em?` · Fechada em ${fmtDate(m.fechada_em)}`:''}{m.observacoes?` · ${m.observacoes}`:''}</p>
+                  {fechada && <button onClick={()=>{setFocusMeta(null);setModalMeta(m)}} className="btn btn-ghost btn-sm">Editar fechamento</button>}
                 </div>
               </>)
             })()}

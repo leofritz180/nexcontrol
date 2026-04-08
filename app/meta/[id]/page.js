@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Header from '../../../components/Header'
 import { supabase } from '../../../lib/supabase/client'
-import { notifyRemessaCreated, notifyMetaFinalized } from '../../../lib/notify'
+import { notifyRemessaCreated, notifyMetaFinalized, notifyMetaClosed } from '../../../lib/notify'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -78,12 +78,27 @@ export default function MetaPage() {
   async function toggleStatus() {
     if (!meta || meta.status_fechamento==='fechada') return
     const newStatus = meta.status==='finalizada'?'ativa':'finalizada'
-    await supabase.from('metas').update({status:newStatus})
-      .eq('id',meta.id)
-      .neq('status_fechamento','fechada')
+    const tid = meta?.tenant_id||profile?.tenant_id
+
     if (newStatus==='finalizada') {
       const liq = remessas.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
-      notifyMetaFinalized(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.quantidade_contas, meta?.rede, liq)
+      const hasSalario = Number(meta?.salario||0) > 0 || Number(meta?.custo_fixo||0) > 0
+
+      if (hasSalario) {
+        // Auto-close: admin already pre-configured salary/costs
+        const lucroFinal = liq + Number(meta.salario||0) - Number(meta.custo_fixo||0)
+        await supabase.from('metas').update({
+          status:'finalizada', status_fechamento:'fechada',
+          lucro_final: lucroFinal, fechada_em: new Date().toISOString(),
+        }).eq('id',meta.id).neq('status_fechamento','fechada')
+        notifyMetaClosed(tid, meta?.quantidade_contas, meta?.rede, lucroFinal)
+      } else {
+        // Normal finalize (admin will close later)
+        await supabase.from('metas').update({status:newStatus}).eq('id',meta.id).neq('status_fechamento','fechada')
+        notifyMetaFinalized(tid, getName(profile), meta?.quantidade_contas, meta?.rede, liq)
+      }
+    } else {
+      await supabase.from('metas').update({status:newStatus}).eq('id',meta.id).neq('status_fechamento','fechada')
     }
     fetchData()
   }

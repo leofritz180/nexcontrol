@@ -115,7 +115,13 @@ export default function OperatorPage() {
     return()=>document.removeEventListener('mousedown',handleClickOutside)
   },[])
 
-  useEffect(()=>{ load() },[])
+  useEffect(()=>{
+    load()
+    // Reload when tab gains focus (prevents stale data)
+    const onFocus = () => load()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  },[])
 
   async function load() {
     setLoading(true)

@@ -523,10 +523,63 @@ export default function AdminPage() {
                   </div>
                 )}
 
+                {/* Editar valores pos-fechamento */}
+                {fechada && (()=>{
+                  const liqCalc = focusRem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
+                  return (
+                  <div style={{marginTop:20,padding:'20px 22px',background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:16}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                      <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>Ajustar valores</span>
+                    </div>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:12}}>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Salario (R$)</label>
+                        <input className="input" type="number" step="0.01" min="0" defaultValue={m.salario||''} placeholder="0,00"
+                          onChange={e=>setFocusMeta(prev=>({...prev,salario:Number(e.target.value||0)}))}
+                          style={{padding:'10px 12px',fontSize:14}}/>
+                      </div>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Custo fixo (R$)</label>
+                        <input className="input" type="number" step="0.01" min="0" defaultValue={m.custo_fixo||''} placeholder="0,00"
+                          onChange={e=>setFocusMeta(prev=>({...prev,custo_fixo:Number(e.target.value||0)}))}
+                          style={{padding:'10px 12px',fontSize:14}}/>
+                      </div>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Taxa agente (R$)</label>
+                        <input className="input" type="number" step="0.01" min="0" defaultValue={m.taxa_agente||''} placeholder="0,00"
+                          onChange={e=>setFocusMeta(prev=>({...prev,taxa_agente:Number(e.target.value||0)}))}
+                          style={{padding:'10px 12px',fontSize:14}}/>
+                      </div>
+                    </div>
+                    {(()=>{
+                      const newLucro = liqCalc + Number(m.salario||0) - Number(m.custo_fixo||0) - Number(m.taxa_agente||0)
+                      return (
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderRadius:12,background:newLucro>=0?'rgba(5,217,140,0.08)':'rgba(240,61,107,0.06)',border:`1px solid ${newLucro>=0?'rgba(5,217,140,0.15)':'rgba(240,61,107,0.12)'}`,marginBottom:12}}>
+                        <span style={{fontSize:12,color:'var(--t2)'}}>Lucro final recalculado</span>
+                        <span className="t-num" style={{fontSize:20,fontWeight:800,color:newLucro>=0?'var(--profit)':'var(--loss)'}}>{newLucro>=0?'+':''}R$ {fmt(newLucro)}</span>
+                      </div>
+                      )
+                    })()}
+                    <button onClick={async()=>{
+                      const newLucro = liqCalc + Number(m.salario||0) - Number(m.custo_fixo||0) - Number(m.taxa_agente||0)
+                      await supabase.from('metas').update({
+                        salario:Number(m.salario||0), custo_fixo:Number(m.custo_fixo||0),
+                        taxa_agente:Number(m.taxa_agente||0), lucro_final:newLucro,
+                      }).eq('id',m.id)
+                      openMetaDetail({...m,lucro_final:newLucro})
+                      loadAll()
+                    }} className="btn btn-profit btn-sm" style={{width:'100%',justifyContent:'center'}}>
+                      <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      Salvar ajustes
+                    </button>
+                  </div>
+                  )
+                })()}
+
                 {/* Meta info footer */}
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:16,padding:'12px 0',borderTop:'1px solid var(--b1)'}}>
                   <p className="t-small">Criada em {fmtDate(m.created_at)}{m.fechada_em?` · Fechada em ${fmtDate(m.fechada_em)}`:''}{m.observacoes?` · ${m.observacoes}`:''}</p>
-                  {fechada && <button onClick={()=>{setFocusMeta(null);setModalMeta(m)}} className="btn btn-ghost btn-sm">Editar fechamento</button>}
                 </div>
               </>)
             })()}

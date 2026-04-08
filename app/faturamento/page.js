@@ -161,6 +161,7 @@ export default function FaturamentoPage() {
 
   /* ── Global stats ── */
   const stats = useMemo(()=>{
+    // Remessas brutas
     const lucro=fRem.reduce((a,r)=>a+Number(r.lucro||0),0)
     const prej=fRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
     const dep=fRem.reduce((a,r)=>a+Number(r.deposito||0),0)
@@ -168,8 +169,11 @@ export default function FaturamentoPage() {
     const roi=dep>0?((liq/dep)*100):0
     const pos=fRem.filter(r=>Number(r.resultado||0)>=0).length
     const taxa=fRem.length>0?Math.round((pos/fRem.length)*100):0
-    return {lucro,prej,liq,dep,roi,taxa,total:fRem.length,pos}
-  },[fRem])
+    // Lucro final das metas fechadas (valor real pos salario/custo)
+    const fechadas=metas.filter(m=>m.status_fechamento==='fechada')
+    const lucroFinal=fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    return {lucro,prej,liq,dep,roi,taxa,total:fRem.length,pos,lucroFinal,fechadas:fechadas.length}
+  },[fRem,metas])
 
   /* ── Chart data ── */
   const chartData = useMemo(()=>{
@@ -339,7 +343,7 @@ export default function FaturamentoPage() {
             <div style={{position:'relative',zIndex:1,maxWidth:700}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:24}}>
                 <span className="live-dot" style={{width:8,height:8}}/>
-                <span style={{fontSize:11,fontWeight:700,color:'rgba(5,217,140,0.7)',letterSpacing:'0.12em'}}>FATURAMENTO TOTAL DA OPERACAO</span>
+                <span style={{fontSize:11,fontWeight:700,color:'rgba(5,217,140,0.7)',letterSpacing:'0.12em'}}>LUCRO FINAL DA OPERACAO</span>
               </div>
               <div className="shine-text" style={{display:'inline-block',marginBottom:14}}>
                 <p className="t-num" style={{fontSize:68,fontWeight:900,lineHeight:1,letterSpacing:'-0.04em',
@@ -347,16 +351,17 @@ export default function FaturamentoPage() {
                   WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',
                   filter:'drop-shadow(0 0 40px rgba(5,217,140,0.25))',
                 }}>
-                  <CountUp value={stats.lucro} prefix="R$ "/>
+                  <CountUp value={stats.lucroFinal} prefix="R$ "/>
                 </p>
               </div>
-              <p style={{fontSize:14,color:'var(--t3)',marginBottom:32}}>{stats.total} remessas processadas · {operators.length} operadores · {redesList.length} redes</p>
+              <p style={{fontSize:14,color:'var(--t3)',marginBottom:32}}>{stats.fechadas} metas fechadas · {stats.total} remessas · {operators.length} operadores</p>
 
               {/* Sub KPIs */}
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:14}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr 1fr',gap:14}}>
                 {[
-                  {label:'Lucro liquido',value:Math.abs(stats.liq),prefix:stats.liq>=0?'+R$ ':'-R$ ',color:stats.liq>=0?'#05d98c':'#f03d6b',sub:stats.liq>=0?'Resultado positivo':'Resultado negativo',rgb:'5,217,140'},
+                  {label:'Lucro bruto',value:stats.lucro,prefix:'R$ ',color:'#05d98c',sub:'Total das remessas',rgb:'5,217,140'},
                   {label:'Prejuizo total',value:stats.prej,prefix:'R$ ',color:'#f03d6b',sub:`${stats.total-stats.pos} remessas negativas`,rgb:'240,61,107'},
+                  {label:'Resultado liquido',value:Math.abs(stats.liq),prefix:stats.liq>=0?'+R$ ':'-R$ ',color:stats.liq>=0?'#05d98c':'#f03d6b',sub:stats.liq>=0?'Positivo':'Negativo',rgb:stats.liq>=0?'5,217,140':'240,61,107'},
                   {label:'ROI estimado',value:null,color:stats.roi>=0?'#6b84ff':'#f03d6b',sub:`Taxa acerto: ${stats.taxa}%`,rgb:'79,110,247'},
                 ].map((kpi,i)=>(
                   <div key={i} style={{

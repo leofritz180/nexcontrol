@@ -42,6 +42,10 @@ function InvitePage() {
     if (!email || !pass || !nome.trim()) return
     setSaving(true); setError('')
 
+    // Re-validate invite still exists and is pending
+    const { data: valid } = await supabase.from('invites').select('id').eq('token', token).eq('status', 'pending').maybeSingle()
+    if (!valid) { setError('Este convite expirou ou foi cancelado.'); setSaving(false); return }
+
     const { error: err } = await supabase.auth.signUp({
       email, password: pass,
       options: { data: { nome: nome.trim(), invite_token: token } }

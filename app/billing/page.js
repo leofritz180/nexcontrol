@@ -57,12 +57,12 @@ export default function BillingPage() {
 
   function calcPlan(plan) {
     const ops=plan.max_operators
-    const opFull=ops*OP_PRICE
-    const discount=opFull*(plan.discount_pct/100)
-    const opFinal=opFull-discount
-    const total=BASE+opFinal
-    const fullPrice=BASE+(ops*OP_PRICE)
-    const savings=fullPrice-total
+    const opFull=Math.round(ops*OP_PRICE*100)/100
+    const discount=Math.round(opFull*(plan.discount_pct/100)*100)/100
+    const opFinal=Math.round((opFull-discount)*100)/100
+    const total=Math.round((BASE+opFinal)*100)/100
+    const fullPrice=Math.round((BASE+ops*OP_PRICE)*100)/100
+    const savings=Math.round((fullPrice-total)*100)/100
     return {ops,opFull,discount,opFinal,total,fullPrice,savings}
   }
 
@@ -78,7 +78,7 @@ export default function BillingPage() {
   const [simMsg,setSimMsg]=useState('')
 
   async function simulatePayment(status) {
-    if(!tenant||!billing?.currentPlan) return
+    if(!tenant||!billing?.currentPlan||simulating) return
     setSimulating(true); setSimMsg('')
     const c = calcPlan(billing.currentPlan)
     const isPaid = status==='paid'
@@ -95,7 +95,8 @@ export default function BillingPage() {
       operator_count: billing.opCount,
       total_amount: c.total,
       payment_method: 'mock',
-      external_id: `mock_${Date.now()}`,
+      external_id: `mock_${Date.now()}_${Math.random().toString(36).slice(2,10)}`,
+      idempotency_key: `${tenant.id}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,
       starts_at: now.toISOString(),
       expires_at: isPaid?expires.toISOString():now.toISOString(),
     }).select().single()

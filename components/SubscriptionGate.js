@@ -33,7 +33,7 @@ export default function SubscriptionGate({ children }) {
       if (!u) { finish('ok'); return }
 
       const { data: p } = await supabase.from('profiles').select('role,tenant_id').eq('id', u.id).maybeSingle()
-      if (!p || p.role !== 'admin') { finish('ok'); return }
+      if (!p || !p.tenant_id) { finish('ok'); return }
 
       const { data: t } = await supabase.from('tenants').select('trial_end,subscription_status').eq('id', p.tenant_id).maybeSingle()
       if (!t) { finish('ok'); return }

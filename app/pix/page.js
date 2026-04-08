@@ -68,12 +68,12 @@ export default function PixPage() {
     setSaving(true); setError(''); setSuccess('')
 
     const raw = parseKeys(textarea)
-    const existingSet = new Set(keys.map(k => k.chave))
+    const existingSet = new Set(keys.map(k => k.chave.replace(/[\s()\-.\/]/g, '')))
     const seen = new Set()
     const unique = []
     for (const c of raw) {
-      const normalized = c.replace(/[\s()-]/g, '')
-      if (!seen.has(normalized) && !existingSet.has(c)) {
+      const normalized = c.replace(/[\s()\-.\/]/g, '')
+      if (!seen.has(normalized) && !existingSet.has(normalized)) {
         seen.add(normalized)
         unique.push(c)
       }

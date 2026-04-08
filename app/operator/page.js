@@ -125,13 +125,16 @@ export default function OperatorPage() {
     setUser(u)
     const { data:p } = await supabase.from('profiles').select('*').eq('id',u.id).maybeSingle()
     setProfile(p)
-    const [{ data:m },{ data:r }] = await Promise.all([
-      supabase.from('metas').select('*').eq('operator_id',u.id).order('created_at',{ascending:false}),
-      supabase.from('remessas').select('lucro,prejuizo,meta_id,created_at').eq('tenant_id',p?.tenant_id).order('created_at',{ascending:false}),
-    ])
+    // Fetch metas first, then remessas only for operator's metas
+    const { data:m } = await supabase.from('metas').select('*').eq('operator_id',u.id).order('created_at',{ascending:false})
     setMetas(m||[])
-    const ids = new Set((m||[]).map(x=>x.id))
-    setRemessas((r||[]).filter(x=>ids.has(x.meta_id)))
+    const metaIds = (m||[]).map(x=>x.id)
+    let allRem = []
+    if (metaIds.length > 0) {
+      const { data:r } = await supabase.from('remessas').select('lucro,prejuizo,resultado,meta_id,created_at').in('meta_id',metaIds).order('created_at',{ascending:false})
+      allRem = r || []
+    }
+    setRemessas(allRem)
     setLoading(false)
   }
 
@@ -160,10 +163,13 @@ export default function OperatorPage() {
   const stats = useMemo(()=>{
     const lucro = remessas.reduce((a,r)=>a+Number(r.lucro||0),0)
     const prej  = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
-    const today = new Date().toDateString()
-    const lucroHoje = remessas.filter(r=>new Date(r.created_at).toDateString()===today).reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
+    const now = new Date()
+    const todayStr = now.toLocaleDateString('pt-BR')
+    const remHoje = remessas.filter(r=>new Date(r.created_at).toLocaleDateString('pt-BR')===todayStr)
+    const lucroHoje = remHoje.reduce((a,r)=>a+Number(r.resultado||Number(r.lucro||0)-Number(r.prejuizo||0)),0)
     const ativas = metas.filter(m=>(m.status||'ativa')==='ativa').length
-    const taxa = remessas.length>0?Math.round((remessas.filter(r=>Number(r.lucro||0)>0).length/remessas.length)*100):0
+    const positivas = remessas.filter(r=>Number(r.resultado||Number(r.lucro||0)-Number(r.prejuizo||0))>0).length
+    const taxa = remessas.length>0?Math.round((positivas/remessas.length)*100):0
     return { lucro, prej, liq:lucro-prej, lucroHoje, ativas, taxa, total:metas.length, nRem:remessas.length }
   },[metas,remessas])
 

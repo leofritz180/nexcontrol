@@ -413,18 +413,27 @@ export default function AdminPage() {
                       <div style={{display:'flex',flexDirection:'column',gap:6,maxHeight:400,overflowY:'auto'}}>
                         {[...focusRem].reverse().map((r,i)=>{
                           const pos=Number(r.resultado||0)>=0
+                          const isLatest=i===0
                           return (
-                            <div key={r.id} className="data-row" style={{padding:'10px 14px'}}>
-                              <div style={{display:'flex',alignItems:'center',gap:10,flex:1,minWidth:0}}>
-                                <div style={{width:28,height:28,borderRadius:7,background:pos?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${pos?'var(--profit-border)':'var(--loss-border)'}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={pos?'var(--profit)':'var(--loss)'} strokeWidth="3" strokeLinecap="round"><polyline points={pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>
-                                </div>
-                                <div style={{minWidth:0}}>
-                                  <p style={{fontSize:12,fontWeight:600,color:'var(--t1)',margin:'0 0 2px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{r.titulo||`Remessa ${focusRem.length-i}`}</p>
-                                  <p className="t-small">{r.tipo} · D: R$ {fmt(r.deposito)} · S: R$ {fmt(r.saque)}</p>
-                                </div>
+                            <div key={r.id} style={{
+                              padding:'12px 14px',borderRadius:12,
+                              background:isLatest?(pos?'rgba(5,217,140,0.06)':'rgba(240,61,107,0.06)'):'var(--raised)',
+                              border:`1px solid ${isLatest?(pos?'rgba(5,217,140,0.15)':'rgba(240,61,107,0.12)'):'var(--b1)'}`,
+                              display:'flex',alignItems:'center',gap:10,
+                              transition:'all 0.2s',
+                              boxShadow:isLatest?`0 0 15px ${pos?'rgba(5,217,140,0.06)':'rgba(240,61,107,0.04)'}`:'none',
+                            }}>
+                              <div style={{width:30,height:30,borderRadius:8,background:pos?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${pos?'var(--profit-border)':'var(--loss-border)'}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={pos?'var(--profit)':'var(--loss)'} strokeWidth="3" strokeLinecap="round"><polyline points={pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>
                               </div>
-                              <p className="t-num" style={{fontSize:14,fontWeight:700,color:pos?'var(--profit)':'var(--loss)',flexShrink:0}}>
+                              <div style={{flex:1,minWidth:0}}>
+                                <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
+                                  <p style={{fontSize:12,fontWeight:600,color:'var(--t1)',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{r.titulo||`Remessa ${focusRem.length-i}`}</p>
+                                  {isLatest&&<span style={{fontSize:8,fontWeight:700,padding:'1px 6px',borderRadius:4,background:pos?'rgba(5,217,140,0.15)':'rgba(240,61,107,0.12)',color:pos?'var(--profit)':'var(--loss)'}}>{pos?'LUCRO':'PREJUIZO'}</span>}
+                                </div>
+                                <p className="t-small">{r.tipo} · D: R$ {fmt(r.deposito)} · S: R$ {fmt(r.saque)}</p>
+                              </div>
+                              <p className="t-num" style={{fontSize:isLatest?16:14,fontWeight:800,color:pos?'var(--profit)':'var(--loss)',flexShrink:0}}>
                                 {pos?'+':'-'}R$ {fmt(Math.abs(Number(r.resultado||0)))}
                               </p>
                             </div>
@@ -438,7 +447,13 @@ export default function AdminPage() {
                   <div className="card" style={{padding:22}}>
                     <h3 className="t-h3" style={{fontSize:14,marginBottom:14}}>Timeline</h3>
                     {focusLogs.length===0?(
-                      <p className="t-small" style={{textAlign:'center',padding:24}}>Nenhum evento registrado.</p>
+                      <div style={{textAlign:'center',padding:'32px 16px'}}>
+                        <div style={{width:40,height:40,borderRadius:12,background:'var(--brand-dim)',border:'1px solid var(--brand-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 12px'}}>
+                          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <p style={{fontSize:12,fontWeight:600,color:'var(--t2)',margin:'0 0 4px'}}>Sem eventos ainda</p>
+                        <p className="t-small">As acoes do operador aparecerao aqui em tempo real</p>
+                      </div>
                     ):(
                       <div style={{display:'flex',flexDirection:'column',gap:0,maxHeight:400,overflowY:'auto'}}>
                         {focusLogs.map((log,i)=>{

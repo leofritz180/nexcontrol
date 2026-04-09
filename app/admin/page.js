@@ -343,9 +343,19 @@ export default function AdminPage() {
                     </span>
                     {!fechada&&!finalizada&&<span className="live-dot" style={{width:7,height:7}}/>}
                   </div>
-                  <button onClick={()=>setFocusMeta(null)} style={{width:36,height:36,borderRadius:10,border:'1px solid var(--b2)',background:'rgba(255,255,255,0.04)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
-                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  </button>
+                  <div style={{display:'flex',alignItems:'center',gap:6}}>
+                    <button onClick={async()=>{
+                      if(!confirm('Tem certeza que deseja EXCLUIR esta meta e todas as remessas? Esta acao nao pode ser desfeita.')) return
+                      await fetch('/api/meta/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({meta_id:m.id})})
+                      setFocusMeta(null); loadAll()
+                    }} style={{width:36,height:36,borderRadius:10,border:'1px solid var(--loss-border)',background:'rgba(240,61,107,0.06)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'all 0.15s'}}
+                      onMouseEnter={e=>e.currentTarget.style.background='rgba(240,61,107,0.15)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(240,61,107,0.06)'}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                    <button onClick={()=>setFocusMeta(null)} style={{width:36,height:36,borderRadius:10,border:'1px solid var(--b2)',background:'rgba(255,255,255,0.04)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
+                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Info cards */}
@@ -418,6 +428,15 @@ export default function AdminPage() {
                               <p className="t-num" style={{fontSize:isLatest?16:14,fontWeight:800,color:pos?'var(--profit)':'var(--loss)',flexShrink:0}}>
                                 {pos?'+':'-'}R$ {fmt(Math.abs(Number(r.resultado||0)))}
                               </p>
+                              <button onClick={async(ev)=>{
+                                ev.stopPropagation()
+                                if(!confirm('Excluir esta remessa?')) return
+                                await fetch('/api/remessa/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({remessa_id:r.id})})
+                                openMetaDetail(m)
+                              }} style={{width:26,height:26,borderRadius:6,border:'1px solid var(--loss-border)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0,opacity:0.5,transition:'opacity 0.15s'}}
+                                onMouseEnter={e=>e.currentTarget.style.opacity='1'} onMouseLeave={e=>e.currentTarget.style.opacity='0.5'}>
+                                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                              </button>
                             </div>
                           )
                         })}

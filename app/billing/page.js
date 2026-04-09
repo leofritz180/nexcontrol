@@ -298,39 +298,46 @@ export default function BillingPage() {
                 </div>
               </div>
 
-              {extraOps > 0 && (<>
+              {extraOps > 0 && (()=>{
+                const extraOnlyCost = Math.round(extraOps * newPrice.opUnitPrice * 100) / 100
+                return (<>
                 {/* Cost breakdown */}
                 <div style={{padding:'14px 16px',borderRadius:14,background:'rgba(79,110,247,0.05)',border:'1px solid rgba(79,110,247,0.1)',marginBottom:16}}>
-                  <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                  <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
                     <span style={{fontSize:12,color:'var(--t2)'}}>{extraOps} novo{extraOps>1?'s':''} operador{extraOps>1?'es':''} x R$ {fmt(newPrice.opUnitPrice)}</span>
-                    <span className="t-num" style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>+R$ {fmt(extraOps * newPrice.opUnitPrice)}/mes</span>
+                    <span className="t-num" style={{fontSize:13,fontWeight:700,color:'var(--brand-bright)'}}>R$ {fmt(extraOnlyCost)}</span>
                   </div>
+                  {newPrice.discount > 0 && (
+                    <p style={{fontSize:11,color:'var(--t3)',margin:'4px 0 0'}}>Preco por operador com {newPrice.discount}% de desconto</p>
+                  )}
                   {newPrice.discount > currentPrice.discount && (
                     <div style={{display:'flex',alignItems:'center',gap:6,marginTop:6}}>
                       <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                      <span style={{fontSize:11,color:'var(--profit)'}}>Desconto aumentou para {newPrice.discount}%</span>
+                      <span style={{fontSize:11,color:'var(--profit)'}}>Desconto subiu para {newPrice.discount}% com {opQty} operadores</span>
                     </div>
                   )}
                 </div>
 
-                <div style={{display:'flex',justifyContent:'space-between',padding:'12px 0',borderBottom:'1px solid var(--b1)'}}>
-                  <span style={{fontSize:13,color:'var(--t2)'}}>Plano atual</span>
-                  <span className="t-num" style={{fontSize:14,fontWeight:700,color:'var(--t1)'}}>R$ {fmt(currentPrice.total)}/mes</span>
-                </div>
-                <div style={{display:'flex',justifyContent:'space-between',padding:'12px 0',borderBottom:'1px solid var(--b1)'}}>
-                  <span style={{fontSize:13,color:'var(--brand-bright)'}}>Adicional</span>
-                  <span className="t-num" style={{fontSize:14,fontWeight:700,color:'var(--brand-bright)'}}>+R$ {fmt(extraCost)}/mes</span>
-                </div>
-                <div style={{display:'flex',justifyContent:'space-between',padding:'14px 0'}}>
-                  <span style={{fontSize:15,fontWeight:800,color:'var(--t1)'}}>Novo total</span>
-                  <span className="t-num" style={{fontSize:24,fontWeight:900,color:'var(--profit)'}}>R$ {fmt(newPrice.total)}/mes</span>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 0'}}>
+                  <div>
+                    <span style={{fontSize:15,fontWeight:800,color:'var(--t1)'}}>Valor a pagar agora</span>
+                    <p style={{fontSize:11,color:'var(--t3)',margin:'2px 0 0'}}>Apenas os operadores adicionais</p>
+                  </div>
+                  <span className="t-num" style={{fontSize:28,fontWeight:900,color:'var(--profit)'}}>R$ {fmt(extraOnlyCost)}</span>
                 </div>
 
-                <button onClick={()=>setShowPix(true)} className="btn btn-profit btn-lg" style={{width:'100%',justifyContent:'center',fontSize:15,fontWeight:800,padding:'14px',marginTop:4}}>
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                  Pagar upgrade — R$ {fmt(newPrice.total)}/mes
+                <div style={{padding:'10px 14px',borderRadius:10,background:'var(--raised)',border:'1px solid var(--b1)',marginBottom:14}}>
+                  <div style={{display:'flex',justifyContent:'space-between',fontSize:12,color:'var(--t3)'}}>
+                    <span>Proximo mes (admin + {opQty} ops)</span>
+                    <span className="t-num" style={{fontWeight:700,color:'var(--t2)'}}>R$ {fmt(newPrice.total)}/mes</span>
+                  </div>
+                </div>
+
+                <button onClick={()=>setShowPix(true)} className="btn btn-profit btn-lg" style={{width:'100%',justifyContent:'center',fontSize:15,fontWeight:800,padding:'14px'}}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                  Adicionar {extraOps} operador{extraOps>1?'es':''} — R$ {fmt(extraOnlyCost)}
                 </button>
-              </>)}
+              </>)})()}
 
               {extraOps === 0 && (
                 <p style={{fontSize:13,color:'var(--t3)',textAlign:'center',padding:'12px 0'}}>Use os botoes + e - para adicionar operadores ao seu plano</p>
@@ -388,18 +395,23 @@ export default function BillingPage() {
         </div>
       </div>
 
-      {showPix&&(
+      {showPix&&(()=>{
+        const extraOps = billing?.subActive ? Math.max(0, opQty - operators.length) : 0
+        const isUpgrade = billing?.subActive && extraOps > 0
+        const upgradeAmount = isUpgrade ? Math.round(extraOps * price.opUnitPrice * 100) / 100 : price.total
+        return (
         <PixPayment
           tenantId={profile?.tenant_id}
           userId={user?.id}
           userName={profile?.nome}
           userEmail={user?.email}
-          amount={price.total}
-          planName={opQty>0?`Admin + ${opQty} op${opQty>1?'s':''} (${price.discount}% desc)`:'Admin Solo'}
+          amount={upgradeAmount}
+          planName={isUpgrade ? `+${extraOps} operador${extraOps>1?'es':''}` : opQty>0?`Admin + ${opQty} ops`:'Admin Solo'}
           onSuccess={()=>{setShowPix(false);init()}}
           onClose={()=>setShowPix(false)}
         />
-      )}
+        )
+      })()}
     </main>
   )
 }

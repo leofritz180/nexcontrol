@@ -316,8 +316,8 @@ export default function BillingPage() {
                   <span style={{fontSize:15,fontWeight:800,color:'var(--t1)'}}>Total mensal</span>
                   <span className="t-num" style={{fontSize:26,fontWeight:900,color:'var(--profit)'}}>R$ {fmt(billing?.currentPlan ? calcPlan(billing.currentPlan).total : BASE)}</span>
                 </div>
-                <button onClick={()=>setTab('plans')} className="btn btn-brand btn-lg" style={{width:'100%',justifyContent:'center',marginTop:8}}>
-                  {billing?.subActive?'Trocar plano':'Escolher plano e assinar'}
+                <button onClick={()=>billing?.currentPlan?setShowPix(true):setTab('plans')} className="btn btn-brand btn-lg" style={{width:'100%',justifyContent:'center',marginTop:8}}>
+                  {billing?.subActive?'Trocar plano':billing?.currentPlan?'Pagar com Pix':'Escolher plano'}
                 </button>
               </div>
             </div>

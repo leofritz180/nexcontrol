@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '../../components/Header'
 import { supabase } from '../../lib/supabase/client'
+import dynamic from 'next/dynamic'
+const PixPayment = dynamic(() => import('../../components/PixPayment'), { ssr: false })
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Op'
@@ -76,6 +78,7 @@ export default function BillingPage() {
 
   const [simulating,setSimulating]=useState(false)
   const [simMsg,setSimMsg]=useState('')
+  const [showPix,setShowPix]=useState(false)
 
   async function simulatePayment(status) {
     if(!tenant||!billing?.currentPlan||simulating) return
@@ -319,6 +322,23 @@ export default function BillingPage() {
               </div>
             </div>
 
+            {/* Real PIX Payment */}
+            <div className="card" style={{padding:24,marginTop:16,marginBottom:16,border:'1px solid var(--profit-border)',background:'linear-gradient(135deg,rgba(5,217,140,0.06),var(--surface))'}}>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+                <div style={{width:30,height:30,borderRadius:8,background:'var(--profit-dim)',border:'1px solid var(--profit-border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div>
+                  <h3 className="t-h3" style={{fontSize:13}}>Pagar com Pix</h3>
+                  <p className="t-small">Pagamento instantaneo via QR Code</p>
+                </div>
+              </div>
+              <button onClick={()=>setShowPix(true)} className="btn btn-profit" style={{width:'100%',justifyContent:'center',fontSize:14,fontWeight:700}}>
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                Gerar Pix — R$ {fmt(billing?.currentPlan ? calcPlan(billing.currentPlan).total : BASE)}
+              </button>
+            </div>
+
             {/* Mock Payment */}
             <div className="card" style={{padding:24,marginTop:16,marginBottom:28,border:'1px dashed var(--brand-border)'}}>
               <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
@@ -405,6 +425,20 @@ export default function BillingPage() {
           <p style={{fontSize:12,color:'var(--t3)'}}>Precisa de ajuda? suporte@nexcontrol.io</p>
         </div>
       </div>
+
+      {showPix && billing?.currentPlan && (
+        <PixPayment
+          tenantId={profile?.tenant_id}
+          userId={user?.id}
+          userName={profile?.nome}
+          userEmail={user?.email}
+          amount={calcPlan(billing.currentPlan).total}
+          planName={billing.currentPlan.name}
+          planId={billing.currentPlan.id}
+          onSuccess={()=>{ setShowPix(false); init() }}
+          onClose={()=>setShowPix(false)}
+        />
+      )}
     </main>
   )
 }

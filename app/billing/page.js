@@ -250,17 +250,95 @@ export default function BillingPage() {
           </div>
         )}
 
-        {/* ── CTA ── */}
-        <div className="a4" style={{marginBottom:32}}>
-          <button onClick={()=>setShowPix(true)} className="btn btn-profit btn-lg" style={{width:'100%',justifyContent:'center',fontSize:16,fontWeight:800,padding:'16px'}}>
-            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            Assinar por R$ {fmt(price.total)}/mes
-          </button>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,marginTop:12}}>
-            <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span style={{fontSize:10,color:'rgba(5,217,140,0.5)',fontWeight:600}}>Pagamento seguro via Pix · Ativacao instantanea</span>
+        {/* ── CTA (new subscribers only) ── */}
+        {!billing?.subActive && (
+          <div className="a4" style={{marginBottom:32}}>
+            <button onClick={()=>setShowPix(true)} className="btn btn-profit btn-lg" style={{width:'100%',justifyContent:'center',fontSize:16,fontWeight:800,padding:'16px'}}>
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Assinar por R$ {fmt(price.total)}/mes
+            </button>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,marginTop:12}}>
+              <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span style={{fontSize:10,color:'rgba(5,217,140,0.5)',fontWeight:600}}>Pagamento seguro via Pix · Ativacao instantanea</span>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* ── ADD OPERATORS (active subscribers only) ── */}
+        {billing?.subActive && (()=>{
+          const [addQty, setAddQty] = [opQty - operators.length, (v)=>setOpQty(operators.length + v)]
+          const extraOps = Math.max(0, opQty - operators.length)
+          const newPrice = calculatePrice(opQty)
+          const extraCost = Math.round((newPrice.total - currentPrice.total) * 100) / 100
+          return (
+          <div className="a4" style={{borderRadius:22,overflow:'hidden',background:'var(--surface)',border:'1px solid var(--brand-border)',boxShadow:'0 0 30px rgba(79,110,247,0.05)',marginBottom:32}}>
+            <div style={{padding:'22px 28px',background:'linear-gradient(135deg,rgba(79,110,247,0.08),transparent)',borderBottom:'1px solid var(--b1)'}}>
+              <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                <div>
+                  <h2 style={{fontSize:16,fontWeight:800,color:'var(--t1)',margin:0}}>Adicionar operadores</h2>
+                  <p className="t-small">Pague apenas pelos operadores adicionais</p>
+                </div>
+              </div>
+            </div>
+            <div style={{padding:'24px 28px'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+                <div>
+                  <p style={{fontSize:13,color:'var(--t2)',margin:'0 0 4px'}}>Operadores atuais: <strong style={{color:'var(--t1)'}}>{operators.length}</strong></p>
+                  <p style={{fontSize:13,color:'var(--t2)',margin:0}}>Adicionar: <strong style={{color:'var(--brand-bright)'}}>{extraOps}</strong></p>
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:0}}>
+                  <button onClick={()=>setOpQty(Math.max(operators.length,opQty-1))} style={{width:40,height:40,borderRadius:'10px 0 0 10px',border:'1px solid var(--b2)',background:'var(--raised)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,fontWeight:700,color:'var(--t1)'}}
+                    onMouseEnter={e=>e.currentTarget.style.background='var(--overlay)'} onMouseLeave={e=>e.currentTarget.style.background='var(--raised)'}>-</button>
+                  <div style={{width:56,height:40,border:'1px solid var(--b2)',borderLeft:'none',borderRight:'none',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--void)'}}>
+                    <span className="t-num" style={{fontSize:20,fontWeight:900,color:'var(--brand-bright)'}}>{extraOps}</span>
+                  </div>
+                  <button onClick={()=>setOpQty(opQty+1)} style={{width:40,height:40,borderRadius:'0 10px 10px 0',border:'1px solid var(--b2)',background:'var(--raised)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,fontWeight:700,color:'var(--t1)'}}
+                    onMouseEnter={e=>e.currentTarget.style.background='var(--overlay)'} onMouseLeave={e=>e.currentTarget.style.background='var(--raised)'}>+</button>
+                </div>
+              </div>
+
+              {extraOps > 0 && (<>
+                {/* Cost breakdown */}
+                <div style={{padding:'14px 16px',borderRadius:14,background:'rgba(79,110,247,0.05)',border:'1px solid rgba(79,110,247,0.1)',marginBottom:16}}>
+                  <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                    <span style={{fontSize:12,color:'var(--t2)'}}>{extraOps} novo{extraOps>1?'s':''} operador{extraOps>1?'es':''} x R$ {fmt(newPrice.opUnitPrice)}</span>
+                    <span className="t-num" style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>+R$ {fmt(extraOps * newPrice.opUnitPrice)}/mes</span>
+                  </div>
+                  {newPrice.discount > currentPrice.discount && (
+                    <div style={{display:'flex',alignItems:'center',gap:6,marginTop:6}}>
+                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span style={{fontSize:11,color:'var(--profit)'}}>Desconto aumentou para {newPrice.discount}%</span>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{display:'flex',justifyContent:'space-between',padding:'12px 0',borderBottom:'1px solid var(--b1)'}}>
+                  <span style={{fontSize:13,color:'var(--t2)'}}>Plano atual</span>
+                  <span className="t-num" style={{fontSize:14,fontWeight:700,color:'var(--t1)'}}>R$ {fmt(currentPrice.total)}/mes</span>
+                </div>
+                <div style={{display:'flex',justifyContent:'space-between',padding:'12px 0',borderBottom:'1px solid var(--b1)'}}>
+                  <span style={{fontSize:13,color:'var(--brand-bright)'}}>Adicional</span>
+                  <span className="t-num" style={{fontSize:14,fontWeight:700,color:'var(--brand-bright)'}}>+R$ {fmt(extraCost)}/mes</span>
+                </div>
+                <div style={{display:'flex',justifyContent:'space-between',padding:'14px 0'}}>
+                  <span style={{fontSize:15,fontWeight:800,color:'var(--t1)'}}>Novo total</span>
+                  <span className="t-num" style={{fontSize:24,fontWeight:900,color:'var(--profit)'}}>R$ {fmt(newPrice.total)}/mes</span>
+                </div>
+
+                <button onClick={()=>setShowPix(true)} className="btn btn-profit btn-lg" style={{width:'100%',justifyContent:'center',fontSize:15,fontWeight:800,padding:'14px',marginTop:4}}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  Pagar upgrade — R$ {fmt(newPrice.total)}/mes
+                </button>
+              </>)}
+
+              {extraOps === 0 && (
+                <p style={{fontSize:13,color:'var(--t3)',textAlign:'center',padding:'12px 0'}}>Use os botoes + e - para adicionar operadores ao seu plano</p>
+              )}
+            </div>
+          </div>
+          )
+        })()}
 
         {/* ── OPERATORS LIST ── */}
         {operators.length>0&&(

@@ -376,6 +376,114 @@ export default function TutorialPage() {
           </AnimatePresence>
         </motion.div>
 
+        {/* Notifications guide */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35, ease }}
+          style={{
+            borderRadius: 20, overflow: 'hidden', marginTop: 24,
+            background: 'rgba(15, 24, 41, 0.5)',
+            backdropFilter: 'blur(30px) saturate(150%)',
+            WebkitBackdropFilter: 'blur(30px) saturate(150%)',
+            border: '1px solid rgba(245,166,35,0.12)',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
+            padding: '24px 28px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+            <motion.div
+              animate={{
+                boxShadow: [
+                  '0 0 0 0 rgba(245,166,35,0.2)',
+                  '0 0 0 6px rgba(245,166,35,0)',
+                  '0 0 0 0 rgba(245,166,35,0)',
+                ],
+              }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+              style={{
+                width: 38, height: 38, borderRadius: 11,
+                background: 'rgba(245,166,35,0.1)', border: '1px solid rgba(245,166,35,0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}
+            >
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="1.5" strokeLinecap="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+            </motion.div>
+            <div>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>
+                Como ativar notificacoes no celular
+              </h2>
+              <p style={{ fontSize: 12, color: 'var(--t3)', margin: '2px 0 0' }}>
+                Receba alertas em tempo real sobre sua operacao
+              </p>
+            </div>
+          </div>
+
+          <p style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.7, margin: '0 0 18px' }}>
+            Para receber notificacoes no celular, instale o NexControl como app na tela inicial do seu aparelho. Depois, ao abrir o app, permita as notificacoes quando o sistema solicitar.
+          </p>
+
+          {/* Steps */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {[
+              { n: '01', text: 'Abra o NexControl no navegador do celular' },
+              { n: '02', text: 'Toque no menu do navegador e selecione "Adicionar a tela inicial"' },
+              { n: '03', text: 'Abra o app instalado na sua tela inicial' },
+              { n: '04', text: 'Permita as notificacoes quando o aviso aparecer' },
+              { n: '05', text: 'Se nao aparecer, ative manualmente nas configuracoes do navegador' },
+            ].map((step, i) => (
+              <motion.div
+                key={step.n}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.4 + i * 0.05, ease }}
+                whileHover={{
+                  background: 'rgba(245,166,35,0.05)',
+                  x: 4,
+                  transition: { duration: 0.15 },
+                }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 14,
+                  padding: '12px 14px', borderRadius: 12,
+                  border: '1px solid rgba(255,255,255,0.03)',
+                  transition: 'border-color 0.2s',
+                }}
+              >
+                <span style={{
+                  width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                  background: 'rgba(245,166,35,0.08)', border: '1px solid rgba(245,166,35,0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 11, fontWeight: 700, fontFamily: 'var(--mono)', color: 'var(--warn)',
+                }}>
+                  {step.n}
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--t1)' }}>
+                  {step.text}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Note */}
+          <div style={{
+            marginTop: 16, padding: '12px 16px', borderRadius: 10,
+            background: 'rgba(245,166,35,0.04)', border: '1px solid rgba(245,166,35,0.1)',
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="1.5" strokeLinecap="round" style={{ flexShrink: 0 }}>
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <span style={{ fontSize: 12, color: 'rgba(245,166,35,0.7)', lineHeight: 1.5 }}>
+              As notificacoes ajudam voce a acompanhar atualizacoes importantes da operacao em tempo real.
+            </span>
+          </div>
+        </motion.div>
+
         {/* Quick links */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}

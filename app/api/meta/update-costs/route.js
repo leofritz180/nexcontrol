@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { sendPushToTenant } from '../../../../lib/push'
 
 export async function POST(req) {
   try {
@@ -26,6 +27,19 @@ export async function POST(req) {
 
     const { error } = await supabase.from('metas').update(update).eq('id', meta_id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Send push notification when meta is closed
+    if (close) {
+      const { data: meta } = await supabase.from('metas').select('tenant_id,titulo,rede,quantidade_contas').eq('id', meta_id).single()
+      if (meta) {
+        const val = Math.abs(Number(lucro_final || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        await sendPushToTenant(supabase, meta.tenant_id, {
+          title: 'Meta fechada',
+          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} encerrada - Resultado final: R$ ${val}`,
+          url: '/admin',
+        })
+      }
+    }
 
     return NextResponse.json({ ok: true })
   } catch (err) {

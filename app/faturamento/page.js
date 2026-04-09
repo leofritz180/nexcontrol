@@ -131,7 +131,7 @@ export default function FaturamentoPage() {
       supabase.from('metas').select('*').order('created_at',{ascending:false}),
       supabase.from('remessas').select('*').order('created_at',{ascending:false}),
     ])
-    setOperators(ops||[]); setMetas(ms||[]); setRemessas(rs||[])
+    setOperators(ops||[]); setMetas((ms||[]).filter(m=>!m.deleted_at)); setRemessas(rs||[])
     setLoading(false)
   }
 
@@ -225,19 +225,25 @@ export default function FaturamentoPage() {
     return Object.values(map).sort((a,b)=>b.liq-a.liq)
   },[metas,fRem])
 
-  /* ── Predictions ── */
+  /* ── Predictions (based on last 14 days only) ── */
   const predictions = useMemo(()=>{
-    if(chartData.length<2) return {trend:'neutral',estimated:0,dailyAvg:0}
-    const last7 = fRem.filter(r=>{const d=new Date(r.created_at); const w=new Date(); w.setDate(w.getDate()-7); return d>=w})
-    const prev7 = fRem.filter(r=>{const d=new Date(r.created_at); const w1=new Date(); w1.setDate(w1.getDate()-14); const w2=new Date(); w2.setDate(w2.getDate()-7); return d>=w1&&d<w2})
+    if(chartData.length<2) return {trend:'neutral',estimated:0,dailyAvg:0,liqLast:0,liqPrev:0,pctChange:0}
+    const now = new Date()
+    const d7 = new Date(now); d7.setDate(d7.getDate()-7)
+    const d14 = new Date(now); d14.setDate(d14.getDate()-14)
+    const last7 = fRem.filter(r=>new Date(r.created_at)>=d7)
+    const prev7 = fRem.filter(r=>{const d=new Date(r.created_at); return d>=d14&&d<d7})
     const liqLast=last7.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
     const liqPrev=prev7.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
     const trend=liqLast>liqPrev?'up':liqLast<liqPrev?'down':'neutral'
-    const days=new Set(fRem.map(r=>new Date(r.created_at).toDateString())).size||1
-    const dailyAvg=stats.liq/days
-    const estimated=stats.liq+(dailyAvg*30)
+    // Daily average based on last 14 days only
+    const d14Rem = fRem.filter(r=>new Date(r.created_at)>=d14)
+    const activeDays = new Set(d14Rem.map(r=>new Date(r.created_at).toDateString())).size || 1
+    const liq14 = d14Rem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
+    const dailyAvg = liq14 / activeDays
+    const estimated = dailyAvg * 30
     return {trend,estimated,dailyAvg,liqLast,liqPrev,pctChange:liqPrev!==0?Math.round(((liqLast-liqPrev)/Math.abs(liqPrev))*100):0}
-  },[fRem,chartData,stats])
+  },[fRem,chartData])
 
   /* ── Goal progress ── */
   const goalData = useMemo(()=>{
@@ -246,11 +252,10 @@ export default function FaturamentoPage() {
     const target=Number(profile?.meta_global)||100000
     const pct=target>0?Math.min(100,Math.round((lucroFinalTotal/target)*100)):0
     const falta=Math.max(0,target-lucroFinalTotal)
-    const days=new Set(fRem.map(r=>new Date(r.created_at).toDateString())).size||1
-    const dailyAvg=stats.liq/days
-    const diasRestantes=dailyAvg>0?Math.ceil(falta/dailyAvg):999
+    // Use predictions daily avg (last 14 days) for dias restantes
+    const diasRestantes=predictions.dailyAvg>0?Math.ceil(falta/predictions.dailyAvg):999
     return {lucroFinalTotal,target,pct,falta,diasRestantes}
-  },[metas,fRem,stats,profile])
+  },[metas,predictions,profile])
 
   const medals=['#FFD700','#C0C0C0','#CD7F32']
 
@@ -406,7 +411,7 @@ export default function FaturamentoPage() {
                   <p className="t-num" style={{fontSize:18,fontWeight:700,color:predictions.estimated>=0?'var(--profit)':'var(--loss)'}}>
                     {predictions.estimated>=0?'+':''}R$ {fmt(Math.abs(predictions.estimated))}
                   </p>
-                  <p className="t-small">Media diaria: R$ {fmt(Math.abs(predictions.dailyAvg))}</p>
+                  <p className="t-small">Media diaria (14d): R$ {fmt(Math.abs(predictions.dailyAvg))}</p>
                 </div>
                 <div style={{background:'var(--raised)',border:'1px solid var(--b1)',borderRadius:12,padding:'16px 14px'}}>
                   <p className="t-label" style={{marginBottom:8}}>Alerta</p>

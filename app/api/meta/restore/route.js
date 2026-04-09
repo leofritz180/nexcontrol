@@ -11,8 +11,8 @@ export async function POST(req) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
-    // Soft delete — set deleted_at timestamp instead of removing
-    await supabase.from('metas').update({ deleted_at: new Date().toISOString() }).eq('id', meta_id)
+    // Restore — clear deleted_at
+    await supabase.from('metas').update({ deleted_at: null }).eq('id', meta_id)
 
     return NextResponse.json({ ok: true })
   } catch (err) {

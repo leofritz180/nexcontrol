@@ -11,8 +11,10 @@ export async function POST(req) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
-    // Soft delete — set deleted_at timestamp instead of removing
-    await supabase.from('metas').update({ deleted_at: new Date().toISOString() }).eq('id', meta_id)
+    // Permanent delete — remove remessas, logs, then meta
+    await supabase.from('remessas').delete().eq('meta_id', meta_id)
+    await supabase.from('activity_logs').delete().eq('meta_id', meta_id)
+    await supabase.from('metas').delete().eq('id', meta_id)
 
     return NextResponse.json({ ok: true })
   } catch (err) {

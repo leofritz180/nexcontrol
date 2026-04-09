@@ -133,7 +133,7 @@ export default function OperatorPage() {
     setProfile(p)
     // Fetch metas first, then remessas only for operator's metas
     const { data:m } = await supabase.from('metas').select('*').eq('operator_id',u.id).order('created_at',{ascending:false})
-    setMetas(m||[])
+    setMetas((m||[]).filter(x=>!x.deleted_at))
     const metaIds = (m||[]).map(x=>x.id)
     let allRem = []
     if (metaIds.length > 0) {

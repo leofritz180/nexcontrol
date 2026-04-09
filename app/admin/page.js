@@ -176,6 +176,7 @@ export default function AdminPage() {
   const REDES=['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
   const [focusLoad, setFocusLoad] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [trashMetas, setTrashMetas] = useState([])
   const tabRef = useRef(null)
   const [tabLine, setTabLine] = useState({ left: 0, width: 0 })
 
@@ -235,7 +236,7 @@ export default function AdminPage() {
     }
     prevRemCount.current = newRs.length
 
-    setOperators(ops||[]); setMetas(ms||[]); setRemessas(newRs); setInvites(inv||[])
+    setOperators(ops||[]); setMetas((ms||[]).filter(m=>!m.deleted_at)); setTrashMetas((ms||[]).filter(m=>!!m.deleted_at)); setRemessas(newRs); setInvites(inv||[])
     if(t) setTenant(t); if(s2) setSub(s2)
     // Load admin own metas
     const adminId = profile?.id || user?.id
@@ -244,8 +245,8 @@ export default function AdminPage() {
         supabase.from('metas').select('*').eq('operator_id',adminId).order('created_at',{ascending:false}),
         supabase.from('remessas').select('*').order('created_at',{ascending:false}),
       ])
-      setMyMetas(mm||[])
-      const myIds=new Set((mm||[]).map(x=>x.id))
+      setMyMetas((mm||[]).filter(x=>!x.deleted_at))
+      const myIds=new Set((mm||[]).filter(x=>!x.deleted_at).map(x=>x.id))
       setMyRem((mr||[]).filter(x=>myIds.has(x.meta_id)))
     }
     setLoading(false)
@@ -363,7 +364,7 @@ export default function AdminPage() {
     { label:'Prejuizo total', rawValue:global.prej, value:`R$ ${fmt(global.prej)}`, sub:'Total acumulado', color:'var(--loss)', card:'card-loss', badge:'acumulado' },
   ]
 
-  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['ranking','Ranking'],['redes','Redes'],['team','Equipe']]
+  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['ranking','Ranking'],['redes','Redes'],['team','Equipe'],['trash','Lixeira']]
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
@@ -1428,6 +1429,103 @@ export default function AdminPage() {
                 </div>
               </motion.div>
             </div>
+          </motion.div>
+        )}
+
+        {/* ═══ TRASH ═══ */}
+        {tab==='trash' && (
+          <motion.div key="trash"
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease }}>
+            <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
+              <div style={{ width:48, height:48, borderRadius:14, background:'rgba(240,61,107,0.08)', border:'1px solid rgba(240,61,107,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="1.5" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </div>
+              <div>
+                <h2 className="t-h2" style={{ margin:'0 0 3px' }}>Lixeira</h2>
+                <p className="t-small">Metas excluidas podem ser restauradas ou removidas permanentemente</p>
+              </div>
+            </div>
+
+            {trashMetas.length === 0 ? (
+              <div style={{ border:'1px dashed var(--b2)', borderRadius:16, padding:64, textAlign:'center' }}>
+                <div style={{ width:48, height:48, borderRadius:14, background:'rgba(255,255,255,0.03)', border:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
+                  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth="1.5" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </div>
+                <p style={{ color:'var(--t2)', fontSize:14, fontWeight:600, marginBottom:4 }}>Lixeira vazia</p>
+                <p className="t-small">Metas excluidas aparecerao aqui para restauracao.</p>
+              </div>
+            ) : (
+              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                {trashMetas.map((m, i) => {
+                  const op = operators.find(o => o.id === m.operator_id)
+                  const mRem = remessas.filter(r => r.meta_id === m.id)
+                  const liq = mRem.reduce((a, r) => a + Number(r.lucro || 0) - Number(r.prejuizo || 0), 0)
+                  const deletedDate = m.deleted_at ? new Date(m.deleted_at).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' }) : ''
+                  return (
+                    <motion.div key={m.id}
+                      initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: i * 0.05, ease }}
+                      style={{
+                        padding:'18px 22px', borderRadius:16,
+                        background:'var(--surface)', border:'1px solid var(--b1)',
+                        display:'flex', alignItems:'center', gap:16,
+                        transition:'all 0.2s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(240,61,107,0.2)'; e.currentTarget.style.background = 'var(--raised)' }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--b1)'; e.currentTarget.style.background = 'var(--surface)' }}
+                    >
+                      {/* Icon */}
+                      <div style={{ width:42, height:42, borderRadius:12, background:'rgba(240,61,107,0.06)', border:'1px solid rgba(240,61,107,0.12)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="1.5" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      </div>
+
+                      {/* Info */}
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+                          <span style={{ fontSize:15, fontWeight:700, color:'var(--t1)' }}>{m.titulo}</span>
+                          {m.rede && <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:6, background:'rgba(79,110,247,0.1)', color:'var(--brand-bright)', border:'1px solid rgba(79,110,247,0.2)' }}>{m.rede}</span>}
+                          <span style={{ fontSize:9, fontWeight:600, padding:'2px 7px', borderRadius:6, background:'rgba(240,61,107,0.08)', color:'var(--loss)', border:'1px solid rgba(240,61,107,0.15)' }}>Excluida</span>
+                        </div>
+                        <p className="t-small">
+                          {getName(op)} · {mRem.length} remessas · Resultado: <span style={{ color: liq >= 0 ? 'var(--profit)' : 'var(--loss)', fontFamily:'var(--mono)', fontWeight:600 }}>{liq >= 0 ? '+' : ''}R$ {fmt(liq)}</span>
+                        </p>
+                        <p style={{ fontSize:10, color:'var(--t4)', marginTop:2 }}>Excluida em {deletedDate}</p>
+                      </div>
+
+                      {/* Actions */}
+                      <div style={{ display:'flex', gap:8, flexShrink:0 }}>
+                        <motion.button
+                          whileHover={{ scale:1.05 }} whileTap={{ scale:0.95 }}
+                          onClick={async () => {
+                            await fetch('/api/meta/restore', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ meta_id:m.id }) })
+                            loadAll()
+                          }}
+                          className="btn btn-sm"
+                          style={{ background:'rgba(5,217,140,0.08)', color:'var(--profit)', border:'1px solid rgba(5,217,140,0.2)', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:600 }}
+                        >
+                          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                          Restaurar
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale:1.05 }} whileTap={{ scale:0.95 }}
+                          onClick={async () => {
+                            if (!confirm('Excluir PERMANENTEMENTE esta meta e todas as remessas? Esta acao nao pode ser desfeita.')) return
+                            await fetch('/api/meta/purge', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ meta_id:m.id }) })
+                            loadAll()
+                          }}
+                          className="btn btn-sm"
+                          style={{ background:'rgba(240,61,107,0.08)', color:'var(--loss)', border:'1px solid rgba(240,61,107,0.2)', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:600 }}
+                        >
+                          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                          Excluir
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  )
+                })}
+              </div>
+            )}
           </motion.div>
         )}
 

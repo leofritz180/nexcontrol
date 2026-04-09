@@ -25,6 +25,11 @@ export default function PushManager({ userId, tenantId }) {
       const saved = await savePushSubscription(sub, userId, tenantId)
       if (saved) {
         setState('granted')
+        // Send welcome push
+        fetch('/api/push/send', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ user_id: userId, title: 'Teste gratis ativado', body: 'Seu acesso de teste foi ativado com sucesso. Voce tem 7 dias gratis para usar o NexControl.', url: '/billing' }),
+        }).catch(() => {})
       } else {
         setState('error')
       }

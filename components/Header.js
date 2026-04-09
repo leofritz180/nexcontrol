@@ -83,7 +83,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
           {[
             { href:'/operator', label:'Operador' },
             { href:'/pix', label:'Chaves PIX' },
-            ...(isAdmin ? [{ href:'/admin', label:'Admin' },{ href:'/faturamento', label:'Faturamento' },{ href:'/billing', label:'Assinatura' }] : []),
+            ...(isAdmin ? [{ href:'/admin', label:'Admin' },{ href:'/faturamento', label:'Faturamento' },{ href:'/billing', label:'Assinatura' },{ href:'/tutorial', label:'Tutorial' }] : []),
           ].map(item => {
             const active = pathname.startsWith(item.href)
             return (

@@ -1,15 +1,22 @@
 'use client'
-import { useEffect, useMemo, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Header from '../../components/Header'
 import TrialBanner, { ConversionModal } from '../../components/TrialBanner'
+import AnimatedNumber from '../../components/ui/AnimatedNumber'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaClosed } from '../../lib/notify'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
+
+/* ── Reusable motion presets ── */
+const ease = [0.33, 1, 0.68, 1]
+const stagger = (i, base = 0) => ({ duration: 0.4, delay: base + i * 0.07, ease })
+const fadeUp = (i, base = 0) => ({ initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: stagger(i, base) })
+const fadeSlideX = (i, base = 0) => ({ initial: { opacity: 0, x: -16 }, animate: { opacity: 1, x: 0 }, transition: stagger(i, base) })
 
 function Sparkline({ data, color, height=32 }) {
   if (!data||data.length<2) return <div style={{ height, display:'flex', alignItems:'center' }}><span style={{ fontSize:10,color:'var(--t4)' }}>sem dados</span></div>
@@ -53,8 +60,14 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
   }
 
   return (
-    <div style={{ position:'fixed',inset:0,background:'rgba(2,4,8,0.9)',backdropFilter:'blur(16px)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:24 }}>
-      <div className="as card" style={{ width:'100%',maxWidth:520,padding:32,boxShadow:'0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(79,110,247,0.15)',border:'1px solid rgba(79,110,247,0.2)' }}>
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ position:'fixed',inset:0,background:'rgba(2,4,8,0.9)',backdropFilter:'blur(16px)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:24 }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.35, ease }}
+        className="card" style={{ width:'100%',maxWidth:520,padding:32,boxShadow:'0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(79,110,247,0.15)',border:'1px solid rgba(79,110,247,0.2)' }}>
         <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24 }}>
           <div style={{ display:'flex',alignItems:'center',gap:14 }}>
             <div style={{ width:42,height:42,borderRadius:12,background:'var(--profit-dim)',border:'1px solid var(--profit-border)',display:'flex',alignItems:'center',justifyContent:'center' }}>
@@ -65,9 +78,9 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
               <p className="t-small">{meta.titulo} · {getName(operador)}</p>
             </div>
           </div>
-          <button onClick={onClose} className="btn btn-ghost btn-sm">
+          <motion.button onClick={onClose} className="btn btn-ghost btn-sm" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+          </motion.button>
         </div>
 
         {/* Resumo */}
@@ -76,7 +89,7 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
           <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10 }}>
             {[
               {l:'Lucro bruto',v:`R$ ${fmt(lucroRem)}`,c:'var(--profit)'},
-              {l:'Prejuízo',   v:`R$ ${fmt(prejRem)}`, c:'var(--loss)'},
+              {l:'Prejuizo',   v:`R$ ${fmt(prejRem)}`, c:'var(--loss)'},
               {l:'Resultado',  v:`R$ ${fmt(liqRem)}`,  c:liqRem>=0?'var(--profit)':'var(--loss)'},
             ].map(({l,v,c})=>(
               <div key={l} style={{ textAlign:'center',background:'var(--void)',borderRadius:10,padding:12 }}>
@@ -89,25 +102,25 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
 
         <div style={{ display:'flex',flexDirection:'column',gap:15 }}>
           <div>
-            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Meu salário nesta meta (R$)</label>
+            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Meu salario nesta meta (R$)</label>
             <p className="t-small" style={{ margin:'0 0 8px' }}>Valor recebido por bater a meta — soma ao resultado (+)</p>
             <input className="input" type="number" step="0.01" min="0" value={salario} onChange={e=>setSalario(e.target.value)} placeholder="0,00"/>
           </div>
           <div>
-            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Custo fixo da operação (R$)</label>
-            <p className="t-small" style={{ margin:'0 0 8px' }}>Salário do operador + despesas — deduzido (−)</p>
+            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Custo fixo da operacao (R$)</label>
+            <p className="t-small" style={{ margin:'0 0 8px' }}>Salario do operador + despesas — deduzido (-)</p>
             <input className="input" type="number" step="0.01" min="0" value={custo} onChange={e=>setCusto(e.target.value)} placeholder="0,00"/>
           </div>
           <div>
             <label className="t-label" style={{ display:'block',marginBottom:8 }}>Taxa agente/blogueira (R$)</label>
-            <p className="t-small" style={{ margin:'0 0 8px' }}>Comissao paga ao agente, blogueira ou parceiro — deduzido (−)</p>
+            <p className="t-small" style={{ margin:'0 0 8px' }}>Comissao paga ao agente, blogueira ou parceiro — deduzido (-)</p>
             <input className="input" type="number" step="0.01" min="0" value={taxa} onChange={e=>setTaxa(e.target.value)} placeholder="0,00"/>
           </div>
 
           <div style={{ background:lucroFinal>=0?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${lucroFinal>=0?'var(--profit-border)':'var(--loss-border)'}`,borderRadius:12,padding:'18px 22px',display:'flex',justifyContent:'space-between',alignItems:'center' }}>
             <div>
               <p className="t-label" style={{ marginBottom:4 }}>Lucro final da meta</p>
-              <p className="t-small">Resultado + salario − custo − taxa agente</p>
+              <p className="t-small">Resultado + salario - custo - taxa agente</p>
             </div>
             <p className="t-num" style={{ fontSize:28,fontWeight:800,color:lucroFinal>=0?'var(--profit)':'var(--loss)' }}>
               {lucroFinal>=0?'+':''}R$ {fmt(lucroFinal)}
@@ -117,14 +130,14 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
           {error && <div className="alert-error" style={{ display:'flex', alignItems:'center', gap:8 }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
 
           <div style={{ display:'flex',gap:10 }}>
-            <button onClick={onClose} className="btn btn-ghost" style={{ flex:1 }}>Cancelar</button>
-            <button onClick={save} disabled={saving} className="btn btn-profit" style={{ flex:2 }}>
+            <motion.button onClick={onClose} className="btn btn-ghost" style={{ flex:1 }} whileTap={{ scale: 0.96 }}>Cancelar</motion.button>
+            <motion.button onClick={save} disabled={saving} className="btn btn-profit" style={{ flex:2 }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
               {saving?<><div className="spinner" style={{ width:14,height:14,borderTopColor:'#012b1c' }}/> Salvando...</>:<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Confirmar fechamento</>}
-            </button>
+            </motion.button>
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -162,9 +175,25 @@ export default function AdminPage() {
   const [mySaving,setMySaving]=useState(false)
   const REDES=['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
   const [focusLoad, setFocusLoad] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+  const tabRef = useRef(null)
+  const [tabLine, setTabLine] = useState({ left: 0, width: 0 })
 
   useEffect(()=>{ checkAndLoad() },[])
   useEffect(()=>{ const iv=setInterval(loadAll,30000); return()=>clearInterval(iv) },[])
+
+  // Tab underline tracking
+  const updateTabLine = useCallback(() => {
+    if (!tabRef.current) return
+    const active = tabRef.current.querySelector('[data-active="true"]')
+    if (active) {
+      const containerRect = tabRef.current.getBoundingClientRect()
+      const activeRect = active.getBoundingClientRect()
+      setTabLine({ left: activeRect.left - containerRect.left, width: activeRect.width })
+    }
+  }, [])
+  useEffect(() => { updateTabLine() }, [tab, updateTabLine])
+  useEffect(() => { const t = setTimeout(updateTabLine, 100); return () => clearTimeout(t) }, [loading])
 
   async function checkAndLoad() {
     const { data:s } = await supabase.auth.getSession()
@@ -222,6 +251,12 @@ export default function AdminPage() {
     setLoading(false)
   }
 
+  async function handleRefresh() {
+    setRefreshing(true)
+    await loadAll()
+    setRefreshing(false)
+  }
+
   async function sendInvite() {
     if(!profile?.tenant_id) return
     setInvSaving(true); setInvMsg('')
@@ -269,7 +304,6 @@ export default function AdminPage() {
     const lucro = remessas.reduce((a,r)=>a+Number(r.lucro||0),0)
     const prej  = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
     const today = new Date().toDateString()
-    // Lucro hoje = lucro_final das metas fechadas hoje pelo admin
     const lucroHoje = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&new Date(m.fechada_em).toDateString()===today).reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const fechadas  = metas.filter(m=>m.status_fechamento==='fechada')
     const lucroFinalTotal = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
@@ -306,7 +340,6 @@ export default function AdminPage() {
   },[metas,selectedOp,metaStatus,metaPeriod])
 
   const rankingRedes = useMemo(()=>{
-    // ONLY use lucro_final from CLOSED metas
     const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.rede)
     const redeMap = {}
     fechadas.forEach(m=>{
@@ -324,28 +357,41 @@ export default function AdminPage() {
   }),[remessas,metas])
 
   const kpis = [
-    { label:'Lucro hoje', value:`R$ ${fmt(Math.abs(global.lucroHoje))}`, sub:global.lucroHoje>=0?'Fechamentos de hoje':'Resultado negativo', color:global.lucroHoje>=0?'var(--profit)':'var(--loss)', card:global.lucroHoje>=0?'card-profit':'card-loss', badge:'ao vivo' },
-    { label:'Lucro final total', value:`R$ ${fmt(global.lucroFinalTotal)}`, sub:'Metas 100% fechadas', color:'var(--brand-bright)', card:'card-primary', badge:'fechado' },
-    { label:'Resultado liquido', value:`R$ ${fmt(Math.abs(global.liq))}`, sub:global.liq>=0?'Positivo':'Negativo', color:global.liq>=0?'var(--profit)':'var(--loss)', card:global.liq>=0?'card-profit':'card-loss', badge:'remessas' },
-    { label:'Prejuizo total', value:`R$ ${fmt(global.prej)}`, sub:'Total acumulado', color:'var(--loss)', card:'card-loss', badge:'acumulado' },
+    { label:'Lucro hoje', rawValue:Math.abs(global.lucroHoje), value:`R$ ${fmt(Math.abs(global.lucroHoje))}`, sub:global.lucroHoje>=0?'Fechamentos de hoje':'Resultado negativo', color:global.lucroHoje>=0?'var(--profit)':'var(--loss)', card:global.lucroHoje>=0?'card-profit':'card-loss', badge:'ao vivo', isLive: true },
+    { label:'Lucro final total', rawValue:global.lucroFinalTotal, value:`R$ ${fmt(global.lucroFinalTotal)}`, sub:'Metas 100% fechadas', color:'var(--brand-bright)', card:'card-primary', badge:'fechado' },
+    { label:'Resultado liquido', rawValue:Math.abs(global.liq), value:`R$ ${fmt(Math.abs(global.liq))}`, sub:global.liq>=0?'Positivo':'Negativo', color:global.liq>=0?'var(--profit)':'var(--loss)', card:global.liq>=0?'card-profit':'card-loss', badge:'remessas' },
+    { label:'Prejuizo total', rawValue:global.prej, value:`R$ ${fmt(global.prej)}`, sub:'Total acumulado', color:'var(--loss)', card:'card-loss', badge:'acumulado' },
   ]
+
+  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['ranking','Ranking'],['redes','Redes'],['team','Equipe']]
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
-      {modalMeta && (
-        <ModalFechamento
-          meta={modalMeta}
-          remessas={remessas.filter(r=>r.meta_id===modalMeta.id)}
-          operador={operators.find(o=>o.id===modalMeta.operator_id)}
-          onClose={()=>setModalMeta(null)}
-          onSaved={loadAll}
-        />
-      )}
+      <AnimatePresence>
+        {modalMeta && (
+          <ModalFechamento
+            meta={modalMeta}
+            remessas={remessas.filter(r=>r.meta_id===modalMeta.id)}
+            operador={operators.find(o=>o.id===modalMeta.operator_id)}
+            onClose={()=>setModalMeta(null)}
+            onSaved={loadAll}
+          />
+        )}
+      </AnimatePresence>
 
       {/* META DETAIL PANEL */}
+      <AnimatePresence>
       {focusMeta && (
-        <div style={{position:'fixed',inset:0,zIndex:1000,background:'rgba(4,8,16,0.92)',backdropFilter:'blur(16px)',display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'40px 24px',overflowY:'auto'}} onClick={()=>setFocusMeta(null)}>
-          <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:900,animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both'}}>
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          style={{position:'fixed',inset:0,zIndex:1000,background:'rgba(4,8,16,0.92)',backdropFilter:'blur(16px)',display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'40px 24px',overflowY:'auto'}} onClick={()=>setFocusMeta(null)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 20 }}
+            transition={{ duration: 0.3, ease }}
+            onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:900}}>
             {(()=>{
               const m=focusMeta, op=operators.find(o=>o.id===m.operator_id)
               const fechada=m.status_fechamento==='fechada', finalizada=m.status==='finalizada'
@@ -362,20 +408,26 @@ export default function AdminPage() {
                     <span style={{padding:'4px 12px',borderRadius:99,fontSize:10,fontWeight:700,letterSpacing:'0.05em',background:fechada?'rgba(5,217,140,0.15)':finalizada?'rgba(240,61,107,0.1)':'rgba(79,110,247,0.1)',border:`1px solid ${fechada?'rgba(5,217,140,0.3)':finalizada?'rgba(240,61,107,0.2)':'rgba(79,110,247,0.2)'}`,color:fechada?'#05d98c':finalizada?'#f03d6b':'#6b84ff'}}>
                       {fechada?'CONCLUIDA':finalizada?'Finalizada':'Ativa'}
                     </span>
-                    {!fechada&&!finalizada&&<span className="live-dot" style={{width:7,height:7}}/>}
+                    {!fechada&&!finalizada&&(
+                      <motion.span
+                        style={{ width:7,height:7,borderRadius:'50%',background:'var(--profit)',flexShrink:0 }}
+                        animate={{ boxShadow:['0 0 0 0 rgba(5,217,140,0.6)','0 0 0 7px rgba(5,217,140,0)','0 0 0 0 rgba(5,217,140,0)'] }}
+                        transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                      />
+                    )}
                   </div>
                   <div style={{display:'flex',alignItems:'center',gap:6}}>
-                    <button onClick={async()=>{
+                    <motion.button whileHover={{ scale:1.08 }} whileTap={{ scale:0.92 }} onClick={async()=>{
                       if(!confirm('Tem certeza que deseja EXCLUIR esta meta e todas as remessas? Esta acao nao pode ser desfeita.')) return
                       await fetch('/api/meta/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({meta_id:m.id})})
                       setFocusMeta(null); loadAll()
                     }} style={{width:36,height:36,borderRadius:10,border:'1px solid var(--loss-border)',background:'rgba(240,61,107,0.06)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'all 0.15s'}}
                       onMouseEnter={e=>e.currentTarget.style.background='rgba(240,61,107,0.15)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(240,61,107,0.06)'}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    </button>
-                    <button onClick={()=>setFocusMeta(null)} style={{width:36,height:36,borderRadius:10,border:'1px solid var(--b2)',background:'rgba(255,255,255,0.04)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
+                    </motion.button>
+                    <motion.button whileHover={{ scale:1.08 }} whileTap={{ scale:0.92 }} onClick={()=>setFocusMeta(null)} style={{width:36,height:36,borderRadius:10,border:'1px solid var(--b2)',background:'rgba(255,255,255,0.04)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
                       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
 
@@ -386,27 +438,29 @@ export default function AdminPage() {
                     {l:'Plataforma',v:m.plataforma||'—',c:'var(--t1)'},
                     {l:'Operador',v:getName(op),c:'var(--info)'},
                     {l:'Contas',v:m.quantidade_contas||0,c:'var(--warn)'},
-                  ].map(({l,v,c})=>(
-                    <div key={l} style={{background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:14,padding:'14px 16px'}}>
+                  ].map(({l,v,c},i)=>(
+                    <motion.div key={l} {...fadeUp(i, 0.1)} style={{background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:14,padding:'14px 16px'}}>
                       <p className="t-label" style={{marginBottom:5}}>{l}</p>
                       <p style={{fontSize:15,fontWeight:700,color:c,margin:0,fontFamily:typeof v==='number'?'var(--mono)':'inherit'}}>{v}</p>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
 
                 {/* KPIs */}
                 <div className="g-5" style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:12,marginBottom:20}}>
                   {[
-                    {l:'Remessas',v:focusRem.length,c:'var(--info)'},
-                    {l:'Lucro',v:`R$ ${fmt(lucroR)}`,c:'var(--profit)'},
-                    {l:'Prejuizo',v:`R$ ${fmt(prejR)}`,c:'var(--loss)'},
-                    {l:'Acerto',v:`${pct}%`,c:pct>=50?'var(--profit)':'var(--warn)'},
-                    {l:fechada?'LUCRO FINAL':'Liquido',v:`${fechada?'+':liqR>=0?'+':''}R$ ${fmt(Math.abs(displayVal))}`,c:'#05d98c'},
-                  ].map(({l,v,c})=>(
-                    <div key={l} style={{background:l.includes('FINAL')?'rgba(5,217,140,0.1)':'var(--surface)',border:`1px solid ${l.includes('FINAL')?'rgba(5,217,140,0.2)':'var(--b1)'}`,borderRadius:14,padding:'14px 16px',textAlign:'center'}}>
+                    {l:'Remessas',v:focusRem.length,c:'var(--info)',isNum:true},
+                    {l:'Lucro',v:`R$ ${fmt(lucroR)}`,c:'var(--profit)',raw:lucroR},
+                    {l:'Prejuizo',v:`R$ ${fmt(prejR)}`,c:'var(--loss)',raw:prejR},
+                    {l:'Acerto',v:`${pct}%`,c:pct>=50?'var(--profit)':'var(--warn)',raw:pct},
+                    {l:fechada?'LUCRO FINAL':'Liquido',v:`${fechada?'+':liqR>=0?'+':''}R$ ${fmt(Math.abs(displayVal))}`,c:'#05d98c',raw:Math.abs(displayVal)},
+                  ].map(({l,v,c,raw,isNum},i)=>(
+                    <motion.div key={l} {...fadeUp(i, 0.15)}
+                      whileHover={{ scale: 1.03, transition: { duration: 0.15 } }}
+                      style={{background:l.includes('FINAL')?'rgba(5,217,140,0.1)':'var(--surface)',border:`1px solid ${l.includes('FINAL')?'rgba(5,217,140,0.2)':'var(--b1)'}`,borderRadius:14,padding:'14px 16px',textAlign:'center'}}>
                       <p className="t-label" style={{marginBottom:5,color:l.includes('FINAL')?'#05d98c':undefined}}>{l}</p>
                       <p className="t-num" style={{fontSize:l.includes('FINAL')?22:16,fontWeight:800,color:c,margin:0}}>{v}</p>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
 
@@ -418,7 +472,13 @@ export default function AdminPage() {
                   <div className="card" style={{padding:22}}>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}}>
                       <h3 className="t-h3" style={{fontSize:14}}>Remessas ({focusRem.length})</h3>
-                      {!fechada&&<span className="live-dot" style={{width:6,height:6}}/>}
+                      {!fechada&&(
+                        <motion.span
+                          style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)' }}
+                          animate={{ boxShadow:['0 0 0 0 rgba(5,217,140,0.6)','0 0 0 6px rgba(5,217,140,0)','0 0 0 0 rgba(5,217,140,0)'] }}
+                          transition={{ duration:2, repeat:Infinity }}
+                        />
+                      )}
                     </div>
                     {focusRem.length===0?(
                       <p className="t-small" style={{textAlign:'center',padding:24}}>Nenhuma remessa registrada.</p>
@@ -428,12 +488,15 @@ export default function AdminPage() {
                           const pos=Number(r.resultado||0)>=0
                           const isLatest=i===0
                           return (
-                            <div key={r.id} style={{
+                            <motion.div key={r.id}
+                              {...fadeSlideX(i)}
+                              whileHover={{ x: 4, transition: { duration: 0.15 } }}
+                              style={{
                               padding:'12px 14px',borderRadius:12,
                               background:isLatest?(pos?'rgba(5,217,140,0.06)':'rgba(240,61,107,0.06)'):'var(--raised)',
                               border:`1px solid ${isLatest?(pos?'rgba(5,217,140,0.15)':'rgba(240,61,107,0.12)'):'var(--b1)'}`,
                               display:'flex',alignItems:'center',gap:10,
-                              transition:'all 0.2s',
+                              transition:'background 0.2s, border-color 0.2s',
                               boxShadow:isLatest?`0 0 15px ${pos?'rgba(5,217,140,0.06)':'rgba(240,61,107,0.04)'}`:'none',
                             }}>
                               <div style={{width:30,height:30,borderRadius:8,background:pos?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${pos?'var(--profit-border)':'var(--loss-border)'}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
@@ -449,7 +512,7 @@ export default function AdminPage() {
                               <p className="t-num" style={{fontSize:isLatest?16:14,fontWeight:800,color:pos?'var(--profit)':'var(--loss)',flexShrink:0}}>
                                 {pos?'+':'-'}R$ {fmt(Math.abs(Number(r.resultado||0)))}
                               </p>
-                              <button onClick={async(ev)=>{
+                              <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={async(ev)=>{
                                 ev.stopPropagation()
                                 if(!confirm('Excluir esta remessa?')) return
                                 await fetch('/api/remessa/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({remessa_id:r.id})})
@@ -457,8 +520,8 @@ export default function AdminPage() {
                               }} style={{width:26,height:26,borderRadius:6,border:'1px solid var(--loss-border)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0,opacity:0.5,transition:'opacity 0.15s'}}
                                 onMouseEnter={e=>e.currentTarget.style.opacity='1'} onMouseLeave={e=>e.currentTarget.style.opacity='0.5'}>
                                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
-                              </button>
-                            </div>
+                              </motion.button>
+                            </motion.div>
                           )
                         })}
                       </div>
@@ -485,10 +548,12 @@ export default function AdminPage() {
                           const ic=iconMap[log.action]||'circle'
                           const lc=colorMap[log.action]||'var(--t2)'
                           return (
-                            <div key={log.id} style={{display:'flex',gap:12,paddingBottom:16,position:'relative'}}>
-                              {/* Line */}
+                            <motion.div key={log.id}
+                              initial={{ opacity: 0, x: 10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ duration: 0.3, delay: i * 0.04, ease }}
+                              style={{display:'flex',gap:12,paddingBottom:16,position:'relative'}}>
                               {i<focusLogs.length-1&&<div style={{position:'absolute',left:13,top:28,bottom:0,width:1,background:'var(--b1)'}}/>}
-                              {/* Dot */}
                               <div style={{width:26,height:26,borderRadius:8,background:`${lc}15`,border:`1px solid ${lc}30`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,zIndex:1}}>
                                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={lc} strokeWidth="2.5" strokeLinecap="round">
                                   {ic==='plus'?<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>
@@ -502,7 +567,7 @@ export default function AdminPage() {
                                 <p style={{fontSize:12,fontWeight:600,color:'var(--t1)',margin:'0 0 2px'}}>{log.description}</p>
                                 <p className="t-small">{getName(logOp)} · {new Date(log.created_at).toLocaleString('pt-BR')}</p>
                               </div>
-                            </div>
+                            </motion.div>
                           )
                         })}
                       </div>
@@ -511,16 +576,18 @@ export default function AdminPage() {
                 </div>
                 )}
 
-                {/* ── UNIFIED SALARY/COSTS PANEL — works for ALL states ── */}
+                {/* ── UNIFIED SALARY/COSTS PANEL ── */}
                 {(()=>{
                   const liqCalc = focusRem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
                   const isActive = !fechada && m.status!=='finalizada'
                   const isFinalizedNotClosed = !fechada && m.status==='finalizada'
                   const newLucro = liqCalc + Number(m.salario||0) - Number(m.custo_fixo||0) - Number(m.taxa_agente||0)
-                  const [saving,setSaving2] = [false,()=>{}] // inline state not needed, use async
 
                   return (
-                  <div style={{marginTop:20,padding:'20px 22px',background:'var(--surface)',border:`1px solid ${fechada?'var(--b1)':'var(--brand-border)'}`,borderRadius:16}}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.3, ease }}
+                    style={{marginTop:20,padding:'20px 22px',background:'var(--surface)',border:`1px solid ${fechada?'var(--b1)':'var(--brand-border)'}`,borderRadius:16}}>
                     <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                       <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>Salario e custos</span>
@@ -549,7 +616,6 @@ export default function AdminPage() {
                       </div>
                     </div>
 
-                    {/* Live calculation */}
                     <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',borderRadius:12,background:newLucro>=0?'rgba(5,217,140,0.08)':'rgba(240,61,107,0.06)',border:`1px solid ${newLucro>=0?'rgba(5,217,140,0.15)':'rgba(240,61,107,0.12)'}`,marginBottom:12}}>
                       <div>
                         <span style={{fontSize:12,fontWeight:600,color:'var(--t2)'}}>Lucro final</span>
@@ -558,8 +624,7 @@ export default function AdminPage() {
                       <span className="t-num" style={{fontSize:22,fontWeight:800,color:newLucro>=0?'var(--profit)':'var(--loss)'}}>{newLucro>=0?'+':''}R$ {fmt(newLucro)}</span>
                     </div>
 
-                    {/* Save button — uses API route with service_role */}
-                    <button onClick={async(e)=>{
+                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }} onClick={async(e)=>{
                       const btn=e.currentTarget; btn.disabled=true; btn.textContent='Salvando...'
                       const sal=Number(m.salario||0),cst=Number(m.custo_fixo||0),tax=Number(m.taxa_agente||0)
                       const lf=liqCalc+sal-cst-tax
@@ -573,7 +638,7 @@ export default function AdminPage() {
                     }} className={`btn ${isFinalizedNotClosed?'btn-profit':'btn-brand'} btn-sm`} style={{width:'100%',justifyContent:'center'}}>
                       <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                       {isActive?'Salvar configuracao':isFinalizedNotClosed?'Salvar e fechar meta':'Salvar ajustes'}
-                    </button>
+                    </motion.button>
 
                     {isActive && (m.salario>0||m.custo_fixo>0||m.taxa_agente>0) && (
                       <div style={{marginTop:10,padding:'10px 14px',background:'var(--profit-dim)',border:'1px solid var(--profit-border)',borderRadius:10,display:'flex',alignItems:'center',gap:8}}>
@@ -581,7 +646,7 @@ export default function AdminPage() {
                         <span style={{fontSize:12,color:'var(--profit)'}}>Pre-configurado. Quando o operador finalizar, a meta fecha automaticamente.</span>
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                   )
                 })()}
 
@@ -591,51 +656,114 @@ export default function AdminPage() {
                 </div>
               </>)
             })()}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
         {/* Header */}
-        <div className="a1" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:28 }}>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease }}
+          style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:28 }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
               <div style={{ display:'flex', alignItems:'center', gap:6, padding:'3px 10px', borderRadius:99, background:'rgba(79,110,247,0.1)', border:'1px solid rgba(79,110,247,0.18)' }}>
                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 <span style={{ fontSize:10, fontWeight:700, color:'var(--brand-bright)', letterSpacing:'0.08em' }}>ADMIN · ACESSO EXCLUSIVO</span>
               </div>
-              <span className="live-dot" style={{ width:6, height:6 }}/>
+              <motion.span
+                style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)',flexShrink:0 }}
+                animate={{ boxShadow:['0 0 0 0 rgba(5,217,140,0.6)','0 0 0 6px rgba(5,217,140,0)','0 0 0 0 rgba(5,217,140,0)'] }}
+                transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+              />
               <span className="t-small">Sync a cada 30s</span>
             </div>
-            <h1 className="t-h1">Painel executivo</h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1, ease }}
+              className="t-h1">Painel executivo</motion.h1>
           </div>
-          <button onClick={loadAll} className="btn btn-ghost btn-sm" style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-            Atualizar
-          </button>
-        </div>
+          <motion.button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="btn btn-ghost btn-sm"
+            whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(79,110,247,0.15)' }}
+            whileTap={{ scale: 0.96 }}
+            style={{ display:'flex', alignItems:'center', gap:6, opacity: refreshing ? 0.5 : 1 }}>
+            {refreshing ? (
+              <motion.div
+                style={{ width:13,height:13,borderRadius:'50%',border:'2px solid var(--t3)',borderTopColor:'var(--brand-bright)' }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+              />
+            ) : (
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            )}
+            {refreshing ? 'Atualizando...' : 'Atualizar'}
+          </motion.button>
+        </motion.div>
 
         <TrialBanner tenant={tenant} subscription={sub} stats={convStats}/>
         <ConversionModal tenant={tenant} subscription={sub} stats={convStats}/>
 
-        {/* Tabs */}
-        <div className="a2 tabs-scroll" style={{ display:'flex', gap:4, marginBottom:24, background:'var(--surface)', border:'1px solid var(--b1)', borderRadius:12, padding:5, width:'fit-content' }}>
-          {[['overview','Visão geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['ranking','Ranking'],['redes','Redes'],['team','Equipe']].map(([k,l])=>{
+        {/* ── PREMIUM TABS ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.15, ease }}
+          ref={tabRef}
+          className="tabs-scroll"
+          style={{ display:'flex', gap:4, marginBottom:24, background:'var(--surface)', border:'1px solid var(--b1)', borderRadius:12, padding:5, width:'fit-content', position:'relative' }}>
+          {/* Animated underline */}
+          <motion.div
+            layoutId="tab-indicator"
+            animate={{ left: tabLine.left, width: tabLine.width }}
+            transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+            style={{
+              position:'absolute', bottom: 5, height: 2, borderRadius: 2,
+              background: 'linear-gradient(90deg, var(--brand-bright), #7c5cfc)',
+              boxShadow: '0 0 8px rgba(79,110,247,0.4)',
+              zIndex: 2,
+            }}
+          />
+          {TABS.map(([k,l])=>{
             const active = tab===k
             return (
-              <button key={k} onClick={()=>setTab(k)} style={{ fontFamily:'Inter,sans-serif', fontSize:12, fontWeight:600, padding:'8px 18px', borderRadius:9, cursor:'pointer', transition:'all 0.15s', background:active?'var(--raised)':'transparent', border:active?'1px solid var(--b2)':'1px solid transparent', color:active?'var(--t1)':'var(--t3)', boxShadow:active?'0 2px 8px rgba(0,0,0,0.3)':'' }}>
+              <motion.button
+                key={k}
+                data-active={active ? 'true' : 'false'}
+                onClick={()=>setTab(k)}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                style={{
+                  fontFamily:'Inter,sans-serif', fontSize:12, fontWeight:600, padding:'8px 18px',
+                  borderRadius:9, cursor:'pointer', transition:'all 0.2s',
+                  background:active?'var(--raised)':'transparent',
+                  border:active?'1px solid var(--b2)':'1px solid transparent',
+                  color:active?'var(--t1)':'var(--t3)',
+                  boxShadow:active?'0 2px 8px rgba(0,0,0,0.3)':'',
+                  position: 'relative', zIndex: 3,
+                }}>
                 {l}
-              </button>
+              </motion.button>
             )
           })}
-        </div>
+        </motion.div>
 
-        {/* OVERVIEW */}
+        {/* ═══ TAB CONTENT WITH ANIMATED TRANSITIONS ═══ */}
+        <AnimatePresence mode="wait">
+
         {/* ═══ MY OPS ═══ */}
         {tab==='myops' && (
-          <div key="myops" className="tab-content">
+          <motion.div key="myops"
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease }}>
             {(()=>{
               const myLucro=myRem.reduce((a,r)=>a+Number(r.lucro||0),0)
               const myPrej=myRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
@@ -654,37 +782,43 @@ export default function AdminPage() {
                 router.push(`/meta/${data.id}`)
               }
               return (<>
-                {/* Header */}
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
                   <div>
                     <h2 className="t-h2">Minha operacao</h2>
                     <p className="t-small">Metas e remessas do admin</p>
                   </div>
-                  <button onClick={()=>setMyShowForm(!myShowForm)} className={`btn ${myShowForm?'btn-ghost':'btn-cta'}`} style={{display:'flex',alignItems:'center',gap:8}}>
+                  <motion.button onClick={()=>setMyShowForm(!myShowForm)} className={`btn ${myShowForm?'btn-ghost':'btn-cta'}`} style={{display:'flex',alignItems:'center',gap:8}} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     {myShowForm?'Fechar':'Nova meta'}
-                  </button>
+                  </motion.button>
                 </div>
 
-                {/* KPIs */}
                 <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:20}}>
                   {[
                     {l:'Minhas metas',v:myMetas.length,c:'var(--brand-bright)'},
                     {l:'Remessas',v:myRem.length,c:'var(--info)'},
-                    {l:'Lucro',v:`R$ ${fmt(myLucro)}`,c:'var(--profit)'},
-                    {l:'Resultado',v:`${myLiq>=0?'+':''}R$ ${fmt(Math.abs(myLiq))}`,c:myLiq>=0?'var(--profit)':'var(--loss)'},
-                  ].map(({l,v,c},i)=>(
-                    <motion.div key={l} initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:0.3,delay:i*0.06}}
+                    {l:'Lucro',v:myLucro,c:'var(--profit)',isMoney:true},
+                    {l:'Resultado',v:myLiq,c:myLiq>=0?'var(--profit)':'var(--loss)',isMoney:true,showSign:true},
+                  ].map(({l,v,c,isMoney,showSign},i)=>(
+                    <motion.div key={l} {...fadeUp(i)}
+                      whileHover={{ scale: 1.03, transition: { duration: 0.15 } }}
                       style={{background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:14,padding:'16px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                       <span className="t-body" style={{fontSize:12}}>{l}</span>
-                      <span className="t-num" style={{fontSize:20,fontWeight:800,color:c}}>{v}</span>
+                      {isMoney ? (
+                        <AnimatedNumber value={Math.abs(v)} prefix={`${showSign?(v>=0?'+':'-'):''}R$ `} style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:800,color:c}} />
+                      ) : (
+                        <AnimatedNumber value={v} decimals={0} style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:800,color:c}} />
+                      )}
                     </motion.div>
                   ))}
                 </div>
 
-                {/* Create form */}
+                <AnimatePresence>
                 {myShowForm && (
-                  <div className="card card-primary" style={{padding:24,marginBottom:20}}>
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease }}
+                    className="card card-primary" style={{ padding:24,marginBottom:20,overflow:'hidden' }}>
                     <h3 className="t-h3" style={{fontSize:14,marginBottom:14}}>Criar minha meta</h3>
                     <form onSubmit={createMyMeta} style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
                       <div>
@@ -707,15 +841,15 @@ export default function AdminPage() {
                         <input className="input" type="number" min="1" value={myContas} onChange={e=>setMyContas(e.target.value)}/>
                       </div>
                       <div style={{gridColumn:'1/-1'}}>
-                        <button type="submit" className="btn btn-brand btn-lg" disabled={mySaving} style={{width:'100%',justifyContent:'center'}}>
+                        <motion.button type="submit" className="btn btn-brand btn-lg" disabled={mySaving} style={{width:'100%',justifyContent:'center'}} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
                           {mySaving?'Criando...':'Iniciar meta'}
-                        </button>
+                        </motion.button>
                       </div>
                     </form>
-                  </div>
+                  </motion.div>
                 )}
+                </AnimatePresence>
 
-                {/* My metas list */}
                 <div style={{display:'flex',flexDirection:'column',gap:10}}>
                   {myMetas.length===0 ? (
                     <div style={{border:'1px dashed var(--b2)',borderRadius:16,padding:48,textAlign:'center'}}>
@@ -730,8 +864,8 @@ export default function AdminPage() {
                     const liq=lucro-prej
                     const fechada=m.status_fechamento==='fechada'
                     return (
-                      <motion.div key={m.id} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:0.3,delay:i*0.04}}
-                        whileHover={{x:4,transition:{duration:0.15}}}
+                      <motion.div key={m.id} {...fadeUp(i)}
+                        whileHover={{x:4, borderColor: 'var(--b3)', transition:{duration:0.15}}}
                         onClick={()=>router.push(`/meta/${m.id}`)}
                         className="row-card" style={{padding:'16px 20px',cursor:'pointer'}}>
                         <div className="accent" style={{background:fechada?'linear-gradient(180deg,var(--profit),#04b876)':'linear-gradient(180deg,var(--brand-bright),var(--brand))'}}/>
@@ -755,26 +889,52 @@ export default function AdminPage() {
                 </div>
               </>)
             })()}
-          </div>
+          </motion.div>
         )}
 
-        {tab==='overview' && (<div key="overview" className="tab-content">
+        {/* ═══ OVERVIEW ═══ */}
+        {tab==='overview' && (
+          <motion.div key="overview"
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease }}>
+
+          {/* KPI Cards */}
           <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:16 }}>
             {kpis.map((k,i)=>(
-              <motion.div key={i} className={`card ${k.card}`} style={{ padding:'22px 24px' }}
+              <motion.div key={i} className={`card ${k.card}`} style={{ padding:'22px 24px', position:'relative', overflow:'hidden' }}
                 initial={{opacity:0,y:20,scale:0.97}} animate={{opacity:1,y:0,scale:1}}
-                transition={{duration:0.4,delay:i*0.08,ease:[0.33,1,0.68,1]}}
-                whileHover={{y:-4,scale:1.02,transition:{duration:0.2}}}>
+                transition={{duration:0.4,delay:i*0.08,ease}}
+                whileHover={{
+                  y:-4, scale:1.02,
+                  boxShadow: k.card.includes('profit')
+                    ? '0 0 40px rgba(5,217,140,0.15), 0 20px 40px rgba(0,0,0,0.3)'
+                    : k.card.includes('loss')
+                    ? '0 0 40px rgba(240,61,107,0.15), 0 20px 40px rgba(0,0,0,0.3)'
+                    : '0 0 40px rgba(79,110,247,0.15), 0 20px 40px rgba(0,0,0,0.3)',
+                  transition:{duration:0.2}
+                }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
                   <span className={`badge ${k.card.includes('profit')?'badge-profit':k.card.includes('loss')?'badge-loss':'badge-brand'}`}>{k.badge}</span>
+                  {k.isLive && (
+                    <motion.span
+                      style={{ width:7,height:7,borderRadius:'50%',background:'var(--profit)' }}
+                      animate={{ boxShadow:['0 0 0 0 rgba(5,217,140,0.6)','0 0 0 7px rgba(5,217,140,0)','0 0 0 0 rgba(5,217,140,0)'] }}
+                      transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                    />
+                  )}
                 </div>
                 <p className="t-label" style={{ marginBottom:10 }}>{k.label}</p>
-                <p className="t-num" style={{ fontSize:26, fontWeight:800, color:k.color, lineHeight:1 }}>{k.value}</p>
+                <AnimatedNumber
+                  value={k.rawValue}
+                  prefix="R$ "
+                  style={{ fontFamily:'var(--mono)', fontSize:26, fontWeight:800, color:k.color, lineHeight:1, display:'block' }}
+                />
                 <p className="t-small" style={{ marginTop:8 }}>{k.sub}</p>
               </motion.div>
             ))}
           </div>
 
+          {/* Stats row */}
           <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:28 }}>
             {[
               { l:'Operadores', v:global.ops,       c:'var(--info)' },
@@ -782,23 +942,27 @@ export default function AdminPage() {
               { l:'Metas fechadas', v:global.fechadas, c:'var(--profit)' },
               { l:'Total remessas', v:global.totalRem, c:'var(--warn)' },
             ].map((c,i)=>(
-              <motion.div key={i} initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:0.35,delay:0.3+i*0.06,ease:[0.33,1,0.68,1]}}
-                whileHover={{scale:1.03,transition:{duration:0.15}}}
-                style={{ background:'var(--surface)', border:'1px solid var(--b1)', borderRadius:14, padding:'16px 20px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <motion.div key={i}
+                initial={{opacity:0,y:14}} animate={{opacity:1,y:0}}
+                transition={{duration:0.35,delay:0.3+i*0.06,ease}}
+                whileHover={{scale:1.03, boxShadow:'0 8px 24px rgba(0,0,0,0.25)', transition:{duration:0.15}}}
+                style={{ background:'var(--surface)', border:'1px solid var(--b1)', borderRadius:14, padding:'16px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', transition:'border-color 0.2s' }}>
                 <span className="t-body" style={{ fontSize:12 }}>{c.l}</span>
-                <span className="t-num" style={{ fontSize:24, fontWeight:800, color:c.c }}>{c.v}</span>
+                <AnimatedNumber value={c.v} decimals={0} style={{ fontFamily:'var(--mono)', fontSize:24, fontWeight:800, color:c.c }} />
               </motion.div>
             ))}
           </div>
 
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
-            {/* Últimas remessas */}
-            <div className="card a3" style={{ padding:24 }}>
+            {/* Feed de remessas */}
+            <motion.div className="card" style={{ padding:24 }}
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.35, ease }}>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:18 }}>
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 <div>
                   <h2 className="t-h3" style={{ fontSize:14 }}>Feed de remessas</h2>
-                  <p className="t-small">Tempo real · todas as operações</p>
+                  <p className="t-small">Tempo real · todas as operacoes</p>
                 </div>
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
@@ -812,29 +976,39 @@ export default function AdminPage() {
                   return (
                     <motion.div key={r.id}
                       initial={{opacity:0,x:-16}} animate={{opacity:1,x:0}}
-                      transition={{duration:0.3,delay:i*0.04,ease:[0.33,1,0.68,1]}}
-                      whileHover={{x:4,transition:{duration:0.15}}}
+                      transition={{duration:0.3,delay:i*0.04,ease}}
+                      whileHover={{
+                        x:4,
+                        background: pos ? 'rgba(5,217,140,0.08)' : 'rgba(240,61,107,0.08)',
+                        borderColor: pos ? 'rgba(5,217,140,0.2)' : 'rgba(240,61,107,0.2)',
+                        transition:{duration:0.15}
+                      }}
                       style={{
                       padding:'12px 14px', borderRadius:12,
                       background:pos?'rgba(5,217,140,0.04)':'rgba(240,61,107,0.04)',
                       border:`1px solid ${pos?'rgba(5,217,140,0.1)':'rgba(240,61,107,0.1)'}`,
                       display:'flex', alignItems:'center', gap:12,
-                      transition:'background 0.2s, border 0.2s',
                     }}>
-                      {/* Operator avatar */}
-                      <div style={{ width:36, height:36, borderRadius:10, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <motion.div
+                        whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(79,110,247,0.25)' }}
+                        style={{ width:36, height:36, borderRadius:10, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
                         <span style={{ fontSize:13, fontWeight:800, color:'white' }}>{getName(op)[0]?.toUpperCase()}</span>
-                      </div>
-                      {/* Info */}
+                      </motion.div>
                       <div style={{ flex:1, minWidth:0 }}>
                         <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3 }}>
                           <span style={{ fontSize:13, fontWeight:700, color:'var(--t1)' }}>{getName(op)}</span>
                           {rede && <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:6, background:'rgba(79,110,247,0.12)', color:'var(--brand-bright)', border:'1px solid rgba(79,110,247,0.2)' }}>{rede}</span>}
-                          {isNew && <span style={{ fontSize:8, fontWeight:700, padding:'2px 6px', borderRadius:6, background:'rgba(5,217,140,0.15)', color:'var(--profit)', border:'1px solid rgba(5,217,140,0.25)', animation:'breathe 2s ease-in-out infinite' }}>NOVO</span>}
+                          {isNew && (
+                            <motion.span
+                              animate={{ opacity: [1, 0.5, 1] }}
+                              transition={{ duration: 2, repeat: Infinity }}
+                              style={{ fontSize:8, fontWeight:700, padding:'2px 6px', borderRadius:6, background:'rgba(5,217,140,0.15)', color:'var(--profit)', border:'1px solid rgba(5,217,140,0.25)' }}>
+                              NOVO
+                            </motion.span>
+                          )}
                         </div>
                         <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{r.titulo||'Remessa'} · {new Date(r.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</p>
                       </div>
-                      {/* Value */}
                       <div style={{ textAlign:'right', flexShrink:0 }}>
                         <p className="t-num" style={{ fontSize:16, fontWeight:800, color:pos?'var(--profit)':'var(--loss)', margin:0 }}>
                           {pos?'+':'-'}R$ {fmt(val)}
@@ -844,10 +1018,12 @@ export default function AdminPage() {
                   )
                 })}
               </div>
-            </div>
+            </motion.div>
 
             {/* Operadores */}
-            <div className="card a4" style={{ padding:24 }}>
+            <motion.div className="card" style={{ padding:24 }}
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.4, ease }}>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:18 }}>
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 <div>
@@ -864,29 +1040,40 @@ export default function AdminPage() {
                   return (
                     <motion.div key={op.id} className="data-row"
                       initial={{opacity:0,x:12}} animate={{opacity:1,x:0}}
-                      transition={{duration:0.3,delay:i*0.05,ease:[0.33,1,0.68,1]}}
-                      whileHover={{x:4,transition:{duration:0.15}}}>
+                      transition={{duration:0.3,delay:i*0.05,ease}}
+                      whileHover={{
+                        x:4,
+                        background:'var(--overlay)',
+                        borderColor:'var(--b2)',
+                        transition:{duration:0.15}
+                      }}>
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                        <div style={{ width:34, height:34, borderRadius:10, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <motion.div
+                          whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(79,110,247,0.3)' }}
+                          style={{ width:34, height:34, borderRadius:10, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
                           <span style={{ fontSize:13, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
-                        </div>
+                        </motion.div>
                         <div>
                           <p style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:'0 0 2px' }}>{getName(op)}</p>
                           <p className="t-small">{ativas} ativa(s) · {opRem.length} remessas</p>
                         </div>
                       </div>
                       <div style={{ textAlign:'right' }}>
-                        <p className="t-num" style={{ fontSize:15, fontWeight:700, color:liq>=0?'var(--profit)':'var(--loss)' }}>{liq>=0?'+':''}R$ {fmt(liq)}</p>
+                        <AnimatedNumber
+                          value={Math.abs(liq)}
+                          prefix={`${liq>=0?'+':'-'}R$ `}
+                          style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:liq>=0?'var(--profit)':'var(--loss)' }}
+                        />
                       </div>
                     </motion.div>
                   )
                 })}
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>)}
+        </motion.div>)}
 
-        {/* OPERATIONS — PREMIUM REDESIGN */}
+        {/* ═══ OPERATIONS ═══ */}
         {tab==='operations' && (()=>{
           const NET_COLORS={
             COROA:{h:'42,100%,50%',hex:'#d4a017',name:'Dourado'},VOY:{h:'220,90%,60%',hex:'#3b82f6',name:'Azul'},
@@ -903,7 +1090,9 @@ export default function AdminPage() {
           }
           function getNC(rede){return NET_COLORS[rede]||NET_COLORS.DEFAULT}
           return (
-          <div key="operations" className="tab-content">
+          <motion.div key="operations"
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease }}>
             {/* Filters */}
             <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:24,flexWrap:'wrap'}}>
               <select className="input" value={selectedOp||''} onChange={e=>setSelectedOp(e.target.value||null)} style={{width:170,padding:'8px 14px',fontSize:12}}>
@@ -911,16 +1100,17 @@ export default function AdminPage() {
                 {operators.map(op=><option key={op.id} value={op.id}>{getName(op)}</option>)}
               </select>
               {[['all','Todas'],['ativa','Ativas'],['finalizada','Finalizadas'],['fechada','Fechadas']].map(([k,l])=>(
-                <button key={k} onClick={()=>setMetaStatus(k)} className={`btn btn-sm ${metaStatus===k?'btn-brand':'btn-ghost'}`}>{l}</button>
+                <motion.button key={k} onClick={()=>setMetaStatus(k)} className={`btn btn-sm ${metaStatus===k?'btn-brand':'btn-ghost'}`} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>{l}</motion.button>
               ))}
               <div style={{display:'flex',gap:4,background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:10,padding:4,marginLeft:'auto'}}>
                 {[['all','Tudo'],['today','Hoje'],['week','7 dias'],['month','30 dias']].map(([k,l])=>(
-                  <button key={k} onClick={()=>setMetaPeriod(k)} style={{fontFamily:'Inter,sans-serif',fontSize:11,fontWeight:600,padding:'5px 12px',borderRadius:7,cursor:'pointer',transition:'all 0.15s',border:'none',background:metaPeriod===k?'var(--raised)':'transparent',color:metaPeriod===k?'var(--t1)':'var(--t3)'}}>{l}</button>
+                  <motion.button key={k} onClick={()=>setMetaPeriod(k)} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                    style={{fontFamily:'Inter,sans-serif',fontSize:11,fontWeight:600,padding:'5px 12px',borderRadius:7,cursor:'pointer',transition:'all 0.15s',border:'none',background:metaPeriod===k?'var(--raised)':'transparent',color:metaPeriod===k?'var(--t1)':'var(--t3)'}}>{l}</motion.button>
                 ))}
               </div>
             </div>
 
-            {/* Grid — Minimal Cards */}
+            {/* Grid */}
             <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16}}>
               {filteredMetas.map((m,i)=>{
                 const mRem=remessas.filter(r=>r.meta_id===m.id)
@@ -940,22 +1130,22 @@ export default function AdminPage() {
                 return (
                   <motion.div key={m.id} onClick={()=>openMetaDetail(m)}
                     initial={{opacity:0,y:16,scale:0.97}} animate={{opacity:1,y:0,scale:1}}
-                    transition={{duration:0.35,delay:i*0.05,ease:[0.33,1,0.68,1]}}
-                    whileHover={{y:-4,scale:1.015,transition:{duration:0.2}}}
+                    transition={{duration:0.35,delay:i*0.05,ease}}
+                    whileHover={{
+                      y:-4,scale:1.015,
+                      boxShadow:`0 0 35px hsla(${nc.h},0.18), 0 12px 30px rgba(0,0,0,0.4)`,
+                      borderColor:`hsla(${nc.h},0.55)`,
+                      transition:{duration:0.2}
+                    }}
                     style={{
                     borderRadius:18,overflow:'hidden',position:'relative',
                     background:`linear-gradient(160deg, hsla(${nc.h},0.32) 0%, hsla(${nc.h},0.15) 45%, #0a1220 100%)`,
                     border:`1px solid hsla(${nc.h},0.4)`,
                     boxShadow:`0 0 25px hsla(${nc.h},0.1), 0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 hsla(${nc.h},0.12)`,
-                    transition:'all 0.3s cubic-bezier(0.33,1,0.68,1)',
                     cursor:'pointer',
-                  }}
-                  >
-                    {/* Accent bar */}
+                  }}>
                     <div style={{height:3,background:`linear-gradient(90deg, ${nc.hex}, ${nc.hex}88)`}}/>
-
                     <div style={{padding:'18px 20px 16px',position:'relative',zIndex:1}}>
-                      {/* Row 1: DEP + Rede + Status */}
                       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:4}}>
                         <div style={{display:'flex',alignItems:'center',gap:6}}>
                           <div style={{width:8,height:8,borderRadius:'50%',background:nc.hex,boxShadow:`0 0 8px ${nc.hex}88`}}/>
@@ -971,27 +1161,23 @@ export default function AdminPage() {
                           {fechada?'Concluida':(m.status||'ativa')==='ativa'?'Ativa':'Finalizada'}
                         </span>
                       </div>
-
-                      {/* Date */}
                       <p style={{fontSize:10,color:'var(--t4)',margin:'0 0 14px',paddingLeft:14}}>{metaDate}</p>
-
-                      {/* Progress bar */}
                       <div style={{marginBottom:14}}>
                         <div style={{display:'flex',justifyContent:'flex-end',marginBottom:5}}>
                           <span style={{fontSize:11,fontWeight:600,color:fechada?'var(--t3)':nc.hex+'99',fontFamily:'var(--mono)'}}>{fechada?`${totalContas}/${totalContas}`:`${depDone}/${totalContas}`}</span>
                         </div>
                         <div style={{height:5,background:'rgba(255,255,255,0.06)',borderRadius:99,overflow:'hidden'}}>
-                          <div style={{
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progPct}%` }}
+                            transition={{ duration: 1, delay: i * 0.05 + 0.2, ease: [0.4,0,0.2,1] }}
+                            style={{
                             height:'100%',borderRadius:99,
-                            width:`${progPct}%`,
                             background:fechada?'linear-gradient(90deg, #05d98c, #34d399)':`linear-gradient(90deg, ${nc.hex}, ${nc.hex}bb)`,
                             boxShadow:fechada?'0 0 10px rgba(5,217,140,0.3)':`0 0 6px ${nc.hex}30`,
-                            transition:'width 1s cubic-bezier(0.4,0,0.2,1)',
                           }}/>
                         </div>
                       </div>
-
-                      {/* Result — right aligned, sofisticado */}
                       <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end'}}>
                         <span style={{
                           fontFamily:'var(--mono)',fontSize:20,fontWeight:800,
@@ -1011,13 +1197,15 @@ export default function AdminPage() {
                 <p className="t-small">Nenhuma meta encontrada.</p>
               </div>
             )}
-          </div>
+          </motion.div>
           )
         })()}
 
-        {/* RANKING */}
+        {/* ═══ RANKING ═══ */}
         {tab==='ranking' && (
-          <div key="ranking" className="tab-content">
+          <motion.div key="ranking"
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease }}>
             <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
               <div style={{ width:48, height:48, borderRadius:14, background:'var(--warn-dim)', border:'1px solid var(--warn-border)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="1.5" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2.34"/><path d="M14 14.66V17a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2.34"/><path d="M6 4v10"/><path d="M18 4v10"/><path d="M12 1v3"/><path d="M9 4h6"/></svg>
@@ -1042,9 +1230,10 @@ export default function AdminPage() {
                   const maxL   = ranking[0]?.lucroFinal||1
                   const barW   = Math.max(3,(op.lucroFinal/maxL)*100)
                   return (
-                    <div key={op.id} className="card a1" style={{ animationDelay:`${i*55}ms`, padding:'22px 26px', border:isTop?`1px solid ${medal}22`:'1px solid var(--b1)', background:isTop?`rgba(${i===0?'255,215,0':i===1?'192,192,192':'205,127,50'},0.03)`:'var(--surface)' }}>
+                    <motion.div key={op.id} className="card" style={{ padding:'22px 26px', border:isTop?`1px solid ${medal}22`:'1px solid var(--b1)', background:isTop?`rgba(${i===0?'255,215,0':i===1?'192,192,192':'205,127,50'},0.03)`:'var(--surface)' }}
+                      {...fadeUp(i)}
+                      whileHover={{ x: 4, borderColor: isTop ? `${medal}44` : 'var(--b2)', transition: { duration: 0.15 } }}>
                       <div style={{ display:'flex', alignItems:'center', gap:20 }}>
-                        {/* Badge */}
                         <div style={{ width:54, height:54, borderRadius:15, background:isTop?`${medal}15`:'var(--raised)', border:`2px solid ${isTop?medal:' var(--b2)'}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                           {isTop
                             ? <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={medal} strokeWidth="1.5" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2.34"/><path d="M14 14.66V17a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2.34"/><path d="M6 4v10"/><path d="M18 4v10"/></svg>
@@ -1053,15 +1242,21 @@ export default function AdminPage() {
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
-                            <div style={{ width:30, height:30, borderRadius:8, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                            <motion.div
+                              whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(79,110,247,0.3)' }}
+                              style={{ width:30, height:30, borderRadius:8, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
                               <span style={{ fontSize:12, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
-                            </div>
+                            </motion.div>
                             <p style={{ fontSize:16, fontWeight:800, color:isTop?medal:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>{getName(op)}</p>
-                            {i===0 && <span className="badge badge-warn">Líder</span>}
+                            {i===0 && <span className="badge badge-warn">Lider</span>}
                           </div>
                           <p className="t-small" style={{ marginBottom:12 }}>{op.email}</p>
                           <div className="progress" style={{ height:4 }}>
-                            <div className="progress-bar" style={{ width:`${barW}%`, background:isTop?`linear-gradient(90deg,${medal},${medal}88)`:'linear-gradient(90deg,var(--brand),var(--brand-bright))' }}/>
+                            <motion.div className="progress-bar"
+                              initial={{ width: 0 }}
+                              animate={{ width: `${barW}%` }}
+                              transition={{ duration: 1, delay: i * 0.1, ease: [0.4,0,0.2,1] }}
+                              style={{ background:isTop?`linear-gradient(90deg,${medal},${medal}88)`:'linear-gradient(90deg,var(--brand),var(--brand-bright))' }}/>
                           </div>
                         </div>
                         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, flexShrink:0 }}>
@@ -1077,16 +1272,19 @@ export default function AdminPage() {
                           ))}
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
             )}
-          </div>
+          </motion.div>
         )}
-        {/* RANKING REDES — LUCRO FINAL ONLY */}
+
+        {/* ═══ REDES ═══ */}
         {tab==='redes' && (
-          <div key="redes" className="tab-content">
+          <motion.div key="redes"
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease }}>
             <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
               <div style={{ width:44, height:44, borderRadius:12, background:'linear-gradient(135deg,rgba(5,217,140,0.15),rgba(79,110,247,0.1))', border:'1px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="1.5" strokeLinecap="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
@@ -1110,18 +1308,16 @@ export default function AdminPage() {
                   const maxVal = Math.max(Math.abs(rankingRedes[0]?.lucroFinal)||1, 1)
                   const barW = Math.max(3, (Math.abs(r.lucroFinal)/maxVal)*100)
                   return (
-                    <div key={r.rede} className="a1" style={{
-                      animationDelay:`${i*40}ms`,
+                    <motion.div key={r.rede}
+                      {...fadeUp(i)}
+                      whileHover={{ x: 4, borderColor: isTop ? 'rgba(255,215,0,0.35)' : 'var(--b2)', transition: { duration: 0.15 } }}
+                      style={{
                       display:'flex', alignItems:'center', gap:16,
                       padding:'18px 22px', borderRadius:16,
                       background:isTop?'linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,215,0,0.02))':'var(--surface)',
                       border:isTop?'1px solid rgba(255,215,0,0.2)':'1px solid var(--b1)',
                       boxShadow:isTop?'0 0 30px rgba(255,215,0,0.06)':'none',
-                      transition:'all 0.25s',
-                    }}
-                      onMouseEnter={e=>{e.currentTarget.style.transform='translateX(4px)';e.currentTarget.style.borderColor=isTop?'rgba(255,215,0,0.35)':'var(--b2)'}}
-                      onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.borderColor=isTop?'rgba(255,215,0,0.2)':'var(--b1)'}}
-                    >
+                    }}>
                       <div style={{width:44,height:44,borderRadius:12,flexShrink:0,background:isTop?'rgba(255,215,0,0.12)':'var(--raised)',border:`2px solid ${isTop?'#FFD700':'var(--b2)'}`,display:'flex',alignItems:'center',justifyContent:'center'}}>
                         <span style={{fontSize:17,fontWeight:900,color:isTop?'#FFD700':'var(--t3)',fontFamily:'var(--mono)'}}>#{i+1}</span>
                       </div>
@@ -1132,23 +1328,29 @@ export default function AdminPage() {
                           <span className="t-small">{r.nMetas} meta{r.nMetas!==1?'s':''}</span>
                         </div>
                         <div style={{height:4,background:'rgba(255,255,255,0.05)',borderRadius:99,overflow:'hidden'}}>
-                          <div style={{height:'100%',width:`${barW}%`,borderRadius:99,background:isTop?'linear-gradient(90deg,#FFD700,#f5a623)':pos?'linear-gradient(90deg,#05d98c,#34d399)':'linear-gradient(90deg,#f03d6b,#f87171)',transition:'width 1s ease'}}/>
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${barW}%` }}
+                            transition={{ duration: 1, delay: i * 0.08, ease: [0.4,0,0.2,1] }}
+                            style={{height:'100%',borderRadius:99,background:isTop?'linear-gradient(90deg,#FFD700,#f5a623)':pos?'linear-gradient(90deg,#05d98c,#34d399)':'linear-gradient(90deg,#f03d6b,#f87171)'}}/>
                         </div>
                       </div>
                       <span className="t-num" style={{fontSize:isTop?24:20,fontWeight:900,flexShrink:0,color:isTop?'#FFD700':pos?'#05d98c':'#f03d6b',textShadow:isTop?'0 0 15px rgba(255,215,0,0.2)':'none'}}>
                         {pos?'+':''}R$ {fmt(r.lucroFinal)}
                       </span>
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
             )}
-          </div>
+          </motion.div>
         )}
 
-        {/* TEAM */}
+        {/* ═══ TEAM ═══ */}
         {tab==='team' && (
-          <div key="team" className="tab-content">
+          <motion.div key="team"
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease }}>
             <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
               <div style={{ width:48, height:48, borderRadius:14, background:'var(--brand-dim)', border:'1px solid var(--brand-border)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="1.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -1161,15 +1363,14 @@ export default function AdminPage() {
 
             <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
               {/* Invite */}
-              <div className="card" style={{ padding:24 }}>
+              <motion.div className="card" style={{ padding:24 }} {...fadeUp(0)}>
                 <h3 className="t-h3" style={{ fontSize:14, marginBottom:6 }}>Gerar link de convite</h3>
                 <p className="t-small" style={{ marginBottom:16 }}>Envie o link para o operador. Ele cria a conta e aceita entrar na sua equipe.</p>
-                <button onClick={sendInvite} className="btn btn-brand" disabled={invSaving} style={{ width:'100%', justifyContent:'center', marginBottom:12 }}>
+                <motion.button onClick={sendInvite} className="btn btn-brand" disabled={invSaving} style={{ width:'100%', justifyContent:'center', marginBottom:12 }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
                   {invSaving ? 'Gerando...' : <><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Gerar novo link</>}
-                </button>
+                </motion.button>
                 {invMsg && <div className={invMsg.startsWith('Erro')?'alert-error':'alert-success'} style={{ display:'flex', alignItems:'center', gap:8, fontSize:12 }}>{invMsg}</div>}
 
-                {/* Pending invites */}
                 {invites.filter(i=>i.status==='pending').length > 0 && (
                   <div style={{ marginTop:20 }}>
                     <p className="t-label" style={{ marginBottom:10 }}>Links ativos ({invites.filter(i=>i.status==='pending').length})</p>
@@ -1181,22 +1382,22 @@ export default function AdminPage() {
                             <p className="t-small">{new Date(inv.created_at).toLocaleDateString('pt-BR')}</p>
                           </div>
                           <div style={{ display:'flex', gap:6 }}>
-                            <button onClick={()=>{navigator.clipboard.writeText(`${window.location.origin}/invite?token=${inv.token}`);setInvMsg('Link copiado!')}} className="btn btn-ghost btn-sm" style={{ padding:'5px 8px' }}>
+                            <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={()=>{navigator.clipboard.writeText(`${window.location.origin}/invite?token=${inv.token}`);setInvMsg('Link copiado!')}} className="btn btn-ghost btn-sm" style={{ padding:'5px 8px' }}>
                               <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                            </button>
-                            <button onClick={()=>deleteInvite(inv.id)} className="btn btn-danger btn-sm" style={{ padding:'5px 8px' }}>
+                            </motion.button>
+                            <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={()=>deleteInvite(inv.id)} className="btn btn-danger btn-sm" style={{ padding:'5px 8px' }}>
                               <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                            </button>
+                            </motion.button>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-              </div>
+              </motion.div>
 
               {/* Operators list */}
-              <div className="card" style={{ padding:24 }}>
+              <motion.div className="card" style={{ padding:24 }} {...fadeUp(1)}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
                   <h3 className="t-h3" style={{ fontSize:14 }}>Operadores ({operators.length})</h3>
                   <span className="badge badge-profit">{operators.length} ativos</span>
@@ -1207,53 +1408,65 @@ export default function AdminPage() {
                       <p className="t-small">Nenhum operador ainda. Envie um convite.</p>
                     </div>
                   ) : operators.map((op,i)=>(
-                    <div key={op.id} className="data-row" style={{ animationDelay:`${i*30}ms` }}>
+                    <motion.div key={op.id} className="data-row"
+                      {...fadeSlideX(i, 0.1)}
+                      whileHover={{ x: 4, background: 'var(--overlay)', transition: { duration: 0.15 } }}>
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                        <div style={{ width:32, height:32, borderRadius:9, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <motion.div
+                          whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(79,110,247,0.3)' }}
+                          style={{ width:32, height:32, borderRadius:9, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
                           <span style={{ fontSize:12, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
-                        </div>
+                        </motion.div>
                         <div>
                           <p style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:0 }}>{getName(op)}</p>
                           <p className="t-small">{op.email}</p>
                         </div>
                       </div>
                       <span className="badge badge-brand" style={{ fontSize:9 }}>{op.role}</span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         )}
+
+        </AnimatePresence>
       </div>
 
-      {/* Notification toast */}
-      {notification && (
-        <div style={{
-          position:'fixed', bottom:24, right:24, zIndex:10001,
-          padding:'16px 20px', borderRadius:16, maxWidth:360,
-          background:notification.pos?'rgba(5,217,140,0.12)':'rgba(240,61,107,0.12)',
-          border:`1px solid ${notification.pos?'rgba(5,217,140,0.25)':'rgba(240,61,107,0.25)'}`,
-          backdropFilter:'blur(20px)',
-          boxShadow:`0 12px 40px rgba(0,0,0,0.4), 0 0 20px ${notification.pos?'rgba(5,217,140,0.1)':'rgba(240,61,107,0.1)'}`,
-          animation:'fade-up 0.3s cubic-bezier(0.33,1,0.68,1) both',
-          display:'flex', alignItems:'center', gap:12,
-        }}>
-          <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-            <span style={{fontSize:13,fontWeight:800,color:'white'}}>{notification.op[0]?.toUpperCase()}</span>
-          </div>
-          <div style={{flex:1,minWidth:0}}>
-            <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
-              <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>{notification.op}</span>
-              {notification.rede && <span style={{fontSize:9,fontWeight:700,padding:'2px 6px',borderRadius:5,background:'rgba(79,110,247,0.12)',color:'var(--brand-bright)'}}>{notification.rede}</span>}
+      {/* ── Notification toast ── */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.3, ease }}
+            style={{
+            position:'fixed', bottom:24, right:24, zIndex:10001,
+            padding:'16px 20px', borderRadius:16, maxWidth:360,
+            background:notification.pos?'rgba(5,217,140,0.12)':'rgba(240,61,107,0.12)',
+            border:`1px solid ${notification.pos?'rgba(5,217,140,0.25)':'rgba(240,61,107,0.25)'}`,
+            backdropFilter:'blur(20px)',
+            boxShadow:`0 12px 40px rgba(0,0,0,0.4), 0 0 20px ${notification.pos?'rgba(5,217,140,0.1)':'rgba(240,61,107,0.1)'}`,
+            display:'flex', alignItems:'center', gap:12,
+          }}>
+            <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <span style={{fontSize:13,fontWeight:800,color:'white'}}>{notification.op[0]?.toUpperCase()}</span>
             </div>
-            <p style={{fontSize:11,color:'var(--t3)',margin:0}}>Nova remessa registrada</p>
-          </div>
-          <span className="t-num" style={{fontSize:16,fontWeight:800,color:notification.pos?'var(--profit)':'var(--loss)',flexShrink:0}}>
-            {notification.pos?'+':'-'}R$ {fmt(notification.val)}
-          </span>
-        </div>
-      )}
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
+                <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>{notification.op}</span>
+                {notification.rede && <span style={{fontSize:9,fontWeight:700,padding:'2px 6px',borderRadius:5,background:'rgba(79,110,247,0.12)',color:'var(--brand-bright)'}}>{notification.rede}</span>}
+              </div>
+              <p style={{fontSize:11,color:'var(--t3)',margin:0}}>Nova remessa registrada</p>
+            </div>
+            <span className="t-num" style={{fontSize:16,fontWeight:800,color:notification.pos?'var(--profit)':'var(--loss)',flexShrink:0}}>
+              {notification.pos?'+':'-'}R$ {fmt(notification.val)}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }

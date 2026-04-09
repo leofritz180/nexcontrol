@@ -152,6 +152,10 @@ export default function MetaPage() {
   const [dep,     setDep]     = useState('')
   const [showAdminClose, setShowAdminClose] = useState(false)
   const [saq,     setSaq]     = useState('')
+  const [editRem, setEditRem] = useState(null)
+  const [editDep, setEditDep] = useState('')
+  const [editSaq, setEditSaq] = useState('')
+  const [editSaving, setEditSaving] = useState(false)
 
   useEffect(()=>{ if(id) fetchData() },[id])
 
@@ -224,6 +228,20 @@ export default function MetaPage() {
         description:action==='reactivate'?`${getName(profile)} reativou a meta "${meta.titulo}"`:`${getName(profile)} alterou status da meta "${meta.titulo}"`,
       })}).catch(()=>{})
     } catch(e) { /* silent */ }
+    fetchData()
+  }
+
+  async function saveEditRem() {
+    if (!editRem||editSaving) return
+    setEditSaving(true)
+    const d=Number(editDep),s=Number(editSaq),diff=s-d
+    await supabase.from('remessas').update({
+      deposito:d, saque:s,
+      lucro:diff>0?diff:0, prejuizo:diff<0?Math.abs(diff):0, resultado:diff,
+      resultado_por_conta:meta?.quantidade_contas&&Number(meta.quantidade_contas)>0?Number((Math.abs(diff)/Number(meta.quantidade_contas)).toFixed(2)):0,
+    }).eq('id',editRem.id)
+    setEditSaving(false)
+    setEditRem(null)
     fetchData()
   }
 
@@ -374,11 +392,17 @@ export default function MetaPage() {
                           </div>
                           <p className="t-small">{r.tipo} · {new Date(r.created_at).toLocaleString('pt-BR')}</p>
                         </div>
-                        <div style={{ textAlign:'right' }}>
-                          <p className="t-num" style={{ fontSize:20,fontWeight:800,color:pos?'var(--profit)':'var(--loss)' }}>
-                            {pos?'+':'−'}R$ {fmt(Math.abs(Number(r.resultado||0)))}
-                          </p>
-                          <p className="t-small">R$ {fmt(r.resultado_por_conta)} / conta</p>
+                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                          <div style={{ textAlign:'right' }}>
+                            <p className="t-num" style={{ fontSize:20,fontWeight:800,color:pos?'var(--profit)':'var(--loss)' }}>
+                              {pos?'+':'−'}R$ {fmt(Math.abs(Number(r.resultado||0)))}
+                            </p>
+                            <p className="t-small">R$ {fmt(r.resultado_por_conta)} / conta</p>
+                          </div>
+                          <button onClick={()=>{setEditRem(r);setEditDep(String(r.deposito||''));setEditSaq(String(r.saque||''))}} style={{width:28,height:28,borderRadius:7,border:'1px solid var(--b2)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',opacity:0.4,transition:'opacity 0.15s',flexShrink:0}}
+                            onMouseEnter={e=>e.currentTarget.style.opacity='1'} onMouseLeave={e=>e.currentTarget.style.opacity='0.4'}>
+                            <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                          </button>
                         </div>
                       </div>
                       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8 }}>
@@ -402,6 +426,41 @@ export default function MetaPage() {
           </div>
         </div>
       </div>
+
+      {/* Edit Remessa Modal */}
+      {editRem && (
+        <div style={{position:'fixed',inset:0,zIndex:10000,background:'rgba(4,8,16,0.9)',backdropFilter:'blur(12px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}} onClick={()=>setEditRem(null)}>
+          <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:400,background:'var(--surface)',borderRadius:20,border:'1px solid var(--b2)',boxShadow:'0 40px 80px rgba(0,0,0,0.5)',animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',padding:28}}>
+            <h3 style={{fontSize:16,fontWeight:800,color:'var(--t1)',margin:'0 0 4px'}}>Editar remessa</h3>
+            <p className="t-small" style={{marginBottom:20}}>{editRem.titulo} · Anterior: D: R$ {fmt(editRem.deposito)} / S: R$ {fmt(editRem.saque)}</p>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
+              <div>
+                <label className="t-label" style={{display:'block',marginBottom:6}}>Deposito *</label>
+                <input className="input" type="number" step="0.01" value={editDep} onChange={e=>setEditDep(e.target.value)} placeholder="0,00"/>
+              </div>
+              <div>
+                <label className="t-label" style={{display:'block',marginBottom:6}}>Saque *</label>
+                <input className="input" type="number" step="0.01" value={editSaq} onChange={e=>setEditSaq(e.target.value)} placeholder="0,00"/>
+              </div>
+            </div>
+            {(editDep||editSaq) && (()=>{
+              const d=Number(editDep||0),s=Number(editSaq||0),diff=s-d
+              return (
+                <div style={{padding:'12px 14px',borderRadius:12,background:diff>=0?'rgba(5,217,140,0.06)':'rgba(240,61,107,0.06)',border:`1px solid ${diff>=0?'rgba(5,217,140,0.12)':'rgba(240,61,107,0.12)'}`,marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <span style={{fontSize:12,color:'var(--t2)'}}>Novo resultado</span>
+                  <span className="t-num" style={{fontSize:18,fontWeight:800,color:diff>=0?'var(--profit)':'var(--loss)'}}>{diff>=0?'+':''}R$ {fmt(diff)}</span>
+                </div>
+              )
+            })()}
+            <div style={{display:'flex',gap:10}}>
+              <button onClick={()=>setEditRem(null)} className="btn btn-ghost" style={{flex:1}}>Cancelar</button>
+              <button onClick={saveEditRem} disabled={editSaving||!editDep||!editSaq} className="btn btn-brand" style={{flex:2}}>
+                {editSaving?'Salvando...':'Salvar alteracao'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Admin Closing Modal */}
       {showAdminClose && (()=>{

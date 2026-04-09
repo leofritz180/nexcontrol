@@ -225,25 +225,27 @@ export default function FaturamentoPage() {
     return Object.values(map).sort((a,b)=>b.liq-a.liq)
   },[metas,fRem])
 
-  /* ── Predictions (based on last 14 days only) ── */
+  /* ── Predictions (based on closed metas lucro_final) ── */
   const predictions = useMemo(()=>{
-    if(chartData.length<2) return {trend:'neutral',estimated:0,dailyAvg:0,liqLast:0,liqPrev:0,pctChange:0}
+    const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em)
+    if(fechadas.length===0) return {trend:'neutral',estimated:0,dailyAvg:0,liqLast:0,liqPrev:0,pctChange:0}
     const now = new Date()
     const d7 = new Date(now); d7.setDate(d7.getDate()-7)
     const d14 = new Date(now); d14.setDate(d14.getDate()-14)
-    const last7 = fRem.filter(r=>new Date(r.created_at)>=d7)
-    const prev7 = fRem.filter(r=>{const d=new Date(r.created_at); return d>=d14&&d<d7})
-    const liqLast=last7.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
-    const liqPrev=prev7.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
-    const trend=liqLast>liqPrev?'up':liqLast<liqPrev?'down':'neutral'
-    // Daily average based on last 14 days only
-    const d14Rem = fRem.filter(r=>new Date(r.created_at)>=d14)
-    const activeDays = new Set(d14Rem.map(r=>new Date(r.created_at).toDateString())).size || 1
-    const liq14 = d14Rem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
-    const dailyAvg = liq14 / activeDays
+    // Compare last 7 days vs previous 7 days using lucro_final of closed metas
+    const last7 = fechadas.filter(m=>new Date(m.fechada_em)>=d7)
+    const prev7 = fechadas.filter(m=>{const d=new Date(m.fechada_em); return d>=d14&&d<d7})
+    const liqLast = last7.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    const liqPrev = prev7.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    const trend = liqLast>liqPrev?'up':liqLast<liqPrev?'down':'neutral'
+    // Daily average: total lucro_final / total calendar days since first close
+    const lucroFinalTotal = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    const firstClose = new Date(Math.min(...fechadas.map(m=>new Date(m.fechada_em).getTime())))
+    const totalDays = Math.max(1, Math.ceil((now - firstClose) / (1000*60*60*24)))
+    const dailyAvg = lucroFinalTotal / totalDays
     const estimated = dailyAvg * 30
     return {trend,estimated,dailyAvg,liqLast,liqPrev,pctChange:liqPrev!==0?Math.round(((liqLast-liqPrev)/Math.abs(liqPrev))*100):0}
-  },[fRem,chartData])
+  },[metas])
 
   /* ── Goal progress ── */
   const goalData = useMemo(()=>{

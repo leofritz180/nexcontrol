@@ -9,54 +9,50 @@ const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
 function AnimatedLogo() {
   return (
-    <div style={{ position:'relative', width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+    <div style={{ position:'relative', width:54, height:54, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
       {/* Orbit ring 1 */}
       <div style={{
-        position:'absolute', inset:-4, borderRadius:'50%',
-        border:'1px solid transparent',
+        position:'absolute', inset:-6, borderRadius:'50%',
+        border:'1.5px solid transparent',
         borderTopColor:'rgba(79,110,247,0.5)',
         borderRightColor:'rgba(79,110,247,0.15)',
         animation:'orbit 3s linear infinite',
-        filter:'drop-shadow(0 0 3px rgba(79,110,247,0.4))',
+        filter:'drop-shadow(0 0 4px rgba(79,110,247,0.4))',
       }}/>
       {/* Orbit ring 2 */}
       <div style={{
-        position:'absolute', inset:-7, borderRadius:'50%',
+        position:'absolute', inset:-10, borderRadius:'50%',
         border:'1px solid transparent',
         borderBottomColor:'rgba(5,217,140,0.4)',
         borderLeftColor:'rgba(5,217,140,0.1)',
         animation:'orbit-reverse 5s linear infinite',
-        filter:'drop-shadow(0 0 3px rgba(5,217,140,0.3))',
+        filter:'drop-shadow(0 0 4px rgba(5,217,140,0.3))',
       }}/>
       {/* Particle dots */}
       <div style={{
         position:'absolute', width:3, height:3, borderRadius:'50%', background:'#05d98c',
-        top:-5, left:'50%', marginLeft:-1.5,
-        boxShadow:'0 0 6px #05d98c',
+        top:-7, left:'50%', marginLeft:-1.5,
+        boxShadow:'0 0 8px #05d98c',
         animation:'orbit 3s linear infinite',
-        transformOrigin:'1.5px 22px',
+        transformOrigin:'1.5px 34px',
       }}/>
       <div style={{
-        position:'absolute', width:2, height:2, borderRadius:'50%', background:'#6b84ff',
-        bottom:-6, left:'50%', marginLeft:-1,
-        boxShadow:'0 0 5px #6b84ff',
+        position:'absolute', width:2.5, height:2.5, borderRadius:'50%', background:'#6b84ff',
+        bottom:-8, left:'50%', marginLeft:-1.25,
+        boxShadow:'0 0 6px #6b84ff',
         animation:'orbit-reverse 5s linear infinite',
-        transformOrigin:'1px -16px',
+        transformOrigin:'1.25px -25px',
       }}/>
-      {/* Glow base */}
+      {/* Glow pulse behind logo */}
       <div style={{
-        position:'absolute', inset:0, borderRadius:9,
-        background:'linear-gradient(135deg,#4f6ef7,#7c5cfc)',
-        boxShadow:'0 0 20px rgba(79,110,247,0.5), 0 0 40px rgba(79,110,247,0.15)',
+        position:'absolute', inset:-2, borderRadius:16,
+        boxShadow:'0 0 25px rgba(79,110,247,0.45), 0 0 50px rgba(79,110,247,0.15)',
         animation:'breathe 4s ease-in-out infinite',
+        pointerEvents:'none',
       }}/>
-      {/* Icon */}
-      <svg width={14} height={14} viewBox="0 0 28 28" fill="none" style={{ position:'relative', zIndex:2 }}>
-        <path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/>
-        <path d="M12 22L18 22L18 6L12 6Z" fill="white"/>
-        <path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/>
-        <circle cx="21" cy="8" r="3" fill="rgba(5,217,140,1)"/>
-      </svg>
+      {/* Logo PNG */}
+      <Image src="/branding/logo-nexcontrol.png" alt="NexControl" width={54} height={54} priority
+        style={{ position:'relative', zIndex:2, borderRadius:14, filter:'drop-shadow(0 0 20px rgba(79,110,247,0.35))' }}/>
     </div>
   )
 }
@@ -72,10 +68,8 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
     <header style={{ position:'sticky', top:0, zIndex:200, height:58, background:'rgba(6,11,20,0.88)', backdropFilter:'blur(28px) saturate(180%)', WebkitBackdropFilter:'blur(28px) saturate(180%)', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'0 28px', height:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
         {/* Logo */}
-        <Link href="/operator" style={{ display:'flex', alignItems:'center', gap:10, transition:'transform 0.3s ease', cursor:'pointer' }}
-          onMouseEnter={e=>e.currentTarget.style.transform='scale(1.03)'}
-          onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}>
-          <Image src="/branding/logo-nexcontrol.png" alt="NexControl" width={46} height={46} priority style={{ borderRadius:12, filter:'drop-shadow(0 0 18px rgba(79,110,247,0.4)) drop-shadow(0 0 40px rgba(79,110,247,0.15))' }}/>
+        <Link href="/operator" style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <AnimatedLogo/>
           <span style={{ fontWeight:800, fontSize:15, letterSpacing:'-0.03em', color:'var(--t1)' }}>
             Nex<span style={{ color:'var(--brand-bright)' }}>Control</span>
           </span>

@@ -75,7 +75,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
         <Link href="/operator" style={{ display:'flex', alignItems:'center', gap:10, transition:'transform 0.3s ease', cursor:'pointer' }}
           onMouseEnter={e=>e.currentTarget.style.transform='scale(1.03)'}
           onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}>
-          <Image src="/branding/logo-nexcontrol.png" alt="NexControl" width={38} height={38} priority style={{ borderRadius:10, filter:'drop-shadow(0 0 12px rgba(79,110,247,0.3))' }}/>
+          <Image src="/branding/logo-nexcontrol.png" alt="NexControl" width={46} height={46} priority style={{ borderRadius:12, filter:'drop-shadow(0 0 18px rgba(79,110,247,0.4)) drop-shadow(0 0 40px rgba(79,110,247,0.15))' }}/>
           <span style={{ fontWeight:800, fontSize:15, letterSpacing:'-0.03em', color:'var(--t1)' }}>
             Nex<span style={{ color:'var(--brand-bright)' }}>Control</span>
           </span>

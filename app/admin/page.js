@@ -480,8 +480,8 @@ export default function AdminPage() {
                       <div style={{display:'flex',flexDirection:'column',gap:0,maxHeight:400,overflowY:'auto'}}>
                         {focusLogs.map((log,i)=>{
                           const logOp=operators.find(o=>o.id===log.operator_id)
-                          const iconMap={meta_created:'plus',meta_finalized:'flag',meta_closed:'check',meta_status_changed:'refresh',remessa_created:'dollar'}
-                          const colorMap={meta_created:'var(--brand-bright)',meta_finalized:'var(--warn)',meta_closed:'var(--profit)',remessa_created:'var(--info)',meta_status_changed:'var(--t2)'}
+                          const iconMap={meta_created:'plus',meta_finalized:'flag',meta_closed:'check',meta_status_changed:'refresh',meta_reactivated:'refresh',remessa_created:'dollar'}
+                          const colorMap={meta_created:'var(--brand-bright)',meta_finalized:'var(--warn)',meta_closed:'var(--profit)',remessa_created:'var(--info)',meta_status_changed:'var(--t2)',meta_reactivated:'var(--warn)'}
                           const ic=iconMap[log.action]||'circle'
                           const lc=colorMap[log.action]||'var(--t2)'
                           return (

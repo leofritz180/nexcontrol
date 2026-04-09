@@ -15,7 +15,8 @@ export async function POST(req) {
     // Fetch fresh meta
     const { data: meta, error: metaErr } = await supabase.from('metas').select('*').eq('id', meta_id).single()
     if (metaErr || !meta) return NextResponse.json({ error: 'Meta not found' }, { status: 404 })
-    if (meta.status_fechamento === 'fechada') return NextResponse.json({ error: 'Already closed' }, { status: 400 })
+    // Allow reactivate on closed metas, block only finalize on closed
+    if (meta.status_fechamento === 'fechada' && action !== 'reactivate') return NextResponse.json({ error: 'Already closed' }, { status: 400 })
 
     // Fetch remessas
     const { data: remessas } = await supabase.from('remessas').select('lucro,prejuizo').eq('meta_id', meta_id)

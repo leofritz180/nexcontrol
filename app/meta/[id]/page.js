@@ -199,8 +199,7 @@ export default function MetaPage() {
     const isClosed = meta.status_fechamento === 'fechada'
     const isFinalize = meta.status !== 'finalizada' && !isClosed
 
-    // Block non-admin from modifying closed metas
-    if (isClosed && !isAdmin) return
+    // Operators can reactivate too (logged)
 
     // Admin finalizing → open closing modal
     if (isAdmin && isFinalize) {
@@ -218,6 +217,12 @@ export default function MetaPage() {
       })
       const json = await res.json()
       if (json.error) { setError(json.error); return }
+      // Log action
+      fetch('/api/meta/log',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        meta_id:meta.id,user_id:user?.id,tenant_id:meta?.tenant_id||profile?.tenant_id,
+        action:action==='reactivate'?'meta_reactivated':'meta_status_changed',
+        description:action==='reactivate'?`${getName(profile)} reativou a meta "${meta.titulo}"`:`${getName(profile)} alterou status da meta "${meta.titulo}"`,
+      })}).catch(()=>{})
     } catch(e) { /* silent */ }
     fetchData()
   }

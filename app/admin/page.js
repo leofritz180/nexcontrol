@@ -152,6 +152,15 @@ export default function AdminPage() {
   const [focusLogs, setFocusLogs] = useState([])
   const [notification, setNotification] = useState(null)
   const prevRemCount = useRef(0)
+  const [myMetas,setMyMetas]=useState([])
+  const [myRem,setMyRem]=useState([])
+  const [myShowForm,setMyShowForm]=useState(false)
+  const [myTitulo,setMyTitulo]=useState('')
+  const [myPlat,setMyPlat]=useState('')
+  const [myRede,setMyRede]=useState('')
+  const [myContas,setMyContas]=useState('10')
+  const [mySaving,setMySaving]=useState(false)
+  const REDES=['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
   const [focusLoad, setFocusLoad] = useState(false)
 
   useEffect(()=>{ checkAndLoad() },[])
@@ -199,6 +208,17 @@ export default function AdminPage() {
 
     setOperators(ops||[]); setMetas(ms||[]); setRemessas(newRs); setInvites(inv||[])
     if(t) setTenant(t); if(s2) setSub(s2)
+    // Load admin own metas
+    const adminId = profile?.id || user?.id
+    if(adminId) {
+      const [{data:mm},{data:mr}]=await Promise.all([
+        supabase.from('metas').select('*').eq('operator_id',adminId).order('created_at',{ascending:false}),
+        supabase.from('remessas').select('*').order('created_at',{ascending:false}),
+      ])
+      setMyMetas(mm||[])
+      const myIds=new Set((mm||[]).map(x=>x.id))
+      setMyRem((mr||[]).filter(x=>myIds.has(x.meta_id)))
+    }
     setLoading(false)
   }
 
@@ -602,7 +622,7 @@ export default function AdminPage() {
 
         {/* Tabs */}
         <div className="a2 tabs-scroll" style={{ display:'flex', gap:4, marginBottom:24, background:'var(--surface)', border:'1px solid var(--b1)', borderRadius:12, padding:5, width:'fit-content' }}>
-          {[['overview','Visão geral'],['operations','Metas & Fechamento'],['ranking','Ranking'],['redes','Redes'],['team','Equipe']].map(([k,l])=>{
+          {[['overview','Visão geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['ranking','Ranking'],['redes','Redes'],['team','Equipe']].map(([k,l])=>{
             const active = tab===k
             return (
               <button key={k} onClick={()=>setTab(k)} style={{ fontFamily:'Inter,sans-serif', fontSize:12, fontWeight:600, padding:'8px 18px', borderRadius:9, cursor:'pointer', transition:'all 0.15s', background:active?'var(--raised)':'transparent', border:active?'1px solid var(--b2)':'1px solid transparent', color:active?'var(--t1)':'var(--t3)', boxShadow:active?'0 2px 8px rgba(0,0,0,0.3)':'' }}>
@@ -613,6 +633,131 @@ export default function AdminPage() {
         </div>
 
         {/* OVERVIEW */}
+        {/* ═══ MY OPS ═══ */}
+        {tab==='myops' && (
+          <div key="myops" className="tab-content">
+            {(()=>{
+              const myLucro=myRem.reduce((a,r)=>a+Number(r.lucro||0),0)
+              const myPrej=myRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
+              const myLiq=myLucro-myPrej
+              async function createMyMeta(e){
+                e.preventDefault()
+                if(!myTitulo.trim()||!myPlat.trim()||!myRede){return}
+                setMySaving(true)
+                const {data,error:err}=await supabase.from('metas').insert({
+                  operator_id:user.id,titulo:myTitulo.trim(),plataforma:myPlat.trim(),rede:myRede,
+                  quantidade_contas:Number(myContas||10),status:'ativa',tenant_id:profile?.tenant_id,
+                }).select().single()
+                setMySaving(false)
+                if(err){return}
+                setMyTitulo('');setMyPlat('');setMyRede('');setMyContas('10');setMyShowForm(false)
+                router.push(`/meta/${data.id}`)
+              }
+              return (<>
+                {/* Header */}
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+                  <div>
+                    <h2 className="t-h2">Minha operacao</h2>
+                    <p className="t-small">Metas e remessas do admin</p>
+                  </div>
+                  <button onClick={()=>setMyShowForm(!myShowForm)} className={`btn ${myShowForm?'btn-ghost':'btn-cta'}`} style={{display:'flex',alignItems:'center',gap:8}}>
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    {myShowForm?'Fechar':'Nova meta'}
+                  </button>
+                </div>
+
+                {/* KPIs */}
+                <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:20}}>
+                  {[
+                    {l:'Minhas metas',v:myMetas.length,c:'var(--brand-bright)'},
+                    {l:'Remessas',v:myRem.length,c:'var(--info)'},
+                    {l:'Lucro',v:`R$ ${fmt(myLucro)}`,c:'var(--profit)'},
+                    {l:'Resultado',v:`${myLiq>=0?'+':''}R$ ${fmt(Math.abs(myLiq))}`,c:myLiq>=0?'var(--profit)':'var(--loss)'},
+                  ].map(({l,v,c},i)=>(
+                    <motion.div key={l} initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:0.3,delay:i*0.06}}
+                      style={{background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:14,padding:'16px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                      <span className="t-body" style={{fontSize:12}}>{l}</span>
+                      <span className="t-num" style={{fontSize:20,fontWeight:800,color:c}}>{v}</span>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Create form */}
+                {myShowForm && (
+                  <div className="card card-primary" style={{padding:24,marginBottom:20}}>
+                    <h3 className="t-h3" style={{fontSize:14,marginBottom:14}}>Criar minha meta</h3>
+                    <form onSubmit={createMyMeta} style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Plataforma *</label>
+                        <input className="input" value={myPlat} onChange={e=>setMyPlat(e.target.value)} placeholder="Nome da plataforma" required/>
+                      </div>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Rede *</label>
+                        <select className="input" value={myRede} onChange={e=>setMyRede(e.target.value)} required>
+                          <option value="">Selecione</option>
+                          {REDES.map(r=><option key={r} value={r}>{r}</option>)}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Titulo *</label>
+                        <input className="input" value={myTitulo} onChange={e=>setMyTitulo(e.target.value)} placeholder="Ex: Meta Abril" required/>
+                      </div>
+                      <div>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Depositantes</label>
+                        <input className="input" type="number" min="1" value={myContas} onChange={e=>setMyContas(e.target.value)}/>
+                      </div>
+                      <div style={{gridColumn:'1/-1'}}>
+                        <button type="submit" className="btn btn-brand btn-lg" disabled={mySaving} style={{width:'100%',justifyContent:'center'}}>
+                          {mySaving?'Criando...':'Iniciar meta'}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                {/* My metas list */}
+                <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                  {myMetas.length===0 ? (
+                    <div style={{border:'1px dashed var(--b2)',borderRadius:16,padding:48,textAlign:'center'}}>
+                      <p style={{color:'var(--t2)',fontSize:14,fontWeight:600,marginBottom:4}}>Nenhuma meta criada</p>
+                      <p className="t-small" style={{marginBottom:16}}>Crie sua primeira meta de operacao.</p>
+                      <button onClick={()=>setMyShowForm(true)} className="btn btn-cta">+ Criar meta</button>
+                    </div>
+                  ) : myMetas.map((m,i)=>{
+                    const mRem=myRem.filter(r=>r.meta_id===m.id)
+                    const lucro=mRem.reduce((a,r)=>a+Number(r.lucro||0),0)
+                    const prej=mRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
+                    const liq=lucro-prej
+                    const fechada=m.status_fechamento==='fechada'
+                    return (
+                      <motion.div key={m.id} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:0.3,delay:i*0.04}}
+                        whileHover={{x:4,transition:{duration:0.15}}}
+                        onClick={()=>router.push(`/meta/${m.id}`)}
+                        className="row-card" style={{padding:'16px 20px',cursor:'pointer'}}>
+                        <div className="accent" style={{background:fechada?'linear-gradient(180deg,var(--profit),#04b876)':'linear-gradient(180deg,var(--brand-bright),var(--brand))'}}/>
+                        <div style={{paddingLeft:14,display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%'}}>
+                          <div>
+                            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+                              <h3 style={{fontSize:14,fontWeight:700,color:'var(--t1)',margin:0}}>{m.titulo}</h3>
+                              <span className={`badge ${fechada?'badge-profit':'badge-brand'}`} style={{fontSize:9}}>
+                                {fechada?'Fechada':(m.status||'ativa')==='ativa'?'Ativa':'Finalizada'}
+                              </span>
+                            </div>
+                            <p className="t-small">{m.rede} · {m.plataforma} · {mRem.length} remessas</p>
+                          </div>
+                          <span className="t-num" style={{fontSize:16,fontWeight:700,color:liq>=0?'var(--profit)':'var(--loss)'}}>
+                            {liq>=0?'+':''}R$ {fmt(liq)}
+                          </span>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </>)
+            })()}
+          </div>
+        )}
+
         {tab==='overview' && (<div key="overview" className="tab-content">
           <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:16 }}>
             {kpis.map((k,i)=>(

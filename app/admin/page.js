@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import Header from '../../components/Header'
 import TrialBanner, { ConversionModal } from '../../components/TrialBanner'
 import { supabase } from '../../lib/supabase/client'
@@ -615,14 +616,17 @@ export default function AdminPage() {
         {tab==='overview' && (<div key="overview" className="tab-content">
           <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:16 }}>
             {kpis.map((k,i)=>(
-              <div key={i} className={`card ${k.card} a${i+1}`} style={{ padding:'22px 24px' }}>
+              <motion.div key={i} className={`card ${k.card}`} style={{ padding:'22px 24px' }}
+                initial={{opacity:0,y:20,scale:0.97}} animate={{opacity:1,y:0,scale:1}}
+                transition={{duration:0.4,delay:i*0.08,ease:[0.33,1,0.68,1]}}
+                whileHover={{y:-4,scale:1.02,transition:{duration:0.2}}}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
                   <span className={`badge ${k.card.includes('profit')?'badge-profit':k.card.includes('loss')?'badge-loss':'badge-brand'}`}>{k.badge}</span>
                 </div>
                 <p className="t-label" style={{ marginBottom:10 }}>{k.label}</p>
                 <p className="t-num" style={{ fontSize:26, fontWeight:800, color:k.color, lineHeight:1 }}>{k.value}</p>
                 <p className="t-small" style={{ marginTop:8 }}>{k.sub}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
 
@@ -633,10 +637,12 @@ export default function AdminPage() {
               { l:'Metas fechadas', v:global.fechadas, c:'var(--profit)' },
               { l:'Total remessas', v:global.totalRem, c:'var(--warn)' },
             ].map((c,i)=>(
-              <div key={i} className={`a${i+1}`} style={{ background:'var(--surface)', border:'1px solid var(--b1)', borderRadius:14, padding:'16px 20px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <motion.div key={i} initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{duration:0.35,delay:0.3+i*0.06,ease:[0.33,1,0.68,1]}}
+                whileHover={{scale:1.03,transition:{duration:0.15}}}
+                style={{ background:'var(--surface)', border:'1px solid var(--b1)', borderRadius:14, padding:'16px 20px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                 <span className="t-body" style={{ fontSize:12 }}>{c.l}</span>
                 <span className="t-num" style={{ fontSize:24, fontWeight:800, color:c.c }}>{c.v}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
 
@@ -659,13 +665,16 @@ export default function AdminPage() {
                   const rede = m?.rede
                   const isNew = (Date.now()-new Date(r.created_at).getTime())<300000
                   return (
-                    <div key={r.id} className="a1" style={{
-                      animationDelay:`${i*25}ms`,
+                    <motion.div key={r.id}
+                      initial={{opacity:0,x:-16}} animate={{opacity:1,x:0}}
+                      transition={{duration:0.3,delay:i*0.04,ease:[0.33,1,0.68,1]}}
+                      whileHover={{x:4,transition:{duration:0.15}}}
+                      style={{
                       padding:'12px 14px', borderRadius:12,
                       background:pos?'rgba(5,217,140,0.04)':'rgba(240,61,107,0.04)',
                       border:`1px solid ${pos?'rgba(5,217,140,0.1)':'rgba(240,61,107,0.1)'}`,
                       display:'flex', alignItems:'center', gap:12,
-                      transition:'all 0.2s',
+                      transition:'background 0.2s, border 0.2s',
                     }}>
                       {/* Operator avatar */}
                       <div style={{ width:36, height:36, borderRadius:10, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -686,7 +695,7 @@ export default function AdminPage() {
                           {pos?'+':'-'}R$ {fmt(val)}
                         </p>
                       </div>
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
@@ -708,7 +717,10 @@ export default function AdminPage() {
                   const liq = opRem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
                   const ativas = metas.filter(m=>m.operator_id===op.id&&(m.status||'ativa')==='ativa').length
                   return (
-                    <div key={op.id} className="data-row a1" style={{ animationDelay:`${i*50}ms` }}>
+                    <motion.div key={op.id} className="data-row"
+                      initial={{opacity:0,x:12}} animate={{opacity:1,x:0}}
+                      transition={{duration:0.3,delay:i*0.05,ease:[0.33,1,0.68,1]}}
+                      whileHover={{x:4,transition:{duration:0.15}}}>
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                         <div style={{ width:34, height:34, borderRadius:10, background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                           <span style={{ fontSize:13, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
@@ -721,7 +733,7 @@ export default function AdminPage() {
                       <div style={{ textAlign:'right' }}>
                         <p className="t-num" style={{ fontSize:15, fontWeight:700, color:liq>=0?'var(--profit)':'var(--loss)' }}>{liq>=0?'+':''}R$ {fmt(liq)}</p>
                       </div>
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
@@ -781,8 +793,11 @@ export default function AdminPage() {
                 const metaDate=new Date(m.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'})
 
                 return (
-                  <div key={m.id} className="meta-card" onClick={()=>openMetaDetail(m)} style={{
-                    animationDelay:`${i*45}ms`,
+                  <motion.div key={m.id} onClick={()=>openMetaDetail(m)}
+                    initial={{opacity:0,y:16,scale:0.97}} animate={{opacity:1,y:0,scale:1}}
+                    transition={{duration:0.35,delay:i*0.05,ease:[0.33,1,0.68,1]}}
+                    whileHover={{y:-4,scale:1.015,transition:{duration:0.2}}}
+                    style={{
                     borderRadius:18,overflow:'hidden',position:'relative',
                     background:`linear-gradient(160deg, hsla(${nc.h},0.32) 0%, hsla(${nc.h},0.15) 45%, #0a1220 100%)`,
                     border:`1px solid hsla(${nc.h},0.4)`,
@@ -790,8 +805,6 @@ export default function AdminPage() {
                     transition:'all 0.3s cubic-bezier(0.33,1,0.68,1)',
                     cursor:'pointer',
                   }}
-                    onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-4px) scale(1.015)';e.currentTarget.style.boxShadow=`0 0 50px hsla(${nc.h},0.2), 0 16px 48px rgba(0,0,0,0.45), inset 0 1px 0 hsla(${nc.h},0.18)`;e.currentTarget.style.borderColor=`hsla(${nc.h},0.55)`}}
-                    onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow=`0 0 25px hsla(${nc.h},0.1), 0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 hsla(${nc.h},0.12)`;e.currentTarget.style.borderColor=`hsla(${nc.h},0.4)`}}
                   >
                     {/* Accent bar */}
                     <div style={{height:3,background:`linear-gradient(90deg, ${nc.hex}, ${nc.hex}88)`}}/>
@@ -844,7 +857,7 @@ export default function AdminPage() {
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>

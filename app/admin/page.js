@@ -285,34 +285,16 @@ export default function AdminPage() {
   },[metas,selectedOp,metaStatus,metaPeriod])
 
   const rankingRedes = useMemo(()=>{
-    const now = new Date()
-    const filteredRem = redePeriodo==='all' ? remessas : remessas.filter(r=>{
-      const d = new Date(r.created_at)
-      if (redePeriodo==='today') return d.toDateString()===now.toDateString()
-      if (redePeriodo==='week') { const w=new Date(now); w.setDate(w.getDate()-7); return d>=w }
-      if (redePeriodo==='month') { const m=new Date(now); m.setMonth(m.getMonth()-1); return d>=m }
-      return true
-    })
+    // ONLY use lucro_final from CLOSED metas
+    const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.rede)
     const redeMap = {}
-    metas.forEach(m=>{
-      const rede = m.rede
-      if (!rede) return
-      if (!redeMap[rede]) redeMap[rede]={rede,lucro:0,prej:0,liq:0,nMetas:0,nRem:0,metaIds:new Set()}
-      redeMap[rede].nMetas++
-      redeMap[rede].metaIds.add(m.id)
+    fechadas.forEach(m=>{
+      if (!redeMap[m.rede]) redeMap[m.rede]={rede:m.rede,lucroFinal:0,nMetas:0}
+      redeMap[m.rede].lucroFinal += Number(m.lucro_final||0)
+      redeMap[m.rede].nMetas++
     })
-    filteredRem.forEach(r=>{
-      const m = metas.find(x=>x.id===r.meta_id)
-      if (!m?.rede || !redeMap[m.rede]) return
-      const entry = redeMap[m.rede]
-      if (!entry.metaIds.has(r.meta_id)) return
-      entry.lucro += Number(r.lucro||0)
-      entry.prej  += Number(r.prejuizo||0)
-      entry.nRem++
-    })
-    Object.values(redeMap).forEach(e=>{ e.liq = e.lucro - e.prej; delete e.metaIds })
-    return Object.values(redeMap).sort((a,b)=>b.liq-a.liq)
-  },[metas,remessas,redePeriodo])
+    return Object.values(redeMap).sort((a,b)=>b.lucroFinal-a.lucroFinal)
+  },[metas])
 
   const convStats = useMemo(()=>({
     totalMoved: remessas.reduce((a,r)=>a+Number(r.deposito||0)+Number(r.saque||0),0),
@@ -925,124 +907,60 @@ export default function AdminPage() {
             )}
           </div>
         )}
-        {/* RANKING REDES */}
+        {/* RANKING REDES — LUCRO FINAL ONLY */}
         {tab==='redes' && (
           <div key="redes" className="tab-content">
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:28 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:16 }}>
-                <div style={{ width:48, height:48, borderRadius:14, background:'linear-gradient(135deg,rgba(5,217,140,0.15),rgba(79,110,247,0.12))', border:'1px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="1.5" strokeLinecap="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-                </div>
-                <div>
-                  <h2 className="t-h2" style={{ margin:'0 0 3px' }}>Ranking de Redes</h2>
-                  <p className="t-small">Performance financeira por rede de operacao</p>
-                </div>
+            <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
+              <div style={{ width:44, height:44, borderRadius:12, background:'linear-gradient(135deg,rgba(5,217,140,0.15),rgba(79,110,247,0.1))', border:'1px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="1.5" strokeLinecap="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
               </div>
-              <div style={{ display:'flex', gap:4, background:'var(--surface)', border:'1px solid var(--b1)', borderRadius:10, padding:4 }}>
-                {[['all','Todos'],['today','Hoje'],['week','Semana'],['month','Mes']].map(([k,l])=>(
-                  <button key={k} onClick={()=>setRedePeriodo(k)} style={{
-                    fontFamily:'Inter,sans-serif', fontSize:11, fontWeight:600, padding:'6px 14px', borderRadius:7, cursor:'pointer',
-                    transition:'all 0.15s', border:'none',
-                    background:redePeriodo===k?'var(--raised)':'transparent',
-                    color:redePeriodo===k?'var(--t1)':'var(--t3)',
-                    boxShadow:redePeriodo===k?'0 2px 8px rgba(0,0,0,0.3)':'',
-                  }}>{l}</button>
-                ))}
+              <div>
+                <h2 className="t-h2" style={{ margin:'0 0 3px' }}>Ranking de Redes</h2>
+                <p className="t-small">Baseado no lucro final das metas fechadas</p>
               </div>
             </div>
 
             {rankingRedes.length===0 ? (
               <div style={{ border:'1px dashed var(--b2)', borderRadius:16, padding:64, textAlign:'center' }}>
-                <p style={{ color:'var(--t2)', fontSize:14, fontWeight:600, marginBottom:4 }}>Nenhuma rede encontrada</p>
-                <p className="t-small">Crie metas com o campo "Rede" preenchido para ver o ranking.</p>
+                <p style={{ color:'var(--t2)', fontSize:14, fontWeight:600, marginBottom:4 }}>Nenhuma rede com metas fechadas</p>
+                <p className="t-small">Feche metas para ver o ranking.</p>
               </div>
             ) : (
-              <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {rankingRedes.map((r,i)=>{
-                  const isTop1 = i===0
-                  const isTop3 = i<3
-                  const medals = ['#FFD700','#C0C0C0','#CD7F32']
-                  const medal = medals[i]
-                  const maxLiq = Math.max(Math.abs(rankingRedes[0]?.liq)||1, 1)
-                  const barW = Math.max(3, (Math.abs(r.liq)/maxLiq)*100)
-                  const pos = r.liq>=0
-
+                  const isTop = i===0
+                  const pos = r.lucroFinal >= 0
+                  const maxVal = Math.max(Math.abs(rankingRedes[0]?.lucroFinal)||1, 1)
+                  const barW = Math.max(3, (Math.abs(r.lucroFinal)/maxVal)*100)
                   return (
-                    <div key={r.rede} className="card a1" style={{
-                      animationDelay:`${i*50}ms`,
-                      padding: isTop1?'0':'22px 26px',
-                      border: isTop1?'1px solid rgba(255,215,0,0.3)':isTop3?`1px solid ${medal}22`:'1px solid var(--b1)',
-                      background: isTop1?'var(--surface)':'var(--surface)',
-                      overflow:'hidden',
-                    }}>
-                      {/* TOP 1 glow header */}
-                      {isTop1 && (
-                        <div style={{
-                          background:'linear-gradient(135deg,rgba(255,215,0,0.12),rgba(5,217,140,0.08),rgba(79,110,247,0.06))',
-                          borderBottom:'1px solid rgba(255,215,0,0.15)',
-                          padding:'16px 26px',
-                          display:'flex', alignItems:'center', justifyContent:'space-between',
-                          position:'relative', overflow:'hidden',
-                        }}>
-                          <div style={{ position:'absolute', top:'-50%', left:'-20%', width:300, height:300, borderRadius:'50%', background:'radial-gradient(circle,rgba(255,215,0,0.08),transparent 70%)', pointerEvents:'none' }}/>
-                          <div style={{ display:'flex', alignItems:'center', gap:12, position:'relative', zIndex:1 }}>
-                            <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2.34"/><path d="M14 14.66V17a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2.34"/><path d="M6 4v10"/><path d="M18 4v10"/></svg>
-                            <span style={{ fontSize:12, fontWeight:800, color:'#FFD700', letterSpacing:'0.08em' }}>REDE #1 — MELHOR PERFORMANCE</span>
-                          </div>
-                          <span className="badge badge-warn" style={{ animation:'cta-pulse 2.5s ease-in-out infinite' }}>TOP</span>
+                    <div key={r.rede} className="a1" style={{
+                      animationDelay:`${i*40}ms`,
+                      display:'flex', alignItems:'center', gap:16,
+                      padding:'18px 22px', borderRadius:16,
+                      background:isTop?'linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,215,0,0.02))':'var(--surface)',
+                      border:isTop?'1px solid rgba(255,215,0,0.2)':'1px solid var(--b1)',
+                      boxShadow:isTop?'0 0 30px rgba(255,215,0,0.06)':'none',
+                      transition:'all 0.25s',
+                    }}
+                      onMouseEnter={e=>{e.currentTarget.style.transform='translateX(4px)';e.currentTarget.style.borderColor=isTop?'rgba(255,215,0,0.35)':'var(--b2)'}}
+                      onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.borderColor=isTop?'rgba(255,215,0,0.2)':'var(--b1)'}}
+                    >
+                      <div style={{width:44,height:44,borderRadius:12,flexShrink:0,background:isTop?'rgba(255,215,0,0.12)':'var(--raised)',border:`2px solid ${isTop?'#FFD700':'var(--b2)'}`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                        <span style={{fontSize:17,fontWeight:900,color:isTop?'#FFD700':'var(--t3)',fontFamily:'var(--mono)'}}>#{i+1}</span>
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+                          <span style={{fontSize:18,fontWeight:900,color:isTop?'#FFD700':'var(--t1)'}}>{r.rede}</span>
+                          {isTop&&<span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:99,background:'rgba(255,215,0,0.15)',color:'#FFD700',border:'1px solid rgba(255,215,0,0.25)'}}>TOP</span>}
+                          <span className="t-small">{r.nMetas} meta{r.nMetas!==1?'s':''}</span>
                         </div>
-                      )}
-
-                      <div style={{ padding:isTop1?'22px 26px':'0', display:'flex', alignItems:'center', gap:20 }}>
-                        {/* Position */}
-                        <div style={{
-                          width:54, height:54, borderRadius:15, flexShrink:0,
-                          background:isTop1?'linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,215,0,0.08))':isTop3?`${medal}15`:'var(--raised)',
-                          border:`2px solid ${isTop3?medal:'var(--b2)'}`,
-                          display:'flex', alignItems:'center', justifyContent:'center',
-                          boxShadow:isTop1?'0 0 30px rgba(255,215,0,0.2), 0 0 60px rgba(255,215,0,0.08)':'none',
-                          animation:isTop1?'glow-brand 3s ease-in-out infinite':'none',
-                        }}>
-                          {isTop3 ? (
-                            <span style={{ fontSize:20, fontWeight:900, color:medal, fontFamily:'Inter,sans-serif' }}>#{i+1}</span>
-                          ) : (
-                            <span style={{ fontSize:20, fontWeight:800, color:'var(--t4)', fontFamily:'Inter,sans-serif' }}>#{i+1}</span>
-                          )}
-                        </div>
-
-                        {/* Info */}
-                        <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
-                            <p style={{ fontSize:isTop1?22:16, fontWeight:900, color:isTop1?'#FFD700':isTop3?medal:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>{r.rede}</p>
-                            {isTop1 && <span className="badge badge-warn" style={{ fontSize:10 }}>Lider</span>}
-                          </div>
-                          <p className="t-small" style={{ marginBottom:10 }}>{r.nMetas} meta(s) · {r.nRem} remessa(s)</p>
-                          <div className="progress" style={{ height:5 }}>
-                            <div className="progress-bar" style={{
-                              width:`${barW}%`,
-                              background:isTop1?'linear-gradient(90deg,#FFD700,#f5a623)':pos?'linear-gradient(90deg,var(--profit),#34d399)':'linear-gradient(90deg,var(--loss),#f87171)',
-                            }}/>
-                          </div>
-                        </div>
-
-                        {/* Metrics */}
-                        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, flexShrink:0 }}>
-                          {[
-                            { l:'Lucro', v:`R$ ${fmt(r.lucro)}`, c:'var(--profit)' },
-                            { l:'Prejuizo', v:`R$ ${fmt(r.prej)}`, c:'var(--loss)' },
-                            { l:'Resultado', v:`${r.liq>=0?'+':''}R$ ${fmt(Math.abs(r.liq))}`, c:isTop1&&pos?'#FFD700':pos?'var(--profit)':'var(--loss)' },
-                          ].map(({l,v,c})=>(
-                            <div key={l} style={{
-                              background:isTop1&&l==='Resultado'?'rgba(255,215,0,0.06)':'var(--raised)',
-                              border:`1px solid ${isTop1&&l==='Resultado'?'rgba(255,215,0,0.15)':'var(--b1)'}`,
-                              borderRadius:10, padding:'11px 16px', textAlign:'center', minWidth:110,
-                            }}>
-                              <p className="t-label" style={{ fontSize:9, marginBottom:5 }}>{l}</p>
-                              <p className="t-num" style={{ fontSize:isTop1&&l==='Resultado'?16:14, fontWeight:700, color:c }}>{v}</p>
-                            </div>
-                          ))}
+                        <div style={{height:4,background:'rgba(255,255,255,0.05)',borderRadius:99,overflow:'hidden'}}>
+                          <div style={{height:'100%',width:`${barW}%`,borderRadius:99,background:isTop?'linear-gradient(90deg,#FFD700,#f5a623)':pos?'linear-gradient(90deg,#05d98c,#34d399)':'linear-gradient(90deg,#f03d6b,#f87171)',transition:'width 1s ease'}}/>
                         </div>
                       </div>
+                      <span className="t-num" style={{fontSize:isTop?24:20,fontWeight:900,flexShrink:0,color:isTop?'#FFD700':pos?'#05d98c':'#f03d6b',textShadow:isTop?'0 0 15px rgba(255,215,0,0.2)':'none'}}>
+                        {pos?'+':''}R$ {fmt(r.lucroFinal)}
+                      </span>
                     </div>
                   )
                 })}

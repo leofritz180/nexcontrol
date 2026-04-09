@@ -228,23 +228,18 @@ export default function FaturamentoPage() {
   /* ── Predictions (based on closed metas lucro_final) ── */
   const predictions = useMemo(()=>{
     const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em)
-    if(fechadas.length===0) return {trend:'neutral',estimated:0,dailyAvg:0,liqLast:0,liqPrev:0,pctChange:0}
+    if(fechadas.length===0) return {trend:'neutral',lucroFinalTotal:0,mediaPorMeta:0,metasFechadas:0,liqLast:0,liqPrev:0,pctChange:0}
     const now = new Date()
     const d7 = new Date(now); d7.setDate(d7.getDate()-7)
     const d14 = new Date(now); d14.setDate(d14.getDate()-14)
-    // Compare last 7 days vs previous 7 days using lucro_final of closed metas
     const last7 = fechadas.filter(m=>new Date(m.fechada_em)>=d7)
     const prev7 = fechadas.filter(m=>{const d=new Date(m.fechada_em); return d>=d14&&d<d7})
     const liqLast = last7.reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const liqPrev = prev7.reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const trend = liqLast>liqPrev?'up':liqLast<liqPrev?'down':'neutral'
-    // Daily average: total lucro_final / total calendar days since first close
     const lucroFinalTotal = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-    const firstClose = new Date(Math.min(...fechadas.map(m=>new Date(m.fechada_em).getTime())))
-    const totalDays = Math.max(1, Math.ceil((now - firstClose) / (1000*60*60*24)))
-    const dailyAvg = lucroFinalTotal / totalDays
-    const estimated = dailyAvg * 30
-    return {trend,estimated,dailyAvg,liqLast,liqPrev,pctChange:liqPrev!==0?Math.round(((liqLast-liqPrev)/Math.abs(liqPrev))*100):0}
+    const mediaPorMeta = fechadas.length > 0 ? lucroFinalTotal / fechadas.length : 0
+    return {trend,lucroFinalTotal,mediaPorMeta,metasFechadas:fechadas.length,liqLast,liqPrev,pctChange:liqPrev!==0?Math.round(((liqLast-liqPrev)/Math.abs(liqPrev))*100):0,dailyAvg:mediaPorMeta}
   },[metas])
 
   /* ── Goal progress ── */
@@ -389,8 +384,8 @@ export default function FaturamentoPage() {
                   <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                 </div>
                 <div>
-                  <h3 className="t-h3" style={{fontSize:14}}>Previsoes inteligentes</h3>
-                  <p className="t-small">Baseado nos ultimos 14 dias</p>
+                  <h3 className="t-h3" style={{fontSize:14}}>Inteligencia da operacao</h3>
+                  <p className="t-small">Baseado nas metas fechadas</p>
                 </div>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12}}>
@@ -409,11 +404,11 @@ export default function FaturamentoPage() {
                   </div>
                 </div>
                 <div style={{background:'var(--raised)',border:'1px solid var(--b1)',borderRadius:12,padding:'16px 14px'}}>
-                  <p className="t-label" style={{marginBottom:8}}>Previsao 30 dias</p>
-                  <p className="t-num" style={{fontSize:18,fontWeight:700,color:predictions.estimated>=0?'var(--profit)':'var(--loss)'}}>
-                    {predictions.estimated>=0?'+':''}R$ {fmt(Math.abs(predictions.estimated))}
+                  <p className="t-label" style={{marginBottom:8}}>Lucro final real</p>
+                  <p className="t-num" style={{fontSize:18,fontWeight:700,color:predictions.lucroFinalTotal>=0?'var(--profit)':'var(--loss)'}}>
+                    {predictions.lucroFinalTotal>=0?'+':''}R$ {fmt(Math.abs(predictions.lucroFinalTotal))}
                   </p>
-                  <p className="t-small">Media diaria (14d): R$ {fmt(Math.abs(predictions.dailyAvg))}</p>
+                  <p className="t-small">{predictions.metasFechadas} meta{predictions.metasFechadas!==1?'s':''} · Media: R$ {fmt(Math.abs(predictions.mediaPorMeta))}/meta</p>
                 </div>
                 <div style={{background:'var(--raised)',border:'1px solid var(--b1)',borderRadius:12,padding:'16px 14px'}}>
                   <p className="t-label" style={{marginBottom:8}}>Alerta</p>

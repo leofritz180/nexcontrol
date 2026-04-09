@@ -7,23 +7,7 @@ import { TrialStatusBadge } from './TrialBanner'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
-function HeaderLogo() {
-  return (
-    <Image
-      src="/branding/logo-nexcontrol.png"
-      alt="NexControl"
-      width={44}
-      height={44}
-      priority
-      quality={100}
-      style={{
-        borderRadius:12,
-        filter:'drop-shadow(0 0 14px rgba(79,110,247,0.35))',
-        flexShrink:0,
-      }}
-    />
-  )
-}
+/* no wrapper, no container, just the image */
 
 export default function Header({ userName, userEmail, isAdmin, tenant, subscription, userId, tenantId }) {
   const pathname = usePathname()
@@ -39,8 +23,8 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
         <Link href="/operator" style={{ display:'flex', alignItems:'center', gap:8, transition:'transform 0.3s ease' }}
           onMouseEnter={e=>e.currentTarget.style.transform='scale(1.03)'}
           onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}>
-          <HeaderLogo/>
-          <span style={{ fontWeight:800, fontSize:16, letterSpacing:'-0.03em', color:'var(--t1)' }}>
+          <Image src="/branding/logo-nexcontrol.png" alt="NexControl" width={44} height={44} priority quality={100} style={{ objectFit:'contain', flexShrink:0 }}/>
+          <span style={{ fontWeight:700, fontSize:16, letterSpacing:'-0.02em', color:'var(--t1)' }}>
             Nex<span style={{ color:'var(--brand-bright)' }}>Control</span>
           </span>
         </Link>

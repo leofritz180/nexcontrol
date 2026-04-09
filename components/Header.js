@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase/client'
 import { TrialStatusBadge } from './TrialBanner'
@@ -71,8 +72,10 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
     <header style={{ position:'sticky', top:0, zIndex:200, height:58, background:'rgba(6,11,20,0.88)', backdropFilter:'blur(28px) saturate(180%)', WebkitBackdropFilter:'blur(28px) saturate(180%)', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'0 28px', height:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
         {/* Logo */}
-        <Link href="/operator" style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <AnimatedLogo/>
+        <Link href="/operator" style={{ display:'flex', alignItems:'center', gap:10, transition:'transform 0.3s ease', cursor:'pointer' }}
+          onMouseEnter={e=>e.currentTarget.style.transform='scale(1.03)'}
+          onMouseLeave={e=>e.currentTarget.style.transform='scale(1)'}>
+          <Image src="/branding/logo-nexcontrol.png" alt="NexControl" width={38} height={38} priority style={{ borderRadius:10, filter:'drop-shadow(0 0 12px rgba(79,110,247,0.3))' }}/>
           <span style={{ fontWeight:800, fontSize:15, letterSpacing:'-0.03em', color:'var(--t1)' }}>
             Nex<span style={{ color:'var(--brand-bright)' }}>Control</span>
           </span>

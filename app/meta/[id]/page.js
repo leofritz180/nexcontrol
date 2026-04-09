@@ -198,8 +198,8 @@ export default function MetaPage() {
     const isAdmin = profile?.role === 'admin'
     const isFinalize = meta.status !== 'finalizada'
 
-    // Admin finalizing → open closing modal instead
-    if (isAdmin && isFinalize && meta.operator_id === user?.id) {
+    // Admin finalizing any meta → open closing modal
+    if (isAdmin && isFinalize) {
       setShowAdminClose(true)
       return
     }

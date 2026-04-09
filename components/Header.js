@@ -9,10 +9,10 @@ const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
 function AnimatedLogo() {
   return (
-    <div style={{ position:'relative', width:54, height:54, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+    <div style={{ position:'relative', width:74, height:74, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
       {/* Orbit ring 1 */}
       <div style={{
-        position:'absolute', inset:-6, borderRadius:'50%',
+        position:'absolute', inset:-8, borderRadius:'50%',
         border:'1.5px solid transparent',
         borderTopColor:'rgba(79,110,247,0.5)',
         borderRightColor:'rgba(79,110,247,0.15)',
@@ -21,7 +21,7 @@ function AnimatedLogo() {
       }}/>
       {/* Orbit ring 2 */}
       <div style={{
-        position:'absolute', inset:-10, borderRadius:'50%',
+        position:'absolute', inset:-13, borderRadius:'50%',
         border:'1px solid transparent',
         borderBottomColor:'rgba(5,217,140,0.4)',
         borderLeftColor:'rgba(5,217,140,0.1)',
@@ -30,29 +30,29 @@ function AnimatedLogo() {
       }}/>
       {/* Particle dots */}
       <div style={{
-        position:'absolute', width:3, height:3, borderRadius:'50%', background:'#05d98c',
-        top:-7, left:'50%', marginLeft:-1.5,
-        boxShadow:'0 0 8px #05d98c',
+        position:'absolute', width:4, height:4, borderRadius:'50%', background:'#05d98c',
+        top:-9, left:'50%', marginLeft:-2,
+        boxShadow:'0 0 10px #05d98c',
         animation:'orbit 3s linear infinite',
-        transformOrigin:'1.5px 34px',
+        transformOrigin:'2px 46px',
       }}/>
       <div style={{
-        position:'absolute', width:2.5, height:2.5, borderRadius:'50%', background:'#6b84ff',
-        bottom:-8, left:'50%', marginLeft:-1.25,
-        boxShadow:'0 0 6px #6b84ff',
+        position:'absolute', width:3, height:3, borderRadius:'50%', background:'#6b84ff',
+        bottom:-10, left:'50%', marginLeft:-1.5,
+        boxShadow:'0 0 8px #6b84ff',
         animation:'orbit-reverse 5s linear infinite',
-        transformOrigin:'1.25px -25px',
+        transformOrigin:'1.5px -34px',
       }}/>
-      {/* Glow pulse behind logo */}
+      {/* Glow pulse */}
       <div style={{
-        position:'absolute', inset:-2, borderRadius:16,
-        boxShadow:'0 0 25px rgba(79,110,247,0.45), 0 0 50px rgba(79,110,247,0.15)',
+        position:'absolute', inset:-3, borderRadius:20,
+        boxShadow:'0 0 30px rgba(79,110,247,0.5), 0 0 60px rgba(79,110,247,0.18)',
         animation:'breathe 4s ease-in-out infinite',
         pointerEvents:'none',
       }}/>
       {/* Logo PNG */}
-      <Image src="/branding/logo-nexcontrol.png" alt="NexControl" width={54} height={54} priority
-        style={{ position:'relative', zIndex:2, borderRadius:14, filter:'drop-shadow(0 0 20px rgba(79,110,247,0.35))' }}/>
+      <Image src="/branding/logo-nexcontrol.png" alt="NexControl" width={74} height={74} priority
+        style={{ position:'relative', zIndex:2, borderRadius:18, filter:'drop-shadow(0 0 24px rgba(79,110,247,0.4))' }}/>
     </div>
   )
 }

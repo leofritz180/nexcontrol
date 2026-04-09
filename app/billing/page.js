@@ -339,36 +339,10 @@ export default function BillingPage() {
               </button>
             </div>
 
-            {/* Mock Payment */}
-            <div className="card" style={{padding:24,marginTop:16,marginBottom:28,border:'1px dashed var(--brand-border)'}}>
-              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
-                <div style={{width:30,height:30,borderRadius:8,background:'var(--brand-dim)',border:'1px solid var(--brand-border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                </div>
-                <div>
-                  <h3 className="t-h3" style={{fontSize:13}}>Simular pagamento</h3>
-                  <p className="t-small">Ambiente de teste — sera substituido pelo gateway real</p>
-                </div>
-              </div>
-              <div style={{display:'flex',gap:8,marginBottom:10}}>
-                <button onClick={()=>simulatePayment('paid')} disabled={simulating} className="btn btn-profit" style={{flex:1,justifyContent:'center',fontSize:12}}>
-                  {simulating?'Processando...':'Aprovar pagamento'}
-                </button>
-                <button onClick={()=>simulatePayment('pending')} disabled={simulating} className="btn btn-ghost" style={{flex:1,justifyContent:'center',fontSize:12,borderColor:'var(--warn-border)',color:'var(--warn)'}}>
-                  Simular pendente
-                </button>
-                <button onClick={()=>simulatePayment('failed')} disabled={simulating} className="btn btn-danger" style={{flex:1,justifyContent:'center',fontSize:12}}>
-                  Simular recusado
-                </button>
-              </div>
-              {simMsg && (
-                <div className={simMsg.includes('aprovado')?'alert-success':simMsg.includes('pendente')?'alert-success':'alert-error'} style={{fontSize:12,display:'flex',alignItems:'center',gap:8}}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    {simMsg.includes('aprovado')?<polyline points="20 6 9 17 4 12"/>:<circle cx="12" cy="12" r="10"/>}
-                  </svg>
-                  {simMsg}
-                </div>
-              )}
+            {/* Security badge */}
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,padding:'12px 16px',background:'rgba(5,217,140,0.04)',border:'1px solid rgba(5,217,140,0.08)',borderRadius:12,marginTop:16,marginBottom:28}}>
+              <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span style={{fontSize:11,color:'rgba(5,217,140,0.5)',fontWeight:600}}>Pagamento seguro via Pix · Ativacao instantanea</span>
             </div>
 
             {/* Operators */}

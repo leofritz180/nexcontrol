@@ -3,19 +3,29 @@ import { useState, useEffect, useRef } from 'react'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 
+function maskCpf(v) {
+  const n = v.replace(/\D/g,'').slice(0,11)
+  if (n.length<=3) return n
+  if (n.length<=6) return n.slice(0,3)+'.'+n.slice(3)
+  if (n.length<=9) return n.slice(0,3)+'.'+n.slice(3,6)+'.'+n.slice(6)
+  return n.slice(0,3)+'.'+n.slice(3,6)+'.'+n.slice(6,9)+'-'+n.slice(9)
+}
+
 export default function PixPayment({ tenantId, userId, userName, userEmail, amount, planName, planId, onSuccess, onClose }) {
-  const [step, setStep] = useState('loading') // loading | pix | paid | error
+  const [step, setStep] = useState('cpf') // cpf | loading | pix | paid | error
+  const [cpf, setCpf] = useState('')
   const [pixData, setPixData] = useState(null)
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState('')
   const pollRef = useRef(null)
 
   useEffect(() => {
-    createPayment()
     return () => clearInterval(pollRef.current)
   }, [])
 
   async function createPayment() {
+    if (cpf.replace(/\D/g,'').length < 11) { setError('CPF invalido'); return }
+    setStep('loading'); setError('')
     try {
       const res = await fetch('/api/asaas/create-payment', {
         method: 'POST',
@@ -27,6 +37,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
           amount,
           name: userName,
           email: userEmail,
+          cpfCnpj: cpf.replace(/\D/g,''),
         }),
       })
       const data = await res.json()
@@ -35,7 +46,6 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
       setPixData(data)
       setStep('pix')
 
-      // Start polling for payment confirmation
       pollRef.current = setInterval(async () => {
         const check = await fetch('/api/asaas/check-status', {
           method: 'POST',
@@ -82,7 +92,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <div>
               <h2 style={{fontSize:18,fontWeight:800,color:'var(--t1)',margin:'0 0 4px'}}>Pagamento via Pix</h2>
-              <p className="t-small">{planName || 'NexControl'}</p>
+              <p className="t-small">{planName || 'NexControl'} · R$ {fmt(amount)}</p>
             </div>
             <button onClick={onClose} style={{width:32,height:32,borderRadius:8,border:'1px solid var(--b2)',background:'transparent',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -91,6 +101,22 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
         </div>
 
         <div style={{padding:'28px'}}>
+          {/* CPF Step */}
+          {step==='cpf' && (
+            <div>
+              <p style={{fontSize:14,color:'var(--t2)',marginBottom:20}}>Informe seu CPF para gerar o Pix</p>
+              <div style={{marginBottom:16}}>
+                <label className="t-label" style={{display:'block',marginBottom:8}}>CPF</label>
+                <input className="input" type="text" value={cpf} onChange={e=>setCpf(maskCpf(e.target.value))} placeholder="000.000.000-00" maxLength={14} style={{fontSize:18,fontFamily:'var(--mono)',textAlign:'center',letterSpacing:'0.05em'}}/>
+              </div>
+              {error && <p style={{fontSize:12,color:'var(--loss)',marginBottom:12}}>{error}</p>}
+              <button onClick={createPayment} disabled={cpf.replace(/\D/g,'').length<11} className="btn btn-profit btn-lg" style={{width:'100%',justifyContent:'center',fontSize:15,fontWeight:700}}>
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                Gerar Pix
+              </button>
+            </div>
+          )}
+
           {/* Loading */}
           {step==='loading' && (
             <div style={{textAlign:'center',padding:'40px 0'}}>
@@ -107,40 +133,31 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
               </div>
               <p style={{fontSize:14,fontWeight:600,color:'var(--loss)',marginBottom:8}}>Erro ao gerar Pix</p>
               <p className="t-small" style={{marginBottom:20}}>{error}</p>
-              <button onClick={()=>{setStep('loading');createPayment()}} className="btn btn-brand btn-sm">Tentar novamente</button>
+              <button onClick={()=>setStep('cpf')} className="btn btn-brand btn-sm">Tentar novamente</button>
             </div>
           )}
 
           {/* PIX QR Code */}
           {step==='pix' && pixData && (
             <div style={{textAlign:'center'}}>
-              {/* Amount */}
-              <div style={{marginBottom:24}}>
-                <p className="t-label" style={{marginBottom:6}}>VALOR A PAGAR</p>
+              <div style={{marginBottom:20}}>
+                <p className="t-label" style={{marginBottom:6}}>VALOR</p>
                 <p className="t-num" style={{fontSize:32,fontWeight:900,color:'var(--brand-bright)'}}>R$ {fmt(amount)}</p>
               </div>
 
-              {/* QR Code */}
               {pixData.pix_qr_code && (
                 <div style={{display:'inline-block',padding:16,background:'white',borderRadius:16,marginBottom:20}}>
-                  <img
-                    src={`data:image/png;base64,${pixData.pix_qr_code}`}
-                    alt="QR Code Pix"
-                    style={{width:200,height:200,display:'block'}}
-                  />
+                  <img src={`data:image/png;base64,${pixData.pix_qr_code}`} alt="QR Code Pix" style={{width:200,height:200,display:'block'}}/>
                 </div>
               )}
 
-              {/* Copy payload */}
-              <div style={{marginBottom:24}}>
-                <p className="t-small" style={{marginBottom:8}}>Ou copie o codigo Pix:</p>
+              <div style={{marginBottom:20}}>
                 <button onClick={copyPayload} className="btn btn-brand" style={{width:'100%',justifyContent:'center'}}>
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                   {copied ? 'Copiado!' : 'Copiar codigo Pix'}
                 </button>
               </div>
 
-              {/* Status */}
               <div style={{padding:'12px 16px',borderRadius:12,background:'var(--warn-dim)',border:'1px solid var(--warn-border)',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
                 <div className="spinner" style={{width:14,height:14,borderTopColor:'var(--warn)',borderWidth:2}}/>
                 <span style={{fontSize:12,fontWeight:600,color:'var(--warn)'}}>Aguardando pagamento...</span>

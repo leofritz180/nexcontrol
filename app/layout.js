@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
 const DynamicBackground = dynamic(() => import('../components/DynamicBackground'), { ssr: false })
 const SubscriptionGate = dynamic(() => import('../components/SubscriptionGate'), { ssr: false })
+const GlobalLoadingScreen = dynamic(() => import('../components/branding/GlobalLoadingScreen'), { ssr: false })
 
 export const metadata = {
   title: 'NexControl',
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <body>
+        <Suspense fallback={null}><GlobalLoadingScreen/></Suspense>
         <div className="bg-flow"/>
         <Suspense fallback={null}><DynamicBackground/></Suspense>
         <Suspense fallback={null}><SubscriptionGate>{children}</SubscriptionGate></Suspense>

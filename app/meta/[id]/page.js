@@ -194,17 +194,22 @@ export default function MetaPage() {
   }
 
   async function toggleStatus() {
-    if (!meta || meta.status_fechamento==='fechada') return
+    if (!meta) return
     const isAdmin = profile?.role === 'admin'
-    const isFinalize = meta.status !== 'finalizada'
+    const isClosed = meta.status_fechamento === 'fechada'
+    const isFinalize = meta.status !== 'finalizada' && !isClosed
 
-    // Admin finalizing any meta → open closing modal
+    // Block non-admin from modifying closed metas
+    if (isClosed && !isAdmin) return
+
+    // Admin finalizing → open closing modal
     if (isAdmin && isFinalize) {
       setShowAdminClose(true)
       return
     }
 
-    const action = meta.status==='finalizada' ? 'reactivate' : 'finalize'
+    // Reactivate (admin can reactivate even closed metas)
+    const action = (meta.status === 'finalizada' || isClosed) ? 'reactivate' : 'finalize'
     try {
       const res = await fetch('/api/meta/close', {
         method:'POST',

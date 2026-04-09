@@ -66,7 +66,7 @@ export async function POST(req) {
     }
 
     if (action === 'reactivate') {
-      await supabase.from('metas').update({ status: 'ativa' }).eq('id', meta_id)
+      await supabase.from('metas').update({ status: 'ativa', status_fechamento: null, lucro_final: null, fechada_em: null }).eq('id', meta_id)
       return NextResponse.json({ ok: true })
     }
 

@@ -168,8 +168,8 @@ body::after {
 }
 .card:hover {
   border-color: var(--b2);
-  transform: translateY(-3px) scale(1.005);
-  box-shadow: 0 24px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
 .card-primary {
@@ -245,7 +245,7 @@ body::after {
   opacity: 0; transition: opacity 0.2s;
 }
 .btn:hover::after { opacity: 1; }
-.btn:active { transform: scale(0.98); }
+.btn:active { transform: scale(0.96); }
 
 .btn-brand {
   background: linear-gradient(145deg, #5a7af8, #3d5ce0);
@@ -302,12 +302,13 @@ body::after {
   border: 1px solid var(--b2); border-radius: 11px;
   color: var(--t1); font-size: 14px; font-weight: 500;
   padding: 12px 16px; outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, transform 0.15s ease;
 }
+.input:hover { border-color: var(--b3); }
 .input:focus {
   border-color: var(--brand);
   background: rgba(79,110,247,0.04);
-  box-shadow: 0 0 0 3px rgba(79,110,247,0.1), 0 0 20px rgba(79,110,247,0.06);
+  box-shadow: 0 0 0 3px rgba(79,110,247,0.12), 0 0 24px rgba(79,110,247,0.08);
 }
 .input::placeholder { color: var(--t4); }
 .input option { background: var(--raised); }
@@ -399,7 +400,10 @@ body::after {
 @keyframes tab-exit  { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(-8px); } }
 
 /* Tab content transition */
-.tab-content { animation: tab-enter 0.3s cubic-bezier(0.33,1,0.68,1) both; }
+.tab-content { animation: tab-enter 0.35s cubic-bezier(0.33,1,0.68,1) both; }
+
+/* All interactive elements */
+a, button, [role="button"] { transition: all 0.2s ease; }
 
 /* ── Cinematic card animations ── */
 @keyframes card-enter {
@@ -449,12 +453,12 @@ body::after {
   pointer-events:none; z-index:2;
 }
 
-.a1 { animation: fade-up 0.5s cubic-bezier(0.4,0,0.2,1) both; }
-.a2 { animation: fade-up 0.5s cubic-bezier(0.4,0,0.2,1) 0.07s both; }
-.a3 { animation: fade-up 0.5s cubic-bezier(0.4,0,0.2,1) 0.14s both; }
-.a4 { animation: fade-up 0.5s cubic-bezier(0.4,0,0.2,1) 0.21s both; }
-.a5 { animation: fade-up 0.5s cubic-bezier(0.4,0,0.2,1) 0.28s both; }
-.a6 { animation: fade-up 0.5s cubic-bezier(0.4,0,0.2,1) 0.35s both; }
+.a1 { animation: fade-up 0.45s cubic-bezier(0.33,1,0.68,1) both; }
+.a2 { animation: fade-up 0.45s cubic-bezier(0.33,1,0.68,1) 0.06s both; }
+.a3 { animation: fade-up 0.45s cubic-bezier(0.33,1,0.68,1) 0.12s both; }
+.a4 { animation: fade-up 0.45s cubic-bezier(0.33,1,0.68,1) 0.18s both; }
+.a5 { animation: fade-up 0.45s cubic-bezier(0.33,1,0.68,1) 0.24s both; }
+.a6 { animation: fade-up 0.45s cubic-bezier(0.33,1,0.68,1) 0.30s both; }
 .ai { animation: fade-in 0.4s ease both; }
 .as { animation: scale-in 0.35s cubic-bezier(0.4,0,0.2,1) both; }
 

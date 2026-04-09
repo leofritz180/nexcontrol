@@ -289,7 +289,7 @@ export default function FaturamentoPage() {
 
         {/* Tabs */}
         <div className="a2 tabs-scroll" style={{display:'flex',gap:4,marginBottom:24,background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:12,padding:5,width:'fit-content'}}>
-          {[['overview','Visao Geral'],['chart','Evolucao'],['operators','Operadores'],['networks','Redes'],['history','Historico']].map(([k,l])=>(
+          {[['overview','Visao Geral'],['chart','Evolucao'],['history','Historico']].map(([k,l])=>(
             <button key={k} onClick={()=>setTab(k)} style={{fontFamily:'Inter,sans-serif',fontSize:12,fontWeight:600,padding:'8px 18px',borderRadius:9,cursor:'pointer',transition:'all 0.15s',background:tab===k?'var(--raised)':'transparent',border:tab===k?'1px solid var(--b2)':'1px solid transparent',color:tab===k?'var(--t1)':'var(--t3)',boxShadow:tab===k?'0 2px 8px rgba(0,0,0,0.3)':''}}>
               {l}
             </button>
@@ -574,123 +574,6 @@ export default function FaturamentoPage() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* ═══ OPERATORS ═══ */}
-        {tab==='operators' && (
-          <div key="op" className="tab-content">
-            <h2 className="t-h2" style={{marginBottom:20}}>Ranking de operadores</h2>
-            <div style={{display:'flex',flexDirection:'column',gap:14}}>
-              {opRanking.map((op,i)=>{
-                const medal=medals[i]
-                const isTop=i<3
-                const maxL=Math.abs(opRanking[0]?.liq)||1
-                const barW=Math.max(3,(Math.abs(op.liq)/maxL)*100)
-                const pos=op.liq>=0
-                return (
-                  <div key={op.id} className="card a1" style={{animationDelay:`${i*50}ms`,padding:'22px 26px',border:isTop?`1px solid ${medal}22`:'1px solid var(--b1)',background:isTop?`rgba(${i===0?'255,215,0':i===1?'192,192,192':'205,127,50'},0.03)`:'var(--surface)'}}>
-                    <div style={{display:'flex',alignItems:'center',gap:20}}>
-                      <div style={{width:50,height:50,borderRadius:14,background:isTop?`${medal}15`:'var(--raised)',border:`2px solid ${isTop?medal:'var(--b2)'}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                        <span style={{fontSize:18,fontWeight:900,color:isTop?medal:'var(--t4)',fontFamily:'Inter,sans-serif'}}>#{i+1}</span>
-                      </div>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:4}}>
-                          <div style={{width:28,height:28,borderRadius:7,background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                            <span style={{fontSize:11,fontWeight:800,color:'white'}}>{getName(op)[0].toUpperCase()}</span>
-                          </div>
-                          <p style={{fontSize:15,fontWeight:800,color:isTop&&i===0?medal:'var(--t1)',margin:0}}>{getName(op)}</p>
-                          {i===0&&<span className="badge badge-warn">Lider</span>}
-                        </div>
-                        <p className="t-small" style={{marginBottom:10}}>{op.nMetas} metas · {op.nRem} remessas · {op.taxa}% acerto</p>
-                        <div className="progress" style={{height:4}}>
-                          <div className="progress-bar" style={{width:`${barW}%`,background:pos?'linear-gradient(90deg,var(--profit),#34d399)':'linear-gradient(90deg,var(--loss),#f87171)'}}/>
-                        </div>
-                      </div>
-                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,flexShrink:0}}>
-                        {[
-                          {l:'Lucro',v:`R$ ${fmt(op.lucro)}`,c:'var(--profit)'},
-                          {l:'Prejuizo',v:`R$ ${fmt(op.prej)}`,c:'var(--loss)'},
-                          {l:'Liquido',v:`${op.liq>=0?'+':''}R$ ${fmt(Math.abs(op.liq))}`,c:pos?'var(--profit)':'var(--loss)'},
-                        ].map(({l,v,c})=>(
-                          <div key={l} style={{background:'var(--raised)',border:'1px solid var(--b1)',borderRadius:10,padding:'11px 16px',textAlign:'center',minWidth:100}}>
-                            <p className="t-label" style={{fontSize:9,marginBottom:5}}>{l}</p>
-                            <p className="t-num" style={{fontSize:13,fontWeight:700,color:c}}>{v}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-              {opRanking.length===0 && (
-                <div style={{border:'1px dashed var(--b2)',borderRadius:16,padding:64,textAlign:'center'}}>
-                  <p className="t-small">Nenhum operador com dados no periodo filtrado.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ═══ NETWORKS ═══ */}
-        {tab==='networks' && (
-          <div key="net" className="tab-content">
-            <h2 className="t-h2" style={{marginBottom:20}}>Ranking de redes</h2>
-            <div style={{display:'flex',flexDirection:'column',gap:14}}>
-              {redeRanking.map((r,i)=>{
-                const medal=medals[i]
-                const isTop=i<3
-                const isTop1=i===0
-                const maxL=Math.abs(redeRanking[0]?.liq)||1
-                const barW=Math.max(3,(Math.abs(r.liq)/maxL)*100)
-                const pos=r.liq>=0
-                return (
-                  <div key={r.rede} className="card a1" style={{animationDelay:`${i*50}ms`,padding:isTop1?0:'22px 26px',border:isTop1?'1px solid rgba(255,215,0,0.3)':isTop?`1px solid ${medal}22`:'1px solid var(--b1)',overflow:'hidden'}}>
-                    {isTop1 && (
-                      <div style={{background:'linear-gradient(135deg,rgba(255,215,0,0.12),rgba(5,217,140,0.06))',borderBottom:'1px solid rgba(255,215,0,0.15)',padding:'14px 26px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                        <div style={{display:'flex',alignItems:'center',gap:10}}>
-                          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 4v10"/><path d="M18 4v10"/></svg>
-                          <span style={{fontSize:11,fontWeight:800,color:'#FFD700',letterSpacing:'0.08em'}}>REDE #1</span>
-                        </div>
-                        <span className="badge badge-warn">TOP</span>
-                      </div>
-                    )}
-                    <div style={{padding:isTop1?'22px 26px':0,display:'flex',alignItems:'center',gap:20}}>
-                      <div style={{width:50,height:50,borderRadius:14,background:isTop?`${medal}15`:'var(--raised)',border:`2px solid ${isTop?medal:'var(--b2)'}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                        <span style={{fontSize:18,fontWeight:900,color:isTop?medal:'var(--t4)'}}>#{i+1}</span>
-                      </div>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:4}}>
-                          <p style={{fontSize:isTop1?20:16,fontWeight:900,color:isTop1?'#FFD700':isTop?medal:'var(--t1)',margin:0}}>{r.rede}</p>
-                          {isTop1&&<span className="badge badge-warn">Lider</span>}
-                        </div>
-                        <p className="t-small" style={{marginBottom:10}}>{r.nMetas} metas · {r.nRem} remessas · {r.taxa}% acerto</p>
-                        <div className="progress" style={{height:4}}>
-                          <div className="progress-bar" style={{width:`${barW}%`,background:isTop1?'linear-gradient(90deg,#FFD700,#f5a623)':pos?'linear-gradient(90deg,var(--profit),#34d399)':'linear-gradient(90deg,var(--loss),#f87171)'}}/>
-                        </div>
-                      </div>
-                      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,flexShrink:0}}>
-                        {[
-                          {l:'Lucro',v:`R$ ${fmt(r.lucro)}`,c:'var(--profit)'},
-                          {l:'Prejuizo',v:`R$ ${fmt(r.prej)}`,c:'var(--loss)'},
-                          {l:'Resultado',v:`${r.liq>=0?'+':''}R$ ${fmt(Math.abs(r.liq))}`,c:isTop1&&pos?'#FFD700':pos?'var(--profit)':'var(--loss)'},
-                        ].map(({l,v,c})=>(
-                          <div key={l} style={{background:'var(--raised)',border:'1px solid var(--b1)',borderRadius:10,padding:'11px 16px',textAlign:'center',minWidth:100}}>
-                            <p className="t-label" style={{fontSize:9,marginBottom:5}}>{l}</p>
-                            <p className="t-num" style={{fontSize:13,fontWeight:700,color:c}}>{v}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-              {redeRanking.length===0 && (
-                <div style={{border:'1px dashed var(--b2)',borderRadius:16,padding:64,textAlign:'center'}}>
-                  <p className="t-small">Nenhuma rede com dados no periodo filtrado.</p>
-                </div>
-              )}
             </div>
           </div>
         )}

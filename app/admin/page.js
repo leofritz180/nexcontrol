@@ -667,49 +667,85 @@ export default function AdminPage() {
       <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
-        {/* Header */}
+        {/* ── PAGE HEADER — signature design ── */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease }}
-          style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:28 }}>
-          <div>
-            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:6, padding:'3px 10px', borderRadius:99, background:'rgba(79,110,247,0.1)', border:'1px solid rgba(79,110,247,0.18)' }}>
-                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span style={{ fontSize:10, fontWeight:700, color:'var(--brand-bright)', letterSpacing:'0.08em' }}>ADMIN · ACESSO EXCLUSIVO</span>
+          style={{ position:'relative', marginBottom:32 }}>
+          {/* Top accent stripe */}
+          <div style={{
+            position:'absolute', top:-12, left:0, width:64, height:3, borderRadius:2,
+            background:'linear-gradient(90deg, var(--brand-bright), #7c5cfc 70%, transparent)',
+            boxShadow:'0 0 12px rgba(79,110,247,0.5)',
+          }}/>
+
+          <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
+            <div>
+              {/* Terminal-style status bar */}
+              <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:14, fontFamily:'var(--mono)', fontSize:10, fontWeight:600, letterSpacing:'0.1em', color:'var(--t3)', textTransform:'uppercase' }}>
+                <span style={{ color:'var(--brand-bright)' }}>[ ADMIN ]</span>
+                <span style={{ color:'var(--t4)' }}>·</span>
+                <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                  <motion.span
+                    style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)' }}
+                    animate={{ boxShadow:['0 0 0 0 rgba(5,217,140,0.7)','0 0 0 6px rgba(5,217,140,0)','0 0 0 0 rgba(5,217,140,0)'] }}
+                    transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                  />
+                  <span style={{ color:'var(--profit)' }}>SISTEMA ATIVO</span>
+                </div>
+                <span style={{ color:'var(--t4)' }}>·</span>
+                <span>SYNC 30S</span>
+                <span style={{ color:'var(--t4)' }}>·</span>
+                <span>{global.totalRem} OPS REGISTRADAS</span>
               </div>
-              <motion.span
-                style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)',flexShrink:0 }}
-                animate={{ boxShadow:['0 0 0 0 rgba(5,217,140,0.6)','0 0 0 6px rgba(5,217,140,0)','0 0 0 0 rgba(5,217,140,0)'] }}
-                transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-              />
-              <span className="t-small">Sync a cada 30s</span>
+              {/* Brutalist title */}
+              <motion.h1
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1, ease }}
+                style={{ fontSize:42, fontWeight:900, letterSpacing:'-0.045em', lineHeight:0.95, color:'var(--t1)', margin:0 }}>
+                Comando.
+                <span style={{
+                  background:'linear-gradient(135deg, #6b84ff, #a78bfa)',
+                  WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+                  fontStyle:'italic',
+                }}>{' '}operacional</span>
+              </motion.h1>
+              <p style={{ fontSize:13, color:'var(--t3)', margin:'10px 0 0', maxWidth:520, lineHeight:1.5 }}>
+                Cada deposito, cada saque, cada centavo.
+                <span style={{ color:'var(--t1)', fontWeight:600 }}> Voce comanda.</span>
+              </p>
             </div>
-            <motion.h1
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1, ease }}
-              className="t-h1">Painel executivo</motion.h1>
+            <motion.button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              whileHover={{ scale: 1.04, boxShadow: '0 0 30px rgba(79,110,247,0.25)' }}
+              whileTap={{ scale: 0.96 }}
+              style={{
+                display:'flex', alignItems:'center', gap:8,
+                padding:'11px 20px', borderRadius:11, fontSize:12, fontWeight:700,
+                fontFamily:'var(--mono)', letterSpacing:'0.06em', textTransform:'uppercase',
+                background: refreshing ? 'rgba(79,110,247,0.05)' : 'rgba(79,110,247,0.08)',
+                border:'1px solid rgba(79,110,247,0.25)',
+                color:'var(--brand-bright)',
+                cursor: refreshing ? 'not-allowed' : 'pointer',
+                opacity: refreshing ? 0.6 : 1,
+                transition:'all 0.2s',
+              }}>
+              {refreshing ? (
+                <motion.div
+                  style={{ width:13,height:13,borderRadius:'50%',border:'2px solid rgba(79,110,247,0.3)',borderTopColor:'var(--brand-bright)' }}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+                />
+              ) : (
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+              )}
+              {refreshing ? 'SINCRONIZANDO' : 'SINCRONIZAR'}
+            </motion.button>
           </div>
-          <motion.button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="btn btn-ghost btn-sm"
-            whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(79,110,247,0.15)' }}
-            whileTap={{ scale: 0.96 }}
-            style={{ display:'flex', alignItems:'center', gap:6, opacity: refreshing ? 0.5 : 1 }}>
-            {refreshing ? (
-              <motion.div
-                style={{ width:13,height:13,borderRadius:'50%',border:'2px solid var(--t3)',borderTopColor:'var(--brand-bright)' }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-              />
-            ) : (
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-            )}
-            {refreshing ? 'Atualizando...' : 'Atualizar'}
-          </motion.button>
+        </motion.div>
         </motion.div>
 
         <TrialBanner tenant={tenant} subscription={sub} stats={convStats}/>
@@ -901,76 +937,207 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease }}>
 
-          {/* KPI Cards */}
-          <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:16 }}>
-            {kpis.map((k,i)=>(
-              <motion.div key={i} className={`card ${k.card}`} style={{ padding:'22px 24px', position:'relative', overflow:'hidden' }}
-                initial={{opacity:0,y:20,scale:0.97}} animate={{opacity:1,y:0,scale:1}}
-                transition={{duration:0.4,delay:i*0.08,ease}}
-                whileHover={{
-                  y:-4, scale:1.02,
-                  boxShadow: k.card.includes('profit')
-                    ? '0 0 40px rgba(5,217,140,0.15), 0 20px 40px rgba(0,0,0,0.3)'
-                    : k.card.includes('loss')
-                    ? '0 0 40px rgba(240,61,107,0.15), 0 20px 40px rgba(0,0,0,0.3)'
-                    : k.card.includes('info')
-                    ? '0 0 40px rgba(56,182,255,0.15), 0 20px 40px rgba(0,0,0,0.3)'
-                    : k.card.includes('warn')
-                    ? '0 0 40px rgba(245,166,35,0.15), 0 20px 40px rgba(0,0,0,0.3)'
-                    : '0 0 40px rgba(79,110,247,0.15), 0 20px 40px rgba(0,0,0,0.3)',
-                  transition:{duration:0.2}
-                }}>
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-                  <span className={`badge ${k.card.includes('profit')?'badge-profit':k.card.includes('loss')?'badge-loss':k.card.includes('info')?'badge-info':k.card.includes('warn')?'badge-warn':'badge-brand'}`}>{k.badge}</span>
-                  {k.isLive && (
+          {/* ── ASYMMETRIC HERO ── */}
+          <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:16, marginBottom:16 }}>
+
+            {/* Hero card — Lucro hoje (massive) */}
+            <motion.div
+              initial={{opacity:0,y:24,scale:0.98}} animate={{opacity:1,y:0,scale:1}}
+              transition={{duration:0.5,ease}}
+              whileHover={{ y:-3, boxShadow:'0 0 80px rgba(5,217,140,0.18), 0 30px 60px rgba(0,0,0,0.4)', transition:{duration:0.25} }}
+              style={{
+                position:'relative', overflow:'hidden', borderRadius:22, padding:'36px 40px',
+                background: global.lucroHoje>=0
+                  ? 'linear-gradient(135deg, rgba(5,217,140,0.12) 0%, rgba(5,217,140,0.03) 35%, #060d18 75%)'
+                  : 'linear-gradient(135deg, rgba(240,61,107,0.12) 0%, rgba(240,61,107,0.03) 35%, #060d18 75%)',
+                border: `1px solid ${global.lucroHoje>=0?'rgba(5,217,140,0.22)':'rgba(240,61,107,0.22)'}`,
+                boxShadow: global.lucroHoje>=0
+                  ? '0 0 50px rgba(5,217,140,0.06), inset 0 1px 0 rgba(255,255,255,0.05)'
+                  : '0 0 50px rgba(240,61,107,0.06), inset 0 1px 0 rgba(255,255,255,0.05)',
+                minHeight:240,
+              }}>
+              {/* Vertical accent bar — signature element */}
+              <div style={{
+                position:'absolute', left:0, top:24, bottom:24, width:3, borderRadius:'0 3px 3px 0',
+                background: global.lucroHoje>=0 ? 'var(--profit)' : 'var(--loss)',
+                boxShadow: `0 0 12px ${global.lucroHoje>=0?'rgba(5,217,140,0.5)':'rgba(240,61,107,0.5)'}`,
+              }}/>
+
+              {/* Background orb */}
+              <div style={{
+                position:'absolute', top:'-30%', right:'-15%', width:380, height:380, borderRadius:'50%',
+                background: global.lucroHoje>=0
+                  ? 'radial-gradient(circle, rgba(5,217,140,0.08), transparent 65%)'
+                  : 'radial-gradient(circle, rgba(240,61,107,0.08), transparent 65%)',
+                filter:'blur(30px)', pointerEvents:'none',
+              }}/>
+
+              <div style={{ position:'relative', zIndex:1 }}>
+                {/* Top status row */}
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8, fontFamily:'var(--mono)', fontSize:10, fontWeight:700, letterSpacing:'0.12em', color:'var(--t3)' }}>
                     <motion.span
                       style={{ width:7,height:7,borderRadius:'50%',background:'var(--profit)' }}
-                      animate={{ boxShadow:['0 0 0 0 rgba(5,217,140,0.6)','0 0 0 7px rgba(5,217,140,0)','0 0 0 0 rgba(5,217,140,0)'] }}
-                      transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                      animate={{ boxShadow:['0 0 0 0 rgba(5,217,140,0.7)','0 0 0 7px rgba(5,217,140,0)','0 0 0 0 rgba(5,217,140,0)'] }}
+                      transition={{ duration:2, repeat:Infinity }}
                     />
-                  )}
+                    <span style={{ color:'var(--profit)' }}>AO VIVO</span>
+                    <span style={{ color:'var(--t4)' }}>·</span>
+                    <span>HOJE</span>
+                  </div>
+                  <span style={{ fontFamily:'var(--mono)', fontSize:10, color:'var(--t4)', letterSpacing:'0.08em' }}>
+                    {new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}).toUpperCase()}
+                  </span>
                 </div>
-                <p className="t-label" style={{ marginBottom:10 }}>{k.label}</p>
-                <AnimatedNumber
-                  value={k.rawValue}
-                  prefix="R$ "
-                  style={{ fontFamily:'var(--mono)', fontSize:26, fontWeight:800, color:k.color, lineHeight:1, display:'block' }}
-                />
-                <p className="t-small" style={{ marginTop:8 }}>{k.sub}</p>
-              </motion.div>
-            ))}
+
+                <p style={{ fontSize:11, fontWeight:700, color:'var(--t3)', letterSpacing:'0.12em', textTransform:'uppercase', marginBottom:14 }}>
+                  Lucro do dia
+                </p>
+
+                {/* MASSIVE NUMBER */}
+                <div style={{ display:'flex', alignItems:'baseline', gap:12, marginBottom:18 }}>
+                  <span style={{ fontFamily:'var(--mono)', fontSize:24, fontWeight:700, color: global.lucroHoje>=0?'var(--profit)':'var(--loss)', opacity:0.7 }}>
+                    {global.lucroHoje>=0?'+':'-'}R$
+                  </span>
+                  <AnimatedNumber
+                    value={Math.abs(global.lucroHoje)}
+                    style={{
+                      fontFamily:'var(--mono)', fontSize:64, fontWeight:900,
+                      color: global.lucroHoje>=0?'var(--profit)':'var(--loss)',
+                      lineHeight:1, letterSpacing:'-0.04em',
+                      textShadow: global.lucroHoje>=0?'0 0 40px rgba(5,217,140,0.25)':'0 0 40px rgba(240,61,107,0.25)',
+                    }}
+                  />
+                </div>
+
+                <div style={{ display:'flex', alignItems:'center', gap:14, paddingTop:18, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
+                  <div>
+                    <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:3 }}>Metas fechadas hoje</p>
+                    <p style={{ fontFamily:'var(--mono)', fontSize:14, fontWeight:700, color:'var(--t1)' }}>
+                      {metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&new Date(m.fechada_em).toDateString()===new Date().toDateString()).length}
+                    </p>
+                  </div>
+                  <div style={{ width:1, height:32, background:'var(--b1)' }}/>
+                  <div>
+                    <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:3 }}>Status</p>
+                    <p style={{ fontFamily:'var(--mono)', fontSize:14, fontWeight:700, color: global.lucroHoje>=0?'var(--profit)':'var(--loss)' }}>
+                      {global.lucroHoje>=0?'POSITIVO':'NEGATIVO'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right column — 3 stacked smaller KPIs */}
+            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+              {[
+                { label:'Lucro final acumulado', value:global.lucroFinalTotal, color:'var(--brand-bright)', accent:'rgba(79,110,247,0.4)', sub:`${global.fechadas} metas fechadas`, prefix:'+R$ ' },
+                { label:'Total depositado', value:global.totalDep, color:'var(--info)', accent:'rgba(56,182,255,0.4)', sub:'Admin + operadores', prefix:'R$ ' },
+                { label:'Total sacado', value:global.totalSaq, color:'var(--warn)', accent:'rgba(245,166,35,0.4)', sub:'Admin + operadores', prefix:'R$ ' },
+              ].map((k,i)=>(
+                <motion.div key={i}
+                  initial={{opacity:0,x:20}} animate={{opacity:1,x:0}}
+                  transition={{duration:0.4,delay:0.15+i*0.08,ease}}
+                  whileHover={{ x:-2, borderColor:k.accent, transition:{duration:0.2} }}
+                  style={{
+                    position:'relative', overflow:'hidden',
+                    flex:1, padding:'18px 22px',
+                    background:'var(--surface)',
+                    border:'1px solid var(--b1)',
+                    borderRadius:14,
+                    display:'flex', alignItems:'center', justifyContent:'space-between',
+                    transition:'all 0.2s',
+                  }}>
+                  {/* Left accent stripe */}
+                  <div style={{
+                    position:'absolute', left:0, top:14, bottom:14, width:2,
+                    background:k.color, borderRadius:'0 2px 2px 0', opacity:0.7,
+                  }}/>
+                  <div style={{ paddingLeft:6 }}>
+                    <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:5 }}>
+                      {k.label}
+                    </p>
+                    <AnimatedNumber
+                      value={k.value}
+                      prefix={k.prefix}
+                      style={{ fontFamily:'var(--mono)', fontSize:21, fontWeight:800, color:k.color, lineHeight:1, display:'block' }}
+                    />
+                    <p style={{ fontSize:10, color:'var(--t3)', marginTop:4 }}>{k.sub}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
-          {/* Stats row */}
-          <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:28 }}>
+          {/* ── HORIZONTAL STATS BAR — single inline strip with dividers ── */}
+          <motion.div
+            initial={{opacity:0,y:14}} animate={{opacity:1,y:0}}
+            transition={{duration:0.4,delay:0.35,ease}}
+            style={{
+              display:'flex', alignItems:'center', gap:0,
+              padding:'20px 28px', marginBottom:28,
+              background:'linear-gradient(90deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))',
+              border:'1px solid var(--b1)',
+              borderRadius:14,
+              position:'relative', overflow:'hidden',
+            }}>
+            {/* bracket label */}
+            <div style={{ position:'absolute', top:-8, left:24, padding:'0 8px', background:'var(--base)', fontFamily:'var(--mono)', fontSize:9, fontWeight:700, color:'var(--t3)', letterSpacing:'0.12em' }}>
+              [ INDICADORES ]
+            </div>
+
             {[
               { l:'Operadores', v:global.ops,       c:'var(--info)' },
               { l:'Total metas', v:global.totalMetas,c:'var(--brand-bright)' },
               { l:'Metas fechadas', v:global.fechadas, c:'var(--profit)' },
               { l:'Total remessas', v:global.totalRem, c:'var(--warn)' },
-            ].map((c,i)=>(
-              <motion.div key={i}
-                initial={{opacity:0,y:14}} animate={{opacity:1,y:0}}
-                transition={{duration:0.35,delay:0.3+i*0.06,ease}}
-                whileHover={{scale:1.03, boxShadow:'0 8px 24px rgba(0,0,0,0.25)', transition:{duration:0.15}}}
-                style={{ background:'var(--surface)', border:'1px solid var(--b1)', borderRadius:14, padding:'16px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', transition:'border-color 0.2s' }}>
-                <span className="t-body" style={{ fontSize:12 }}>{c.l}</span>
-                <AnimatedNumber value={c.v} decimals={0} style={{ fontFamily:'var(--mono)', fontSize:24, fontWeight:800, color:c.c }} />
-              </motion.div>
+            ].map((c,i,arr)=>(
+              <div key={i} style={{ display:'flex', alignItems:'center', flex:1 }}>
+                <motion.div
+                  whileHover={{ y:-2, transition:{duration:0.15} }}
+                  style={{ flex:1, padding:'4px 12px', cursor:'default' }}>
+                  <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', letterSpacing:'0.12em', textTransform:'uppercase', marginBottom:6 }}>
+                    {c.l}
+                  </p>
+                  <AnimatedNumber value={c.v} decimals={0} style={{ fontFamily:'var(--mono)', fontSize:28, fontWeight:900, color:c.c, lineHeight:1, display:'block' }} />
+                </motion.div>
+                {i<arr.length-1 && <div style={{ width:1, height:42, background:'var(--b1)', flexShrink:0 }}/>}
+              </div>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
+          {/* ── ACTIVITY GRID — asymmetric 3fr / 2fr ── */}
+          <div style={{ display:'grid', gridTemplateColumns:'1.55fr 1fr', gap:16 }}>
             {/* Feed de remessas */}
-            <motion.div className="card" style={{ padding:24 }}
+            <motion.div style={{
+                position:'relative', overflow:'hidden', padding:24, borderRadius:18,
+                background:'var(--surface)', border:'1px solid var(--b1)',
+                boxShadow:'0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04)',
+              }}
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.35, ease }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:18 }}>
-                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+              transition={{ duration: 0.4, delay: 0.4, ease }}>
+              {/* Vertical accent */}
+              <div style={{
+                position:'absolute', left:0, top:24, bottom:24, width:3, borderRadius:'0 3px 3px 0',
+                background:'linear-gradient(180deg, var(--brand-bright), #7c5cfc)',
+              }}/>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, paddingLeft:6 }}>
                 <div>
-                  <h2 className="t-h3" style={{ fontSize:14 }}>Feed de remessas</h2>
-                  <p className="t-small">Tempo real · todas as operacoes</p>
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+                    <span style={{ fontFamily:'var(--mono)', fontSize:9, fontWeight:700, color:'var(--brand-bright)', letterSpacing:'0.12em' }}>
+                      [ FEED · LIVE ]
+                    </span>
+                    <motion.span
+                      style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)' }}
+                      animate={{ boxShadow:['0 0 0 0 rgba(5,217,140,0.7)','0 0 0 5px rgba(5,217,140,0)','0 0 0 0 rgba(5,217,140,0)'] }}
+                      transition={{ duration:2, repeat:Infinity }}
+                    />
+                  </div>
+                  <h2 style={{ fontSize:18, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>Cada movimento, em tempo real</h2>
                 </div>
+                <span style={{ fontFamily:'var(--mono)', fontSize:10, color:'var(--t4)', letterSpacing:'0.06em' }}>
+                  {remessas.length} TOTAL
+                </span>
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
                 {remessas.slice(0,12).map((r,i)=>{
@@ -1028,15 +1195,27 @@ export default function AdminPage() {
             </motion.div>
 
             {/* Operadores */}
-            <motion.div className="card" style={{ padding:24 }}
+            <motion.div style={{
+                position:'relative', overflow:'hidden', padding:24, borderRadius:18,
+                background:'var(--surface)', border:'1px solid var(--b1)',
+                boxShadow:'0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04)',
+              }}
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.4, ease }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:18 }}>
-                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              transition={{ duration: 0.4, delay: 0.45, ease }}>
+              <div style={{
+                position:'absolute', left:0, top:24, bottom:24, width:3, borderRadius:'0 3px 3px 0',
+                background:'linear-gradient(180deg, #f5a623, #f97316)',
+              }}/>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, paddingLeft:6 }}>
                 <div>
-                  <h2 className="t-h3" style={{ fontSize:14 }}>Operadores ativos</h2>
-                  <p className="t-small">Resultado acumulado por operador</p>
+                  <span style={{ fontFamily:'var(--mono)', fontSize:9, fontWeight:700, color:'var(--warn)', letterSpacing:'0.12em' }}>
+                    [ EQUIPE ]
+                  </span>
+                  <h2 style={{ fontSize:18, fontWeight:800, color:'var(--t1)', margin:'4px 0 0', letterSpacing:'-0.02em' }}>Quem entrega resultado</h2>
                 </div>
+                <span style={{ fontFamily:'var(--mono)', fontSize:10, color:'var(--t4)', letterSpacing:'0.06em' }}>
+                  {operators.length} ATIVOS
+                </span>
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {operators.map((op,i)=>{

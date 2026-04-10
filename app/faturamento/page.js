@@ -165,6 +165,7 @@ export default function FaturamentoPage() {
     const lucro=fRem.reduce((a,r)=>a+Number(r.lucro||0),0)
     const prej=fRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
     const dep=fRem.reduce((a,r)=>a+Number(r.deposito||0),0)
+    const saq=fRem.reduce((a,r)=>a+Number(r.saque||0),0)
     const liq=lucro-prej
     const roi=dep>0?((liq/dep)*100):0
     const pos=fRem.filter(r=>Number(r.resultado||0)>=0).length
@@ -172,7 +173,7 @@ export default function FaturamentoPage() {
     // Lucro final das metas fechadas (valor real pos salario/custo)
     const fechadas=metas.filter(m=>m.status_fechamento==='fechada')
     const lucroFinal=fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-    return {lucro,prej,liq,dep,roi,taxa,total:fRem.length,pos,lucroFinal,fechadas:fechadas.length}
+    return {lucro,prej,liq,dep,saq,roi,taxa,total:fRem.length,pos,lucroFinal,fechadas:fechadas.length}
   },[fRem,metas])
 
   /* ── Chart data ── */
@@ -364,8 +365,8 @@ export default function FaturamentoPage() {
           <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
             {[
               {l:'Lucro bruto',v:`R$ ${fmt(stats.lucro)}`,c:'var(--profit)'},
-              {l:'Prejuizo total',v:`R$ ${fmt(stats.prej)}`,c:'var(--loss)'},
-              {l:'Resultado liquido',v:`${stats.liq>=0?'+':'-'}R$ ${fmt(Math.abs(stats.liq))}`,c:stats.liq>=0?'var(--profit)':'var(--loss)'},
+              {l:'Total depositado',v:`R$ ${fmt(stats.dep)}`,c:'var(--info)'},
+              {l:'Total sacado',v:`R$ ${fmt(stats.saq)}`,c:'var(--warn)'},
               {l:'Taxa de acerto',v:`${stats.taxa}%`,c:stats.taxa>=50?'var(--profit)':'var(--warn)'},
             ].map(({l,v,c})=>(
               <div key={l} style={{background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:14,padding:'16px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>

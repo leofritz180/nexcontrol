@@ -1218,10 +1218,13 @@ export default function AdminPage() {
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {operators.map((op,i)=>{
-                  const ids = new Set(metas.filter(m=>m.operator_id===op.id).map(m=>m.id))
+                  const opMetas = metas.filter(m=>m.operator_id===op.id)
+                  const opMetasFechadas = opMetas.filter(m=>m.status_fechamento==='fechada')
+                  const ids = new Set(opMetas.map(m=>m.id))
                   const opRem = remessas.filter(r=>ids.has(r.meta_id))
-                  const liq = opRem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)
-                  const ativas = metas.filter(m=>m.operator_id===op.id&&(m.status||'ativa')==='ativa').length
+                  // Lucro final real (ja descontado salario, custo fixo, taxa agente)
+                  const lucroFinal = opMetasFechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+                  const ativas = opMetas.filter(m=>(m.status||'ativa')==='ativa').length
                   return (
                     <motion.div key={op.id} className="data-row"
                       initial={{opacity:0,x:12}} animate={{opacity:1,x:0}}
@@ -1240,15 +1243,16 @@ export default function AdminPage() {
                         </motion.div>
                         <div>
                           <p style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:'0 0 2px' }}>{getName(op)}</p>
-                          <p className="t-small">{ativas} ativa(s) · {opRem.length} remessas</p>
+                          <p className="t-small">{ativas} ativa(s) · {opMetasFechadas.length} fechada(s) · {opRem.length} remessas</p>
                         </div>
                       </div>
                       <div style={{ textAlign:'right' }}>
                         <AnimatedNumber
-                          value={Math.abs(liq)}
-                          prefix={`${liq>=0?'+':'-'}R$ `}
-                          style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:liq>=0?'var(--profit)':'var(--loss)' }}
+                          value={Math.abs(lucroFinal)}
+                          prefix={`${lucroFinal>=0?'+':'-'}R$ `}
+                          style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:lucroFinal>=0?'var(--profit)':'var(--loss)' }}
                         />
+                        <p style={{ fontSize:9, color:'var(--t4)', margin:'2px 0 0', letterSpacing:'0.06em', fontWeight:600 }}>LUCRO FINAL</p>
                       </div>
                     </motion.div>
                   )

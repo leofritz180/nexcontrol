@@ -304,11 +304,13 @@ export default function AdminPage() {
   const global = useMemo(()=>{
     const lucro = remessas.reduce((a,r)=>a+Number(r.lucro||0),0)
     const prej  = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
+    const totalDep = remessas.reduce((a,r)=>a+Number(r.deposito||0),0)
+    const totalSaq = remessas.reduce((a,r)=>a+Number(r.saque||0),0)
     const today = new Date().toDateString()
     const lucroHoje = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&new Date(m.fechada_em).toDateString()===today).reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const fechadas  = metas.filter(m=>m.status_fechamento==='fechada')
     const lucroFinalTotal = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-    return { lucro,prej,liq:lucro-prej,lucroHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length }
+    return { lucro,prej,liq:lucro-prej,totalDep,totalSaq,lucroHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length }
   },[operators,metas,remessas])
 
   const ranking = useMemo(()=>
@@ -360,8 +362,8 @@ export default function AdminPage() {
   const kpis = [
     { label:'Lucro hoje', rawValue:Math.abs(global.lucroHoje), value:`R$ ${fmt(Math.abs(global.lucroHoje))}`, sub:global.lucroHoje>=0?'Fechamentos de hoje':'Resultado negativo', color:global.lucroHoje>=0?'var(--profit)':'var(--loss)', card:global.lucroHoje>=0?'card-profit':'card-loss', badge:'ao vivo', isLive: true },
     { label:'Lucro final total', rawValue:global.lucroFinalTotal, value:`R$ ${fmt(global.lucroFinalTotal)}`, sub:'Metas 100% fechadas', color:'var(--brand-bright)', card:'card-primary', badge:'fechado' },
-    { label:'Resultado liquido', rawValue:Math.abs(global.liq), value:`R$ ${fmt(Math.abs(global.liq))}`, sub:global.liq>=0?'Positivo':'Negativo', color:global.liq>=0?'var(--profit)':'var(--loss)', card:global.liq>=0?'card-profit':'card-loss', badge:'remessas' },
-    { label:'Prejuizo total', rawValue:global.prej, value:`R$ ${fmt(global.prej)}`, sub:'Total acumulado', color:'var(--loss)', card:'card-loss', badge:'acumulado' },
+    { label:'Total depositado', rawValue:global.totalDep, value:`R$ ${fmt(global.totalDep)}`, sub:'Admin + operadores', color:'var(--info)', card:'card-info', badge:'depositos' },
+    { label:'Total sacado', rawValue:global.totalSaq, value:`R$ ${fmt(global.totalSaq)}`, sub:'Admin + operadores', color:'var(--warn)', card:'card-warn', badge:'saques' },
   ]
 
   const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['ranking','Ranking'],['redes','Redes'],['team','Equipe'],['trash','Lixeira']]
@@ -911,11 +913,15 @@ export default function AdminPage() {
                     ? '0 0 40px rgba(5,217,140,0.15), 0 20px 40px rgba(0,0,0,0.3)'
                     : k.card.includes('loss')
                     ? '0 0 40px rgba(240,61,107,0.15), 0 20px 40px rgba(0,0,0,0.3)'
+                    : k.card.includes('info')
+                    ? '0 0 40px rgba(56,182,255,0.15), 0 20px 40px rgba(0,0,0,0.3)'
+                    : k.card.includes('warn')
+                    ? '0 0 40px rgba(245,166,35,0.15), 0 20px 40px rgba(0,0,0,0.3)'
                     : '0 0 40px rgba(79,110,247,0.15), 0 20px 40px rgba(0,0,0,0.3)',
                   transition:{duration:0.2}
                 }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-                  <span className={`badge ${k.card.includes('profit')?'badge-profit':k.card.includes('loss')?'badge-loss':'badge-brand'}`}>{k.badge}</span>
+                  <span className={`badge ${k.card.includes('profit')?'badge-profit':k.card.includes('loss')?'badge-loss':k.card.includes('info')?'badge-info':k.card.includes('warn')?'badge-warn':'badge-brand'}`}>{k.badge}</span>
                   {k.isLive && (
                     <motion.span
                       style={{ width:7,height:7,borderRadius:'50%',background:'var(--profit)' }}

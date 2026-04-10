@@ -746,7 +746,6 @@ export default function AdminPage() {
             </motion.button>
           </div>
         </motion.div>
-        </motion.div>
 
         <TrialBanner tenant={tenant} subscription={sub} stats={convStats}/>
         <ConversionModal tenant={tenant} subscription={sub} stats={convStats}/>

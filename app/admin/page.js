@@ -484,15 +484,24 @@ export default function AdminPage() {
                     {l:'Lucro',v:`R$ ${fmt(lucroR)}`,c:'var(--profit)',raw:lucroR},
                     {l:'Prejuizo',v:`R$ ${fmt(prejR)}`,c:'var(--loss)',raw:prejR},
                     {l:'Acerto',v:`${pct}%`,c:pct>=50?'var(--profit)':'var(--warn)',raw:pct},
-                    {l:fechada?'LUCRO FINAL':'Liquido',v:`${fechada?'+':liqR>=0?'+':''}R$ ${fmt(Math.abs(displayVal))}`,c:'#05d98c',raw:Math.abs(displayVal)},
-                  ].map(({l,v,c,raw,isNum},i)=>(
+                    {l:fechada?'LUCRO FINAL':'Liquido',v:`${displayVal>=0?'+':'-'}R$ ${fmt(Math.abs(displayVal))}`,c:displayVal>=0?'#05d98c':'#f03d6b',raw:Math.abs(displayVal)},
+                  ].map(({l,v,c,raw,isNum},i)=>{
+                    const isFinal = l.includes('FINAL')
+                    const isLiq = l==='Liquido'
+                    const highlightPos = (isFinal||isLiq) && displayVal>=0
+                    const highlightNeg = (isFinal||isLiq) && displayVal<0
+                    return (
                     <motion.div key={l} {...fadeUp(i, 0.15)}
                       whileHover={{ scale: 1.03, transition: { duration: 0.15 } }}
-                      style={{background:l.includes('FINAL')?'rgba(5,217,140,0.1)':'var(--surface)',border:`1px solid ${l.includes('FINAL')?'rgba(5,217,140,0.2)':'var(--b1)'}`,borderRadius:14,padding:'14px 16px',textAlign:'center'}}>
-                      <p className="t-label" style={{marginBottom:5,color:l.includes('FINAL')?'#05d98c':undefined}}>{l}</p>
-                      <p className="t-num" style={{fontSize:l.includes('FINAL')?22:16,fontWeight:800,color:c,margin:0}}>{v}</p>
+                      style={{
+                        background: highlightPos?'rgba(5,217,140,0.1)':highlightNeg?'rgba(240,61,107,0.1)':'var(--surface)',
+                        border:`1px solid ${highlightPos?'rgba(5,217,140,0.2)':highlightNeg?'rgba(240,61,107,0.2)':'var(--b1)'}`,
+                        borderRadius:14,padding:'14px 16px',textAlign:'center'
+                      }}>
+                      <p className="t-label" style={{marginBottom:5,color:highlightPos?'#05d98c':highlightNeg?'#f03d6b':undefined}}>{l}</p>
+                      <p className="t-num" style={{fontSize:isFinal?22:16,fontWeight:800,color:c,margin:0}}>{v}</p>
                     </motion.div>
-                  ))}
+                  )})}
                 </div>
 
                 {focusLoad ? (

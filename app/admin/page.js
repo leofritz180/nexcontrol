@@ -319,7 +319,9 @@ export default function AdminPage() {
       const ids = new Set(opMetas.map(m=>m.id))
       const opRem = remessas.filter(r=>ids.has(r.meta_id))
       const sparkData = opMetas.map(m=>Number(m.lucro_final||0))
-      return { ...op, metasFechadas:opMetas.length, lucroFinal:opMetas.reduce((a,m)=>a+Number(m.lucro_final||0),0), totalRem:opRem.length, sparkData }
+      // Total de depositantes finalizados = soma do quantidade_contas de todas as metas fechadas
+      const depositantesFinalizados = opMetas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+      return { ...op, metasFechadas:opMetas.length, lucroFinal:opMetas.reduce((a,m)=>a+Number(m.lucro_final||0),0), totalRem:opRem.length, depositantesFinalizados, sparkData }
     }).sort((a,b)=>b.lucroFinal-a.lucroFinal)
   ,[operators,metas,remessas])
 
@@ -1451,7 +1453,7 @@ export default function AdminPage() {
                         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, flexShrink:0 }}>
                           {[
                             { l:'Metas fechadas', v:op.metasFechadas, c:'var(--info)' },
-                            { l:'Remessas',       v:op.totalRem,      c:'var(--warn)' },
+                            { l:'Depositantes', v:op.depositantesFinalizados, c:'var(--warn)' },
                             { l:'Lucro final',    v:`R$ ${fmt(op.lucroFinal)}`, c:isTop?medal:'var(--profit)' },
                           ].map(({l,v,c})=>(
                             <div key={l} style={{ background:'var(--raised)', border:'1px solid var(--b1)', borderRadius:10, padding:'11px 16px', textAlign:'center', minWidth:110 }}>

@@ -1076,14 +1076,14 @@ export default function AdminPage() {
             transition={{duration:0.4,delay:0.35,ease}}
             style={{
               display:'flex', alignItems:'center', gap:0,
-              padding:'20px 28px', marginBottom:28,
+              padding:'22px 28px 18px', marginTop:14, marginBottom:28,
               background:'linear-gradient(90deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))',
               border:'1px solid var(--b1)',
               borderRadius:14,
-              position:'relative', overflow:'hidden',
+              position:'relative',
             }}>
             {/* bracket label */}
-            <div style={{ position:'absolute', top:-8, left:24, padding:'0 8px', background:'var(--base)', fontFamily:'var(--mono)', fontSize:9, fontWeight:700, color:'var(--t3)', letterSpacing:'0.12em' }}>
+            <div style={{ position:'absolute', top:-7, left:24, padding:'0 10px', background:'var(--base)', fontFamily:'var(--mono)', fontSize:10, fontWeight:700, color:'var(--t3)', letterSpacing:'0.14em', lineHeight:1, whiteSpace:'nowrap' }}>
               [ INDICADORES ]
             </div>
 

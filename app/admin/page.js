@@ -177,6 +177,7 @@ export default function AdminPage() {
   const [focusLoad, setFocusLoad] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [trashMetas, setTrashMetas] = useState([])
+  const [heroPeriod, setHeroPeriod] = useState('all')
   const tabRef = useRef(null)
   const [tabLine, setTabLine] = useState({ left: 0, width: 0 })
 
@@ -312,6 +313,31 @@ export default function AdminPage() {
     const lucroFinalTotal = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
     return { lucro,prej,liq:lucro-prej,totalDep,totalSaq,lucroHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length }
   },[operators,metas,remessas])
+
+  // ── Hero card: lucro final por periodo selecionado ──
+  const heroLucro = useMemo(()=>{
+    const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em)
+    if(heroPeriod==='all') {
+      return { value: fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0), count: fechadas.length }
+    }
+    const now = new Date()
+    let filtered = fechadas
+    if(heroPeriod==='today') {
+      const t = now.toDateString()
+      filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===t)
+    } else if(heroPeriod==='yesterday') {
+      const y = new Date(now); y.setDate(y.getDate()-1)
+      const yStr = y.toDateString()
+      filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===yStr)
+    } else if(heroPeriod==='7d') {
+      const d = new Date(now); d.setDate(d.getDate()-7)
+      filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
+    } else if(heroPeriod==='30d') {
+      const d = new Date(now); d.setDate(d.getDate()-30)
+      filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
+    }
+    return { value: filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0), count: filtered.length }
+  },[metas,heroPeriod])
 
   const ranking = useMemo(()=>
     operators.map(op=>{
@@ -941,33 +967,33 @@ export default function AdminPage() {
           {/* ── ASYMMETRIC HERO ── */}
           <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:16, marginBottom:16 }}>
 
-            {/* Hero card — Lucro hoje (massive) */}
+            {/* Hero card — Lucro total (massive) with period selector */}
             <motion.div
               initial={{opacity:0,y:24,scale:0.98}} animate={{opacity:1,y:0,scale:1}}
               transition={{duration:0.5,ease}}
               whileHover={{ y:-3, boxShadow:'0 0 80px rgba(5,217,140,0.18), 0 30px 60px rgba(0,0,0,0.4)', transition:{duration:0.25} }}
               style={{
                 position:'relative', overflow:'hidden', borderRadius:22, padding:'36px 40px',
-                background: global.lucroHoje>=0
+                background: heroLucro.value>=0
                   ? 'linear-gradient(135deg, rgba(5,217,140,0.12) 0%, rgba(5,217,140,0.03) 35%, #060d18 75%)'
                   : 'linear-gradient(135deg, rgba(240,61,107,0.12) 0%, rgba(240,61,107,0.03) 35%, #060d18 75%)',
-                border: `1px solid ${global.lucroHoje>=0?'rgba(5,217,140,0.22)':'rgba(240,61,107,0.22)'}`,
-                boxShadow: global.lucroHoje>=0
+                border: `1px solid ${heroLucro.value>=0?'rgba(5,217,140,0.22)':'rgba(240,61,107,0.22)'}`,
+                boxShadow: heroLucro.value>=0
                   ? '0 0 50px rgba(5,217,140,0.06), inset 0 1px 0 rgba(255,255,255,0.05)'
                   : '0 0 50px rgba(240,61,107,0.06), inset 0 1px 0 rgba(255,255,255,0.05)',
-                minHeight:240,
+                minHeight:260,
               }}>
               {/* Vertical accent bar — signature element */}
               <div style={{
                 position:'absolute', left:0, top:24, bottom:24, width:3, borderRadius:'0 3px 3px 0',
-                background: global.lucroHoje>=0 ? 'var(--profit)' : 'var(--loss)',
-                boxShadow: `0 0 12px ${global.lucroHoje>=0?'rgba(5,217,140,0.5)':'rgba(240,61,107,0.5)'}`,
+                background: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
+                boxShadow: `0 0 12px ${heroLucro.value>=0?'rgba(5,217,140,0.5)':'rgba(240,61,107,0.5)'}`,
               }}/>
 
               {/* Background orb */}
               <div style={{
                 position:'absolute', top:'-30%', right:'-15%', width:380, height:380, borderRadius:'50%',
-                background: global.lucroHoje>=0
+                background: heroLucro.value>=0
                   ? 'radial-gradient(circle, rgba(5,217,140,0.08), transparent 65%)'
                   : 'radial-gradient(circle, rgba(240,61,107,0.08), transparent 65%)',
                 filter:'blur(30px)', pointerEvents:'none',
@@ -975,7 +1001,7 @@ export default function AdminPage() {
 
               <div style={{ position:'relative', zIndex:1 }}>
                 {/* Top status row */}
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24 }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18, flexWrap:'wrap', gap:8 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, fontFamily:'var(--mono)', fontSize:10, fontWeight:700, letterSpacing:'0.12em', color:'var(--t3)' }}>
                     <motion.span
                       style={{ width:7,height:7,borderRadius:'50%',background:'var(--profit)' }}
@@ -984,45 +1010,77 @@ export default function AdminPage() {
                     />
                     <span style={{ color:'var(--profit)' }}>AO VIVO</span>
                     <span style={{ color:'var(--t4)' }}>·</span>
-                    <span>HOJE</span>
+                    <span>LUCRO ACUMULADO</span>
                   </div>
                   <span style={{ fontFamily:'var(--mono)', fontSize:10, color:'var(--t4)', letterSpacing:'0.08em' }}>
                     {new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}).toUpperCase()}
                   </span>
                 </div>
 
+                {/* Period selector */}
+                <div style={{ display:'flex', gap:4, marginBottom:18, padding:4, background:'rgba(0,0,0,0.25)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:10, width:'fit-content', flexWrap:'wrap' }}>
+                  {[
+                    ['all','Tudo'],
+                    ['today','Hoje'],
+                    ['yesterday','Ontem'],
+                    ['7d','7 dias'],
+                    ['30d','30 dias'],
+                  ].map(([k,l])=>{
+                    const active = heroPeriod===k
+                    return (
+                      <motion.button
+                        key={k}
+                        onClick={()=>setHeroPeriod(k)}
+                        whileTap={{ scale:0.95 }}
+                        style={{
+                          fontFamily:'var(--mono)', fontSize:10, fontWeight:700, letterSpacing:'0.06em',
+                          padding:'5px 12px', borderRadius:7, cursor:'pointer',
+                          border:'1px solid transparent',
+                          background: active ? (heroLucro.value>=0?'rgba(5,217,140,0.12)':'rgba(240,61,107,0.12)') : 'transparent',
+                          color: active ? (heroLucro.value>=0?'var(--profit)':'var(--loss)') : 'var(--t3)',
+                          borderColor: active ? (heroLucro.value>=0?'rgba(5,217,140,0.25)':'rgba(240,61,107,0.25)') : 'transparent',
+                          textTransform:'uppercase', transition:'all 0.2s',
+                        }}
+                      >
+                        {l}
+                      </motion.button>
+                    )
+                  })}
+                </div>
+
                 <p style={{ fontSize:11, fontWeight:700, color:'var(--t3)', letterSpacing:'0.12em', textTransform:'uppercase', marginBottom:14 }}>
-                  Lucro do dia
+                  {heroPeriod==='all'?'Lucro total da operacao':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
                 </p>
 
                 {/* MASSIVE NUMBER */}
                 <div style={{ display:'flex', alignItems:'baseline', gap:12, marginBottom:18 }}>
-                  <span style={{ fontFamily:'var(--mono)', fontSize:24, fontWeight:700, color: global.lucroHoje>=0?'var(--profit)':'var(--loss)', opacity:0.7 }}>
-                    {global.lucroHoje>=0?'+':'-'}R$
+                  <span style={{ fontFamily:'var(--mono)', fontSize:24, fontWeight:700, color: heroLucro.value>=0?'var(--profit)':'var(--loss)', opacity:0.7 }}>
+                    {heroLucro.value>=0?'+':'-'}R$
                   </span>
                   <AnimatedNumber
-                    value={Math.abs(global.lucroHoje)}
+                    value={Math.abs(heroLucro.value)}
+                    key={heroPeriod}
                     style={{
-                      fontFamily:'var(--mono)', fontSize:64, fontWeight:900,
-                      color: global.lucroHoje>=0?'var(--profit)':'var(--loss)',
+                      fontFamily:'var(--mono)', fontSize:60, fontWeight:900,
+                      color: heroLucro.value>=0?'var(--profit)':'var(--loss)',
                       lineHeight:1, letterSpacing:'-0.04em',
-                      textShadow: global.lucroHoje>=0?'0 0 40px rgba(5,217,140,0.25)':'0 0 40px rgba(240,61,107,0.25)',
+                      textShadow: heroLucro.value>=0?'0 0 40px rgba(5,217,140,0.25)':'0 0 40px rgba(240,61,107,0.25)',
                     }}
                   />
                 </div>
 
                 <div style={{ display:'flex', alignItems:'center', gap:14, paddingTop:18, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
                   <div>
-                    <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:3 }}>Metas fechadas hoje</p>
+                    <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:3 }}>Metas no periodo</p>
                     <p style={{ fontFamily:'var(--mono)', fontSize:14, fontWeight:700, color:'var(--t1)' }}>
-                      {metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&new Date(m.fechada_em).toDateString()===new Date().toDateString()).length}
+                      {heroLucro.count}
                     </p>
                   </div>
                   <div style={{ width:1, height:32, background:'var(--b1)' }}/>
                   <div>
                     <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:3 }}>Status</p>
-                    <p style={{ fontFamily:'var(--mono)', fontSize:14, fontWeight:700, color: global.lucroHoje>=0?'var(--profit)':'var(--loss)' }}>
-                      {global.lucroHoje>=0?'POSITIVO':'NEGATIVO'}
+                    <p style={{ fontFamily:'var(--mono)', fontSize:14, fontWeight:700, color: heroLucro.value>=0?'var(--profit)':'var(--loss)' }}>
+                      {heroLucro.value>=0?'POSITIVO':'NEGATIVO'}
                     </p>
                   </div>
                 </div>

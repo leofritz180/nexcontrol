@@ -8,6 +8,8 @@ import AnimatedNumber from '../../components/ui/AnimatedNumber'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaClosed } from '../../lib/notify'
 import { ProLockedCard } from '../../components/pro/ProGate'
+import dynamic from 'next/dynamic'
+const Onboarding = dynamic(() => import('../../components/Onboarding'), { ssr: false })
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -738,6 +740,7 @@ export default function AdminPage() {
       )}
       </AnimatePresence>
 
+      <Onboarding/>
       <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>

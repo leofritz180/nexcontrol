@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 /* ═══════════════════════════════════════════
    NEXCONTROL — DESIGN SYSTEM
@@ -58,6 +58,12 @@
   /* Font */
   --mono: 'JetBrains Mono', monospace;
 
+  /* Glow system — brand signature */
+  --glow-brand:  0 0 24px rgba(229,57,53,0.2), 0 0 60px rgba(229,57,53,0.06);
+  --glow-profit: 0 0 24px rgba(34,197,94,0.18), 0 0 60px rgba(34,197,94,0.05);
+  --glow-loss:   0 0 24px rgba(239,68,68,0.18), 0 0 60px rgba(239,68,68,0.05);
+  --glow-ai:     0 0 24px rgba(168,85,247,0.18), 0 0 60px rgba(168,85,247,0.05);
+
   color-scheme: dark;
 }
 
@@ -79,24 +85,31 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Ambient light */
+/* Global ambient background — depth + technology feel */
 body::before {
   content: '';
-  position: fixed; top: -15%; left: -5%; width: 50%; height: 45%;
-  background: radial-gradient(ellipse, rgba(229,57,53,0.035) 0%, transparent 55%);
+  position: fixed; top: -20%; left: -10%; width: 60%; height: 50%;
+  background: radial-gradient(ellipse at 30% 40%, rgba(229,57,53,0.04) 0%, transparent 50%);
   pointer-events: none; z-index: 0;
-  animation: ambient-drift 30s ease-in-out infinite alternate;
+  animation: ambient-drift 35s ease-in-out infinite alternate;
 }
 body::after {
   content: '';
-  position: fixed; bottom: -10%; right: -5%; width: 40%; height: 40%;
-  background: radial-gradient(ellipse, rgba(34,197,94,0.02) 0%, transparent 55%);
+  position: fixed; bottom: -15%; right: -10%; width: 50%; height: 45%;
+  background: radial-gradient(ellipse at 70% 60%, rgba(34,197,94,0.025) 0%, transparent 50%);
   pointer-events: none; z-index: 0;
-  animation: ambient-drift 25s ease-in-out infinite alternate-reverse;
+  animation: ambient-drift 28s ease-in-out infinite alternate-reverse;
 }
 @keyframes ambient-drift {
-  0% { transform: translate(0,0); }
-  100% { transform: translate(30px, 20px); }
+  0% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(20px, 15px) scale(1.02); }
+  100% { transform: translate(30px, 20px) scale(1); }
+}
+
+/* Depth layer — radial gradient center */
+.depth-bg {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(12,18,32,0.5) 0%, transparent 70%);
 }
 
 /* bg-flow hidden */
@@ -221,28 +234,39 @@ body::after {
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   font-weight: 600; font-size: 13px; border-radius: 10px; border: none;
-  cursor: pointer; transition: all 0.2s ease;
-  white-space: nowrap; position: relative;
+  cursor: pointer; transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+  white-space: nowrap; position: relative; overflow: hidden;
   padding: 10px 18px;
 }
+.btn::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+.btn:hover::after { left: 150%; }
 .btn:active { transform: scale(0.96); }
-.btn:hover { transform: translateY(-1px); }
+.btn:hover { transform: translateY(-2px); }
 
 .btn-brand {
-  background: #e53935;
+  background: linear-gradient(135deg, #e53935, #d32f2f);
   color: white;
   box-shadow: 0 4px 16px rgba(229,57,53,0.25), 0 0 0 1px rgba(229,57,53,0.1);
 }
-.btn-brand:hover { background: #ef5350; box-shadow: 0 8px 28px rgba(229,57,53,0.4), 0 0 0 1px rgba(229,57,53,0.15); transform: scale(1.02); }
+.btn-brand:hover {
+  background: linear-gradient(135deg, #ef5350, #e53935);
+  box-shadow: 0 8px 32px rgba(229,57,53,0.45), 0 0 0 1px rgba(229,57,53,0.15), 0 0 60px rgba(229,57,53,0.1);
+  transform: translateY(-2px) scale(1.02);
+}
 .btn-brand:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
 .btn-profit {
-  background: #22C55E;
+  background: linear-gradient(135deg, #22C55E, #16a34a);
   color: #052e16;
   font-weight: 700;
   box-shadow: 0 4px 16px rgba(34,197,94,0.3);
 }
-.btn-profit:hover { background: #4ADE80; box-shadow: 0 6px 24px rgba(34,197,94,0.45); transform: translateY(-1px); }
+.btn-profit:hover { background: linear-gradient(135deg, #4ADE80, #22C55E); box-shadow: 0 8px 28px rgba(34,197,94,0.45), 0 0 50px rgba(34,197,94,0.08); transform: translateY(-2px); }
 .btn-profit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 .btn-ghost {
@@ -377,6 +401,11 @@ body::after {
 @keyframes drift { 0%,100%{transform:translate(0,0)} 25%{transform:translate(6px,-4px)} 50%{transform:translate(-3px,6px)} 75%{transform:translate(5px,3px)} }
 @keyframes tab-enter { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 @keyframes tab-exit  { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(-8px); } }
+
+/* Logo hover effects */
+.logo-wrapper:hover { transform: scale(1.03); }
+.logo-wrapper:hover .logo-aura { opacity: 1 !important; transform: scale(1.2); }
+.logo-wrapper:hover .logo-text { text-shadow: 0 0 12px rgba(229,57,53,0.25); }
 
 /* Tab content transition */
 .tab-content { animation: tab-enter 0.35s cubic-bezier(0.33,1,0.68,1) both; }
@@ -710,4 +739,104 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
+}
+
+/* ══════════════════════════════
+   SHIMMER — Premium loading
+══════════════════════════════ */
+.shimmer-card {
+  position: relative; overflow: hidden;
+  background: linear-gradient(145deg, var(--surface), var(--raised));
+  border-radius: 14px; border: 1px solid var(--b1);
+}
+.shimmer-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.03) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════
+   ENHANCED GLOW SYSTEM — Brand signature
+══════════════════════════════ */
+.glow-brand-hover:hover   { box-shadow: 0 0 35px rgba(229,57,53,0.3), 0 0 80px rgba(229,57,53,0.08); }
+.glow-profit-hover:hover  { box-shadow: 0 0 35px rgba(34,197,94,0.25), 0 0 80px rgba(34,197,94,0.06); }
+.glow-loss-hover:hover    { box-shadow: 0 0 35px rgba(239,68,68,0.25), 0 0 80px rgba(239,68,68,0.06); }
+.glow-ai-hover:hover      { box-shadow: 0 0 35px rgba(168,85,247,0.25), 0 0 80px rgba(168,85,247,0.06); }
+
+/* Number emphasis — fintech style */
+.num-highlight {
+  font-family: var(--mono);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-shadow: 0 0 30px currentColor;
+}
+
+/* ══════════════════════════════
+   PAGE TRANSITIONS
+══════════════════════════════ */
+.page-enter {
+  animation: page-fade-in 0.4s cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════
+   INTERACTIVE FEEDBACK
+══════════════════════════════ */
+.interactive {
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.interactive:hover { transform: translateY(-2px); }
+.interactive:active { transform: translateY(0) scale(0.98); }
+
+.click-feedback { transition: all 0.2s ease; }
+.click-feedback:active { transform: scale(0.97); opacity: 0.9; }
+
+/* ══════════════════════════════
+   LOGO SYSTEM
+══════════════════════════════ */
+.logo-aura {
+  position: absolute; inset: -40%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(229,57,53,0.08), transparent 65%);
+  animation: breathe 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.logo-shine {
+  position: absolute; inset: 0; overflow: hidden; border-radius: inherit;
+  pointer-events: none;
+}
+.logo-shine::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  animation: shine 6s ease-in-out infinite;
+}
+
+.logo-orbit-dot {
+  position: absolute; width: 3px; height: 3px; border-radius: 50%;
+  background: rgba(229,57,53,0.35);
+  pointer-events: none;
+}
+
+/* ══════════════════════════════
+   TYPOGRAPHY PREMIUM
+══════════════════════════════ */
+.t-num-lg {
+  font-family: var(--mono);
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.t-num-xl {
+  font-family: var(--mono);
+  font-weight: 800;
+  font-size: 36px;
+  letter-spacing: -0.04em;
+  line-height: 1;
 }

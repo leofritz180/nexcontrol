@@ -39,6 +39,7 @@ export default function RootLayout({ children }) {
       <body>
         <Suspense fallback={null}><GlobalLoadingScreen/></Suspense>
         <div className="bg-flow"/>
+        <div className="depth-bg"/>
         <Suspense fallback={null}><DynamicBackground/></Suspense>
         <Suspense fallback={null}><SubscriptionGate>{children}</SubscriptionGate></Suspense>
       </body>

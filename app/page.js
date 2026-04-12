@@ -77,6 +77,75 @@ export default function HomePage() {
             ))}
           </motion.div>
         </motion.div>
+
+        {/* Dashboard mockup */}
+        <motion.div {...fadeUp(0.5)} style={{ maxWidth:700, width:'100%', margin:'60px auto 0', position:'relative', zIndex:1 }}>
+          <div style={{ borderRadius:16, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)', boxShadow:'0 20px 60px rgba(0,0,0,0.5)', background:'linear-gradient(145deg, #0c1424, #080e1a)', padding:'20px 24px 24px' }}>
+            {/* Fake header */}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <div style={{ width:20, height:20, borderRadius:5, background:'#e53935' }}/>
+                <span style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.4)' }}>Painel executivo</span>
+              </div>
+              <div style={{ display:'flex', gap:4 }}>
+                {[6,6,6].map((_,i) => <div key={i} style={{ width:6, height:6, borderRadius:'50%', background:'rgba(255,255,255,0.1)' }}/>)}
+              </div>
+            </div>
+            {/* Fake KPI cards */}
+            <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:12, marginBottom:12 }}>
+              <div style={{ padding:'18px 20px', borderRadius:10, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.04)' }}>
+                <p style={{ fontSize:9, color:'rgba(255,255,255,0.3)', margin:'0 0 8px' }}>Lucro final acumulado</p>
+                <p style={{ fontFamily:'var(--mono)', fontSize:28, fontWeight:900, color:'#22C55E', margin:0 }}>+R$ 3.058,47</p>
+                <p style={{ fontSize:8, color:'rgba(255,255,255,0.2)', marginTop:6 }}>11 metas fechadas</p>
+              </div>
+              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                {[{l:'Depositado',v:'R$ 57.581'},{l:'Sacado',v:'R$ 51.330'},{l:'Metas',v:'20'}].map(({l,v}) => (
+                  <div key={l} style={{ flex:1, padding:'8px 12px', borderRadius:8, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                    <span style={{ fontSize:8, color:'rgba(255,255,255,0.25)' }}>{l}</span>
+                    <span style={{ fontFamily:'var(--mono)', fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.6)' }}>{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Fake list */}
+            <div style={{ padding:'12px 14px', borderRadius:10, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)' }}>
+              <p style={{ fontSize:9, fontWeight:600, color:'rgba(255,255,255,0.3)', margin:'0 0 10px' }}>Remessas recentes</p>
+              {[{n:'Pedro',v:'+R$ 95,00',g:true},{n:'Lucas',v:'-R$ 18,00',g:false},{n:'Ana',v:'+R$ 145,00',g:true}].map(({n,v,g}) => (
+                <div key={n} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'6px 0', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <div style={{ width:18, height:18, borderRadius:5, background:'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.3)' }}>{n[0]}</span>
+                    </div>
+                    <span style={{ fontSize:9, color:'rgba(255,255,255,0.4)' }}>{n}</span>
+                  </div>
+                  <span style={{ fontFamily:'var(--mono)', fontSize:10, fontWeight:700, color:g?'#22C55E':'#EF4444' }}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Shadow glow below mockup */}
+          <div style={{ position:'absolute', bottom:-30, left:'20%', right:'20%', height:60, background:'radial-gradient(ellipse, rgba(229,57,53,0.08), transparent 70%)', filter:'blur(20px)', pointerEvents:'none' }}/>
+        </motion.div>
+      </section>
+
+      {/* ═══════════════════════════════════
+          RESULTADO / LUCRO
+      ═══════════════════════════════════ */}
+      <section style={{ padding:'80px 24px', textAlign:'center' }}>
+        <motion.div {...fadeUp()} style={{ maxWidth:600, margin:'0 auto' }}>
+          <p style={{ fontSize:12, color:'var(--t3)', letterSpacing:'0.15em', marginBottom:16, fontWeight:600 }}>RESULTADO REAL</p>
+          <motion.p
+            animate={{ scale:[1,1.015,1] }}
+            transition={{ duration:4, repeat:Infinity, ease:'easeInOut' }}
+            style={{ fontFamily:'var(--mono)', fontSize:64, fontWeight:900, color:'#22C55E', lineHeight:1, margin:'0 0 12px',
+              textShadow:'0 0 60px rgba(34,197,94,0.2), 0 0 120px rgba(34,197,94,0.1)',
+            }}>
+            +R$ 3.058,47
+          </motion.p>
+          <p style={{ fontSize:15, color:'var(--t3)', lineHeight:1.5 }}>
+            Lucro real registrado na plataforma. Cada centavo rastreado, cada meta fechada com custos descontados.
+          </p>
+        </motion.div>
       </section>
 
       {/* ═══════════════════════════════════
@@ -155,30 +224,68 @@ export default function HomePage() {
           APP NO CELULAR
       ═══════════════════════════════════ */}
       <section style={{ padding:'80px 24px', maxWidth:900, margin:'0 auto' }}>
-        <motion.div {...fadeUp()} style={{ textAlign:'center', padding:'48px 40px', borderRadius:20, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.05)', boxShadow:'0 8px 40px rgba(0,0,0,0.4)' }}>
-          <div style={{ fontSize:48, marginBottom:20 }}>
-            <svg width={48} height={48} viewBox="0 0 24 24" fill="none" stroke="var(--t1)" strokeWidth={1.2} strokeLinecap="round" style={{ margin:'0 auto' }}>
-              <rect x="5" y="2" width="14" height="20" rx="2"/>
-              <line x1="12" y1="18" x2="12" y2="18.01"/>
-            </svg>
-          </div>
-          <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 12px', letterSpacing:'-0.03em' }}>Leve sua operacao no bolso</h2>
-          <p style={{ fontSize:15, color:'var(--t3)', lineHeight:1.6, maxWidth:480, margin:'0 auto 28px' }}>
-            Instale o NexControl como app no seu celular. Receba notificacoes, acompanhe resultados e controle tudo na palma da mao.
-          </p>
-          <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14 }}>
-            {[
-              {t:'Instale como app', d:'Adicione a tela inicial'},
-              {t:'Notificacoes push', d:'Alertas em tempo real'},
-              {t:'Funciona offline', d:'Dados acessiveis sempre'},
-            ].map(({t,d}) => (
-              <div key={t} style={{ padding:'16px 14px', borderRadius:10, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.04)' }}>
-                <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 4px' }}>{t}</p>
-                <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{d}</p>
+        <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:32, alignItems:'center' }}>
+          {/* Text */}
+          <motion.div {...fadeUp()}>
+            <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 12px', letterSpacing:'-0.03em' }}>Leve sua operacao no bolso</h2>
+            <p style={{ fontSize:15, color:'var(--t3)', lineHeight:1.6, margin:'0 0 28px' }}>
+              Instale como app no iPhone ou Android. Receba notificacoes quando operadores registram remessas. Acompanhe lucro em tempo real.
+            </p>
+            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+              {[
+                {t:'Instale como app', d:'Adicione a tela inicial em 2 toques'},
+                {t:'Notificacoes push', d:'Saiba na hora quando algo acontece'},
+                {t:'Dados sempre disponiveis', d:'Acompanhe de qualquer lugar'},
+              ].map(({t,d}) => (
+                <div key={t} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth={2.5} strokeLinecap="round" style={{ marginTop:2, flexShrink:0 }}><polyline points="20 6 9 17 4 12"/></svg>
+                  <div>
+                    <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 2px' }}>{t}</p>
+                    <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Phone mockup */}
+          <motion.div {...fadeUp(0.2)} style={{ display:'flex', justifyContent:'center' }}>
+            <div style={{ width:220, borderRadius:28, padding:'12px 10px 16px', background:'linear-gradient(180deg, #1a1a1a, #111)', border:'2px solid rgba(255,255,255,0.08)', boxShadow:'0 20px 60px rgba(0,0,0,0.6)', position:'relative' }}>
+              {/* Notch */}
+              <div style={{ width:80, height:20, borderRadius:10, background:'#000', margin:'0 auto 10px', border:'1px solid rgba(255,255,255,0.06)' }}/>
+              {/* Screen */}
+              <div style={{ borderRadius:14, overflow:'hidden', background:'#080e1a', padding:'14px 12px' }}>
+                {/* Mini header */}
+                <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:12 }}>
+                  <div style={{ width:14, height:14, borderRadius:4, background:'#e53935' }}/>
+                  <span style={{ fontSize:7, fontWeight:700, color:'rgba(255,255,255,0.4)' }}>NexControl</span>
+                </div>
+                {/* Mini KPI */}
+                <div style={{ padding:'10px', borderRadius:8, background:'rgba(255,255,255,0.03)', marginBottom:8 }}>
+                  <p style={{ fontSize:6, color:'rgba(255,255,255,0.3)', margin:'0 0 4px' }}>Lucro total</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:900, color:'#22C55E', margin:0 }}>+R$ 3.058</p>
+                </div>
+                {/* Mini items */}
+                {['Pedro +R$ 95','Lucas -R$ 18','Ana +R$ 145'].map(s => (
+                  <div key={s} style={{ padding:'5px 0', borderBottom:'1px solid rgba(255,255,255,0.03)', display:'flex', justifyContent:'space-between' }}>
+                    <span style={{ fontSize:7, color:'rgba(255,255,255,0.3)' }}>{s.split(' ')[0]}</span>
+                    <span style={{ fontFamily:'var(--mono)', fontSize:7, fontWeight:700, color:s.includes('+')?'#22C55E':'#EF4444' }}>{s.split(' ').slice(1).join(' ')}</span>
+                  </div>
+                ))}
+                {/* Notification */}
+                <div style={{ marginTop:10, padding:'8px 10px', borderRadius:8, background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.15)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:4, marginBottom:3 }}>
+                    <div style={{ width:4, height:4, borderRadius:'50%', background:'#22C55E' }}/>
+                    <span style={{ fontSize:6, fontWeight:700, color:'#22C55E' }}>Nova remessa</span>
+                  </div>
+                  <p style={{ fontSize:6, color:'rgba(255,255,255,0.3)', margin:0 }}>Pedro registrou +R$ 95,00</p>
+                </div>
               </div>
-            ))}
-          </div>
-        </motion.div>
+              {/* Home indicator */}
+              <div style={{ width:60, height:4, borderRadius:2, background:'rgba(255,255,255,0.15)', margin:'10px auto 0' }}/>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* ═══════════════════════════════════

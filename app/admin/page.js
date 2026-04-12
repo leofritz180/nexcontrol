@@ -971,106 +971,101 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease }}>
 
-          {/* ── HERO CARD ── */}
+          {/* ── HERO CARD — dominant ── */}
           <motion.div
-            initial={{opacity:0,y:16}} animate={{opacity:1,y:0}}
+            initial={{opacity:0,y:14}} animate={{opacity:1,y:0}}
             transition={{duration:0.4,ease}}
-            whileHover={{ y:-2, boxShadow:'0 12px 40px rgba(0,0,0,0.5)', transition:{duration:0.2} }}
+            whileHover={{ y:-2, transition:{duration:0.2} }}
             style={{
-              marginBottom:20, padding:'32px 36px', borderRadius:16,
+              marginBottom:24, padding:'44px 44px 40px', borderRadius:18,
               background:'var(--surface)', border:'1px solid var(--b1)',
               boxShadow:'0 4px 24px rgba(0,0,0,0.4)',
             }}>
 
-            {/* Period selector */}
-            <div style={{ display:'flex', gap:2, marginBottom:20 }}>
-              {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7 dias'],['30d','30 dias']].map(([k,l])=>{
-                const active = heroPeriod===k
-                return (
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:28 }}>
+              <p style={{ fontSize:13, color:'var(--t3)', fontWeight:500, margin:0 }}>
+                {heroPeriod==='all'?'Lucro final acumulado':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
+              </p>
+              <div style={{ display:'flex', gap:2 }}>
+                {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d']].map(([k,l])=>(
                   <button key={k} onClick={()=>setHeroPeriod(k)}
                     style={{
-                      fontFamily:'Inter,sans-serif', fontSize:12, fontWeight:600,
-                      padding:'6px 16px', borderRadius:8, cursor:'pointer',
-                      border:'none',
-                      background: active ? 'var(--raised)' : 'transparent',
-                      color: active ? 'var(--t1)' : 'var(--t3)',
+                      fontSize:11, fontWeight:600, padding:'5px 14px', borderRadius:7,
+                      cursor:'pointer', border:'none',
+                      background: heroPeriod===k ? 'var(--raised)' : 'transparent',
+                      color: heroPeriod===k ? 'var(--t1)' : 'var(--t4)',
                       transition:'all 0.15s',
-                    }}>
-                    {l}
-                  </button>
-                )
-              })}
+                    }}/>
+                ))}
+              </div>
             </div>
-
-            <p style={{ fontSize:12, color:'var(--t3)', marginBottom:10, fontWeight:500 }}>
-              {heroPeriod==='all'?'Lucro final acumulado':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
-            </p>
 
             <AnimatedNumber
               value={Math.abs(heroLucro.value)}
               key={heroPeriod}
               prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
               style={{
-                fontFamily:'var(--mono)', fontSize:48, fontWeight:900,
+                fontFamily:'var(--mono)', fontSize:56, fontWeight:900,
                 color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
                 lineHeight:1, letterSpacing:'-0.03em', display:'block',
               }}
             />
 
-            <p style={{ fontSize:12, color:'var(--t3)', marginTop:12 }}>
-              {heroLucro.count} meta{heroLucro.count!==1?'s':''} fechada{heroLucro.count!==1?'s':''}
-            </p>
+            <div style={{ display:'flex', alignItems:'center', gap:20, marginTop:20, paddingTop:20, borderTop:'1px solid var(--b1)' }}>
+              <div>
+                <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2 }}>Metas fechadas</p>
+                <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)', margin:0 }}>{heroLucro.count}</p>
+              </div>
+              <div style={{ width:1, height:28, background:'var(--b1)' }}/>
+              <div>
+                <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2 }}>Status</p>
+                <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:heroLucro.value>=0?'var(--profit)':'var(--loss)', margin:0 }}>
+                  {heroLucro.value>=0?'Positivo':'Negativo'}
+                </p>
+              </div>
+            </div>
+
+            {/* Period buttons visible */}
+            <div style={{ display:'flex', gap:2, marginTop:20 }}>
+              {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7 dias'],['30d','30 dias']].map(([k,l])=>(
+                <button key={k} onClick={()=>setHeroPeriod(k)}
+                  style={{
+                    fontSize:11, fontWeight:600, padding:'6px 16px', borderRadius:8,
+                    cursor:'pointer', border:'none',
+                    background: heroPeriod===k ? 'var(--raised)' : 'transparent',
+                    color: heroPeriod===k ? 'var(--t1)' : 'var(--t3)',
+                    transition:'all 0.15s',
+                  }}>
+                  {l}
+                </button>
+              ))}
+            </div>
           </motion.div>
 
-          {/* Secondary KPIs */}
-          <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:20 }}>
+          {/* Secondary KPIs + Stats — single row of 4 */}
+          <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
             {[
-              { label:'Lucro final total', value:global.lucroFinalTotal, prefix:'R$ ', sub:`${global.fechadas} fechadas` },
-              { label:'Total depositado', value:global.totalDep, prefix:'R$ ', sub:'Toda operacao' },
-              { label:'Total sacado', value:global.totalSaq, prefix:'R$ ', sub:'Toda operacao' },
+              { label:'Total depositado', value:global.totalDep, prefix:'R$ ' },
+              { label:'Total sacado', value:global.totalSaq, prefix:'R$ ' },
+              { label:'Operadores', value:global.ops, prefix:'', decimals:0 },
+              { label:'Total remessas', value:global.totalRem, prefix:'', decimals:0 },
             ].map((k,i)=>(
               <motion.div key={i}
-                initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}
-                transition={{duration:0.3,delay:0.08+i*0.06,ease}}
-                whileHover={{ y:-2, boxShadow:'0 8px 28px rgba(0,0,0,0.45)', transition:{duration:0.15} }}
+                initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+                transition={{duration:0.25,delay:0.1+i*0.05,ease}}
+                whileHover={{ y:-2, transition:{duration:0.15} }}
                 style={{
-                  padding:'22px 26px', borderRadius:14,
+                  padding:'20px 24px', borderRadius:14,
                   background:'var(--surface)', border:'1px solid var(--b1)',
-                  boxShadow:'0 2px 16px rgba(0,0,0,0.3)',
+                  boxShadow:'0 2px 12px rgba(0,0,0,0.25)',
                   transition:'all 0.2s ease',
                 }}>
-                <p style={{ fontSize:11, color:'var(--t3)', marginBottom:10, fontWeight:500 }}>{k.label}</p>
-                <AnimatedNumber value={k.value} prefix={k.prefix}
-                  style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:'var(--t1)', display:'block', lineHeight:1 }} />
-                <p style={{ fontSize:11, color:'var(--t4)', marginTop:8 }}>{k.sub}</p>
+                <p style={{ fontSize:10, color:'var(--t3)', marginBottom:8 }}>{k.label}</p>
+                <AnimatedNumber value={k.value} prefix={k.prefix} decimals={k.decimals ?? 2}
+                  style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:800, color:'var(--t1)', display:'block', lineHeight:1 }} />
               </motion.div>
             ))}
           </div>
-
-          {/* Stats card */}
-          <motion.div
-            initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}
-            transition={{duration:0.3,delay:0.25,ease}}
-            style={{
-              display:'flex', gap:0, marginBottom:24, padding:'20px 28px',
-              borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)',
-              boxShadow:'0 2px 16px rgba(0,0,0,0.3)',
-            }}>
-            {[
-              { l:'Operadores', v:global.ops },
-              { l:'Total metas', v:global.totalMetas },
-              { l:'Metas fechadas', v:global.fechadas },
-              { l:'Remessas', v:global.totalRem },
-            ].map((c,i,arr)=>(
-              <div key={i} style={{ flex:1, display:'flex', alignItems:'center' }}>
-                <div style={{ flex:1 }}>
-                  <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4 }}>{c.l}</p>
-                  <AnimatedNumber value={c.v} decimals={0} style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:'var(--t1)' }} />
-                </div>
-                {i<arr.length-1 && <div style={{ width:1, height:36, background:'var(--b1)', flexShrink:0 }}/>}
-              </div>
-            ))}
-          </motion.div>
 
           {/* Activity — feed + operators */}
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:20 }}>
@@ -1085,7 +1080,7 @@ export default function AdminPage() {
                 <span style={{ fontSize:11, color:'var(--t3)' }}>{remessas.length} total</span>
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                {remessas.slice(0,10).map((r,i)=>{
+                {remessas.slice(0,5).map((r,i)=>{
                   const m   = metas.find(x=>x.id===r.meta_id)
                   const op  = operators.find(o=>o.id===m?.operator_id)
                   const pos = Number(r.resultado||0)>=0
@@ -1096,7 +1091,7 @@ export default function AdminPage() {
                       transition={{duration:0.2,delay:i*0.03}}
                       style={{
                       padding:'10px 0', display:'flex', alignItems:'center', gap:12,
-                      borderBottom: i<9 ? '1px solid var(--b1)' : 'none',
+                      borderBottom: i<4 ? '1px solid var(--b1)' : 'none',
                     }}>
                       <div style={{ width:32, height:32, borderRadius:8, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                         <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>{getName(op)[0]?.toUpperCase()}</span>
@@ -1120,37 +1115,37 @@ export default function AdminPage() {
               transition={{duration:0.3,delay:0.3,ease}}
               style={{ padding:24, borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)' }}>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
-                <h3 style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:0 }}>Operadores</h3>
+                <h3 style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:0 }}>Top operadores</h3>
                 <span style={{ fontSize:11, color:'var(--t3)' }}>{operators.length} ativos</span>
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
-                {operators.map((op,i)=>{
+                {operators.map(op=>{
                   const opMetasFechadas = metas.filter(m=>m.operator_id===op.id&&m.status_fechamento==='fechada')
                   const lucroFinal = opMetasFechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
                   const ativas = metas.filter(m=>m.operator_id===op.id&&(m.status||'ativa')==='ativa').length
-                  return (
+                  return { ...op, lucroFinal, ativas, fechadas: opMetasFechadas.length }
+                }).sort((a,b)=>b.lucroFinal-a.lucroFinal).slice(0,5).map((op,i)=>(
                     <motion.div key={op.id}
                       initial={{opacity:0}} animate={{opacity:1}}
                       transition={{duration:0.2,delay:i*0.04}}
                       style={{
                         padding:'10px 0', display:'flex', alignItems:'center', gap:10,
-                        borderBottom: i<operators.length-1 ? '1px solid var(--b1)' : 'none',
+                        borderBottom: i<4 ? '1px solid var(--b1)' : 'none',
                       }}>
                       <div style={{ width:32, height:32, borderRadius:8, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                         <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>{getName(op)[0].toUpperCase()}</span>
                       </div>
                       <div style={{ flex:1 }}>
                         <p style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:0 }}>{getName(op)}</p>
-                        <p style={{ fontSize:11, color:'var(--t3)', margin:'2px 0 0' }}>{ativas} ativa{ativas!==1?'s':''} · {opMetasFechadas.length} fechada{opMetasFechadas.length!==1?'s':''}</p>
+                        <p style={{ fontSize:11, color:'var(--t3)', margin:'2px 0 0' }}>{op.ativas} ativa{op.ativas!==1?'s':''} · {op.fechadas} fechada{op.fechadas!==1?'s':''}</p>
                       </div>
                       <div style={{ textAlign:'right' }}>
-                        <span className="t-num" style={{ fontSize:14, fontWeight:700, color:lucroFinal>=0?'var(--profit)':'var(--loss)' }}>
-                          {lucroFinal>=0?'+':'-'}R$ {fmt(Math.abs(lucroFinal))}
+                        <span className="t-num" style={{ fontSize:14, fontWeight:700, color:op.lucroFinal>=0?'var(--profit)':'var(--loss)' }}>
+                          {op.lucroFinal>=0?'+':'-'}R$ {fmt(Math.abs(op.lucroFinal))}
                         </span>
                       </div>
                     </motion.div>
-                  )
-                })}
+                  ))}
               </div>
             </motion.div>
           </div>

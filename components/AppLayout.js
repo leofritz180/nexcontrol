@@ -14,7 +14,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
         userId={userId}
         tenantId={tenantId}
       />
-      <div style={{ marginLeft:240 }} className="app-content">
+      <div style={{ marginLeft:248 }} className="app-content">
         {children}
       </div>
       <style jsx global>{`

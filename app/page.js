@@ -66,7 +66,7 @@ export default function HomePage() {
 
           <motion.div {...fadeUp(0.3)} style={{ display:'flex', gap:32, justifyContent:'center', marginTop:48 }}>
             {[
-              {v:'14 dias',l:'teste gratis'},
+              {v:'3 dias',l:'teste gratis'},
               {v:'Tempo real',l:'atualizacao 30s'},
               {v:'App celular',l:'iPhone e Android'},
             ].map(({v,l}) => (
@@ -76,6 +76,16 @@ export default function HomePage() {
               </div>
             ))}
           </motion.div>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity:0 }}
+          animate={{ opacity:0.3, y:[0,8,0] }}
+          transition={{ opacity:{delay:2,duration:0.5}, y:{duration:2,repeat:Infinity,ease:'easeInOut'} }}
+          style={{ marginTop:40, display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
+          <span style={{ fontSize:10, color:'rgba(255,255,255,0.25)', letterSpacing:'0.1em' }}>DESCUBRA MAIS</span>
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </motion.div>
 
         {/* Dashboard mockup */}
@@ -317,47 +327,64 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════
-          COMPARATIVO FREE vs PRO
+          PLANOS PRO
       ═══════════════════════════════════ */}
-      <section style={{ padding:'80px 24px', maxWidth:800, margin:'0 auto' }}>
-        <motion.div {...fadeUp()} style={{ textAlign:'center', marginBottom:40 }}>
-          <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 12px', letterSpacing:'-0.03em' }}>Escolha seu plano</h2>
+      <section style={{ padding:'80px 24px', maxWidth:860, margin:'0 auto' }}>
+        <motion.div {...fadeUp()} style={{ textAlign:'center', marginBottom:16 }}>
+          <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 12px', letterSpacing:'-0.03em' }}>Escolha como usar o PRO</h2>
+          <p style={{ fontSize:14, color:'var(--t3)', margin:0 }}>Teste gratuito de 3 dias em todos os planos. Acesso completo.</p>
         </motion.div>
 
-        <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
-          {/* Free */}
-          <motion.div {...fadeUp(0)} style={{ padding:'32px 28px', borderRadius:16, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.05)' }}>
-            <p style={{ fontSize:12, fontWeight:700, color:'var(--t3)', marginBottom:16, letterSpacing:'0.08em' }}>PADRAO</p>
-            <p style={{ fontFamily:'var(--mono)', fontSize:32, fontWeight:900, color:'var(--t1)', margin:'0 0 4px' }}>R$ 39,90<span style={{ fontSize:14, fontWeight:500, color:'var(--t3)' }}>/mes</span></p>
-            <p style={{ fontSize:12, color:'var(--t3)', marginBottom:24 }}>Admin solo</p>
-            {['Dashboard completa','Metas e fechamento','Remessas ilimitadas','Notificacoes push','App no celular','PIX integrado'].map(f => (
-              <div key={f} style={{ display:'flex', alignItems:'center', gap:8, padding:'6px 0' }}>
+        <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1.15fr', gap:16, marginTop:32 }}>
+
+          {/* PRO Solo */}
+          <motion.div {...fadeUp(0)}
+            whileHover={{ y:-4, transition:{duration:0.2} }}
+            style={{ padding:'36px 30px', borderRadius:18, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.06)', transition:'all 0.25s ease' }}>
+            <p style={{ fontSize:11, fontWeight:700, color:'var(--t2)', marginBottom:16, letterSpacing:'0.1em' }}>PRO SOLO</p>
+            <p style={{ fontFamily:'var(--mono)', fontSize:36, fontWeight:900, color:'var(--t1)', margin:'0 0 4px' }}>R$ 39,90<span style={{ fontSize:14, fontWeight:500, color:'var(--t3)' }}>/mes</span></p>
+            <p style={{ fontSize:13, color:'var(--t3)', marginBottom:28 }}>Para quem opera sozinho com controle total</p>
+            {['Dashboard completo','Metas e fechamento inteligente','Remessas ilimitadas','Notificacoes em tempo real','App no celular','PIX integrado'].map(f => (
+              <div key={f} style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0' }}>
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth={2.5} strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                 <span style={{ fontSize:12, color:'var(--t2)' }}>{f}</span>
               </div>
             ))}
-            <Link href="/signup" className="btn btn-ghost" style={{ width:'100%', justifyContent:'center', marginTop:24 }}>
-              Comecar gratis
+            <Link href="/signup" className="btn btn-ghost" style={{ width:'100%', justifyContent:'center', marginTop:28, fontWeight:600 }}>
+              Comecar 3 dias gratis
             </Link>
           </motion.div>
 
-          {/* PRO */}
-          <motion.div {...fadeUp(0.1)} style={{ padding:'32px 28px', borderRadius:16, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(229,57,53,0.2)', position:'relative', boxShadow:'0 0 40px rgba(229,57,53,0.06)' }}>
-            <div style={{ position:'absolute', top:-10, right:20, fontSize:10, fontWeight:700, padding:'4px 12px', borderRadius:6, background:'#e53935', color:'white' }}>RECOMENDADO</div>
-            <p style={{ fontSize:12, fontWeight:700, color:'#ff4444', marginBottom:16, letterSpacing:'0.08em' }}>PRO</p>
-            <p style={{ fontFamily:'var(--mono)', fontSize:32, fontWeight:900, color:'var(--t1)', margin:'0 0 4px' }}>R$ 39,90<span style={{ fontSize:14, fontWeight:500, color:'var(--t3)' }}>/mes + ops</span></p>
-            <p style={{ fontSize:12, color:'var(--t3)', marginBottom:24 }}>Admin + operadores</p>
-            {['Tudo do padrao','Operadores ilimitados','Inteligencia da operacao','Ranking de redes','Modo apresentacao','Exportacao premium','Previsoes e alertas','Prioridade em novidades'].map(f => (
-              <div key={f} style={{ display:'flex', alignItems:'center', gap:8, padding:'6px 0' }}>
+          {/* PRO Equipe — DESTAQUE */}
+          <motion.div {...fadeUp(0.1)}
+            whileHover={{ y:-4, boxShadow:'0 0 50px rgba(229,57,53,0.1)', transition:{duration:0.2} }}
+            style={{ padding:'36px 30px', borderRadius:18, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(229,57,53,0.22)', position:'relative', boxShadow:'0 0 30px rgba(229,57,53,0.05)', transition:'all 0.25s ease' }}>
+
+            <motion.div
+              animate={{ boxShadow:['0 0 8px rgba(229,57,53,0.3)','0 0 16px rgba(229,57,53,0.5)','0 0 8px rgba(229,57,53,0.3)'] }}
+              transition={{ duration:3, repeat:Infinity }}
+              style={{ position:'absolute', top:-12, right:20, fontSize:10, fontWeight:700, padding:'5px 14px', borderRadius:7, background:'#e53935', color:'white' }}>
+              RECOMENDADO
+            </motion.div>
+
+            <p style={{ fontSize:11, fontWeight:700, color:'#ff4444', marginBottom:16, letterSpacing:'0.1em' }}>PRO EQUIPE</p>
+            <p style={{ fontFamily:'var(--mono)', fontSize:36, fontWeight:900, color:'var(--t1)', margin:'0 0 4px' }}>R$ 39,90<span style={{ fontSize:14, fontWeight:500, color:'var(--t3)' }}>/mes + operadores</span></p>
+            <p style={{ fontSize:13, color:'var(--t3)', marginBottom:28 }}>Para escalar sua operacao com equipe</p>
+            {['Tudo do PRO Solo','Operadores ilimitados','Inteligencia da operacao','Ranking de redes','Modo apresentacao','Exportacao premium','Previsoes e alertas','Prioridade em novidades'].map(f => (
+              <div key={f} style={{ display:'flex', alignItems:'center', gap:8, padding:'7px 0' }}>
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth={2.5} strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                 <span style={{ fontSize:12, color:'var(--t1)' }}>{f}</span>
               </div>
             ))}
-            <Link href="/billing" className="btn btn-brand" style={{ width:'100%', justifyContent:'center', marginTop:24, fontWeight:700 }}>
+            <Link href="/billing" className="btn btn-brand" style={{ width:'100%', justifyContent:'center', marginTop:28, fontWeight:700, fontSize:15 }}>
               Ativar plano PRO
             </Link>
           </motion.div>
         </div>
+
+        <p style={{ textAlign:'center', fontSize:12, color:'var(--t4)', marginTop:20 }}>
+          Sem plano gratuito. Teste completo por 3 dias em qualquer plano.
+        </p>
       </section>
 
       {/* ═══════════════════════════════════
@@ -366,7 +393,7 @@ export default function HomePage() {
       <section style={{ padding:'80px 24px 100px', textAlign:'center' }}>
         <motion.div {...fadeUp()}>
           <h2 style={{ fontSize:32, fontWeight:800, color:'var(--t1)', margin:'0 0 12px', letterSpacing:'-0.03em' }}>Pronto pra ter controle total?</h2>
-          <p style={{ fontSize:15, color:'var(--t3)', marginBottom:32 }}>14 dias gratis. Sem cartao. Cancele quando quiser.</p>
+          <p style={{ fontSize:15, color:'var(--t3)', marginBottom:32 }}>3 dias gratis. Sem cartao. Cancele quando quiser.</p>
           <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:260, justifyContent:'center', fontSize:16, fontWeight:700 }}>
             Comecar agora
           </Link>

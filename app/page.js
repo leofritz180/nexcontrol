@@ -8,172 +8,221 @@ import { supabase } from '../lib/supabase/client'
 const ease = [0.33,1,0.68,1]
 const fadeUp = (d=0) => ({initial:{opacity:0,y:20},whileInView:{opacity:1,y:0},viewport:{once:true},transition:{duration:0.5,delay:d,ease}})
 
-const NOTIFS = [
-  { name:'Pedro', value:95, delay:0 },
-  { name:'Ana', value:147, delay:4 },
-  { name:'Lucas', value:68, delay:8 },
-  { name:'Maria', value:32, delay:12 },
-  { name:'Carlos', value:120, delay:16 },
+const NOTIF_DATA = [
+  { name:'Pedro', value:95 },
+  { name:'Ana', value:147 },
+  { name:'Lucas', value:68 },
+  { name:'Maria', value:32 },
+  { name:'Carlos', value:120 },
+  { name:'Rafael', value:89 },
 ]
 
 function PhoneSection() {
   const [idx, setIdx] = useState(0)
   const [total, setTotal] = useState(3058)
   const [flash, setFlash] = useState(false)
+  const [mouseX, setMouseX] = useState(0)
+  const [mouseY, setMouseY] = useState(0)
 
   useEffect(() => {
     let i = 0
     const interval = setInterval(() => {
-      i = (i + 1) % NOTIFS.length
+      i = (i + 1) % NOTIF_DATA.length
       setIdx(i)
-      setTotal(prev => prev + NOTIFS[i].value)
+      setTotal(prev => prev + NOTIF_DATA[i].value)
       setFlash(true)
-      setTimeout(() => setFlash(false), 600)
-    }, 3000)
+      setTimeout(() => setFlash(false), 800)
+    }, 2800)
     return () => clearInterval(interval)
   }, [])
 
-  const current = NOTIFS[idx]
+  // Parallax on mouse move (desktop)
+  useEffect(() => {
+    const handler = (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2
+      const y = (e.clientY / window.innerHeight - 0.5) * 2
+      setMouseX(x); setMouseY(y)
+    }
+    window.addEventListener('mousemove', handler, { passive:true })
+    return () => window.removeEventListener('mousemove', handler)
+  }, [])
+
+  const n = NOTIF_DATA[idx]
+  const tiltX = -3 + mouseX * 4
+  const tiltY = 2 + mouseY * -3
 
   return (
-    <section style={{ padding:'100px 24px', maxWidth:1000, margin:'0 auto', position:'relative' }}>
-      {/* Ambient glow */}
-      <div style={{ position:'absolute', top:'30%', right:'15%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.05), transparent 60%)', filter:'blur(60px)', pointerEvents:'none' }}/>
+    <section style={{ padding:'120px 24px', position:'relative', overflow:'hidden' }}>
+      {/* Ambient glow — reactive */}
+      <motion.div
+        animate={{ opacity: flash ? [0.4,0.7,0.4] : 0.4 }}
+        transition={{ duration:1 }}
+        style={{ position:'absolute', top:'25%', left:'50%', transform:'translate(-50%,-50%)', width:700, height:700, borderRadius:'50%',
+          background:'radial-gradient(circle, rgba(34,197,94,0.06), transparent 55%)', filter:'blur(80px)', pointerEvents:'none',
+        }}
+      />
 
-      <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:48, alignItems:'center' }}>
-        {/* Text */}
-        <motion.div {...fadeUp()}>
-          <h2 style={{ fontSize:32, fontWeight:900, color:'var(--t1)', margin:'0 0 14px', letterSpacing:'-0.03em', lineHeight:1.15 }}>
-            Veja seu lucro chegando<br/>em tempo real
-          </h2>
-          <p style={{ fontSize:16, color:'var(--t3)', lineHeight:1.6, margin:'0 0 32px' }}>
-            Cada remessa registrada vira uma notificacao no seu celular. Simples assim.
-          </p>
-          <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-            {[
-              {t:'Notificacao instantanea', d:'Saiba na hora quando dinheiro entra ou sai'},
-              {t:'Lucro atualizado ao vivo', d:'O dashboard muda a cada operacao'},
-              {t:'Instale em 2 toques', d:'Funciona como app nativo no iPhone e Android'},
-            ].map(({t,d}) => (
-              <div key={t} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth={2.5} strokeLinecap="round" style={{ marginTop:3, flexShrink:0 }}><polyline points="20 6 9 17 4 12"/></svg>
-                <div>
-                  <p style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:'0 0 3px' }}>{t}</p>
-                  <p style={{ fontSize:12, color:'var(--t3)', margin:0 }}>{d}</p>
+      <div style={{ maxWidth:1000, margin:'0 auto' }}>
+        <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1.1fr', gap:48, alignItems:'center' }}>
+
+          {/* Copy */}
+          <motion.div {...fadeUp()}>
+            <h2 style={{ fontSize:34, fontWeight:900, color:'var(--t1)', margin:'0 0 14px', letterSpacing:'-0.03em', lineHeight:1.15 }}>
+              Seu lucro chega assim
+            </h2>
+            <p style={{ fontSize:16, color:'var(--t3)', lineHeight:1.6, margin:'0 0 36px' }}>
+              Cada remessa vira uma notificacao no seu celular. Em tempo real.
+            </p>
+            <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+              {[
+                {t:'Notificacao instantanea', d:'Saiba na hora quando dinheiro entra ou sai da operacao'},
+                {t:'Lucro atualizado ao vivo', d:'O valor muda a cada remessa registrada pelo operador'},
+                {t:'Instale em 2 toques', d:'Funciona como app nativo no iPhone e Android'},
+              ].map(({t,d}) => (
+                <div key={t} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth={2.5} strokeLinecap="round" style={{ marginTop:3, flexShrink:0 }}><polyline points="20 6 9 17 4 12"/></svg>
+                  <div>
+                    <p style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:'0 0 3px' }}>{t}</p>
+                    <p style={{ fontSize:12, color:'var(--t3)', margin:0 }}>{d}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* iPhone */}
-        <motion.div {...fadeUp(0.2)} style={{ display:'flex', justifyContent:'center', perspective:800 }}>
-          <div style={{
-            width:260, borderRadius:36, padding:'10px 8px 14px',
-            background:'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 30%, #111 100%)',
-            border:'1.5px solid rgba(255,255,255,0.12)',
-            boxShadow:'0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.08)',
-            position:'relative', transform:'rotateY(-3deg) rotateX(2deg)',
-          }}>
-            {/* Dynamic Island */}
-            <div style={{ width:90, height:24, borderRadius:12, background:'#000', margin:'0 auto 8px', border:'1px solid rgba(255,255,255,0.08)', position:'relative', overflow:'hidden' }}>
-              <div style={{ position:'absolute', right:20, top:8, width:6, height:6, borderRadius:'50%', background:'rgba(255,255,255,0.08)' }}/>
+              ))}
             </div>
+          </motion.div>
 
-            {/* Screen */}
-            <div style={{ borderRadius:22, overflow:'hidden', background:'#060a12', position:'relative' }}>
-              {/* Green flash on notification */}
-              <AnimatePresence>
-                {flash && (
-                  <motion.div
-                    initial={{ opacity:0.15 }} animate={{ opacity:0 }}
-                    exit={{ opacity:0 }} transition={{ duration:0.6 }}
-                    style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 20%, rgba(34,197,94,0.2), transparent 60%)', zIndex:5, pointerEvents:'none' }}
-                  />
-                )}
-              </AnimatePresence>
+          {/* iPhone 3D */}
+          <motion.div {...fadeUp(0.2)} style={{ display:'flex', justifyContent:'center', perspective:1000 }}>
+            <motion.div
+              animate={{ y:[0,-6,0,4,0] }}
+              transition={{ duration:6, repeat:Infinity, ease:'easeInOut' }}
+              style={{
+                width:280, borderRadius:40, padding:'10px 8px 14px',
+                background:`linear-gradient(165deg, #333 0%, #1c1c1c 25%, #111 60%, #0a0a0a 100%)`,
+                border:'1.5px solid rgba(255,255,255,0.14)',
+                boxShadow:`0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.1), 0 0 ${flash?'60':'30'}px rgba(34,197,94,${flash?'0.12':'0.04'})`,
+                position:'relative',
+                transform:`rotateY(${tiltX}deg) rotateX(${tiltY}deg)`,
+                transition:'transform 0.1s ease, box-shadow 0.5s ease',
+              }}>
 
-              {/* iOS Notification dropping in */}
-              <div style={{ padding:'8px 10px 0', position:'relative', zIndex:4 }}>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity:0, y:-40, scale:0.95 }}
-                    animate={{ opacity:1, y:0, scale:1 }}
-                    exit={{ opacity:0, y:-20, scale:0.97 }}
-                    transition={{ duration:0.4, ease:[0.33,1,0.68,1] }}
-                    style={{
-                      padding:'10px 12px', borderRadius:14,
-                      background:'rgba(255,255,255,0.08)',
-                      backdropFilter:'blur(20px)', WebkitBackdropFilter:'blur(20px)',
-                      border:'1px solid rgba(255,255,255,0.06)',
-                      marginBottom:8,
-                    }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
-                      <div style={{ width:18, height:18, borderRadius:5, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                        <svg width={8} height={8} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
-                      </div>
-                      <div style={{ flex:1 }}>
-                        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                          <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.7)' }}>NexControl</span>
-                          <span style={{ fontSize:6, color:'rgba(255,255,255,0.25)' }}>agora</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p style={{ fontSize:8, color:'rgba(255,255,255,0.5)', margin:0, paddingLeft:26 }}>
-                      Lucro na remessa: <span style={{ color:'#22C55E', fontWeight:700 }}>+R$ {current.value},00</span>
-                    </p>
-                  </motion.div>
-                </AnimatePresence>
+              {/* Side buttons */}
+              <div style={{ position:'absolute', left:-2, top:80, width:2, height:28, borderRadius:'2px 0 0 2px', background:'rgba(255,255,255,0.1)' }}/>
+              <div style={{ position:'absolute', left:-2, top:120, width:2, height:20, borderRadius:'2px 0 0 2px', background:'rgba(255,255,255,0.1)' }}/>
+              <div style={{ position:'absolute', left:-2, top:148, width:2, height:20, borderRadius:'2px 0 0 2px', background:'rgba(255,255,255,0.1)' }}/>
+              <div style={{ position:'absolute', right:-2, top:100, width:2, height:36, borderRadius:'0 2px 2px 0', background:'rgba(255,255,255,0.1)' }}/>
+
+              {/* Dynamic Island */}
+              <div style={{ width:100, height:28, borderRadius:14, background:'#000', margin:'0 auto 8px', border:'1px solid rgba(255,255,255,0.06)', position:'relative' }}>
+                <div style={{ position:'absolute', left:22, top:10, width:8, height:8, borderRadius:'50%', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.06)' }}/>
+                <div style={{ position:'absolute', right:22, top:10, width:6, height:6, borderRadius:'50%', background:'rgba(255,255,255,0.06)' }}/>
               </div>
 
-              {/* App content */}
-              <div style={{ padding:'4px 12px 16px' }}>
-                {/* Header */}
-                <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
-                  <div style={{ width:16, height:16, borderRadius:5, background:'#e53935' }}/>
-                  <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.45)' }}>NexControl</span>
+              {/* Screen */}
+              <div style={{ borderRadius:28, overflow:'hidden', background:'#060a12', position:'relative', minHeight:400 }}>
+
+                {/* Green flash */}
+                <AnimatePresence>
+                  {flash && (
+                    <motion.div
+                      initial={{ opacity:0.2 }} animate={{ opacity:0 }}
+                      exit={{ opacity:0 }} transition={{ duration:0.8 }}
+                      style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 15%, rgba(34,197,94,0.25), transparent 55%)', zIndex:10, pointerEvents:'none' }}
+                    />
+                  )}
+                </AnimatePresence>
+
+                {/* Notification */}
+                <div style={{ padding:'10px 10px 0', position:'relative', zIndex:8 }}>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity:0, y:-50, scale:0.92 }}
+                      animate={{ opacity:1, y:0, scale:1 }}
+                      exit={{ opacity:0, y:-25, scale:0.96 }}
+                      transition={{ duration:0.45, ease:[0.16,1,0.3,1] }}
+                      style={{
+                        padding:'11px 13px', borderRadius:16,
+                        background:'rgba(255,255,255,0.08)',
+                        backdropFilter:'blur(24px)', WebkitBackdropFilter:'blur(24px)',
+                        border:'1px solid rgba(255,255,255,0.07)',
+                        marginBottom:6,
+                        boxShadow:'0 4px 20px rgba(0,0,0,0.3)',
+                      }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:9, marginBottom:5 }}>
+                        <div style={{ width:20, height:20, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                          <svg width={9} height={9} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+                        </div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ display:'flex', justifyContent:'space-between' }}>
+                            <span style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.75)' }}>NexControl</span>
+                            <span style={{ fontSize:7, color:'rgba(255,255,255,0.25)' }}>agora</span>
+                          </div>
+                        </div>
+                      </div>
+                      <p style={{ fontSize:9, color:'rgba(255,255,255,0.5)', margin:0, paddingLeft:29 }}>
+                        Nova remessa: <span style={{ color:'#22C55E', fontWeight:700, fontSize:10 }}>+R$ {n.value},00</span>
+                      </p>
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
 
-                {/* KPI — updates live */}
-                <motion.div
-                  animate={flash ? { scale:[1,1.02,1] } : {}}
-                  transition={{ duration:0.3 }}
-                  style={{ padding:'12px 14px', borderRadius:12, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.04)', marginBottom:10, position:'relative', overflow:'hidden' }}>
-                  <p style={{ fontSize:7, color:'rgba(255,255,255,0.3)', margin:'0 0 5px' }}>Lucro total</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:900, color:'#22C55E', margin:0,
-                    textShadow: flash ? '0 0 20px rgba(34,197,94,0.3)' : 'none', transition:'text-shadow 0.3s',
-                  }}>
-                    +R$ {total.toLocaleString('pt-BR')}
-                  </p>
-                  {/* Green glow pulse */}
-                  {flash && <div style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 30% 50%, rgba(34,197,94,0.08), transparent 60%)', pointerEvents:'none' }}/>}
-                </motion.div>
+                {/* App */}
+                <div style={{ padding:'6px 14px 18px' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:12 }}>
+                    <div style={{ width:18, height:18, borderRadius:5, background:'#e53935' }}/>
+                    <span style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.45)' }}>NexControl</span>
+                  </div>
 
-                {/* Recent items */}
-                <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
-                  {NOTIFS.slice(0,3).map((n,i) => (
-                    <div key={n.name} style={{ padding:'5px 2px', borderBottom:'1px solid rgba(255,255,255,0.03)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <div style={{ width:14, height:14, borderRadius:4, background:'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                          <span style={{ fontSize:6, fontWeight:700, color:'rgba(255,255,255,0.3)' }}>{n.name[0]}</span>
+                  {/* KPI */}
+                  <motion.div
+                    animate={flash ? { scale:[1,1.025,1] } : {}}
+                    transition={{ duration:0.35 }}
+                    style={{
+                      padding:'14px 16px', borderRadius:14,
+                      background:'linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
+                      border:'1px solid rgba(255,255,255,0.05)',
+                      marginBottom:12, position:'relative', overflow:'hidden',
+                    }}>
+                    <p style={{ fontSize:8, color:'rgba(255,255,255,0.3)', margin:'0 0 6px' }}>Lucro total</p>
+                    <p style={{
+                      fontFamily:'var(--mono)', fontSize:24, fontWeight:900, color:'#22C55E', margin:0,
+                      textShadow: flash ? '0 0 25px rgba(34,197,94,0.4)' : 'none',
+                      transition:'text-shadow 0.4s',
+                    }}>
+                      +R$ {total.toLocaleString('pt-BR')}
+                    </p>
+                    {flash && <div style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 20% 50%, rgba(34,197,94,0.1), transparent 60%)', pointerEvents:'none' }}/>}
+                  </motion.div>
+
+                  {/* Feed */}
+                  {NOTIF_DATA.slice(0,4).map((item,i) => (
+                    <div key={item.name} style={{ padding:'6px 2px', borderBottom:i<3?'1px solid rgba(255,255,255,0.03)':'none', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+                        <div style={{ width:16, height:16, borderRadius:5, background:'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                          <span style={{ fontSize:7, fontWeight:700, color:'rgba(255,255,255,0.3)' }}>{item.name[0]}</span>
                         </div>
-                        <span style={{ fontSize:7, color:'rgba(255,255,255,0.35)' }}>{n.name}</span>
+                        <span style={{ fontSize:8, color:'rgba(255,255,255,0.35)' }}>{item.name}</span>
                       </div>
-                      <span style={{ fontFamily:'var(--mono)', fontSize:8, fontWeight:700, color:'#22C55E' }}>+R$ {n.value}</span>
+                      <span style={{ fontFamily:'var(--mono)', fontSize:9, fontWeight:700, color:'#22C55E' }}>+R$ {item.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
 
-            {/* Home indicator */}
-            <div style={{ width:70, height:4, borderRadius:2, background:'rgba(255,255,255,0.15)', margin:'10px auto 0' }}/>
+              {/* Home indicator */}
+              <div style={{ width:80, height:4, borderRadius:2, background:'rgba(255,255,255,0.15)', margin:'10px auto 0' }}/>
 
-            {/* Glass reflection */}
-            <div style={{ position:'absolute', top:0, left:0, right:0, height:'45%', borderRadius:'36px 36px 0 0', background:'linear-gradient(180deg, rgba(255,255,255,0.04), transparent)', pointerEvents:'none' }}/>
-          </div>
-        </motion.div>
+              {/* Glass reflection — animated */}
+              <motion.div
+                animate={{ opacity:[0.03,0.06,0.03] }}
+                transition={{ duration:4, repeat:Infinity, ease:'easeInOut' }}
+                style={{ position:'absolute', top:0, left:0, right:0, height:'50%', borderRadius:'40px 40px 0 0',
+                  background:'linear-gradient(165deg, rgba(255,255,255,0.08) 0%, transparent 40%)', pointerEvents:'none',
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   )

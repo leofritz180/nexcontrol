@@ -1,6 +1,7 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import Header from '../../components/Header'
 import { supabase } from '../../lib/supabase/client'
 import { calculatePrice, getAllTiers, BASE_PRICE, OP_BASE_PRICE } from '../../lib/pricing'
@@ -412,6 +413,72 @@ export default function BillingPage() {
         />
         )
       })()}
+      {/* ═══════════════════════════════════
+          LANDING SECTIONS — conversion content
+      ═══════════════════════════════════ */}
+      <div style={{ maxWidth:1100, margin:'60px auto 0', padding:'0 28px 80px' }}>
+
+        {/* Diferenciais */}
+        <div style={{ textAlign:'center', marginBottom:40 }}>
+          <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Tudo que o PRO libera</h2>
+          <p style={{ fontSize:14, color:'var(--t3)', maxWidth:450, margin:'0 auto' }}>Recursos exclusivos que transformam dados em decisoes estrategicas.</p>
+        </div>
+
+        <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:60 }}>
+          {[
+            {icon:'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', t:'Dashboard premium', d:'Lucro, metas e operadores em tempo real'},
+            {icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z', t:'Inteligencia IA', d:'Previsoes e insights automaticos'},
+            {icon:'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5', t:'Alertas estrategicos', d:'Notificacoes de queda e risco'},
+            {icon:'M3 4h18M3 8h12M3 12h18M3 16h8M3 20h14', t:'Ranking de redes', d:'Saiba quais redes geram mais lucro'},
+            {icon:'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z', t:'Modo apresentacao', d:'Video cinematografico do resultado'},
+            {icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe ilimitada', d:'Operadores sem limite de quantidade'},
+            {icon:'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4', t:'Exportacao premium', d:'Imagem e video pra compartilhar'},
+            {icon:'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z', t:'App no celular', d:'Push notifications no iPhone'},
+          ].map(({icon,t,d},i) => (
+            <div key={i} style={{ padding:'20px 18px', borderRadius:12, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.04)' }}>
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:10, opacity:0.7 }}>
+                <path d={icon}/>
+              </svg>
+              <h4 style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 4px' }}>{t}</h4>
+              <p style={{ fontSize:11, color:'var(--t3)', margin:0, lineHeight:1.4 }}>{d}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Prova social */}
+        <div style={{ textAlign:'center', marginBottom:32 }}>
+          <h2 style={{ fontSize:24, fontWeight:800, color:'var(--t1)', margin:'0 0 24px', letterSpacing:'-0.02em' }}>Quem usa, nao volta pra planilha</h2>
+        </div>
+        <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginBottom:60 }}>
+          {[
+            {q:'Agora consigo controlar tudo em um lugar so. Nao volto pra planilha.', n:'R. Silva'},
+            {q:'O app no celular mudou minha rotina. Recebo tudo em tempo real.', n:'M. Costa'},
+            {q:'Visual premium e controle real. Minha equipe toda usa.', n:'L. Santos'},
+          ].map(({q,n},i) => (
+            <div key={i} style={{ padding:'22px 20px', borderRadius:12, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.04)' }}>
+              <p style={{ fontSize:12, color:'var(--t2)', lineHeight:1.6, margin:'0 0 14px', fontStyle:'italic' }}>"{q}"</p>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <div style={{ width:24, height:24, borderRadius:6, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <span style={{ fontSize:10, fontWeight:700, color:'var(--t2)' }}>{n[0]}</span>
+                </div>
+                <span style={{ fontSize:11, color:'var(--t3)', fontWeight:600 }}>{n}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA final */}
+        <div style={{ textAlign:'center', padding:'40px 0' }}>
+          <p style={{ fontSize:13, color:'var(--t3)', marginBottom:8 }}>3 dias gratis. Sem cartao. Cancele quando quiser.</p>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginTop:16 }}>
+            <div style={{ width:24, height:24, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <svg width={10} height={10} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+            </div>
+            <span style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.35)' }}>Nex<span style={{ color:'#ff4444' }}>Control</span></span>
+          </div>
+          <p style={{ fontSize:10, color:'var(--t4)', marginTop:6 }}>Sistema operacional de resultados</p>
+        </div>
+      </div>
     </main>
   )
 }

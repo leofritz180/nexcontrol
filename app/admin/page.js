@@ -988,11 +988,11 @@ export default function AdminPage() {
               }}>
               {/* Ambient glow */}
               <div style={{
-                position:'absolute', top:'10%', left:'5%', width:350, height:250, borderRadius:'50%',
+                position:'absolute', top:'5%', left:'0%', width:450, height:350, borderRadius:'50%',
                 background: heroLucro.value>=0
-                  ? 'radial-gradient(circle, rgba(34,197,94,0.06), transparent 65%)'
-                  : 'radial-gradient(circle, rgba(239,68,68,0.06), transparent 65%)',
-                filter:'blur(40px)', pointerEvents:'none',
+                  ? 'radial-gradient(circle, rgba(34,197,94,0.08), transparent 60%)'
+                  : 'radial-gradient(circle, rgba(239,68,68,0.08), transparent 60%)',
+                filter:'blur(50px)', pointerEvents:'none',
               }}/>
               <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)', pointerEvents:'none' }}/>
 
@@ -1053,23 +1053,25 @@ export default function AdminPage() {
             {/* RIGHT — 4 stacked KPI cards */}
             <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
               {[
-                { label:'Total depositado', value:global.totalDep, prefix:'R$ ' },
-                { label:'Total sacado', value:global.totalSaq, prefix:'R$ ' },
-                { label:'Total metas', value:global.totalMetas, prefix:'', decimals:0 },
-                { label:'Total de depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), prefix:'', decimals:0 },
+                { label:'Total depositado', value:global.totalDep, prefix:'R$ ', accent:'rgba(59,130,246,0.4)' },
+                { label:'Total sacado', value:global.totalSaq, prefix:'R$ ', accent:'rgba(245,158,11,0.4)' },
+                { label:'Total metas', value:global.totalMetas, prefix:'', decimals:0, accent:'rgba(255,255,255,0.15)' },
+                { label:'Total de depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), prefix:'', decimals:0, accent:'rgba(229,57,53,0.4)' },
               ].map((k,i)=>(
                 <motion.div key={i}
-                  initial={{opacity:0,x:12}} animate={{opacity:1,x:0}}
-                  transition={{duration:0.3,delay:0.1+i*0.06,ease}}
-                  whileHover={{ y:-2, boxShadow:'0 12px 36px rgba(0,0,0,0.5)', transition:{duration:0.2} }}
+                  initial={{opacity:0,x:14}} animate={{opacity:1,x:0}}
+                  transition={{duration:0.3,delay:0.1+i*0.07,ease}}
+                  whileHover={{ y:-3, boxShadow:'0 14px 40px rgba(0,0,0,0.55)', borderColor:'rgba(255,255,255,0.1)', transition:{duration:0.2} }}
                   style={{
-                    flex:1, padding:'16px 22px', borderRadius:14,
+                    position:'relative', flex:1, padding:'18px 22px 18px 26px', borderRadius:14,
                     background:'linear-gradient(145deg, #0c1424, #080e1a)',
                     border:'1px solid rgba(255,255,255,0.05)',
-                    boxShadow:'0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+                    boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
                     transition:'all 0.25s ease',
                     display:'flex', alignItems:'center', justifyContent:'space-between',
                   }}>
+                  {/* Left accent line */}
+                  <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:'0 2px 2px 0', background:k.accent }}/>
                   <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{k.label}</p>
                   <AnimatedNumber value={k.value} prefix={k.prefix} decimals={k.decimals ?? 2}
                     style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:800, color:'var(--t1)' }} />

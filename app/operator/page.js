@@ -9,7 +9,7 @@ import { notifyMetaCreated } from '../../lib/notify'
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 
-function CountUp({ value, prefix='', suffix='', duration=1200, isNegative=false }) {
+function CountUp({ value, prefix='', suffix='', duration=1200, isNegative=false, integer=false }) {
   const [display, setDisplay] = useState('0')
   const ref = useRef(null)
   useEffect(() => {
@@ -19,7 +19,7 @@ function CountUp({ value, prefix='', suffix='', duration=1200, isNegative=false 
       const progress = Math.min((now-start)/duration, 1)
       const ease = 1-Math.pow(1-progress,3)
       const current = num*ease
-      setDisplay(fmt(current))
+      setDisplay(integer ? String(Math.round(current)) : fmt(current))
       if (progress < 1) ref.current = requestAnimationFrame(tick)
     }
     ref.current = requestAnimationFrame(tick)
@@ -219,9 +219,9 @@ export default function OperatorPage() {
         <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:28 }}>
           {[
             { label:'Resultado hoje', value:Math.abs(stats.lucroHoje), prefix:`${stats.lucroHoje>=0?'+':'-'}R$ `, color:stats.lucroHoje>=0?'var(--profit)':'var(--loss)', sub:stats.lucroHoje>=0?'Lucro do dia':'Prejuizo do dia' },
-            { label:'Metas ativas', value:stats.ativas, prefix:'', suffix:'', decimals:0, color:'var(--t1)', sub:`${stats.total} total` },
-            { label:'Remessas', value:stats.nRem, prefix:'', suffix:'', decimals:0, color:'var(--t1)', sub:'Total registradas' },
-            { label:'Total de depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), prefix:'', suffix:'', decimals:0, color:'var(--t1)', sub:`${metas.filter(m=>m.status_fechamento==='fechada').length} metas fechadas` },
+            { label:'Metas ativas', value:stats.ativas, prefix:'', suffix:'', color:'var(--t1)', sub:`${stats.total} total`, int:true },
+            { label:'Remessas', value:stats.nRem, prefix:'', suffix:'', color:'var(--t1)', sub:'Total registradas', int:true },
+            { label:'Total de depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), prefix:'', suffix:'', color:'var(--t1)', sub:`${metas.filter(m=>m.status_fechamento==='fechada').length} metas fechadas`, int:true },
           ].map((k,i)=>(
             <motion.div key={i}
               initial={{ opacity:0, y:12 }}
@@ -238,7 +238,7 @@ export default function OperatorPage() {
               }}>
               <p style={{ fontSize:11, color:'var(--t3)', marginBottom:12, fontWeight:500 }}>{k.label}</p>
               <p style={{ fontFamily:'var(--mono)', fontSize:24, fontWeight:800, color:k.color, margin:0, lineHeight:1 }}>
-                <CountUp value={k.value} prefix={k.prefix||''} suffix={k.suffix||''}/>
+                <CountUp value={k.value} prefix={k.prefix||''} suffix={k.suffix||''} integer={!!k.int}/>
               </p>
               <p style={{ fontSize:11, color:'var(--t4)', marginTop:10 }}>{k.sub}</p>
             </motion.div>

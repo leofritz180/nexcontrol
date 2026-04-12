@@ -21,7 +21,7 @@ export const metadata = {
     ],
     apple: '/icons/icon-192.png',
   },
-  themeColor: '#4f6ef7',
+  themeColor: '#3B82F6',
 }
 
 export const viewport = { width: 'device-width', initialScale: 1, maximumScale: 1, viewportFit: 'cover' }

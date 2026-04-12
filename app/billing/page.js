@@ -70,7 +70,7 @@ export default function BillingPage() {
 
         {/* ── HERO ── */}
         <div className="a1" style={{textAlign:'center',marginBottom:40}}>
-          <div style={{display:'inline-flex',alignItems:'center',gap:6,padding:'4px 14px',borderRadius:99,background:billing?.subActive?'var(--profit-dim)':billing?.trialActive?'rgba(79,110,247,0.08)':'var(--loss-dim)',border:`1px solid ${billing?.subActive?'var(--profit-border)':billing?.trialActive?'rgba(79,110,247,0.15)':'var(--loss-border)'}`,marginBottom:20}}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:6,padding:'4px 14px',borderRadius:99,background:billing?.subActive?'var(--profit-dim)':billing?.trialActive?'rgba(59,130,246,0.08)':'var(--loss-dim)',border:`1px solid ${billing?.subActive?'var(--profit-border)':billing?.trialActive?'rgba(59,130,246,0.15)':'var(--loss-border)'}`,marginBottom:20}}>
             <div style={{width:6,height:6,borderRadius:'50%',background:billing?.subActive?'var(--profit)':billing?.trialActive?'var(--brand-bright)':'var(--loss)'}}/>
             <span style={{fontSize:11,fontWeight:700,color:billing?.subActive?'var(--profit)':billing?.trialActive?'var(--brand-bright)':'var(--loss)',letterSpacing:'0.06em'}}>
               {billing?.subActive?'ASSINATURA ATIVA':billing?.trialActive?`TRIAL · ${billing.daysLeft} DIAS`:'ASSINE PARA CONTINUAR'}
@@ -91,7 +91,7 @@ export default function BillingPage() {
           <div style={{
             borderRadius:22,overflow:'hidden',
             background:'var(--surface)',border:opQty===0?'2px solid var(--brand-border)':'1px solid var(--b1)',
-            boxShadow:opQty===0?'0 0 40px rgba(79,110,247,0.08)':'none',
+            boxShadow:opQty===0?'0 0 40px rgba(59,130,246,0.08)':'none',
             transition:'all 0.3s',cursor:'pointer',
           }} onClick={()=>setOpQty(0)}>
             <div style={{padding:'28px 26px'}}>
@@ -119,12 +119,12 @@ export default function BillingPage() {
           {/* ADMIN + OPERATORS */}
           <div style={{
             borderRadius:22,overflow:'hidden',position:'relative',
-            background:opQty>0?'linear-gradient(145deg,rgba(79,110,247,0.1),var(--surface) 60%)':'var(--surface)',
+            background:opQty>0?'linear-gradient(145deg,rgba(59,130,246,0.1),var(--surface) 60%)':'var(--surface)',
             border:opQty>0?'2px solid var(--brand-border)':'1px solid var(--b1)',
-            boxShadow:opQty>0?'0 0 40px rgba(79,110,247,0.08)':'none',
+            boxShadow:opQty>0?'0 0 40px rgba(59,130,246,0.08)':'none',
             transition:'all 0.3s',cursor:'pointer',
           }} onClick={()=>{if(opQty===0)setOpQty(Math.max(1,operators.length))}}>
-            <div style={{position:'absolute',top:0,right:0,padding:'6px 16px',borderRadius:'0 20px 0 12px',background:'linear-gradient(135deg,#4f6ef7,#7c5cfc)',fontSize:10,fontWeight:800,color:'white',letterSpacing:'0.06em'}}>RECOMENDADO</div>
+            <div style={{position:'absolute',top:0,right:0,padding:'6px 16px',borderRadius:'0 20px 0 12px',background:'linear-gradient(135deg,#3B82F6,#3B82F6)',fontSize:10,fontWeight:800,color:'white',letterSpacing:'0.06em'}}>RECOMENDADO</div>
             <div style={{padding:'28px 26px'}}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
                 <h3 style={{fontSize:17,fontWeight:800,color:'var(--t1)',margin:0}}>Admin + Operadores</h3>
@@ -158,7 +158,7 @@ export default function BillingPage() {
               {tiers.map((t,i)=>{
                 const isActive = price.discount === t.discount && opQty > 0
                 return (
-                  <div key={i} style={{padding:'12px 10px',borderRadius:12,textAlign:'center',background:isActive?'rgba(5,217,140,0.08)':'var(--surface)',border:`1px solid ${isActive?'rgba(5,217,140,0.2)':'var(--b1)'}`,transition:'all 0.2s'}}>
+                  <div key={i} style={{padding:'12px 10px',borderRadius:12,textAlign:'center',background:isActive?'rgba(34,197,94,0.08)':'var(--surface)',border:`1px solid ${isActive?'rgba(34,197,94,0.2)':'var(--b1)'}`,transition:'all 0.2s'}}>
                     <p style={{fontSize:9,fontWeight:700,color:isActive?'var(--profit)':'var(--t3)',letterSpacing:'0.06em',marginBottom:4}}>{t.label.toUpperCase()}</p>
                     <p className="t-num" style={{fontSize:isActive?18:14,fontWeight:900,color:isActive?'var(--profit)':t.discount>0?'var(--t1)':'var(--t3)',marginBottom:2}}>
                       {t.discount>0?`-${t.discount}%`:'—'}
@@ -173,8 +173,8 @@ export default function BillingPage() {
 
         {/* ── OPERATOR SELECTOR + SUMMARY (only when operators selected) ── */}
         {opQty > 0 && (
-          <div className="a3" style={{borderRadius:22,overflow:'hidden',background:'var(--surface)',border:'1px solid var(--brand-border)',boxShadow:'0 0 40px rgba(79,110,247,0.06)',marginBottom:24}}>
-            <div style={{padding:'24px 28px',background:'linear-gradient(135deg,rgba(79,110,247,0.08),transparent)',borderBottom:'1px solid var(--b1)'}}>
+          <div className="a3" style={{borderRadius:22,overflow:'hidden',background:'var(--surface)',border:'1px solid var(--brand-border)',boxShadow:'0 0 40px rgba(59,130,246,0.06)',marginBottom:24}}>
+            <div style={{padding:'24px 28px',background:'linear-gradient(135deg,rgba(59,130,246,0.08),transparent)',borderBottom:'1px solid var(--b1)'}}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                 <div>
                   <h2 style={{fontSize:16,fontWeight:800,color:'var(--t1)',margin:'0 0 4px'}}>Quantidade de operadores</h2>
@@ -195,13 +195,13 @@ export default function BillingPage() {
             <div style={{padding:'24px 28px'}}>
               {/* Discount badge */}
               {price.discount > 0 && (
-                <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px',borderRadius:10,background:'rgba(5,217,140,0.06)',border:'1px solid rgba(5,217,140,0.12)',marginBottom:14}}>
+                <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px',borderRadius:10,background:'rgba(34,197,94,0.06)',border:'1px solid rgba(34,197,94,0.12)',marginBottom:14}}>
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                   <span style={{fontSize:12,fontWeight:600,color:'var(--profit)'}}>{price.discount}% desbloqueado — economia de R$ {fmt(price.savings)}/mes</span>
                 </div>
               )}
               {price.nextTier && (
-                <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px',borderRadius:10,background:'rgba(79,110,247,0.05)',border:'1px solid rgba(79,110,247,0.1)',marginBottom:14}}>
+                <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px',borderRadius:10,background:'rgba(59,130,246,0.05)',border:'1px solid rgba(59,130,246,0.1)',marginBottom:14}}>
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                   <span style={{fontSize:12,color:'var(--t2)'}}>+{price.nextTierOps - opQty} op{price.nextTierOps-opQty>1?'s':''} para <strong style={{color:'var(--brand-bright)'}}>{price.nextTierDiscount}% desconto</strong></span>
                 </div>
@@ -259,7 +259,7 @@ export default function BillingPage() {
             </button>
             <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,marginTop:12}}>
               <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span style={{fontSize:10,color:'rgba(5,217,140,0.5)',fontWeight:600}}>Pagamento seguro via Pix · Ativacao instantanea</span>
+              <span style={{fontSize:10,color:'rgba(34,197,94,0.5)',fontWeight:600}}>Pagamento seguro via Pix · Ativacao instantanea</span>
             </div>
           </div>
         )}
@@ -271,8 +271,8 @@ export default function BillingPage() {
           const newPrice = calculatePrice(opQty)
           const extraCost = Math.round((newPrice.total - currentPrice.total) * 100) / 100
           return (
-          <div className="a4" style={{borderRadius:22,overflow:'hidden',background:'var(--surface)',border:'1px solid var(--brand-border)',boxShadow:'0 0 30px rgba(79,110,247,0.05)',marginBottom:32}}>
-            <div style={{padding:'22px 28px',background:'linear-gradient(135deg,rgba(79,110,247,0.08),transparent)',borderBottom:'1px solid var(--b1)'}}>
+          <div className="a4" style={{borderRadius:22,overflow:'hidden',background:'var(--surface)',border:'1px solid var(--brand-border)',boxShadow:'0 0 30px rgba(59,130,246,0.05)',marginBottom:32}}>
+            <div style={{padding:'22px 28px',background:'linear-gradient(135deg,rgba(59,130,246,0.08),transparent)',borderBottom:'1px solid var(--b1)'}}>
               <div style={{display:'flex',alignItems:'center',gap:10}}>
                 <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
                 <div>
@@ -302,7 +302,7 @@ export default function BillingPage() {
                 const extraOnlyCost = Math.round(extraOps * newPrice.opUnitPrice * 100) / 100
                 return (<>
                 {/* Cost breakdown */}
-                <div style={{padding:'14px 16px',borderRadius:14,background:'rgba(79,110,247,0.05)',border:'1px solid rgba(79,110,247,0.1)',marginBottom:16}}>
+                <div style={{padding:'14px 16px',borderRadius:14,background:'rgba(59,130,246,0.05)',border:'1px solid rgba(59,130,246,0.1)',marginBottom:16}}>
                   <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
                     <span style={{fontSize:12,color:'var(--t2)'}}>{extraOps} novo{extraOps>1?'s':''} operador{extraOps>1?'es':''} x R$ {fmt(newPrice.opUnitPrice)}</span>
                     <span className="t-num" style={{fontSize:13,fontWeight:700,color:'var(--brand-bright)'}}>R$ {fmt(extraOnlyCost)}</span>
@@ -357,7 +357,7 @@ export default function BillingPage() {
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {operators.map(op=>(
                 <div key={op.id} style={{display:'flex',alignItems:'center',gap:5,padding:'5px 10px 5px 5px',borderRadius:8,background:'var(--raised)',border:'1px solid var(--b1)'}}>
-                  <div style={{width:22,height:22,borderRadius:6,background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <div style={{width:22,height:22,borderRadius:6,background:'linear-gradient(135deg,rgba(59,130,246,0.3),rgba(59,130,246,0.2))',display:'flex',alignItems:'center',justifyContent:'center'}}>
                     <span style={{fontSize:9,fontWeight:800,color:'white'}}>{getName(op)[0].toUpperCase()}</span>
                   </div>
                   <span style={{fontSize:11,fontWeight:600,color:'var(--t2)'}}>{getName(op)}</span>

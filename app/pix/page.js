@@ -185,7 +185,7 @@ export default function PixPage() {
         <div className="a1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,rgba(5,217,140,0.2),rgba(79,110,247,0.15))', border: '1px solid var(--profit-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,rgba(34,197,94,0.2),rgba(59,130,246,0.15))', border: '1px solid var(--profit-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 10h20" /><path d="M6 16h.01" /><path d="M10 16h4" /></svg>
               </div>
               <h1 className="t-h1">Chaves PIX</h1>

@@ -42,9 +42,9 @@ function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, onClose, onSaved 
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:10000,background:'rgba(4,8,16,0.92)',backdropFilter:'blur(16px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:520,background:'var(--surface)',borderRadius:24,border:'1px solid rgba(79,110,247,0.2)',boxShadow:'0 40px 80px rgba(0,0,0,0.6)',animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',overflow:'hidden'}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:520,background:'var(--surface)',borderRadius:24,border:'1px solid rgba(59,130,246,0.2)',boxShadow:'0 40px 80px rgba(0,0,0,0.6)',animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',overflow:'hidden'}}>
         {/* Header */}
-        <div style={{padding:'24px 28px',background:'linear-gradient(135deg,rgba(79,110,247,0.1),transparent)',borderBottom:'1px solid var(--b1)'}}>
+        <div style={{padding:'24px 28px',background:'linear-gradient(135deg,rgba(59,130,246,0.1),transparent)',borderBottom:'1px solid var(--b1)'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <div style={{display:'flex',alignItems:'center',gap:12}}>
               <div style={{width:40,height:40,borderRadius:12,background:'var(--profit-dim)',border:'1px solid var(--profit-border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -446,7 +446,7 @@ export default function MetaPage() {
             {(editDep||editSaq) && (()=>{
               const d=Number(editDep||0),s=Number(editSaq||0),diff=s-d
               return (
-                <div style={{padding:'12px 14px',borderRadius:12,background:diff>=0?'rgba(5,217,140,0.06)':'rgba(240,61,107,0.06)',border:`1px solid ${diff>=0?'rgba(5,217,140,0.12)':'rgba(240,61,107,0.12)'}`,marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <div style={{padding:'12px 14px',borderRadius:12,background:diff>=0?'rgba(34,197,94,0.06)':'rgba(239,68,68,0.06)',border:`1px solid ${diff>=0?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)'}`,marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                   <span style={{fontSize:12,color:'var(--t2)'}}>Novo resultado</span>
                   <span className="t-num" style={{fontSize:18,fontWeight:800,color:diff>=0?'var(--profit)':'var(--loss)'}}>{diff>=0?'+':''}R$ {fmt(diff)}</span>
                 </div>

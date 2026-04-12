@@ -275,7 +275,7 @@ export default function FaturamentoPage() {
         <div className="a1" style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:16,marginBottom:28}}>
           <div>
             <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
-              <div style={{width:40,height:40,borderRadius:12,background:'linear-gradient(135deg,rgba(5,217,140,0.2),rgba(79,110,247,0.15))',border:'1px solid var(--profit-border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <div style={{width:40,height:40,borderRadius:12,background:'linear-gradient(135deg,rgba(34,197,94,0.2),rgba(59,130,246,0.15))',border:'1px solid var(--profit-border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
                 <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="1.8" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
               </div>
               <div>
@@ -308,35 +308,35 @@ export default function FaturamentoPage() {
           <div className="a1" style={{
             position:'relative', overflow:'hidden', borderRadius:28, padding:'52px 48px',
             background:'linear-gradient(160deg, #040810 0%, #060b14 30%, #081018 60%, #040810 100%)',
-            border:'1px solid rgba(5,217,140,0.12)',
-            boxShadow:'0 0 100px rgba(5,217,140,0.05), 0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)',
+            border:'1px solid rgba(34,197,94,0.12)',
+            boxShadow:'0 0 100px rgba(34,197,94,0.05), 0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)',
             marginBottom:24,
           }}>
             {/* ── Ambient orbs ── */}
-            <div style={{position:'absolute',top:'-25%',left:'-8%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle, rgba(5,217,140,0.07), transparent 60%)',filter:'blur(50px)',pointerEvents:'none',animation:'drift 20s ease-in-out infinite'}}/>
-            <div style={{position:'absolute',bottom:'-30%',right:'-5%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle, rgba(79,110,247,0.05), transparent 60%)',filter:'blur(50px)',pointerEvents:'none',animation:'drift 25s ease-in-out infinite 5s'}}/>
+            <div style={{position:'absolute',top:'-25%',left:'-8%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle, rgba(34,197,94,0.07), transparent 60%)',filter:'blur(50px)',pointerEvents:'none',animation:'drift 20s ease-in-out infinite'}}/>
+            <div style={{position:'absolute',bottom:'-30%',right:'-5%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle, rgba(59,130,246,0.05), transparent 60%)',filter:'blur(50px)',pointerEvents:'none',animation:'drift 25s ease-in-out infinite 5s'}}/>
 
             {/* ── Energy Circle (right side) ── */}
             <div style={{position:'absolute',right:40,top:'50%',transform:'translateY(-50%)',width:320,height:320,pointerEvents:'none'}}>
               {/* Outer ring spinning */}
-              <div style={{position:'absolute',inset:0,borderRadius:'50%',border:'1.5px solid transparent',borderTopColor:'rgba(5,217,140,0.35)',borderRightColor:'rgba(5,217,140,0.08)',animation:'energy-spin 8s linear infinite',filter:'drop-shadow(0 0 6px rgba(5,217,140,0.3))'}}/>
+              <div style={{position:'absolute',inset:0,borderRadius:'50%',border:'1.5px solid transparent',borderTopColor:'rgba(34,197,94,0.35)',borderRightColor:'rgba(34,197,94,0.08)',animation:'energy-spin 8s linear infinite',filter:'drop-shadow(0 0 6px rgba(34,197,94,0.3))'}}/>
               {/* Middle ring reverse */}
-              <div style={{position:'absolute',inset:20,borderRadius:'50%',border:'1px solid transparent',borderBottomColor:'rgba(79,110,247,0.3)',borderLeftColor:'rgba(79,110,247,0.06)',animation:'energy-spin 12s linear infinite reverse',filter:'drop-shadow(0 0 4px rgba(79,110,247,0.2))'}}/>
+              <div style={{position:'absolute',inset:20,borderRadius:'50%',border:'1px solid transparent',borderBottomColor:'rgba(59,130,246,0.3)',borderLeftColor:'rgba(59,130,246,0.06)',animation:'energy-spin 12s linear infinite reverse',filter:'drop-shadow(0 0 4px rgba(59,130,246,0.2))'}}/>
               {/* Inner ring */}
-              <div style={{position:'absolute',inset:45,borderRadius:'50%',border:'1px solid transparent',borderTopColor:'rgba(5,217,140,0.2)',animation:'energy-spin 6s linear infinite'}}/>
+              <div style={{position:'absolute',inset:45,borderRadius:'50%',border:'1px solid transparent',borderTopColor:'rgba(34,197,94,0.2)',animation:'energy-spin 6s linear infinite'}}/>
               {/* Pulsing core */}
-              <div style={{position:'absolute',inset:65,borderRadius:'50%',background:'radial-gradient(circle, rgba(5,217,140,0.08) 0%, rgba(5,217,140,0.02) 50%, transparent 70%)',animation:'breathe 5s ease-in-out infinite'}}/>
+              <div style={{position:'absolute',inset:65,borderRadius:'50%',background:'radial-gradient(circle, rgba(34,197,94,0.08) 0%, rgba(34,197,94,0.02) 50%, transparent 70%)',animation:'breathe 5s ease-in-out infinite'}}/>
               {/* Ring pulse */}
-              <div style={{position:'absolute',inset:30,borderRadius:'50%',border:'1px solid rgba(5,217,140,0.06)',animation:'ring-pulse 4s ease-in-out infinite'}}/>
-              <div style={{position:'absolute',inset:55,borderRadius:'50%',border:'1px solid rgba(79,110,247,0.05)',animation:'ring-pulse 4s ease-in-out infinite 2s'}}/>
+              <div style={{position:'absolute',inset:30,borderRadius:'50%',border:'1px solid rgba(34,197,94,0.06)',animation:'ring-pulse 4s ease-in-out infinite'}}/>
+              <div style={{position:'absolute',inset:55,borderRadius:'50%',border:'1px solid rgba(59,130,246,0.05)',animation:'ring-pulse 4s ease-in-out infinite 2s'}}/>
               {/* Particles */}
               {[
-                {size:3,top:'15%',left:'20%',color:'#05d98c',delay:'0s',dur:'7s'},
-                {size:2,top:'70%',left:'15%',color:'#6b84ff',delay:'1s',dur:'9s'},
-                {size:3,top:'25%',left:'75%',color:'#05d98c',delay:'2s',dur:'8s'},
-                {size:2,top:'60%',left:'80%',color:'#6b84ff',delay:'0.5s',dur:'6s'},
-                {size:2,top:'45%',left:'50%',color:'#05d98c',delay:'3s',dur:'10s'},
-                {size:2,top:'80%',left:'45%',color:'#34d399',delay:'1.5s',dur:'7s'},
+                {size:3,top:'15%',left:'20%',color:'#22C55E',delay:'0s',dur:'7s'},
+                {size:2,top:'70%',left:'15%',color:'#60A5FA',delay:'1s',dur:'9s'},
+                {size:3,top:'25%',left:'75%',color:'#22C55E',delay:'2s',dur:'8s'},
+                {size:2,top:'60%',left:'80%',color:'#60A5FA',delay:'0.5s',dur:'6s'},
+                {size:2,top:'45%',left:'50%',color:'#22C55E',delay:'3s',dur:'10s'},
+                {size:2,top:'80%',left:'45%',color:'#4ADE80',delay:'1.5s',dur:'7s'},
               ].map((p,i)=>(
                 <div key={i} style={{position:'absolute',width:p.size,height:p.size,borderRadius:'50%',background:p.color,top:p.top,left:p.left,boxShadow:`0 0 8px ${p.color}`,opacity:0.7,animation:`drift ${p.dur} ease-in-out infinite ${p.delay}`}}/>
               ))}
@@ -346,13 +346,13 @@ export default function FaturamentoPage() {
             <div style={{position:'relative',zIndex:1,maxWidth:700}}>
               <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:24}}>
                 <span className="live-dot" style={{width:8,height:8}}/>
-                <span style={{fontSize:11,fontWeight:700,color:'rgba(5,217,140,0.7)',letterSpacing:'0.12em'}}>LUCRO FINAL DA OPERACAO</span>
+                <span style={{fontSize:11,fontWeight:700,color:'rgba(34,197,94,0.7)',letterSpacing:'0.12em'}}>LUCRO FINAL DA OPERACAO</span>
               </div>
               <div className="shine-text" style={{display:'inline-block',marginBottom:14}}>
                 <p className="t-num" style={{fontSize:68,fontWeight:900,lineHeight:1,letterSpacing:'-0.04em',
-                  background:'linear-gradient(135deg, #05d98c 0%, #34d399 30%, #6ee7b7 60%, #34d399 80%, #05d98c 100%)',
+                  background:'linear-gradient(135deg, #22C55E 0%, #4ADE80 30%, #6ee7b7 60%, #4ADE80 80%, #22C55E 100%)',
                   WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',
-                  filter:'drop-shadow(0 0 40px rgba(5,217,140,0.25))',
+                  filter:'drop-shadow(0 0 40px rgba(34,197,94,0.25))',
                 }}>
                   <CountUp value={stats.lucroFinal} prefix="R$ "/>
                 </p>
@@ -473,7 +473,7 @@ export default function FaturamentoPage() {
                 <p className="t-small">concluido</p>
               </div>
               <div className="progress" style={{height:8,marginBottom:14}}>
-                <div className="progress-bar" style={{width:`${goalData.pct}%`,background:'linear-gradient(90deg,var(--profit),#34d399)',boxShadow:'0 0 12px rgba(5,217,140,0.3)'}}/>
+                <div className="progress-bar" style={{width:`${goalData.pct}%`,background:'linear-gradient(90deg,var(--profit),#4ADE80)',boxShadow:'0 0 12px rgba(34,197,94,0.3)'}}/>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}>
                 <div style={{background:'var(--raised)',borderRadius:10,padding:'10px 12px',border:'1px solid var(--b1)'}}>
@@ -500,13 +500,13 @@ export default function FaturamentoPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData.slice(-14)}>
                     <defs>
-                      <linearGradient id="gProfit" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#05d98c" stopOpacity={0.3}/><stop offset="100%" stopColor="#05d98c" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gProfit" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#22C55E" stopOpacity={0.3}/><stop offset="100%" stopColor="#22C55E" stopOpacity={0}/></linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/>
                     <XAxis dataKey="name" tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`}/>
                     <Tooltip content={<ChartTooltip/>}/>
-                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="#05d98c" fill="url(#gProfit)" strokeWidth={2}/>
+                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="#22C55E" fill="url(#gProfit)" strokeWidth={2}/>
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -547,17 +547,17 @@ export default function FaturamentoPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>
-                      <linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#05d98c" stopOpacity={0.25}/><stop offset="100%" stopColor="#05d98c" stopOpacity={0}/></linearGradient>
-                      <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f03d6b" stopOpacity={0.2}/><stop offset="100%" stopColor="#f03d6b" stopOpacity={0}/></linearGradient>
-                      <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#4f6ef7" stopOpacity={0.25}/><stop offset="100%" stopColor="#4f6ef7" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#22C55E" stopOpacity={0.25}/><stop offset="100%" stopColor="#22C55E" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#EF4444" stopOpacity={0.2}/><stop offset="100%" stopColor="#EF4444" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3B82F6" stopOpacity={0.25}/><stop offset="100%" stopColor="#3B82F6" stopOpacity={0}/></linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/>
                     <XAxis dataKey="name" tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false} tickFormatter={v=>`R$${(v/1000).toFixed(1)}k`}/>
                     <Tooltip content={<ChartTooltip/>}/>
-                    <Area type="monotone" dataKey="lucro" name="Lucro" stroke="#05d98c" fill="url(#gL)" strokeWidth={2}/>
-                    <Area type="monotone" dataKey="prejuizo" name="Prejuizo" stroke="#f03d6b" fill="url(#gP)" strokeWidth={2}/>
-                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="#4f6ef7" fill="url(#gN)" strokeWidth={2.5}/>
+                    <Area type="monotone" dataKey="lucro" name="Lucro" stroke="#22C55E" fill="url(#gL)" strokeWidth={2}/>
+                    <Area type="monotone" dataKey="prejuizo" name="Prejuizo" stroke="#EF4444" fill="url(#gP)" strokeWidth={2}/>
+                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="#3B82F6" fill="url(#gN)" strokeWidth={2.5}/>
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -572,8 +572,8 @@ export default function FaturamentoPage() {
                     <XAxis dataKey="name" tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <Tooltip content={<ChartTooltip/>}/>
-                    <Bar dataKey="lucro" name="Lucro" fill="#05d98c" radius={[4,4,0,0]} maxBarSize={32}/>
-                    <Bar dataKey="prejuizo" name="Prejuizo" fill="#f03d6b" radius={[4,4,0,0]} maxBarSize={32}/>
+                    <Bar dataKey="lucro" name="Lucro" fill="#22C55E" radius={[4,4,0,0]} maxBarSize={32}/>
+                    <Bar dataKey="prejuizo" name="Prejuizo" fill="#EF4444" radius={[4,4,0,0]} maxBarSize={32}/>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -602,7 +602,7 @@ export default function FaturamentoPage() {
                 return (
                   <div key={r.id} className="data-row a1" style={{animationDelay:`${i*15}ms`,display:'grid',gridTemplateColumns:'1.2fr 0.8fr 0.8fr 1fr 1fr 1fr 0.8fr',gap:8,padding:'12px 20px'}}>
                     <div style={{display:'flex',alignItems:'center',gap:8,minWidth:0}}>
-                      <div style={{width:24,height:24,borderRadius:6,background:'linear-gradient(135deg,rgba(79,110,247,0.3),rgba(124,92,252,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                      <div style={{width:24,height:24,borderRadius:6,background:'linear-gradient(135deg,rgba(59,130,246,0.3),rgba(59,130,246,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
                         <span style={{fontSize:9,fontWeight:800,color:'white'}}>{getName(op)[0]?.toUpperCase()}</span>
                       </div>
                       <span style={{fontSize:12,fontWeight:600,color:'var(--t1)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{getName(op)}</span>

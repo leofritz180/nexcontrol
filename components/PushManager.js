@@ -63,9 +63,9 @@ export default function PushManager({ userId, tenantId }) {
     <div style={{
       position:'fixed', bottom:20, left:20, right:20, zIndex:9000, maxWidth:420,
       padding:'16px 20px', borderRadius:16,
-      background:'linear-gradient(135deg, rgba(79,110,247,0.12), var(--surface))',
-      border:'1px solid rgba(79,110,247,0.2)',
-      boxShadow:'0 12px 40px rgba(0,0,0,0.4), 0 0 20px rgba(79,110,247,0.08)',
+      background:'linear-gradient(135deg, rgba(59,130,246,0.12), var(--surface))',
+      border:'1px solid rgba(59,130,246,0.2)',
+      boxShadow:'0 12px 40px rgba(0,0,0,0.4), 0 0 20px rgba(59,130,246,0.08)',
       display:'flex', alignItems:'center', gap:14,
       animation:'fade-up 0.4s cubic-bezier(0.33,1,0.68,1) both',
     }}>

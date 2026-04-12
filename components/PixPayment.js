@@ -87,7 +87,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
         {/* Header */}
         <div style={{
           padding:'24px 28px', borderBottom:'1px solid var(--b1)',
-          background:'linear-gradient(135deg, rgba(79,110,247,0.08), var(--surface))',
+          background:'linear-gradient(135deg, rgba(59,130,246,0.08), var(--surface))',
         }}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <div>

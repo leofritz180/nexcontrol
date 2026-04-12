@@ -27,7 +27,7 @@ export default function GlobalLoadingScreen() {
             display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column',
           }}
         >
-          <div style={{ position:'absolute', width:350, height:350, borderRadius:'50%', background:'radial-gradient(circle, rgba(79,110,247,0.07), transparent 65%)', filter:'blur(80px)', pointerEvents:'none' }}/>
+          <div style={{ position:'absolute', width:350, height:350, borderRadius:'50%', background:'radial-gradient(circle, rgba(59,130,246,0.07), transparent 65%)', filter:'blur(80px)', pointerEvents:'none' }}/>
 
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }}
@@ -35,7 +35,7 @@ export default function GlobalLoadingScreen() {
             transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
           >
             <Image src="/branding/logo-nexcontrol.png" alt="NexControl" width={64} height={64} priority quality={100}
-              style={{ filter:'drop-shadow(0 0 20px rgba(79,110,247,0.35))' }}/>
+              style={{ filter:'drop-shadow(0 0 20px rgba(59,130,246,0.35))' }}/>
           </motion.div>
 
           <motion.p
@@ -44,7 +44,7 @@ export default function GlobalLoadingScreen() {
             transition={{ delay: 0.25, duration: 0.4 }}
             style={{ fontFamily:'Inter,sans-serif', fontWeight:800, fontSize:17, letterSpacing:'-0.03em', color:'#eef2ff', marginTop:16 }}
           >
-            Nex<span style={{ color:'#6b84ff' }}>Control</span>
+            Nex<span style={{ color:'#60A5FA' }}>Control</span>
           </motion.p>
         </motion.div>
       )}

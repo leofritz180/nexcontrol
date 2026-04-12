@@ -22,8 +22,8 @@ export function IconMoney({ size=44, color='#00E5A0' }) {
 
 export function IconTarget({ size=44 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" style={{filter:'drop-shadow(0 4px 12px rgba(124,92,252,0.4))'}}>
-      <ellipse cx="24" cy="42" rx="14" ry="4" fill="#7C5CFC" opacity="0.2"/>
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" style={{filter:'drop-shadow(0 4px 12px rgba(59,130,246,0.4))'}}>
+      <ellipse cx="24" cy="42" rx="14" ry="4" fill="#3B82F6" opacity="0.2"/>
       <circle cx="24" cy="22" r="16" fill="url(#tg1)" opacity="0.9"/>
       <circle cx="24" cy="22" r="16" fill="rgba(255,255,255,0.08)"/>
       <circle cx="24" cy="22" r="11" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5"/>
@@ -111,9 +111,9 @@ export function IconTrophy({ size=44 }) {
 
 export function IconLock({ size=44 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" style={{filter:'drop-shadow(0 4px 12px rgba(124,92,252,0.35))'}}>
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" style={{filter:'drop-shadow(0 4px 12px rgba(59,130,246,0.35))'}}>
       <defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#A98BFF"/><stop offset="100%" stopColor="#4A2FCC"/></linearGradient></defs>
-      <ellipse cx="24" cy="42" rx="13" ry="3.5" fill="#7C5CFC" opacity="0.18"/>
+      <ellipse cx="24" cy="42" rx="13" ry="3.5" fill="#3B82F6" opacity="0.18"/>
       <rect x="10" y="20" width="28" height="22" rx="7" fill="url(#lg1)" opacity="0.9"/>
       <rect x="10" y="20" width="28" height="9" rx="7" fill="rgba(255,255,255,0.12)"/>
       <path d="M16 20 v-6 a8 8 0 0 1 16 0 v6" stroke="rgba(169,139,255,0.6)" strokeWidth="3" strokeLinecap="round" fill="none"/>
@@ -174,7 +174,7 @@ export function IconNexControl({ size=36 }) {
     <svg width={size} height={size} viewBox="0 0 36 36" fill="none">
       <defs>
         <linearGradient id="nc-logo" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#7C5CFC"/>
+          <stop offset="0%" stopColor="#3B82F6"/>
           <stop offset="100%" stopColor="#00D4FF"/>
         </linearGradient>
       </defs>

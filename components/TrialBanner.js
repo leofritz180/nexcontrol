@@ -14,10 +14,10 @@ function getLevel(days) {
 }
 
 const CFG = {
-  green:  { bg:'rgba(5,217,140,0.06)', border:'rgba(5,217,140,0.15)', color:'var(--profit)', rgb:'5,217,140' },
-  yellow: { bg:'rgba(245,166,35,0.08)', border:'rgba(245,166,35,0.2)', color:'var(--warn)', rgb:'245,166,35' },
-  orange: { bg:'rgba(245,166,35,0.12)', border:'rgba(245,166,35,0.25)', color:'#f59e0b', rgb:'245,166,35' },
-  red:    { bg:'rgba(240,61,107,0.1)', border:'rgba(240,61,107,0.25)', color:'var(--loss)', rgb:'240,61,107' },
+  green:  { bg:'rgba(34,197,94,0.06)', border:'rgba(34,197,94,0.15)', color:'var(--profit)', rgb:'34,197,94' },
+  yellow: { bg:'rgba(245,158,11,0.08)', border:'rgba(245,158,11,0.2)', color:'var(--warn)', rgb:'245,158,11' },
+  orange: { bg:'rgba(245,158,11,0.12)', border:'rgba(245,158,11,0.25)', color:'#f59e0b', rgb:'245,158,11' },
+  red:    { bg:'rgba(239,68,68,0.1)', border:'rgba(239,68,68,0.25)', color:'var(--loss)', rgb:'239,68,68' },
 }
 
 function useTrialState(tenant, subscription) {
@@ -83,17 +83,17 @@ export function ConversionModal({ tenant, subscription, stats }) {
       <div onClick={e=>e.stopPropagation()} style={{
         maxWidth:520,width:'100%',
         background:'var(--surface)',borderRadius:28,overflow:'hidden',
-        border:`1px solid ${t.trialExpired?'rgba(240,61,107,0.2)':'rgba(79,110,247,0.2)'}`,
-        boxShadow:`0 0 100px ${t.trialExpired?'rgba(240,61,107,0.1)':'rgba(79,110,247,0.1)'}, 0 40px 80px rgba(0,0,0,0.5)`,
+        border:`1px solid ${t.trialExpired?'rgba(239,68,68,0.2)':'rgba(59,130,246,0.2)'}`,
+        boxShadow:`0 0 100px ${t.trialExpired?'rgba(239,68,68,0.1)':'rgba(59,130,246,0.1)'}, 0 40px 80px rgba(0,0,0,0.5)`,
         animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',
       }}>
         {/* Top gradient */}
         <div style={{
           padding:'32px 36px 24px',
           background:t.trialExpired
-            ?'linear-gradient(135deg, rgba(240,61,107,0.12), rgba(240,61,107,0.03))'
-            :'linear-gradient(135deg, rgba(79,110,247,0.12), rgba(5,217,140,0.06))',
-          borderBottom:`1px solid ${t.trialExpired?'rgba(240,61,107,0.1)':'rgba(79,110,247,0.1)'}`,
+            ?'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.03))'
+            :'linear-gradient(135deg, rgba(59,130,246,0.12), rgba(34,197,94,0.06))',
+          borderBottom:`1px solid ${t.trialExpired?'rgba(239,68,68,0.1)':'rgba(59,130,246,0.1)'}`,
           textAlign:'center',
         }}>
           {/* Countdown */}
@@ -160,7 +160,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
           {/* CTA */}
           <button onClick={()=>router.push('/billing')} className="btn btn-profit btn-lg" style={{
             width:'100%',justifyContent:'center',fontSize:16,fontWeight:800,padding:'16px 24px',
-            boxShadow:'0 0 0 0 rgba(5,217,140,0.5)',
+            boxShadow:'0 0 0 0 rgba(34,197,94,0.5)',
             animation:'cta-pulse 2.5s ease-in-out infinite',
           }}>
             <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>

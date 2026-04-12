@@ -13,40 +13,40 @@ function AnimatedLogo() {
       <div style={{
         position:'absolute', inset:-4, borderRadius:'50%',
         border:'1px solid transparent',
-        borderTopColor:'rgba(79,110,247,0.5)',
-        borderRightColor:'rgba(79,110,247,0.15)',
+        borderTopColor:'rgba(59,130,246,0.5)',
+        borderRightColor:'rgba(59,130,246,0.15)',
         animation:'orbit 3s linear infinite',
-        filter:'drop-shadow(0 0 3px rgba(79,110,247,0.4))',
+        filter:'drop-shadow(0 0 3px rgba(59,130,246,0.4))',
       }}/>
       {/* Orbit ring 2 */}
       <div style={{
         position:'absolute', inset:-7, borderRadius:'50%',
         border:'1px solid transparent',
-        borderBottomColor:'rgba(5,217,140,0.4)',
-        borderLeftColor:'rgba(5,217,140,0.1)',
+        borderBottomColor:'rgba(34,197,94,0.4)',
+        borderLeftColor:'rgba(34,197,94,0.1)',
         animation:'orbit-reverse 5s linear infinite',
-        filter:'drop-shadow(0 0 3px rgba(5,217,140,0.3))',
+        filter:'drop-shadow(0 0 3px rgba(34,197,94,0.3))',
       }}/>
       {/* Particle dots */}
       <div style={{
-        position:'absolute', width:3, height:3, borderRadius:'50%', background:'#05d98c',
+        position:'absolute', width:3, height:3, borderRadius:'50%', background:'#22C55E',
         top:-5, left:'50%', marginLeft:-1.5,
-        boxShadow:'0 0 6px #05d98c',
+        boxShadow:'0 0 6px #22C55E',
         animation:'orbit 3s linear infinite',
         transformOrigin:'1.5px 22px',
       }}/>
       <div style={{
-        position:'absolute', width:2, height:2, borderRadius:'50%', background:'#6b84ff',
+        position:'absolute', width:2, height:2, borderRadius:'50%', background:'#60A5FA',
         bottom:-6, left:'50%', marginLeft:-1,
-        boxShadow:'0 0 5px #6b84ff',
+        boxShadow:'0 0 5px #60A5FA',
         animation:'orbit-reverse 5s linear infinite',
         transformOrigin:'1px -16px',
       }}/>
       {/* Glow base */}
       <div style={{
         position:'absolute', inset:0, borderRadius:9,
-        background:'linear-gradient(135deg,#e53935,#c62828)',
-        boxShadow:'0 0 20px rgba(229,57,53,0.4), 0 0 40px rgba(229,57,53,0.1)',
+        background:'linear-gradient(135deg,#3B82F6,#2563EB)',
+        boxShadow:'0 0 20px rgba(59,130,246,0.3), 0 0 40px rgba(59,130,246,0.1)',
         animation:'breathe 4s ease-in-out infinite',
       }}/>
       {/* Icon */}
@@ -54,7 +54,7 @@ function AnimatedLogo() {
         <path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/>
         <path d="M12 22L18 22L18 6L12 6Z" fill="white"/>
         <path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/>
-        <circle cx="21" cy="8" r="3" fill="rgba(5,217,140,1)"/>
+        <circle cx="21" cy="8" r="3" fill="rgba(34,197,94,1)"/>
       </svg>
     </div>
   )
@@ -101,7 +101,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           {isAdmin && <TrialStatusBadge tenant={tenant} subscription={subscription}/>}
           <div style={{ display:'flex', alignItems:'center', gap:8, padding:'5px 12px 5px 5px', borderRadius:10, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ width:26, height:26, borderRadius:7, background:'linear-gradient(135deg,#4f6ef7,#7c5cfc)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <div style={{ width:26, height:26, borderRadius:7, background:'linear-gradient(135deg,#3B82F6,#3B82F6)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
               <span style={{ fontSize:11, fontWeight:800, color:'white' }}>{initial}</span>
             </div>
             <span style={{ fontSize:12, color:'var(--t2)', maxWidth:130, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{name}</span>

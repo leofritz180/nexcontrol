@@ -200,7 +200,7 @@ export default function OperatorPage() {
               <span style={{ fontSize:11, color:'var(--t3)', fontWeight:600, letterSpacing:'0.06em' }}>SISTEMA ONLINE</span>
             </div>
             <h1 className="t-h1">
-              Olá, <span style={{ background:'linear-gradient(135deg,#818cf8,#a78bfa)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>{getName(profile)}</span>
+              Olá, <span style={{ background:'linear-gradient(135deg,#60A5FA,#60A5FA)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>{getName(profile)}</span>
             </h1>
             <p className="t-body" style={{ marginTop:4 }}>
               {new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
@@ -254,8 +254,8 @@ export default function OperatorPage() {
                       padding:'12px 16px', outline:'none', cursor:'pointer', textAlign:'left',
                       display:'flex', alignItems:'center', justifyContent:'space-between',
                       transition:'border-color 0.2s, box-shadow 0.2s, background 0.2s',
-                      boxShadow:redeOpen?'0 0 0 3px rgba(79,110,247,0.1), 0 0 20px rgba(79,110,247,0.06)':'none',
-                      background:redeOpen?'rgba(79,110,247,0.04)':'var(--void)',
+                      boxShadow:redeOpen?'0 0 0 3px rgba(59,130,246,0.1), 0 0 20px rgba(59,130,246,0.06)':'none',
+                      background:redeOpen?'rgba(59,130,246,0.04)':'var(--void)',
                     }}>
                     <span>{rede||'Selecione a rede'}</span>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
@@ -267,7 +267,7 @@ export default function OperatorPage() {
                     <div style={{
                       position:'absolute', top:'calc(100% + 6px)', left:0, right:0, zIndex:100,
                       background:'var(--raised)', border:'1px solid var(--b2)', borderRadius:14,
-                      boxShadow:'0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(79,110,247,0.08)',
+                      boxShadow:'0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(59,130,246,0.08)',
                       maxHeight:260, overflowY:'auto', padding:6,
                       animation:'scale-in 0.2s cubic-bezier(0.4,0,0.2,1) both',
                     }}>
@@ -275,12 +275,12 @@ export default function OperatorPage() {
                         <button key={r} type="button"
                           onClick={()=>{setRede(r);setRedeOpen(false)}}
                           onMouseEnter={e=>{e.currentTarget.style.background=rede===r?'':'var(--overlay)'}}
-                          onMouseLeave={e=>{e.currentTarget.style.background=rede===r?'linear-gradient(135deg,rgba(79,110,247,0.25),rgba(124,92,252,0.18))':''}}
+                          onMouseLeave={e=>{e.currentTarget.style.background=rede===r?'linear-gradient(135deg,rgba(59,130,246,0.25),rgba(59,130,246,0.18))':''}}
                           style={{
                             width:'100%', display:'block', padding:'9px 14px', border:'none', borderRadius:9,
                             textAlign:'left', cursor:'pointer', fontSize:13, fontWeight:rede===r?700:500,
                             color:rede===r?'white':'var(--t2)',
-                            background:rede===r?'linear-gradient(135deg,rgba(79,110,247,0.25),rgba(124,92,252,0.18))':'transparent',
+                            background:rede===r?'linear-gradient(135deg,rgba(59,130,246,0.25),rgba(59,130,246,0.18))':'transparent',
                             transition:'background 0.12s, color 0.12s',
                           }}>
                           {r}
@@ -379,7 +379,7 @@ export default function OperatorPage() {
                       {mRem.length>0 && (
                         <>
                           <div className="progress" style={{ height:3, marginBottom:5 }}>
-                            <div className="progress-bar" style={{ width:`${pct}%`, background:`linear-gradient(90deg,${pct>=50?'var(--profit)':'var(--loss)'},${pct>=50?'#34d399':'#f87171'})` }}/>
+                            <div className="progress-bar" style={{ width:`${pct}%`, background:`linear-gradient(90deg,${pct>=50?'var(--profit)':'var(--loss)'},${pct>=50?'#4ADE80':'#f87171'})` }}/>
                           </div>
                           <p style={{ fontSize:10,color:'var(--t4)' }}>
                             {pct}% acerto · L: R$ {fmt(lucro)} · P: R$ {fmt(prej)}

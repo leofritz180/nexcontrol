@@ -216,150 +216,193 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
         </div>
       )}
 
-      {/* === PRINT: title above === */}
-      {printMode && (
-        <motion.p
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 32 }}
-        >
+      {/* ══════════════════════════════════
+         PRINT MODE — full visual
+      ══════════════════════════════════ */}
+      {printMode && (<>
+        {/* Vignette */}
+        <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse 70% 70% at 50% 45%, transparent 40%, rgba(0,0,0,0.6) 100%)', pointerEvents:'none', zIndex:1 }}/>
+
+        {/* TITLE */}
+        <motion.p initial={{opacity:0,y:-10}} animate={{opacity:1,y:0}} transition={{delay:0.2}}
+          style={{ fontSize:13, color:'rgba(255,255,255,0.35)', letterSpacing:'0.25em', textTransform:'uppercase', fontWeight:700, marginBottom:40, zIndex:2 }}>
           Resultado da operacao
         </motion.p>
-      )}
 
-      {/* === CENTRAL HUD === */}
-      <motion.div
-        key={printMode ? 'print' : 'normal'}
-        initial={{ opacity: 0, scale: 0.7 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, delay: 0.15, ease }}
-        whileHover={!printMode ? { scale: 1.03, transition: { duration: 0.3 } } : {}}
-        style={{ position: 'relative', width: S, height: S, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <Particles color={c} count={printMode ? 18 : 14} radius={S/2 + 10}/>
-
-        {/* Ring 1 — outer goal */}
-        <svg width={S} height={S} style={{ position: 'absolute', transform: 'rotate(-90deg)' }}>
-          <circle cx={S/2} cy={S/2} r={(S-8)/2} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth={2}/>
-          <Ring progress={goalPct} size={S} strokeWidth={2} color="rgba(255,255,255,0.1)" delay={0.6} glow={false}/>
-        </svg>
-
-        {/* Ring 2 — decorative spin */}
-        <motion.svg width={S-30} height={S-30} style={{ position: 'absolute' }}
-          animate={{ rotate: 360 }} transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}>
-          <circle cx={(S-30)/2} cy={(S-30)/2} r={(S-38)/2} fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth={1} strokeDasharray="4 14"/>
-        </motion.svg>
-
-        {/* Ring 3 — main progress */}
-        <svg width={S-60} height={S-60} style={{ position: 'absolute', transform: 'rotate(-90deg)' }}>
-          <circle cx={(S-60)/2} cy={(S-60)/2} r={(S-72)/2} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={printMode ? 5 : 4}/>
-          <Ring progress={profitPct} size={S-60} strokeWidth={printMode ? 5 : 4} color={c} delay={0.4}/>
-        </svg>
-
-        {/* Ring 4 — inner accent */}
-        <motion.svg width={S-100} height={S-100} style={{ position: 'absolute' }}
-          animate={{ rotate: -360 }} transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}>
-          <circle cx={(S-100)/2} cy={(S-100)/2} r={(S-106)/2} fill="none" stroke={`${cDim}0.1)`} strokeWidth={1} strokeDasharray="2 10"/>
-        </motion.svg>
-
-        {/* Center content */}
+        {/* BIG HUD */}
         <motion.div
-          animate={{ boxShadow: [
-            `0 0 60px ${cDim}0.06), 0 0 120px ${cDim}0.03)`,
-            `0 0 100px ${cDim}0.12), 0 0 200px ${cDim}0.05)`,
-            `0 0 60px ${cDim}0.06), 0 0 120px ${cDim}0.03)`,
-          ]}}
-          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-          style={{
-            width: S - 140, height: S - 140, borderRadius: '50%',
-            background: `radial-gradient(circle, ${cDim}0.05), transparent 70%)`,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
-          {!printMode && (
+          initial={{opacity:0,scale:0.7}} animate={{opacity:1,scale:1}}
+          transition={{duration:1,delay:0.1,ease}}
+          style={{ position:'relative', width:480, height:480, display:'flex', alignItems:'center', justifyContent:'center', zIndex:2 }}>
+
+          <Particles color={c} count={22} radius={260}/>
+
+          <svg width={480} height={480} style={{position:'absolute',transform:'rotate(-90deg)'}}>
+            <circle cx={240} cy={240} r={234} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth={2}/>
+            <Ring progress={goalPct} size={480} strokeWidth={2} color="rgba(255,255,255,0.1)" delay={0.5} glow={false}/>
+          </svg>
+
+          <motion.svg width={440} height={440} style={{position:'absolute'}}
+            animate={{rotate:360}} transition={{duration:60,repeat:Infinity,ease:'linear'}}>
+            <circle cx={220} cy={220} r={216} fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth={1} strokeDasharray="5 16"/>
+          </motion.svg>
+
+          <svg width={400} height={400} style={{position:'absolute',transform:'rotate(-90deg)'}}>
+            <circle cx={200} cy={200} r={194} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={6}/>
+            <Ring progress={profitPct} size={400} strokeWidth={6} color={c} delay={0.3}/>
+          </svg>
+
+          <motion.svg width={350} height={350} style={{position:'absolute'}}
+            animate={{rotate:-360}} transition={{duration:90,repeat:Infinity,ease:'linear'}}>
+            <circle cx={175} cy={175} r={171} fill="none" stroke={`${cDim}0.1)`} strokeWidth={1} strokeDasharray="3 12"/>
+          </motion.svg>
+
+          <svg width={310} height={310} style={{position:'absolute',transform:'rotate(-90deg)'}}>
+            <circle cx={155} cy={155} r={151} fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth={1}/>
+          </svg>
+
+          {/* Center glow + value */}
+          <motion.div
+            animate={{boxShadow:[
+              `0 0 80px ${cDim}0.08), 0 0 160px ${cDim}0.04)`,
+              `0 0 120px ${cDim}0.16), 0 0 240px ${cDim}0.06)`,
+              `0 0 80px ${cDim}0.08), 0 0 160px ${cDim}0.04)`,
+            ]}}
+            transition={{duration:3.5,repeat:Infinity,ease:'easeInOut'}}
+            style={{
+              width:280, height:280, borderRadius:'50%',
+              background:`radial-gradient(circle, ${cDim}0.06), transparent 65%)`,
+              display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+            }}>
+            <motion.p
+              animate={{scale:[1,1.02,1]}}
+              transition={{duration:4,repeat:Infinity,ease:'easeInOut'}}
+              style={{
+                fontFamily:"'JetBrains Mono', monospace", fontSize:58, fontWeight:900,
+                color:c, lineHeight:1, letterSpacing:'-0.03em', margin:0, textAlign:'center',
+                textShadow:`0 0 50px ${cDim}0.45), 0 0 100px ${cDim}0.2), 0 0 150px ${cDim}0.1)`,
+              }}>
+              {isPos?'+':'-'}R$<br/>
+              <span style={{fontSize:62}}><CountUpValue value={val} key={'print-'+mode}/></span>
+            </motion.p>
+            <p style={{fontSize:13, color:'rgba(255,255,255,0.25)', marginTop:14}}>
+              {fechadas.length} metas fechadas
+            </p>
+          </motion.div>
+        </motion.div>
+
+        {/* FOOTER */}
+        <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.6}}
+          style={{marginTop:48, display:'flex', flexDirection:'column', alignItems:'center', gap:14, zIndex:2}}>
+          <div style={{display:'flex', alignItems:'center', gap:10}}>
+            <div style={{width:30,height:30,borderRadius:7,background:'#e53935',display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <svg width={13} height={13} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+            </div>
+            <div>
+              <span style={{fontSize:16, color:'rgba(255,255,255,0.45)', fontWeight:700}}>
+                Nex<span style={{color:'#ff4444'}}>Control</span>
+              </span>
+              <p style={{fontSize:10, color:'rgba(255,255,255,0.15)', margin:'2px 0 0', letterSpacing:'0.08em'}}>Sistema operacional</p>
+            </div>
+          </div>
+          <span style={{fontSize:11, color:'rgba(255,255,255,0.12)', letterSpacing:'0.06em'}}>
+            {new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})}
+          </span>
+        </motion.div>
+      </>)}
+
+      {/* ══════════════════════════════════
+         NORMAL MODE — with switcher + stats
+      ══════════════════════════════════ */}
+      {!printMode && (<>
+        {/* HUD */}
+        <motion.div
+          initial={{opacity:0,scale:0.7}} animate={{opacity:1,scale:1}}
+          transition={{duration:1,delay:0.15,ease}}
+          whileHover={{scale:1.03,transition:{duration:0.3}}}
+          style={{position:'relative',width:360,height:360,display:'flex',alignItems:'center',justifyContent:'center'}}>
+
+          <Particles color={c} count={14} radius={190}/>
+
+          <svg width={360} height={360} style={{position:'absolute',transform:'rotate(-90deg)'}}>
+            <circle cx={180} cy={180} r={174} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth={2}/>
+            <Ring progress={goalPct} size={360} strokeWidth={2} color="rgba(255,255,255,0.1)" delay={0.6} glow={false}/>
+          </svg>
+          <motion.svg width={330} height={330} style={{position:'absolute'}}
+            animate={{rotate:360}} transition={{duration:60,repeat:Infinity,ease:'linear'}}>
+            <circle cx={165} cy={165} r={161} fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth={1} strokeDasharray="4 14"/>
+          </motion.svg>
+          <svg width={300} height={300} style={{position:'absolute',transform:'rotate(-90deg)'}}>
+            <circle cx={150} cy={150} r={144} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={4}/>
+            <Ring progress={profitPct} size={300} strokeWidth={4} color={c} delay={0.4}/>
+          </svg>
+          <motion.svg width={260} height={260} style={{position:'absolute'}}
+            animate={{rotate:-360}} transition={{duration:90,repeat:Infinity,ease:'linear'}}>
+            <circle cx={130} cy={130} r={126} fill="none" stroke={`${cDim}0.1)`} strokeWidth={1} strokeDasharray="2 10"/>
+          </motion.svg>
+
+          <motion.div
+            animate={{boxShadow:[
+              `0 0 60px ${cDim}0.06), 0 0 120px ${cDim}0.03)`,
+              `0 0 100px ${cDim}0.12), 0 0 200px ${cDim}0.05)`,
+              `0 0 60px ${cDim}0.06), 0 0 120px ${cDim}0.03)`,
+            ]}}
+            transition={{duration:3.5,repeat:Infinity,ease:'easeInOut'}}
+            style={{
+              width:220,height:220,borderRadius:'50%',
+              background:`radial-gradient(circle, ${cDim}0.05), transparent 70%)`,
+              display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+            }}>
             <AnimatePresence mode="wait">
               <motion.p key={mode+'-lbl'} initial={{opacity:0,y:-5}} animate={{opacity:1,y:0}} exit={{opacity:0,y:5}} transition={{duration:0.2}}
-                style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 8, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>
+                style={{fontSize:11,color:'rgba(255,255,255,0.3)',marginBottom:8,letterSpacing:'0.12em',textTransform:'uppercase',fontWeight:600}}>
                 {mode==='total'?'Lucro total':mode==='today'?'Lucro de hoje':'Ultimos 7 dias'}
               </motion.p>
             </AnimatePresence>
-          )}
-
-          <AnimatePresence mode="wait">
-            <motion.div key={mode+'-val'} initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.9}} transition={{duration:0.3}}>
-              <motion.p
-                animate={{ scale: [1, 1.015, 1] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                style={{
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: printMode ? 54 : 44,
-                  fontWeight: 900, color: c, lineHeight: 1, letterSpacing: '-0.03em',
-                  margin: 0, textAlign: 'center',
-                  textShadow: `0 0 40px ${cDim}0.4), 0 0 80px ${cDim}0.2), 0 0 120px ${cDim}0.1)`,
-                }}>
-                {isPos ? '+' : '-'}R$<br/>
-                <span style={{ fontSize: printMode ? 58 : 48 }}><CountUpValue value={val} key={mode}/></span>
-              </motion.p>
-            </motion.div>
-          </AnimatePresence>
-
-          <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.5}}
-            style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 10 }}>
-            {fechadas.length} metas fechadas
-          </motion.p>
+            <AnimatePresence mode="wait">
+              <motion.div key={mode+'-val'} initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:0.9}} transition={{duration:0.3}}>
+                <motion.p animate={{scale:[1,1.015,1]}} transition={{duration:4,repeat:Infinity,ease:'easeInOut'}}
+                  style={{fontFamily:"'JetBrains Mono', monospace",fontSize:44,fontWeight:900,color:c,lineHeight:1,letterSpacing:'-0.03em',margin:0,textAlign:'center',
+                    textShadow:`0 0 40px ${cDim}0.4), 0 0 80px ${cDim}0.2)`,}}>
+                  {isPos?'+':'-'}R$<br/>
+                  <span style={{fontSize:48}}><CountUpValue value={val} key={mode}/></span>
+                </motion.p>
+              </motion.div>
+            </AnimatePresence>
+            <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.5}}
+              style={{fontSize:11,color:'rgba(255,255,255,0.2)',marginTop:10}}>
+              {fechadas.length} metas fechadas
+            </motion.p>
+          </motion.div>
         </motion.div>
-      </motion.div>
 
-      {/* === PERIOD SWITCHER (normal only) === */}
-      {!printMode && (
+        {/* Switcher */}
         <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.7}}
-          style={{ display: 'flex', gap: 4, marginTop: 40, background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: 4, border: '1px solid rgba(255,255,255,0.04)' }}>
-          {[['total','Total'],['today','Hoje'],['week','7 dias']].map(([k,l]) => (
-            <motion.button key={k} onClick={() => setMode(k)} whileTap={{ scale: 0.95 }}
-              style={{ fontSize: 12, fontWeight: 600, padding: '8px 22px', borderRadius: 8, cursor: 'pointer', border: 'none', transition: 'all 0.2s',
-                background: mode===k ? 'rgba(255,255,255,0.07)' : 'transparent',
-                color: mode===k ? '#fff' : 'rgba(255,255,255,0.3)',
+          style={{display:'flex',gap:4,marginTop:40,background:'rgba(255,255,255,0.03)',borderRadius:10,padding:4,border:'1px solid rgba(255,255,255,0.04)'}}>
+          {[['total','Total'],['today','Hoje'],['week','7 dias']].map(([k,l])=>(
+            <motion.button key={k} onClick={()=>setMode(k)} whileTap={{scale:0.95}}
+              style={{fontSize:12,fontWeight:600,padding:'8px 22px',borderRadius:8,cursor:'pointer',border:'none',transition:'all 0.2s',
+                background:mode===k?'rgba(255,255,255,0.07)':'transparent',color:mode===k?'#fff':'rgba(255,255,255,0.3)',
               }}>{l}</motion.button>
           ))}
         </motion.div>
-      )}
 
-      {/* === BOTTOM STATS (normal only) === */}
-      {!printMode && (
+        {/* Stats */}
         <motion.div initial={{opacity:0,y:30}} animate={{opacity:1,y:0}} transition={{delay:0.9}}
-          style={{ display: 'flex', gap: 48, marginTop: 48 }}>
+          style={{display:'flex',gap:48,marginTop:48}}>
           {[
-            { l: 'Depositado', v: `R$ ${fmt(stats.dep)}` },
-            { l: 'Sacado', v: `R$ ${fmt(stats.saq)}` },
-            { l: 'Operadores', v: String(operators.length) },
-            { l: 'Acerto', v: `${stats.taxa}%` },
-          ].map(({ l, v }, i) => (
-            <motion.div key={l} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1+i*0.1}} style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', marginBottom: 6, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 600 }}>{l}</p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.55)', margin: 0 }}>{v}</p>
+            {l:'Depositado',v:`R$ ${fmt(stats.dep)}`},
+            {l:'Sacado',v:`R$ ${fmt(stats.saq)}`},
+            {l:'Operadores',v:String(operators.length)},
+            {l:'Acerto',v:`${stats.taxa}%`},
+          ].map(({l,v},i)=>(
+            <motion.div key={l} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1+i*0.1}} style={{textAlign:'center'}}>
+              <p style={{fontSize:9,color:'rgba(255,255,255,0.2)',marginBottom:6,letterSpacing:'0.1em',textTransform:'uppercase',fontWeight:600}}>{l}</p>
+              <p style={{fontFamily:"'JetBrains Mono', monospace",fontSize:16,fontWeight:700,color:'rgba(255,255,255,0.55)',margin:0}}>{v}</p>
             </motion.div>
           ))}
         </motion.div>
-      )}
-
-      {/* === PRINT FOOTER === */}
-      {printMode && (
-        <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.5}}
-          style={{ position: 'absolute', bottom: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 24, height: 24, borderRadius: 6, background: '#e53935', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width={10} height={10} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
-            </div>
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', fontWeight: 700, letterSpacing: '-0.01em' }}>
-              Nex<span style={{ color: '#ff4444' }}>Control</span>
-            </span>
-          </div>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.06em' }}>
-            {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
-          </span>
-        </motion.div>
-      )}
+      </>)}
 
       {/* === OFF-SCREEN CAPTURE CONTAINER (1080x1920 story) === */}
       {printMode && (

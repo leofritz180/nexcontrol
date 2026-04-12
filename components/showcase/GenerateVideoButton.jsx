@@ -9,7 +9,7 @@ import { motion } from 'framer-motion'
  * 2. Uploads to Vercel Blob Storage
  * 3. Returns shareable public URL
  */
-export function GenerateVideoButton({ amount, completedGoals, goalPct, mode, stats, style }) {
+export function GenerateVideoButton({ amount, completedGoals, goalPct, mode, stats, onClose, style }) {
   const [status, setStatus] = useState('idle') // idle | rendering | uploading | done | error
   const [progress, setProgress] = useState(0)
   const [videoUrl, setVideoUrl] = useState(null)
@@ -124,6 +124,12 @@ export function GenerateVideoButton({ amount, completedGoals, goalPct, mode, sta
             style={{ fontSize: 11, fontWeight: 600, padding: '7px 16px', borderRadius: 7, cursor: 'pointer', border: 'none', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.3)' }}>
             Novo
           </motion.button>
+          {onClose && (
+            <motion.button onClick={onClose} whileTap={{ scale: 0.96 }}
+              style={{ fontSize: 11, fontWeight: 600, padding: '7px 16px', borderRadius: 7, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: 'rgba(255,255,255,0.3)' }}>
+              Fechar
+            </motion.button>
+          )}
         </div>
       )}
 

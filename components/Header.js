@@ -45,8 +45,8 @@ function AnimatedLogo() {
       {/* Glow base */}
       <div style={{
         position:'absolute', inset:0, borderRadius:9,
-        background:'linear-gradient(135deg,#3B82F6,#2563EB)',
-        boxShadow:'0 0 20px rgba(59,130,246,0.3), 0 0 40px rgba(59,130,246,0.1)',
+        background:'linear-gradient(135deg,#e53935,#c62828)',
+        boxShadow:'0 0 20px rgba(229,57,53,0.4), 0 0 40px rgba(229,57,53,0.1)',
         animation:'breathe 4s ease-in-out infinite',
       }}/>
       {/* Icon */}

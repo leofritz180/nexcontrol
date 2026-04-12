@@ -1055,7 +1055,7 @@ export default function AdminPage() {
               {[
                 { label:'Total depositado', value:global.totalDep, prefix:'R$ ' },
                 { label:'Total sacado', value:global.totalSaq, prefix:'R$ ' },
-                { label:'Total metas', value:global.totalMetas, prefix:'', decimals:0 },
+                { label:'Total de depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), prefix:'', decimals:0 },
                 { label:'Total remessas', value:global.totalRem, prefix:'', decimals:0 },
               ].map((k,i)=>(
                 <motion.div key={i}

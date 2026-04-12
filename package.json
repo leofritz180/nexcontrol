@@ -12,6 +12,7 @@
     "@remotion/renderer": "^4.0.448",
     "@remotion/vercel": "^4.0.448",
     "@supabase/supabase-js": "^2.49.8",
+    "@vercel/blob": "^2.3.3",
     "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",
     "next": "14.2.30",

@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { GenerateVideoButton } from './showcase/GenerateVideoButton'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const ease = [0.33,1,0.68,1]
@@ -201,10 +202,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
       {/* Print controls */}
       {printMode && (
         <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 10, display: 'flex', gap: 8 }}>
-          <button onClick={exportVideo} disabled={generatingVideo}
-            style={{ fontSize: 11, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: generatingVideo?'wait':'pointer', border: '1px solid rgba(229,57,53,0.3)', background: 'rgba(229,57,53,0.15)', color: '#ff6b6b', opacity: generatingVideo ? 0.7 : 1 }}>
-            {generatingVideo ? `Gerando video ${videoProgress}%` : 'Gerar video'}
-          </button>
+          <GenerateVideoButton amount={val} completedGoals={fechadas.length} goalPct={goalPct} mode={mode}/>
           <button onClick={exportImage} disabled={exporting}
             style={{ fontSize: 11, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: exporting?'wait':'pointer', border: 'none', background: '#e53935', color: 'white', opacity: exporting ? 0.6 : 1 }}>
             {exporting ? 'Gerando...' : 'Baixar imagem'}

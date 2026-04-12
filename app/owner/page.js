@@ -215,7 +215,17 @@ export default function OwnerPage() {
                       </span>
                     </td>
                     <td style={{ padding:'10px 12px', fontSize:11, color: a.daysSinceActivity > 7 ? 'var(--loss)' : a.daysSinceActivity > 3 ? 'var(--warn)' : 'var(--t3)' }}>
-                      {a.daysSinceActivity < 999 ? `${a.daysSinceActivity}d atras` : 'Nunca'}
+                      {(()=>{
+                        if (!a.lastActivity) return 'Nunca'
+                        const diff = Date.now() - new Date(a.lastActivity).getTime()
+                        const min = Math.floor(diff/60000)
+                        if (min < 1) return 'Agora'
+                        if (min < 60) return `${min}min atras`
+                        const hrs = Math.floor(min/60)
+                        if (hrs < 24) return `${hrs}h atras`
+                        const days = Math.floor(hrs/24)
+                        return `${days}d atras`
+                      })()}
                     </td>
                   </tr>
                 ))}

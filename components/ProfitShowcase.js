@@ -76,6 +76,26 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
   const [generatingVideo, setGeneratingVideo] = useState(false)
   const captureRef = useRef(null)
 
+  const fechadas = (metas||[]).filter(m => m.status_fechamento === 'fechada' && m.fechada_em)
+  const now = new Date()
+  const todayStr = now.toDateString()
+  const d7 = new Date(now); d7.setDate(d7.getDate() - 7)
+
+  const values = useMemo(() => ({
+    total: fechadas.reduce((a, m) => a + Number(m.lucro_final || 0), 0),
+    today: fechadas.filter(m => new Date(m.fechada_em).toDateString() === todayStr).reduce((a, m) => a + Number(m.lucro_final || 0), 0),
+    week: fechadas.filter(m => new Date(m.fechada_em) >= d7).reduce((a, m) => a + Number(m.lucro_final || 0), 0),
+  }), [metas])
+
+  const val = values[mode]
+  const isPos = val >= 0
+  const c = isPos ? '#22C55E' : '#EF4444'
+  const cDim = isPos ? 'rgba(34,197,94,' : 'rgba(239,68,68,'
+  const goalPct = (goalData?.target || 0) > 0 ? Math.min(1, (goalData?.lucroFinalTotal || 0) / goalData.target) : 0
+  const profitPct = Math.min(1, Math.abs(val) / Math.max(1, (goalData?.target) || Math.abs(val) * 1.5))
+
+  const S = printMode ? 420 : 360
+
   const exportImage = useCallback(async () => {
     if (exporting || !captureRef.current) return
     setExporting(true)
@@ -125,26 +145,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
     setGeneratingVideo(false)
   }, [generatingVideo, val, fechadas.length, goalPct])
 
-  const fechadas = metas.filter(m => m.status_fechamento === 'fechada' && m.fechada_em)
-  const now = new Date()
-  const todayStr = now.toDateString()
-  const d7 = new Date(now); d7.setDate(d7.getDate() - 7)
-
-  const values = useMemo(() => ({
-    total: fechadas.reduce((a, m) => a + Number(m.lucro_final || 0), 0),
-    today: fechadas.filter(m => new Date(m.fechada_em).toDateString() === todayStr).reduce((a, m) => a + Number(m.lucro_final || 0), 0),
-    week: fechadas.filter(m => new Date(m.fechada_em) >= d7).reduce((a, m) => a + Number(m.lucro_final || 0), 0),
-  }), [metas])
-
-  const val = values[mode]
-  const isPos = val >= 0
-  const c = isPos ? '#22C55E' : '#EF4444'
-  const cDim = isPos ? 'rgba(34,197,94,' : 'rgba(239,68,68,'
-  const goalPct = goalData.target > 0 ? Math.min(1, goalData.lucroFinalTotal / goalData.target) : 0
-  const profitPct = Math.min(1, Math.abs(val) / Math.max(1, goalData.target || Math.abs(val) * 1.5))
-
-  // Print mode = bigger ring, no stats, pure visual
-  const S = printMode ? 420 : 360
+  // Data computed above callbacks
 
   return (
     <motion.div

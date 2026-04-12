@@ -72,6 +72,8 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
   const [mode, setMode] = useState('total')
   const [printMode, setPrintMode] = useState(false)
   const [exporting, setExporting] = useState(false)
+  const [videoProgress, setVideoProgress] = useState(0)
+  const [generatingVideo, setGeneratingVideo] = useState(false)
   const captureRef = useRef(null)
 
   const exportImage = useCallback(async () => {
@@ -97,6 +99,31 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
     }
     setExporting(false)
   }, [exporting])
+
+  const exportVideo = useCallback(async () => {
+    if (generatingVideo) return
+    setGeneratingVideo(true)
+    setVideoProgress(0)
+    try {
+      const { generateVideo } = await import('../lib/videoExport')
+      const blob = await generateVideo({
+        value: val,
+        metasFechadas: fechadas.length,
+        goalPct,
+        onProgress: setVideoProgress,
+      })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      const d = new Date()
+      link.download = `nexcontrol-resultado-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.webm`
+      link.href = url
+      link.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      console.error('Video export failed:', e)
+    }
+    setGeneratingVideo(false)
+  }, [generatingVideo, val, fechadas.length, goalPct])
 
   const fechadas = metas.filter(m => m.status_fechamento === 'fechada' && m.fechada_em)
   const now = new Date()
@@ -173,6 +200,10 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
       {/* Print controls */}
       {printMode && (
         <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 10, display: 'flex', gap: 8 }}>
+          <button onClick={exportVideo} disabled={generatingVideo}
+            style={{ fontSize: 11, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: generatingVideo?'wait':'pointer', border: '1px solid rgba(229,57,53,0.3)', background: 'rgba(229,57,53,0.15)', color: '#ff6b6b', opacity: generatingVideo ? 0.7 : 1 }}>
+            {generatingVideo ? `Gerando video ${videoProgress}%` : 'Gerar video'}
+          </button>
           <button onClick={exportImage} disabled={exporting}
             style={{ fontSize: 11, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: exporting?'wait':'pointer', border: 'none', background: '#e53935', color: 'white', opacity: exporting ? 0.6 : 1 }}>
             {exporting ? 'Gerando...' : 'Baixar imagem'}

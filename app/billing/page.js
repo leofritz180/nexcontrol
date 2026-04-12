@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import Header from '../../components/Header'
+import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { calculatePrice, getAllTiers, BASE_PRICE, OP_BASE_PRICE } from '../../lib/pricing'
 import dynamic from 'next/dynamic'
@@ -59,14 +59,15 @@ export default function BillingPage() {
 
   if(loading) return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}/>
+      <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
       <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}><div className="spinner" style={{width:28,height:28,borderTopColor:'var(--brand-bright)'}}/></div>
+      </AppLayout>
     </main>
   )
 
   return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}/>
+      <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{maxWidth:820,margin:'0 auto',padding:'40px 28px'}}>
 
@@ -416,6 +417,7 @@ export default function BillingPage() {
       })()}
       {/* Landing sections with iPhone demo, features, social proof */}
       <BillingLanding/>
+      </AppLayout>
     </main>
   )
 }

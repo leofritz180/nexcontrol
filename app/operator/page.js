@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import Header from '../../components/Header'
+import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaCreated } from '../../lib/notify'
 
@@ -190,7 +190,7 @@ export default function OperatorPage() {
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role==='admin'} userId={user?.id} tenantId={profile?.tenant_id}/>
+      <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role==='admin'} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
         {/* Header */}
@@ -460,6 +460,7 @@ export default function OperatorPage() {
           </div>
         </div>
       </div>
+      </AppLayout>
     </main>
   )
 }

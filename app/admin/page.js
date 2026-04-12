@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import Header from '../../components/Header'
+import AppLayout from '../../components/AppLayout'
 import TrialBanner, { ConversionModal } from '../../components/TrialBanner'
 import AnimatedNumber from '../../components/ui/AnimatedNumber'
 import { supabase } from '../../lib/supabase/client'
@@ -743,7 +743,7 @@ export default function AdminPage() {
 
       <Onboarding/>
       <ProBanner blockedCount={6}/>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}/>
+      <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
         {/* ── PAGE HEADER — clean ── */}
@@ -1688,6 +1688,7 @@ export default function AdminPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      </AppLayout>
     </main>
   )
 }

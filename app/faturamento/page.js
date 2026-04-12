@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '../../components/Header'
+import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { generateInsights, getHealthStatus } from '../../lib/insights'
 import { ProLockedCard } from '../../components/pro/ProGate'
@@ -264,17 +264,18 @@ export default function FaturamentoPage() {
 
   if(loading) return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}/>
+      <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
       <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}>
         <div className="spinner" style={{width:28,height:28,borderTopColor:'var(--brand-bright)'}}/>
       </div>
+      </AppLayout>
     </main>
   )
 
   return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
       {showShowcase && <ProfitShowcase stats={stats} goalData={goalData} operators={operators} metas={metas} onClose={()=>setShowShowcase(false)}/>}
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}/>
+      <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{maxWidth:1380,margin:'0 auto',padding:'32px 28px'}}>
         {/* Header */}
@@ -744,6 +745,7 @@ export default function FaturamentoPage() {
           </div>
         )}
       </div>
+      </AppLayout>
     </main>
   )
 }

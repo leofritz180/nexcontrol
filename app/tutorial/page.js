@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import Header from '../../components/Header'
+import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 
 const ease = [0.33, 1, 0.68, 1]
@@ -74,7 +74,7 @@ export default function TutorialPage() {
 
   return (
     <main style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-      <Header
+      <AppLayout
         userName={getName(profile)}
         userEmail={user?.email}
         isAdmin={true}
@@ -82,7 +82,7 @@ export default function TutorialPage() {
         subscription={sub}
         userId={user?.id}
         tenantId={profile?.tenant_id}
-      />
+      >
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px 80px' }}>
         {/* Header */}
@@ -519,6 +519,7 @@ export default function TutorialPage() {
           ))}
         </motion.div>
       </div>
+      </AppLayout>
     </main>
   )
 }

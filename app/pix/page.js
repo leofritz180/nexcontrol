@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '../../components/Header'
+import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -178,7 +178,7 @@ export default function PixPage() {
 
   return (
     <main style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}/>
+      <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
         {/* Header */}
@@ -391,6 +391,7 @@ export default function PixPage() {
           </div>
         </div>
       </div>
+      </AppLayout>
     </main>
   )
 }

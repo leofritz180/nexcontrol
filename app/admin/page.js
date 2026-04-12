@@ -766,7 +766,7 @@ export default function AdminPage() {
           <motion.button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="btn btn-ghost btn-sm"
+            className="btn btn-brand btn-sm"
             whileTap={{ scale: 0.96 }}
             style={{ display:'flex', alignItems:'center', gap:6, opacity: refreshing ? 0.5 : 1 }}>
             {refreshing ? (

@@ -73,8 +73,6 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
   const [mode, setMode] = useState('total')
   const [printMode, setPrintMode] = useState(false)
   const [exporting, setExporting] = useState(false)
-  const [videoProgress, setVideoProgress] = useState(0)
-  const [generatingVideo, setGeneratingVideo] = useState(false)
   const captureRef = useRef(null)
 
   const fechadas = (metas||[]).filter(m => m.status_fechamento === 'fechada' && m.fechada_em)
@@ -121,30 +119,6 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
     setExporting(false)
   }, [exporting])
 
-  const exportVideo = useCallback(async () => {
-    if (generatingVideo) return
-    setGeneratingVideo(true)
-    setVideoProgress(0)
-    try {
-      const { renderVideo } = await import('../lib/video')
-      const blob = await renderVideo({
-        value: val,
-        metasFechadas: fechadas.length,
-        goalPct,
-        onProgress: setVideoProgress,
-      })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      const d = new Date()
-      link.download = `nexcontrol-resultado-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.webm`
-      link.href = url
-      link.click()
-      URL.revokeObjectURL(url)
-    } catch (e) {
-      console.error('Video export failed:', e)
-    }
-    setGeneratingVideo(false)
-  }, [generatingVideo, val, fechadas.length, goalPct])
 
   // Data computed above callbacks
 

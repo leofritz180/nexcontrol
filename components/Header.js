@@ -22,6 +22,8 @@ function Logo() {
   )
 }
 
+const OWNER_EMAIL = 'leofritz180@gmail.com'
+
 export default function Header({ userName, userEmail, isAdmin, tenant, subscription, userId, tenantId }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -59,6 +61,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
               { href: '/faturamento', label: 'Faturamento' },
               { href: '/billing', label: 'Assinatura' },
               { href: '/tutorial', label: 'Tutorial' },
+              ...(userEmail === OWNER_EMAIL ? [{ href: '/owner', label: 'Owner' }] : []),
             ] : []),
           ].map(item => {
             const active = pathname.startsWith(item.href)

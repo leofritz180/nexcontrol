@@ -1,44 +1,41 @@
 import { useMemo } from 'react'
-import { interpolate, useCurrentFrame, useVideoConfig } from 'remotion'
+import { useCurrentFrame, useVideoConfig, interpolate } from 'remotion'
 
-export function ParticleField({ color, count = 20, radius = 220 }) {
+export function ParticleField({ color = '#22C55E', count = 25 }) {
   const frame = useCurrentFrame()
-  const { fps } = useVideoConfig()
+  const { fps, width, height } = useVideoConfig()
   const sec = frame / fps
 
-  const particles = useMemo(() =>
-    Array.from({ length: count }, (_, i) => ({
-      angle: (i / count) * 360,
-      dist: radius + (Math.sin(i * 137.5) * 40),
-      size: 1.5 + (i % 3),
-      speed: 0.003 + (i % 5) * 0.001,
-      phase: (i * 0.8) % (Math.PI * 2),
-    }))
-  , [count, radius])
+  const fadeIn = interpolate(frame, [15, 60], [0, 1], { extrapolateLeft:'clamp', extrapolateRight:'clamp' })
 
-  // Fade in particles 0.5-2s
-  const opacity = interpolate(frame, [30, 90], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
+  const dots = useMemo(() =>
+    Array.from({ length: count }, (_, i) => ({
+      x: (Math.sin(i * 137.5 + 0.1) * 0.5 + 0.5) * width,
+      y: (Math.cos(i * 91.3 + 0.3) * 0.5 + 0.5) * height,
+      size: 1 + (i % 4),
+      driftX: 12 + (i % 7) * 4,
+      driftY: 8 + (i % 5) * 3,
+      speedX: 0.2 + (i % 3) * 0.15,
+      speedY: 0.15 + (i % 4) * 0.1,
+      phase: (i * 1.3) % (Math.PI * 2),
+      brightness: 0.08 + (i % 5) * 0.06,
+    }))
+  , [count, width, height])
 
   return (
-    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-      {particles.map((p, i) => {
-        const ang = (p.angle * Math.PI / 180) + sec * p.speed * 12
-        const pulse = 0.4 + Math.sin(sec * 2 + p.phase) * 0.6
-        const x = Math.cos(ang) * p.dist
-        const y = Math.sin(ang) * p.dist
-        const a = opacity * pulse * 0.45
+    <div style={{ position:'absolute', inset:0, pointerEvents:'none' }}>
+      {dots.map((d, i) => {
+        const x = d.x + Math.sin(sec * d.speedX + d.phase) * d.driftX
+        const y = d.y + Math.cos(sec * d.speedY + d.phase) * d.driftY
+        const pulse = 0.4 + Math.sin(sec * 2 + d.phase) * 0.6
+        const a = fadeIn * pulse * d.brightness
 
         return (
           <div key={i} style={{
-            position: 'absolute',
-            left: `calc(50% + ${x}px)`,
-            top: `calc(50% + ${y}px)`,
-            width: p.size, height: p.size,
-            borderRadius: '50%',
-            background: color,
-            opacity: a,
-            boxShadow: `0 0 ${p.size * 4}px ${color}`,
-            transform: `scale(${0.8 + pulse * 0.4})`,
+            position:'absolute', left: x, top: y,
+            width: d.size, height: d.size, borderRadius:'50%',
+            background: color, opacity: a,
+            boxShadow: `0 0 ${d.size * 6}px ${color}${Math.round(a * 40).toString(16).padStart(2,'0')}`,
           }}/>
         )
       })}

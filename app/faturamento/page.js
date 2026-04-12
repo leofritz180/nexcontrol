@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 import Header from '../../components/Header'
 import { supabase } from '../../lib/supabase/client'
 import { generateInsights, getHealthStatus } from '../../lib/insights'
+import dynamic from 'next/dynamic'
+const ProfitShowcase = dynamic(() => import('../../components/ProfitShowcase'), { ssr: false })
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
@@ -112,6 +114,7 @@ export default function FaturamentoPage() {
   const [editGoal,setEditGoal]=useState(false)
   const [goalInput,setGoalInput]=useState('')
   const [savingGoal,setSavingGoal]=useState(false)
+  const [showShowcase,setShowShowcase]=useState(false)
 
   useEffect(()=>{ checkAndLoad() },[])
 
@@ -269,6 +272,7 @@ export default function FaturamentoPage() {
 
   return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
+      {showShowcase && <ProfitShowcase stats={stats} goalData={goalData} operators={operators} metas={metas} onClose={()=>setShowShowcase(false)}/>}
       <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{maxWidth:1380,margin:'0 auto',padding:'32px 28px'}}>
@@ -285,10 +289,16 @@ export default function FaturamentoPage() {
               </div>
             </div>
           </div>
-          <button onClick={loadAll} className="btn btn-ghost btn-sm" style={{display:'flex',alignItems:'center',gap:6}}>
-            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-            Atualizar
-          </button>
+          <div style={{display:'flex',gap:8}}>
+            <button onClick={()=>setShowShowcase(true)} className="btn btn-brand btn-sm" style={{display:'flex',alignItems:'center',gap:6}}>
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Apresentacao
+            </button>
+            <button onClick={loadAll} className="btn btn-ghost btn-sm" style={{display:'flex',alignItems:'center',gap:6}}>
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+              Atualizar
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}

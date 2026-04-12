@@ -8,6 +8,177 @@ import { supabase } from '../lib/supabase/client'
 const ease = [0.33,1,0.68,1]
 const fadeUp = (d=0) => ({initial:{opacity:0,y:20},whileInView:{opacity:1,y:0},viewport:{once:true},transition:{duration:0.5,delay:d,ease}})
 
+const NOTIFS = [
+  { name:'Pedro', value:95, delay:0 },
+  { name:'Ana', value:147, delay:4 },
+  { name:'Lucas', value:68, delay:8 },
+  { name:'Maria', value:32, delay:12 },
+  { name:'Carlos', value:120, delay:16 },
+]
+
+function PhoneSection() {
+  const [idx, setIdx] = useState(0)
+  const [total, setTotal] = useState(3058)
+  const [flash, setFlash] = useState(false)
+
+  useEffect(() => {
+    let i = 0
+    const interval = setInterval(() => {
+      i = (i + 1) % NOTIFS.length
+      setIdx(i)
+      setTotal(prev => prev + NOTIFS[i].value)
+      setFlash(true)
+      setTimeout(() => setFlash(false), 600)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const current = NOTIFS[idx]
+
+  return (
+    <section style={{ padding:'100px 24px', maxWidth:1000, margin:'0 auto', position:'relative' }}>
+      {/* Ambient glow */}
+      <div style={{ position:'absolute', top:'30%', right:'15%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.05), transparent 60%)', filter:'blur(60px)', pointerEvents:'none' }}/>
+
+      <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:48, alignItems:'center' }}>
+        {/* Text */}
+        <motion.div {...fadeUp()}>
+          <h2 style={{ fontSize:32, fontWeight:900, color:'var(--t1)', margin:'0 0 14px', letterSpacing:'-0.03em', lineHeight:1.15 }}>
+            Veja seu lucro chegando<br/>em tempo real
+          </h2>
+          <p style={{ fontSize:16, color:'var(--t3)', lineHeight:1.6, margin:'0 0 32px' }}>
+            Cada remessa registrada vira uma notificacao no seu celular. Simples assim.
+          </p>
+          <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+            {[
+              {t:'Notificacao instantanea', d:'Saiba na hora quando dinheiro entra ou sai'},
+              {t:'Lucro atualizado ao vivo', d:'O dashboard muda a cada operacao'},
+              {t:'Instale em 2 toques', d:'Funciona como app nativo no iPhone e Android'},
+            ].map(({t,d}) => (
+              <div key={t} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth={2.5} strokeLinecap="round" style={{ marginTop:3, flexShrink:0 }}><polyline points="20 6 9 17 4 12"/></svg>
+                <div>
+                  <p style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:'0 0 3px' }}>{t}</p>
+                  <p style={{ fontSize:12, color:'var(--t3)', margin:0 }}>{d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* iPhone */}
+        <motion.div {...fadeUp(0.2)} style={{ display:'flex', justifyContent:'center', perspective:800 }}>
+          <div style={{
+            width:260, borderRadius:36, padding:'10px 8px 14px',
+            background:'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 30%, #111 100%)',
+            border:'1.5px solid rgba(255,255,255,0.12)',
+            boxShadow:'0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.08)',
+            position:'relative', transform:'rotateY(-3deg) rotateX(2deg)',
+          }}>
+            {/* Dynamic Island */}
+            <div style={{ width:90, height:24, borderRadius:12, background:'#000', margin:'0 auto 8px', border:'1px solid rgba(255,255,255,0.08)', position:'relative', overflow:'hidden' }}>
+              <div style={{ position:'absolute', right:20, top:8, width:6, height:6, borderRadius:'50%', background:'rgba(255,255,255,0.08)' }}/>
+            </div>
+
+            {/* Screen */}
+            <div style={{ borderRadius:22, overflow:'hidden', background:'#060a12', position:'relative' }}>
+              {/* Green flash on notification */}
+              <AnimatePresence>
+                {flash && (
+                  <motion.div
+                    initial={{ opacity:0.15 }} animate={{ opacity:0 }}
+                    exit={{ opacity:0 }} transition={{ duration:0.6 }}
+                    style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 20%, rgba(34,197,94,0.2), transparent 60%)', zIndex:5, pointerEvents:'none' }}
+                  />
+                )}
+              </AnimatePresence>
+
+              {/* iOS Notification dropping in */}
+              <div style={{ padding:'8px 10px 0', position:'relative', zIndex:4 }}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity:0, y:-40, scale:0.95 }}
+                    animate={{ opacity:1, y:0, scale:1 }}
+                    exit={{ opacity:0, y:-20, scale:0.97 }}
+                    transition={{ duration:0.4, ease:[0.33,1,0.68,1] }}
+                    style={{
+                      padding:'10px 12px', borderRadius:14,
+                      background:'rgba(255,255,255,0.08)',
+                      backdropFilter:'blur(20px)', WebkitBackdropFilter:'blur(20px)',
+                      border:'1px solid rgba(255,255,255,0.06)',
+                      marginBottom:8,
+                    }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+                      <div style={{ width:18, height:18, borderRadius:5, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <svg width={8} height={8} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                          <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.7)' }}>NexControl</span>
+                          <span style={{ fontSize:6, color:'rgba(255,255,255,0.25)' }}>agora</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p style={{ fontSize:8, color:'rgba(255,255,255,0.5)', margin:0, paddingLeft:26 }}>
+                      Lucro na remessa: <span style={{ color:'#22C55E', fontWeight:700 }}>+R$ {current.value},00</span>
+                    </p>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* App content */}
+              <div style={{ padding:'4px 12px 16px' }}>
+                {/* Header */}
+                <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
+                  <div style={{ width:16, height:16, borderRadius:5, background:'#e53935' }}/>
+                  <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.45)' }}>NexControl</span>
+                </div>
+
+                {/* KPI — updates live */}
+                <motion.div
+                  animate={flash ? { scale:[1,1.02,1] } : {}}
+                  transition={{ duration:0.3 }}
+                  style={{ padding:'12px 14px', borderRadius:12, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.04)', marginBottom:10, position:'relative', overflow:'hidden' }}>
+                  <p style={{ fontSize:7, color:'rgba(255,255,255,0.3)', margin:'0 0 5px' }}>Lucro total</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:900, color:'#22C55E', margin:0,
+                    textShadow: flash ? '0 0 20px rgba(34,197,94,0.3)' : 'none', transition:'text-shadow 0.3s',
+                  }}>
+                    +R$ {total.toLocaleString('pt-BR')}
+                  </p>
+                  {/* Green glow pulse */}
+                  {flash && <div style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 30% 50%, rgba(34,197,94,0.08), transparent 60%)', pointerEvents:'none' }}/>}
+                </motion.div>
+
+                {/* Recent items */}
+                <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+                  {NOTIFS.slice(0,3).map((n,i) => (
+                    <div key={n.name} style={{ padding:'5px 2px', borderBottom:'1px solid rgba(255,255,255,0.03)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                        <div style={{ width:14, height:14, borderRadius:4, background:'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                          <span style={{ fontSize:6, fontWeight:700, color:'rgba(255,255,255,0.3)' }}>{n.name[0]}</span>
+                        </div>
+                        <span style={{ fontSize:7, color:'rgba(255,255,255,0.35)' }}>{n.name}</span>
+                      </div>
+                      <span style={{ fontFamily:'var(--mono)', fontSize:8, fontWeight:700, color:'#22C55E' }}>+R$ {n.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Home indicator */}
+            <div style={{ width:70, height:4, borderRadius:2, background:'rgba(255,255,255,0.15)', margin:'10px auto 0' }}/>
+
+            {/* Glass reflection */}
+            <div style={{ position:'absolute', top:0, left:0, right:0, height:'45%', borderRadius:'36px 36px 0 0', background:'linear-gradient(180deg, rgba(255,255,255,0.04), transparent)', pointerEvents:'none' }}/>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
 export default function HomePage() {
   const router = useRouter()
   const [checking, setChecking] = useState(true)
@@ -231,72 +402,9 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════
-          APP NO CELULAR
+          APP NO CELULAR — dopamine section
       ═══════════════════════════════════ */}
-      <section style={{ padding:'80px 24px', maxWidth:900, margin:'0 auto' }}>
-        <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:32, alignItems:'center' }}>
-          {/* Text */}
-          <motion.div {...fadeUp()}>
-            <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 12px', letterSpacing:'-0.03em' }}>Leve sua operacao no bolso</h2>
-            <p style={{ fontSize:15, color:'var(--t3)', lineHeight:1.6, margin:'0 0 28px' }}>
-              Instale como app no iPhone ou Android. Receba notificacoes quando operadores registram remessas. Acompanhe lucro em tempo real.
-            </p>
-            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-              {[
-                {t:'Instale como app', d:'Adicione a tela inicial em 2 toques'},
-                {t:'Notificacoes push', d:'Saiba na hora quando algo acontece'},
-                {t:'Dados sempre disponiveis', d:'Acompanhe de qualquer lugar'},
-              ].map(({t,d}) => (
-                <div key={t} style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth={2.5} strokeLinecap="round" style={{ marginTop:2, flexShrink:0 }}><polyline points="20 6 9 17 4 12"/></svg>
-                  <div>
-                    <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 2px' }}>{t}</p>
-                    <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{d}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Phone mockup */}
-          <motion.div {...fadeUp(0.2)} style={{ display:'flex', justifyContent:'center' }}>
-            <div style={{ width:220, borderRadius:28, padding:'12px 10px 16px', background:'linear-gradient(180deg, #1a1a1a, #111)', border:'2px solid rgba(255,255,255,0.08)', boxShadow:'0 20px 60px rgba(0,0,0,0.6)', position:'relative' }}>
-              {/* Notch */}
-              <div style={{ width:80, height:20, borderRadius:10, background:'#000', margin:'0 auto 10px', border:'1px solid rgba(255,255,255,0.06)' }}/>
-              {/* Screen */}
-              <div style={{ borderRadius:14, overflow:'hidden', background:'#080e1a', padding:'14px 12px' }}>
-                {/* Mini header */}
-                <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:12 }}>
-                  <div style={{ width:14, height:14, borderRadius:4, background:'#e53935' }}/>
-                  <span style={{ fontSize:7, fontWeight:700, color:'rgba(255,255,255,0.4)' }}>NexControl</span>
-                </div>
-                {/* Mini KPI */}
-                <div style={{ padding:'10px', borderRadius:8, background:'rgba(255,255,255,0.03)', marginBottom:8 }}>
-                  <p style={{ fontSize:6, color:'rgba(255,255,255,0.3)', margin:'0 0 4px' }}>Lucro total</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:900, color:'#22C55E', margin:0 }}>+R$ 3.058</p>
-                </div>
-                {/* Mini items */}
-                {['Pedro +R$ 95','Lucas -R$ 18','Ana +R$ 145'].map(s => (
-                  <div key={s} style={{ padding:'5px 0', borderBottom:'1px solid rgba(255,255,255,0.03)', display:'flex', justifyContent:'space-between' }}>
-                    <span style={{ fontSize:7, color:'rgba(255,255,255,0.3)' }}>{s.split(' ')[0]}</span>
-                    <span style={{ fontFamily:'var(--mono)', fontSize:7, fontWeight:700, color:s.includes('+')?'#22C55E':'#EF4444' }}>{s.split(' ').slice(1).join(' ')}</span>
-                  </div>
-                ))}
-                {/* Notification */}
-                <div style={{ marginTop:10, padding:'8px 10px', borderRadius:8, background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.15)' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:4, marginBottom:3 }}>
-                    <div style={{ width:4, height:4, borderRadius:'50%', background:'#22C55E' }}/>
-                    <span style={{ fontSize:6, fontWeight:700, color:'#22C55E' }}>Nova remessa</span>
-                  </div>
-                  <p style={{ fontSize:6, color:'rgba(255,255,255,0.3)', margin:0 }}>Pedro registrou +R$ 95,00</p>
-                </div>
-              </div>
-              {/* Home indicator */}
-              <div style={{ width:60, height:4, borderRadius:2, background:'rgba(255,255,255,0.15)', margin:'10px auto 0' }}/>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      <PhoneSection/>
 
       {/* ═══════════════════════════════════
           PROVA SOCIAL

@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import Header from '../../components/Header'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaCreated } from '../../lib/notify'
@@ -214,25 +215,33 @@ export default function OperatorPage() {
           </div>
         </div>
 
-        {/* Metrics — neutral cards */}
-        <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
+        {/* Metrics */}
+        <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:28 }}>
           {[
-            { label:'Resultado hoje', value:Math.abs(stats.lucroHoje), prefix:`${stats.lucroHoje>=0?'+':'-'}R$ `, color:stats.lucroHoje>=0?'var(--profit)':'var(--loss)' },
-            { label:'Metas ativas', value:stats.ativas, prefix:'', decimals:0, color:'var(--t1)' },
-            { label:'Remessas', value:stats.nRem, prefix:'', decimals:0, color:'var(--t1)' },
-            { label:'Taxa de acerto', value:stats.taxa, prefix:'', suffix:'%', decimals:0, color:stats.taxa>=50?'var(--profit)':'var(--loss)' },
+            { label:'Resultado hoje', value:Math.abs(stats.lucroHoje), prefix:`${stats.lucroHoje>=0?'+':'-'}R$ `, color:stats.lucroHoje>=0?'var(--profit)':'var(--loss)', sub:stats.lucroHoje>=0?'Lucro do dia':'Prejuizo do dia' },
+            { label:'Metas ativas', value:stats.ativas, prefix:'', suffix:'', decimals:0, color:'var(--t1)', sub:`${stats.total} total` },
+            { label:'Remessas', value:stats.nRem, prefix:'', suffix:'', decimals:0, color:'var(--t1)', sub:'Total registradas' },
+            { label:'Taxa de acerto', value:stats.taxa, prefix:'', suffix:'%', decimals:0, color:stats.taxa>=50?'var(--profit)':'var(--loss)', sub:`${remessas.filter(r=>Number(r.lucro||0)>0).length} positivas` },
           ].map((k,i)=>(
-            <div key={i} style={{
-              padding:'20px 24px', borderRadius:14,
-              background:'var(--surface)', border:'1px solid var(--b1)',
-            }}>
-              <p style={{ fontSize:10, color:'var(--t3)', marginBottom:8 }}>{k.label}</p>
-              <CountUp value={k.value} prefix={k.prefix||''} suffix={k.suffix||''} />
-              <span style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:k.color, display:'none' }}/>
-              <p style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:k.color, margin:0, lineHeight:1 }}>
+            <motion.div key={i}
+              initial={{ opacity:0, y:12 }}
+              animate={{ opacity:1, y:0 }}
+              transition={{ duration:0.35, delay:i*0.06, ease:[0.33,1,0.68,1] }}
+              whileHover={{ y:-3, boxShadow:'0 12px 32px rgba(0,0,0,0.45)', transition:{duration:0.2} }}
+              style={{
+                padding:'24px 26px', borderRadius:14,
+                background:'linear-gradient(145deg, var(--surface), var(--void))',
+                border:'1px solid var(--b1)',
+                boxShadow:'0 2px 12px rgba(0,0,0,0.25)',
+                transition:'all 0.2s ease',
+                cursor:'default',
+              }}>
+              <p style={{ fontSize:11, color:'var(--t3)', marginBottom:12, fontWeight:500 }}>{k.label}</p>
+              <p style={{ fontFamily:'var(--mono)', fontSize:24, fontWeight:800, color:k.color, margin:0, lineHeight:1 }}>
                 <CountUp value={k.value} prefix={k.prefix||''} suffix={k.suffix||''}/>
               </p>
-            </div>
+              <p style={{ fontSize:11, color:'var(--t4)', marginTop:10 }}>{k.sub}</p>
+            </motion.div>
           ))}
         </div>
 
@@ -351,9 +360,13 @@ export default function OperatorPage() {
                 const pct   = (lucro+prej)>0?Math.round((lucro/(lucro+prej))*100):0
                 const fechada   = m.status_fechamento==='fechada'
                 const finalizada = m.status==='finalizada'
-                const accentColor = fechada?'var(--profit)':finalizada?'var(--loss)':'var(--brand-bright)'
                 return (
-                  <div key={m.id} className="row-card a1" style={{ animationDelay:`${i*40}ms`, padding:'18px 20px' }}
+                  <motion.div key={m.id}
+                    initial={{ opacity:0, y:10 }}
+                    animate={{ opacity:1, y:0 }}
+                    transition={{ duration:0.3, delay:i*0.04, ease:[0.33,1,0.68,1] }}
+                    whileHover={{ y:-2, boxShadow:'0 8px 24px rgba(0,0,0,0.4)', transition:{duration:0.15} }}
+                    className="row-card" style={{ padding:'18px 20px', boxShadow:'0 2px 8px rgba(0,0,0,0.2)', transition:'all 0.2s ease' }}
                     onClick={()=>router.push(`/meta/${m.id}`)}>
                     <div className="accent" style={{ background:fechada?'var(--profit)':finalizada?'var(--loss)':'var(--t3)' }}/>
                     <div style={{ paddingLeft:14 }}>
@@ -390,7 +403,7 @@ export default function OperatorPage() {
                         </>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>

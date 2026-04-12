@@ -93,10 +93,15 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* ── PRO CTA ── */}
       {isAdmin && !subActive && (
         <div style={{ padding:'0 14px 14px' }}>
+          <motion.div
+            animate={{ boxShadow:['0 0 15px rgba(229,57,53,0.08)','0 0 25px rgba(229,57,53,0.15)','0 0 15px rgba(229,57,53,0.08)'] }}
+            transition={{ duration:3, repeat:Infinity }}
+            style={{ borderRadius:10 }}
+          >
           <Link href="/billing" onClick={()=>setMobileOpen(false)}
             style={{
               display:'flex', alignItems:'center', justifyContent:'center', gap:8,
-              padding:'10px 16px', borderRadius:10, textDecoration:'none',
+              padding:'11px 16px', borderRadius:10, textDecoration:'none',
               fontSize:12, fontWeight:700, color:'#ff4444',
               background:'rgba(229,57,53,0.08)', border:'1px solid rgba(229,57,53,0.18)',
               transition:'all 0.2s',
@@ -107,6 +112,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth={2} strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             Desbloquear PRO
           </Link>
+          </motion.div>
         </div>
       )}
 

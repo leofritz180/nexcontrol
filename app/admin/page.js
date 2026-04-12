@@ -1023,17 +1023,24 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <AnimatedNumber
-                  value={Math.abs(heroLucro.value)}
-                  key={heroPeriod}
-                  prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
-                  style={{
-                    fontFamily:'var(--mono)', fontSize:48, fontWeight:900,
-                    color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
-                    lineHeight:1, letterSpacing:'-0.03em', display:'block',
-                    textShadow: heroLucro.value>=0 ? '0 0 60px rgba(34,197,94,0.15)' : '0 0 60px rgba(239,68,68,0.15)',
+                <motion.div
+                  animate={{ textShadow: heroLucro.value>=0
+                    ? ['0 0 40px rgba(34,197,94,0.15)','0 0 80px rgba(34,197,94,0.25)','0 0 40px rgba(34,197,94,0.15)']
+                    : ['0 0 40px rgba(239,68,68,0.15)','0 0 80px rgba(239,68,68,0.25)','0 0 40px rgba(239,68,68,0.15)']
                   }}
-                />
+                  transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
+                >
+                  <AnimatedNumber
+                    value={Math.abs(heroLucro.value)}
+                    key={heroPeriod}
+                    prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
+                    style={{
+                      fontFamily:'var(--mono)', fontSize:52, fontWeight:900,
+                      color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
+                      lineHeight:1, letterSpacing:'-0.03em', display:'block',
+                    }}
+                  />
+                </motion.div>
 
                 <div style={{ display:'flex', alignItems:'center', gap:20, marginTop:24, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
                   <div>
@@ -1185,13 +1192,13 @@ export default function AdminPage() {
 
           {/* PRO locked cards */}
           <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginTop:24 }}>
-            <ProLockedCard title="Previsao inteligente" description="Saiba quanto voce pode faturar nos proximos 30 dias com base no seu ritmo atual. Projecao automatica atualizada em tempo real." icon="M13 2L3 14h9l-1 8 10-12h-9l1-8z">
+            <ProLockedCard title="Previsao inteligente" description="Desbloqueie previsoes que aumentam seu lucro. Saiba quanto voce pode faturar nos proximos 30 dias com base no ritmo real da operacao." icon="M13 2L3 14h9l-1 8 10-12h-9l1-8z">
               <div><div style={{height:14,width:'60%',background:'rgba(34,197,94,0.1)',borderRadius:3,marginBottom:6}}/><div style={{height:20,width:'45%',background:'rgba(34,197,94,0.08)',borderRadius:3}}/></div>
             </ProLockedCard>
-            <ProLockedCard title="Ranking de redes" description="Descubra quais redes geram mais lucro, quais estao caindo e onde concentrar sua operacao pra maximizar resultado." icon="M3 4h18M3 8h12M3 12h18M3 16h8M3 20h14">
+            <ProLockedCard title="Ranking de redes" description="Veja onde voce esta perdendo dinheiro. Descubra quais redes geram mais lucro e onde concentrar pra maximizar resultado." icon="M3 4h18M3 8h12M3 12h18M3 16h8M3 20h14">
               <div>{[1,2,3].map(i=>(<div key={i} style={{height:10,width:`${80-i*15}%`,background:'rgba(255,255,255,0.04)',borderRadius:3,marginBottom:4}}/>))}</div>
             </ProLockedCard>
-            <ProLockedCard title="Alertas estrategicos" description="Receba alertas automaticos quando detectamos queda de performance, operadores inativos ou metas em risco." icon="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5">
+            <ProLockedCard title="Alertas estrategicos" description="Clientes PRO detectam problemas antes que virem prejuizo. Alertas de queda, inatividade e metas em risco." icon="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5">
               <div>{[1,2,3].map(i=>(<div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'3px 0'}}><div style={{width:4,height:4,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/><div style={{height:8,width:`${60+i*10}%`,background:'rgba(255,255,255,0.03)',borderRadius:2}}/></div>))}</div>
             </ProLockedCard>
           </div>

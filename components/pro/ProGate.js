@@ -52,7 +52,7 @@ export function ProLockedCard({ title, description, icon, children }) {
         {/* Bottom — blurred preview + SEJA PRO button */}
         <div style={{ position:'relative', padding:'0 22px 22px' }}>
           {/* Blurred content */}
-          <div style={{ filter:'blur(5px)', opacity:0.5, pointerEvents:'none', minHeight:60 }}>
+          <div style={{ filter:'blur(6px)', opacity:0.4, pointerEvents:'none', minHeight:60 }}>
             {children || (
               <div>
                 <div style={{ height:12, width:'70%', background:'rgba(255,255,255,0.06)', borderRadius:3, marginBottom:6 }}/>
@@ -68,9 +68,11 @@ export function ProLockedCard({ title, description, icon, children }) {
           }}>
             <div style={{
               display:'flex', alignItems:'center', gap:6,
-              padding:'8px 20px', borderRadius:99,
+              padding:'9px 22px', borderRadius:99,
               background:'rgba(229,57,53,0.15)', border:'1px solid rgba(229,57,53,0.25)',
               color:'#ff4444', fontSize:12, fontWeight:700,
+              boxShadow:'0 0 20px rgba(229,57,53,0.1)',
+              animation:'cta-pulse 2.5s ease-in-out infinite',
               transition:'all 0.2s',
             }}
               onMouseEnter={e => { e.currentTarget.style.background='rgba(229,57,53,0.25)' }}

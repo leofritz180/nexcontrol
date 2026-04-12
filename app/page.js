@@ -142,7 +142,7 @@ function LiveDashboardDemo() {
         {/* Live feed */}
         <div style={{ padding:'12px 14px', borderRadius:10, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)' }}>
           <p style={{ fontSize:9, fontWeight:600, color:'rgba(255,255,255,0.3)', margin:'0 0 10px' }}>Remessas recentes</p>
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence>
             {feed.map((item,i) => (
               <motion.div key={item.n+item.v+i}
                 initial={{ opacity:0, x:-20 }}

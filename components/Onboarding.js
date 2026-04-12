@@ -13,7 +13,9 @@ export default function Onboarding() {
   const [simFlash, setSimFlash] = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem(ONBOARDING_KEY)) { setPhase(3); return }
+    try {
+      if (typeof window !== 'undefined' && localStorage.getItem(ONBOARDING_KEY)) { setPhase(3); return }
+    } catch { setPhase(3); return }
     setPhase(0)
     setTimeout(() => setPhase(1), 2200)
   }, [])
@@ -40,7 +42,7 @@ export default function Onboarding() {
   }, [phase])
 
   function finish() {
-    localStorage.setItem(ONBOARDING_KEY, 'true')
+    try { localStorage.setItem(ONBOARDING_KEY, 'true') } catch {}
     setPhase(3)
   }
 

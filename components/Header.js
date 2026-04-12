@@ -2,25 +2,10 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase/client'
+import Logo from './Logo'
 import { TrialStatusBadge } from './TrialBanner'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
-
-function Logo() {
-  return (
-    <div style={{
-      width: 30, height: 30, borderRadius: 8, flexShrink: 0,
-      background: '#e53935',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <svg width={14} height={14} viewBox="0 0 28 28" fill="none">
-        <path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/>
-        <path d="M12 22L18 22L18 6L12 6Z" fill="white"/>
-        <path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/>
-      </svg>
-    </div>
-  )
-}
 
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 
@@ -44,11 +29,8 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
         height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20,
       }}>
         {/* Logo */}
-        <Link href={isAdmin ? '/admin' : '/operator'} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <Logo/>
-          <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: '-0.02em', color: 'var(--t1)' }}>
-            Nex<span style={{ color: '#ff4444' }}>Control</span>
-          </span>
+        <Link href={isAdmin ? '/admin' : '/operator'} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Logo size={0.94} textSize={14} style={{ gap: 10 }}/>
         </Link>
 
         {/* Nav */}

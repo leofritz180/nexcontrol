@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
+import Logo from './Logo'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
@@ -46,20 +47,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
 
       {/* ── Logo ── */}
       <Link href={isAdmin?'/admin':'/operator'} onClick={()=>setMobileOpen(false)}
-        style={{ display:'flex', alignItems:'center', gap:11, padding:'22px 22px 28px', textDecoration:'none' }}>
-        <motion.div
-          animate={{ boxShadow:['0 0 12px rgba(229,57,53,0.15)','0 0 20px rgba(229,57,53,0.3)','0 0 12px rgba(229,57,53,0.15)'] }}
-          transition={{ duration:4, repeat:Infinity }}
-          style={{ width:32, height:32, borderRadius:9, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-          <svg width={14} height={14} viewBox="0 0 28 28" fill="none">
-            <path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/>
-            <path d="M12 22L18 22L18 6L12 6Z" fill="white"/>
-            <path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/>
-          </svg>
-        </motion.div>
-        <span style={{ fontSize:15, fontWeight:700, color:'var(--t1)' }}>
-          Nex<span style={{ color:'#ff4444' }}>Control</span>
-        </span>
+        style={{ display:'flex', alignItems:'center', padding:'22px 22px 28px', textDecoration:'none' }}>
+        <Logo size={1} glow style={{ gap:11 }}/>
       </Link>
 
       {/* ── Nav ── */}

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
+import Logo, { NexIcon } from '../components/Logo'
 
 const ease = [0.33,1,0.68,1]
 
@@ -82,7 +83,7 @@ function LiveDashboardDemo() {
                 boxShadow:'0 4px 16px rgba(0,0,0,0.3)',
               }}>
               <div style={{ width:20, height:20, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                <svg width={9} height={9} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+                <NexIcon size={9}/>
               </div>
               <div style={{ flex:1 }}>
                 <div style={{ display:'flex', justifyContent:'space-between' }}>
@@ -203,17 +204,9 @@ export default function HomePage() {
           style={{ maxWidth:580, position:'relative', zIndex:1 }}
         >
           {/* Logo */}
-          <motion.div
-            animate={{ boxShadow:['0 0 25px rgba(229,57,53,0.2)','0 0 45px rgba(229,57,53,0.35)','0 0 25px rgba(229,57,53,0.2)'] }}
-            transition={{ duration:3, repeat:Infinity }}
-            style={{ width:60, height:60, borderRadius:16, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 28px' }}
-          >
-            <svg width={26} height={26} viewBox="0 0 28 28" fill="none">
-              <path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/>
-              <path d="M12 22L18 22L18 6L12 6Z" fill="white"/>
-              <path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/>
-            </svg>
-          </motion.div>
+          <div style={{ display:'flex', justifyContent:'center', marginBottom:28 }}>
+            <Logo size={1.88} showText={false} glow/>
+          </div>
 
           <motion.h1
             initial={{ opacity:0, y:10 }}
@@ -321,11 +314,8 @@ export default function HomePage() {
           </Link>
         </motion.div>
 
-        <div style={{ marginTop:48, display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
-          <div style={{ width:24, height:24, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <svg width={10} height={10} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
-          </div>
-          <span style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.3)' }}>Nex<span style={{ color:'#ff4444' }}>Control</span></span>
+        <div style={{ marginTop:48, display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <Logo size={0.75} textSize={13} style={{ gap:8, opacity:0.4 }}/>
         </div>
         <p style={{ fontSize:10, color:'var(--t4)', marginTop:6 }}>Sistema operacional de resultados</p>
       </section>

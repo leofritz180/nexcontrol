@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GenerateVideoButton } from './showcase/GenerateVideoButton'
+import Logo, { NexIcon } from './Logo'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const ease = [0.33,1,0.68,1]
@@ -130,7 +131,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
           style={{ position:'absolute', top:20, left:24, right:24, display:'flex', alignItems:'center', justifyContent:'space-between', zIndex:10 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
             <div style={{ width:24, height:24, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <svg width={10} height={10} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+              <NexIcon size={10}/>
             </div>
             <span style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.5)' }}>NexControl</span>
           </div>
@@ -175,11 +176,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
               transition={{ duration:3, repeat:Infinity }}
               style={{ width:80, height:80, borderRadius:20, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}
             >
-              <svg width={36} height={36} viewBox="0 0 28 28" fill="none">
-                <path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/>
-                <path d="M12 22L18 22L18 6L12 6Z" fill="white"/>
-                <path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/>
-              </svg>
+              <NexIcon size={36}/>
             </motion.div>
             <div style={{ textAlign:'center' }}>
               <div style={{ display:'flex', justifyContent:'center' }}>
@@ -336,7 +333,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
           style={{ position:'absolute', bottom:40, display:'flex', flexDirection:'column', alignItems:'center', gap:12, zIndex:2 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ width:28, height:28, borderRadius:7, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <svg width={12} height={12} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+              <NexIcon size={12}/>
             </div>
             <span style={{ fontSize:14, color:'rgba(255,255,255,0.4)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
           </div>
@@ -352,7 +349,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
           style={{ position:'absolute', bottom:40, display:'flex', flexDirection:'column', alignItems:'center', gap:14, zIndex:2 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
             <div style={{ width:30, height:30, borderRadius:7, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <svg width={13} height={13} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+              <NexIcon size={13}/>
             </div>
             <div>
               <span style={{ fontSize:16, color:'rgba(255,255,255,0.45)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
@@ -386,7 +383,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
           <div style={{ position:'absolute', bottom:80, display:'flex', flexDirection:'column', alignItems:'center', gap:16 }}>
             <div style={{ display:'flex', alignItems:'center', gap:12 }}>
               <div style={{ width:32, height:32, borderRadius:8, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <svg width={14} height={14} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+                <NexIcon size={14}/>
               </div>
               <span style={{ fontSize:20, color:'rgba(255,255,255,0.4)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
             </div>

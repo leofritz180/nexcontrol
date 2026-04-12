@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { NexIcon } from './Logo'
 
 const KEY = 'nexcontrol_onboarded'
 
@@ -64,11 +65,7 @@ export default function Onboarding() {
               display:'flex', alignItems:'center', justifyContent:'center',
               margin:'0 auto 20px', boxShadow:'0 0 30px rgba(229,57,53,0.3)',
             }}>
-              <svg width={22} height={22} viewBox="0 0 28 28" fill="none">
-                <path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/>
-                <path d="M12 22L18 22L18 6L12 6Z" fill="white"/>
-                <path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/>
-              </svg>
+              <NexIcon size={22}/>
             </div>
             <p style={{ fontSize:14, color:'rgba(255,255,255,0.35)' }}>Preparando seu painel...</p>
           </motion.div>

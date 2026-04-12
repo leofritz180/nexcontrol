@@ -16,12 +16,19 @@ export const metadata = {
   },
   icons: {
     icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/icons/favicon-32.png', sizes: '32x32', type: 'image/png' },
       { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
     ],
     apple: '/icons/icon-192.png',
   },
   themeColor: '#04070e',
+  openGraph: {
+    title: 'NexControl',
+    description: 'Gestao inteligente de metas, operadores e faturamento',
+    siteName: 'NexControl',
+    type: 'website',
+  },
 }
 
 export const viewport = { width: 'device-width', initialScale: 1, maximumScale: 1, viewportFit: 'cover' }

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
+import Logo from '../../components/Logo'
 
 /* ── Floating particles (memoized) ── */
 function Particles() {
@@ -70,35 +71,7 @@ function BackgroundOrbs() {
   )
 }
 
-/* ── Logo icon ── */
-function LogoIcon() {
-  return (
-    <motion.div
-      style={{
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        width: 64, height: 64, borderRadius: 20,
-        background: '#e53935',
-        position: 'relative',
-      }}
-      animate={{
-        y: [0, -3, 0, 3, 0],
-        boxShadow: [
-          '0 0 40px rgba(229,57,53,0.4), 0 0 80px rgba(229,57,53,0.15)',
-          '0 0 60px rgba(229,57,53,0.6), 0 0 120px rgba(229,57,53,0.2)',
-          '0 0 40px rgba(229,57,53,0.4), 0 0 80px rgba(229,57,53,0.15)',
-        ],
-      }}
-      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-    >
-      <svg width={30} height={30} viewBox="0 0 28 28" fill="none">
-        <path d="M4 22 L10 22 L10 12 L4 12 Z" fill="white" opacity={0.5} />
-        <path d="M12 22 L18 22 L18 6 L12 6 Z" fill="white" />
-        <path d="M20 22 L26 22 L26 16 L20 16 Z" fill="white" opacity={0.7} />
-        <circle cx="21" cy="8" r="3" fill="rgba(34,197,94,1)" />
-      </svg>
-    </motion.div>
-  )
-}
+/* ── Logo icon (uses reusable Logo component) ── */
 
 /* ── Main ── */
 export default function LoginPage() {
@@ -165,7 +138,7 @@ export default function LoginPage() {
             transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
             style={{ marginBottom: 22 }}
           >
-            <LogoIcon />
+            <Logo size={2} showText={false} glow/>
           </motion.div>
 
           <motion.h1
@@ -177,13 +150,7 @@ export default function LoginPage() {
               letterSpacing: '-0.04em', color: '#eef2ff', margin: '0 0 8px',
             }}
           >
-            Nex
-            <span style={{
-              background: 'linear-gradient(135deg, #ff4444, #ff4444)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            }}>
-              Control
-            </span>
+            <Logo showIcon={false} textSize={34} style={{ fontWeight: 900 }}/>
           </motion.h1>
 
           <motion.div

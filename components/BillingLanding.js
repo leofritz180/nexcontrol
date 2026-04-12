@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Logo, { NexIcon } from './Logo'
 
 const ease = [0.33,1,0.68,1]
 const fadeUp = (d=0) => ({initial:{opacity:0,y:16},whileInView:{opacity:1,y:0},viewport:{once:true},transition:{duration:0.5,delay:d,ease}})
@@ -151,7 +152,7 @@ export default function BillingLanding() {
                       }}>
                       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
                         <div style={{ width:18, height:18, borderRadius:5, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                          <svg width={8} height={8} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+                          <NexIcon size={8}/>
                         </div>
                         <div style={{ flex:1, display:'flex', justifyContent:'space-between' }}>
                           <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.7)' }}>NexControl</span>
@@ -228,9 +229,9 @@ export default function BillingLanding() {
         <p style={{ fontSize:12, color:'var(--t4)' }}>3 dias gratis. Sem cartao. Cancele quando quiser.</p>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginTop:12 }}>
           <div style={{ width:22, height:22, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <svg width={9} height={9} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+            <NexIcon size={9}/>
           </div>
-          <span style={{ fontSize:12, fontWeight:700, color:'rgba(255,255,255,0.3)' }}>Nex<span style={{ color:'#ff4444' }}>Control</span></span>
+          <Logo showIcon={false} textSize={12} style={{ opacity:0.3 }}/>
         </div>
       </div>
     </div>

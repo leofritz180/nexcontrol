@@ -189,8 +189,8 @@ function SalaryPanel({ meta, liqCalc, onSaved }) {
       initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3, ease: [0.33,1,0.68,1] }}
       style={{ marginTop: 20, padding: '20px 22px', background: 'var(--surface)', border: `1px solid ${fechada ? 'var(--b1)' : 'var(--brand-border)'}`, borderRadius: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Salario e custos</span>
         {isActive && <span className="t-small" style={{ marginLeft: 4 }}>Pre-configure para fechamento automatico</span>}
         {isFinalizedNotClosed && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--warn)', marginLeft: 4 }}>Operador finalizou — defina valores e feche</span>}
@@ -217,14 +217,14 @@ function SalaryPanel({ meta, liqCalc, onSaved }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderRadius: 12, background: newLucro >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${newLucro >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.12)'}`, marginBottom: 12 }}>
-        <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, padding: '14px 16px', borderRadius: 12, background: newLucro >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${newLucro >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.12)'}`, marginBottom: 12 }}>
+        <div style={{ minWidth: 0 }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t2)' }}>Lucro final</span>
-          <p className="t-small" style={{ margin: '2px 0 0' }}>
+          <p className="t-small" style={{ margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             Resultado ({fmt(liqCalc)}) + Sal ({fmt(sal)}) - Custo ({fmt(cst)}) - Taxa ({fmt(tax)})
           </p>
         </div>
-        <span className="t-num" style={{ fontSize: 22, fontWeight: 800, color: newLucro >= 0 ? 'var(--profit)' : 'var(--loss)' }}>
+        <span className="t-num" style={{ fontSize: 22, fontWeight: 800, color: newLucro >= 0 ? 'var(--profit)' : 'var(--loss)', flexShrink: 0 }}>
           {newLucro >= 0 ? '+' : ''}R$ {fmt(newLucro)}
         </span>
       </div>
@@ -540,9 +540,9 @@ export default function AdminPage() {
               const displayVal=fechada&&m.lucro_final!=null?Number(m.lucro_final):liqR
               return (<>
                 {/* Header */}
-                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
-                  <div style={{display:'flex',alignItems:'center',gap:12}}>
-                    <h2 style={{fontSize:22,fontWeight:900,color:'var(--t1)',margin:0}}>{m.titulo}</h2>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12,marginBottom:20}}>
+                  <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap',minWidth:0}}>
+                    <h2 style={{fontSize:22,fontWeight:900,color:'var(--t1)',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'60vw'}}>{m.titulo}</h2>
                     <span style={{padding:'4px 12px',borderRadius:99,fontSize:10,fontWeight:700,letterSpacing:'0.05em',background:fechada?'rgba(34,197,94,0.15)':finalizada?'rgba(239,68,68,0.1)':'rgba(59,130,246,0.1)',border:`1px solid ${fechada?'rgba(34,197,94,0.3)':finalizada?'rgba(239,68,68,0.2)':'rgba(59,130,246,0.2)'}`,color:fechada?'#22C55E':finalizada?'#EF4444':'#60A5FA'}}>
                       {fechada?'CONCLUIDA':finalizada?'Finalizada':'Ativa'}
                     </span>
@@ -899,7 +899,7 @@ export default function AdminPage() {
                     transition={{ duration: 0.3, ease }}
                     className="card card-primary" style={{ padding:24,marginBottom:20,overflow:'hidden' }}>
                     <h3 className="t-h3" style={{fontSize:14,marginBottom:14}}>Criar minha meta</h3>
-                    <form onSubmit={createMyMeta} style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+                    <form onSubmit={createMyMeta} className="g-form" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
                       <div>
                         <label className="t-label" style={{display:'block',marginBottom:6}}>Plataforma *</label>
                         <input className="input" value={myPlat} onChange={e=>setMyPlat(e.target.value)} placeholder="Nome da plataforma" required/>
@@ -1003,11 +1003,11 @@ export default function AdminPage() {
               <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)', pointerEvents:'none' }}/>
 
               <div style={{ position:'relative', zIndex:1 }}>
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:28 }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10, marginBottom:28 }}>
                   <p style={{ fontSize:13, color:'var(--t3)', fontWeight:500, margin:0 }}>
                     {heroPeriod==='all'?'Lucro final acumulado':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
                   </p>
-                  <div style={{ display:'flex', gap:2, background:'rgba(0,0,0,0.3)', borderRadius:9, padding:3 }}>
+                  <div style={{ display:'flex', gap:2, background:'rgba(0,0,0,0.3)', borderRadius:9, padding:3, flexWrap:'wrap' }}>
                     {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d']].map(([k,l])=>(
                       <button key={k} onClick={()=>setHeroPeriod(k)}
                         style={{
@@ -1042,7 +1042,7 @@ export default function AdminPage() {
                   />
                 </motion.div>
 
-                <div style={{ display:'flex', alignItems:'center', gap:20, marginTop:24, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:20, marginTop:24, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
                   <div>
                     <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2, letterSpacing:'0.05em', textTransform:'uppercase' }}>Fechadas</p>
                     <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)', margin:0 }}>{heroLucro.count}</p>
@@ -1443,7 +1443,7 @@ export default function AdminPage() {
                       {...fadeUp(i)}
                       whileHover={{ x: 4, borderColor: isTop ? 'rgba(255,215,0,0.35)' : 'var(--b2)', transition: { duration: 0.15 } }}
                       style={{
-                      display:'flex', alignItems:'center', gap:16,
+                      display:'flex', alignItems:'center', flexWrap:'wrap', gap:16,
                       padding:'18px 22px', borderRadius:16,
                       background:isTop?'linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,215,0,0.02))':'var(--surface)',
                       border:isTop?'1px solid rgba(255,215,0,0.2)':'1px solid var(--b1)',

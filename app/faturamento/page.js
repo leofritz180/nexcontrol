@@ -348,7 +348,7 @@ export default function FaturamentoPage() {
                   </p>
                 )}
 
-                <div style={{display:'flex',alignItems:'center',gap:20,marginTop:24,paddingTop:20,borderTop:'1px solid rgba(255,255,255,0.05)'}}>
+                <div style={{display:'flex',alignItems:'center',flexWrap:'wrap',gap:20,marginTop:24,paddingTop:20,borderTop:'1px solid rgba(255,255,255,0.05)'}}>
                   <div>
                     <p style={{fontSize:10,color:'var(--t4)',marginBottom:2,textTransform:'uppercase',letterSpacing:'0.05em'}}>Fechadas</p>
                     <p style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:700,color:'var(--t1)',margin:0}}>{stats.fechadas}</p>

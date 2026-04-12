@@ -992,12 +992,12 @@ export default function RedesPage() {
 
                           {/* Rank + Name */}
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 5 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 5, flexWrap: 'wrap' }}>
                               <span style={{
                                 fontSize: 11, fontWeight: 800, color: '#64748B', fontFamily: 'var(--mono, monospace)',
                                 minWidth: 24,
                               }}>#{i + 1}</span>
-                              <span style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9' }}>{rede.nome}</span>
+                              <span style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rede.nome}</span>
                               {/* Trend badge */}
                               <span style={{
                                 fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 6,

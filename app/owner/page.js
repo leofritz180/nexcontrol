@@ -112,7 +112,7 @@ export default function OwnerPage() {
                 <CountUp value={kpis.mrr} prefix="R$ "/>
               </p>
               <p style={{fontSize:12,color:'var(--t3)',margin:0}}>{kpis.activeSubs} assinaturas ativas · Ticket medio R$ {fmt(kpis.avgTicket)}</p>
-              <div style={{display:'flex',gap:20,marginTop:20,paddingTop:16,borderTop:'1px solid rgba(255,255,255,0.05)'}}>
+              <div style={{display:'flex',flexWrap:'wrap',gap:20,marginTop:20,paddingTop:16,borderTop:'1px solid rgba(255,255,255,0.05)'}}>
                 <div><p style={{fontSize:10,color:'var(--t4)',marginBottom:2,textTransform:'uppercase'}}>Receita total</p><p style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:700,color:'var(--t1)',margin:0}}>R$ {fmt(kpis.totalRevenue)}</p></div>
                 <div style={{width:1,height:28,background:'rgba(255,255,255,0.05)'}}/>
                 <div><p style={{fontSize:10,color:'var(--t4)',marginBottom:2,textTransform:'uppercase'}}>Ultimos 30d</p><p style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:700,color:'var(--t1)',margin:0}}>R$ {fmt(kpis.rev30)}</p></div>
@@ -203,7 +203,7 @@ export default function OwnerPage() {
             )}
             <div style={{marginTop:16,padding:'14px',borderRadius:10,background:'rgba(255,255,255,0.02)'}}>
               <p style={{fontSize:10,color:'var(--t4)',marginBottom:6,textTransform:'uppercase',letterSpacing:'0.06em'}}>Engajamento</p>
-              <div style={{display:'flex',gap:24}}>
+              <div style={{display:'flex',gap:24,flexWrap:'wrap'}}>
                 {[{l:'Hoje',v:activity.activeToday},{l:'7 dias',v:activity.active7},{l:'30 dias',v:activity.active30}].map(({l,v})=>(
                   <div key={l}><p style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:800,color:'var(--t1)',margin:'0 0 2px'}}>{v}</p><p style={{fontSize:10,color:'var(--t3)',margin:0}}>{l}</p></div>
                 ))}

@@ -285,7 +285,7 @@ export default function BillingPage() {
               </div>
             </div>
             <div style={{padding:'24px 28px'}}>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12,marginBottom:20}}>
                 <div>
                   <p style={{fontSize:13,color:'var(--t2)',margin:'0 0 4px'}}>Operadores atuais: <strong style={{color:'var(--t1)'}}>{operators.length}</strong></p>
                   <p style={{fontSize:13,color:'var(--t2)',margin:0}}>Adicionar: <strong style={{color:'var(--brand-bright)'}}>{extraOps}</strong></p>

@@ -740,84 +740,46 @@ export default function AdminPage() {
       <Header userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
-        {/* ── PAGE HEADER — signature design ── */}
+        {/* ── PAGE HEADER — clean ── */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease }}
-          style={{ position:'relative', marginBottom:32 }}>
-          {/* Top accent stripe */}
-          <div style={{
-            position:'absolute', top:-12, left:0, width:64, height:3, borderRadius:2,
-            background:'linear-gradient(90deg, var(--brand-bright), #3B82F6 70%, transparent)',
-            boxShadow:'0 0 12px rgba(59,130,246,0.5)',
-          }}/>
-
-          <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
-            <div>
-              {/* Terminal-style status bar */}
-              <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:14, fontFamily:'var(--mono)', fontSize:10, fontWeight:600, letterSpacing:'0.1em', color:'var(--t3)', textTransform:'uppercase' }}>
-                <span style={{ color:'var(--brand-bright)' }}>[ ADMIN ]</span>
-                <span style={{ color:'var(--t4)' }}>·</span>
-                <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                  <motion.span
-                    style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)' }}
-                    animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.7)','0 0 0 6px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
-                    transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                  />
-                  <span style={{ color:'var(--profit)' }}>SISTEMA ATIVO</span>
-                </div>
-                <span style={{ color:'var(--t4)' }}>·</span>
-                <span>SYNC 30S</span>
-                <span style={{ color:'var(--t4)' }}>·</span>
-                <span>{global.totalRem} OPS REGISTRADAS</span>
-              </div>
-              {/* Brutalist title */}
-              <motion.h1
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1, ease }}
-                style={{ fontSize:42, fontWeight:900, letterSpacing:'-0.045em', lineHeight:0.95, color:'var(--t1)', margin:0 }}>
-                Comando.
-                <span style={{
-                  background:'linear-gradient(135deg, #60A5FA, #60A5FA)',
-                  WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-                  fontStyle:'italic',
-                }}>{' '}operacional</span>
-              </motion.h1>
-              <p style={{ fontSize:13, color:'var(--t3)', margin:'10px 0 0', maxWidth:520, lineHeight:1.5 }}>
-                Cada deposito, cada saque, cada centavo.
-                <span style={{ color:'var(--t1)', fontWeight:600 }}> Voce comanda.</span>
-              </p>
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, ease }}
+          style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:32 }}>
+          <div>
+            <motion.h1
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.05, ease }}
+              style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:'0 0 6px' }}>
+              Painel executivo
+            </motion.h1>
+            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+              <motion.span
+                style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)' }}
+                animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.6)','0 0 0 5px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
+                transition={{ duration:2, repeat:Infinity }}
+              />
+              <span style={{ fontSize:12, color:'var(--t3)' }}>Atualiza a cada 30s</span>
             </div>
-            <motion.button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              whileHover={{ scale: 1.04, boxShadow: '0 0 30px rgba(59,130,246,0.25)' }}
-              whileTap={{ scale: 0.96 }}
-              style={{
-                display:'flex', alignItems:'center', gap:8,
-                padding:'11px 20px', borderRadius:11, fontSize:12, fontWeight:700,
-                fontFamily:'var(--mono)', letterSpacing:'0.06em', textTransform:'uppercase',
-                background: refreshing ? 'rgba(59,130,246,0.05)' : 'rgba(59,130,246,0.08)',
-                border:'1px solid rgba(59,130,246,0.25)',
-                color:'var(--brand-bright)',
-                cursor: refreshing ? 'not-allowed' : 'pointer',
-                opacity: refreshing ? 0.6 : 1,
-                transition:'all 0.2s',
-              }}>
-              {refreshing ? (
-                <motion.div
-                  style={{ width:13,height:13,borderRadius:'50%',border:'2px solid rgba(59,130,246,0.3)',borderTopColor:'var(--brand-bright)' }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                />
-              ) : (
-                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-              )}
-              {refreshing ? 'SINCRONIZANDO' : 'SINCRONIZAR'}
-            </motion.button>
           </div>
+          <motion.button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="btn btn-ghost btn-sm"
+            whileTap={{ scale: 0.96 }}
+            style={{ display:'flex', alignItems:'center', gap:6, opacity: refreshing ? 0.5 : 1 }}>
+            {refreshing ? (
+              <motion.div
+                style={{ width:13,height:13,borderRadius:'50%',border:'2px solid var(--t4)',borderTopColor:'var(--t1)' }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+              />
+            ) : (
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            )}
+            {refreshing ? 'Atualizando...' : 'Atualizar'}
+          </motion.button>
         </motion.div>
 
         <TrialBanner tenant={tenant} subscription={sub} stats={convStats}/>
@@ -1006,15 +968,110 @@ export default function AdminPage() {
         {/* ═══ OVERVIEW ═══ */}
         {tab==='overview' && (
           <motion.div key="overview"
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease }}>
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.25, ease }}>
 
-          {/* ── ASYMMETRIC HERO ── */}
-          <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:16, marginBottom:16 }}>
+          {/* ── HERO: one dominant number ── */}
+          {/* Hero — clean, one number dominates */}
+          <motion.div
+            initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
+            transition={{duration:0.4,ease}}
+            style={{ marginBottom:32, padding:'40px 0' }}>
 
-            {/* Hero card — Lucro total (massive) with period selector */}
+            {/* Period selector — minimal */}
+            <div style={{ display:'flex', gap:2, marginBottom:24 }}>
+              {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7 dias'],['30d','30 dias']].map(([k,l])=>{
+                const active = heroPeriod===k
+                return (
+                  <button key={k} onClick={()=>setHeroPeriod(k)}
+                    style={{
+                      fontFamily:'Inter,sans-serif', fontSize:12, fontWeight:600,
+                      padding:'6px 16px', borderRadius:8, cursor:'pointer',
+                      border:'none',
+                      background: active ? 'var(--raised)' : 'transparent',
+                      color: active ? 'var(--t1)' : 'var(--t3)',
+                      transition:'all 0.15s',
+                    }}>
+                    {l}
+                  </button>
+                )
+              })}
+            </div>
+
+            <p style={{ fontSize:12, color:'var(--t3)', marginBottom:8, fontWeight:500 }}>
+              {heroPeriod==='all'?'Lucro final acumulado':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
+            </p>
+
+            {/* THE number */}
+            <div style={{ display:'flex', alignItems:'baseline', gap:8 }}>
+              <AnimatedNumber
+                value={Math.abs(heroLucro.value)}
+                key={heroPeriod}
+                prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
+                style={{
+                  fontFamily:'var(--mono)', fontSize:56, fontWeight:900,
+                  color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
+                  lineHeight:1, letterSpacing:'-0.03em',
+                }}
+              />
+            </div>
+
+            <p style={{ fontSize:12, color:'var(--t3)', marginTop:10 }}>
+              {heroLucro.count} meta{heroLucro.count!==1?'s':''} fechada{heroLucro.count!==1?'s':''}
+            </p>
+          </motion.div>
+
+          {/* Secondary KPIs — 3 clean cards, neutral, no color overload */}
+          <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:32 }}>
+            {[
+              { label:'Lucro final total', value:global.lucroFinalTotal, prefix:'R$ ', color:'var(--t1)', sub:`${global.fechadas} fechadas` },
+              { label:'Total depositado', value:global.totalDep, prefix:'R$ ', color:'var(--t1)', sub:'Toda operacao' },
+              { label:'Total sacado', value:global.totalSaq, prefix:'R$ ', color:'var(--t1)', sub:'Toda operacao' },
+            ].map((k,i)=>(
+              <motion.div key={i}
+                initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}
+                transition={{duration:0.3,delay:0.1+i*0.06,ease}}
+                style={{
+                  padding:'24px 28px', borderRadius:14,
+                  background:'var(--surface)', border:'1px solid var(--b1)',
+                }}>
+                <p style={{ fontSize:11, color:'var(--t3)', marginBottom:12, fontWeight:500 }}>{k.label}</p>
+                <AnimatedNumber value={k.value} prefix={k.prefix}
+                  style={{ fontFamily:'var(--mono)', fontSize:24, fontWeight:800, color:k.color, display:'block', lineHeight:1 }} />
+                <p style={{ fontSize:11, color:'var(--t4)', marginTop:8 }}>{k.sub}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Stats — inline, minimal */}
+          <div style={{ display:'flex', gap:32, marginBottom:36, padding:'0 4px' }}>
+            {[
+              { l:'Operadores', v:global.ops },
+              { l:'Total metas', v:global.totalMetas },
+              { l:'Metas fechadas', v:global.fechadas },
+              { l:'Remessas', v:global.totalRem },
+            ].map((c,i)=>(
+              <motion.div key={i}
+                initial={{opacity:0}} animate={{opacity:1}}
+                transition={{duration:0.3,delay:0.2+i*0.05}}>
+                <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4 }}>{c.l}</p>
+                <AnimatedNumber value={c.v} decimals={0} style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:'var(--t1)' }} />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Activity — feed + operators */}
+          <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:20 }}>
+
+            {/* Feed */}
             <motion.div
-              initial={{opacity:0,y:24,scale:0.98}} animate={{opacity:1,y:0,scale:1}}
+              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
+              transition={{duration:0.3,delay:0.25,ease}}
+              style={{ padding:24, borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)' }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+                <h3 style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:0 }}>Remessas recentes</h3>
+                <span style={{ fontSize:11, color:'var(--t3)' }}>{remessas.length} total</span>
+              </div>
               transition={{duration:0.5,ease}}
               whileHover={{ y:-3, boxShadow:'0 0 80px rgba(34,197,94,0.18), 0 30px 60px rgba(0,0,0,0.4)', transition:{duration:0.25} }}
               style={{
@@ -1173,191 +1230,71 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* ── HORIZONTAL STATS BAR — single inline strip with dividers ── */}
-          <motion.div
-            initial={{opacity:0,y:14}} animate={{opacity:1,y:0}}
-            transition={{duration:0.4,delay:0.35,ease}}
-            style={{
-              display:'flex', alignItems:'center', gap:0,
-              padding:'22px 28px 18px', marginTop:14, marginBottom:28,
-              background:'linear-gradient(90deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))',
-              border:'1px solid var(--b1)',
-              borderRadius:14,
-              position:'relative',
-            }}>
-            {/* bracket label */}
-            <div style={{ position:'absolute', top:-7, left:24, padding:'0 10px', background:'var(--base)', fontFamily:'var(--mono)', fontSize:10, fontWeight:700, color:'var(--t3)', letterSpacing:'0.14em', lineHeight:1, whiteSpace:'nowrap' }}>
-              [ INDICADORES ]
-            </div>
+          {/* stats inline moved above */}
 
-            {[
-              { l:'Operadores', v:global.ops,       c:'var(--info)' },
-              { l:'Total metas', v:global.totalMetas,c:'var(--brand-bright)' },
-              { l:'Metas fechadas', v:global.fechadas, c:'var(--profit)' },
-              { l:'Total remessas', v:global.totalRem, c:'var(--warn)' },
-            ].map((c,i,arr)=>(
-              <div key={i} style={{ display:'flex', alignItems:'center', flex:1 }}>
-                <motion.div
-                  whileHover={{ y:-2, transition:{duration:0.15} }}
-                  style={{ flex:1, padding:'4px 12px', cursor:'default' }}>
-                  <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', letterSpacing:'0.12em', textTransform:'uppercase', marginBottom:6 }}>
-                    {c.l}
-                  </p>
-                  <AnimatedNumber value={c.v} decimals={0} style={{ fontFamily:'var(--mono)', fontSize:28, fontWeight:900, color:c.c, lineHeight:1, display:'block' }} />
-                </motion.div>
-                {i<arr.length-1 && <div style={{ width:1, height:42, background:'var(--b1)', flexShrink:0 }}/>}
-              </div>
-            ))}
-          </motion.div>
-
-          {/* ── ACTIVITY GRID — asymmetric 3fr / 2fr ── */}
-          <div style={{ display:'grid', gridTemplateColumns:'1.55fr 1fr', gap:16 }}>
-            {/* Feed de remessas */}
-            <motion.div style={{
-                position:'relative', overflow:'hidden', padding:24, borderRadius:18,
-                background:'var(--surface)', border:'1px solid var(--b1)',
-                boxShadow:'0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04)',
-              }}
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.4, ease }}>
-              {/* Vertical accent */}
-              <div style={{
-                position:'absolute', left:0, top:24, bottom:24, width:3, borderRadius:'0 3px 3px 0',
-                background:'linear-gradient(180deg, var(--brand-bright), #3B82F6)',
-              }}/>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, paddingLeft:6 }}>
-                <div>
-                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
-                    <span style={{ fontFamily:'var(--mono)', fontSize:9, fontWeight:700, color:'var(--brand-bright)', letterSpacing:'0.12em' }}>
-                      [ FEED · LIVE ]
-                    </span>
-                    <motion.span
-                      style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)' }}
-                      animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.7)','0 0 0 5px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
-                      transition={{ duration:2, repeat:Infinity }}
-                    />
-                  </div>
-                  <h2 style={{ fontSize:18, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>Cada movimento, em tempo real</h2>
-                </div>
-                <span style={{ fontFamily:'var(--mono)', fontSize:10, color:'var(--t4)', letterSpacing:'0.06em' }}>
-                  {remessas.length} TOTAL
-                </span>
-              </div>
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                {remessas.slice(0,12).map((r,i)=>{
+                {remessas.slice(0,10).map((r,i)=>{
                   const m   = metas.find(x=>x.id===r.meta_id)
                   const op  = operators.find(o=>o.id===m?.operator_id)
                   const pos = Number(r.resultado||0)>=0
                   const val = Math.abs(Number(r.resultado||0))
-                  const rede = m?.rede
-                  const isNew = (Date.now()-new Date(r.created_at).getTime())<300000
                   return (
                     <motion.div key={r.id}
-                      initial={{opacity:0,x:-16}} animate={{opacity:1,x:0}}
-                      transition={{duration:0.3,delay:i*0.04,ease}}
-                      whileHover={{
-                        x:4,
-                        background: pos ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
-                        borderColor: pos ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)',
-                        transition:{duration:0.15}
-                      }}
+                      initial={{opacity:0}} animate={{opacity:1}}
+                      transition={{duration:0.2,delay:i*0.03}}
                       style={{
-                      padding:'12px 14px', borderRadius:12,
-                      background:pos?'rgba(34,197,94,0.04)':'rgba(239,68,68,0.04)',
-                      border:`1px solid ${pos?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}`,
-                      display:'flex', alignItems:'center', gap:12,
+                      padding:'10px 0', display:'flex', alignItems:'center', gap:12,
+                      borderBottom: i<9 ? '1px solid var(--b1)' : 'none',
                     }}>
-                      <motion.div
-                        whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(59,130,246,0.25)' }}
-                        style={{ width:36, height:36, borderRadius:10, background:'linear-gradient(135deg,rgba(59,130,246,0.3),rgba(59,130,246,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
-                        <span style={{ fontSize:13, fontWeight:800, color:'white' }}>{getName(op)[0]?.toUpperCase()}</span>
-                      </motion.div>
+                      <div style={{ width:32, height:32, borderRadius:8, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>{getName(op)[0]?.toUpperCase()}</span>
+                      </div>
                       <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3 }}>
-                          <span style={{ fontSize:13, fontWeight:700, color:'var(--t1)' }}>{getName(op)}</span>
-                          {rede && <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:6, background:'rgba(59,130,246,0.12)', color:'var(--brand-bright)', border:'1px solid rgba(59,130,246,0.2)' }}>{rede}</span>}
-                          {isNew && (
-                            <motion.span
-                              animate={{ opacity: [1, 0.5, 1] }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                              style={{ fontSize:8, fontWeight:700, padding:'2px 6px', borderRadius:6, background:'rgba(34,197,94,0.15)', color:'var(--profit)', border:'1px solid rgba(34,197,94,0.25)' }}>
-                              NOVO
-                            </motion.span>
-                          )}
-                        </div>
-                        <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{r.titulo||'Remessa'} · {new Date(r.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</p>
+                        <span style={{ fontSize:13, fontWeight:600, color:'var(--t1)' }}>{getName(op)}</span>
+                        <p style={{ fontSize:11, color:'var(--t3)', margin:'2px 0 0' }}>{r.titulo||'Remessa'} · {new Date(r.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</p>
                       </div>
-                      <div style={{ textAlign:'right', flexShrink:0 }}>
-                        <p className="t-num" style={{ fontSize:16, fontWeight:800, color:pos?'var(--profit)':'var(--loss)', margin:0 }}>
-                          {pos?'+':'-'}R$ {fmt(val)}
-                        </p>
-                      </div>
+                      <span className="t-num" style={{ fontSize:15, fontWeight:800, color:pos?'var(--profit)':'var(--loss)', flexShrink:0 }}>
+                        {pos?'+':'-'}R$ {fmt(val)}
+                      </span>
                     </motion.div>
                   )
                 })}
               </div>
             </motion.div>
 
-            {/* Operadores */}
-            <motion.div style={{
-                position:'relative', overflow:'hidden', padding:24, borderRadius:18,
-                background:'var(--surface)', border:'1px solid var(--b1)',
-                boxShadow:'0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04)',
-              }}
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.45, ease }}>
-              <div style={{
-                position:'absolute', left:0, top:24, bottom:24, width:3, borderRadius:'0 3px 3px 0',
-                background:'linear-gradient(180deg, #f5a623, #f97316)',
-              }}/>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, paddingLeft:6 }}>
-                <div>
-                  <span style={{ fontFamily:'var(--mono)', fontSize:9, fontWeight:700, color:'var(--warn)', letterSpacing:'0.12em' }}>
-                    [ EQUIPE ]
-                  </span>
-                  <h2 style={{ fontSize:18, fontWeight:800, color:'var(--t1)', margin:'4px 0 0', letterSpacing:'-0.02em' }}>Quem entrega resultado</h2>
-                </div>
-                <span style={{ fontFamily:'var(--mono)', fontSize:10, color:'var(--t4)', letterSpacing:'0.06em' }}>
-                  {operators.length} ATIVOS
-                </span>
+            {/* Operadores — clean list */}
+            <motion.div
+              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
+              transition={{duration:0.3,delay:0.3,ease}}
+              style={{ padding:24, borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)' }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+                <h3 style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:0 }}>Operadores</h3>
+                <span style={{ fontSize:11, color:'var(--t3)' }}>{operators.length} ativos</span>
               </div>
-              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
                 {operators.map((op,i)=>{
-                  const opMetas = metas.filter(m=>m.operator_id===op.id)
-                  const opMetasFechadas = opMetas.filter(m=>m.status_fechamento==='fechada')
-                  const ids = new Set(opMetas.map(m=>m.id))
-                  const opRem = remessas.filter(r=>ids.has(r.meta_id))
-                  // Lucro final real (ja descontado salario, custo fixo, taxa agente)
+                  const opMetasFechadas = metas.filter(m=>m.operator_id===op.id&&m.status_fechamento==='fechada')
                   const lucroFinal = opMetasFechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-                  const ativas = opMetas.filter(m=>(m.status||'ativa')==='ativa').length
+                  const ativas = metas.filter(m=>m.operator_id===op.id&&(m.status||'ativa')==='ativa').length
                   return (
-                    <motion.div key={op.id} className="data-row"
-                      initial={{opacity:0,x:12}} animate={{opacity:1,x:0}}
-                      transition={{duration:0.3,delay:i*0.05,ease}}
-                      whileHover={{
-                        x:4,
-                        background:'var(--overlay)',
-                        borderColor:'var(--b2)',
-                        transition:{duration:0.15}
+                    <motion.div key={op.id}
+                      initial={{opacity:0}} animate={{opacity:1}}
+                      transition={{duration:0.2,delay:i*0.04}}
+                      style={{
+                        padding:'10px 0', display:'flex', alignItems:'center', gap:10,
+                        borderBottom: i<operators.length-1 ? '1px solid var(--b1)' : 'none',
                       }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                        <motion.div
-                          whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(59,130,246,0.3)' }}
-                          style={{ width:34, height:34, borderRadius:10, background:'linear-gradient(135deg,rgba(59,130,246,0.3),rgba(59,130,246,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
-                          <span style={{ fontSize:13, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
-                        </motion.div>
-                        <div>
-                          <p style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:'0 0 2px' }}>{getName(op)}</p>
-                          <p className="t-small">{ativas} ativa(s) · {opMetasFechadas.length} fechada(s) · {opRem.length} remessas</p>
-                        </div>
+                      <div style={{ width:32, height:32, borderRadius:8, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>{getName(op)[0].toUpperCase()}</span>
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <p style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:0 }}>{getName(op)}</p>
+                        <p style={{ fontSize:11, color:'var(--t3)', margin:'2px 0 0' }}>{ativas} ativa{ativas!==1?'s':''} · {opMetasFechadas.length} fechada{opMetasFechadas.length!==1?'s':''}</p>
                       </div>
                       <div style={{ textAlign:'right' }}>
-                        <AnimatedNumber
-                          value={Math.abs(lucroFinal)}
-                          prefix={`${lucroFinal>=0?'+':'-'}R$ `}
-                          style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:lucroFinal>=0?'var(--profit)':'var(--loss)' }}
-                        />
-                        <p style={{ fontSize:9, color:'var(--t4)', margin:'2px 0 0', letterSpacing:'0.06em', fontWeight:600 }}>LUCRO FINAL</p>
+                        <span className="t-num" style={{ fontSize:14, fontWeight:700, color:lucroFinal>=0?'var(--profit)':'var(--loss)' }}>
+                          {lucroFinal>=0?'+':'-'}R$ {fmt(Math.abs(lucroFinal))}
+                        </span>
                       </div>
                     </motion.div>
                   )

@@ -221,7 +221,7 @@ export default function OperatorPage() {
             { label:'Resultado hoje', value:Math.abs(stats.lucroHoje), prefix:`${stats.lucroHoje>=0?'+':'-'}R$ `, color:stats.lucroHoje>=0?'var(--profit)':'var(--loss)', sub:stats.lucroHoje>=0?'Lucro do dia':'Prejuizo do dia' },
             { label:'Metas ativas', value:stats.ativas, prefix:'', suffix:'', decimals:0, color:'var(--t1)', sub:`${stats.total} total` },
             { label:'Remessas', value:stats.nRem, prefix:'', suffix:'', decimals:0, color:'var(--t1)', sub:'Total registradas' },
-            { label:'Taxa de acerto', value:stats.taxa, prefix:'', suffix:'%', decimals:0, color:stats.taxa>=50?'var(--profit)':'var(--loss)', sub:`${remessas.filter(r=>Number(r.lucro||0)>0).length} positivas` },
+            { label:'Total de depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), prefix:'', suffix:'', decimals:0, color:'var(--t1)', sub:`${metas.filter(m=>m.status_fechamento==='fechada').length} metas fechadas` },
           ].map((k,i)=>(
             <motion.div key={i}
               initial={{ opacity:0, y:12 }}

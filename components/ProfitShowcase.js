@@ -202,7 +202,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
       {/* Print controls */}
       {printMode && (
         <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 10, display: 'flex', gap: 8 }}>
-          <GenerateVideoButton amount={val} completedGoals={fechadas.length} goalPct={goalPct} mode={mode}/>
+          <GenerateVideoButton amount={val} completedGoals={fechadas.length} goalPct={goalPct} mode={mode} stats={stats}/>
           <button onClick={exportImage} disabled={exporting}
             style={{ fontSize: 11, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: exporting?'wait':'pointer', border: 'none', background: '#e53935', color: 'white', opacity: exporting ? 0.6 : 1 }}>
             {exporting ? 'Gerando...' : 'Baixar imagem'}

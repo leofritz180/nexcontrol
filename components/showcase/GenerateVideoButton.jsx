@@ -9,7 +9,7 @@ import { motion } from 'framer-motion'
  * 2. Uploads to Vercel Blob Storage
  * 3. Returns shareable public URL
  */
-export function GenerateVideoButton({ amount, completedGoals, goalPct, mode, style }) {
+export function GenerateVideoButton({ amount, completedGoals, goalPct, mode, stats, style }) {
   const [status, setStatus] = useState('idle') // idle | rendering | uploading | done | error
   const [progress, setProgress] = useState(0)
   const [videoUrl, setVideoUrl] = useState(null)
@@ -26,6 +26,7 @@ export function GenerateVideoButton({ amount, completedGoals, goalPct, mode, sty
         value: amount,
         metasFechadas: completedGoals || 0,
         goalPct: goalPct || 0,
+        stats: stats || {},
         onProgress: setProgress,
       })
 

@@ -556,14 +556,28 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 
   /* Brutalist hero title (admin) — scale down */
   h1[style*="42px"] { font-size: 28px !important; line-height: 1 !important; }
+  h1[style*="40px"] { font-size: 28px !important; line-height: 1.1 !important; }
   h1[style*="34px"] { font-size: 26px !important; }
   h1[style*="32px"] { font-size: 24px !important; }
 
   /* Hero massive number (lucro hoje) → fits screen */
   span[style*="64px"] { font-size: 38px !important; }
+  span[style*="58px"] { font-size: 36px !important; }
+  span[style*="56px"] { font-size: 34px !important; }
+  span[style*="52px"] { font-size: 32px !important; }
   span[style*="42px"] { font-size: 28px !important; }
+  p[style*="56px"] { font-size: 34px !important; }
+  p[style*="52px"] { font-size: 32px !important; }
+  p[style*="48px"] { font-size: 30px !important; }
+  p[style*="42px"] { font-size: 28px !important; }
+  p[style*="40px"] { font-size: 28px !important; }
   p[style*="36px"] { font-size: 26px !important; }
   p[style*="28px"] { font-size: 22px !important; }
+  /* AnimatedNumber uses span wrapper — catch big mono numbers */
+  div[style*="fontSize: 52"],
+  div[style*="fontSize:52"] { font-size: 32px !important; }
+  div[style*="fontSize: 48"],
+  div[style*="fontSize:48"] { font-size: 30px !important; }
 
   /* ── Header → wraps with horizontal scroll nav ── */
   header { height: auto !important; min-height: 52px; }
@@ -606,6 +620,10 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
   }
+  div[style*="gridTemplateColumns"][style*="repeat(6"] {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
   div[style*="gridTemplateColumns: '1fr 1fr'"],
   div[style*="gridTemplateColumns:'1fr 1fr'"],
   div[style*="gridTemplateColumns: '2fr 1fr'"],
@@ -615,7 +633,13 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   div[style*="gridTemplateColumns: '1.55fr 1fr'"],
   div[style*="gridTemplateColumns:'1.55fr 1fr'"],
   div[style*="gridTemplateColumns: '1fr 320px'"],
-  div[style*="gridTemplateColumns:'1fr 320px'"] {
+  div[style*="gridTemplateColumns:'1fr 320px'"],
+  div[style*="gridTemplateColumns: '1fr 1.1fr'"],
+  div[style*="gridTemplateColumns:'1fr 1.1fr'"],
+  div[style*="gridTemplateColumns: '1.4fr 1fr'"],
+  div[style*="gridTemplateColumns:'1.4fr 1fr'"],
+  div[style*="gridTemplateColumns: '380px 1fr'"],
+  div[style*="gridTemplateColumns:'380px 1fr'"] {
     grid-template-columns: 1fr !important;
     gap: 12px !important;
   }
@@ -681,7 +705,9 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   div[style*="maxWidth: 420"],
   div[style*="maxWidth:420"],
   div[style*="maxWidth: 440"],
-  div[style*="maxWidth:440"] {
+  div[style*="maxWidth:440"],
+  div[style*="maxWidth: 480"],
+  div[style*="maxWidth:480"] {
     max-width: 100% !important;
     width: 100% !important;
   }

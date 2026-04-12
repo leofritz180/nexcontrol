@@ -45,8 +45,8 @@ function AnimatedLogo() {
       {/* Glow base */}
       <div style={{
         position:'absolute', inset:0, borderRadius:9,
-        background:'linear-gradient(135deg,#4f6ef7,#7c5cfc)',
-        boxShadow:'0 0 20px rgba(79,110,247,0.5), 0 0 40px rgba(79,110,247,0.15)',
+        background:'linear-gradient(135deg,#e53935,#c62828)',
+        boxShadow:'0 0 20px rgba(229,57,53,0.4), 0 0 40px rgba(229,57,53,0.1)',
         animation:'breathe 4s ease-in-out infinite',
       }}/>
       {/* Icon */}
@@ -68,7 +68,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
   const initial = name[0].toUpperCase()
 
   return (<>
-    <header style={{ position:'sticky', top:0, zIndex:200, height:58, background:'rgba(6,11,20,0.88)', backdropFilter:'blur(28px) saturate(180%)', WebkitBackdropFilter:'blur(28px) saturate(180%)', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+    <header style={{ position:'sticky', top:0, zIndex:200, height:58, background:'rgba(10,10,10,0.92)', backdropFilter:'blur(20px)', WebkitBackdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.06)' }}>
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'0 28px', height:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
         {/* Logo */}
         <Link href="/operator" style={{ display:'flex', alignItems:'center', gap:10 }}>

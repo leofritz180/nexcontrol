@@ -192,52 +192,55 @@ export default function OperatorPage() {
       <Header userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role==='admin'} userId={user?.id} tenantId={profile?.tenant_id}/>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
-        {/* Welcome */}
-        <div className="a1" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:32 }}>
+        {/* Header */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:32 }}>
           <div>
-            <div className="live" style={{ marginBottom:8 }}>
-              <span className="live-dot"/>
-              <span style={{ fontSize:11, color:'var(--t3)', fontWeight:600, letterSpacing:'0.06em' }}>SISTEMA ONLINE</span>
-            </div>
-            <h1 className="t-h1">
-              Olá, <span style={{ background:'linear-gradient(135deg,#60A5FA,#60A5FA)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>{getName(profile)}</span>
+            <h1 style={{ fontSize:24, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:'0 0 4px' }}>
+              Ola, {getName(profile)}
             </h1>
-            <p className="t-body" style={{ marginTop:4 }}>
-              {new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
+            <p style={{ fontSize:13, color:'var(--t3)', margin:0 }}>
+              {new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}
             </p>
           </div>
-          <div style={{ display:'flex', gap:10 }}>
+          <div style={{ display:'flex', gap:8 }}>
             <button onClick={load} className="btn btn-ghost btn-sm" style={{ display:'flex', alignItems:'center', gap:6 }}>
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-              Sync
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+              Atualizar
             </button>
-            <button onClick={()=>setShowForm(!showForm)} className={`btn ${showForm?'btn-ghost':'btn-cta'}`} style={{ display:'flex', alignItems:'center', gap:8 }}>
-              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <button onClick={()=>setShowForm(!showForm)} className={`btn ${showForm?'btn-ghost':'btn-brand'}`} style={{ display:'flex', alignItems:'center', gap:6 }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               {showForm?'Fechar':'Nova meta'}
             </button>
           </div>
         </div>
 
-        {/* Metrics */}
-        <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:24 }}>
-          <MetricCard iconType="profit" label="Resultado hoje" value={`R$ ${fmt(Math.abs(stats.lucroHoje))}`} color={hojeColor} badge="ao vivo" animClass="a1" sub={stats.lucroHoje>=0?'Lucro do dia':'Prejuizo do dia'}/>
-          <MetricCard iconType="target" label="Metas ativas" value={stats.ativas} color="brand" badge="operando" animClass="a2" sub={`${stats.total} total · ${metas.filter(m=>m.status==='finalizada').length} encerradas`}/>
-          <MetricCard iconType="box" label="Remessas" value={stats.nRem} color="info" badge="registradas" animClass="a3" sub="Total acumulado"/>
-          <MetricCard iconType="bolt" label="Taxa de acerto" value={`${stats.taxa}%`} color={stats.taxa>=50?'profit':'warn'} badge="performance" animClass="a4" sub={`${remessas.filter(r=>Number(r.lucro||0)>0).length} positivas de ${stats.nRem}`}/>
+        {/* Metrics — neutral cards */}
+        <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
+          {[
+            { label:'Resultado hoje', value:Math.abs(stats.lucroHoje), prefix:`${stats.lucroHoje>=0?'+':'-'}R$ `, color:stats.lucroHoje>=0?'var(--profit)':'var(--loss)' },
+            { label:'Metas ativas', value:stats.ativas, prefix:'', decimals:0, color:'var(--t1)' },
+            { label:'Remessas', value:stats.nRem, prefix:'', decimals:0, color:'var(--t1)' },
+            { label:'Taxa de acerto', value:stats.taxa, prefix:'', suffix:'%', decimals:0, color:stats.taxa>=50?'var(--profit)':'var(--loss)' },
+          ].map((k,i)=>(
+            <div key={i} style={{
+              padding:'20px 24px', borderRadius:14,
+              background:'var(--surface)', border:'1px solid var(--b1)',
+            }}>
+              <p style={{ fontSize:10, color:'var(--t3)', marginBottom:8 }}>{k.label}</p>
+              <CountUp value={k.value} prefix={k.prefix||''} suffix={k.suffix||''} />
+              <span style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:k.color, display:'none' }}/>
+              <p style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:k.color, margin:0, lineHeight:1 }}>
+                <CountUp value={k.value} prefix={k.prefix||''} suffix={k.suffix||''}/>
+              </p>
+            </div>
+          ))}
         </div>
 
         {/* Form */}
         {showForm && (
-          <div className="as card card-primary" style={{ padding:26, marginBottom:24 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20 }}>
-              <div style={{ width:34,height:34,borderRadius:9,background:'var(--brand-dim)',border:'1px solid var(--brand-border)',display:'flex',alignItems:'center',justifyContent:'center' }}>
-                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-              </div>
-              <div>
-                <h2 style={{ fontSize:15,fontWeight:700,color:'var(--t1)',margin:0 }}>Iniciar nova meta</h2>
-                <p style={{ fontSize:12,color:'var(--t3)',margin:0 }}>Ao criar, você vai direto para a página da meta</p>
-              </div>
-            </div>
+          <div style={{ padding:26, marginBottom:24, borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)' }}>
+            <h2 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:'0 0 4px' }}>Iniciar nova meta</h2>
+            <p style={{ fontSize:12, color:'var(--t3)', margin:'0 0 20px' }}>Ao criar, voce vai direto para a pagina da meta</p>
             <form onSubmit={handleCreate} style={{ display:'flex', flexDirection:'column', gap:16 }}>
               {/* Row 1 */}
               <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
@@ -322,7 +325,7 @@ export default function OperatorPage() {
                 <h2 className="t-h3">Centro de metas</h2>
                 <p className="t-small" style={{ marginTop:2 }}>Performance individual em tempo real</p>
               </div>
-              <span className="badge badge-brand">{stats.ativas} ativas</span>
+              <span style={{ fontSize:11, color:'var(--t3)' }}>{stats.ativas} ativas</span>
             </div>
 
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
@@ -333,12 +336,12 @@ export default function OperatorPage() {
                 </div>
               ) : metas.length===0 ? (
                 <div style={{ border:'1px dashed var(--b2)', borderRadius:16, padding:60, textAlign:'center' }}>
-                  <div style={{ width:52,height:52,borderRadius:14,background:'var(--brand-dim)',border:'1px solid var(--brand-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px' }}>
-                    <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                  <div style={{ width:48,height:48,borderRadius:12,background:'var(--raised)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px' }}>
+                    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                   </div>
                   <p style={{ color:'var(--t2)',fontSize:14,fontWeight:600,marginBottom:4 }}>Nenhuma meta criada</p>
                   <p className="t-small" style={{ marginBottom:20 }}>Inicie sua primeira operação agora.</p>
-                  <button onClick={()=>setShowForm(true)} className="btn btn-cta">+ Criar primeira meta</button>
+                  <button onClick={()=>setShowForm(true)} className="btn btn-brand">+ Criar primeira meta</button>
                 </div>
               ) : metas.map((m,i)=>{
                 const mRem  = remessas.filter(r=>r.meta_id===m.id)
@@ -352,12 +355,12 @@ export default function OperatorPage() {
                 return (
                   <div key={m.id} className="row-card a1" style={{ animationDelay:`${i*40}ms`, padding:'18px 20px' }}
                     onClick={()=>router.push(`/meta/${m.id}`)}>
-                    <div className="accent" style={{ background:fechada?'linear-gradient(180deg,var(--profit),#04b876)':finalizada?'linear-gradient(180deg,var(--loss),#c0294e)':'linear-gradient(180deg,var(--brand-bright),var(--brand))' }}/>
+                    <div className="accent" style={{ background:fechada?'var(--profit)':finalizada?'var(--loss)':'var(--t3)' }}/>
                     <div style={{ paddingLeft:14 }}>
                       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
                         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                           <h3 style={{ fontSize:14,fontWeight:700,color:'var(--t1)',margin:0,letterSpacing:'-0.01em' }}>{m.titulo}</h3>
-                          <span className={`badge ${fechada?'badge-profit':finalizada?'badge-loss':'badge-brand'}`}>
+                          <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:6, background:fechada?'var(--profit-dim)':finalizada?'var(--loss-dim)':'var(--raised)', color:fechada?'var(--profit)':finalizada?'var(--loss)':'var(--t2)', border:`1px solid ${fechada?'var(--profit-border)':finalizada?'var(--loss-border)':'var(--b1)'}` }}>
                             {fechada?'Fechada':finalizada?'Finalizada':'Ativa'}
                           </span>
                         </div>
@@ -370,7 +373,7 @@ export default function OperatorPage() {
                       </div>
                       <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:6, flexWrap:'wrap' }}>
                         {m.plataforma && <span className="badge badge-neutral" style={{ fontSize:9 }}>{m.plataforma}</span>}
-                        {m.rede && <span className="badge badge-brand" style={{ fontSize:9 }}>{m.rede}</span>}
+                        {m.rede && <span style={{ fontSize:9, fontWeight:600, padding:'2px 7px', borderRadius:5, background:'var(--raised)', color:'var(--t2)', border:'1px solid var(--b1)' }}>{m.rede}</span>}
                         <span className="t-small">{m.quantidade_contas||0} contas · {mRem.length} remessas</span>
                       </div>
                       <p className="t-small" style={{ marginBottom:mRem.length>0?12:0 }}>
@@ -396,59 +399,49 @@ export default function OperatorPage() {
           {/* Sidebar */}
           <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
             {/* P&L */}
-            <div className="card a3" style={{ padding:22 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:18 }}>
-                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                <h3 className="t-h3" style={{ fontSize:13 }}>Resultado acumulado</h3>
-              </div>
+            <div style={{ padding:22, borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)' }}>
+              <h3 style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 16px' }}>Resultado acumulado</h3>
               {[
-                { l:'Lucro bruto',     v:`R$ ${fmt(stats.lucro)}`,     c:'var(--profit)', up:true },
-                { l:'Prejuizo bruto',  v:`R$ ${fmt(stats.prej)}`,      c:'var(--loss)',   up:false },
-                { l:'Resultado liquido', v:`${stats.liq>=0?'+':''}R$ ${fmt(Math.abs(stats.liq))}`, c:stats.liq>=0?'var(--profit)':'var(--loss)', up:stats.liq>=0 },
+                { l:'Lucro bruto',     v:`R$ ${fmt(stats.lucro)}`,     c:'var(--profit)' },
+                { l:'Prejuizo bruto',  v:`R$ ${fmt(stats.prej)}`,      c:'var(--loss)' },
+                { l:'Resultado', v:`${stats.liq>=0?'+':''}R$ ${fmt(Math.abs(stats.liq))}`, c:stats.liq>=0?'var(--profit)':'var(--loss)' },
               ].map((s,i)=>(
-                <div key={i} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom:i<2?'1px solid var(--b1)':'' }}>
-                  <span style={{ fontSize:12,color:'var(--t2)' }}>{s.l}</span>
-                  <span className="t-num" style={{ fontSize:14,fontWeight:700,color:s.c, display:'inline-flex', alignItems:'center', gap:4 }}>
-                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points={s.up?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>
-                    {s.v}
-                  </span>
+                <div key={i} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom:i<2?'1px solid var(--b1)':'none' }}>
+                  <span style={{ fontSize:12, color:'var(--t3)' }}>{s.l}</span>
+                  <span style={{ fontFamily:'var(--mono)', fontSize:14, fontWeight:700, color:s.c }}>{s.v}</span>
                 </div>
               ))}
             </div>
 
             {/* Summary */}
-            <div className="card a4" style={{ padding:22 }}>
-              <h3 className="t-h3" style={{ fontSize:13, marginBottom:14 }}>Metas</h3>
+            <div style={{ padding:22, borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)' }}>
+              <h3 style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 14px' }}>Metas</h3>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:8 }}>
                 {[
-                  { l:'Total', v:stats.total, c:'var(--t1)' },
-                  { l:'Ativas', v:stats.ativas, c:'var(--profit)' },
-                  { l:'Fechadas', v:metas.filter(m=>m.status_fechamento==='fechada').length, c:'var(--brand-bright)' },
-                ].map(({l,v,c})=>(
-                  <div key={l} className="stat-pill">
-                    <p className="t-num" style={{ fontSize:22,color:c,marginBottom:2 }}>{v}</p>
-                    <p style={{ fontSize:10,color:'var(--t4)',letterSpacing:'0.04em' }}>{l}</p>
+                  { l:'Total', v:stats.total },
+                  { l:'Ativas', v:stats.ativas },
+                  { l:'Fechadas', v:metas.filter(m=>m.status_fechamento==='fechada').length },
+                ].map(({l,v})=>(
+                  <div key={l} style={{ textAlign:'center', padding:'12px 8px', borderRadius:10, background:'var(--raised)' }}>
+                    <p style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:800, color:'var(--t1)', margin:'0 0 2px' }}>{v}</p>
+                    <p style={{ fontSize:10, color:'var(--t3)' }}>{l}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Quick actions */}
-            <div className="card a5" style={{ padding:22 }}>
-              <h3 className="t-h3" style={{ fontSize:13, marginBottom:14 }}>Ações rápidas</h3>
+            <div style={{ padding:22, borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)' }}>
+              <h3 style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 14px' }}>Acoes rapidas</h3>
               <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-                <button onClick={()=>setShowForm(true)} className="btn btn-cta" style={{ width:'100%', justifyContent:'center' }}>
+                <button onClick={()=>setShowForm(true)} className="btn btn-brand" style={{ width:'100%', justifyContent:'center' }}>
                   + Iniciar nova meta
                 </button>
                 {metas.find(m=>(m.status||'ativa')==='ativa') && (
                   <button onClick={()=>router.push(`/meta/${metas.find(m=>(m.status||'ativa')==='ativa').id}`)} className="btn btn-ghost" style={{ width:'100%', justifyContent:'center' }}>
-                    Abrir meta ativa →
+                    Abrir meta ativa
                   </button>
                 )}
-                <button onClick={()=>router.push('/pix')} className="btn btn-ghost" style={{ width:'100%', justifyContent:'center', display:'flex', alignItems:'center', gap:8 }}>
-                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg>
-                  Chaves PIX →
-                </button>
               </div>
             </div>
           </div>

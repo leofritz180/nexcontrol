@@ -26,6 +26,12 @@ export default function SignupPage() {
 
     setLoading(false)
     if (err) { setError(err.message); return }
+    // Try to redirect directly if auto-confirmed
+    const { data: session } = await supabase.auth.getSession()
+    if (session?.session?.user) {
+      router.push('/admin')
+      return
+    }
     setSuccess(true)
   }
 
@@ -38,7 +44,7 @@ export default function SignupPage() {
           </div>
           <h2 className="t-h2" style={{ marginBottom:8 }}>Conta criada</h2>
           <p className="t-body" style={{ marginBottom:24 }}>Verifique seu email para confirmar o cadastro.</p>
-          <Link href="/login" className="btn btn-brand" style={{ width:'100%', justifyContent:'center' }}>Ir para o login</Link>
+          <Link href="/login" className="btn btn-brand" style={{ width:'100%', justifyContent:'center' }}>Entrar no sistema</Link>
         </div>
       </div>
     </main>

@@ -146,12 +146,12 @@ export function ProUpgradeModal({ onClose, feature }) {
         </motion.div>
 
         <h2 style={{ fontSize:22, fontWeight:800, color:'var(--t1)', margin:'0 0 8px' }}>
-          Voce esta perdendo oportunidades
+          Pare de operar no escuro
         </h2>
         <p style={{ fontSize:14, color:'var(--t3)', margin:'0 0 28px', lineHeight:1.5 }}>
           {feature
-            ? `"${feature}" mostra dados que clientes PRO usam pra lucrar mais. Desbloqueie agora.`
-            : 'Previsoes, rankings e insights que aumentam seu lucro. Clientes PRO performam melhor.'}
+            ? `"${feature}" — inteligencia que clientes PRO usam pra performar melhor. Decisoes baseadas em dados reais.`
+            : 'Previsoes, rankings e alertas que aumentam seu lucro. Quem tem, performa mais.'}
         </p>
 
         <div style={{ display:'flex', flexDirection:'column', gap:10 }}>

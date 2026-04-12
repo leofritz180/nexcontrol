@@ -758,7 +758,7 @@ export default function AdminPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.05, ease }}
               style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:'0 0 6px' }}>
-              Painel executivo
+              Central de operacoes
             </motion.h1>
             <div style={{ display:'flex', alignItems:'center', gap:10 }}>
               <motion.span
@@ -766,7 +766,7 @@ export default function AdminPage() {
                 animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.6)','0 0 0 5px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
                 transition={{ duration:2, repeat:Infinity }}
               />
-              <span style={{ fontSize:12, color:'var(--t3)' }}>Atualiza a cada 30s</span>
+              <span style={{ fontSize:12, color:'var(--t3)' }}>Dados em tempo real</span>
             </div>
           </div>
           <motion.button
@@ -1192,13 +1192,13 @@ export default function AdminPage() {
 
           {/* PRO locked cards */}
           <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginTop:24 }}>
-            <ProLockedCard title="Previsao inteligente" description="Desbloqueie previsoes que aumentam seu lucro. Saiba quanto voce pode faturar nos proximos 30 dias com base no ritmo real da operacao." icon="M13 2L3 14h9l-1 8 10-12h-9l1-8z">
+            <ProLockedCard title="Previsao inteligente" description="Previsoes que aumentam seu lucro. Pare de operar no escuro — saiba quanto voce vai faturar nos proximos 30 dias." icon="M13 2L3 14h9l-1 8 10-12h-9l1-8z">
               <div><div style={{height:14,width:'60%',background:'rgba(34,197,94,0.1)',borderRadius:3,marginBottom:6}}/><div style={{height:20,width:'45%',background:'rgba(34,197,94,0.08)',borderRadius:3}}/></div>
             </ProLockedCard>
-            <ProLockedCard title="Ranking de redes" description="Veja onde voce esta perdendo dinheiro. Descubra quais redes geram mais lucro e onde concentrar pra maximizar resultado." icon="M3 4h18M3 8h12M3 12h18M3 16h8M3 20h14">
+            <ProLockedCard title="Ranking de redes" description="Descubra as redes mais lucrativas. Veja onde voce esta perdendo dinheiro e onde concentrar pra maximizar performance." icon="M3 4h18M3 8h12M3 12h18M3 16h8M3 20h14">
               <div>{[1,2,3].map(i=>(<div key={i} style={{height:10,width:`${80-i*15}%`,background:'rgba(255,255,255,0.04)',borderRadius:3,marginBottom:4}}/>))}</div>
             </ProLockedCard>
-            <ProLockedCard title="Alertas estrategicos" description="Clientes PRO detectam problemas antes que virem prejuizo. Alertas de queda, inatividade e metas em risco." icon="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5">
+            <ProLockedCard title="Alertas estrategicos" description="Decisoes baseadas em dados reais. Detecte queda de performance, operadores inativos e metas em risco antes que virem prejuizo." icon="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5">
               <div>{[1,2,3].map(i=>(<div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'3px 0'}}><div style={{width:4,height:4,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/><div style={{height:8,width:`${60+i*10}%`,background:'rgba(255,255,255,0.03)',borderRadius:2}}/></div>))}</div>
             </ProLockedCard>
           </div>

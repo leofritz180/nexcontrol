@@ -221,7 +221,7 @@ export default function HomePage() {
             transition={{ duration:0.5, delay:0.15, ease }}
             style={{ fontSize:40, fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 14px', lineHeight:1.12 }}
           >
-            Controle total da sua<br/>operacao em tempo real
+            Aumente seu lucro com<br/>dados reais em tempo real
           </motion.h1>
 
           <motion.p
@@ -230,7 +230,7 @@ export default function HomePage() {
             transition={{ duration:0.5, delay:0.25, ease }}
             style={{ fontSize:16, color:'var(--t2)', marginBottom:36, lineHeight:1.6 }}
           >
-            Veja exatamente onde voce ganha e perde dinheiro.<br/>Sem planilhas, sem achismo.
+            Pare de operar no escuro. Veja onde voce ganha e perde dinheiro — com inteligencia e performance.
           </motion.p>
 
           <motion.div
@@ -285,9 +285,9 @@ export default function HomePage() {
       <section style={{ padding:'40px 24px 80px', maxWidth:900, margin:'0 auto' }}>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }} className="g-4">
           {[
-            { icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z', t:'Controle em tempo real', d:'Dashboard atualizado a cada 30 segundos. Lucro, prejuizo, metas e remessas ao vivo.' },
-            { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Operadores organizados', d:'Cada operador com acesso proprio. Voce acompanha tudo sem depender de ninguem.' },
-            { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro claro e real', d:'Fechamento com salario, custos e taxa do agente. O lucro final e o numero que importa.' },
+            { icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z', t:'Inteligencia em tempo real', d:'Performance da operacao atualizada a cada 30 segundos. Lucro, metas e remessas ao vivo.' },
+            { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe com performance', d:'Cada operador com acesso proprio. Ranking, resultados e accountability em um lugar.' },
+            { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real, nao estimativa', d:'Fechamento com salario, custos e taxa do agente. O numero que importa, nao achismo.' },
           ].map(({icon,t,d},i) => (
             <motion.div key={i}
               initial={{ opacity:0, y:16 }}
@@ -314,8 +314,8 @@ export default function HomePage() {
           viewport={{ once:true }}
           transition={{ duration:0.5 }}
         >
-          <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pronto pra ter controle total?</h2>
-          <p style={{ fontSize:14, color:'var(--t3)', marginBottom:28 }}>3 dias gratis. Sem cartao. Cancele quando quiser.</p>
+          <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pronto pra operar com inteligencia?</h2>
+          <p style={{ fontSize:14, color:'var(--t3)', marginBottom:28 }}>3 dias gratis. Decisoes baseadas em dados reais.</p>
           <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:240, justifyContent:'center', fontSize:15, fontWeight:700 }}>
             Comecar agora
           </Link>

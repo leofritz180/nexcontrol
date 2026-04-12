@@ -304,76 +304,77 @@ export default function FaturamentoPage() {
 
         {/* ═══ OVERVIEW ═══ */}
         {tab==='overview' && (<div key="ov" className="tab-content">
-          {/* ── HERO SHOWCASE ── */}
-          <div className="a1" style={{
-            position:'relative', overflow:'hidden', borderRadius:28, padding:'52px 48px',
-            background:'linear-gradient(160deg, #040810 0%, #060b14 30%, #081018 60%, #040810 100%)',
-            border:'1px solid rgba(34,197,94,0.12)',
-            boxShadow:'0 0 100px rgba(34,197,94,0.05), 0 40px 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)',
-            marginBottom:24,
-          }}>
-            {/* ── Ambient orbs ── */}
-            <div style={{position:'absolute',top:'-25%',left:'-8%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle, rgba(34,197,94,0.07), transparent 60%)',filter:'blur(50px)',pointerEvents:'none',animation:'drift 20s ease-in-out infinite'}}/>
-            <div style={{position:'absolute',bottom:'-30%',right:'-5%',width:500,height:500,borderRadius:'50%',background:'radial-gradient(circle, rgba(59,130,246,0.05), transparent 60%)',filter:'blur(50px)',pointerEvents:'none',animation:'drift 25s ease-in-out infinite 5s'}}/>
 
-            {/* ── Energy Circle (right side) ── */}
-            <div style={{position:'absolute',right:40,top:'50%',transform:'translateY(-50%)',width:320,height:320,pointerEvents:'none'}}>
-              {/* Outer ring spinning */}
-              <div style={{position:'absolute',inset:0,borderRadius:'50%',border:'1.5px solid transparent',borderTopColor:'rgba(34,197,94,0.35)',borderRightColor:'rgba(34,197,94,0.08)',animation:'energy-spin 8s linear infinite',filter:'drop-shadow(0 0 6px rgba(34,197,94,0.3))'}}/>
-              {/* Middle ring reverse */}
-              <div style={{position:'absolute',inset:20,borderRadius:'50%',border:'1px solid transparent',borderBottomColor:'rgba(59,130,246,0.3)',borderLeftColor:'rgba(59,130,246,0.06)',animation:'energy-spin 12s linear infinite reverse',filter:'drop-shadow(0 0 4px rgba(59,130,246,0.2))'}}/>
-              {/* Inner ring */}
-              <div style={{position:'absolute',inset:45,borderRadius:'50%',border:'1px solid transparent',borderTopColor:'rgba(34,197,94,0.2)',animation:'energy-spin 6s linear infinite'}}/>
-              {/* Pulsing core */}
-              <div style={{position:'absolute',inset:65,borderRadius:'50%',background:'radial-gradient(circle, rgba(34,197,94,0.08) 0%, rgba(34,197,94,0.02) 50%, transparent 70%)',animation:'breathe 5s ease-in-out infinite'}}/>
-              {/* Ring pulse */}
-              <div style={{position:'absolute',inset:30,borderRadius:'50%',border:'1px solid rgba(34,197,94,0.06)',animation:'ring-pulse 4s ease-in-out infinite'}}/>
-              <div style={{position:'absolute',inset:55,borderRadius:'50%',border:'1px solid rgba(59,130,246,0.05)',animation:'ring-pulse 4s ease-in-out infinite 2s'}}/>
-              {/* Particles */}
-              {[
-                {size:3,top:'15%',left:'20%',color:'#22C55E',delay:'0s',dur:'7s'},
-                {size:2,top:'70%',left:'15%',color:'#60A5FA',delay:'1s',dur:'9s'},
-                {size:3,top:'25%',left:'75%',color:'#22C55E',delay:'2s',dur:'8s'},
-                {size:2,top:'60%',left:'80%',color:'#60A5FA',delay:'0.5s',dur:'6s'},
-                {size:2,top:'45%',left:'50%',color:'#22C55E',delay:'3s',dur:'10s'},
-                {size:2,top:'80%',left:'45%',color:'#4ADE80',delay:'1.5s',dur:'7s'},
-              ].map((p,i)=>(
-                <div key={i} style={{position:'absolute',width:p.size,height:p.size,borderRadius:'50%',background:p.color,top:p.top,left:p.left,boxShadow:`0 0 8px ${p.color}`,opacity:0.7,animation:`drift ${p.dur} ease-in-out infinite ${p.delay}`}}/>
-              ))}
-            </div>
+          {/* ── HERO + KPIs side by side ── */}
+          <div className="g-side" style={{display:'grid',gridTemplateColumns:'1.6fr 1fr',gap:16,marginBottom:24}}>
 
-            {/* ── Content ── */}
-            <div style={{position:'relative',zIndex:1,maxWidth:700}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:24}}>
-                <span className="live-dot" style={{width:8,height:8}}/>
-                <span style={{fontSize:11,fontWeight:700,color:'rgba(34,197,94,0.7)',letterSpacing:'0.12em'}}>LUCRO FINAL DA OPERACAO</span>
-              </div>
-              <div className="shine-text" style={{display:'inline-block',marginBottom:14}}>
-                <p className="t-num" style={{fontSize:68,fontWeight:900,lineHeight:1,letterSpacing:'-0.04em',
-                  background:'linear-gradient(135deg, #22C55E 0%, #4ADE80 30%, #6ee7b7 60%, #4ADE80 80%, #22C55E 100%)',
-                  WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',
-                  filter:'drop-shadow(0 0 40px rgba(34,197,94,0.25))',
+            {/* Hero card */}
+            <div style={{
+              position:'relative', overflow:'hidden', borderRadius:18, padding:'40px 40px 36px',
+              background:'linear-gradient(145deg, #0c1424, #080e1a)',
+              border:'1px solid rgba(255,255,255,0.06)',
+              boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)',
+            }}>
+              <div style={{position:'absolute',top:'5%',left:'0%',width:400,height:300,borderRadius:'50%',background:'radial-gradient(circle, rgba(34,197,94,0.07), transparent 60%)',filter:'blur(50px)',pointerEvents:'none'}}/>
+              <div style={{position:'absolute',top:0,left:'15%',right:'15%',height:1,background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)',pointerEvents:'none'}}/>
+
+              <div style={{position:'relative',zIndex:1}}>
+                <p style={{fontSize:12,color:'var(--t3)',marginBottom:8,fontWeight:500}}>Lucro final da operacao</p>
+
+                <p style={{fontFamily:'var(--mono)',fontSize:48,fontWeight:900,lineHeight:1,letterSpacing:'-0.03em',margin:'0 0 6px',
+                  color:'var(--profit)',
+                  textShadow:'0 0 60px rgba(34,197,94,0.15)',
                 }}>
                   <CountUp value={stats.lucroFinal} prefix="R$ "/>
                 </p>
-              </div>
-              <p style={{fontSize:14,color:'var(--t3)',marginBottom:0}}>{stats.fechadas} metas fechadas · {stats.total} remessas · {operators.length} operadores</p>
-            </div>
-          </div>
 
-          {/* KPIs */}
-          <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:24}}>
-            {[
-              {l:'Lucro bruto',v:`R$ ${fmt(stats.lucro)}`,c:'var(--profit)'},
-              {l:'Total depositado',v:`R$ ${fmt(stats.dep)}`,c:'var(--info)'},
-              {l:'Total sacado',v:`R$ ${fmt(stats.saq)}`,c:'var(--warn)'},
-              {l:'Taxa de acerto',v:`${stats.taxa}%`,c:stats.taxa>=50?'var(--profit)':'var(--warn)'},
-            ].map(({l,v,c})=>(
-              <div key={l} style={{background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:14,padding:'16px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                <span style={{fontSize:12,color:'var(--t2)'}}>{l}</span>
-                <span className="t-num" style={{fontSize:18,fontWeight:800,color:c}}>{v}</span>
+                {predictions.pctChange!==0 && (
+                  <p style={{fontSize:12,color:predictions.pctChange>0?'var(--profit)':'var(--loss)',margin:'0 0 0',fontWeight:600}}>
+                    {predictions.pctChange>0?'+':''}{predictions.pctChange}% vs semana anterior
+                    {predictions.trend==='up'?' ↑':predictions.trend==='down'?' ↓':''}
+                  </p>
+                )}
+
+                <div style={{display:'flex',alignItems:'center',gap:20,marginTop:24,paddingTop:20,borderTop:'1px solid rgba(255,255,255,0.05)'}}>
+                  <div>
+                    <p style={{fontSize:10,color:'var(--t4)',marginBottom:2,textTransform:'uppercase',letterSpacing:'0.05em'}}>Fechadas</p>
+                    <p style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:700,color:'var(--t1)',margin:0}}>{stats.fechadas}</p>
+                  </div>
+                  <div style={{width:1,height:28,background:'rgba(255,255,255,0.05)'}}/>
+                  <div>
+                    <p style={{fontSize:10,color:'var(--t4)',marginBottom:2,textTransform:'uppercase',letterSpacing:'0.05em'}}>Remessas</p>
+                    <p style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:700,color:'var(--t1)',margin:0}}>{stats.total}</p>
+                  </div>
+                  <div style={{width:1,height:28,background:'rgba(255,255,255,0.05)'}}/>
+                  <div>
+                    <p style={{fontSize:10,color:'var(--t4)',marginBottom:2,textTransform:'uppercase',letterSpacing:'0.05em'}}>Operadores</p>
+                    <p style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:700,color:'var(--t1)',margin:0}}>{operators.length}</p>
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
+
+            {/* Right — 4 KPI cards stacked */}
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              {[
+                {l:'Lucro bruto',v:`R$ ${fmt(stats.lucro)}`,accent:'rgba(34,197,94,0.4)'},
+                {l:'Total depositado',v:`R$ ${fmt(stats.dep)}`,accent:'rgba(59,130,246,0.4)'},
+                {l:'Total sacado',v:`R$ ${fmt(stats.saq)}`,accent:'rgba(245,158,11,0.4)'},
+                {l:'Taxa de acerto',v:`${stats.taxa}%`,accent:'rgba(255,255,255,0.15)'},
+              ].map(({l,v,accent},i)=>(
+                <div key={l} style={{
+                  position:'relative',flex:1,padding:'16px 22px 16px 26px',borderRadius:14,
+                  background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                  border:'1px solid rgba(255,255,255,0.05)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+                  display:'flex',alignItems:'center',justifyContent:'space-between',
+                }}>
+                  <div style={{position:'absolute',left:0,top:'20%',bottom:'20%',width:2,borderRadius:'0 2px 2px 0',background:accent}}/>
+                  <span style={{fontSize:11,color:'var(--t3)'}}>{l}</span>
+                  <span style={{fontFamily:'var(--mono)',fontSize:18,fontWeight:800,color:'var(--t1)'}}>{v}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Predictions + Goal */}

@@ -597,14 +597,14 @@ export default function FaturamentoPage() {
 
           {/* PRO locked */}
           <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14,marginBottom:24}}>
-            <ProLockedCard title="Projecao de lucro" icon="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z">
-              <div><p style={{fontSize:10,color:'var(--t3)',margin:'0 0 5px'}}>Projecao 30 dias</p><p style={{fontFamily:'var(--mono)',fontSize:20,fontWeight:800,color:'var(--profit)',margin:0}}>+R$ 8.400</p></div>
+            <ProLockedCard title="Projecao de lucro" description="Veja quanto voce pode faturar nos proximos 30 dias mantendo o ritmo atual. Projecao automatica baseada nas suas metas fechadas." icon="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z">
+              <div><div style={{height:14,width:'55%',background:'rgba(34,197,94,0.08)',borderRadius:3,marginBottom:5}}/><div style={{height:18,width:'40%',background:'rgba(34,197,94,0.06)',borderRadius:3}}/></div>
             </ProLockedCard>
-            <ProLockedCard title="Comparativo de operadores" icon="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0">
-              <div>{['Pedro: 85%','Ana: 72%','Lucas: 68%'].map((s,i)=>(<div key={i} style={{padding:'3px 0',fontSize:9,color:'var(--t3)'}}>{s}</div>))}</div>
+            <ProLockedCard title="Comparativo de operadores" description="Compare a performance de cada operador lado a lado. Taxa de acerto, volume, lucro e velocidade em um so lugar." icon="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0">
+              <div>{[1,2,3].map(i=>(<div key={i} style={{height:10,width:`${75-i*12}%`,background:'rgba(255,255,255,0.04)',borderRadius:3,marginBottom:4}}/>))}</div>
             </ProLockedCard>
-            <ProLockedCard title="Heatmap de performance" icon="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z">
-              <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2}}>{Array.from({length:21}).map((_,i)=>(<div key={i} style={{width:10,height:10,borderRadius:2,background:`rgba(34,197,94,${0.1+Math.random()*0.4})`}}/>))}</div>
+            <ProLockedCard title="Heatmap de performance" description="Mapa visual mostrando os melhores dias e horarios da sua operacao. Identifique padroes e otimize seu tempo." icon="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z">
+              <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2}}>{Array.from({length:14}).map((_,i)=>(<div key={i} style={{width:10,height:10,borderRadius:2,background:'rgba(255,255,255,0.03)'}}/>))}</div>
             </ProLockedCard>
           </div>
 

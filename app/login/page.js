@@ -8,14 +8,14 @@ import { supabase } from '../../lib/supabase/client'
 /* ── Floating particles (memoized) ── */
 function Particles() {
   const dots = useMemo(() => [
-    { size: 3, x: '12%', y: '15%', color: 'rgba(59,130,246,0.45)', dur: 6, del: 0 },
+    { size: 3, x: '12%', y: '15%', color: 'rgba(229,57,53,0.45)', dur: 6, del: 0 },
     { size: 2, x: '8%',  y: '70%', color: 'rgba(34,197,94,0.35)',  dur: 8, del: 1 },
-    { size: 4, x: '88%', y: '28%', color: 'rgba(59,130,246,0.25)', dur: 7, del: 0.5 },
+    { size: 4, x: '88%', y: '28%', color: 'rgba(229,57,53,0.25)', dur: 7, del: 0.5 },
     { size: 2, x: '85%', y: '78%', color: 'rgba(239,68,68,0.3)',  dur: 5, del: 2 },
     { size: 3, x: '5%',  y: '50%', color: 'rgba(34,197,94,0.25)',  dur: 9, del: 0.3 },
     { size: 2, x: '75%', y: '18%', color: 'rgba(245,158,11,0.3)',  dur: 7, del: 1.5 },
-    { size: 2, x: '50%', y: '90%', color: 'rgba(59,130,246,0.2)',  dur: 10, del: 3 },
-    { size: 3, x: '92%', y: '55%', color: 'rgba(59,130,246,0.25)', dur: 8, del: 2.5 },
+    { size: 2, x: '50%', y: '90%', color: 'rgba(229,57,53,0.2)',  dur: 10, del: 3 },
+    { size: 3, x: '92%', y: '55%', color: 'rgba(229,57,53,0.25)', dur: 8, del: 2.5 },
   ], [])
 
   return dots.map((d, i) => (
@@ -40,7 +40,7 @@ function BackgroundOrbs() {
         style={{
           position: 'fixed', top: '-18%', left: '-12%', width: 700, height: 700,
           borderRadius: '50%', pointerEvents: 'none',
-          background: 'radial-gradient(circle, rgba(59,130,246,0.14) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(229,57,53,0.14) 0%, transparent 65%)',
           filter: 'blur(60px)',
         }}
         animate={{ x: [0, 30, -20, 0], y: [0, -20, 15, 0], scale: [1, 1.05, 0.97, 1] }}
@@ -60,7 +60,7 @@ function BackgroundOrbs() {
         style={{
           position: 'fixed', top: '40%', right: '20%', width: 400, height: 400,
           borderRadius: '50%', pointerEvents: 'none',
-          background: 'radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(229,57,53,0.06) 0%, transparent 65%)',
           filter: 'blur(80px)',
         }}
         animate={{ x: [0, 40, -30, 0], y: [0, -30, 25, 0] }}
@@ -77,15 +77,15 @@ function LogoIcon() {
       style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         width: 64, height: 64, borderRadius: 20,
-        background: 'linear-gradient(135deg, #3B82F6, #3B82F6)',
+        background: '#e53935',
         position: 'relative',
       }}
       animate={{
         y: [0, -3, 0, 3, 0],
         boxShadow: [
-          '0 0 40px rgba(59,130,246,0.4), 0 0 80px rgba(59,130,246,0.15)',
-          '0 0 60px rgba(59,130,246,0.6), 0 0 120px rgba(59,130,246,0.2)',
-          '0 0 40px rgba(59,130,246,0.4), 0 0 80px rgba(59,130,246,0.15)',
+          '0 0 40px rgba(229,57,53,0.4), 0 0 80px rgba(229,57,53,0.15)',
+          '0 0 60px rgba(229,57,53,0.6), 0 0 120px rgba(229,57,53,0.2)',
+          '0 0 40px rgba(229,57,53,0.4), 0 0 80px rgba(229,57,53,0.15)',
         ],
       }}
       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
@@ -179,7 +179,7 @@ export default function LoginPage() {
           >
             Nex
             <span style={{
-              background: 'linear-gradient(135deg, #60A5FA, #60A5FA)',
+              background: 'linear-gradient(135deg, #ff4444, #ff4444)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             }}>
               Control
@@ -223,13 +223,13 @@ export default function LoginPage() {
             backdropFilter: 'blur(40px) saturate(160%)',
             WebkitBackdropFilter: 'blur(40px) saturate(160%)',
             border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 40px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.07)',
+            boxShadow: '0 40px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(229,57,53,0.08), inset 0 1px 0 rgba(255,255,255,0.07)',
           }}
         >
           {/* Glass gradient overlay */}
           <div style={{
             position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
-            background: 'linear-gradient(145deg, rgba(59,130,246,0.06) 0%, transparent 40%, rgba(59,130,246,0.03) 100%)',
+            background: 'linear-gradient(145deg, rgba(229,57,53,0.06) 0%, transparent 40%, rgba(229,57,53,0.03) 100%)',
           }} />
           {/* Top highlight */}
           <div style={{
@@ -274,10 +274,10 @@ export default function LoginPage() {
                     width: '100%', fontSize: 14, fontWeight: 500,
                     padding: '13px 16px', borderRadius: 12, outline: 'none',
                     color: 'var(--t1)',
-                    background: focused === 'email' ? 'rgba(59,130,246,0.06)' : 'rgba(4,8,16,0.7)',
-                    border: `1px solid ${focused === 'email' ? 'rgba(59,130,246,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                    background: focused === 'email' ? 'rgba(229,57,53,0.06)' : 'rgba(4,8,16,0.7)',
+                    border: `1px solid ${focused === 'email' ? 'rgba(229,57,53,0.5)' : 'rgba(255,255,255,0.1)'}`,
                     boxShadow: focused === 'email'
-                      ? '0 0 0 3px rgba(59,130,246,0.12), 0 0 20px rgba(59,130,246,0.08)'
+                      ? '0 0 0 3px rgba(229,57,53,0.12), 0 0 20px rgba(229,57,53,0.08)'
                       : 'none',
                     transition: 'all 0.25s ease',
                   }}
@@ -307,10 +307,10 @@ export default function LoginPage() {
                       width: '100%', fontSize: 14, fontWeight: 500,
                       padding: '13px 16px', paddingRight: 46, borderRadius: 12, outline: 'none',
                       color: 'var(--t1)',
-                      background: focused === 'pass' ? 'rgba(59,130,246,0.06)' : 'rgba(4,8,16,0.7)',
-                      border: `1px solid ${focused === 'pass' ? 'rgba(59,130,246,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                      background: focused === 'pass' ? 'rgba(229,57,53,0.06)' : 'rgba(4,8,16,0.7)',
+                      border: `1px solid ${focused === 'pass' ? 'rgba(229,57,53,0.5)' : 'rgba(255,255,255,0.1)'}`,
                       boxShadow: focused === 'pass'
-                        ? '0 0 0 3px rgba(59,130,246,0.12), 0 0 20px rgba(59,130,246,0.08)'
+                        ? '0 0 0 3px rgba(229,57,53,0.12), 0 0 20px rgba(229,57,53,0.08)'
                         : 'none',
                       transition: 'all 0.25s ease',
                     }}
@@ -363,7 +363,7 @@ export default function LoginPage() {
                 <motion.button
                   type="submit"
                   disabled={loading}
-                  whileHover={loading ? {} : { scale: 1.02, boxShadow: '0 8px 40px rgba(59,130,246,0.5), 0 0 60px rgba(59,130,246,0.2)' }}
+                  whileHover={loading ? {} : { scale: 1.02, boxShadow: '0 8px 40px rgba(229,57,53,0.5), 0 0 60px rgba(229,57,53,0.2)' }}
                   whileTap={loading ? {} : { scale: 0.96 }}
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -371,11 +371,11 @@ export default function LoginPage() {
                     borderRadius: 13, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
                     color: 'white', position: 'relative', overflow: 'hidden',
                     background: loading
-                      ? 'linear-gradient(145deg, rgba(59,130,246,0.4), rgba(61,92,224,0.3))'
+                      ? 'linear-gradient(145deg, rgba(229,57,53,0.4), rgba(61,92,224,0.3))'
                       : 'linear-gradient(145deg, #5a7af8, #6c5ce7)',
                     boxShadow: loading
                       ? 'none'
-                      : '0 4px 24px rgba(59,130,246,0.4), 0 0 40px rgba(59,130,246,0.12), inset 0 1px 0 rgba(255,255,255,0.2)',
+                      : '0 4px 24px rgba(229,57,53,0.4), 0 0 40px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.2)',
                     opacity: loading ? 0.6 : 1,
                     transition: 'opacity 0.2s',
                   }}
@@ -448,8 +448,8 @@ export default function LoginPage() {
             <motion.div
               whileHover={{
                 scale: 1.015,
-                borderColor: 'rgba(59,130,246,0.4)',
-                boxShadow: '0 0 30px rgba(59,130,246,0.1)',
+                borderColor: 'rgba(229,57,53,0.4)',
+                boxShadow: '0 0 30px rgba(229,57,53,0.1)',
               }}
               whileTap={{ scale: 0.97 }}
               style={{

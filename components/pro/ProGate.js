@@ -38,34 +38,41 @@ export function ProLockedCard({ title, description, preview, icon, children }) {
           PRO
         </div>
 
-        {/* Content — blurred */}
-        <div style={{ filter: hovered ? 'blur(2px)' : 'blur(4px)', transition:'filter 0.3s', pointerEvents:'none' }}>
+        {/* Visible content — title + description */}
+        <div style={{ position:'relative', zIndex:2, pointerEvents:'none' }}>
           {icon && (
-            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:12, opacity:0.5 }}>
+            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={hovered?'#ff4444':'var(--t3)'} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:12, opacity:0.6, transition:'stroke 0.3s' }}>
               <path d={icon}/>
             </svg>
           )}
-          {children || (
-            <div>
-              <div style={{ height:18, width:'60%', background:'rgba(255,255,255,0.06)', borderRadius:4, marginBottom:8 }}/>
-              <div style={{ height:28, width:'80%', background:'rgba(255,255,255,0.04)', borderRadius:4, marginBottom:6 }}/>
-              <div style={{ height:12, width:'50%', background:'rgba(255,255,255,0.03)', borderRadius:3 }}/>
-            </div>
-          )}
+          <h4 style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:'0 0 6px' }}>{title}</h4>
+          {description && <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 14px', lineHeight:1.5 }}>{description}</p>}
+
+          {/* Blurred preview hint */}
+          <div style={{ filter:'blur(5px)', opacity:0.4 }}>
+            {children || (
+              <div>
+                <div style={{ height:16, width:'70%', background:'rgba(255,255,255,0.06)', borderRadius:4, marginBottom:6 }}/>
+                <div style={{ height:22, width:'50%', background:'rgba(255,255,255,0.04)', borderRadius:4 }}/>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Lock overlay */}
+        {/* Lock + CTA at bottom */}
         <div style={{
-          position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-          background: hovered ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.5)',
-          transition:'background 0.3s',
+          display:'flex', alignItems:'center', gap:8, marginTop:14,
+          padding:'10px 12px', borderRadius:8,
+          background: hovered ? 'rgba(229,57,53,0.08)' : 'rgba(255,255,255,0.02)',
+          border:`1px solid ${hovered ? 'rgba(229,57,53,0.15)' : 'rgba(255,255,255,0.04)'}`,
+          transition:'all 0.3s',
         }}>
-          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={hovered?'#ff4444':'rgba(255,255,255,0.3)'} strokeWidth={1.5} strokeLinecap="round" style={{ marginBottom:8, transition:'stroke 0.3s' }}>
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={hovered?'#ff4444':'rgba(255,255,255,0.3)'} strokeWidth={1.5} strokeLinecap="round" style={{ flexShrink:0, transition:'stroke 0.3s' }}>
             <rect x="3" y="11" width="18" height="11" rx="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
-          <span style={{ fontSize:11, fontWeight:600, color: hovered?'#ff4444':'rgba(255,255,255,0.35)', transition:'color 0.3s' }}>
-            Disponivel no PRO
+          <span style={{ fontSize:11, fontWeight:600, color:hovered?'#ff4444':'rgba(255,255,255,0.3)', transition:'color 0.3s' }}>
+            {hovered ? 'Clique para desbloquear' : 'Disponivel no PRO'}
           </span>
         </div>
       </motion.div>

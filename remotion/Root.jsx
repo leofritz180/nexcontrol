@@ -1,7 +1,7 @@
-import { Composition } from 'remotion'
+import { registerRoot, Composition } from 'remotion'
 import { ProfitCinematicVideo } from './compositions/ProfitCinematicVideo'
 
-export function RemotionRoot() {
+function RemotionRoot() {
   return (
     <>
       <Composition
@@ -24,3 +24,5 @@ export function RemotionRoot() {
     </>
   )
 }
+
+registerRoot(RemotionRoot)

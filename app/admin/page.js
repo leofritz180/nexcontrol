@@ -971,98 +971,105 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease }}>
 
-          {/* ── HERO CARD — dominant ── */}
+          {/* ── HERO CARD — premium ── */}
           <motion.div
-            initial={{opacity:0,y:14}} animate={{opacity:1,y:0}}
-            transition={{duration:0.4,ease}}
-            whileHover={{ y:-2, transition:{duration:0.2} }}
+            initial={{opacity:0,y:16}} animate={{opacity:1,y:0}}
+            transition={{duration:0.5,ease}}
+            whileHover={{ y:-4, boxShadow:'0 24px 64px rgba(0,0,0,0.6)', transition:{duration:0.25} }}
             style={{
-              marginBottom:24, padding:'44px 44px 40px', borderRadius:18,
-              background:'var(--surface)', border:'1px solid var(--b1)',
-              boxShadow:'0 4px 24px rgba(0,0,0,0.4)',
+              position:'relative', overflow:'hidden',
+              marginBottom:24, padding:'48px 48px 40px', borderRadius:18,
+              background:'linear-gradient(145deg, #0c1424, #080e1a)',
+              border:'1px solid rgba(255,255,255,0.06)',
+              boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)',
             }}>
+            {/* Ambient glow behind value */}
+            <div style={{
+              position:'absolute', top:'10%', left:'5%', width:400, height:300, borderRadius:'50%',
+              background: heroLucro.value>=0
+                ? 'radial-gradient(circle, rgba(34,197,94,0.06), transparent 65%)'
+                : 'radial-gradient(circle, rgba(239,68,68,0.06), transparent 65%)',
+              filter:'blur(40px)', pointerEvents:'none',
+            }}/>
+            {/* Top line highlight */}
+            <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)', pointerEvents:'none' }}/>
 
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:28 }}>
-              <p style={{ fontSize:13, color:'var(--t3)', fontWeight:500, margin:0 }}>
-                {heroPeriod==='all'?'Lucro final acumulado':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
-              </p>
-              <div style={{ display:'flex', gap:2 }}>
-                {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d']].map(([k,l])=>(
-                  <button key={k} onClick={()=>setHeroPeriod(k)}
-                    style={{
-                      fontSize:11, fontWeight:600, padding:'5px 14px', borderRadius:7,
-                      cursor:'pointer', border:'none',
-                      background: heroPeriod===k ? 'var(--raised)' : 'transparent',
-                      color: heroPeriod===k ? 'var(--t1)' : 'var(--t4)',
-                      transition:'all 0.15s',
-                    }}/>
-                ))}
-              </div>
-            </div>
-
-            <AnimatedNumber
-              value={Math.abs(heroLucro.value)}
-              key={heroPeriod}
-              prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
-              style={{
-                fontFamily:'var(--mono)', fontSize:56, fontWeight:900,
-                color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
-                lineHeight:1, letterSpacing:'-0.03em', display:'block',
-              }}
-            />
-
-            <div style={{ display:'flex', alignItems:'center', gap:20, marginTop:20, paddingTop:20, borderTop:'1px solid var(--b1)' }}>
-              <div>
-                <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2 }}>Metas fechadas</p>
-                <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)', margin:0 }}>{heroLucro.count}</p>
-              </div>
-              <div style={{ width:1, height:28, background:'var(--b1)' }}/>
-              <div>
-                <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2 }}>Status</p>
-                <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:heroLucro.value>=0?'var(--profit)':'var(--loss)', margin:0 }}>
-                  {heroLucro.value>=0?'Positivo':'Negativo'}
+            <div style={{ position:'relative', zIndex:1 }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:32 }}>
+                <p style={{ fontSize:13, color:'var(--t3)', fontWeight:500, margin:0 }}>
+                  {heroPeriod==='all'?'Lucro final acumulado':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
                 </p>
+                <div style={{ display:'flex', gap:2, background:'rgba(0,0,0,0.3)', borderRadius:9, padding:3 }}>
+                  {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d']].map(([k,l])=>(
+                    <button key={k} onClick={()=>setHeroPeriod(k)}
+                      style={{
+                        fontSize:11, fontWeight:600, padding:'5px 14px', borderRadius:7,
+                        cursor:'pointer', border:'none',
+                        background: heroPeriod===k ? 'rgba(255,255,255,0.08)' : 'transparent',
+                        color: heroPeriod===k ? 'var(--t1)' : 'var(--t4)',
+                        transition:'all 0.15s',
+                      }}>
+                      {l}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Period buttons visible */}
-            <div style={{ display:'flex', gap:2, marginTop:20 }}>
-              {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7 dias'],['30d','30 dias']].map(([k,l])=>(
-                <button key={k} onClick={()=>setHeroPeriod(k)}
-                  style={{
-                    fontSize:11, fontWeight:600, padding:'6px 16px', borderRadius:8,
-                    cursor:'pointer', border:'none',
-                    background: heroPeriod===k ? 'var(--raised)' : 'transparent',
-                    color: heroPeriod===k ? 'var(--t1)' : 'var(--t3)',
-                    transition:'all 0.15s',
-                  }}>
-                  {l}
-                </button>
-              ))}
+              <AnimatedNumber
+                value={Math.abs(heroLucro.value)}
+                key={heroPeriod}
+                prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
+                style={{
+                  fontFamily:'var(--mono)', fontSize:56, fontWeight:900,
+                  color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
+                  lineHeight:1, letterSpacing:'-0.03em', display:'block',
+                  textShadow: heroLucro.value>=0 ? '0 0 60px rgba(34,197,94,0.15)' : '0 0 60px rgba(239,68,68,0.15)',
+                }}
+              />
+
+              <div style={{ display:'flex', alignItems:'center', gap:24, marginTop:28, paddingTop:24, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
+                <div>
+                  <p style={{ fontSize:10, color:'var(--t4)', marginBottom:3, letterSpacing:'0.05em', textTransform:'uppercase' }}>Metas fechadas</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:700, color:'var(--t1)', margin:0 }}>{heroLucro.count}</p>
+                </div>
+                <div style={{ width:1, height:32, background:'rgba(255,255,255,0.05)' }}/>
+                <div>
+                  <p style={{ fontSize:10, color:'var(--t4)', marginBottom:3, letterSpacing:'0.05em', textTransform:'uppercase' }}>Status</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:700, color:heroLucro.value>=0?'var(--profit)':'var(--loss)', margin:0 }}>
+                    {heroLucro.value>=0?'Positivo':'Negativo'}
+                  </p>
+                </div>
+                <div style={{ width:1, height:32, background:'rgba(255,255,255,0.05)' }}/>
+                <div>
+                  <p style={{ fontSize:10, color:'var(--t4)', marginBottom:3, letterSpacing:'0.05em', textTransform:'uppercase' }}>Operadores</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:700, color:'var(--t1)', margin:0 }}>{global.ops}</p>
+                </div>
+              </div>
             </div>
           </motion.div>
 
-          {/* Secondary KPIs + Stats — single row of 4 */}
+          {/* Secondary KPIs */}
           <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14, marginBottom:24 }}>
             {[
               { label:'Total depositado', value:global.totalDep, prefix:'R$ ' },
               { label:'Total sacado', value:global.totalSaq, prefix:'R$ ' },
-              { label:'Operadores', value:global.ops, prefix:'', decimals:0 },
+              { label:'Total metas', value:global.totalMetas, prefix:'', decimals:0 },
               { label:'Total remessas', value:global.totalRem, prefix:'', decimals:0 },
             ].map((k,i)=>(
               <motion.div key={i}
-                initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
-                transition={{duration:0.25,delay:0.1+i*0.05,ease}}
-                whileHover={{ y:-2, transition:{duration:0.15} }}
+                initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}
+                transition={{duration:0.3,delay:0.12+i*0.05,ease}}
+                whileHover={{ y:-4, boxShadow:'0 16px 48px rgba(0,0,0,0.5)', transition:{duration:0.2} }}
                 style={{
-                  padding:'20px 24px', borderRadius:14,
-                  background:'var(--surface)', border:'1px solid var(--b1)',
-                  boxShadow:'0 2px 12px rgba(0,0,0,0.25)',
-                  transition:'all 0.2s ease',
+                  padding:'22px 26px', borderRadius:14,
+                  background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                  border:'1px solid rgba(255,255,255,0.05)',
+                  boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+                  transition:'all 0.25s ease',
                 }}>
-                <p style={{ fontSize:10, color:'var(--t3)', marginBottom:8 }}>{k.label}</p>
+                <p style={{ fontSize:10, color:'var(--t3)', marginBottom:10, letterSpacing:'0.04em' }}>{k.label}</p>
                 <AnimatedNumber value={k.value} prefix={k.prefix} decimals={k.decimals ?? 2}
-                  style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:800, color:'var(--t1)', display:'block', lineHeight:1 }} />
+                  style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:'var(--t1)', display:'block', lineHeight:1 }} />
               </motion.div>
             ))}
           </div>
@@ -1073,11 +1080,16 @@ export default function AdminPage() {
             {/* Feed */}
             <motion.div
               initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
-              transition={{duration:0.3,delay:0.25,ease}}
-              style={{ padding:24, borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)' }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
-                <h3 style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:0 }}>Remessas recentes</h3>
-                <span style={{ fontSize:11, color:'var(--t3)' }}>{remessas.length} total</span>
+              transition={{duration:0.35,delay:0.3,ease}}
+              style={{
+                padding:'28px 28px', borderRadius:16,
+                background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                border:'1px solid rgba(255,255,255,0.05)',
+                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+              }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:22 }}>
+                <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Remessas recentes</h3>
+                <span style={{ fontSize:11, color:'var(--t4)' }}>{remessas.length} total</span>
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
                 {remessas.slice(0,5).map((r,i)=>{
@@ -1087,11 +1099,13 @@ export default function AdminPage() {
                   const val = Math.abs(Number(r.resultado||0))
                   return (
                     <motion.div key={r.id}
-                      initial={{opacity:0}} animate={{opacity:1}}
-                      transition={{duration:0.2,delay:i*0.03}}
+                      initial={{opacity:0,y:6}} animate={{opacity:1,y:0}}
+                      transition={{duration:0.25,delay:i*0.04}}
+                      whileHover={{ background:'rgba(255,255,255,0.03)', transition:{duration:0.15} }}
                       style={{
-                      padding:'10px 0', display:'flex', alignItems:'center', gap:12,
-                      borderBottom: i<4 ? '1px solid var(--b1)' : 'none',
+                      padding:'12px 10px', display:'flex', alignItems:'center', gap:12,
+                      borderBottom: i<4 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                      borderRadius:8, margin:'0 -10px', transition:'background 0.15s',
                     }}>
                       <div style={{ width:32, height:32, borderRadius:8, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                         <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>{getName(op)[0]?.toUpperCase()}</span>
@@ -1112,11 +1126,16 @@ export default function AdminPage() {
             {/* Operadores — clean list */}
             <motion.div
               initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
-              transition={{duration:0.3,delay:0.3,ease}}
-              style={{ padding:24, borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)' }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
-                <h3 style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:0 }}>Top operadores</h3>
-                <span style={{ fontSize:11, color:'var(--t3)' }}>{operators.length} ativos</span>
+              transition={{duration:0.35,delay:0.35,ease}}
+              style={{
+                padding:'28px 28px', borderRadius:16,
+                background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                border:'1px solid rgba(255,255,255,0.05)',
+                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+              }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:22 }}>
+                <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Top operadores</h3>
+                <span style={{ fontSize:11, color:'var(--t4)' }}>{operators.length} ativos</span>
               </div>
               <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
                 {operators.map(op=>{
@@ -1126,11 +1145,13 @@ export default function AdminPage() {
                   return { ...op, lucroFinal, ativas, fechadas: opMetasFechadas.length }
                 }).sort((a,b)=>b.lucroFinal-a.lucroFinal).slice(0,5).map((op,i)=>(
                     <motion.div key={op.id}
-                      initial={{opacity:0}} animate={{opacity:1}}
-                      transition={{duration:0.2,delay:i*0.04}}
+                      initial={{opacity:0,y:6}} animate={{opacity:1,y:0}}
+                      transition={{duration:0.25,delay:i*0.04}}
+                      whileHover={{ background:'rgba(255,255,255,0.03)', transition:{duration:0.15} }}
                       style={{
-                        padding:'10px 0', display:'flex', alignItems:'center', gap:10,
-                        borderBottom: i<4 ? '1px solid var(--b1)' : 'none',
+                        padding:'12px 10px', display:'flex', alignItems:'center', gap:10,
+                        borderBottom: i<4 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                        borderRadius:8, margin:'0 -10px', transition:'background 0.15s',
                       }}>
                       <div style={{ width:32, height:32, borderRadius:8, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                         <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>{getName(op)[0].toUpperCase()}</span>

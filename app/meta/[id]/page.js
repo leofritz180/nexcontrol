@@ -171,7 +171,8 @@ export default function MetaPage() {
       supabase.from('remessas').select('*').eq('meta_id',id).order('created_at',{ascending:true}),
     ])
     setProfile(p)
-    if (m && m.operator_id !== u.id) { router.push('/operator'); return }
+    // Admin can view all metas in their tenant; operator only their own
+    if (m && m.operator_id !== u.id && p?.role !== 'admin') { router.push('/operator'); return }
     setMeta(m||null); setRemessas(r||[])
     setLoading(false)
   }
@@ -262,7 +263,7 @@ export default function MetaPage() {
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
         {/* Header */}
         <div className="a1" style={{ marginBottom:28 }}>
-          <button onClick={()=>router.push('/operator')} className="btn btn-ghost btn-sm" style={{ display:'inline-flex', alignItems:'center', gap:6, marginBottom:16 }}>
+          <button onClick={()=>router.push(profile?.role==='admin'?'/admin':'/operator')} className="btn btn-ghost btn-sm" style={{ display:'inline-flex', alignItems:'center', gap:6, marginBottom:16 }}>
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
             Voltar ao painel
           </button>

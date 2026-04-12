@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '../../components/Header'
 import { supabase } from '../../lib/supabase/client'
+import { generateInsights, getHealthStatus } from '../../lib/insights'
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
@@ -492,6 +493,96 @@ export default function FaturamentoPage() {
               </div>
             </div>
           </div>
+
+          {/* ── INSIGHTS AUTOMÁTICOS ── */}
+          {(()=>{
+            const { insights, alerts } = generateInsights({ stats, predictions, goalData, metas, operators, remessas:fRem })
+            const health = getHealthStatus(stats, predictions)
+            return (
+            <div className="g-side" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:24}}>
+              {/* Health + Insights */}
+              <div style={{
+                padding:'28px 28px', borderRadius:16,
+                background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                border:'1px solid rgba(255,255,255,0.05)',
+                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+              }}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
+                  <h3 style={{fontSize:15,fontWeight:700,color:'var(--t1)',margin:0}}>Leitura da operacao</h3>
+                  <span style={{
+                    fontSize:10,fontWeight:700,padding:'4px 12px',borderRadius:6,
+                    background: health.level==='good'||health.level==='growing'?'var(--profit-dim)':health.level==='attention'||health.level==='unstable'?'var(--warn-dim)':'var(--loss-dim)',
+                    color: health.color,
+                    border:`1px solid ${health.level==='good'||health.level==='growing'?'var(--profit-border)':health.level==='attention'||health.level==='unstable'?'var(--warn-border)':'var(--loss-border)'}`,
+                  }}>
+                    {health.label}
+                  </span>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                  {insights.map((ins,i)=>(
+                    <div key={i} style={{
+                      display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:10,
+                      background:'rgba(255,255,255,0.02)',
+                    }}>
+                      <div style={{
+                        width:6,height:6,borderRadius:'50%',flexShrink:0,
+                        background: ins.type==='profit'?'var(--profit)':ins.type==='loss'?'var(--loss)':'var(--t3)',
+                      }}/>
+                      <span style={{fontSize:12,color:'var(--t2)',lineHeight:1.4}}>{ins.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Alerts */}
+              <div style={{
+                padding:'28px 28px', borderRadius:16,
+                background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                border:'1px solid rgba(255,255,255,0.05)',
+                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+              }}>
+                <h3 style={{fontSize:15,fontWeight:700,color:'var(--t1)',margin:'0 0 20px'}}>Alertas e atencao</h3>
+                {alerts.length===0 ? (
+                  <div style={{padding:'20px 0',textAlign:'center'}}>
+                    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round" style={{margin:'0 auto 8px',display:'block'}}><polyline points="20 6 9 17 4 12"/></svg>
+                    <p style={{fontSize:12,color:'var(--t3)'}}>Nenhum alerta no momento</p>
+                  </div>
+                ) : (
+                  <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                    {alerts.map((al,i)=>(
+                      <div key={i} style={{
+                        display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:10,
+                        background: al.type==='loss'?'rgba(239,68,68,0.05)':'rgba(245,158,11,0.05)',
+                        border:`1px solid ${al.type==='loss'?'rgba(239,68,68,0.1)':'rgba(245,158,11,0.1)'}`,
+                      }}>
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={al.type==='loss'?'var(--loss)':'var(--warn)'} strokeWidth="2" strokeLinecap="round" style={{flexShrink:0}}>
+                          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span style={{fontSize:12,color:al.type==='loss'?'var(--loss)':'var(--warn)',lineHeight:1.4}}>{al.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Projection */}
+                {goalData.target>0 && goalData.pct<100 && (
+                  <div style={{marginTop:20,padding:'14px 16px',borderRadius:10,background:'rgba(255,255,255,0.02)',borderTop:'1px solid rgba(255,255,255,0.04)'}}>
+                    <p style={{fontSize:10,color:'var(--t4)',marginBottom:6,textTransform:'uppercase',letterSpacing:'0.06em'}}>Projecao</p>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                      <span style={{fontSize:12,color:'var(--t2)'}}>Meta global ({goalData.pct}%)</span>
+                      <span style={{fontFamily:'var(--mono)',fontSize:14,fontWeight:700,color:'var(--t1)'}}>
+                        {goalData.diasRestantes<999?`~${goalData.diasRestantes} dias`:'N/A'}
+                      </span>
+                    </div>
+                    <div style={{marginTop:8,height:4,background:'var(--raised)',borderRadius:99,overflow:'hidden'}}>
+                      <div style={{height:'100%',width:`${goalData.pct}%`,borderRadius:99,background:'var(--profit)',transition:'width 0.5s ease'}}/>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            )
+          })()}
 
           {/* Mini chart + Quick stats */}
           <div className="g-side" style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16}}>

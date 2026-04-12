@@ -125,8 +125,8 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
     setGeneratingVideo(true)
     setVideoProgress(0)
     try {
-      const { generateVideo } = await import('../lib/videoExport')
-      const blob = await generateVideo({
+      const { renderVideo } = await import('../lib/video')
+      const blob = await renderVideo({
         value: val,
         metasFechadas: fechadas.length,
         goalPct,

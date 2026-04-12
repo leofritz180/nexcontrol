@@ -971,15 +971,19 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease }}>
 
-          {/* ── HERO: one dominant number ── */}
-          {/* Hero — clean, one number dominates */}
+          {/* ── HERO CARD ── */}
           <motion.div
-            initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
+            initial={{opacity:0,y:16}} animate={{opacity:1,y:0}}
             transition={{duration:0.4,ease}}
-            style={{ marginBottom:32, padding:'40px 0' }}>
+            whileHover={{ y:-2, boxShadow:'0 12px 40px rgba(0,0,0,0.5)', transition:{duration:0.2} }}
+            style={{
+              marginBottom:20, padding:'32px 36px', borderRadius:16,
+              background:'var(--surface)', border:'1px solid var(--b1)',
+              boxShadow:'0 4px 24px rgba(0,0,0,0.4)',
+            }}>
 
-            {/* Period selector — minimal */}
-            <div style={{ display:'flex', gap:2, marginBottom:24 }}>
+            {/* Period selector */}
+            <div style={{ display:'flex', gap:2, marginBottom:20 }}>
               {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7 dias'],['30d','30 dias']].map(([k,l])=>{
                 const active = heroPeriod===k
                 return (
@@ -998,67 +1002,75 @@ export default function AdminPage() {
               })}
             </div>
 
-            <p style={{ fontSize:12, color:'var(--t3)', marginBottom:8, fontWeight:500 }}>
+            <p style={{ fontSize:12, color:'var(--t3)', marginBottom:10, fontWeight:500 }}>
               {heroPeriod==='all'?'Lucro final acumulado':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
             </p>
 
-            {/* THE number */}
-            <div style={{ display:'flex', alignItems:'baseline', gap:8 }}>
-              <AnimatedNumber
-                value={Math.abs(heroLucro.value)}
-                key={heroPeriod}
-                prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
-                style={{
-                  fontFamily:'var(--mono)', fontSize:56, fontWeight:900,
-                  color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
-                  lineHeight:1, letterSpacing:'-0.03em',
-                }}
-              />
-            </div>
+            <AnimatedNumber
+              value={Math.abs(heroLucro.value)}
+              key={heroPeriod}
+              prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
+              style={{
+                fontFamily:'var(--mono)', fontSize:48, fontWeight:900,
+                color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
+                lineHeight:1, letterSpacing:'-0.03em', display:'block',
+              }}
+            />
 
-            <p style={{ fontSize:12, color:'var(--t3)', marginTop:10 }}>
+            <p style={{ fontSize:12, color:'var(--t3)', marginTop:12 }}>
               {heroLucro.count} meta{heroLucro.count!==1?'s':''} fechada{heroLucro.count!==1?'s':''}
             </p>
           </motion.div>
 
-          {/* Secondary KPIs — 3 clean cards, neutral, no color overload */}
-          <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:32 }}>
+          {/* Secondary KPIs */}
+          <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:20 }}>
             {[
-              { label:'Lucro final total', value:global.lucroFinalTotal, prefix:'R$ ', color:'var(--t1)', sub:`${global.fechadas} fechadas` },
-              { label:'Total depositado', value:global.totalDep, prefix:'R$ ', color:'var(--t1)', sub:'Toda operacao' },
-              { label:'Total sacado', value:global.totalSaq, prefix:'R$ ', color:'var(--t1)', sub:'Toda operacao' },
+              { label:'Lucro final total', value:global.lucroFinalTotal, prefix:'R$ ', sub:`${global.fechadas} fechadas` },
+              { label:'Total depositado', value:global.totalDep, prefix:'R$ ', sub:'Toda operacao' },
+              { label:'Total sacado', value:global.totalSaq, prefix:'R$ ', sub:'Toda operacao' },
             ].map((k,i)=>(
               <motion.div key={i}
                 initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}
-                transition={{duration:0.3,delay:0.1+i*0.06,ease}}
+                transition={{duration:0.3,delay:0.08+i*0.06,ease}}
+                whileHover={{ y:-2, boxShadow:'0 8px 28px rgba(0,0,0,0.45)', transition:{duration:0.15} }}
                 style={{
-                  padding:'24px 28px', borderRadius:14,
+                  padding:'22px 26px', borderRadius:14,
                   background:'var(--surface)', border:'1px solid var(--b1)',
+                  boxShadow:'0 2px 16px rgba(0,0,0,0.3)',
+                  transition:'all 0.2s ease',
                 }}>
-                <p style={{ fontSize:11, color:'var(--t3)', marginBottom:12, fontWeight:500 }}>{k.label}</p>
+                <p style={{ fontSize:11, color:'var(--t3)', marginBottom:10, fontWeight:500 }}>{k.label}</p>
                 <AnimatedNumber value={k.value} prefix={k.prefix}
-                  style={{ fontFamily:'var(--mono)', fontSize:24, fontWeight:800, color:k.color, display:'block', lineHeight:1 }} />
+                  style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:'var(--t1)', display:'block', lineHeight:1 }} />
                 <p style={{ fontSize:11, color:'var(--t4)', marginTop:8 }}>{k.sub}</p>
               </motion.div>
             ))}
           </div>
 
-          {/* Stats — inline, minimal */}
-          <div style={{ display:'flex', gap:32, marginBottom:36, padding:'0 4px' }}>
+          {/* Stats card */}
+          <motion.div
+            initial={{opacity:0,y:10}} animate={{opacity:1,y:0}}
+            transition={{duration:0.3,delay:0.25,ease}}
+            style={{
+              display:'flex', gap:0, marginBottom:24, padding:'20px 28px',
+              borderRadius:14, background:'var(--surface)', border:'1px solid var(--b1)',
+              boxShadow:'0 2px 16px rgba(0,0,0,0.3)',
+            }}>
             {[
               { l:'Operadores', v:global.ops },
               { l:'Total metas', v:global.totalMetas },
               { l:'Metas fechadas', v:global.fechadas },
               { l:'Remessas', v:global.totalRem },
-            ].map((c,i)=>(
-              <motion.div key={i}
-                initial={{opacity:0}} animate={{opacity:1}}
-                transition={{duration:0.3,delay:0.2+i*0.05}}>
-                <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4 }}>{c.l}</p>
-                <AnimatedNumber value={c.v} decimals={0} style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:'var(--t1)' }} />
-              </motion.div>
+            ].map((c,i,arr)=>(
+              <div key={i} style={{ flex:1, display:'flex', alignItems:'center' }}>
+                <div style={{ flex:1 }}>
+                  <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4 }}>{c.l}</p>
+                  <AnimatedNumber value={c.v} decimals={0} style={{ fontFamily:'var(--mono)', fontSize:22, fontWeight:800, color:'var(--t1)' }} />
+                </div>
+                {i<arr.length-1 && <div style={{ width:1, height:36, background:'var(--b1)', flexShrink:0 }}/>}
+              </div>
             ))}
-          </div>
+          </motion.div>
 
           {/* Activity — feed + operators */}
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:20 }}>

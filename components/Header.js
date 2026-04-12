@@ -44,7 +44,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
         height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20,
       }}>
         {/* Logo */}
-        <Link href="/operator" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+        <Link href={isAdmin ? '/admin' : '/operator'} style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
           <Logo/>
           <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: '-0.02em', color: 'var(--t1)' }}>
             Nex<span style={{ color: '#ff4444' }}>Control</span>
@@ -54,7 +54,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
         {/* Nav */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {[
-            { href: '/operator', label: 'Operador' },
+            ...(!isAdmin ? [{ href: '/operator', label: 'Operador' }] : []),
             { href: '/pix', label: 'Chaves PIX' },
             ...(isAdmin ? [
               { href: '/admin', label: 'Admin' },

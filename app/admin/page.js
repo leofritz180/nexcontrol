@@ -312,18 +312,18 @@ export default function AdminPage() {
     const { data:p } = await supabase.from('profiles').select('*').eq('id',u.id).maybeSingle()
     if (!p||p.role!=='admin') { router.push('/operator'); return }
     setProfile(p)
-    loadAll()
+    loadAll(u.id, p.tenant_id)
   }
 
-  async function loadAll() {
+  async function loadAll(forceUserId, forceTenantId) {
     setLoading(true)
     const [{ data:ops },{ data:ms },{ data:rs },{ data:inv },{ data:t },{ data:s2 }] = await Promise.all([
       supabase.from('profiles').select('*').eq('role','operator').order('created_at',{ascending:false}),
       supabase.from('metas').select('*').order('created_at',{ascending:false}),
       supabase.from('remessas').select('*').order('created_at',{ascending:false}),
       supabase.from('invites').select('*').order('created_at',{ascending:false}),
-      supabase.from('tenants').select('*').eq('id',profile?.tenant_id).maybeSingle(),
-      supabase.from('subscriptions').select('*').eq('tenant_id',profile?.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
+      supabase.from('tenants').select('*').eq('id',forceTenantId||profile?.tenant_id).maybeSingle(),
+      supabase.from('subscriptions').select('*').eq('tenant_id',forceTenantId||profile?.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
     ])
     // Detect new remessas for notification
     const newRs = rs||[]
@@ -347,7 +347,7 @@ export default function AdminPage() {
     setOperators(ops||[]); setMetas((ms||[]).filter(m=>!m.deleted_at)); setTrashMetas((ms||[]).filter(m=>!!m.deleted_at)); setRemessas(newRs); setInvites(inv||[])
     if(t) setTenant(t); if(s2) setSub(s2)
     // Load admin own metas
-    const adminId = profile?.id || user?.id
+    const adminId = forceUserId || profile?.id || user?.id
     if(adminId) {
       const [{data:mm},{data:mr}]=await Promise.all([
         supabase.from('metas').select('*').eq('operator_id',adminId).order('created_at',{ascending:false}),

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
@@ -71,6 +71,32 @@ function Particles({ color, count = 14, radius = 200 }) {
 export default function ProfitShowcase({ stats, goalData, operators, metas, onClose }) {
   const [mode, setMode] = useState('total')
   const [printMode, setPrintMode] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const captureRef = useRef(null)
+
+  const exportImage = useCallback(async () => {
+    if (exporting || !captureRef.current) return
+    setExporting(true)
+    try {
+      const html2canvas = (await import('html2canvas')).default
+      const canvas = await html2canvas(captureRef.current, {
+        backgroundColor: '#010204',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        width: 1080,
+        height: 1920,
+      })
+      const link = document.createElement('a')
+      const d = new Date()
+      link.download = `nexcontrol-resultado-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.png`
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    } catch (e) {
+      console.error('Export failed:', e)
+    }
+    setExporting(false)
+  }, [exporting])
 
   const fechadas = metas.filter(m => m.status_fechamento === 'fechada' && m.fechada_em)
   const now = new Date()
@@ -144,11 +170,18 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
         </motion.div>
       )}
 
-      {/* Print exit (tiny, top-right) */}
+      {/* Print controls */}
       {printMode && (
-        <button onClick={() => setPrintMode(false)} style={{ position: 'absolute', top: 16, right: 16, zIndex: 10, fontSize: 11, padding: '5px 12px', borderRadius: 6, cursor: 'pointer', border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)' }}>
-          Sair
-        </button>
+        <div style={{ position: 'absolute', top: 16, right: 16, zIndex: 10, display: 'flex', gap: 8 }}>
+          <button onClick={exportImage} disabled={exporting}
+            style={{ fontSize: 11, fontWeight: 600, padding: '6px 14px', borderRadius: 6, cursor: exporting?'wait':'pointer', border: 'none', background: '#e53935', color: 'white', opacity: exporting ? 0.6 : 1 }}>
+            {exporting ? 'Gerando...' : 'Baixar imagem'}
+          </button>
+          <button onClick={() => setPrintMode(false)}
+            style={{ fontSize: 11, padding: '6px 12px', borderRadius: 6, cursor: 'pointer', border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.3)' }}>
+            Sair
+          </button>
+        </div>
       )}
 
       {/* === PRINT: title above === */}
@@ -294,6 +327,98 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
             {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
           </span>
         </motion.div>
+      )}
+
+      {/* === OFF-SCREEN CAPTURE CONTAINER (1080x1920 story) === */}
+      {printMode && (
+        <div ref={captureRef} style={{
+          position: 'fixed', left: '-9999px', top: 0,
+          width: 1080, height: 1920,
+          background: '#010204',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          fontFamily: "'Inter', -apple-system, sans-serif",
+          overflow: 'hidden',
+        }}>
+          {/* Ambient glow */}
+          <div style={{
+            position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%,-50%)',
+            width: 800, height: 800, borderRadius: '50%',
+            background: `radial-gradient(circle, ${cDim}0.12), ${cDim}0.04) 35%, transparent 60%)`,
+            filter: 'blur(100px)', pointerEvents: 'none',
+          }}/>
+
+          {/* Title */}
+          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.25em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 80 }}>
+            Resultado da operacao
+          </p>
+
+          {/* Ring visual (static SVG — no animation for capture) */}
+          <div style={{ position: 'relative', width: 500, height: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {/* Outer ring */}
+            <svg width={500} height={500} style={{ position: 'absolute', transform: 'rotate(-90deg)' }}>
+              <circle cx={250} cy={250} r={244} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={3}/>
+              <circle cx={250} cy={250} r={244} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={3}
+                strokeLinecap="round" strokeDasharray={2*Math.PI*244}
+                strokeDashoffset={2*Math.PI*244*(1-goalPct)}/>
+            </svg>
+            {/* Middle decorative */}
+            <svg width={460} height={460} style={{ position: 'absolute' }}>
+              <circle cx={230} cy={230} r={226} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth={1} strokeDasharray="5 15"/>
+            </svg>
+            {/* Main ring */}
+            <svg width={420} height={420} style={{ position: 'absolute', transform: 'rotate(-90deg)' }}>
+              <circle cx={210} cy={210} r={204} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={6}/>
+              <circle cx={210} cy={210} r={204} fill="none" stroke={c} strokeWidth={6}
+                strokeLinecap="round" strokeDasharray={2*Math.PI*204}
+                strokeDashoffset={2*Math.PI*204*(1-profitPct)}
+                style={{ filter: `drop-shadow(0 0 12px ${c})` }}/>
+            </svg>
+            {/* Inner accent */}
+            <svg width={370} height={370} style={{ position: 'absolute' }}>
+              <circle cx={185} cy={185} r={181} fill="none" stroke={`${cDim}0.1)`} strokeWidth={1} strokeDasharray="3 12"/>
+            </svg>
+            {/* Center glow */}
+            <div style={{
+              width: 300, height: 300, borderRadius: '50%',
+              background: `radial-gradient(circle, ${cDim}0.06), transparent 70%)`,
+              boxShadow: `0 0 100px ${cDim}0.12), 0 0 200px ${cDim}0.06)`,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <p style={{
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 72, fontWeight: 900,
+                color: c, lineHeight: 1, letterSpacing: '-0.03em', margin: 0, textAlign: 'center',
+                textShadow: `0 0 50px ${cDim}0.4), 0 0 100px ${cDim}0.2)`,
+              }}>
+                {isPos ? '+' : '-'}R$
+              </p>
+              <p style={{
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 78, fontWeight: 900,
+                color: c, lineHeight: 1, letterSpacing: '-0.03em', margin: '8px 0 0', textAlign: 'center',
+                textShadow: `0 0 50px ${cDim}0.4), 0 0 100px ${cDim}0.2)`,
+              }}>
+                {fmt(Math.abs(val))}
+              </p>
+              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.25)', marginTop: 16 }}>
+                {fechadas.length} metas fechadas
+              </p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div style={{ position: 'absolute', bottom: 80, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: '#e53935', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width={14} height={14} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+              </div>
+              <span style={{ fontSize: 20, color: 'rgba(255,255,255,0.4)', fontWeight: 700 }}>
+                Nex<span style={{ color: '#ff4444' }}>Control</span>
+              </span>
+            </div>
+            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.08em' }}>
+              {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+            </span>
+          </div>
+        </div>
       )}
     </motion.div>
   )

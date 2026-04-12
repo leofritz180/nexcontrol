@@ -10,9 +10,9 @@
 ═══════════════════════════════════════════ */
 
 :root {
-  /* Backgrounds — deep dark */
-  --void:    #050710;
-  --base:    #070b14;
+  /* Backgrounds — deeper */
+  --void:    #030508;
+  --base:    #04070e;
   --surface: #0c1220;
   --raised:  #111929;
   --overlay: #172032;

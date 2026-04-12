@@ -23,7 +23,7 @@ export default function GlobalLoadingScreen() {
           transition={{ duration: 0.5, ease: 'easeInOut' }}
           style={{
             position:'fixed', inset:0, zIndex:99999,
-            background:'#070b14',
+            background:'#04070e',
             display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column',
           }}
         >

@@ -501,7 +501,7 @@ export default function AdminPage() {
     { label:'Total sacado', rawValue:global.totalSaq, value:`R$ ${fmt(global.totalSaq)}`, sub:'Admin + operadores', color:'var(--warn)', card:'card-warn', badge:'saques' },
   ]
 
-  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['ranking','Ranking'],['redes','Redes'],['team','Equipe'],['trash','Lixeira']]
+  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['redes','Redes'],['trash','Lixeira']]
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>

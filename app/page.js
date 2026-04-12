@@ -2,10 +2,172 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 
 const ease = [0.33,1,0.68,1]
+
+const DEMO_OPS = [
+  { name:'Pedro', value:132 },
+  { name:'Ana', value:95 },
+  { name:'Lucas', value:47 },
+  { name:'Maria', value:68 },
+  { name:'Carlos', value:120 },
+]
+
+function LiveDashboardDemo() {
+  const [total, setTotal] = useState(3058)
+  const [idx, setIdx] = useState(0)
+  const [flash, setFlash] = useState(false)
+  const [feed, setFeed] = useState([
+    { n:'Pedro', v:95, g:true },
+    { n:'Lucas', v:18, g:false },
+    { n:'Ana', v:145, g:true },
+  ])
+
+  useEffect(() => {
+    let i = 0
+    const iv = setInterval(() => {
+      i = (i+1) % DEMO_OPS.length
+      const op = DEMO_OPS[i]
+      setIdx(i)
+      setTotal(prev => prev + op.value)
+      setFlash(true)
+      setFeed(prev => [{ n:op.name, v:op.value, g:true }, ...prev.slice(0,2)])
+      setTimeout(() => setFlash(false), 700)
+    }, 3000)
+    return () => clearInterval(iv)
+  }, [])
+
+  const op = DEMO_OPS[idx]
+
+  return (
+    <section style={{ padding:'0 24px 80px', maxWidth:700, margin:'0 auto', position:'relative' }}>
+      <motion.div
+        initial={{ opacity:0, y:30 }}
+        whileInView={{ opacity:1, y:0 }}
+        viewport={{ once:true }}
+        transition={{ duration:0.6, ease }}
+        style={{
+          borderRadius:16, overflow:'hidden', position:'relative',
+          border:'1px solid rgba(255,255,255,0.06)',
+          boxShadow:`0 20px 60px rgba(0,0,0,0.5)${flash?', 0 0 40px rgba(34,197,94,0.06)':''}`,
+          background:'linear-gradient(145deg, #0c1424, #080e1a)',
+          padding:'20px 24px 24px',
+          transition:'box-shadow 0.5s ease',
+        }}
+      >
+        {/* Green flash */}
+        <AnimatePresence>
+          {flash && (
+            <motion.div initial={{opacity:0.12}} animate={{opacity:0}} exit={{opacity:0}} transition={{duration:0.7}}
+              style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 30%, rgba(34,197,94,0.12), transparent 60%)', zIndex:5, pointerEvents:'none' }}/>
+          )}
+        </AnimatePresence>
+
+        {/* Notification dropping */}
+        <div style={{ position:'relative', zIndex:6, marginBottom:12 }}>
+          <AnimatePresence mode="wait">
+            <motion.div key={idx}
+              initial={{ opacity:0, y:-35, scale:0.94 }}
+              animate={{ opacity:1, y:0, scale:1 }}
+              exit={{ opacity:0, y:-15, scale:0.97 }}
+              transition={{ duration:0.4, ease:[0.16,1,0.3,1] }}
+              style={{
+                padding:'10px 14px', borderRadius:12,
+                background:'rgba(255,255,255,0.06)',
+                backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)',
+                border:'1px solid rgba(255,255,255,0.06)',
+                display:'flex', alignItems:'center', gap:10,
+                boxShadow:'0 4px 16px rgba(0,0,0,0.3)',
+              }}>
+              <div style={{ width:20, height:20, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <svg width={9} height={9} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ display:'flex', justifyContent:'space-between' }}>
+                  <span style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.65)' }}>NexControl</span>
+                  <span style={{ fontSize:7, color:'rgba(255,255,255,0.2)' }}>agora</span>
+                </div>
+                <p style={{ fontSize:9, color:'rgba(255,255,255,0.45)', margin:'3px 0 0' }}>
+                  {op.name} registrou: <span style={{ color:'#22C55E', fontWeight:700 }}>+R$ {op.value},00</span>
+                </p>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Header */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <div style={{ width:18, height:18, borderRadius:5, background:'#e53935' }}/>
+            <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.4)' }}>Painel executivo</span>
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+            <motion.div animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.5)','0 0 0 4px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
+              transition={{ duration:2, repeat:Infinity }}
+              style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}/>
+            <span style={{ fontSize:8, color:'rgba(255,255,255,0.2)' }}>ao vivo</span>
+          </div>
+        </div>
+
+        {/* KPI */}
+        <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:12, marginBottom:12 }}>
+          <motion.div
+            animate={flash ? { scale:[1,1.02,1] } : {}}
+            transition={{ duration:0.3 }}
+            style={{ padding:'18px 20px', borderRadius:10, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.04)', position:'relative', overflow:'hidden' }}
+          >
+            <p style={{ fontSize:9, color:'rgba(255,255,255,0.3)', margin:'0 0 8px' }}>Lucro final acumulado</p>
+            <p style={{
+              fontFamily:'var(--mono)', fontSize:28, fontWeight:900, color:'#22C55E', margin:0,
+              textShadow: flash ? '0 0 20px rgba(34,197,94,0.25)' : 'none',
+              transition:'text-shadow 0.3s',
+            }}>
+              +R$ {total.toLocaleString('pt-BR')},47
+            </p>
+            <p style={{ fontSize:8, color:'rgba(255,255,255,0.2)', marginTop:6 }}>metas fechadas</p>
+            {flash && <div style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 30% 50%, rgba(34,197,94,0.06), transparent 60%)', pointerEvents:'none' }}/>}
+          </motion.div>
+          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+            {[{l:'Depositado',v:'R$ 57.581'},{l:'Sacado',v:'R$ 51.330'},{l:'Metas',v:'20'}].map(({l,v}) => (
+              <div key={l} style={{ flex:1, padding:'8px 12px', borderRadius:8, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <span style={{ fontSize:8, color:'rgba(255,255,255,0.25)' }}>{l}</span>
+                <span style={{ fontFamily:'var(--mono)', fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.6)' }}>{v}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Live feed */}
+        <div style={{ padding:'12px 14px', borderRadius:10, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)' }}>
+          <p style={{ fontSize:9, fontWeight:600, color:'rgba(255,255,255,0.3)', margin:'0 0 10px' }}>Remessas recentes</p>
+          <AnimatePresence mode="popLayout">
+            {feed.map((item,i) => (
+              <motion.div key={item.n+item.v+i}
+                initial={{ opacity:0, x:-20 }}
+                animate={{ opacity:1, x:0 }}
+                exit={{ opacity:0 }}
+                transition={{ duration:0.3 }}
+                style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'6px 0', borderBottom:i<2?'1px solid rgba(255,255,255,0.03)':'none' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <div style={{ width:18, height:18, borderRadius:5, background:'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.3)' }}>{item.n[0]}</span>
+                  </div>
+                  <span style={{ fontSize:9, color:'rgba(255,255,255,0.4)' }}>{item.n}</span>
+                </div>
+                <span style={{ fontFamily:'var(--mono)', fontSize:10, fontWeight:700, color:item.g?'#22C55E':'#EF4444' }}>{item.g?'+':'-'}R$ {item.v},00</span>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      {/* Shadow glow */}
+      <div style={{ position:'absolute', bottom:-20, left:'25%', right:'25%', height:40, background:'radial-gradient(ellipse, rgba(34,197,94,0.05), transparent 70%)', filter:'blur(15px)', pointerEvents:'none' }}/>
+    </section>
+  )
+}
 
 export default function HomePage() {
   const router = useRouter()
@@ -116,54 +278,8 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* ═══ MOCK DO DASHBOARD ═══ */}
-      <section style={{ padding:'0 24px 80px', maxWidth:700, margin:'0 auto' }}>
-        <motion.div
-          initial={{ opacity:0, y:30 }}
-          whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true }}
-          transition={{ duration:0.6, ease }}
-          style={{ borderRadius:16, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)', boxShadow:'0 20px 60px rgba(0,0,0,0.5)', background:'linear-gradient(145deg, #0c1424, #080e1a)', padding:'20px 24px 24px' }}
-        >
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-              <div style={{ width:20, height:20, borderRadius:5, background:'#e53935' }}/>
-              <span style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.4)' }}>Painel executivo</span>
-            </div>
-            <div style={{ display:'flex', gap:4 }}>{[1,2,3].map(i => <div key={i} style={{ width:6, height:6, borderRadius:'50%', background:'rgba(255,255,255,0.1)' }}/>)}</div>
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:12, marginBottom:12 }}>
-            <div style={{ padding:'18px 20px', borderRadius:10, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.04)' }}>
-              <p style={{ fontSize:9, color:'rgba(255,255,255,0.3)', margin:'0 0 8px' }}>Lucro final acumulado</p>
-              <p style={{ fontFamily:'var(--mono)', fontSize:28, fontWeight:900, color:'#22C55E', margin:0 }}>+R$ 3.058,47</p>
-              <p style={{ fontSize:8, color:'rgba(255,255,255,0.2)', marginTop:6 }}>11 metas fechadas</p>
-            </div>
-            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-              {[{l:'Depositado',v:'R$ 57.581'},{l:'Sacado',v:'R$ 51.330'},{l:'Metas',v:'20'}].map(({l,v}) => (
-                <div key={l} style={{ flex:1, padding:'8px 12px', borderRadius:8, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                  <span style={{ fontSize:8, color:'rgba(255,255,255,0.25)' }}>{l}</span>
-                  <span style={{ fontFamily:'var(--mono)', fontSize:11, fontWeight:700, color:'rgba(255,255,255,0.6)' }}>{v}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{ padding:'12px 14px', borderRadius:10, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.03)' }}>
-            <p style={{ fontSize:9, fontWeight:600, color:'rgba(255,255,255,0.3)', margin:'0 0 10px' }}>Remessas recentes</p>
-            {[{n:'Pedro',v:'+R$ 95,00',g:true},{n:'Lucas',v:'-R$ 18,00',g:false},{n:'Ana',v:'+R$ 145,00',g:true}].map(({n,v,g}) => (
-              <div key={n} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'6px 0', borderBottom:'1px solid rgba(255,255,255,0.03)' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <div style={{ width:18, height:18, borderRadius:5, background:'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.3)' }}>{n[0]}</span>
-                  </div>
-                  <span style={{ fontSize:9, color:'rgba(255,255,255,0.4)' }}>{n}</span>
-                </div>
-                <span style={{ fontFamily:'var(--mono)', fontSize:10, fontWeight:700, color:g?'#22C55E':'#EF4444' }}>{v}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ position:'absolute', bottom:-30, left:'20%', right:'20%', height:60, background:'radial-gradient(ellipse, rgba(229,57,53,0.06), transparent 70%)', filter:'blur(20px)', pointerEvents:'none' }}/>
-        </motion.div>
-      </section>
+      {/* ═══ LIVE DASHBOARD DEMO ═══ */}
+      <LiveDashboardDemo/>
 
       {/* ═══ 3 PILARES ═══ */}
       <section style={{ padding:'40px 24px 80px', maxWidth:900, margin:'0 auto' }}>

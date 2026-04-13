@@ -23,7 +23,7 @@ export default function ProxyPage() {
     if (!u) { router.push('/login'); return }
     setUser(u)
     const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
-    if (!p || p.role !== 'admin') { router.push('/operator'); return }
+    if (!p) { router.push('/login'); return }
     setProfile(p)
     const [{ data: t }, { data: s2 }] = await Promise.all([
       supabase.from('tenants').select('*').eq('id', p.tenant_id).maybeSingle(),

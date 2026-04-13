@@ -994,40 +994,44 @@ export default function MetaPage() {
           const positivas = remessas.filter(r=>Number(r.resultado||0)>=0).length
           const taxaAcerto = remessas.length > 0 ? Math.round((positivas/remessas.length)*100) : 0
 
-          // Insights
+          // Insights — linguagem natural, contextual
           const insights = []
           let streak = 0
           const ord = [...remessas].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at))
           for (let i = ord.length-1; i >= 0; i--) { if (Number(ord[i].resultado||0)<0) streak++; else break }
 
-          if (liq > 0) insights.push({ text: `Meta encerrada no positivo — resultado raro e excelente!`, type: 'good' })
-          else if (avgPerConta >= -5) insights.push({ text: `Prejuizo controlado: R$ ${fmt(Math.abs(avgPerConta))}/conta — dentro do esperado`, type: 'good' })
-          else if (avgPerConta >= -10) insights.push({ text: `Prejuizo moderado: R$ ${fmt(Math.abs(avgPerConta))}/conta — atencao na proxima`, type: 'warn' })
-          else insights.push({ text: `Prejuizo elevado: R$ ${fmt(Math.abs(avgPerConta))}/conta — revisar estrategia`, type: 'critical' })
+          if (liq > 0) insights.push({ text: `Resultado acima do padrao — meta encerrou no positivo com R$ ${fmt(liq)}`, type: 'good' })
+          else if (avgPerConta >= -5) insights.push({ text: `Desempenho solido: R$ ${fmt(Math.abs(avgPerConta))}/conta — resultado dentro do aceitavel`, type: 'good' })
+          else if (avgPerConta >= -10) insights.push({ text: `Resultado abaixo do ideal: R$ ${fmt(Math.abs(avgPerConta))}/conta de media`, type: 'warn' })
+          else insights.push({ text: `Media de R$ ${fmt(Math.abs(avgPerConta))}/conta — acima do limite recomendado`, type: 'critical' })
 
-          if (taxaAcerto >= 60) insights.push({ text: `${taxaAcerto}% das remessas positivas — boa consistencia`, type: 'good' })
-          else if (taxaAcerto >= 40) insights.push({ text: `${taxaAcerto}% de acerto — resultados mistos`, type: 'warn' })
+          if (taxaAcerto >= 60) insights.push({ text: `Consistencia alta — ${taxaAcerto}% das remessas com resultado positivo`, type: 'good' })
+          else if (taxaAcerto >= 40) insights.push({ text: `Resultados variaram — ${taxaAcerto}% de aproveitamento nas remessas`, type: 'warn' })
+          else if (remessas.length >= 3) insights.push({ text: `Aproveitamento baixo — apenas ${taxaAcerto}% das remessas positivas`, type: 'critical' })
 
-          if (streak >= 3) insights.push({ text: `Meta encerrou com ${streak} remessas negativas seguidas`, type: 'warn' })
+          if (streak >= 3) insights.push({ text: `Encerrou com sequencia negativa de ${streak} remessas — padrão a observar`, type: 'warn' })
+          else if (streak === 0 && remessas.length >= 3) insights.push({ text: 'Ultima remessa foi positiva — bom fechamento', type: 'good' })
 
-          if (pctConclusao >= 100) insights.push({ text: `Meta 100% concluida — todas as contas processadas`, type: 'good' })
-          else if (pctConclusao >= 70) insights.push({ text: `${pctConclusao}% concluido — boa execucao`, type: 'good' })
+          if (pctConclusao >= 100) insights.push({ text: `Execucao completa — ${contasDone} de ${nContas} contas processadas`, type: 'good' })
+          else if (pctConclusao >= 70) insights.push({ text: `${pctConclusao}% executado — ${nContas - contasDone} contas restantes`, type: 'good' })
+          else if (pctConclusao > 0) insights.push({ text: `Meta parcial — ${contasDone} de ${nContas} contas (${pctConclusao}%)`, type: 'warn' })
 
-          // Melhorias
+          // Melhorias — contextuais e praticas
           const melhorias = []
-          if (avgPerConta < -8) melhorias.push('Reduzir prejuizo medio por conta')
-          if (streak >= 2) melhorias.push('Evitar sequencias longas sem trocar de slot')
-          if (pctConclusao < 80) melhorias.push('Melhorar taxa de conclusao de contas')
+          if (avgPerConta < -8) melhorias.push('Reduzir variacao de resultado por conta nas proximas metas')
+          if (streak >= 2) melhorias.push('Diversificar slots quando identificar sequencia negativa')
+          if (pctConclusao < 80 && pctConclusao > 0) melhorias.push('Aumentar volume de contas processadas por meta')
           if (remessas.length > 0) {
             const tempos = ord.map(r=>new Date(r.created_at).getTime())
             if (tempos.length >= 2) {
               const gaps = tempos.slice(1).map((t,i)=>t-tempos[i])
               const avgGap = gaps.reduce((a,g)=>a+g,0)/gaps.length
-              if (avgGap > 4*60*60*1000) melhorias.push('Manter ritmo mais constante entre remessas')
+              if (avgGap > 4*60*60*1000) melhorias.push('Aumentar ritmo — intervalos longos entre remessas')
+              else if (avgGap < 0.5*60*60*1000 && taxaAcerto < 50) melhorias.push('Desacelerar — ritmo rapido com baixo aproveitamento')
             }
           }
-          if (taxaAcerto < 50) melhorias.push('Buscar mais consistencia nos resultados')
-          if (melhorias.length === 0) melhorias.push('Manter o padrao da operacao atual')
+          if (taxaAcerto < 50 && taxaAcerto > 0) melhorias.push('Manter consistencia entre remessas na proxima meta')
+          if (melhorias.length === 0) melhorias.push('Operacao dentro do padrao — manter estrategia atual')
 
           const cfgI = { good:'var(--profit)', warn:'var(--warn)', critical:'var(--loss)' }
 
@@ -1035,77 +1039,104 @@ export default function MetaPage() {
             <motion.div
               key="finale"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              style={{ position:'fixed', inset:0, zIndex:10000, background:'rgba(2,4,8,0.9)', backdropFilter:'blur(12px)', display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}
+              transition={{ duration: 0.4 }}
+              style={{ position:'fixed', inset:0, zIndex:10000, background:'rgba(2,4,8,0.92)', backdropFilter:'blur(16px)', display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}
               onClick={e => { if (e.target === e.currentTarget) { setShowFinalePopup(false); router.push('/operator') } }}
             >
+              {/* Ambient glow */}
+              <div style={{ position:'absolute', top:'30%', left:'50%', width:400, height:400, marginLeft:-200, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.03), transparent 70%)', pointerEvents:'none' }} />
+
               <motion.div
-                initial={{ opacity:0, scale:0.92, y:30 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.95 }}
-                transition={{ duration:0.5, ease:[0.33,1,0.68,1] }}
+                initial={{ opacity:0, scale:0.9, y:40 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.95 }}
+                transition={{ duration:0.55, ease:[0.33,1,0.68,1] }}
                 onClick={e => e.stopPropagation()}
-                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:24, background:'linear-gradient(160deg, #10141e, #080b14)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:'0 50px 120px rgba(0,0,0,0.8), 0 0 60px rgba(34,197,94,0.04)' }}
+                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:28, background:'linear-gradient(160deg, #10141e, #080b14)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:'0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(34,197,94,0.04), inset 0 1px 0 rgba(255,255,255,0.03)' }}
               >
                 {/* Header */}
-                <div style={{ padding:'32px 28px 24px', textAlign:'center', borderBottom:'1px solid rgba(255,255,255,0.04)', background:'linear-gradient(180deg, rgba(34,197,94,0.04), transparent)' }}>
-                  <motion.div initial={{scale:0}} animate={{scale:1}} transition={{delay:0.2,type:'spring',stiffness:200}} style={{ width:56, height:56, borderRadius:16, background:'var(--profit-dim)', border:'1px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', boxShadow:'0 0 30px rgba(34,197,94,0.1)' }}>
-                    <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <div style={{ padding:'36px 32px 28px', textAlign:'center', borderBottom:'1px solid rgba(255,255,255,0.04)', background:'linear-gradient(180deg, rgba(34,197,94,0.05), transparent)', position:'relative', overflow:'hidden' }}>
+                  <div style={{ position:'absolute', top:-40, left:'50%', marginLeft:-100, width:200, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.08), transparent 70%)', pointerEvents:'none' }} />
+                  <motion.div
+                    initial={{scale:0, rotate:-20}} animate={{scale:1, rotate:0}} transition={{delay:0.15, type:'spring', stiffness:180, damping:12}}
+                    style={{ width:64, height:64, borderRadius:18, background:'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.06))', border:'1.5px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 18px', boxShadow:'0 0 40px rgba(34,197,94,0.15), 0 0 80px rgba(34,197,94,0.05)', position:'relative' }}
+                  >
+                    <svg width={30} height={30} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </motion.div>
-                  <motion.h2 initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:0.3}} style={{ fontSize:22, fontWeight:800, color:'var(--t1)', margin:'0 0 6px', letterSpacing:'-0.02em' }}>
-                    Meta finalizada
+                  <motion.h2 initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:0.3, duration:0.4}} style={{ fontSize:24, fontWeight:900, color:'#fff', margin:'0 0 8px', letterSpacing:'-0.03em' }}>
+                    Operacao concluida
                   </motion.h2>
-                  <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4}} style={{ fontSize:13, color:'var(--t3)', margin:0 }}>
-                    {nContas} DEP {meta.rede || ''} · {new Date().toLocaleDateString('pt-BR')}
+                  <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4}} style={{ fontSize:14, color:'var(--t3)', margin:0 }}>
+                    {nContas} DEP · {meta.rede || ''} · {new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' })}
                   </motion.p>
                 </div>
 
-                <div style={{ padding:'24px 28px 28px' }}>
-                  {/* Metricas */}
-                  <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:0.4}} style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:20 }}>
+                <div style={{ padding:'28px 32px 32px' }}>
+                  {/* Resultado destaque */}
+                  <motion.div initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} transition={{delay:0.45}} style={{
+                    padding:'20px 24px', borderRadius:16, marginBottom:24, textAlign:'center',
+                    background: liq>=0 ? 'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02))' : 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02))',
+                    border: `1px solid ${liq>=0 ? 'var(--profit-border)' : 'var(--loss-border)'}`,
+                    boxShadow: liq>=0 ? '0 0 30px rgba(34,197,94,0.06)' : '0 0 30px rgba(239,68,68,0.06)',
+                  }}>
+                    <p style={{ fontSize:10, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.08em', margin:'0 0 8px', fontWeight:600 }}>Resultado da meta</p>
+                    <p style={{ fontSize:32, fontWeight:900, color:liq>=0?'var(--profit)':'var(--loss)', margin:0, fontFamily:'var(--mono)', letterSpacing:'-0.03em', textShadow:`0 0 30px ${liq>=0?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)'}` }}>
+                      {liq>=0?'+':''}R$ {fmt(liq)}
+                    </p>
+                    <p style={{ fontSize:11, color:'var(--t4)', margin:'6px 0 0' }}>R$ {fmt(Math.abs(avgPerConta))}/conta · {taxaAcerto}% de acerto</p>
+                  </motion.div>
+
+                  {/* Metricas grid */}
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:24 }}>
                     {[
-                      { l:'Remessas', v:remessas.length, c:'var(--t2)' },
-                      { l:'Contas', v:`${contasDone}/${nContas}`, c:'var(--t2)' },
+                      { l:'Remessas', v:remessas.length, c:'var(--t1)' },
+                      { l:'Contas', v:`${contasDone}/${nContas}`, c:'var(--t1)' },
                       { l:'Conclusao', v:`${pctConclusao}%`, c:pctConclusao>=80?'var(--profit)':'var(--warn)' },
                       { l:'Depositado', v:`R$ ${fmt(totalDep)}`, c:'var(--t2)' },
                       { l:'Sacado', v:`R$ ${fmt(totalSaq)}`, c:'var(--t2)' },
-                      { l:'Resultado', v:`${liq>=0?'+':''}R$ ${fmt(liq)}`, c:liq>=0?'var(--profit)':'var(--loss)' },
-                      { l:'Media/remessa', v:`R$ ${fmt(avgPerRemessa)}`, c:avgPerRemessa>=0?'var(--profit)':'var(--loss)' },
-                      { l:'Media/conta', v:`R$ ${fmt(avgPerConta)}`, c:avgPerConta>=-5?'var(--profit)':avgPerConta>=-10?'var(--warn)':'var(--loss)' },
-                      { l:'Taxa acerto', v:`${taxaAcerto}%`, c:taxaAcerto>=50?'var(--profit)':'var(--warn)' },
+                      { l:'Media/remessa', v:`R$ ${fmt(Math.abs(avgPerRemessa))}`, c:avgPerRemessa>=0?'var(--profit)':'var(--t2)' },
                     ].map(({l,v,c},i) => (
-                      <motion.div key={l} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{delay:0.5+i*0.04}} style={{ padding:'12px 14px', borderRadius:12, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.04)', textAlign:'center' }}>
-                        <p style={{ fontSize:9, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.06em', margin:'0 0 5px', fontWeight:600 }}>{l}</p>
-                        <p style={{ fontSize:15, fontWeight:700, color:c, margin:0, fontFamily:'var(--mono)' }}>{v}</p>
+                      <motion.div key={l} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:0.55+i*0.05}}
+                        style={{ padding:'14px 16px', borderRadius:14, background:'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008))', border:'1px solid rgba(255,255,255,0.05)', textAlign:'center', transition:'all 0.2s' }}
+                        onMouseEnter={e => { e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)' }}
+                        onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.borderColor='rgba(255,255,255,0.05)' }}
+                      >
+                        <p style={{ fontSize:9, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.06em', margin:'0 0 6px', fontWeight:600 }}>{l}</p>
+                        <p style={{ fontSize:17, fontWeight:800, color:c, margin:0, fontFamily:'var(--mono)' }}>{v}</p>
                       </motion.div>
                     ))}
-                  </motion.div>
+                  </div>
 
                   {/* Insights */}
-                  <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:0.7}} style={{ marginBottom:20 }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
-                      <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
-                      <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>Analise da operacao</span>
+                  <motion.div initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:0.8}} style={{ marginBottom:24 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+                      <span style={{ fontSize:13, fontWeight:700, color:'var(--t1)' }}>Analise da operacao</span>
+                      <span style={{ fontSize:9, fontWeight:700, color:'#a855f7', background:'rgba(168,85,247,0.1)', padding:'2px 7px', borderRadius:5 }}>AI</span>
                     </div>
-                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                    <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                       {insights.map((ins,i) => (
-                        <motion.div key={i} initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} transition={{delay:0.8+i*0.08}} style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', borderRadius:10, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.04)' }}>
-                          <div style={{ width:6, height:6, borderRadius:'50%', background:cfgI[ins.type], flexShrink:0 }} />
-                          <span style={{ fontSize:12, color:'var(--t2)' }}>{ins.text}</span>
+                        <motion.div key={i} initial={{opacity:0,x:-12}} animate={{opacity:1,x:0}} transition={{delay:0.9+i*0.1, ease:[0.33,1,0.68,1]}}
+                          style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px', borderRadius:12, background:'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008))', border:'1px solid rgba(255,255,255,0.05)', transition:'all 0.2s' }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; e.currentTarget.style.transform='translateX(2px)' }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'; e.currentTarget.style.transform='none' }}
+                        >
+                          <div style={{ width:8, height:8, borderRadius:'50%', background:cfgI[ins.type], flexShrink:0, boxShadow:`0 0 8px ${cfgI[ins.type]}` }} />
+                          <span style={{ fontSize:12, color:'var(--t2)', lineHeight:1.4 }}>{ins.text}</span>
                         </motion.div>
                       ))}
                     </div>
                   </motion.div>
 
                   {/* Melhorias */}
-                  <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:0.9}} style={{ padding:'16px 18px', borderRadius:14, background:'rgba(245,158,11,0.04)', border:'1px solid rgba(245,158,11,0.1)', marginBottom:24 }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
-                      <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-                      <span style={{ fontSize:12, fontWeight:700, color:'var(--warn)' }}>O que melhorar</span>
+                  <motion.div initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:1.1}} style={{ padding:'18px 20px', borderRadius:16, background:'linear-gradient(145deg, rgba(245,158,11,0.04), rgba(245,158,11,0.01))', border:'1px solid rgba(245,158,11,0.1)', marginBottom:28 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+                      <span style={{ fontSize:13, fontWeight:700, color:'var(--warn)' }}>Proxima meta</span>
                     </div>
-                    <div style={{ display:'flex', flexDirection:'column', gap:5 }}>
+                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
                       {melhorias.map((m,i) => (
-                        <motion.div key={i} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1+i*0.06}} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                          <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                          <span style={{ fontSize:11, color:'var(--t3)' }}>{m}</span>
+                        <motion.div key={i} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.2+i*0.07}} style={{ display:'flex', alignItems:'center', gap:10 }}>
+                          <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="2.5" strokeLinecap="round" style={{flexShrink:0}}><polyline points="9 18 15 12 9 6"/></svg>
+                          <span style={{ fontSize:12, color:'var(--t3)', lineHeight:1.4 }}>{m}</span>
                         </motion.div>
                       ))}
                     </div>
@@ -1113,18 +1144,17 @@ export default function MetaPage() {
 
                   {/* CTA */}
                   <motion.button
-                    initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:1.1}}
+                    initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:1.3}}
+                    whileHover={{ scale:1.02, boxShadow:'0 8px 32px rgba(34,197,94,0.35)' }}
+                    whileTap={{ scale:0.97 }}
                     onClick={() => { setShowFinalePopup(false); router.push('/operator') }}
                     style={{
-                      width:'100%', padding:'15px 24px', borderRadius:14, border:'none', cursor:'pointer',
+                      width:'100%', padding:'16px 28px', borderRadius:14, border:'none', cursor:'pointer',
                       fontSize:15, fontWeight:700, color:'#fff',
                       background:'linear-gradient(135deg, #22c55e, #16a34a)',
-                      boxShadow:'0 6px 24px rgba(34,197,94,0.25)',
+                      boxShadow:'0 6px 24px rgba(34,197,94,0.3)',
                       display:'flex', alignItems:'center', justifyContent:'center', gap:8,
-                      transition:'transform 0.2s',
                     }}
-                    onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
-                    onMouseLeave={e => e.currentTarget.style.transform='none'}
                   >
                     <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                     Concluido — voltar ao painel

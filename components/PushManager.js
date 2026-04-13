@@ -28,7 +28,7 @@ export default function PushManager({ userId, tenantId }) {
         // Send welcome push
         fetch('/api/push/send', {
           method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ user_id: userId, title: 'Notificações ativadas - você receberá alertas em tempo real', body: '', url: '/admin' }),
+          body: JSON.stringify({ user_id: userId, title: 'NexControl', body: 'Notificações ativadas - você receberá alertas em tempo real', url: '/admin' }),
         }).catch(() => {})
       } else {
         setState('error')

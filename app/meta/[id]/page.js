@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useParams, useRouter } from 'next/navigation'
-import Header from '../../../components/Header'
+import AppLayout from '../../../components/AppLayout'
 import { supabase } from '../../../lib/supabase/client'
 import { notifyRemessaCreated } from '../../../lib/notify'
 import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
@@ -416,7 +416,7 @@ export default function MetaPage() {
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
-      <Header userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role==='admin'} userId={user?.id} tenantId={profile?.tenant_id}/>
+      <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role==='admin'} userId={user?.id} tenantId={profile?.tenant_id}>
 
       {/* Feedback toast */}
       <AnimatePresence>
@@ -1165,6 +1165,7 @@ export default function MetaPage() {
           )
         })()}
       </AnimatePresence>
+      </AppLayout>
     </main>
   )
 }

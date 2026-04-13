@@ -171,21 +171,19 @@ export default function MetaPage() {
     const u = s?.session?.user
     if (!u) { router.push('/login'); return }
     setUser(u)
-    const [{ data:p },{ data:m },{ data:r }] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id',u.id).maybeSingle(),
+    const { data:p } = await supabase.from('profiles').select('*').eq('id',u.id).maybeSingle()
+    setProfile(p)
+    const tid = p?.tenant_id
+    const [{ data:m },{ data:r },{ data:tenantData }] = await Promise.all([
       supabase.from('metas').select('*').eq('id',id).single(),
       supabase.from('remessas').select('*').eq('meta_id',id).order('created_at',{ascending:true}),
+      tid ? supabase.from('tenants').select('*').eq('id', tid).maybeSingle() : Promise.resolve({ data: null }),
     ])
-    setProfile(p)
     // Admin can view all metas in their tenant; operator only their own
     if (m && m.operator_id !== u.id && p?.role !== 'admin') { router.push('/operator'); return }
     setMeta(m||null); setRemessas(r||[])
-    const tid = m?.tenant_id || p?.tenant_id
-    if (tid) {
-      const { data: tenantData } = await supabase.from('tenants').select('favorite_slots').eq('id', tid).maybeSingle()
-      const slots = tenantData?.favorite_slots
-      setTenantSlots(Array.isArray(slots) ? slots : [])
-    }
+    const slots = tenantData?.favorite_slots
+    setTenantSlots(Array.isArray(slots) ? slots : [])
     setLoading(false)
   }
 

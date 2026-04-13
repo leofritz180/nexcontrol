@@ -226,11 +226,16 @@ export default function MetaPage() {
     }
 
     if (diff < 0 && absPer > 8) {
-      return { type: 'warn', title: `Prejuizo elevado: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: 'Comecou a ficar ruim. Monitore com atencao as proximas.', icon: 'alert' }
+      return { type: 'warn', title: `Atencao: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: 'Prejuizo acima do ideal. Fique atento nas proximas remessas.', icon: 'alert' }
     }
 
     if (diff < 0 && absPer > 3) {
-      return { type: 'warn', title: `Prejuizo: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: 'Dentro do esperado. Segue operando normalmente.', icon: 'alert' }
+      const msgs = [
+        'Dentro do esperado. Segue operando normalmente.',
+        'Prejuizo aceitavel, faz parte. Bora pra proxima!',
+        'Normal na operacao. Continua firme.',
+      ]
+      return { type: 'good', title: `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: msgs[Math.floor(Math.random() * msgs.length)], icon: 'check' }
     }
 
     if (diff < 0 && absPer <= 3) {
@@ -463,7 +468,13 @@ export default function MetaPage() {
           const avgPerConta = nContas > 0 ? totais.liq / nContas : 0
           const avgPerRemessa = remessas.length > 0 ? totais.liq / remessas.length : 0
 
-          // A) Sequencia de prejuizo — com dados reais
+          // Calcular prejuizo medio por conta das remessas (pra contexto)
+          const remsComContas = remessas.filter(r => Number(r.contas_remessa || 0) > 0)
+          const avgPrejPerConta = remsComContas.length > 0
+            ? remsComContas.filter(r => Number(r.resultado || 0) < 0).reduce((a, r) => a + Math.abs(Number(r.resultado || 0)) / Number(r.contas_remessa), 0) / Math.max(remsComContas.filter(r => Number(r.resultado || 0) < 0).length, 1)
+            : 0
+
+          // A) Sequencia — so alerta se prejuizo por conta for alto
           let streak = 0
           let streakTotal = 0
           for (let i = ordered.length - 1; i >= 0; i--) {
@@ -471,19 +482,25 @@ export default function MetaPage() {
             if (res < 0) { streak++; streakTotal += res }
             else break
           }
-          const streakAvg = streak > 0 && nContas > 0 ? streakTotal / nContas : 0
-          if (streak >= 3) insights.push({ text: `${streak} remessas consecutivas negativas — prejuizo acumulado de R$ ${fmt(Math.abs(streakTotal))} (R$ ${fmt(Math.abs(streakAvg))}/conta)`, type: 'critical', action: 'Reduzir contas na proxima remessa ou avaliar pausa' })
-          else if (streak >= 2) insights.push({ text: `${streak} remessas seguidas com prejuizo — R$ ${fmt(Math.abs(streakTotal))} perdidos nas ultimas ${streak}`, type: 'warn', action: 'Manter volume atual e observar proxima remessa' })
+          // Sequencia so e preocupante se > 4 seguidas OU se media da sequencia > R$8/conta
+          const streakPerConta = streak > 0 && nContas > 0 ? Math.abs(streakTotal) / nContas : 0
+          if (streak >= 5 || (streak >= 3 && streakPerConta > 12)) {
+            insights.push({ text: `${streak} remessas seguidas negativas com media de R$ ${fmt(streakPerConta)}/conta`, type: 'critical', action: 'Avaliar trocar de slot ou pausar operacao' })
+          } else if (streak >= 4 || (streak >= 3 && streakPerConta > 8)) {
+            insights.push({ text: `${streak} remessas seguidas com prejuizo — fique atento`, type: 'warn', action: 'Normal na operacao, mas observe as proximas' })
+          }
+          // Sequencia de 2-3 com prejuizo leve NAO gera alerta (e normal)
 
-          // B) Media por conta — com contexto
+          // B) Media por conta — calibrada pro modelo real
+          // Prejuizo ate R$8/conta e NORMAL na operacao (salario compensa)
           if (nContas > 0) {
-            if (avgPerConta > 5) insights.push({ text: `Media excelente: R$ ${fmt(avgPerConta)}/conta em ${remessas.length} remessas`, type: 'good', action: 'Possivel aumentar volume de contas' })
-            else if (avgPerConta > 2) insights.push({ text: `Media positiva: R$ ${fmt(avgPerConta)}/conta — operacao saudavel`, type: 'good', action: 'Continuar no ritmo atual' })
-            else if (avgPerConta >= -1) insights.push({ text: `Media instavel: R$ ${fmt(avgPerConta)}/conta em ${remessas.length} remessas`, type: 'warn', action: 'Manter operacao e monitorar proximas 2-3 remessas' })
-            else insights.push({ text: `Media negativa: R$ ${fmt(avgPerConta)}/conta — ${remessas.length} remessas analisadas`, type: 'critical', action: 'Revisar estrategia — considerar trocar rede ou reduzir volume' })
+            if (avgPerConta > 2) insights.push({ text: `Operacao positiva: R$ ${fmt(avgPerConta)}/conta em ${remessas.length} remessas`, type: 'good', action: 'Continuar no ritmo atual' })
+            else if (avgPerConta >= -8) insights.push({ text: `Operacao dentro do esperado: R$ ${fmt(avgPerConta)}/conta`, type: 'good', action: 'Prejuizo controlado — faz parte da operacao' })
+            else if (avgPerConta >= -12) insights.push({ text: `Atencao: media de R$ ${fmt(avgPerConta)}/conta — acima do ideal`, type: 'warn', action: 'Monitorar proximas remessas com cuidado' })
+            else insights.push({ text: `Media alta de prejuizo: R$ ${fmt(avgPerConta)}/conta`, type: 'critical', action: 'Considerar trocar rede ou reduzir volume' })
           }
 
-          // C) Pendencias — com urgencia
+          // C) Pendencias — informativo, nao alarmista
           const probs = remessas.filter(r => r.status_problema && r.status_problema !== 'normal')
           if (probs.length > 0) {
             const sp = probs.filter(r => r.status_problema === 'saque_pendente').length
@@ -493,29 +510,33 @@ export default function MetaPage() {
             if (sp) parts.push(`${sp} saque${sp > 1 ? 's' : ''} pendente${sp > 1 ? 's' : ''}`)
             if (cb) parts.push(`${cb} conta${cb > 1 ? 's' : ''} bloqueada${cb > 1 ? 's' : ''}`)
             if (ba) parts.push(`${ba} em analise bancaria`)
-            insights.push({ text: `${probs.length} pendencia${probs.length > 1 ? 's' : ''} ativa${probs.length > 1 ? 's' : ''}: ${parts.join(', ')}`, type: cb > 0 ? 'critical' : 'warn', action: 'Resolver pendencias antes de registrar novas remessas' })
+            // Bloqueios e saques pendentes sao comuns — so warn, nao critical
+            insights.push({ text: `Pendencias: ${parts.join(', ')}`, type: 'warn', action: 'Resolver quando possivel — nao impede operacao' })
           }
 
-          // D) Tendencia antecipada
-          if (ordered.length >= 4) {
+          // D) Tendencia — so alerta se queda for significativa
+          if (ordered.length >= 6) {
             const half = Math.floor(ordered.length / 2)
             const first = ordered.slice(0, half).reduce((a, r) => a + Number(r.resultado || 0), 0) / half
             const second = ordered.slice(half).reduce((a, r) => a + Number(r.resultado || 0), 0) / (ordered.length - half)
-            if (second > first && second > 0) insights.push({ text: `Tendencia de melhora: media subiu de R$ ${fmt(first)} para R$ ${fmt(second)} por remessa`, type: 'good', action: 'Manter ritmo — operacao em crescimento' })
-            else if (second < first && second < first * 0.5) insights.push({ text: `Tendencia de queda: media caiu de R$ ${fmt(first)} para R$ ${fmt(second)} por remessa`, type: 'critical', action: 'Considerar pausa ou reduzir volume' })
-            else if (second < first && streak === 0) insights.push({ text: `Leve queda detectada: media de R$ ${fmt(first)} caiu para R$ ${fmt(second)} por remessa`, type: 'warn', action: 'Observar proximas remessas com atencao' })
+            if (second > first && second > 0) insights.push({ text: `Tendencia positiva: resultados melhorando`, type: 'good', action: 'Manter ritmo' })
+            // So alerta queda se for muito significativa (>50% piora)
+            else if (second < first * 0.3 && Math.abs(second) > 5) insights.push({ text: `Queda significativa nos resultados`, type: 'warn', action: 'Observar proximas remessas' })
           }
 
-          if (insights.length === 0 && totais.liq >= 0) insights.push({ text: `Operacao estavel — R$ ${fmt(avgPerConta)}/conta em ${remessas.length} remessas`, type: 'good', action: 'Sem alertas. Continuar normalmente.' })
+          if (insights.length === 0) insights.push({ text: `Operacao estavel — ${remessas.length} remessas registradas`, type: 'good', action: 'Tudo dentro do esperado. Continuar normalmente.' })
 
-          // Score (0-100)
-          let score = 50
-          if (avgPerConta > 5) score += 25; else if (avgPerConta > 2) score += 15; else if (avgPerConta > 0) score += 5; else if (avgPerConta > -1) score -= 10; else score -= 25
-          if (streak >= 3) score -= 20; else if (streak >= 2) score -= 10
-          if (probs.length > 0) score -= probs.length * 5
+          // Score (0-100) — calibrado: prejuizo leve nao penaliza
+          let score = 65 // Base mais alta (operacao normal comeca em 65)
+          if (avgPerConta > 2) score += 20
+          else if (avgPerConta >= -3) score += 10 // Prejuizo leve = ainda bom
+          else if (avgPerConta >= -8) score += 0 // Esperado = neutro
+          else if (avgPerConta >= -12) score -= 10 // Atencao
+          else score -= 25 // Critico
+          if (streak >= 5) score -= 15; else if (streak >= 3 && streakPerConta > 8) score -= 8
+          if (probs.length > 3) score -= 5 // Muitas pendencias
           const pctDone = nContas > 0 ? (remessas.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0) / nContas) : 0
-          score += Math.round(pctDone * 15)
-          if (ordered.length >= 4) { const h = Math.floor(ordered.length / 2); const f = ordered.slice(0, h).reduce((a, r) => a + Number(r.resultado || 0), 0) / h; const s = ordered.slice(h).reduce((a, r) => a + Number(r.resultado || 0), 0) / (ordered.length - h); if (s > f) score += 10; else if (s < f * 0.5) score -= 10 }
+          score += Math.round(pctDone * 15) // Progresso bonus
           score = Math.max(0, Math.min(100, score))
           const scoreColor = score >= 70 ? 'var(--profit)' : score >= 40 ? 'var(--warn)' : 'var(--loss)'
 

@@ -561,6 +561,18 @@ export default function OperadoresPage() {
       const best = withRemessas.sort((a, b) => b.lucroPerRemessa - a.lucroPerRemessa)[0]
       lines.push({ text: `Melhor eficiencia: ${getName(best)} com R$ ${fmt(best.lucroPerRemessa)}/remessa.`, type: 'up' })
     }
+    // Best lucro/conta
+    const withDeps = operatorStats.filter(o => o.totalDeposit > 0 && o.closedCount >= 2)
+    if (withDeps.length > 0) {
+      const sorted = [...withDeps].sort((a, b) => (b.lucroFinal / b.totalDeposit) - (a.lucroFinal / a.totalDeposit))
+      const best = sorted[0]
+      lines.push({ text: `Maior lucro por conta: ${getName(best)} com R$ ${fmt(best.lucroFinal / best.totalDeposit)}/conta.`, type: 'up' })
+      if (sorted.length > 1) {
+        const worst = sorted[sorted.length - 1]
+        const worstAvg = worst.lucroFinal / worst.totalDeposit
+        lines.push({ text: `Menor lucro por conta: ${getName(worst)} com R$ ${fmt(worstAvg)}/conta.`, type: worstAvg < 0 ? 'down' : 'warn' })
+      }
+    }
     if (lines.length === 0) lines.push({ text: 'Sem dados suficientes.', type: 'neutral' })
     return lines
   }, [ranking, operatorStats])

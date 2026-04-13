@@ -703,7 +703,8 @@ export default function OperatorPage() {
                   {activeMeta && (() => {
                     const mRem = getMetaRemessas(activeMeta.id)
                     const target = Number(activeMeta.quantidade_contas || 0)
-                    const progress = target > 0 ? Math.min(Math.round((mRem.length / target) * 100), 100) : 0
+                    const done = mRem.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+                    const progress = target > 0 ? Math.min(Math.round((done / target) * 100), 100) : 0
                     const totalDep = mRem.reduce((a, r) => a + Number(r.deposito || 0), 0)
                     const totalSaq = mRem.reduce((a, r) => a + Number(r.saque || 0), 0)
                     return (
@@ -740,7 +741,7 @@ export default function OperatorPage() {
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                             <span style={{ fontSize: 12, color: 'var(--t3)' }}>Progresso</span>
                             <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>
-                              {mRem.length}/{target} contas
+                              {done}/{target} contas
                             </span>
                           </div>
                           <div style={{ height: 6, borderRadius: 3, background: 'var(--b1)', overflow: 'hidden' }}>
@@ -757,10 +758,14 @@ export default function OperatorPage() {
                         </div>
 
                         {/* Stats row */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 18 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 18 }}>
                           <div style={{ textAlign: 'center', padding: '10px 8px', borderRadius: 10, background: 'var(--raised)' }}>
                             <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: 'var(--t2)', margin: '0 0 2px' }}>{mRem.length}</p>
-                            <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>Remessas</p>
+                            <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>Remessas</p>
+                          </div>
+                          <div style={{ textAlign: 'center', padding: '10px 8px', borderRadius: 10, background: 'var(--raised)' }}>
+                            <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: 'var(--profit)', margin: '0 0 2px' }}>{done}</p>
+                            <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>Contas</p>
                           </div>
                           <div style={{ textAlign: 'center', padding: '10px 8px', borderRadius: 10, background: 'var(--raised)' }}>
                             <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: '0 0 2px' }}>R$ {fmt(totalDep)}</p>

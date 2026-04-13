@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 const DynamicBackground = dynamic(() => import('../components/DynamicBackground'), { ssr: false })
 const SubscriptionGate = dynamic(() => import('../components/SubscriptionGate'), { ssr: false })
 const GlobalLoadingScreen = dynamic(() => import('../components/branding/GlobalLoadingScreen'), { ssr: false })
+const InstallPrompt = dynamic(() => import('../components/InstallPrompt'), { ssr: false })
 
 export const metadata = {
   title: 'NexControl',
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
         <div className="depth-bg"/>
         <Suspense fallback={null}><DynamicBackground/></Suspense>
         <Suspense fallback={null}><SubscriptionGate>{children}</SubscriptionGate></Suspense>
+        <Suspense fallback={null}><InstallPrompt/></Suspense>
       </body>
     </html>
   )

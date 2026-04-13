@@ -42,17 +42,27 @@ export async function POST(req) {
     const allPay = payments || []
     const allSubs = subscriptions || []
 
-    // Active subs
+    // Active / cancelled subs
     const activeSubs = allSubs.filter(s => s.status === 'active')
     const cancelledSubs = allSubs.filter(s => s.status === 'cancelled')
 
-    // Revenue
+    // Revenue calculations
     const paidPayments = allPay.filter(p => p.status === 'RECEIVED' || p.status === 'CONFIRMED')
     const totalRevenue = paidPayments.reduce((a, p) => a + Number(p.amount || 0), 0)
+
+    const today = now.toISOString().slice(0, 10)
+    const revenueToday = paidPayments.filter(p => (p.created_at || '').slice(0, 10) === today).reduce((a, p) => a + Number(p.amount || 0), 0)
+
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+    const revenueMonth = paidPayments.filter(p => p.created_at >= monthStart).reduce((a, p) => a + Number(p.amount || 0), 0)
+
     const rev30 = paidPayments.filter(p => new Date(p.created_at) >= d30).reduce((a, p) => a + Number(p.amount || 0), 0)
     const rev7 = paidPayments.filter(p => new Date(p.created_at) >= d7).reduce((a, p) => a + Number(p.amount || 0), 0)
 
-    // MRR estimate (active subs * avg ticket)
+    const prevD7 = new Date(d7.getTime() - 7 * 86400000)
+    const prevRevenue7d = paidPayments.filter(p => new Date(p.created_at) >= prevD7 && new Date(p.created_at) < d7).reduce((a, p) => a + Number(p.amount || 0), 0)
+
+    // MRR estimate
     const avgTicket = paidPayments.length > 0 ? totalRevenue / paidPayments.length : 39.9
     const mrr = activeSubs.length * avgTicket
 
@@ -60,16 +70,13 @@ export async function POST(req) {
     const new7 = admins.filter(a => new Date(a.created_at) >= d7).length
     const new30 = admins.filter(a => new Date(a.created_at) >= d30).length
 
-    // ARPU
+    // ARPU / Churn / LTV
     const arpu = admins.length > 0 ? totalRevenue / admins.length : 0
-
-    // Churn (cancelled / total subs created)
     const churnRate = allSubs.length > 0 ? Math.round((cancelledSubs.length / allSubs.length) * 100) : 0
-
-    // LTV
     const ltv = churnRate > 0 ? avgTicket / (churnRate / 100) : avgTicket * 12
 
     // Conversion funnel
+    const totalSignups = admins.length
     const withMeta = new Set(allMetas.map(m => m.operator_id || m.tenant_id)).size
     const withRemessa = new Set(allRem.map(r => {
       const meta = allMetas.find(m => m.id === r.meta_id)
@@ -88,36 +95,47 @@ export async function POST(req) {
       const m = allMetas.find(x => x.id === r.meta_id); return m?.tenant_id
     }).filter(Boolean)).size
 
-    // Per-admin stats
+    // Per-admin stats (rankings)
     const adminStats = admins.map(a => {
       const tid = a.tenant_id
       const ops = operators.filter(o => o.tenant_id === tid).length
       const ms = allMetas.filter(m => m.tenant_id === tid)
       const fechadas = ms.filter(m => m.status_fechamento === 'fechada')
       const rems = allRem.filter(r => ms.some(m => m.id === r.meta_id))
-      const lastActivity = rems.length > 0 ? rems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0].created_at : null
+      const lastActivity = rems.length > 0 ? rems.sort((x, y) => new Date(y.created_at) - new Date(x.created_at))[0].created_at : null
       const paid = allPay.filter(p => p.tenant_id === tid && (p.status === 'RECEIVED' || p.status === 'CONFIRMED'))
       const sub = allSubs.find(s => s.tenant_id === tid && s.status === 'active')
       return {
-        id: a.id, email: a.email, tenant_id: tid, created_at: a.created_at,
+        id: a.id, email: a.email, name: a.email.split('@')[0], tenant_id: tid, created_at: a.created_at,
         operators: ops, metas: ms.length, fechadas: fechadas.length,
         remessas: rems.length, totalPaid: paid.reduce((s, p) => s + Number(p.amount || 0), 0),
         lastActivity, hasActiveSub: !!sub,
         daysSinceActivity: lastActivity ? Math.floor((now - new Date(lastActivity)) / 86400000) : 999,
       }
-    }).sort((a, b) => b.totalPaid - a.totalPaid)
+    }).sort((a, b) => b.metas - a.metas)
 
     // Alerts
     const alerts = []
-    const inactive = adminStats.filter(a => a.daysSinceActivity > 7 && a.daysSinceActivity < 999)
-    if (inactive.length > 0) alerts.push({ text: `${inactive.length} cliente(s) sem atividade ha mais de 7 dias`, type: 'warn' })
+    if (revenueToday === 0) alerts.push({ text: 'Nenhuma receita registrada hoje', type: 'warn' })
+    if (rev7 < prevRevenue7d * 0.7 && prevRevenue7d > 0) alerts.push({ text: `Receita semanal caiu ${Math.round((1 - rev7 / Math.max(prevRevenue7d, 1)) * 100)}%`, type: 'critical' })
+    const inactiveAdmins = admins.filter(a => !allMetas.some(m => m.tenant_id === a.tenant_id && new Date(m.created_at) >= d7))
+    if (inactiveAdmins.length > 2) alerts.push({ text: `${inactiveAdmins.length} admins sem atividade nos ultimos 7 dias`, type: 'warn' })
     const noMeta = adminStats.filter(a => a.metas === 0)
     if (noMeta.length > 0) alerts.push({ text: `${noMeta.length} cliente(s) nunca criaram uma meta`, type: 'warn' })
     const unpaid = allPay.filter(p => p.status === 'PENDING')
-    if (unpaid.length > 0) alerts.push({ text: `${unpaid.length} cobranca(s) pendente(s)`, type: 'loss' })
+    if (unpaid.length > 0) alerts.push({ text: `${unpaid.length} cobranca(s) pendente(s)`, type: 'critical' })
     const expired = (tenants || []).filter(t => t.trial_ends_at && new Date(t.trial_ends_at) < now)
     const expiredNoSub = expired.filter(t => !allSubs.find(s => s.tenant_id === t.id && s.status === 'active'))
-    if (expiredNoSub.length > 0) alerts.push({ text: `${expiredNoSub.length} trial(s) expirado(s) sem assinatura`, type: 'loss' })
+    if (expiredNoSub.length > 0) alerts.push({ text: `${expiredNoSub.length} trial(s) expirado(s) sem assinatura`, type: 'critical' })
+
+    // Revenue by day (last 30 days) for chart
+    const revenueByDay = []
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now); d.setDate(d.getDate() - i)
+      const dateStr = d.toISOString().slice(0, 10)
+      const dayRev = paidPayments.filter(p => (p.created_at || '').slice(0, 10) === dateStr).reduce((a, p) => a + Number(p.amount || 0), 0)
+      revenueByDay.push({ date: dateStr, value: dayRev })
+    }
 
     // Insights
     const insights = []
@@ -129,24 +147,29 @@ export async function POST(req) {
     }
     const avgOps = admins.length > 0 ? (operators.length / admins.length).toFixed(1) : '0'
     insights.push({ text: `Media de ${avgOps} operadores por admin`, type: 'neutral' })
-    if (mrr > 0) insights.push({ text: `MRR atual: R$ ${mrr.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, type: 'profit' })
+    if (mrr > 0) insights.push({ text: `MRR atual: R$ ${mrr.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, type: 'profit' })
+
+    // Revenue variation percentage (7d vs prev 7d)
+    const revenueVariation = prevRevenue7d > 0 ? Math.round(((rev7 - prevRevenue7d) / prevRevenue7d) * 100) : rev7 > 0 ? 100 : 0
 
     return NextResponse.json({
       kpis: {
         totalAdmins: admins.length, totalOperators: operators.length,
         activeSubs: activeSubs.length, cancelledSubs: cancelledSubs.length,
-        mrr, totalRevenue, rev30, rev7,
+        mrr, totalRevenue, revenueToday, revenueMonth, rev30, rev7,
+        prevRevenue7d, revenueVariation,
         new7, new30, avgTicket, arpu, churnRate, ltv,
         totalMetas: allMetas.length, totalRemessas: allRem.length,
       },
       funnel: {
-        registered: admins.length,
+        registered: totalSignups,
         withMeta, withRemessa, withSub,
       },
       activity: { activeToday, active7, active30 },
       adminStats: adminStats.slice(0, 20),
       alerts,
       insights,
+      revenueByDay,
     })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })

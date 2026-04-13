@@ -443,25 +443,25 @@ export default function CustosPage() {
         {/* Add Cost Modal */}
         <AnimatePresence>
           {showModal && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => { if (!saving) setShowModal(false) }}
-                style={{ position: 'fixed', inset: 0, zIndex: 500, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
-              />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={() => { if (!saving) setShowModal(false) }}
+              style={{ position: 'fixed', inset: 0, zIndex: 9000, background: 'rgba(2,4,8,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+            >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
+                onClick={e => e.stopPropagation()}
                 style={{
-                  position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                  zIndex: 510, width: '90%', maxWidth: 520,
-                  background: 'var(--surface)', border: '1px solid var(--b2)', borderRadius: 18,
-                  padding: '32px', boxShadow: '0 24px 80px rgba(0,0,0,0.5)',
-                  overflow: 'hidden',
+                  width: '100%', maxWidth: 480, maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto',
+                  background: 'linear-gradient(160deg, #10141e, #080b14)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 22,
+                  padding: '32px', boxShadow: '0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.03)',
+                  position: 'relative',
                 }}
               >
                 {/* Success flash overlay */}
@@ -494,8 +494,11 @@ export default function CustosPage() {
                 {/* Modal header */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
                   <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>Novo custo</h2>
-                  <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth={2} strokeLinecap="round">
+                  <button onClick={() => setShowModal(false)} style={{ width: 34, height: 34, borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--t3)', transition: 'all 0.15s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'var(--t1)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--t3)' }}
+                  >
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
                       <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                   </button>
@@ -591,7 +594,7 @@ export default function CustosPage() {
                   {saving ? 'Salvando...' : 'Adicionar custo'}
                 </motion.button>
               </motion.div>
-            </>
+            </motion.div>
           )}
         </AnimatePresence>
       </AppLayout>

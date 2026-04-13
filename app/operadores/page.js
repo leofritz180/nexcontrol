@@ -539,6 +539,7 @@ export default function OperadoresPage() {
 
   const maxLucro = useMemo(() => ranking.length > 0 ? Math.max(...ranking.map(o => Math.abs(o.lucroFinal)), 1) : 1, [ranking])
   const totalActive = useMemo(() => operatorStats.filter(o => o.activeMetas > 0).length, [operatorStats])
+  const totalDeps = useMemo(() => operatorStats.reduce((a, o) => a + o.totalDeposit, 0), [operatorStats])
   const totalLucro = useMemo(() => closedMetas.reduce((a, m) => a + Number(m.lucro_final || 0), 0), [closedMetas])
   const avgWinRate = useMemo(() => {
     const withClosed = operatorStats.filter(o => o.closedCount > 0)
@@ -635,10 +636,11 @@ export default function OperadoresPage() {
 
             {/* KPIs */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
-              <KpiCard label="Total operadores" value={operators.length} rgb="59,130,246" i={0} />
-              <KpiCard label="Ativos" value={totalActive} rgb="34,197,94" i={1} />
-              <KpiCard label="Acerto medio" value={avgWinRate} suffix="%" rgb="229,57,53" i={2} />
-              <KpiCard label="Lucro da equipe" value={totalLucro} rgb="34,197,94" i={3} isCurrency dynamicColor />
+              <KpiCard label="Operadores" value={operators.length} rgb="148,163,184" i={0} />
+              <KpiCard label="Ativos" value={totalActive} rgb="148,163,184" i={1} />
+              <KpiCard label="Depositantes" value={totalDeps} rgb="148,163,184" i={2} />
+              <KpiCard label="Acerto medio" value={avgWinRate} suffix="%" rgb="148,163,184" i={3} />
+              <KpiCard label="Lucro da equipe" value={totalLucro} rgb="34,197,94" i={4} isCurrency dynamicColor />
             </div>
 
             {/* Ranking list */}

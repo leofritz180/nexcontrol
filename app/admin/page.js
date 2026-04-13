@@ -36,7 +36,8 @@ function Sparkline({ data, color, height=32 }) {
   )
 }
 
-function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
+function ModalFechamento({ meta, remessas, operador, opModel, onClose, onSaved }) {
+  const apenasBau = opModel === 'apenas_bau'
   const lucroRem = remessas.reduce((a,r)=>a+Number(r.lucro||0),0)
   const prejRem  = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
   const liqRem   = lucroRem-prejRem
@@ -106,35 +107,39 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
         </div>
 
         <div style={{ display:'flex',flexDirection:'column',gap:15 }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-            <div>
-              <label className="t-label" style={{ display:'block',marginBottom:8 }}>Salario da meta (R$)</label>
-              <p className="t-small" style={{ margin:'0 0 8px' }}>Valor recebido por bater a meta (+)</p>
-              <input className="input" type="number" step="0.01" min="0" value={salario} onChange={e=>setSalario(e.target.value)} placeholder="0,00"/>
-            </div>
+          <div style={{ display:'grid', gridTemplateColumns: apenasBau ? '1fr' : '1fr 1fr', gap:12 }}>
+            {!apenasBau && (
+              <div>
+                <label className="t-label" style={{ display:'block',marginBottom:8 }}>Salario da meta (R$)</label>
+                <p className="t-small" style={{ margin:'0 0 8px' }}>Valor recebido por bater a meta (+)</p>
+                <input className="input" type="number" step="0.01" min="0" value={salario} onChange={e=>setSalario(e.target.value)} placeholder="0,00"/>
+              </div>
+            )}
             <div>
               <label className="t-label" style={{ display:'block',marginBottom:8 }}>Bau (R$)</label>
               <p className="t-small" style={{ margin:'0 0 8px' }}>Bonus coletado nas contas (+)</p>
               <input className="input" type="number" step="0.01" min="0" value={bau} onChange={e=>setBau(e.target.value)} placeholder="0,00"/>
             </div>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+          <div style={{ display:'grid', gridTemplateColumns: apenasBau ? '1fr' : '1fr 1fr', gap:12 }}>
             <div>
               <label className="t-label" style={{ display:'block',marginBottom:8 }}>Custo fixo (R$)</label>
               <p className="t-small" style={{ margin:'0 0 8px' }}>Despesas da operacao (-)</p>
               <input className="input" type="number" step="0.01" min="0" value={custo} onChange={e=>setCusto(e.target.value)} placeholder="0,00"/>
             </div>
-            <div>
-              <label className="t-label" style={{ display:'block',marginBottom:8 }}>Taxa agente/blogueira (R$)</label>
-              <p className="t-small" style={{ margin:'0 0 8px' }}>Comissao paga (-)</p>
-              <input className="input" type="number" step="0.01" min="0" value={taxa} onChange={e=>setTaxa(e.target.value)} placeholder="0,00"/>
-            </div>
+            {!apenasBau && (
+              <div>
+                <label className="t-label" style={{ display:'block',marginBottom:8 }}>Taxa agente/blogueira (R$)</label>
+                <p className="t-small" style={{ margin:'0 0 8px' }}>Comissao paga (-)</p>
+                <input className="input" type="number" step="0.01" min="0" value={taxa} onChange={e=>setTaxa(e.target.value)} placeholder="0,00"/>
+              </div>
+            )}
           </div>
 
           <div style={{ background:lucroFinal>=0?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${lucroFinal>=0?'var(--profit-border)':'var(--loss-border)'}`,borderRadius:12,padding:'18px 22px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12 }}>
             <div>
               <p className="t-label" style={{ marginBottom:4 }}>Lucro final da meta</p>
-              <p className="t-small">Resultado + salario + bau - custo - taxa</p>
+              <p className="t-small">{apenasBau ? 'Resultado + bau - custo' : 'Resultado + salario + bau - custo - taxa'}</p>
             </div>
             <p className="t-num" style={{ fontSize:28,fontWeight:800,color:lucroFinal>=0?'var(--profit)':'var(--loss)' }}>
               {lucroFinal>=0?'+':''}R$ {fmt(lucroFinal)}
@@ -156,7 +161,8 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
 }
 
 /* ── Salary/costs panel (isolated from polling) ── */
-function SalaryPanel({ meta, liqCalc, onSaved }) {
+function SalaryPanel({ meta, liqCalc, opModel, onSaved }) {
+  const apenasBau = opModel === 'apenas_bau'
   const fechada = meta.status_fechamento === 'fechada'
   const isActive = !fechada && meta.status !== 'finalizada'
   const isFinalizedNotClosed = !fechada && meta.status === 'finalizada'
@@ -203,18 +209,20 @@ function SalaryPanel({ meta, liqCalc, onSaved }) {
       style={{ marginTop: 20, padding: '20px 22px', background: 'var(--surface)', border: `1px solid ${fechada ? 'var(--b1)' : 'var(--brand-border)'}`, borderRadius: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Salario e custos</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>{apenasBau ? 'Bau e custos' : 'Salario e custos'}</span>
         {isActive && <span className="t-small" style={{ marginLeft: 4 }}>Pre-configure para fechamento automatico</span>}
         {isFinalizedNotClosed && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--warn)', marginLeft: 4 }}>Operador finalizou — defina valores e feche</span>}
         {fechada && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--profit)', marginLeft: 4 }}>Meta fechada — ajuste se necessario</span>}
       </div>
-      <div className="g-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
-        <div>
-          <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Salario (R$)</label>
-          <input className="input" type="number" step="0.01" min="0" value={salario}
-            onChange={e => setSalario(e.target.value)}
-            placeholder="0,00" style={{ padding: '10px 12px', fontSize: 14 }}/>
-        </div>
+      <div className="g-form" style={{ display: 'grid', gridTemplateColumns: apenasBau ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
+        {!apenasBau && (
+          <div>
+            <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Salario (R$)</label>
+            <input className="input" type="number" step="0.01" min="0" value={salario}
+              onChange={e => setSalario(e.target.value)}
+              placeholder="0,00" style={{ padding: '10px 12px', fontSize: 14 }}/>
+          </div>
+        )}
         <div>
           <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Bau (R$)</label>
           <input className="input" type="number" step="0.01" min="0" value={bauVal}
@@ -227,19 +235,21 @@ function SalaryPanel({ meta, liqCalc, onSaved }) {
             onChange={e => setCusto(e.target.value)}
             placeholder="0,00" style={{ padding: '10px 12px', fontSize: 14 }}/>
         </div>
-        <div>
-          <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Taxa agente (R$)</label>
-          <input className="input" type="number" step="0.01" min="0" value={taxa}
-            onChange={e => setTaxa(e.target.value)}
-            placeholder="0,00" style={{ padding: '10px 12px', fontSize: 14 }}/>
-        </div>
+        {!apenasBau && (
+          <div>
+            <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Taxa agente (R$)</label>
+            <input className="input" type="number" step="0.01" min="0" value={taxa}
+              onChange={e => setTaxa(e.target.value)}
+              placeholder="0,00" style={{ padding: '10px 12px', fontSize: 14 }}/>
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, padding: '14px 16px', borderRadius: 12, background: newLucro >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${newLucro >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.12)'}`, marginBottom: 12 }}>
         <div style={{ minWidth: 0 }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t2)' }}>Lucro final</span>
           <p className="t-small" style={{ margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            Resultado ({fmt(liqCalc)}) + Sal ({fmt(sal)}) - Custo ({fmt(cst)}) - Taxa ({fmt(tax)})
+            {apenasBau ? `Resultado (${fmt(liqCalc)}) + Bau (${fmt(bv)}) - Custo (${fmt(cst)})` : `Resultado (${fmt(liqCalc)}) + Sal (${fmt(sal)}) + Bau (${fmt(bv)}) - Custo (${fmt(cst)}) - Taxa (${fmt(tax)})`}
           </p>
         </div>
         <span className="t-num" style={{ fontSize: 22, fontWeight: 800, color: newLucro >= 0 ? 'var(--profit)' : 'var(--loss)', flexShrink: 0 }}>
@@ -529,6 +539,7 @@ export default function AdminPage() {
             meta={modalMeta}
             remessas={remessas.filter(r=>r.meta_id===modalMeta.id)}
             operador={operators.find(o=>o.id===modalMeta.operator_id)}
+            opModel={tenant?.operation_model || 'salario_bau'}
             onClose={()=>setModalMeta(null)}
             onSaved={loadAll}
           />
@@ -745,6 +756,7 @@ export default function AdminPage() {
                 <SalaryPanel
                   meta={m}
                   liqCalc={focusRem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)}
+                  opModel={tenant?.operation_model || 'salario_bau'}
                   onSaved={(updated)=>{ openMetaDetail(updated); loadAll() }}
                 />
 
@@ -1505,10 +1517,40 @@ export default function AdminPage() {
                 <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="1.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>
               <div>
-                <h2 className="t-h2" style={{ margin:'0 0 3px' }}>Equipe</h2>
-                <p className="t-small">Gerencie operadores e convites do seu tenant</p>
+                <h2 className="t-h2" style={{ margin:'0 0 3px' }}>Equipe e Configuracoes</h2>
+                <p className="t-small">Operadores, convites e modelo de operacao</p>
               </div>
             </div>
+
+            {/* Operation model selector */}
+            <motion.div className="card" style={{ padding: 20, marginBottom: 20 }} {...fadeUp(0)}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Modelo de operacao</span>
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {[
+                  { key: 'salario_bau', label: 'Salario + Bau', desc: 'Com contrato de plataforma' },
+                  { key: 'apenas_bau', label: 'Apenas Bau', desc: 'Sem contrato, lucro so do bau' },
+                ].map(opt => {
+                  const active = (tenant?.operation_model || 'salario_bau') === opt.key
+                  return (
+                    <button key={opt.key} onClick={async () => {
+                      await supabase.from('tenants').update({ operation_model: opt.key }).eq('id', profile.tenant_id)
+                      setTenant(prev => ({ ...prev, operation_model: opt.key }))
+                    }} style={{
+                      flex: 1, padding: '14px 16px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                      background: active ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${active ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.05)'}`,
+                      textAlign: 'left', transition: 'all 0.2s',
+                    }}>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: active ? '#e53935' : 'var(--t2)', margin: '0 0 3px' }}>{opt.label}</p>
+                      <p style={{ fontSize: 11, color: active ? 'rgba(229,57,53,0.6)' : 'var(--t4)', margin: 0 }}>{opt.desc}</p>
+                    </button>
+                  )
+                })}
+              </div>
+            </motion.div>
 
             <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
               {/* Invite */}

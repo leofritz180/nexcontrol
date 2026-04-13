@@ -11,6 +11,7 @@ import { ProLockedCard } from '../../components/pro/ProGate'
 import ProBanner from '../../components/pro/ProBanner'
 import dynamic from 'next/dynamic'
 const Onboarding = dynamic(() => import('../../components/Onboarding'), { ssr: false })
+import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, shouldShowDemo } from '../../lib/demo-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -315,6 +316,273 @@ function SalaryPanel({ meta, liqCalc, tenantOpModel, onSaved }) {
         </div>
       )}
     </motion.div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════
+   DEMO ADMIN DASHBOARD — onboarding visual premium
+   ═══════════════════════════════════════════════════ */
+function DemoAdminDashboard({ onCreateMeta, userName }) {
+  const [insightIdx, setInsightIdx] = useState(0)
+  const [activityIdx, setActivityIdx] = useState(0)
+  const [tick, setTick] = useState(0)
+
+  useEffect(() => {
+    const iv = setInterval(() => setInsightIdx(p => (p + 1) % DEMO_INSIGHTS.length), 6000)
+    return () => clearInterval(iv)
+  }, [])
+  useEffect(() => {
+    const iv = setInterval(() => setActivityIdx(p => (p + 1) % DEMO_ACTIVITY.length), 3000)
+    return () => clearInterval(iv)
+  }, [])
+  useEffect(() => {
+    const iv = setInterval(() => setTick(p => p + 1), 8000)
+    return () => clearInterval(iv)
+  }, [])
+
+  const insight = DEMO_INSIGHTS[insightIdx]
+  const insightColors = { profit: { bg:'rgba(34,197,94,0.06)', border:'rgba(34,197,94,0.12)', color:'#22C55E' }, loss: { bg:'rgba(239,68,68,0.06)', border:'rgba(239,68,68,0.12)', color:'#EF4444' }, warn: { bg:'rgba(245,158,11,0.06)', border:'rgba(245,158,11,0.12)', color:'#F59E0B' }, info: { bg:'rgba(229,57,53,0.06)', border:'rgba(229,57,53,0.12)', color:'#e53935' } }
+  const ic = insightColors[insight.type]
+
+  const demoActiveMeta = DEMO_METAS[0]
+  const demoActiveRem = DEMO_REMESSAS.filter(r => r.meta_id === demoActiveMeta.id)
+  const doneDep = demoActiveRem.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+
+  return (
+    <div>
+      {/* Demo banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          padding: '12px 20px', borderRadius: 12, marginBottom: 24,
+          background: 'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))',
+          border: '1px solid rgba(229,57,53,0.15)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: 12,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', boxShadow: '0 0 8px rgba(229,57,53,0.4)' }} />
+          <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>
+            Exemplo de operacao em andamento — seus dados reais comecam quando criar sua primeira meta
+          </span>
+        </div>
+      </motion.div>
+
+      {/* Insight rotativo */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        style={{ padding:'12px 18px', borderRadius:12, marginBottom:20, background:ic.bg, border:`1px solid ${ic.border}`, display:'flex', alignItems:'center', gap:10 }}
+      >
+        <div style={{ width:6, height:6, borderRadius:'50%', background:ic.color, flexShrink:0 }} />
+        <AnimatePresence mode="wait">
+          <motion.p key={insightIdx} initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} transition={{ duration:0.3 }} style={{ margin:0, fontSize:13, fontWeight:500, color:ic.color }}>
+            {insight.text}
+          </motion.p>
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Hero + KPIs */}
+      <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:24, marginBottom:28 }}>
+        {/* Hero card */}
+        <motion.div
+          initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }}
+          transition={{ duration:0.5, ease }}
+          style={{
+            position:'relative', overflow:'hidden',
+            padding:'40px 40px 36px', borderRadius:18,
+            background:'linear-gradient(145deg, #0c1424, #080e1a)',
+            border:'1px solid rgba(255,255,255,0.06)',
+            boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3)',
+          }}
+        >
+          <div style={{ position:'absolute', top:'5%', left:'0%', width:450, height:350, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.08), transparent 60%)', filter:'blur(50px)', pointerEvents:'none' }} />
+
+          <div style={{ position:'relative', zIndex:1 }}>
+            <p style={{ fontSize:13, color:'var(--t3)', fontWeight:500, margin:'0 0 28px' }}>Lucro final acumulado</p>
+            <motion.div
+              animate={{ textShadow:['0 0 40px rgba(34,197,94,0.15)','0 0 80px rgba(34,197,94,0.25)','0 0 40px rgba(34,197,94,0.15)'] }}
+              transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
+            >
+              <AnimatedNumber
+                value={499.20}
+                prefix="+R$ "
+                style={{ fontFamily:'var(--mono)', fontSize:52, fontWeight:900, color:'var(--profit)', lineHeight:1, letterSpacing:'-0.03em', display:'block' }}
+              />
+            </motion.div>
+            <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:20, marginTop:24, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
+              <div>
+                <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2, letterSpacing:'0.05em', textTransform:'uppercase' }}>Fechadas</p>
+                <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)', margin:0 }}>2</p>
+              </div>
+              <div style={{ width:1, height:28, background:'rgba(255,255,255,0.05)' }} />
+              <div>
+                <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2, letterSpacing:'0.05em', textTransform:'uppercase' }}>Status</p>
+                <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--profit)', margin:0 }}>Positivo</p>
+              </div>
+              <div style={{ width:1, height:28, background:'rgba(255,255,255,0.05)' }} />
+              <div>
+                <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2, letterSpacing:'0.05em', textTransform:'uppercase' }}>Operadores</p>
+                <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)', margin:0 }}>1</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* KPIs right */}
+        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+          {[
+            { l:'Total depositado', v:'R$ 2.530,00', c:'var(--t1)' },
+            { l:'Total sacado', v:'R$ 2.980,00', c:'var(--t1)' },
+            { l:'Total metas', v:'3', c:'var(--t1)' },
+            { l:'Depositantes totais', v:'100', c:'var(--t1)' },
+          ].map((kpi, i) => (
+            <motion.div key={i}
+              initial={{ opacity:0, x:16 }} animate={{ opacity:1, x:0 }}
+              transition={{ duration:0.35, delay:0.15+i*0.07, ease }}
+              style={{
+                flex:1, padding:'16px 20px', borderRadius:14,
+                background:'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
+                border:'1px solid rgba(255,255,255,0.05)',
+                display:'flex', alignItems:'center', justifyContent:'space-between',
+              }}
+            >
+              <span style={{ fontSize:12, color:'var(--t3)', fontWeight:500 }}>{kpi.l}</span>
+              <span style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:kpi.c }}>{kpi.v}</span>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Activity feed + Meta ativa */}
+      <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20, marginBottom:28 }}>
+
+        {/* Meta ativa demo */}
+        <motion.div
+          initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }}
+          transition={{ duration:0.4, delay:0.2, ease }}
+          style={{
+            padding:24, borderRadius:16,
+            background:'var(--surface)', border:'2px solid rgba(34,197,94,0.25)',
+            boxShadow:'0 0 24px rgba(34,197,94,0.05)',
+            position:'relative', overflow:'hidden',
+          }}
+        >
+          <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:'linear-gradient(90deg, #22C55E, rgba(34,197,94,0.3))' }} />
+          <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
+            <h3 style={{ fontSize:16, fontWeight:800, color:'var(--t1)', margin:0 }}>
+              {demoActiveMeta.quantidade_contas} DEP {demoActiveMeta.rede}
+            </h3>
+            <span style={{ fontSize:10, fontWeight:600, padding:'3px 8px', borderRadius:6, background:'rgba(34,197,94,0.1)', color:'#22C55E', border:'1px solid rgba(34,197,94,0.2)' }}>Ativa</span>
+          </div>
+          <div style={{ marginBottom:14 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
+              <span style={{ fontSize:11, color:'var(--t3)' }}>Progresso</span>
+              <span style={{ fontFamily:'var(--mono)', fontSize:11, fontWeight:700, color:'var(--t2)' }}>{doneDep}/{demoActiveMeta.quantidade_contas}</span>
+            </div>
+            <div style={{ height:6, borderRadius:3, background:'var(--b1)', overflow:'hidden' }}>
+              <motion.div
+                initial={{ width:0 }}
+                animate={{ width:`${Math.round(doneDep/demoActiveMeta.quantidade_contas*100)}%` }}
+                transition={{ duration:1, ease:[0.33,1,0.68,1] }}
+                style={{ height:'100%', borderRadius:3, background:'linear-gradient(90deg, #22C55E, #16A34A)' }}
+              />
+            </div>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
+            {[
+              { v:demoActiveRem.length, l:'Remessas' },
+              { v:`R$ ${fmt(demoActiveRem.reduce((a,r)=>a+Number(r.deposito||0),0))}`, l:'Depositado' },
+              { v:`R$ ${fmt(demoActiveRem.reduce((a,r)=>a+Number(r.saque||0),0))}`, l:'Sacado' },
+            ].map((s,i) => (
+              <div key={i} style={{ textAlign:'center', padding:'8px 6px', borderRadius:8, background:'var(--raised)' }}>
+                <p style={{ fontFamily:'var(--mono)', fontSize:13, fontWeight:700, color:'var(--t2)', margin:'0 0 2px' }}>{s.v}</p>
+                <p style={{ fontSize:9, color:'var(--t4)', margin:0 }}>{s.l}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Live activity */}
+        <motion.div
+          initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }}
+          transition={{ duration:0.4, delay:0.3, ease }}
+          style={{ padding:24, borderRadius:16, background:'var(--surface)', border:'1px solid rgba(255,255,255,0.06)' }}
+        >
+          <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:16 }}>
+            <motion.div
+              animate={{ opacity:[0.4,1,0.4] }}
+              transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+              style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}
+            />
+            <h3 style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:0 }}>Atividade ao vivo</h3>
+          </div>
+          <div style={{ minHeight:80, display:'flex', flexDirection:'column', gap:12 }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activityIdx}
+                initial={{ opacity:0, y:8 }}
+                animate={{ opacity:1, y:0 }}
+                exit={{ opacity:0, y:-8 }}
+                transition={{ duration:0.3 }}
+                style={{ display:'flex', alignItems:'flex-start', gap:10 }}
+              >
+                <span style={{ width:6, height:6, borderRadius:'50%', marginTop:6, background:DEMO_ACTIVITY[activityIdx].color, flexShrink:0, boxShadow:`0 0 6px ${DEMO_ACTIVITY[activityIdx].color}44` }} />
+                <div>
+                  <p style={{ fontSize:13, color:'var(--t2)', margin:'0 0 3px', fontWeight:500 }}>{DEMO_ACTIVITY[activityIdx].text}</p>
+                  <p style={{ fontSize:10, color:'var(--t4)', margin:0 }}>agora</p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Metas fechadas resumo */}
+          <div style={{ borderTop:'1px solid var(--b1)', paddingTop:14, marginTop:14 }}>
+            <p style={{ fontSize:11, fontWeight:600, color:'var(--t3)', margin:'0 0 8px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Metas fechadas</p>
+            {DEMO_METAS.filter(m=>m.status_fechamento==='fechada').map((m, i) => (
+              <div key={m.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'6px 0', borderBottom:i===0?'1px solid var(--b1)':'none' }}>
+                <span style={{ fontSize:12, color:'var(--t3)' }}>{m.quantidade_contas} DEP {m.rede}</span>
+                <span style={{ fontFamily:'var(--mono)', fontSize:12, fontWeight:700, color:'var(--profit)' }}>+R$ {fmt(m.lucro_final)}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* CTA */}
+      <motion.div
+        initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }}
+        transition={{ duration:0.4, delay:0.4, ease }}
+        style={{
+          padding:'32px 40px', borderRadius:18, textAlign:'center',
+          background:'linear-gradient(145deg, rgba(229,57,53,0.06), rgba(229,57,53,0.02))',
+          border:'1px solid rgba(229,57,53,0.12)',
+        }}
+      >
+        <h3 style={{ fontSize:20, fontWeight:800, color:'var(--t1)', margin:'0 0 8px', letterSpacing:'-0.02em' }}>
+          Pronto para comecar sua operacao?
+        </h3>
+        <p style={{ fontSize:14, color:'var(--t3)', margin:'0 0 24px' }}>
+          Crie sua primeira meta e veja seus dados reais neste painel.
+        </p>
+        <motion.button
+          whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }}
+          onClick={onCreateMeta}
+          style={{
+            padding:'16px 40px', fontSize:15, fontWeight:700,
+            color:'#fff', background:'linear-gradient(135deg, #e53935, #c62828)',
+            border:'none', borderRadius:14, cursor:'pointer',
+            boxShadow:'0 4px 24px rgba(229,57,53,0.3)',
+            display:'inline-flex', alignItems:'center', gap:8,
+          }}
+        >
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Criar minha primeira meta
+        </motion.button>
+      </motion.div>
+    </div>
   )
 }
 
@@ -1231,6 +1499,14 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease }}>
 
+          {/* ── DEMO MODE FOR NEW ADMINS ── */}
+          {!loading && shouldShowDemo(metas) ? (
+            <DemoAdminDashboard
+              onCreateMeta={() => { setTab('myops'); setTimeout(() => setMyShowForm(true), 300) }}
+              userName={getName(profile)}
+            />
+          ) : (<>
+
           {/* ── Insights rotativos ── */}
           {(() => {
             const tips = []
@@ -1581,6 +1857,7 @@ export default function AdminPage() {
               <div>{[1,2,3].map(i=>(<div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'3px 0'}}><div style={{width:4,height:4,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/><div style={{height:8,width:`${60+i*10}%`,background:'rgba(255,255,255,0.03)',borderRadius:2}}/></div>))}</div>
             </ProLockedCard>
           </div>}
+        </>)}
         </motion.div>)}
 
         {/* ═══ OPERATIONS ═══ */}

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaCreated } from '../../lib/notify'
+import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, shouldShowDemo } from '../../lib/demo-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -187,6 +188,348 @@ function MilestoneBadge({ label, achieved }) {
 }
 
 /* ═══════════════════════════════════════════════════
+   DEMO DASHBOARD — onboarding visual premium
+   ═══════════════════════════════════════════════════ */
+function DemoOperatorDashboard({ onCreateMeta }) {
+  const [insightIdx, setInsightIdx] = useState(0)
+  const [activityIdx, setActivityIdx] = useState(0)
+
+  useEffect(() => {
+    const iv = setInterval(() => setInsightIdx(p => (p + 1) % DEMO_INSIGHTS.length), 5000)
+    return () => clearInterval(iv)
+  }, [])
+  useEffect(() => {
+    const iv = setInterval(() => setActivityIdx(p => (p + 1) % DEMO_ACTIVITY.length), 3000)
+    return () => clearInterval(iv)
+  }, [])
+
+  const demoMeta = DEMO_METAS[0]
+  const demoRem = DEMO_REMESSAS.filter(r => r.meta_id === demoMeta.id)
+  const target = demoMeta.quantidade_contas
+  const done = demoRem.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+  const progress = Math.round((done / target) * 100)
+  const totalDep = demoRem.reduce((a, r) => a + Number(r.deposito || 0), 0)
+  const totalSaq = demoRem.reduce((a, r) => a + Number(r.saque || 0), 0)
+
+  const insight = DEMO_INSIGHTS[insightIdx]
+  const insightColors = { profit: '#22C55E', loss: '#EF4444', warn: '#F59E0B', info: '#e53935' }
+
+  return (
+    <div>
+      {/* Demo banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          padding: '12px 20px', borderRadius: 12, marginBottom: 24,
+          background: 'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))',
+          border: '1px solid rgba(229,57,53,0.15)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: 12,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', boxShadow: '0 0 8px rgba(229,57,53,0.4)' }} />
+          <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>
+            Visualizacao demonstrativa — seus dados reais comecam quando criar sua primeira meta
+          </span>
+        </div>
+      </motion.div>
+
+      {/* Demo KPIs */}
+      <div className="nxc-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+        <KpiCard index={0} icon={<IconTarget />} label="Metas ativas" value={1} integer sub="3 total" />
+        <KpiCard index={1} icon={<IconBox />} label="Total remessas" value={9} integer sub="Registradas" />
+        <KpiCard index={2} icon={<IconUsers />} label="Total depositantes" value={100} integer sub="Soma de contas de todas as metas" />
+        <KpiCard index={3} icon={<IconPercent />} label="Taxa de conclusao" value={67} suffix="%" integer sub="2 de 3 metas fechadas" />
+      </div>
+
+      {/* Responsive */}
+      <style>{`
+        @media (max-width: 1100px) { .nxc-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; } .nxc-demo-layout { grid-template-columns: 1fr !important; } }
+        @media (max-width: 480px) { .nxc-kpi-grid { grid-template-columns: 1fr !important; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes demoPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+      `}</style>
+
+      {/* Main 2-col layout */}
+      <div className="nxc-demo-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20 }}>
+
+        {/* LEFT — Metas */}
+        <div>
+          {/* Insight rotativo */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.15 }}
+            style={{
+              padding: '14px 18px', borderRadius: 12, marginBottom: 20,
+              background: `${insightColors[insight.type]}08`,
+              border: `1px solid ${insightColors[insight.type]}20`,
+              display: 'flex', alignItems: 'center', gap: 10,
+            }}
+          >
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: insightColors[insight.type], flexShrink: 0 }} />
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={insightIdx}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}
+              >
+                {insight.text}
+              </motion.span>
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Meta ativa em destaque */}
+          <motion.div
+            custom={0} variants={fadeUp} initial="hidden" animate="visible"
+            style={{
+              padding: 28, borderRadius: 16,
+              background: 'var(--surface)',
+              border: '2px solid rgba(34,197,94,0.3)',
+              boxShadow: '0 0 30px rgba(34,197,94,0.06)',
+              position: 'relative', overflow: 'hidden', marginBottom: 16,
+            }}
+          >
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #22C55E, rgba(34,197,94,0.3))' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+              <h3 style={{ fontSize: 24, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>
+                {demoMeta.quantidade_contas} DEP {demoMeta.rede}
+              </h3>
+              <RedeBadge rede={demoMeta.rede} />
+              <StatusBadge status="ativa" />
+            </div>
+
+            {/* Progress */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: 'var(--t3)' }}>Progresso</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>{done}/{target} contas</span>
+              </div>
+              <div style={{ height: 8, borderRadius: 4, background: 'var(--b1)', overflow: 'hidden' }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 1.2, ease: [0.33, 1, 0.68, 1] }}
+                  style={{ height: '100%', borderRadius: 4, background: 'linear-gradient(90deg, #22C55E, #16A34A)' }}
+                />
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 18 }}>
+              {[
+                { v: demoRem.length, l: 'Remessas', c: 'var(--t2)', mono: true },
+                { v: done, l: 'Contas', c: 'var(--profit)', mono: true },
+                { v: `R$ ${fmt(totalDep)}`, l: 'Deposito', c: 'var(--t2)', mono: false },
+                { v: `R$ ${fmt(totalSaq)}`, l: 'Saque', c: 'var(--t2)', mono: false },
+              ].map((s, i) => (
+                <div key={i} style={{ textAlign: 'center', padding: '10px 8px', borderRadius: 10, background: 'var(--raised)' }}>
+                  <p style={{ fontFamily: 'var(--mono)', fontSize: typeof s.v === 'number' ? 18 : 14, fontWeight: typeof s.v === 'number' ? 800 : 700, color: s.c, margin: '0 0 2px' }}>
+                    {typeof s.v === 'number' ? <CountUp value={s.v} integer /> : s.v}
+                  </p>
+                  <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>{s.l}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA — NOT a link to demo meta, but to create real one */}
+            <button
+              onClick={onCreateMeta}
+              style={{
+                width: '100%', padding: '14px 28px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                fontSize: 14, fontWeight: 700, color: '#fff',
+                background: '#e53935', border: 'none', borderRadius: 11,
+                cursor: 'pointer', boxShadow: '0 4px 16px rgba(229,57,53,0.3)',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#c62828' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#e53935' }}
+            >
+              <IconBolt /> Criar minha primeira meta real
+            </button>
+          </motion.div>
+
+          {/* Remessas demo */}
+          <motion.div
+            custom={1} variants={fadeUp} initial="hidden" animate="visible"
+            style={{ padding: 22, borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--b1)' }}
+          >
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Exemplo de remessas
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {demoRem.slice(0, 4).map((r, i) => {
+                const liq = Number(r.saque || 0) - Number(r.deposito || 0)
+                const isPositive = liq > 0
+                return (
+                  <motion.div
+                    key={r.id}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 + i * 0.08 }}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '12px 0',
+                      borderBottom: i < 3 ? '1px solid var(--b1)' : 'none',
+                    }}
+                  >
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--t2)', margin: '0 0 2px' }}>
+                        {r.titulo} {r.slot_name ? `— ${r.slot_name}` : ''}
+                      </p>
+                      <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>
+                        {r.contas_remessa > 0 ? `${r.contas_remessa} contas` : r.tipo} — D: R$ {fmt(r.deposito)} / S: R$ {fmt(r.saque)}
+                      </p>
+                    </div>
+                    <span style={{
+                      fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700,
+                      color: isPositive ? 'var(--profit)' : 'var(--loss)',
+                    }}>
+                      {isPositive ? '+' : ''}R$ {fmt(Math.abs(liq))}
+                    </span>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </motion.div>
+
+          {/* Other closed metas */}
+          <motion.div
+            custom={2} variants={fadeUp} initial="hidden" animate="visible"
+            style={{ marginTop: 16 }}
+          >
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--t3)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Metas anteriores (exemplo)</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {DEMO_METAS.filter(m => m.status_fechamento === 'fechada').map((meta, i) => (
+                <motion.div
+                  key={meta.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 + i * 0.1 }}
+                  style={{
+                    padding: '18px 22px', borderRadius: 14,
+                    background: 'var(--surface)', border: '1px solid var(--b1)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <h4 style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>
+                        {meta.quantidade_contas} DEP {meta.rede}
+                      </h4>
+                      <RedeBadge rede={meta.rede} />
+                      <StatusBadge status="fechada" />
+                    </div>
+                    <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'var(--profit)' }}>
+                      +R$ {fmt(meta.lucro_final)}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 11, color: 'var(--t3)' }}>{meta.quantidade_contas} contas</span>
+                    <span style={{ fontSize: 11, color: 'var(--t4)' }}>
+                      {DEMO_REMESSAS.filter(r => r.meta_id === meta.id).length} remessas
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* RIGHT SIDEBAR */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+          {/* Activity feed */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.2 }}
+            style={{ padding: 22, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', animation: 'demoPulse 2s infinite' }} />
+              <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Atividade recente</h3>
+            </div>
+            <div style={{ minHeight: 32 }}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activityIdx}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3 }}
+                  style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}
+                >
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', marginTop: 5, background: DEMO_ACTIVITY[activityIdx].color, flexShrink: 0 }} />
+                  <div>
+                    <p style={{ fontSize: 12, color: 'var(--t2)', margin: '0 0 2px', fontWeight: 500 }}>{DEMO_ACTIVITY[activityIdx].text}</p>
+                    <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>agora</p>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+          {/* Demo stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.3 }}
+            style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 16px' }}>Stats pessoais</h3>
+            {[
+              { label: 'Metas fechadas', value: '2' },
+              { label: 'Total de depositantes', value: '100' },
+              { label: 'Media depositantes/meta', value: '33' },
+              { label: 'Media remessas/meta', value: '3' },
+            ].map((item, i) => (
+              <div key={i} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '11px 0',
+                borderBottom: i < 3 ? '1px solid var(--b1)' : 'none',
+              }}>
+                <span style={{ fontSize: 12, color: 'var(--t3)' }}>{item.label}</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'var(--t2)' }}>{item.value}</span>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* CTA sidebar */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.4 }}
+            style={{ padding: 22, borderRadius: 16, background: 'linear-gradient(145deg, rgba(229,57,53,0.08), rgba(229,57,53,0.02))', border: '1px solid rgba(229,57,53,0.15)' }}
+          >
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: '0 0 8px' }}>Pronto para comecar?</h3>
+            <p style={{ fontSize: 12, color: 'var(--t3)', margin: '0 0 16px', lineHeight: 1.5 }}>
+              Crie sua primeira meta e veja seus dados reais aqui.
+            </p>
+            <button
+              onClick={onCreateMeta}
+              style={{
+                width: '100%', padding: '12px 16px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                fontSize: 13, fontWeight: 700, color: '#fff',
+                background: '#e53935', border: 'none', borderRadius: 10,
+                cursor: 'pointer', boxShadow: '0 2px 12px rgba(229,57,53,0.25)',
+              }}
+            >
+              <IconPlus /> Iniciar minha operacao
+            </button>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════
    MAIN PAGE
    ═══════════════════════════════════════════════════ */
 export default function OperatorPage() {
@@ -269,6 +612,9 @@ export default function OperatorPage() {
     notifyMetaCreated(profile?.tenant_id, getName(profile), data.quantidade_contas, data.rede)
     router.push(`/meta/${data.id}`)
   }
+
+  /* ── Demo mode ── */
+  const isDemo = !loading && shouldShowDemo(metas)
 
   /* ── Computed stats ── */
   const stats = useMemo(() => {
@@ -388,6 +734,11 @@ export default function OperatorPage() {
             </div>
           </div>
 
+          {/* ══ DEMO MODE ══ */}
+          {isDemo ? (
+            <DemoOperatorDashboard onCreateMeta={() => setShowForm(true)} />
+          ) : (
+          <>
           {/* ── KPI CARDS (4 cards, neutral) ── */}
           <div className="nxc-kpi-grid" style={{
             display: 'grid',
@@ -1158,6 +1509,8 @@ export default function OperatorPage() {
 
             </div>
           </div>
+          </>
+          )}
         </div>
       </AppLayout>
     </main>

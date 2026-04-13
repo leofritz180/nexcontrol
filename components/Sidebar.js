@@ -78,7 +78,9 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                   color: active?'var(--t1)':'var(--t3)',
                   background: active?'rgba(255,255,255,0.05)':'transparent',
                   borderLeft: active?'3px solid #e53935':'3px solid transparent',
-                  boxShadow: active?'inset 0 0 20px rgba(229,57,53,0.04)':'none',
+                  boxShadow: item.pro ? '0 0 0 1px rgba(229,57,53,0.25), 0 0 10px rgba(229,57,53,0.06)' : active?'inset 0 0 20px rgba(229,57,53,0.04)':'none',
+                  border: item.pro ? '1px solid rgba(229,57,53,0.2)' : 'none',
+                  animation: item.pro ? 'ring-pulse 3s ease-in-out infinite' : 'none',
                   transition:'all 0.2s ease',
                 }}
                 onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='rgba(255,255,255,0.03)';e.currentTarget.style.color='var(--t2)'}}}

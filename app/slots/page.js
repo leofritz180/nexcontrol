@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
+import Link from 'next/link'
 import AppLayout from '../../components/AppLayout'
 import { PROVIDERS, SLOTS } from '../../lib/slots-data'
 
@@ -195,6 +196,8 @@ export default function SlotsPage() {
     setLoading(false)
   }
 
+  const isPro = sub?.status === 'active' && (!sub.expires_at || new Date(sub.expires_at) > new Date())
+
   const filtered = useMemo(() => {
     if (filter === 'all') return SLOTS
     return SLOTS.filter(s => s.provider === filter)
@@ -315,25 +318,92 @@ export default function SlotsPage() {
               ))}
             </motion.div>
 
-            {/* Grid */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={filter}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                  gap: 16,
-                }}
-              >
-                {filtered.map((slot, i) => (
-                  <SlotCard key={slot.id} slot={slot} index={i} />
-                ))}
-              </motion.div>
-            </AnimatePresence>
+            {/* Grid — with PRO gate */}
+            <div style={{ position: 'relative' }}>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={filter}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                    gap: 16,
+                    filter: isPro ? 'none' : 'blur(3px) brightness(0.6)',
+                    opacity: isPro ? 1 : 0.65,
+                    pointerEvents: isPro ? 'auto' : 'none',
+                    transition: 'filter 0.3s, opacity 0.3s',
+                  }}
+                >
+                  {filtered.map((slot, i) => (
+                    <SlotCard key={slot.id} slot={slot} index={i} />
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+
+              {/* PRO overlay */}
+              {!isPro && filtered.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, ease }}
+                  style={{
+                    position: 'absolute', top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '100%', maxWidth: 400, padding: '40px 32px',
+                    background: 'rgba(10,14,24,0.85)',
+                    backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(229,57,53,0.15)',
+                    borderRadius: 24,
+                    boxShadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(229,57,53,0.06)',
+                    textAlign: 'center', zIndex: 10,
+                  }}
+                >
+                  {/* Crown icon */}
+                  <motion.div
+                    animate={{ boxShadow: ['0 0 20px rgba(229,57,53,0.15)', '0 0 35px rgba(229,57,53,0.25)', '0 0 20px rgba(229,57,53,0.15)'] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    style={{
+                      width: 56, height: 56, borderRadius: 16, margin: '0 auto 20px',
+                      background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.2)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}
+                  >
+                    <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2 4l3 12h14l3-12-5 4-5-4-5 4-3-4z" />
+                      <path d="M5 16h14v2H5z" />
+                    </svg>
+                  </motion.div>
+
+                  <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: '-0.02em' }}>
+                    Conteudo exclusivo PRO
+                  </h3>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24, lineHeight: 1.5 }}>
+                    Desbloqueie os melhores slots e analises avancadas do catalogo premium.
+                  </p>
+
+                  <Link href="/billing" style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    padding: '14px 32px', borderRadius: 14,
+                    fontSize: 15, fontWeight: 700, textDecoration: 'none',
+                    background: 'linear-gradient(135deg, #e53935, #c62828)', color: '#fff',
+                    boxShadow: '0 6px 24px rgba(229,57,53,0.3)',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                  }}>
+                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                    </svg>
+                    Seja PRO
+                  </Link>
+
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 16 }}>
+                    A partir de R$ 39,90/mes
+                  </p>
+                </motion.div>
+              )}
+            </div>
 
             {filtered.length === 0 && (
               <div style={{ textAlign: 'center', padding: '60px 20px' }}>

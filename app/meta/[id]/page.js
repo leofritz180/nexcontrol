@@ -191,6 +191,12 @@ export default function MetaPage() {
     if (m && r && u) evaluateOnLoad({ remessas: r, meta: m, userId: u.id })
   }
 
+  // Refresh rapido — so recarrega remessas (sem auth/profile)
+  async function refreshRemessas() {
+    const { data: r } = await supabase.from('remessas').select('*').eq('meta_id', id).order('created_at', { ascending: true })
+    if (r) setRemessas(r)
+  }
+
   // ── Feedback operacional instantaneo ──
   function getOperationalFeedback(diff, statusProblema, nContasRemessa) {
     const perConta = nContasRemessa > 0 ? diff / nContasRemessa : diff
@@ -322,7 +328,7 @@ export default function MetaPage() {
     if (err) { setError(err.message); return }
     setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot(''); setObsRemessa('')
     showFeedback(diff, statusProb, Number(contasRemessa||0))
-    await fetchData()
+    await refreshRemessas()
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
     // Insights inteligentes (camada separada, nao altera notify.js)
     evaluateAfterRemessa({

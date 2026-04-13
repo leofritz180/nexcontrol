@@ -637,21 +637,24 @@ export default function OperatorPage() {
                     </div>
 
                     {/* Boas praticas */}
-                    <div style={{ padding: '16px 18px', borderRadius: 12, background: 'rgba(168,85,247,0.04)', border: '1px solid rgba(168,85,247,0.1)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                    <div style={{ padding: '16px 18px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--b1)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                         <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>Boas praticas</span>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {[
-                          'Ate R$ 8/conta de prejuizo e aceitavel',
-                          'Acima de R$ 12/conta comeca a comprometer',
-                          'Sequencia negativa = troque de estrategia',
-                          'Registre todas as contas por remessa',
+                          { text: 'Lucro ou ate R$ 5/conta', sub: 'Bom resultado', color: 'var(--profit)', dot: 'rgba(34,197,94,0.5)' },
+                          { text: 'De R$ 5 a R$ 10/conta', sub: 'Normal de acontecer', color: 'var(--t2)', dot: 'rgba(148,163,184,0.5)' },
+                          { text: 'De R$ 10 a R$ 14/conta', sub: 'Comeca a comprometer', color: 'var(--warn)', dot: 'rgba(245,158,11,0.5)' },
+                          { text: 'Acima de R$ 14/conta', sub: 'Resultado ruim, atencao', color: 'var(--loss)', dot: 'rgba(239,68,68,0.5)' },
                         ].map((tip, i) => (
-                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(168,85,247,0.4)', flexShrink: 0 }} />
-                            <span style={{ fontSize: 11, color: 'var(--t3)' }}>{tip}</span>
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <div style={{ width: 6, height: 6, borderRadius: '50%', background: tip.dot, flexShrink: 0 }} />
+                            <div>
+                              <span style={{ fontSize: 12, fontWeight: 600, color: tip.color }}>{tip.text}</span>
+                              <span style={{ fontSize: 11, color: 'var(--t4)', marginLeft: 6 }}>— {tip.sub}</span>
+                            </div>
                           </div>
                         ))}
                       </div>

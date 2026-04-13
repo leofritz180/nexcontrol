@@ -652,8 +652,26 @@ export default function OperadoresPage() {
   const tabs = [
     { key: 'ranking', label: 'Ranking' },
     { key: 'equipe', label: 'Equipe' },
+    { key: 'folha', label: 'Folha de pagamento' },
     { key: 'config', label: 'Configuracoes' },
   ]
+
+  // Folha de pagamento data
+  const folhaData = useMemo(() => {
+    const payModel = tenant?.operator_payment_model || 'fixo_dep'
+    const payValue = Number(tenant?.operator_payment_value ?? 2)
+    return operatorStats.filter(o => o.closedCount > 0).map(op => {
+      const deps = op.totalDeposit
+      const lucro = op.lucroFinal
+      let valor = 0
+      if (payModel === 'percentual') {
+        valor = lucro > 0 ? lucro * (payValue / 100) : 0
+      } else {
+        valor = deps * payValue
+      }
+      return { ...op, pagamento: valor, payModel, payValue }
+    }).sort((a, b) => b.pagamento - a.pagamento)
+  }, [operatorStats, tenant])
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
@@ -858,6 +876,112 @@ export default function OperadoresPage() {
         )}
 
         {/* ═══════════ TAB 3: CONFIGURACOES ═══════════ */}
+        {/* FOLHA DE PAGAMENTO */}
+        {tab === 'folha' && (
+          <motion.div key="folha" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+              <div>
+                <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>
+                  Modelo: <strong style={{ color: 'var(--t2)' }}>{(tenant?.operator_payment_model || 'fixo_dep') === 'fixo_dep' ? `R$ ${fmt(Number(tenant?.operator_payment_value ?? 2))} por depositante` : `${Number(tenant?.operator_payment_value ?? 15)}% do lucro`}</strong>
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--profit)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(folhaData.reduce((a, o) => a + o.pagamento, 0))}</p>
+                  <p style={{ fontSize: 10, color: 'var(--t4)', margin: '2px 0 0' }}>Total a pagar</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Table */}
+            {folhaData.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--b1)' }}>
+                <p style={{ fontSize: 14, color: 'var(--t3)' }}>Nenhum operador com metas fechadas.</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid var(--b1)' }}>
+                {/* Header row */}
+                <div style={{
+                  display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
+                  padding: '12px 20px', background: 'rgba(255,255,255,0.03)',
+                  borderBottom: '1px solid var(--b1)',
+                }}>
+                  {['Operador', 'Metas', 'Deps', 'Lucro', 'A pagar'].map(h => (
+                    <p key={h} style={{ fontSize: 10, fontWeight: 600, color: 'var(--t4)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: h === 'Operador' ? 'left' : 'right' }}>{h}</p>
+                  ))}
+                </div>
+
+                {/* Rows */}
+                {folhaData.map((op, i) => (
+                  <div key={op.id} style={{
+                    display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
+                    padding: '14px 20px', alignItems: 'center',
+                    background: i % 2 === 0 ? 'var(--surface)' : 'rgba(255,255,255,0.015)',
+                    borderBottom: i < folhaData.length - 1 ? '1px solid var(--b1)' : 'none',
+                    transition: 'background 0.2s',
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.035)'}
+                    onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? 'var(--surface)' : 'rgba(255,255,255,0.015)'}
+                  >
+                    {/* Name */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{
+                        width: 32, height: 32, borderRadius: 9, flexShrink: 0,
+                        background: 'var(--profit-dim)', border: '1px solid var(--profit-border)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 13, fontWeight: 700, color: 'var(--t1)',
+                      }}>{getInitial(op)}</div>
+                      <div>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', margin: 0 }}>{getName(op)}</p>
+                        <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>{op.email}</p>
+                      </div>
+                    </div>
+                    {/* Metas */}
+                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>{op.closedCount}</p>
+                    {/* Deps */}
+                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>{op.totalDeposit}</p>
+                    {/* Lucro */}
+                    <p style={{ fontSize: 14, fontWeight: 700, color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>
+                      {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
+                    </p>
+                    {/* A pagar */}
+                    <div style={{ textAlign: 'right' }}>
+                      <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--brand-bright)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>
+                        R$ {fmt(op.pagamento)}
+                      </p>
+                      <p style={{ fontSize: 9, color: 'var(--t4)', margin: '1px 0 0' }}>
+                        {op.payModel === 'percentual' ? `${op.payValue}% lucro` : `${op.totalDeposit} × R$ ${fmt(op.payValue)}`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Total row */}
+                <div style={{
+                  display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
+                  padding: '14px 20px', background: 'rgba(229,57,53,0.04)',
+                  borderTop: '1px solid var(--brand-border)',
+                }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Total</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>
+                    {folhaData.reduce((a, o) => a + o.closedCount, 0)}
+                  </p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>
+                    {folhaData.reduce((a, o) => a + o.totalDeposit, 0)}
+                  </p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--profit)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>
+                    R$ {fmt(folhaData.reduce((a, o) => a + o.lucroFinal, 0))}
+                  </p>
+                  <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--brand-bright)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>
+                    R$ {fmt(folhaData.reduce((a, o) => a + o.pagamento, 0))}
+                  </p>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+
         {tab === 'config' && (
           <motion.div key="config" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
 

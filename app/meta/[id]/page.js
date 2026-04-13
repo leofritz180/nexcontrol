@@ -160,6 +160,7 @@ export default function MetaPage() {
   const [editSaq, setEditSaq] = useState('')
   const [editSaving, setEditSaving] = useState(false)
   const [contasRemessa, setContasRemessa] = useState('')
+  const [obsRemessa, setObsRemessa] = useState('')
   const [feedback, setFeedback] = useState(null)
   const [tenantSlots, setTenantSlots] = useState([])
   const [selectedSlot, setSelectedSlot] = useState('')
@@ -315,10 +316,11 @@ export default function MetaPage() {
       status_problema:statusProb,
       contas_remessa: tipo === 'redeposito' ? 0 : Number(contasRemessa||0),
       slot_name: selectedSlot || null,
+      observacoes: obsRemessa.trim() || null,
     })
     setSalvando(false)
     if (err) { setError(err.message); return }
-    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot('')
+    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot(''); setObsRemessa('')
     showFeedback(diff, statusProb, Number(contasRemessa||0))
     await fetchData()
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
@@ -739,6 +741,12 @@ export default function MetaPage() {
                 </div>
               </div>
 
+              {/* Observacoes */}
+              <div>
+                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Observacoes <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
+                <input className="input" value={obsRemessa} onChange={e=>setObsRemessa(e.target.value)} placeholder="Detalhes sobre esta remessa..." style={{ fontSize:13 }}/>
+              </div>
+
               {/* Slot selector — always show section, msg if none configured */}
               <div>
                 <label className="t-label" style={{ display:'block', marginBottom:8 }}>Slot <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
@@ -748,13 +756,17 @@ export default function MetaPage() {
                   <div style={{ position: 'relative' }}>
                     {/* Seta esquerda */}
                     <button onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: -200, behavior: 'smooth' }) }}
-                      style={{ position: 'absolute', left: -4, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 28, height: 28, borderRadius: 8, border: '1px solid var(--b2)', background: 'var(--surface)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--t3)', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.15)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.4)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.08)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.25)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)' }}
+                      style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 32, height: 32, borderRadius: 10, border: '1px solid rgba(229,57,53,0.25)', background: 'rgba(229,57,53,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e53935', boxShadow: '0 4px 12px rgba(0,0,0,0.4), 0 0 8px rgba(229,57,53,0.1)', transition: 'all 0.2s ease' }}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
                     {/* Seta direita */}
                     <button onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: 200, behavior: 'smooth' }) }}
-                      style={{ position: 'absolute', right: -4, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 28, height: 28, borderRadius: 8, border: '1px solid var(--b2)', background: 'var(--surface)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--t3)', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.15)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.4)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.08)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.25)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)' }}
+                      style={{ position: 'absolute', right: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 32, height: 32, borderRadius: 10, border: '1px solid rgba(229,57,53,0.25)', background: 'rgba(229,57,53,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e53935', boxShadow: '0 4px 12px rgba(0,0,0,0.4), 0 0 8px rgba(229,57,53,0.1)', transition: 'all 0.2s ease' }}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                     <div id="slot-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none', padding: '0 30px' }}>
                       <style>{`#slot-scroll::-webkit-scrollbar{display:none}`}</style>
@@ -862,6 +874,7 @@ export default function MetaPage() {
                           </div>
                           <p className="t-small">{r.tipo} · {new Date(r.created_at).toLocaleString('pt-BR')}</p>
                           {r.slot_name && <span style={{ display:'inline-block', marginTop:3, padding:'2px 8px', borderRadius:6, fontSize:9, fontWeight:600, background:'rgba(59,130,246,0.1)', border:'1px solid rgba(59,130,246,0.2)', color:'var(--info)' }}>{r.slot_name}</span>}
+                          {r.observacoes && <p style={{ fontSize:11, color:'var(--t4)', margin:'4px 0 0', fontStyle:'italic' }}>{r.observacoes}</p>}
                         </div>
                         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                           <div style={{ textAlign:'right' }}>

@@ -1,0 +1,1 @@
+ALTER TABLE remessas ADD COLUMN IF NOT EXISTS observacoes TEXT;

@@ -299,7 +299,7 @@ export default function MetaPage() {
       resultado_por_conta:meta?.quantidade_contas&&Number(meta.quantidade_contas)>0?Number((Math.abs(diff)/Number(meta.quantidade_contas)).toFixed(2)):0,
       tenant_id:profile?.tenant_id,
       status_problema:statusProb,
-      contas_remessa:Number(contasRemessa||0),
+      contas_remessa: tipo === 'redeposito' ? 0 : Number(contasRemessa||0),
     })
     setSalvando(false)
     if (err) { setError(err.message); return }
@@ -513,14 +513,14 @@ export default function MetaPage() {
           if (avgPerConta > 5) score += 25; else if (avgPerConta > 2) score += 15; else if (avgPerConta > 0) score += 5; else if (avgPerConta > -1) score -= 10; else score -= 25
           if (streak >= 3) score -= 20; else if (streak >= 2) score -= 10
           if (probs.length > 0) score -= probs.length * 5
-          const pctDone = nContas > 0 ? (remessas.reduce((a, r) => a + Number(r.contas_remessa || 0), 0) / nContas) : 0
+          const pctDone = nContas > 0 ? (remessas.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0) / nContas) : 0
           score += Math.round(pctDone * 15)
           if (ordered.length >= 4) { const h = Math.floor(ordered.length / 2); const f = ordered.slice(0, h).reduce((a, r) => a + Number(r.resultado || 0), 0) / h; const s = ordered.slice(h).reduce((a, r) => a + Number(r.resultado || 0), 0) / (ordered.length - h); if (s > f) score += 10; else if (s < f * 0.5) score -= 10 }
           score = Math.max(0, Math.min(100, score))
           const scoreColor = score >= 70 ? 'var(--profit)' : score >= 40 ? 'var(--warn)' : 'var(--loss)'
 
           // Previsao
-          const contasRestantes = nContas - remessas.reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+          const contasRestantes = nContas - remessas.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
           const previsaoFinal = nContas > 0 ? avgPerConta * nContas : 0
 
           const cfg = { good: { bg: 'var(--profit-dim)', border: 'var(--profit-border)', color: 'var(--profit)', icon: 'M20 6L9 17l-5-5' }, warn: { bg: 'var(--warn-dim)', border: 'var(--warn-border)', color: 'var(--warn)', icon: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' }, critical: { bg: 'var(--loss-dim)', border: 'var(--loss-border)', color: 'var(--loss)', icon: 'M18 6L6 18M6 6l12 12' } }

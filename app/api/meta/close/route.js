@@ -41,8 +41,8 @@ export async function POST(req) {
         // Notify admin
         const fmt = v => Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         await sendPushToTenant(supabase, meta.tenant_id, {
-          title: 'NexControl',
-          body: `Meta encerrada - ${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} - Lucro: R$ ${fmt(lucroFinal)}`,
+          title: 'Meta finalizada!',
+          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} encerrada - Lucro: R$ ${fmt(lucroFinal)}`,
           url: '/admin',
         })
 
@@ -57,8 +57,8 @@ export async function POST(req) {
         const fmt = v => Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
 
         await sendPushToTenant(supabase, meta.tenant_id, {
-          title: 'NexControl',
-          body: `Op. ${opName} finalizou meta - ${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} - ${liq >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(liq)}`,
+          title: 'Meta finalizada!',
+          body: `Op. ${opName} finalizou ${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} - ${liq >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(liq)}`,
           url: '/admin',
         })
 

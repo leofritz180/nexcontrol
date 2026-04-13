@@ -36,8 +36,8 @@ function Sparkline({ data, color, height=32 }) {
   )
 }
 
-function ModalFechamento({ meta, remessas, operador, opModel, payModel, payValue, onClose, onSaved }) {
-  const apenasBau = opModel === 'apenas_bau'
+function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, payValue, onClose, onSaved }) {
+  const apenasBau = (meta.operation_model || tenantOpModel || 'salario_bau') === 'apenas_bau'
   const lucroRem = remessas.reduce((a,r)=>a+Number(r.lucro||0),0)
   const prejRem  = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
   const liqRem   = lucroRem-prejRem
@@ -181,8 +181,8 @@ function ModalFechamento({ meta, remessas, operador, opModel, payModel, payValue
 }
 
 /* ── Salary/costs panel (isolated from polling) ── */
-function SalaryPanel({ meta, liqCalc, opModel, onSaved }) {
-  const apenasBau = opModel === 'apenas_bau'
+function SalaryPanel({ meta, liqCalc, tenantOpModel, onSaved }) {
+  const apenasBau = (meta.operation_model || tenantOpModel || 'salario_bau') === 'apenas_bau'
   const fechada = meta.status_fechamento === 'fechada'
   const isActive = !fechada && meta.status !== 'finalizada'
   const isFinalizedNotClosed = !fechada && meta.status === 'finalizada'
@@ -327,6 +327,7 @@ export default function AdminPage() {
   const [myPlat,setMyPlat]=useState('')
   const [myRede,setMyRede]=useState('')
   const [myContas,setMyContas]=useState('10')
+  const [myOpModel,setMyOpModel]=useState('salario_bau')
   const [mySaving,setMySaving]=useState(false)
   const REDES=['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
   const [focusLoad, setFocusLoad] = useState(false)
@@ -549,7 +550,7 @@ export default function AdminPage() {
     { label:'Total sacado', rawValue:global.totalSaq, value:`R$ ${fmt(global.totalSaq)}`, sub:'Admin + operadores', color:'var(--warn)', card:'card-warn', badge:'saques' },
   ]
 
-  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['team','Equipe'],['trash','Lixeira']]
+  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['trash','Lixeira']]
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
@@ -559,7 +560,7 @@ export default function AdminPage() {
             meta={modalMeta}
             remessas={remessas.filter(r=>r.meta_id===modalMeta.id)}
             operador={operators.find(o=>o.id===modalMeta.operator_id)}
-            opModel={tenant?.operation_model || 'salario_bau'}
+            tenantOpModel={tenant?.operation_model || 'salario_bau'}
             payModel={tenant?.operator_payment_model || 'fixo_dep'}
             payValue={Number(tenant?.operator_payment_value ?? 2)}
             onClose={()=>setModalMeta(null)}
@@ -778,7 +779,7 @@ export default function AdminPage() {
                 <SalaryPanel
                   meta={m}
                   liqCalc={focusRem.reduce((a,r)=>a+Number(r.lucro||0)-Number(r.prejuizo||0),0)}
-                  opModel={tenant?.operation_model || 'salario_bau'}
+                  tenantOpModel={tenant?.operation_model || 'salario_bau'}
                   onSaved={(updated)=>{ openMetaDetail(updated); loadAll() }}
                 />
 
@@ -906,6 +907,7 @@ export default function AdminPage() {
                 const {data,error:err}=await supabase.from('metas').insert({
                   operator_id:user.id,titulo:myTitulo.trim(),plataforma:myPlat.trim(),rede:myRede,
                   quantidade_contas:Number(myContas||10),status:'ativa',tenant_id:profile?.tenant_id,
+                  operation_model:myOpModel,
                 }).select().single()
                 setMySaving(false)
                 if(err){return}
@@ -970,6 +972,20 @@ export default function AdminPage() {
                       <div>
                         <label className="t-label" style={{display:'block',marginBottom:6}}>Depositantes</label>
                         <input className="input" type="number" min="1" value={myContas} onChange={e=>setMyContas(e.target.value)}/>
+                      </div>
+                      <div style={{gridColumn:'1/-1'}}>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Modelo da meta</label>
+                        <div style={{display:'flex',gap:8}}>
+                          {[{k:'salario_bau',l:'Salario + Bau'},{k:'apenas_bau',l:'Apenas Bau'}].map(o=>(
+                            <button key={o.k} type="button" onClick={()=>setMyOpModel(o.k)} style={{
+                              flex:1, padding:'10px 14px', borderRadius:10, border:'none', cursor:'pointer',
+                              background: myOpModel===o.k ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.02)',
+                              border: `1px solid ${myOpModel===o.k ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.05)'}`,
+                              fontSize:12, fontWeight:600, color: myOpModel===o.k ? '#e53935' : 'var(--t3)',
+                              transition:'all 0.2s',
+                            }}>{o.l}</button>
+                          ))}
+                        </div>
                       </div>
                       <div style={{gridColumn:'1/-1'}}>
                         <motion.button type="submit" className="btn btn-brand btn-lg" disabled={mySaving} style={{width:'100%',justifyContent:'center'}} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>

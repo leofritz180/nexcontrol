@@ -508,6 +508,7 @@ export default function OperadoresPage() {
   const tabs = [
     { key: 'ranking', label: 'Ranking' },
     { key: 'equipe', label: 'Equipe' },
+    { key: 'config', label: 'Configuracoes' },
   ]
 
   return (
@@ -650,6 +651,87 @@ export default function OperadoresPage() {
                 ))}
               </div>
             )}
+          </motion.div>
+        )}
+
+        {/* CONFIG */}
+        {tab === 'config' && (
+          <motion.div key="config" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+
+            {/* Modelo de operacao padrao */}
+            <div style={{ padding: 20, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Modelo de operacao padrao</span>
+                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>Pode ser alterado por meta</span>
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {[
+                  { key: 'salario_bau', label: 'Salario + Bau', desc: 'Com contrato de plataforma' },
+                  { key: 'apenas_bau', label: 'Apenas Bau', desc: 'Sem contrato, lucro so do bau' },
+                ].map(opt => {
+                  const active = (tenant?.operation_model || 'salario_bau') === opt.key
+                  return (
+                    <button key={opt.key} onClick={async () => {
+                      await supabase.from('tenants').update({ operation_model: opt.key }).eq('id', profile.tenant_id)
+                      setTenant(prev => ({ ...prev, operation_model: opt.key }))
+                    }} style={{
+                      flex: 1, padding: '14px 16px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                      background: active ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${active ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.05)'}`,
+                      textAlign: 'left', transition: 'all 0.2s',
+                    }}>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: active ? '#e53935' : 'rgba(255,255,255,0.5)', margin: '0 0 3px' }}>{opt.label}</p>
+                      <p style={{ fontSize: 11, color: active ? 'rgba(229,57,53,0.5)' : 'rgba(255,255,255,0.2)', margin: 0 }}>{opt.desc}</p>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Pagamento de operadores */}
+            <div style={{ padding: 20, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Pagamento de operadores</span>
+              </div>
+              <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+                {[
+                  { key: 'fixo_dep', label: 'Fixo por depositante', desc: 'Ex: R$ 2,00 por dep' },
+                  { key: 'percentual', label: '% do lucro final', desc: 'Ex: 15% do lucro' },
+                ].map(opt => {
+                  const active = (tenant?.operator_payment_model || 'fixo_dep') === opt.key
+                  return (
+                    <button key={opt.key} onClick={async () => {
+                      await supabase.from('tenants').update({ operator_payment_model: opt.key }).eq('id', profile.tenant_id)
+                      setTenant(prev => ({ ...prev, operator_payment_model: opt.key }))
+                    }} style={{
+                      flex: 1, padding: '12px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                      background: active ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${active ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.05)'}`,
+                      textAlign: 'left', transition: 'all 0.2s',
+                    }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: active ? '#22c55e' : 'rgba(255,255,255,0.5)', margin: '0 0 2px' }}>{opt.label}</p>
+                      <p style={{ fontSize: 10, color: active ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.2)', margin: 0 }}>{opt.desc}</p>
+                    </button>
+                  )
+                })}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <label style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', flexShrink: 0 }}>
+                  {(tenant?.operator_payment_model || 'fixo_dep') === 'fixo_dep' ? 'Valor por dep (R$)' : 'Percentual (%)'}
+                </label>
+                <input className="input" type="number" step="0.01" min="0"
+                  value={tenant?.operator_payment_value ?? 2}
+                  onChange={async (e) => {
+                    const val = Number(e.target.value)
+                    await supabase.from('tenants').update({ operator_payment_value: val }).eq('id', profile.tenant_id)
+                    setTenant(prev => ({ ...prev, operator_payment_value: val }))
+                  }}
+                  style={{ padding: '8px 12px', fontSize: 14, maxWidth: 100 }}
+                />
+              </div>
+            </div>
           </motion.div>
         )}
       </div>

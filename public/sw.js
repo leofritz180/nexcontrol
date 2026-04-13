@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications
+// NexControl Service Worker — Push Notifications v2
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

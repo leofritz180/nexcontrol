@@ -204,6 +204,7 @@ export default function OperatorPage() {
   const [redeOpen, setRedeOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [metaFilter, setMetaFilter] = useState('todas')
   const [showForm, setShowForm] = useState(false)
   const redeRef = useRef(null)
 
@@ -639,12 +640,28 @@ export default function OperatorPage() {
                 LEFT COLUMN: Metas
                ════════════════════════════════════════════ */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
                 <div>
                   <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', margin: '0 0 2px' }}>Suas metas</h2>
                   <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Acompanhe o progresso das suas operacoes</p>
                 </div>
-                <span style={{ fontSize: 11, color: 'var(--t3)', fontFamily: 'var(--mono)' }}>{stats.ativas} ativas</span>
+                <div style={{ display: 'flex', gap: 4, background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: 3, border: '1px solid var(--b1)' }}>
+                  {[
+                    { k: 'todas', l: 'Todas', c: metas.length },
+                    { k: 'ativas', l: 'Ativas', c: metas.filter(m => m.status === 'ativa' || m.status === 'em_andamento').length },
+                    { k: 'fechadas', l: 'Fechadas', c: metas.filter(m => m.status_fechamento === 'fechada').length },
+                  ].map(f => (
+                    <button key={f.k} onClick={() => setMetaFilter(f.k)} style={{
+                      padding: '5px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600,
+                      border: 'none', cursor: 'pointer',
+                      background: metaFilter === f.k ? 'rgba(255,255,255,0.07)' : 'transparent',
+                      color: metaFilter === f.k ? 'var(--t1)' : 'var(--t4)',
+                      transition: 'all 0.2s',
+                    }}>
+                      {f.l} <span style={{ fontFamily: 'var(--mono)', fontSize: 10, marginLeft: 3, opacity: 0.6 }}>{f.c}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {loading ? (
@@ -780,7 +797,11 @@ export default function OperatorPage() {
                       <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--t3)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Todas as metas</h3>
                     )}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {metas.map((meta, i) => {
+                      {metas.filter(m => {
+                        if (metaFilter === 'ativas') return m.status === 'ativa' || m.status === 'em_andamento'
+                        if (metaFilter === 'fechadas') return m.status_fechamento === 'fechada'
+                        return true
+                      }).map((meta, i) => {
                         const mRem = getMetaRemessas(meta.id)
                         const status = getMetaStatus(meta)
                         const totalDep = mRem.reduce((a, r) => a + Number(r.deposito || 0), 0)

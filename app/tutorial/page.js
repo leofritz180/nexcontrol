@@ -159,7 +159,7 @@ export default function TutorialPage() {
           {/* YouTube embed */}
           <div style={{ position: 'relative', background: '#000', aspectRatio: '16/9' }}>
             <iframe
-              src="https://www.youtube.com/embed/1sapZb05ZbM?rel=0&modestbranding=1"
+              src="https://www.youtube.com/embed/Zi5b-nuB_Yw?rel=0&modestbranding=1"
               title="Video aula NexControl"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen

@@ -40,6 +40,14 @@ export const viewport = { width: 'device-width', initialScale: 1, maximumScale: 
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          if('serviceWorker' in navigator){
+            navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})
+              .then(r=>r.update()).catch(()=>{})
+          }
+        `}} />
+      </head>
       <body>
         <Suspense fallback={null}><GlobalLoadingScreen/></Suspense>
         <div className="bg-flow"/>

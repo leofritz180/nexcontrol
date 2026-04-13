@@ -16,33 +16,216 @@ const DEMO_OPS = [
   { name:'Carlos', value:120 },
 ]
 
-function SocialProofNumber({ target, suffix }) {
+const FEED_EVENTS = [
+  { text:'Carlos registrou +R$ 120', color:'#22C55E' },
+  { text:'Meta concluida com sucesso', color:'#22C55E' },
+  { text:'Novo operador ativo', color:'#e53935' },
+  { text:'+R$ 68 registrado agora', color:'#22C55E' },
+  { text:'Pedro finalizou meta', color:'#22C55E' },
+  { text:'Ana registrou +R$ 95', color:'#22C55E' },
+  { text:'Nova remessa processada', color:'#e53935' },
+]
+
+const STATUS_LINES = [
+  'Operacao sendo atualizada em tempo real',
+  'Dados sendo processados agora',
+  'Nova atividade detectada',
+]
+
+/* ── Count-up with glow + pulse ── */
+function SocialProofNumber({ target, suffix, active }) {
   const [val, setVal] = useState(0)
-  const [started, setStarted] = useState(false)
-  const ref = useRef(null)
+  const [done, setDone] = useState(false)
   const rafRef = useRef(null)
+
   useEffect(() => {
-    if (!started) return
-    const dur = 1200, start = performance.now()
+    if (!active) return
+    const dur = 1800, start = performance.now()
     const tick = now => {
       const t = Math.min((now - start) / dur, 1)
-      const eased = 1 - Math.pow(1 - t, 3)
+      const eased = 1 - Math.pow(1 - t, 4)
       setVal(Math.round(target * eased))
       if (t < 1) rafRef.current = requestAnimationFrame(tick)
+      else setDone(true)
     }
     rafRef.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [started, target])
+  }, [active, target])
+
+  const display = target >= 1000000
+    ? `${(val / 1000000).toFixed(val < target ? 1 : 0)}`
+    : target >= 1000 ? val.toLocaleString('pt-BR') : String(val)
+
+  const glowOpacity = active && !done ? 0.18 : done ? 0.06 : 0
+
+  return (
+    <motion.p
+      animate={done ? { scale:[1, 1.02, 1] } : {}}
+      transition={done ? { duration:3, repeat:Infinity, ease:'easeInOut' } : {}}
+      style={{
+        fontSize:36, fontWeight:900, color:'#fff', margin:0,
+        fontFamily:'var(--mono, "JetBrains Mono", monospace)',
+        letterSpacing:'-0.03em',
+        textShadow:`0 0 ${active ? 25 : 0}px rgba(255,255,255,${glowOpacity})`,
+        transition:'text-shadow 0.6s ease',
+      }}
+    >
+      {display}{suffix}
+    </motion.p>
+  )
+}
+
+/* ── Live feed (events appearing one by one) ── */
+function LiveFeed({ active }) {
+  const [index, setIndex] = useState(0)
+
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setStarted(true); obs.disconnect() } }, { threshold: 0.5 })
-    if (ref.current) obs.observe(ref.current)
+    if (!active) return
+    const iv = setInterval(() => {
+      setIndex(prev => (prev + 1) % FEED_EVENTS.length)
+    }, 2500)
+    return () => clearInterval(iv)
+  }, [active])
+
+  if (!active) return null
+  const ev = FEED_EVENTS[index]
+
+  return (
+    <div style={{ minHeight:24, display:'flex', alignItems:'center', justifyContent:'center', marginTop:20 }}>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ opacity:0, y:10 }}
+          animate={{ opacity:1, y:0 }}
+          exit={{ opacity:0, y:-10 }}
+          transition={{ duration:0.35 }}
+          style={{ display:'flex', alignItems:'center', gap:8 }}
+        >
+          <span style={{ width:6, height:6, borderRadius:'50%', background:ev.color, boxShadow:`0 0 8px ${ev.color}44`, flexShrink:0 }} />
+          <span style={{ fontSize:13, color:'rgba(255,255,255,0.55)', fontWeight:500 }}>{ev.text}</span>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/* ── Dynamic status text ── */
+function StatusLine({ active }) {
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    if (!active) return
+    const iv = setInterval(() => {
+      setIndex(prev => (prev + 1) % STATUS_LINES.length)
+    }, 3000)
+    return () => clearInterval(iv)
+  }, [active])
+
+  if (!active) return null
+
+  return (
+    <div style={{ minHeight:20, display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginTop:16 }}>
+      <motion.span
+        animate={{ opacity:[0.4, 1, 0.4] }}
+        transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+        style={{ width:5, height:5, borderRadius:'50%', background:'#e53935', boxShadow:'0 0 6px rgba(229,57,53,0.4)' }}
+      />
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={index}
+          initial={{ opacity:0 }}
+          animate={{ opacity:0.4 }}
+          exit={{ opacity:0 }}
+          transition={{ duration:0.4 }}
+          style={{ fontSize:11, color:'rgba(255,255,255,0.4)', fontWeight:500, letterSpacing:'0.02em' }}
+        >
+          {STATUS_LINES[index]}
+        </motion.span>
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/* ── Social Proof Section (viewport-triggered) ── */
+function SocialProofSection() {
+  const [active, setActive] = useState(false)
+  const sectionRef = useRef(null)
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setActive(true); obs.disconnect() }
+    }, { threshold: 0.3 })
+    if (sectionRef.current) obs.observe(sectionRef.current)
     return () => obs.disconnect()
   }, [])
-  const display = target >= 1000000 ? `${(val / 1000000).toFixed(val < target ? 1 : 0)}` : target >= 1000 ? val.toLocaleString('pt-BR') : String(val)
+
+  const stats = [
+    { target: 400, suffix: '+', label: 'Operadores ativos' },
+    { target: 1, suffix: 'M+', label: 'Monitorados em operacoes' },
+    { target: 3000, suffix: '+', label: 'Metas analisadas' },
+  ]
+
   return (
-    <p ref={ref} style={{ fontSize: 36, fontWeight: 900, color: '#fff', margin: 0, fontFamily: 'var(--mono, "JetBrains Mono", monospace)', letterSpacing: '-0.03em', textShadow: '0 0 30px rgba(255,255,255,0.08)' }}>
-      {display}{suffix}
-    </p>
+    <section ref={sectionRef} style={{ padding:'48px 24px 40px', maxWidth:800, margin:'0 auto', textAlign:'center', position:'relative' }}>
+
+      {/* HUD scan line */}
+      {active && (
+        <div style={{
+          position:'absolute', top:0, left:0, right:0, bottom:0,
+          pointerEvents:'none', overflow:'hidden', borderRadius:20,
+        }}>
+          <div style={{
+            position:'absolute', left:0, right:0, height:1,
+            background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)',
+            animation:'hudScan 4s linear infinite',
+          }} />
+        </div>
+      )}
+
+      <style>{`
+        @keyframes hudScan {
+          0% { top: 0; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+      `}</style>
+
+      <motion.p
+        initial={{ opacity:0, y:10 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+        transition={{ duration:0.4 }}
+        style={{ fontSize:13, fontWeight:600, color:'rgba(255,255,255,0.4)', letterSpacing:'0.06em', marginBottom:28 }}
+      >
+        QUEM USA NEXCONTROL JA TEM CONTROLE REAL DA OPERACAO:
+      </motion.p>
+
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:20 }} className="g-4">
+        {stats.map(({ target, suffix, label }, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity:0, y:14 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+            transition={{ duration:0.4, delay:i * 0.15 }}
+            whileHover={{ y:-4, transition:{ duration:0.2 } }}
+            style={{
+              padding:'24px 18px', borderRadius:16, position:'relative', overflow:'hidden',
+              background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.04)',
+              cursor:'default', transition:'box-shadow 0.3s, border-color 0.3s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow='0 8px 30px rgba(0,0,0,0.3)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.04)'; e.currentTarget.style.boxShadow='none' }}
+          >
+            <SocialProofNumber target={target} suffix={suffix} active={active} />
+            <p style={{ fontSize:13, color:'rgba(255,255,255,0.4)', margin:'8px 0 0', fontWeight:500 }}>{label}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Live feed */}
+      <LiveFeed active={active} />
+
+      {/* Dynamic status text */}
+      <StatusLine active={active} />
+    </section>
   )
 }
 
@@ -318,39 +501,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══ PROVA SOCIAL ═══ */}
-      <section style={{ padding: '48px 24px 40px', maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
-          style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', marginBottom: 28 }}
-        >
-          QUEM USA NEXCONTROL NAO OPERA NO ESCURO:
-        </motion.p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }} className="g-4">
-          {[
-            { target: 400, suffix: '+', label: 'Operadores ativos' },
-            { target: 1, suffix: 'M+', label: 'Monitorados em operacoes' },
-            { target: 3000, suffix: '+', label: 'Metas analisadas' },
-          ].map(({ target, suffix, label }, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.12 }}
-              style={{ padding: '20px 16px' }}
-            >
-              <SocialProofNumber target={target} suffix={suffix} />
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', margin: '8px 0 0', fontWeight: 500 }}>{label}</p>
-            </motion.div>
-          ))}
-        </div>
-        <motion.p
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-          style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 20 }}
-        >
-          Dados atualizados continuamente pela plataforma
-        </motion.p>
-      </section>
+      <SocialProofSection />
 
       {/* ═══ LIVE DASHBOARD DEMO ═══ */}
       <p style={{ fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: 20 }}>Veja sua operacao acontecendo em tempo real:</p>

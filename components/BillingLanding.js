@@ -1,7 +1,9 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
 import Logo, { NexIcon } from './Logo'
+import { SLOTS } from '../lib/slots-data'
 
 const ease = [0.33,1,0.68,1]
 const fadeUp = (d=0) => ({initial:{opacity:0,y:16},whileInView:{opacity:1,y:0},viewport:{once:true},transition:{duration:0.5,delay:d,ease}})
@@ -223,6 +225,126 @@ export default function BillingLanding() {
           </motion.div>
         ))}
       </div>
+
+      {/* ═══ Slots Premium Spoiler ═══ */}
+      <motion.div {...fadeUp(0.1)} style={{ marginBottom: 48 }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 99,
+            background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.15)',
+            marginBottom: 16,
+          }}>
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#e53935', letterSpacing: '0.06em' }}>EXCLUSIVO PRO</span>
+          </div>
+          <h2 style={{ fontSize: 24, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginBottom: 8 }}>
+            +{SLOTS.length} slots premium liberados no PRO
+          </h2>
+          <p style={{ fontSize: 13, color: 'var(--t3)', maxWidth: 420, margin: '0 auto', lineHeight: 1.5 }}>
+            Slots mapeados por performance, organizados por provedor e nivel de retorno. Conteudo que so usuarios PRO conseguem visualizar.
+          </p>
+        </div>
+
+        {/* Mini stats */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 24, flexWrap: 'wrap' }}>
+          {[
+            { v: `+${SLOTS.length}`, l: 'slots mapeados' },
+            { v: '8', l: 'provedores' },
+            { v: '24/7', l: 'atualizado' },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: 20, fontWeight: 800, color: '#e53935', margin: '0 0 2px', fontFamily: 'var(--mono, monospace)' }}>{s.v}</p>
+              <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0, letterSpacing: '0.04em' }}>{s.l}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Spoiler grid — 6 locked cards */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+          gap: 12, marginBottom: 24,
+        }}>
+          {SLOTS.filter(s => s.performance === 'alta').slice(0, 6).map((slot, i) => {
+            const lvColor = '#22c55e'
+            const blurVar = 7 + (slot.id % 4)
+            return (
+              <motion.div key={slot.id} {...fadeUp(0.1 + i * 0.06)} style={{
+                background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(229,57,53,0.06)',
+                borderRadius: 14, overflow: 'hidden', position: 'relative',
+              }}>
+                {/* Shimmer */}
+                <div style={{ position: 'absolute', inset: 0, zIndex: 5, pointerEvents: 'none', overflow: 'hidden', borderRadius: 14 }}>
+                  <div style={{
+                    position: 'absolute', top: 0, left: '-100%', width: '60%', height: '100%',
+                    background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.03) 48%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.03) 52%, transparent 60%)',
+                    animation: `shine ${6 + i}s ease-in-out infinite`,
+                    animationDelay: `${i * 0.8}s`,
+                  }} />
+                </div>
+
+                {/* Image */}
+                <div style={{ aspectRatio: '16/10', position: 'relative', overflow: 'hidden' }}>
+                  {slot.image && (
+                    <img src={slot.image} alt="" style={{
+                      position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+                      filter: `blur(${blurVar}px) brightness(0.55) saturate(0.5)`,
+                    }} />
+                  )}
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.3))', zIndex: 1 }} />
+
+                  {/* Badges */}
+                  <span style={{
+                    position: 'absolute', top: 7, left: 7, zIndex: 3, padding: '3px 7px', borderRadius: 5,
+                    background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.08)',
+                    fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase',
+                  }}>{slot.provider.toUpperCase()}</span>
+                  <span style={{
+                    position: 'absolute', top: 7, right: 7, zIndex: 3, padding: '3px 7px', borderRadius: 5,
+                    background: `${lvColor}18`, border: `1px solid ${lvColor}30`,
+                    fontSize: 8, fontWeight: 700, color: lvColor, textTransform: 'uppercase',
+                  }}>ALTA</span>
+
+                  {/* Lock */}
+                  <div style={{ position: 'absolute', inset: 0, zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.8" strokeLinecap="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Skeleton */}
+                <div style={{ padding: '10px 10px 8px' }}>
+                  <div style={{ height: 10, width: '65%', borderRadius: 3, backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%)', animation: 'shimmer 2.5s ease-in-out infinite' }} />
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+
+        {/* Reinforcement text */}
+        <p style={{ fontSize: 12, color: 'var(--t4)', textAlign: 'center', marginBottom: 20, lineHeight: 1.5, maxWidth: 380, margin: '0 auto 20px' }}>
+          Voce esta vendo apenas uma versao limitada. Slots com maior performance nao ficam visiveis para contas gratuitas.
+        </p>
+
+        {/* CTA */}
+        <div style={{ textAlign: 'center' }}>
+          <Link href="/billing" style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            padding: '14px 32px', borderRadius: 14,
+            fontSize: 15, fontWeight: 700, textDecoration: 'none',
+            background: 'linear-gradient(135deg, #e53935, #c62828)', color: '#fff',
+            boxShadow: '0 6px 24px rgba(229,57,53,0.25)',
+          }}>
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+            Desbloquear Slots Premium
+          </Link>
+        </div>
+      </motion.div>
 
       {/* Footer */}
       <div style={{ textAlign:'center', padding:'20px 0' }}>

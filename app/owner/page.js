@@ -289,51 +289,68 @@ export default function OwnerPage() {
         <motion.div {...fadeUp(0, 0.3)} style={{ ...card, marginBottom: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>Ranking de admins</h3>
-            <span style={{ fontSize: 11, color: '#64748B' }}>Top 10 por metas</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 11, color: '#64748B' }}>Top 8 por metas</span>
+              <button
+                onClick={() => router.push('/owner/admins')}
+                style={{ fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 6, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: '#94A3B8', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,0.08)'; e.target.style.color = '#F1F5F9' }}
+                onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.04)'; e.target.style.color = '#94A3B8' }}
+              >
+                Ver todos
+              </button>
+            </div>
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  {['#', 'Admin', 'Metas', 'Operadores', 'Status'].map(h => (
+                  {['#', 'Admin', 'Metas', 'Ops', 'Plano', 'Atividade'].map(h => (
                     <th key={h} style={{ padding: '10px 14px', textAlign: 'left', color: '#64748B', fontWeight: 600, fontSize: 10, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {adminStats.slice(0, 10).map((a, i) => (
-                  <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                  >
-                    <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontWeight: 700, color: i < 3 ? '#22C55E' : '#64748B', fontSize: 13 }}>
-                      {i + 1}
-                    </td>
-                    <td style={{ padding: '12px 14px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 28, height: 28, borderRadius: 7, background: '#0c1424', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: '#94A3B8' }}>{(a.name || a.email)[0].toUpperCase()}</span>
+                {adminStats.slice(0, 8).map((a, i) => {
+                  const planColors = { PRO: { bg: 'rgba(34,197,94,0.08)', color: '#22C55E', border: 'rgba(34,197,94,0.2)' }, TRIAL: { bg: 'rgba(245,158,11,0.08)', color: '#F59E0B', border: 'rgba(245,158,11,0.2)' }, FREE: { bg: 'rgba(100,116,139,0.08)', color: '#64748B', border: 'rgba(100,116,139,0.2)' } }
+                  const plan = planColors[a.planStatus] || planColors.FREE
+                  const days = a.daysSinceActivity
+                  const activityDot = days <= 1 ? '#22C55E' : days <= 7 ? '#F59E0B' : '#EF4444'
+                  const relTime = !a.lastActivity ? 'nunca' : days === 0 ? 'hoje' : days === 1 ? 'ha 1 dia' : days < 30 ? `ha ${days} dias` : `ha ${Math.floor(days / 30)}m`
+                  return (
+                    <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.15s' }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontWeight: 700, color: i < 3 ? '#22C55E' : '#64748B', fontSize: 13 }}>
+                        {i + 1}
+                      </td>
+                      <td style={{ padding: '12px 14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 30, height: 30, borderRadius: 8, background: i < 3 ? 'rgba(34,197,94,0.1)' : '#0c1424', border: `1px solid ${i < 3 ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: i < 3 ? '#22C55E' : '#94A3B8' }}>{(a.name || a.email)[0].toUpperCase()}</span>
+                            <div style={{ position: 'absolute', bottom: -2, right: -2, width: 8, height: 8, borderRadius: '50%', background: activityDot, border: '2px solid #0c1424' }} />
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <p style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>{a.name || a.email.split('@')[0]}</p>
+                            <p style={{ fontSize: 10, color: '#64748B', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>{a.email}</p>
+                          </div>
                         </div>
-                        <div style={{ minWidth: 0 }}>
-                          <p style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>{a.name || a.email.split('@')[0]}</p>
-                          <p style={{ fontSize: 10, color: '#64748B', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>{a.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 15, fontWeight: 800, color: '#F1F5F9' }}>{a.metas}</td>
-                    <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 14, fontWeight: 600, color: '#94A3B8' }}>{a.operators}</td>
-                    <td style={{ padding: '12px 14px' }}>
-                      <span style={{
-                        fontSize: 10, fontWeight: 600, padding: '3px 10px', borderRadius: 5,
-                        background: a.hasActiveSub ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
-                        color: a.hasActiveSub ? '#22C55E' : '#EF4444',
-                        border: `1px solid ${a.hasActiveSub ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
-                      }}>
-                        {a.hasActiveSub ? 'Assinante' : 'Sem plano'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 15, fontWeight: 800, color: '#F1F5F9' }}>{a.metas}</td>
+                      <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 14, fontWeight: 600, color: '#94A3B8' }}>{a.operators}</td>
+                      <td style={{ padding: '12px 14px' }}>
+                        <span style={{
+                          fontSize: 10, fontWeight: 600, padding: '3px 10px', borderRadius: 5,
+                          background: plan.bg, color: plan.color, border: `1px solid ${plan.border}`,
+                        }}>
+                          {a.planStatus}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px 14px', fontSize: 11, color: days <= 1 ? '#22C55E' : days <= 7 ? '#94A3B8' : '#64748B' }}>{relTime}</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

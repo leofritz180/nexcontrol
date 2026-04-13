@@ -27,9 +27,9 @@ export async function POST(req) {
       { data: remessas },
       { data: payments },
     ] = await Promise.all([
-      sb.from('profiles').select('id,email,role,tenant_id,created_at'),
-      sb.from('tenants').select('id,name,created_at,trial_ends_at'),
-      sb.from('subscriptions').select('id,tenant_id,status,plan,operator_qty,created_at'),
+      sb.from('profiles').select('id,email,role,tenant_id,created_at,updated_at'),
+      sb.from('tenants').select('id,name,created_at,trial_end,subscription_status'),
+      sb.from('subscriptions').select('id,tenant_id,status,plan,operator_qty,expires_at,created_at'),
       sb.from('metas').select('id,operator_id,tenant_id,status,status_fechamento,quantidade_contas,lucro_final,created_at,fechada_em,deleted_at'),
       sb.from('remessas').select('id,meta_id,lucro,prejuizo,deposito,saque,resultado,created_at'),
       sb.from('asaas_payments').select('id,tenant_id,amount,status,created_at').order('created_at', { ascending: false }),
@@ -102,17 +102,37 @@ export async function POST(req) {
       const ms = allMetas.filter(m => m.tenant_id === tid)
       const fechadas = ms.filter(m => m.status_fechamento === 'fechada')
       const rems = allRem.filter(r => ms.some(m => m.id === r.meta_id))
-      const lastActivity = rems.length > 0 ? rems.sort((x, y) => new Date(y.created_at) - new Date(x.created_at))[0].created_at : null
       const paid = allPay.filter(p => p.tenant_id === tid && (p.status === 'RECEIVED' || p.status === 'CONFIRMED'))
-      const sub = allSubs.find(s => s.tenant_id === tid && s.status === 'active')
+
+      // Fix plan status: check subscriptions with expiry + tenant trial status
+      const hasSub = (subscriptions || []).some(s =>
+        s.tenant_id === tid &&
+        s.status === 'active' &&
+        (!s.expires_at || new Date(s.expires_at) > now)
+      )
+      const tenant = (tenants || []).find(t => t.id === tid)
+      const isTrial = tenant?.subscription_status === 'trial' && tenant?.trial_end && new Date(tenant.trial_end) > now
+      const planStatus = hasSub ? 'PRO' : isTrial ? 'TRIAL' : 'FREE'
+
+      // Last activity: most recent meta or remessa created_at
+      const metaDates = ms.map(m => m.created_at).filter(Boolean)
+      const remDates = rems.map(r => r.created_at).filter(Boolean)
+      const allDates = [...metaDates, ...remDates].sort((a, b) => new Date(b) - new Date(a))
+      const lastActivity = allDates.length > 0 ? allDates[0] : null
+
+      // Last seen: profile updated_at or lastActivity
+      const lastSeen = a.updated_at || lastActivity
+
       return {
         id: a.id, email: a.email, name: a.email.split('@')[0], tenant_id: tid, created_at: a.created_at,
         operators: ops, metas: ms.length, fechadas: fechadas.length,
-        remessas: rems.length, totalPaid: paid.reduce((s, p) => s + Number(p.amount || 0), 0),
-        lastActivity, hasActiveSub: !!sub,
+        remessas: rems.length, totalRemessas: rems.length,
+        totalPaid: paid.reduce((s, p) => s + Number(p.amount || 0), 0),
+        lastActivity, lastSeen,
+        hasActiveSub: hasSub, planStatus,
         daysSinceActivity: lastActivity ? Math.floor((now - new Date(lastActivity)) / 86400000) : 999,
       }
-    }).sort((a, b) => b.metas - a.metas)
+    }).sort((a, b) => b.metas - a.metas || b.operators - a.operators || (new Date(b.lastActivity || 0) - new Date(a.lastActivity || 0)))
 
     // Alerts
     const alerts = []
@@ -124,7 +144,7 @@ export async function POST(req) {
     if (noMeta.length > 0) alerts.push({ text: `${noMeta.length} cliente(s) nunca criaram uma meta`, type: 'warn' })
     const unpaid = allPay.filter(p => p.status === 'PENDING')
     if (unpaid.length > 0) alerts.push({ text: `${unpaid.length} cobranca(s) pendente(s)`, type: 'critical' })
-    const expired = (tenants || []).filter(t => t.trial_ends_at && new Date(t.trial_ends_at) < now)
+    const expired = (tenants || []).filter(t => t.trial_end && new Date(t.trial_end) < now)
     const expiredNoSub = expired.filter(t => !allSubs.find(s => s.tenant_id === t.id && s.status === 'active'))
     if (expiredNoSub.length > 0) alerts.push({ text: `${expiredNoSub.length} trial(s) expirado(s) sem assinatura`, type: 'critical' })
 
@@ -166,7 +186,7 @@ export async function POST(req) {
         withMeta, withRemessa, withSub,
       },
       activity: { activeToday, active7, active30 },
-      adminStats: adminStats.slice(0, 20),
+      adminStats,
       alerts,
       insights,
       revenueByDay,

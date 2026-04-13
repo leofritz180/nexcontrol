@@ -36,7 +36,7 @@ function Sparkline({ data, color, height=32 }) {
   )
 }
 
-function ModalFechamento({ meta, remessas, operador, opModel, onClose, onSaved }) {
+function ModalFechamento({ meta, remessas, operador, opModel, payModel, payValue, onClose, onSaved }) {
   const apenasBau = opModel === 'apenas_bau'
   const lucroRem = remessas.reduce((a,r)=>a+Number(r.lucro||0),0)
   const prejRem  = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
@@ -50,11 +50,20 @@ function ModalFechamento({ meta, remessas, operador, opModel, onClose, onSaved }
 
   const lucroFinal = useMemo(()=>liqRem+Number(salario||0)+Number(bau||0)-Number(custo||0)-Number(taxa||0),[salario,bau,custo,taxa,liqRem])
 
+  // Calculo automatico pagamento operador
+  const deps = Number(meta.quantidade_contas || 0)
+  const pgtoOp = useMemo(() => {
+    if (!operador || meta.operator_id === meta.admin_id) return 0 // admin nao paga a si mesmo
+    if (payModel === 'percentual') return lucroFinal > 0 ? lucroFinal * (payValue / 100) : 0
+    return deps * payValue // fixo por dep
+  }, [payModel, payValue, lucroFinal, deps, operador])
+
   async function save() {
     if (saving) return
     setSaving(true); setError('')
     const { data:updated, error:err } = await supabase.from('metas').update({
       salario:Number(salario||0), bau:Number(bau||0), custo_fixo:Number(custo||0), taxa_agente:Number(taxa||0),
+      pagamento_operador: pgtoOp,
       lucro_final:lucroFinal, status:'finalizada',
       status_fechamento:'fechada', fechada_em:new Date().toISOString(),
     }).eq('id',meta.id).neq('status_fechamento','fechada').select()
@@ -145,6 +154,17 @@ function ModalFechamento({ meta, remessas, operador, opModel, onClose, onSaved }
               {lucroFinal>=0?'+':''}R$ {fmt(lucroFinal)}
             </p>
           </div>
+
+          {/* Pagamento do operador */}
+          {pgtoOp > 0 && operador && (
+            <div style={{ background:'rgba(59,130,246,0.06)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:12, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:8 }}>
+              <div>
+                <p className="t-label" style={{ marginBottom:2 }}>Pagar a {getName(operador)}</p>
+                <p className="t-small">{payModel === 'percentual' ? `${payValue}% do lucro` : `${deps} deps × R$ ${fmt(payValue)}`}</p>
+              </div>
+              <p className="t-num" style={{ fontSize:18, fontWeight:700, color:'#60a5fa' }}>R$ {fmt(pgtoOp)}</p>
+            </div>
+          )}
 
           {error && <div className="alert-error" style={{ display:'flex', alignItems:'center', gap:8 }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
 
@@ -540,6 +560,8 @@ export default function AdminPage() {
             remessas={remessas.filter(r=>r.meta_id===modalMeta.id)}
             operador={operators.find(o=>o.id===modalMeta.operator_id)}
             opModel={tenant?.operation_model || 'salario_bau'}
+            payModel={tenant?.operator_payment_model || 'fixo_dep'}
+            payValue={Number(tenant?.operator_payment_value ?? 2)}
             onClose={()=>setModalMeta(null)}
             onSaved={loadAll}
           />
@@ -1549,6 +1571,53 @@ export default function AdminPage() {
                     </button>
                   )
                 })}
+              </div>
+            </motion.div>
+
+            {/* Operator payment config */}
+            <motion.div className="card" style={{ padding: 20, marginBottom: 20 }} {...fadeUp(0.1)}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Pagamento de operadores</span>
+              </div>
+              <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+                {[
+                  { key: 'fixo_dep', label: 'Fixo por depositante', desc: 'Ex: R$ 2,00 por dep' },
+                  { key: 'percentual', label: '% do lucro final', desc: 'Ex: 15% do lucro' },
+                ].map(opt => {
+                  const active = (tenant?.operator_payment_model || 'fixo_dep') === opt.key
+                  return (
+                    <button key={opt.key} onClick={async () => {
+                      await supabase.from('tenants').update({ operator_payment_model: opt.key }).eq('id', profile.tenant_id)
+                      setTenant(prev => ({ ...prev, operator_payment_model: opt.key }))
+                    }} style={{
+                      flex: 1, padding: '12px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                      background: active ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${active ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.05)'}`,
+                      textAlign: 'left', transition: 'all 0.2s',
+                    }}>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: active ? '#22c55e' : 'var(--t2)', margin: '0 0 2px' }}>{opt.label}</p>
+                      <p style={{ fontSize: 10, color: active ? 'rgba(34,197,94,0.6)' : 'var(--t4)', margin: 0 }}>{opt.desc}</p>
+                    </button>
+                  )
+                })}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <label className="t-label" style={{ flexShrink: 0 }}>
+                  {(tenant?.operator_payment_model || 'fixo_dep') === 'fixo_dep' ? 'Valor por depositante (R$)' : 'Percentual do lucro (%)'}
+                </label>
+                <input className="input" type="number" step="0.01" min="0"
+                  value={tenant?.operator_payment_value ?? 2}
+                  onChange={async (e) => {
+                    const val = Number(e.target.value)
+                    await supabase.from('tenants').update({ operator_payment_value: val }).eq('id', profile.tenant_id)
+                    setTenant(prev => ({ ...prev, operator_payment_value: val }))
+                  }}
+                  style={{ padding: '8px 12px', fontSize: 14, maxWidth: 120 }}
+                />
+                <span style={{ fontSize: 12, color: 'var(--t3)' }}>
+                  {(tenant?.operator_payment_model || 'fixo_dep') === 'fixo_dep' ? 'por depositante' : '% do lucro'}
+                </span>
               </div>
             </motion.div>
 

@@ -58,12 +58,12 @@ function SlotCard({ slot, index, isPro }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.5), ease }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={clicked ? { opacity: 1, y: 0, scale: [1, 0.97, 1] } : { opacity: 1, y: 0 }}
+      transition={{ duration: clicked ? 0.35 : 0.3, delay: clicked ? 0 : Math.min(index * 0.03, 0.5), ease }}
       onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      animate={clicked ? { scale: [1, 0.97, 1] } : {}}
-      transition={clicked ? { duration: 0.35 } : {}}
       style={{
         minHeight: 200,
         background: locked

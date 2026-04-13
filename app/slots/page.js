@@ -68,118 +68,116 @@ function SlotCard({ slot, index, isPro }) {
         background: `linear-gradient(135deg, ${isAlta ? 'rgba(229,57,53,0.08)' : 'rgba(245,158,11,0.08)'}, rgba(255,255,255,0.02))`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
-        filter: locked ? 'blur(2px) brightness(0.55)' : 'none',
-        transition: 'filter 0.3s',
       }}>
         {/* Real image or fallback */}
         {hasImage ? (
           <img
             src={slot.image}
-            alt={slot.name}
+            alt={isPro ? slot.name : ''}
             onError={() => setImgError(true)}
             style={{
               position: 'absolute', inset: 0, width: '100%', height: '100%',
               objectFit: 'cover',
-              transition: 'transform 0.4s',
+              transition: 'transform 0.4s, filter 0.3s',
               transform: hovered && !locked ? 'scale(1.05)' : 'scale(1)',
+              filter: locked ? 'blur(14px) brightness(0.35) saturate(0.3)' : 'none',
             }}
           />
         ) : (
-          /* Fallback — premium placeholder */
           <div style={{
             position: 'absolute', inset: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
             background: `linear-gradient(145deg, #0c1220 0%, ${isAlta ? 'rgba(229,57,53,0.06)' : 'rgba(245,158,11,0.06)'} 100%)`,
-          }}>
-            <p style={{
-              fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.2)',
-              textTransform: 'uppercase', letterSpacing: '0.04em',
-              textAlign: 'center', padding: '0 16px', lineHeight: 1.3,
-            }}>
-              {slot.name}
-            </p>
-          </div>
+            filter: locked ? 'brightness(0.4)' : 'none',
+          }} />
         )}
 
-        {/* Performance badge */}
-        <div style={{
-          position: 'absolute', top: 10, left: 10, zIndex: 2,
-          padding: '4px 10px', borderRadius: 7,
-          background: isAlta ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.15)',
-          border: `1px solid ${isAlta ? 'rgba(34,197,94,0.25)' : 'rgba(245,158,11,0.25)'}`,
-          fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-          color: isAlta ? '#22c55e' : '#f59e0b',
-          textTransform: 'uppercase',
-        }}>
-          {isAlta ? 'Alta' : 'Media'}
-        </div>
+        {/* Dark overlay for locked */}
+        {locked && (
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 2,
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%)',
+          }} />
+        )}
 
-        {/* Provider badge */}
+        {/* Provider badge — always visible */}
         <div style={{
-          position: 'absolute', top: 10, right: 10, zIndex: 2,
+          position: 'absolute', top: 10, left: 10, zIndex: 4,
           padding: '4px 10px', borderRadius: 7,
-          background: 'rgba(0,0,0,0.4)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.6)',
+          background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)',
+          fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.7)',
           textTransform: 'uppercase', letterSpacing: '0.04em',
           backdropFilter: 'blur(4px)',
         }}>
           {slot.provider.toUpperCase()}
         </div>
-      </div>
 
-      {/* Lock overlay — only image area */}
-      {locked && (
+        {/* Performance badge — always visible */}
         <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0,
-          aspectRatio: '16/10',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 3,
+          position: 'absolute', top: 10, right: 10, zIndex: 4,
+          padding: '4px 10px', borderRadius: 7,
+          background: isAlta ? 'rgba(34,197,94,0.2)' : slot.performance === 'baixa' ? 'rgba(59,130,246,0.2)' : 'rgba(245,158,11,0.2)',
+          border: `1px solid ${isAlta ? 'rgba(34,197,94,0.3)' : slot.performance === 'baixa' ? 'rgba(59,130,246,0.3)' : 'rgba(245,158,11,0.3)'}`,
+          fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
+          color: isAlta ? '#22c55e' : slot.performance === 'baixa' ? '#60a5fa' : '#f59e0b',
+          textTransform: 'uppercase',
         }}>
-          <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-            padding: '12px 18px', borderRadius: 12,
-            background: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
-          }}>
-            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="rgba(229,57,53,0.8)" strokeWidth="1.8" strokeLinecap="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" />
-              <path d="M7 11V7a5 5 0 0110 0v4" />
-            </svg>
-            <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.06em' }}>EXCLUSIVO PRO</span>
-          </div>
+          {isAlta ? 'Alta' : slot.performance === 'baixa' ? 'Baixa' : 'Media'}
         </div>
-      )}
+
+        {/* Lock icon — center of image */}
+        {locked && (
+          <div style={{
+            position: 'relative', zIndex: 3,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+          }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 12,
+              background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.25)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0110 0v4" />
+              </svg>
+            </div>
+            <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.08em' }}>EXCLUSIVO PRO</span>
+          </div>
+        )}
+      </div>
 
       {/* Content */}
       <div style={{
-        padding: '16px 16px 14px', flex: 1, display: 'flex', flexDirection: 'column', gap: 10,
-        opacity: locked ? 0.7 : 1, transition: 'opacity 0.3s',
+        padding: '14px 14px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8,
       }}>
-        {/* Name */}
-        <h3 style={{
-          fontSize: 15, fontWeight: 700, color: '#fff', margin: 0,
-          letterSpacing: '-0.01em',
-          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>
-          {slot.name}
-        </h3>
-
-        {/* Stars */}
-        <Stars count={slot.rating} />
-
-        {/* Tags */}
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-          {slot.tags.map(tag => (
-            <span key={tag} style={{
-              fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 6,
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
-              color: 'rgba(255,255,255,0.45)',
+        {/* Name — skeleton for locked */}
+        {locked ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ height: 14, width: '75%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'shimmer 2s ease-in-out infinite', backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%)' }} />
+            <div style={{ height: 10, width: '50%', borderRadius: 3, background: 'rgba(255,255,255,0.04)', animation: 'shimmer 2s ease-in-out infinite 0.3s', backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%)' }} />
+          </div>
+        ) : (
+          <>
+            <h3 style={{
+              fontSize: 15, fontWeight: 700, color: '#fff', margin: 0,
+              letterSpacing: '-0.01em',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             }}>
-              {tag}
-            </span>
-          ))}
-        </div>
+              {slot.name}
+            </h3>
+            <Stars count={slot.rating} />
+            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+              {slot.tags.map(tag => (
+                <span key={tag} style={{
+                  fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 6,
+                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
+                  color: 'rgba(255,255,255,0.45)',
+                }}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Spacer */}
         <div style={{ flex: 1 }} />
@@ -197,7 +195,7 @@ function SlotCard({ slot, index, isPro }) {
             <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
             </svg>
-            Seja PRO
+            Desbloquear
           </Link>
         ) : (
           <motion.button

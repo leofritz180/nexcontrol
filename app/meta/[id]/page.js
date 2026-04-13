@@ -182,8 +182,8 @@ export default function MetaPage() {
   }
 
   // ── Feedback operacional instantaneo ──
-  function getOperationalFeedback(diff, statusProblema, nContas) {
-    const perConta = nContas > 0 ? diff / nContas : diff
+  function getOperationalFeedback(diff, statusProblema, nContasRemessa) {
+    const perConta = nContasRemessa > 0 ? diff / nContasRemessa : diff
     const avgPrej = remessas.length > 0
       ? remessas.filter(r => Number(r.resultado || 0) < 0).reduce((a, r) => a + Math.abs(Number(r.resultado || 0)), 0) / Math.max(remessas.filter(r => Number(r.resultado || 0) < 0).length, 1)
       : 0
@@ -262,8 +262,8 @@ export default function MetaPage() {
     return null
   }
 
-  function showFeedback(diff, statusProblema) {
-    const fb = getOperationalFeedback(diff, statusProblema, Number(meta?.quantidade_contas || 0))
+  function showFeedback(diff, statusProblema, nContasRem) {
+    const fb = getOperationalFeedback(diff, statusProblema, nContasRem)
     if (fb) {
       setFeedback(fb)
       setTimeout(() => setFeedback(null), 6000)
@@ -296,7 +296,7 @@ export default function MetaPage() {
       titulo:tituloR.trim()||`${tipo==='redeposito'?'Redepósito':tipo==='ajuste'?'Ajuste':'Remessa'} ${remessas.length+1}`,
       tipo, saldo_inicial:si, deposito:d, saque:s,
       lucro:diff>0?diff:0, prejuizo:diff<0?Math.abs(diff):0, resultado:diff,
-      resultado_por_conta:meta?.quantidade_contas&&Number(meta.quantidade_contas)>0?Number((Math.abs(diff)/Number(meta.quantidade_contas)).toFixed(2)):0,
+      resultado_por_conta: Number(contasRemessa||0) > 0 ? Number((diff / Number(contasRemessa)).toFixed(2)) : 0,
       tenant_id:profile?.tenant_id,
       status_problema:statusProb,
       contas_remessa: tipo === 'redeposito' ? 0 : Number(contasRemessa||0),
@@ -304,7 +304,7 @@ export default function MetaPage() {
     setSalvando(false)
     if (err) { setError(err.message); return }
     setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa('')
-    showFeedback(diff, statusProb)
+    showFeedback(diff, statusProb, Number(contasRemessa||0))
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
     fetchData()
   }
@@ -350,7 +350,7 @@ export default function MetaPage() {
     await supabase.from('remessas').update({
       deposito:d, saque:s,
       lucro:diff>0?diff:0, prejuizo:diff<0?Math.abs(diff):0, resultado:diff,
-      resultado_por_conta:meta?.quantidade_contas&&Number(meta.quantidade_contas)>0?Number((Math.abs(diff)/Number(meta.quantidade_contas)).toFixed(2)):0,
+      resultado_por_conta: Number(editRem.contas_remessa||0) > 0 ? Number((diff / Number(editRem.contas_remessa)).toFixed(2)) : 0,
     }).eq('id',editRem.id)
     setEditSaving(false)
     setEditRem(null)

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Header from '../../../components/Header'
 import { supabase } from '../../../lib/supabase/client'
 import { notifyRemessaCreated } from '../../../lib/notify'
+import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -185,6 +186,8 @@ export default function MetaPage() {
     const slots = tenantData?.favorite_slots
     setTenantSlots(Array.isArray(slots) ? slots : [])
     setLoading(false)
+    // Insight: meta parada
+    if (m && r && u) evaluateOnLoad({ remessas: r, meta: m, userId: u.id })
   }
 
   // ── Feedback operacional instantaneo ──
@@ -319,6 +322,12 @@ export default function MetaPage() {
     showFeedback(diff, statusProb, Number(contasRemessa||0))
     await fetchData()
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
+    // Insights inteligentes (camada separada, nao altera notify.js)
+    evaluateAfterRemessa({
+      remessas, meta,
+      novaRemessa: { resultado: diff, contas_remessa: Number(contasRemessa||0) },
+      userId: user?.id,
+    })
   }
 
   async function toggleStatus() {

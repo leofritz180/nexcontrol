@@ -742,7 +742,7 @@ export default function AdminPage() {
       </AnimatePresence>
 
       <Onboarding/>
-      <ProBanner blockedCount={6}/>
+      {!(sub?.status === 'active' && new Date(sub.expires_at) > new Date()) && <ProBanner blockedCount={6}/>}
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
@@ -1190,8 +1190,8 @@ export default function AdminPage() {
             </motion.div>
           </div>
 
-          {/* PRO locked cards */}
-          <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginTop:24 }}>
+          {/* PRO locked cards — only show if NOT PRO active */}
+          {!(sub?.status === 'active' && new Date(sub.expires_at) > new Date()) && <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginTop:24 }}>
             <ProLockedCard title="Previsao inteligente" description="Previsoes que aumentam seu lucro. Pare de operar no escuro — saiba quanto voce vai faturar nos proximos 30 dias." icon="M13 2L3 14h9l-1 8 10-12h-9l1-8z">
               <div><div style={{height:14,width:'60%',background:'rgba(34,197,94,0.1)',borderRadius:3,marginBottom:6}}/><div style={{height:20,width:'45%',background:'rgba(34,197,94,0.08)',borderRadius:3}}/></div>
             </ProLockedCard>
@@ -1201,7 +1201,7 @@ export default function AdminPage() {
             <ProLockedCard title="Alertas estrategicos" description="Decisoes baseadas em dados reais. Detecte queda de performance, operadores inativos e metas em risco antes que virem prejuizo." icon="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5">
               <div>{[1,2,3].map(i=>(<div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'3px 0'}}><div style={{width:4,height:4,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/><div style={{height:8,width:`${60+i*10}%`,background:'rgba(255,255,255,0.03)',borderRadius:2}}/></div>))}</div>
             </ProLockedCard>
-          </div>
+          </div>}
         </motion.div>)}
 
         {/* ═══ OPERATIONS ═══ */}

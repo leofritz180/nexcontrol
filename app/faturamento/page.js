@@ -116,8 +116,11 @@ export default function FaturamentoPage() {
   const [goalInput,setGoalInput]=useState('')
   const [savingGoal,setSavingGoal]=useState(false)
   const [showShowcase,setShowShowcase]=useState(false)
+  const [subData,setSubData]=useState(null)
 
   useEffect(()=>{ checkAndLoad() },[])
+
+  const isPro = subData?.status === 'active' && (!subData.expires_at || new Date(subData.expires_at) > new Date())
 
   async function checkAndLoad() {
     const {data:s}=await supabase.auth.getSession()
@@ -126,17 +129,19 @@ export default function FaturamentoPage() {
     setUser(u)
     const {data:p}=await supabase.from('profiles').select('*').eq('id',u.id).maybeSingle()
     if(!p||p.role!=='admin'){router.push('/operator');return}
-    setProfile(p); loadAll()
+    setProfile(p); loadAll(p.tenant_id)
   }
 
-  async function loadAll() {
+  async function loadAll(tid) {
     setLoading(true)
-    const [{data:ops},{data:ms},{data:rs}]=await Promise.all([
+    const [{data:ops},{data:ms},{data:rs},{data:subRow}]=await Promise.all([
       supabase.from('profiles').select('*').eq('role','operator').order('created_at',{ascending:false}),
       supabase.from('metas').select('*').order('created_at',{ascending:false}),
       supabase.from('remessas').select('*').order('created_at',{ascending:false}),
+      supabase.from('subscriptions').select('*').eq('tenant_id',tid||profile?.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
     ])
     setOperators(ops||[]); setMetas((ms||[]).filter(m=>!m.deleted_at)); setRemessas(rs||[])
+    if(subRow) setSubData(subRow)
     setLoading(false)
   }
 
@@ -596,8 +601,8 @@ export default function FaturamentoPage() {
             )
           })()}
 
-          {/* PRO locked */}
-          <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14,marginBottom:24}}>
+          {/* PRO locked — only show if NOT PRO */}
+          {!isPro && <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14,marginBottom:24}}>
             <ProLockedCard title="Projecao de lucro" description="Veja quanto voce pode faturar nos proximos 30 dias mantendo o ritmo atual. Projecao automatica baseada nas suas metas fechadas." icon="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z">
               <div><div style={{height:14,width:'55%',background:'rgba(34,197,94,0.08)',borderRadius:3,marginBottom:5}}/><div style={{height:18,width:'40%',background:'rgba(34,197,94,0.06)',borderRadius:3}}/></div>
             </ProLockedCard>
@@ -607,7 +612,7 @@ export default function FaturamentoPage() {
             <ProLockedCard title="Heatmap de performance" description="Mapa visual mostrando os melhores dias e horarios da sua operacao. Identifique padroes e otimize seu tempo." icon="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z">
               <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2}}>{Array.from({length:14}).map((_,i)=>(<div key={i} style={{width:10,height:10,borderRadius:2,background:'rgba(255,255,255,0.03)'}}/>))}</div>
             </ProLockedCard>
-          </div>
+          </div>}
 
           {/* Mini chart + Quick stats */}
           <div className="g-side" style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16}}>

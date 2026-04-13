@@ -40,7 +40,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
     ...(isAdmin && userEmail === OWNER_EMAIL ? [{ href:'/owner', label:'Owner', icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' }] : []),
   ]
 
-  const subActive = subscription?.status === 'active'
+  const subActive = subscription?.status === 'active' && (!subscription.expires_at || new Date(subscription.expires_at) > new Date())
 
   const content = (
     <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>

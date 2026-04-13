@@ -41,15 +41,27 @@ export default function SubscriptionGate({ children }) {
       const now = new Date()
       const trialEnd = new Date(t.trial_end)
 
-      if ((t.subscription_status === 'trial' && now < trialEnd) || t.subscription_status === 'active') {
-        finish('ok'); return
-      }
-
+      // First check: active subscription in subscriptions table (source of truth)
       const { data: sub } = await supabase.from('subscriptions')
         .select('status,expires_at').eq('tenant_id', p.tenant_id).eq('status', 'active')
         .order('created_at', { ascending: false }).limit(1).maybeSingle()
 
-      finish(sub && new Date(sub.expires_at) > now ? 'ok' : 'blocked')
+      if (sub && new Date(sub.expires_at) > now) {
+        finish('ok'); return
+      }
+
+      // Second check: tenant-level status
+      if (t.subscription_status === 'active') {
+        // tenant says active but no valid subscription found — allow but may be stale
+        finish('ok'); return
+      }
+
+      // Third check: trial
+      if (t.subscription_status === 'trial' && now < trialEnd) {
+        finish('ok'); return
+      }
+
+      finish('blocked')
     } catch {
       finish('ok')
     }

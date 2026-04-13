@@ -364,6 +364,8 @@ export default function OperadoresPage() {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('ranking')
   const [selectedOp, setSelectedOp] = useState(null)
+  const [invSaving, setInvSaving] = useState(false)
+  const [invMsg, setInvMsg] = useState('')
 
   useEffect(() => { checkAndLoad() }, [])
 
@@ -394,6 +396,21 @@ export default function OperadoresPage() {
     if (t) setTenant(t)
     if (s2) setSub(s2)
     setLoading(false)
+  }
+
+  async function sendInvite() {
+    if (!profile?.tenant_id) return
+    setInvSaving(true); setInvMsg('')
+    const { data, error: err } = await supabase.from('invites').insert({
+      tenant_id: profile.tenant_id,
+      role: 'operator',
+    }).select().single()
+    setInvSaving(false)
+    if (err) { setInvMsg('Erro: ' + err.message); return }
+    const link = `${window.location.origin}/invite?token=${data.token}`
+    await navigator.clipboard.writeText(link)
+    setInvMsg('Link copiado!')
+    setTimeout(() => setInvMsg(''), 4000)
   }
 
   const closedMetas = useMemo(() => metas.filter(m => m.status_fechamento === 'fechada'), [metas])
@@ -579,15 +596,19 @@ export default function OperadoresPage() {
         {/* EQUIPE */}
         {tab === 'equipe' && (
           <motion.div key="equipe" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-            <motion.div {...fadeUp(0)} style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
-              <button onClick={() => router.push('/admin')} style={{
+            <motion.div {...fadeUp(0)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, marginBottom: 20 }}>
+              {invMsg && (
+                <span style={{ fontSize: 12, fontWeight: 600, color: invMsg.startsWith('Erro') ? '#ef4444' : '#22c55e' }}>{invMsg}</span>
+              )}
+              <button onClick={sendInvite} disabled={invSaving} style={{
                 padding: '9px 18px', fontSize: 13, fontWeight: 600,
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 10, color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
+                background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)',
+                borderRadius: 10, color: '#22c55e', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 7, transition: 'all 0.2s ease',
+                opacity: invSaving ? 0.6 : 1,
               }}>
-                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Convidar
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                {invSaving ? 'Gerando...' : 'Gerar link de convite'}
               </button>
             </motion.div>
 

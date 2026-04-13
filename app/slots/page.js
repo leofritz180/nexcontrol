@@ -59,8 +59,8 @@ function SlotCard({ slot, index, isPro }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
-      animate={clicked ? { opacity: 1, y: 0, scale: [1, 0.97, 1] } : { opacity: 1, y: 0 }}
-      transition={{ duration: clicked ? 0.35 : 0.3, delay: clicked ? 0 : Math.min(index * 0.03, 0.5), ease }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.4), ease }}
       onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -84,18 +84,11 @@ function SlotCard({ slot, index, isPro }) {
         cursor: locked ? 'pointer' : 'default',
       }}
     >
-      {/* Shimmer sweep on locked cards */}
+      {/* Shimmer sweep on locked cards — CSS only, no JS */}
       {locked && (
-        <div style={{
-          position: 'absolute', inset: 0, zIndex: 5, pointerEvents: 'none', overflow: 'hidden', borderRadius: 18,
-        }}>
-          <div style={{
-            position: 'absolute', top: 0, left: '-100%', width: '60%', height: '100%',
-            background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.03) 48%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.03) 52%, transparent 60%)',
-            animation: `shine ${6 + (slot.id % 3)}s ease-in-out infinite`,
-            animationDelay: `${(slot.id % 5) * 0.8}s`,
-          }} />
-        </div>
+        <div className="shine-card" style={{
+          position: 'absolute', inset: 0, zIndex: 5, pointerEvents: 'none', borderRadius: 18,
+        }} />
       )}
 
       {/* Image area */}
@@ -159,35 +152,24 @@ function SlotCard({ slot, index, isPro }) {
           {isAlta ? 'Alta' : slot.performance === 'baixa' ? 'Baixa' : 'Media'}
         </div>
 
-        {/* Lock element — glassmorphism center */}
+        {/* Lock icon center */}
         {locked && (
-          <motion.div
-            animate={{ scale: [1, 1.04, 1] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            style={{
-              position: 'relative', zIndex: 3,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-            }}
-          >
+          <div style={{
+            position: 'relative', zIndex: 3,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
+          }}>
             <div style={{
-              width: 38, height: 38, borderRadius: 11,
-              background: 'rgba(0,0,0,0.35)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.3), 0 0 20px rgba(229,57,53,0.06)',
+              width: 36, height: 36, borderRadius: 10,
+              background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="1.8" strokeLinecap="round">
+              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.8" strokeLinecap="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" />
                 <path d="M7 11V7a5 5 0 0110 0v4" />
               </svg>
             </div>
-            <span style={{
-              fontSize: 8, fontWeight: 700, letterSpacing: '0.08em',
-              color: 'rgba(255,255,255,0.3)',
-              textShadow: '0 1px 4px rgba(0,0,0,0.5)',
-            }}>EXCLUSIVO PRO</span>
-          </motion.div>
+            <span style={{ fontSize: 8, fontWeight: 600, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.06em' }}>PRO</span>
+          </div>
         )}
       </div>
 
@@ -211,18 +193,6 @@ function SlotCard({ slot, index, isPro }) {
         )}
 
         <div style={{ flex: 1 }} />
-
-        {/* Clicked feedback */}
-        {locked && clicked && (
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            style={{ fontSize: 10, fontWeight: 600, color: '#e53935', textAlign: 'center', marginBottom: 4 }}
-          >
-            Disponivel no PRO
-          </motion.div>
-        )}
 
         {locked ? (
           <Link href="/billing" onClick={e => e.stopPropagation()} style={{

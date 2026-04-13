@@ -353,9 +353,9 @@ export default function MetaPage() {
   const pctAcerto = remessas.length>0?Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100):0
 
   const fbCfg = {
-    good: { bg: 'var(--profit-dim)', border: 'var(--profit-border)', color: 'var(--profit)', iconPath: 'M20 6L9 17l-5-5' },
-    warn: { bg: 'var(--warn-dim)', border: 'var(--warn-border)', color: 'var(--warn)', iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' },
-    critical: { bg: 'var(--loss-dim)', border: 'var(--loss-border)', color: 'var(--loss)', iconPath: 'M18 6L6 18M6 6l12 12' },
+    good: { bg: 'linear-gradient(145deg, #0a1a12, #0c1424)', border: 'rgba(34,197,94,0.3)', color: '#22C55E', iconPath: 'M20 6L9 17l-5-5' },
+    warn: { bg: 'linear-gradient(145deg, #1a1608, #14120a)', border: 'rgba(245,158,11,0.3)', color: '#F59E0B', iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' },
+    critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: '#EF4444', iconPath: 'M18 6L6 18M6 6l12 12' },
   }
 
   return (
@@ -374,10 +374,11 @@ export default function MetaPage() {
               transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
               style={{
                 position: 'fixed', top: 20, right: 20, zIndex: 9999,
-                maxWidth: 380, padding: '16px 20px', borderRadius: 14,
-                background: c.bg, border: `1px solid ${c.border}`,
-                boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
-                display: 'flex', alignItems: 'flex-start', gap: 12,
+                maxWidth: 400, padding: '18px 22px', borderRadius: 16,
+                background: c.bg, border: `1.5px solid ${c.border}`,
+                boxShadow: '0 16px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03)',
+                backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+                display: 'flex', alignItems: 'flex-start', gap: 14,
                 cursor: 'pointer',
               }}
               onClick={() => setFeedback(null)}
@@ -386,15 +387,15 @@ export default function MetaPage() {
                 <path d={c.iconPath} />
               </svg>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: c.color, margin: '0 0 3px' }}>{feedback.title}</p>
-                <p style={{ fontSize: 12, color: 'var(--t2)', margin: 0, lineHeight: 1.4 }}>{feedback.text}</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: c.color, margin: '0 0 4px' }}>{feedback.title}</p>
+                <p style={{ fontSize: 12, color: '#CBD5E1', margin: 0, lineHeight: 1.5 }}>{feedback.text}</p>
               </div>
               {/* Progress bar timer */}
               <motion.div
                 initial={{ width: '100%' }}
                 animate={{ width: '0%' }}
                 transition={{ duration: 6, ease: 'linear' }}
-                style={{ position: 'absolute', bottom: 0, left: 0, height: 2, borderRadius: '0 0 14px 14px', background: c.color, opacity: 0.4 }}
+                style={{ position: 'absolute', bottom: 0, left: 0, height: 3, borderRadius: '0 0 16px 16px', background: c.color, opacity: 0.5 }}
               />
             </motion.div>
           )

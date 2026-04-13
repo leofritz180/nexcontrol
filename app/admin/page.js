@@ -356,6 +356,7 @@ export default function AdminPage() {
   const [refreshing, setRefreshing] = useState(false)
   const [trashMetas, setTrashMetas] = useState([])
   const [heroPeriod, setHeroPeriod] = useState('all')
+  const [costs, setCosts] = useState([])
   const tabRef = useRef(null)
   const [tabLine, setTabLine] = useState({ left: 0, width: 0 })
 
@@ -388,14 +389,16 @@ export default function AdminPage() {
 
   async function loadAll(forceUserId, forceTenantId) {
     setLoading(true)
-    const [{ data:ops },{ data:ms },{ data:rs },{ data:inv },{ data:t },{ data:s2 }] = await Promise.all([
+    const [{ data:ops },{ data:ms },{ data:rs },{ data:inv },{ data:t },{ data:s2 },{ data:costsData }] = await Promise.all([
       supabase.from('profiles').select('*').eq('role','operator').order('created_at',{ascending:false}),
       supabase.from('metas').select('*').order('created_at',{ascending:false}),
       supabase.from('remessas').select('*').order('created_at',{ascending:false}),
       supabase.from('invites').select('*').order('created_at',{ascending:false}),
       supabase.from('tenants').select('*').eq('id',forceTenantId||profile?.tenant_id).maybeSingle(),
       supabase.from('subscriptions').select('*').eq('tenant_id',forceTenantId||profile?.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
+      supabase.from('costs').select('amount,date').eq('tenant_id',forceTenantId||profile?.tenant_id),
     ])
+    setCosts(costsData||[])
     // Detect new remessas for notification
     const newRs = rs||[]
     if (prevRemCount.current > 0 && newRs.length > prevRemCount.current) {
@@ -502,8 +505,14 @@ export default function AdminPage() {
     const avgCustoPorMeta = fechadas.length>0 ? totalCustosFechadas/fechadas.length : 0
     const avgPrejPerConta = totalContasFechadas>0 ? prej/totalContasFechadas : 0
     const breakEvenContas = avgBauPerConta>avgPrejPerConta ? Math.ceil(avgCustoPorMeta/(avgBauPerConta-avgPrejPerConta)) : 0
-    return { lucro,prej,liq:lucro-prej,totalDep,totalSaq,lucroHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal,lucroPerConta,lucroPerMeta,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas }
-  },[operators,metas,remessas])
+    // Costs subtraction
+    const todayISO = new Date().toISOString().slice(0,10)
+    const custosHoje = costs.filter(c=>c.date===todayISO).reduce((a,c)=>a+Number(c.amount||0),0)
+    const custosTotal = costs.reduce((a,c)=>a+Number(c.amount||0),0)
+    const lucroHojeNet = lucroHoje - custosHoje
+    const lucroFinalTotalNet = lucroFinalTotal - custosTotal
+    return { lucro,prej,liq:lucro-prej,totalDep,totalSaq,lucroHoje:lucroHojeNet,custosHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal:lucroFinalTotalNet,custosTotal,lucroPerConta,lucroPerMeta,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas }
+  },[operators,metas,remessas,costs])
 
   // ── Hero card: lucro final por periodo selecionado ──
   const heroLucro = useMemo(()=>{
@@ -622,8 +631,8 @@ export default function AdminPage() {
   }, [remessas])
 
   const kpis = [
-    { label:'Lucro hoje', rawValue:Math.abs(global.lucroHoje), value:`R$ ${fmt(Math.abs(global.lucroHoje))}`, sub:global.lucroHoje>=0?'Fechamentos de hoje':'Resultado negativo', color:global.lucroHoje>=0?'var(--profit)':'var(--loss)', card:global.lucroHoje>=0?'card-profit':'card-loss', badge:'ao vivo', isLive: true },
-    { label:'Lucro final total', rawValue:global.lucroFinalTotal, value:`R$ ${fmt(global.lucroFinalTotal)}`, sub:'Metas 100% fechadas', color:'var(--brand-bright)', card:'card-primary', badge:'fechado' },
+    { label:'Lucro hoje', rawValue:Math.abs(global.lucroHoje), value:`R$ ${fmt(Math.abs(global.lucroHoje))}`, sub:global.custosHoje>0?`Custos: -R$ ${fmt(global.custosHoje)}`:(global.lucroHoje>=0?'Fechamentos de hoje':'Resultado negativo'), color:global.lucroHoje>=0?'var(--profit)':'var(--loss)', card:global.lucroHoje>=0?'card-profit':'card-loss', badge:'ao vivo', isLive: true },
+    { label:'Lucro final total', rawValue:global.lucroFinalTotal, value:`R$ ${fmt(global.lucroFinalTotal)}`, sub:global.custosTotal>0?`Custos: -R$ ${fmt(global.custosTotal)}`:'Metas 100% fechadas', color:'var(--brand-bright)', card:'card-primary', badge:'fechado' },
     { label:'Total depositado', rawValue:global.totalDep, value:`R$ ${fmt(global.totalDep)}`, sub:'Admin + operadores', color:'var(--info)', card:'card-info', badge:'depositos' },
     { label:'Total sacado', rawValue:global.totalSaq, value:`R$ ${fmt(global.totalSaq)}`, sub:'Admin + operadores', color:'var(--warn)', card:'card-warn', badge:'saques' },
     { label:'Lucro/conta', rawValue:Math.abs(global.lucroPerConta), value:`R$ ${fmt(Math.abs(global.lucroPerConta))}`, sub:'Media por depositante', color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', card:global.lucroPerConta>=0?'card-profit':'card-loss', badge:'rentabilidade' },

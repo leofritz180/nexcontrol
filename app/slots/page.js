@@ -300,7 +300,7 @@ export default function SlotsPage() {
   }
 
   return (
-    <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
+    <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px' }}>
 
         {/* Header */}

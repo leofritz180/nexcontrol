@@ -295,11 +295,11 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
       style={{
         padding: '20px 22px', borderRadius: 14, cursor: 'pointer', position: 'relative', overflow: 'hidden',
         background: isTop1
-          ? h ? 'rgba(34,197,94,0.06)' : 'rgba(34,197,94,0.03)'
-          : h ? 'rgba(255,255,255,0.035)' : 'rgba(255,255,255,0.02)',
+          ? h ? 'rgba(34,197,94,0.04)' : 'rgba(34,197,94,0.02)'
+          : h ? 'rgba(255,255,255,0.03)' : 'var(--surface)',
         border: `1px solid ${isTop1
-          ? h ? 'rgba(34,197,94,0.18)' : 'rgba(34,197,94,0.1)'
-          : h ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`,
+          ? h ? 'var(--profit-border)' : 'rgba(34,197,94,0.08)'
+          : h ? 'var(--b2)' : 'var(--b1)'}`,
         transform: h ? 'translateY(-1px)' : 'none',
         transition: 'all 0.3s ease',
       }}
@@ -320,10 +320,10 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
         {/* Avatar */}
         <div style={{
           width: 42, height: 42, borderRadius: 12, flexShrink: 0,
-          background: op.lucroFinal >= 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-          border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'}`,
+          background: op.lucroFinal >= 0 ? 'var(--profit-dim)' : 'var(--loss-dim)',
+          border: `1px solid ${op.lucroFinal >= 0 ? 'var(--profit-border)' : 'var(--loss-border)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 17, fontWeight: 800, color: '#fff',
+          fontSize: 17, fontWeight: 800, color: 'var(--t1)',
         }}>
           {getInitial(op)}
         </div>
@@ -345,18 +345,33 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
               }}>{badge.text}</span>
             )}
           </div>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{op.closedCount} meta{op.closedCount !== 1 ? 's' : ''} fechada{op.closedCount !== 1 ? 's' : ''}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 10, color: 'var(--t3)' }}>{op.closedCount} meta{op.closedCount !== 1 ? 's' : ''}</span>
+            <span style={{ fontSize: 10, color: 'var(--t4)' }}>{op.totalDeposit} dep{op.totalDeposit !== 1 ? 's' : ''}</span>
+            {op.totalDeposit > 0 && (
+              <span style={{ fontSize: 10, color: 'var(--t4)', fontFamily: 'var(--mono, monospace)' }}>
+                R$ {fmt(op.lucroFinal / op.totalDeposit)}/conta
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Lucro */}
-        <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 110 }}>
-          <p style={{
-            fontSize: 20, fontWeight: 800, margin: 0, fontFamily: 'var(--mono, monospace)',
-            color: op.lucroFinal >= 0 ? '#22c55e' : '#ef4444',
-            letterSpacing: '-0.02em',
-          }}>
-            {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
-          </p>
+        {/* Stats right */}
+        <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexShrink: 0 }}>
+          <div style={{ textAlign: 'right' }}>
+            <p style={{ fontSize: 9, color: 'var(--t4)', margin: '0 0 2px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Deps</p>
+            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>{op.totalDeposit}</p>
+          </div>
+          <div style={{ textAlign: 'right', minWidth: 100 }}>
+            <p style={{ fontSize: 9, color: 'var(--t4)', margin: '0 0 2px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Lucro</p>
+            <p style={{
+              fontSize: 18, fontWeight: 800, margin: 0, fontFamily: 'var(--mono, monospace)',
+              color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)',
+              letterSpacing: '-0.02em',
+            }}>
+              {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
+            </p>
+          </div>
         </div>
       </div>
 

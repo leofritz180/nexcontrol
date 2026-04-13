@@ -91,10 +91,10 @@ function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
       animate="visible"
       whileHover={{ y: -3, transition: { duration: 0.2 } }}
       style={{
-        padding: '22px 24px',
-        borderRadius: 14,
-        background: 'var(--surface)',
-        border: '1px solid var(--b1)',
+        padding: 22,
+        borderRadius: 16,
+        background: 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
+        border: '1px solid rgba(255,255,255,0.05)',
         boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
         cursor: 'default',
         position: 'relative',
@@ -112,10 +112,10 @@ function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
         }}>
           {icon}
         </div>
-        <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>{label}</span>
+        <span style={{ fontSize: 10, color: 'var(--t3)', fontWeight: 500, opacity: 0.4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
       </div>
       <p style={{
-        fontFamily: 'var(--mono)', fontSize: 26, fontWeight: 800,
+        fontFamily: 'var(--mono)', fontSize: 32, fontWeight: 800,
         color: 'var(--t2)', margin: 0, lineHeight: 1, letterSpacing: '-0.02em'
       }}>
         <CountUp value={Math.abs(Number(value || 0))} prefix={prefix || ''} suffix={suffix || ''} integer={!!integer} />
@@ -348,12 +348,12 @@ export default function OperatorPage() {
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
 
           {/* ── HEADER ── */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--t1)', margin: '0 0 4px' }}>
+              <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--t1)', margin: '0 0 4px' }}>
                 Ola, {getName(profile)}
               </h1>
-              <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>
+              <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, opacity: 0.75 }}>
                 {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
               </p>
             </div>
@@ -392,8 +392,8 @@ export default function OperatorPage() {
           <div className="nxc-kpi-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 14,
-            marginBottom: 24,
+            gap: 16,
+            marginBottom: 32,
           }}>
             <KpiCard
               index={0}
@@ -751,7 +751,7 @@ export default function OperatorPage() {
                 LEFT COLUMN: Metas
                ════════════════════════════════════════════ */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
                 <div>
                   <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', margin: '0 0 2px' }}>Suas metas</h2>
                   <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Acompanhe o progresso das suas operacoes</p>
@@ -808,7 +808,7 @@ export default function OperatorPage() {
                   </button>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
                   {/* ── META ATIVA EM DESTAQUE ── */}
                   {activeMeta && (() => {
@@ -825,11 +825,11 @@ export default function OperatorPage() {
                         initial="hidden"
                         animate="visible"
                         style={{
-                          padding: '24px 28px',
+                          padding: 28,
                           borderRadius: 16,
                           background: 'var(--surface)',
-                          border: '1px solid rgba(34,197,94,0.25)',
-                          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+                          border: '2px solid rgba(34,197,94,0.3)',
+                          boxShadow: '0 0 30px rgba(34,197,94,0.06)',
                           position: 'relative',
                           overflow: 'hidden',
                         }}
@@ -839,7 +839,7 @@ export default function OperatorPage() {
 
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                            <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>
+                            <h3 style={{ fontSize: 24, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>
                               {activeMeta.quantidade_contas || 0} DEP {activeMeta.rede || ''}
                             </h3>
                             <RedeBadge rede={activeMeta.rede} />
@@ -855,13 +855,13 @@ export default function OperatorPage() {
                               {done}/{target} contas
                             </span>
                           </div>
-                          <div style={{ height: 6, borderRadius: 3, background: 'var(--b1)', overflow: 'hidden' }}>
+                          <div style={{ height: 8, borderRadius: 4, background: 'var(--b1)', overflow: 'hidden' }}>
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${progress}%` }}
                               transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
                               style={{
-                                height: '100%', borderRadius: 3,
+                                height: '100%', borderRadius: 4,
                                 background: 'linear-gradient(90deg, #22C55E, #16A34A)',
                               }}
                             />
@@ -891,11 +891,11 @@ export default function OperatorPage() {
                         <button
                           onClick={() => router.push(`/meta/${activeMeta.id}`)}
                           style={{
-                            width: '100%', padding: '12px 24px',
+                            width: '100%', padding: '14px 28px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                             fontSize: 14, fontWeight: 700, color: '#fff',
                             background: '#22C55E', border: 'none', borderRadius: 11,
-                            cursor: 'pointer', boxShadow: '0 2px 12px rgba(34,197,94,0.25)',
+                            cursor: 'pointer', boxShadow: '0 4px 16px rgba(34,197,94,0.3)',
                             transition: 'all 0.2s ease',
                           }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#16A34A' }}
@@ -912,7 +912,7 @@ export default function OperatorPage() {
                     {activeMeta && (
                       <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--t3)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Todas as metas</h3>
                     )}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                       {metas.filter(m => {
                         if (metaFilter === 'ativas') return m.status === 'ativa' || m.status === 'em_andamento'
                         if (metaFilter === 'fechadas') return m.status_fechamento === 'fechada'
@@ -933,7 +933,7 @@ export default function OperatorPage() {
                             whileHover={{ y: -2, borderColor: 'rgba(229,57,53,0.3)', transition: { duration: 0.15 } }}
                             onClick={() => router.push(`/meta/${meta.id}`)}
                             style={{
-                              padding: '16px 20px',
+                              padding: '18px 22px',
                               borderRadius: 14,
                               background: 'var(--surface)',
                               border: '1px solid var(--b1)',
@@ -997,13 +997,13 @@ export default function OperatorPage() {
             {/* ════════════════════════════════════════════
                 RIGHT SIDEBAR
                ════════════════════════════════════════════ */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
               {/* ── Stats pessoais ── */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.1 }}
-                style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
                 <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 16px' }}>Stats pessoais</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -1015,11 +1015,11 @@ export default function OperatorPage() {
                   ].map((item, i) => (
                     <div key={i} style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      padding: '10px 0',
+                      padding: '11px 0',
                       borderBottom: i < 3 ? '1px solid var(--b1)' : 'none',
                     }}>
                       <span style={{ fontSize: 12, color: 'var(--t3)' }}>{item.label}</span>
-                      <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: 'var(--t2)' }}>{item.value}</span>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: 'var(--t2)' }}>{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -1029,7 +1029,7 @@ export default function OperatorPage() {
               <motion.div
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.16 }}
-                style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                   <div style={{ color: '#F59E0B' }}><IconAward /></div>
@@ -1050,7 +1050,7 @@ export default function OperatorPage() {
               <motion.div
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.22 }}
-                style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
                 <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px' }}>Conquistas</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -1064,7 +1064,7 @@ export default function OperatorPage() {
               <motion.div
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.28 }}
-                style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                   <div style={{ color: alertas.total > 0 ? '#F59E0B' : 'var(--t3)' }}><IconAlert /></div>
@@ -1121,7 +1121,7 @@ export default function OperatorPage() {
               <motion.div
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.34 }}
-                style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
                 <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px' }}>Acoes rapidas</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

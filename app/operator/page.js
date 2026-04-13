@@ -449,22 +449,48 @@ export default function OperatorPage() {
             }
           `}</style>
 
-          {/* ── META CREATION FORM (slide-down) ── */}
+          {/* ── MODO OPERACAO — Modal fullscreen ── */}
           <AnimatePresence>
             {showForm && (
               <motion.div
-                initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-                animate={{ opacity: 1, height: 'auto', marginBottom: 24 }}
-                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
-                style={{ overflow: 'hidden' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                style={{
+                  position: 'fixed', inset: 0, zIndex: 9000,
+                  background: 'rgba(2,4,8,0.85)', backdropFilter: 'blur(8px)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+                }}
+                onClick={e => { if (e.target === e.currentTarget) setShowForm(false) }}
               >
-                <div style={{
-                  padding: 28, borderRadius: 14,
-                  background: 'var(--surface)', border: '1px solid var(--b1)',
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+                onClick={e => e.stopPropagation()}
+                style={{
+                  width: '100%', maxWidth: 540, maxHeight: 'calc(100dvh - 40px)', overflowY: 'auto',
+                  padding: 32, borderRadius: 20,
+                  background: 'linear-gradient(160deg, #10141e, #080b14)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  boxShadow: '0 40px 100px rgba(0,0,0,0.7)',
                 }}>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', margin: '0 0 4px' }}>Iniciar nova meta</h2>
-                  <p style={{ fontSize: 12, color: 'var(--t3)', margin: '0 0 24px' }}>Ao criar, voce vai direto para a pagina da meta</p>
+                  {/* Header */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+                    <div>
+                      <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Modo Operacao</h2>
+                      <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Configure sua nova meta e inicie a operacao</p>
+                    </div>
+                    <button onClick={() => setShowForm(false)} style={{
+                      width: 34, height: 34, borderRadius: 10, border: '1px solid var(--b2)',
+                      background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', color: 'var(--t3)',
+                    }}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </div>
                   <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                     {/* Row 1 */}
                     <div className="nxc-form-row1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
@@ -593,6 +619,88 @@ export default function OperatorPage() {
                       </div>
                     </div>
 
+                    {/* Quick select contas */}
+                    <div>
+                      <label style={{ display: 'block', marginBottom: 8, fontSize: 11, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Selecao rapida</label>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        {[20, 30, 50, 60].map(n => (
+                          <button key={n} type="button" onClick={() => setContas(String(n))} style={{
+                            flex: 1, padding: '10px 0', borderRadius: 10, fontSize: 13, fontWeight: 700,
+                            fontFamily: 'var(--mono)', border: 'none', cursor: 'pointer',
+                            background: Number(contas) === n ? 'rgba(229,57,53,0.12)' : 'var(--raised)',
+                            color: Number(contas) === n ? '#e53935' : 'var(--t3)',
+                            border: `1px solid ${Number(contas) === n ? 'rgba(229,57,53,0.25)' : 'var(--b1)'}`,
+                            transition: 'all 0.2s',
+                          }}>{n}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Boas praticas */}
+                    <div style={{ padding: '16px 18px', borderRadius: 12, background: 'rgba(168,85,247,0.04)', border: '1px solid rgba(168,85,247,0.1)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>Boas praticas</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {[
+                          'Ate R$ 8/conta de prejuizo e aceitavel',
+                          'Acima de R$ 12/conta comeca a comprometer',
+                          'Sequencia negativa = troque de estrategia',
+                          'Registre todas as contas por remessa',
+                        ].map((tip, i) => (
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(168,85,247,0.4)', flexShrink: 0 }} />
+                            <span style={{ fontSize: 11, color: 'var(--t3)' }}>{tip}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Alertas do historico */}
+                    {(() => {
+                      const closed = metas.filter(m => m.status_fechamento === 'fechada')
+                      if (closed.length === 0) return null
+                      const alerts = []
+                      // Ultima meta com sequencia negativa
+                      const lastMeta = closed[0]
+                      const lastRems = remessas.filter(r => r.meta_id === lastMeta?.id)
+                      let negStreak = 0
+                      for (let i = lastRems.length - 1; i >= 0; i--) {
+                        if (Number(lastRems[i]?.resultado || 0) < 0) negStreak++; else break
+                      }
+                      if (negStreak >= 2) alerts.push(`Ultima meta teve ${negStreak} remessas negativas seguidas`)
+                      // Media geral
+                      const totalContas = closed.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+                      const totalRems = remessas.filter(r => closed.some(m => m.id === r.meta_id))
+                      const totalPrej = totalRems.reduce((a, r) => a + Number(r.prejuizo || 0), 0)
+                      const avgPrejPerConta = totalContas > 0 ? totalPrej / totalContas : 0
+                      if (avgPrejPerConta > 8) alerts.push(`Prejuizo medio acima do ideal: R$ ${fmt(avgPrejPerConta)}/conta`)
+                      if (alerts.length === 0) return null
+                      return (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {alerts.map((a, i) => (
+                            <div key={i} style={{ padding: '10px 14px', borderRadius: 10, background: 'var(--warn-dim)', border: '1px solid var(--warn-border)', display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--warn)' }}>
+                              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                              {a}
+                            </div>
+                          ))}
+                        </div>
+                      )
+                    })()}
+
+                    {/* Resumo */}
+                    {plataforma && rede && (
+                      <div style={{ padding: '14px 18px', borderRadius: 12, background: 'var(--raised)', border: '1px solid var(--b1)' }}>
+                        <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 8px' }}>Resumo</p>
+                        <div style={{ display: 'flex', gap: 16 }}>
+                          <span style={{ fontSize: 12, color: 'var(--t2)' }}>{plataforma}</span>
+                          <span style={{ fontSize: 12, color: 'var(--t3)' }}>{rede}</span>
+                          <span style={{ fontSize: 12, color: 'var(--t2)', fontFamily: 'var(--mono)' }}>{contas} contas</span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Submit */}
                     <button
                       type="submit"
@@ -613,7 +721,7 @@ export default function OperatorPage() {
                           Criando...
                         </>
                       ) : (
-                        <><IconBolt /> Iniciar meta</>
+                        <><IconBolt /> Iniciar operacao</>
                       )}
                     </button>
                   </form>
@@ -628,7 +736,7 @@ export default function OperatorPage() {
                       {error}
                     </div>
                   )}
-                </div>
+              </motion.div>
               </motion.div>
             )}
           </AnimatePresence>

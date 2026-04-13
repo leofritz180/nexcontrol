@@ -58,15 +58,18 @@ function SlotCard({ slot, index, isPro }) {
 
   return (
     <motion.div
-      {...fadeUp(index, 0.08)}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.5), ease }}
       onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       animate={clicked ? { scale: [1, 0.97, 1] } : {}}
       transition={clicked ? { duration: 0.35 } : {}}
       style={{
+        minHeight: 200,
         background: locked
-          ? 'linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005))'
+          ? 'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))'
           : 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
         border: `1px solid ${hovered
           ? locked ? 'rgba(229,57,53,0.18)' : 'rgba(255,255,255,0.1)'
@@ -120,9 +123,11 @@ function SlotCard({ slot, index, isPro }) {
         ) : (
           <div style={{
             position: 'absolute', inset: 0,
-            background: `linear-gradient(145deg, #0c1220, ${isAlta ? 'rgba(229,57,53,0.06)' : 'rgba(245,158,11,0.06)'})`,
-            filter: locked ? 'brightness(0.5)' : 'none',
-          }} />
+            background: `linear-gradient(145deg, #151c2c, ${isAlta ? 'rgba(229,57,53,0.12)' : 'rgba(245,158,11,0.12)'})`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {!locked && <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.15)', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center', padding: '0 12px' }}>{slot.name}</p>}
+          </div>
         )}
 
         {/* Gradient overlay for locked */}

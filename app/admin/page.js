@@ -1868,7 +1868,7 @@ export default function AdminPage() {
                 const depDone=fechada?totalContas:Math.min(remDone,totalContas)
                 const progPct=fechada?100:(totalContas>0?Math.min(100,(depDone/totalContas)*100):0)
                 const displayVal=fechada&&m.lucro_final!=null?Number(m.lucro_final):liqR
-                const isPos=fechada||liqR>=0
+                const isPos=displayVal>=0
                 const metaDate=new Date(m.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'})
 
                 return (
@@ -1928,7 +1928,7 @@ export default function AdminPage() {
                           color:isPos?'#22C55E':'#EF4444',
                           opacity:0.9,
                         }}>
-                          {isPos?'+':''}R$ {fmt(Math.abs(displayVal))}
+                          {isPos?'+':'-'}R$ {fmt(Math.abs(displayVal))}
                         </span>
                       </div>
                     </div>

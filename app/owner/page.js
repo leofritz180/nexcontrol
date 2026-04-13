@@ -10,6 +10,20 @@ const fmtInt = v => Number(v || 0).toLocaleString('pt-BR')
 const ease = [0.33, 1, 0.68, 1]
 const fadeUp = (i, base = 0) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35, delay: base + i * 0.06, ease } })
 
+function relativeTime(dateStr) {
+  if (!dateStr) return 'nunca'
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'agora'
+  if (mins < 60) return `ha ${mins}min`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `ha ${hours}h`
+  const days = Math.floor(hours / 24)
+  if (days === 1) return 'ha 1 dia'
+  if (days < 30) return `ha ${days} dias`
+  return `ha ${Math.floor(days / 30)}m`
+}
+
 function CountUp({ value, prefix = '', suffix = '', duration = 1200, formatter = fmt }) {
   const [d, setD] = useState('0')
   const ref = useRef(null)
@@ -36,6 +50,8 @@ export default function OwnerPage() {
   const [data, setData] = useState(null)
   const [chartRange, setChartRange] = useState(30)
   const [hoveredBar, setHoveredBar] = useState(null)
+  const [adminSearch, setAdminSearch] = useState('')
+  const [selectedAdmin, setSelectedAdmin] = useState(null)
 
   useEffect(() => {
     async function init() {
@@ -287,10 +303,9 @@ export default function OwnerPage() {
 
         {/* ═══ 5. ADMIN RANKING ═══ */}
         <motion.div {...fadeUp(0, 0.3)} style={{ ...card, marginBottom: 28 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>Ranking de admins</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 11, color: '#64748B' }}>Top 8 por metas</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <button
                 onClick={() => router.push('/owner/admins')}
                 style={{ fontSize: 11, fontWeight: 600, padding: '5px 14px', borderRadius: 6, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: '#94A3B8', transition: 'all 0.2s' }}
@@ -301,25 +316,54 @@ export default function OwnerPage() {
               </button>
             </div>
           </div>
+
+          {/* Search bar */}
+          <div style={{ position: 'relative', marginBottom: 16 }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input
+              type="text"
+              value={adminSearch}
+              onChange={e => setAdminSearch(e.target.value)}
+              placeholder="Buscar admin por nome ou email..."
+              style={{
+                width: '100%', padding: '10px 14px 10px 36px', fontSize: 13,
+                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 10, color: '#F1F5F9', outline: 'none',
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={e => e.target.style.borderColor = 'rgba(229,57,53,0.3)'}
+              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+            />
+          </div>
+
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  {['#', 'Admin', 'Metas', 'Ops', 'Plano', 'Atividade'].map(h => (
+                  {['#', 'Admin', 'Metas', 'Ops', 'Plano', 'Ultima atividade'].map(h => (
                     <th key={h} style={{ padding: '10px 14px', textAlign: 'left', color: '#64748B', fontWeight: 600, fontSize: 10, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {adminStats.slice(0, 8).map((a, i) => {
+                {adminStats
+                  .filter(a => {
+                    if (!adminSearch.trim()) return true
+                    const q = adminSearch.toLowerCase()
+                    return (a.name || '').toLowerCase().includes(q) || (a.email || '').toLowerCase().includes(q)
+                  })
+                  .slice(0, 10)
+                  .map((a, i) => {
                   const planColors = { PRO: { bg: 'rgba(34,197,94,0.08)', color: '#22C55E', border: 'rgba(34,197,94,0.2)' }, TRIAL: { bg: 'rgba(245,158,11,0.08)', color: '#F59E0B', border: 'rgba(245,158,11,0.2)' }, FREE: { bg: 'rgba(100,116,139,0.08)', color: '#64748B', border: 'rgba(100,116,139,0.2)' } }
                   const plan = planColors[a.planStatus] || planColors.FREE
                   const days = a.daysSinceActivity
-                  const activityDot = days <= 1 ? '#22C55E' : days <= 7 ? '#F59E0B' : '#EF4444'
-                  const relTime = !a.lastActivity ? 'nunca' : days === 0 ? 'hoje' : days === 1 ? 'ha 1 dia' : days < 30 ? `ha ${days} dias` : `ha ${Math.floor(days / 30)}m`
+                  const activityDot = days <= 0 ? '#22C55E' : days <= 7 ? '#F59E0B' : '#EF4444'
+                  const relTime = relativeTime(a.lastActivity)
                   return (
-                    <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                    <tr key={a.id}
+                      style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.15s', cursor: 'pointer' }}
+                      onClick={() => setSelectedAdmin(selectedAdmin?.id === a.id ? null : a)}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
                       <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontWeight: 700, color: i < 3 ? '#22C55E' : '#64748B', fontSize: 13 }}>
@@ -340,14 +384,11 @@ export default function OwnerPage() {
                       <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 15, fontWeight: 800, color: '#F1F5F9' }}>{a.metas}</td>
                       <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 14, fontWeight: 600, color: '#94A3B8' }}>{a.operators}</td>
                       <td style={{ padding: '12px 14px' }}>
-                        <span style={{
-                          fontSize: 10, fontWeight: 600, padding: '3px 10px', borderRadius: 5,
-                          background: plan.bg, color: plan.color, border: `1px solid ${plan.border}`,
-                        }}>
+                        <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 10px', borderRadius: 5, background: plan.bg, color: plan.color, border: `1px solid ${plan.border}` }}>
                           {a.planStatus}
                         </span>
                       </td>
-                      <td style={{ padding: '12px 14px', fontSize: 11, color: days <= 1 ? '#22C55E' : days <= 7 ? '#94A3B8' : '#64748B' }}>{relTime}</td>
+                      <td style={{ padding: '12px 14px', fontSize: 11, color: days <= 0 ? '#22C55E' : days <= 7 ? '#94A3B8' : '#EF4444', fontWeight: days <= 0 ? 600 : 400 }}>{relTime}</td>
                     </tr>
                   )
                 })}
@@ -355,6 +396,60 @@ export default function OwnerPage() {
             </table>
           </div>
         </motion.div>
+
+        {/* ═══ ADMIN DETAIL DRAWER ═══ */}
+        {selectedAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            style={{ ...card, marginBottom: 28, position: 'relative' }}
+          >
+            <button onClick={() => setSelectedAdmin(null)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 4 }}>
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 18, fontWeight: 800, color: '#e53935' }}>{(selectedAdmin.name || selectedAdmin.email)[0].toUpperCase()}</span>
+              </div>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9', margin: '0 0 2px' }}>{selectedAdmin.name || selectedAdmin.email.split('@')[0]}</h3>
+                <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>{selectedAdmin.email}</p>
+              </div>
+              {(() => {
+                const planColors = { PRO: { bg: 'rgba(34,197,94,0.08)', color: '#22C55E', border: 'rgba(34,197,94,0.2)' }, TRIAL: { bg: 'rgba(245,158,11,0.08)', color: '#F59E0B', border: 'rgba(245,158,11,0.2)' }, FREE: { bg: 'rgba(100,116,139,0.08)', color: '#64748B', border: 'rgba(100,116,139,0.2)' } }
+                const plan = planColors[selectedAdmin.planStatus] || planColors.FREE
+                return <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 12px', borderRadius: 6, background: plan.bg, color: plan.color, border: `1px solid ${plan.border}`, marginLeft: 'auto' }}>{selectedAdmin.planStatus}</span>
+              })()}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
+              {[
+                { l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' },
+                { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#22C55E' },
+                { l: 'Operadores', v: selectedAdmin.operators, c: '#F1F5F9' },
+                { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' },
+              ].map((s, i) => (
+                <div key={i} style={{ textAlign: 'center', padding: '14px 8px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 22, fontWeight: 800, color: s.c, margin: '0 0 4px' }}>{s.v}</p>
+                  <p style={{ fontSize: 10, color: '#64748B', margin: 0, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{s.l}</p>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Total pago</p>
+                <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 18, fontWeight: 700, color: selectedAdmin.totalPaid > 0 ? '#22C55E' : '#64748B', margin: 0 }}>R$ {fmt(selectedAdmin.totalPaid)}</p>
+              </div>
+              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Ultima atividade</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: selectedAdmin.daysSinceActivity <= 0 ? '#22C55E' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444', margin: 0 }}>{relativeTime(selectedAdmin.lastActivity)}</p>
+              </div>
+            </div>
+            <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+              <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Conta criada em</p>
+              <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>{selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '--'}</p>
+            </div>
+          </motion.div>
+        )}
 
         {/* ═══ 6. ALERTS ═══ */}
         <motion.div {...fadeUp(1, 0.3)} style={{ ...card, marginBottom: 28 }}>

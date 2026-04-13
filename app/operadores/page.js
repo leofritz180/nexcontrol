@@ -349,7 +349,12 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
             <span style={{ fontSize: 10, color: 'var(--t3)' }}>{op.closedCount} meta{op.closedCount !== 1 ? 's' : ''}</span>
             <span style={{ fontSize: 10, color: 'var(--t4)' }}>{op.totalDeposit} dep{op.totalDeposit !== 1 ? 's' : ''}</span>
             {op.totalDeposit > 0 && (
-              <span style={{ fontSize: 10, color: 'var(--t4)', fontFamily: 'var(--mono, monospace)' }}>
+              <span style={{
+                fontSize: 9, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
+                padding: '2px 7px', borderRadius: 5,
+                background: 'rgba(229,57,53,0.08)', color: '#e53935',
+                border: '1px solid rgba(229,57,53,0.15)',
+              }}>
                 R$ {fmt(op.lucroFinal / op.totalDeposit)}/conta
               </span>
             )}

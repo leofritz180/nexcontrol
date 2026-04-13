@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase/client'
+import { markJustSignedUp } from '../../components/InstallPrompt'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -29,6 +30,7 @@ export default function SignupPage() {
     // Try to redirect directly if auto-confirmed
     const { data: session } = await supabase.auth.getSession()
     if (session?.session?.user) {
+      markJustSignedUp()
       router.push('/admin')
       return
     }

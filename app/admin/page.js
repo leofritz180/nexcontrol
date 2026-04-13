@@ -393,7 +393,10 @@ export default function AdminPage() {
     }
     prevRemCount.current = newRs.length
 
-    setOperators(ops||[]); setMetas((ms||[]).filter(m=>!m.deleted_at)); setTrashMetas((ms||[]).filter(m=>!!m.deleted_at)); setRemessas(newRs); setInvites(inv||[])
+    const activeMetas = (ms||[]).filter(m=>!m.deleted_at)
+    const activeMetaIds = new Set(activeMetas.map(m=>m.id))
+    const activeRems = newRs.filter(r=>activeMetaIds.has(r.meta_id))
+    setOperators(ops||[]); setMetas(activeMetas); setTrashMetas((ms||[]).filter(m=>!!m.deleted_at)); setRemessas(activeRems); setInvites(inv||[])
     if(t) setTenant(t); if(s2) setSub(s2)
     // Load admin own metas
     const adminId = forceUserId || profile?.id || user?.id

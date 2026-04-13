@@ -556,8 +556,10 @@ export default function RedesPage() {
       supabase.from('metas').select('*').order('created_at', { ascending: false }),
       supabase.from('remessas').select('*').order('created_at', { ascending: false }),
     ])
-    setMetas((ms || []).filter(m => !m.deleted_at))
-    setRemessas(rs || [])
+    const activeMetas = (ms || []).filter(m => !m.deleted_at)
+    const activeMetaIds = new Set(activeMetas.map(m => m.id))
+    setMetas(activeMetas)
+    setRemessas((rs || []).filter(r => activeMetaIds.has(r.meta_id)))
     setLoading(false)
   }
 

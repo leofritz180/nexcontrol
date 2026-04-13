@@ -525,9 +525,11 @@ export default function OperadoresPage() {
       supabase.from('subscriptions').select('*').eq('tenant_id', tid).order('created_at', { ascending: false }).limit(1).maybeSingle(),
       supabase.from('invites').select('*').order('created_at', { ascending: false }),
     ])
+    const activeMetas = (ms || []).filter(m => !m.deleted_at)
+    const activeMetaIds = new Set(activeMetas.map(m => m.id))
     setOperators(ops || [])
-    setMetas((ms || []).filter(m => !m.deleted_at))
-    setRemessas(rs || [])
+    setMetas(activeMetas)
+    setRemessas((rs || []).filter(r => activeMetaIds.has(r.meta_id)))
     setInvites(inv || [])
     if (t) setTenant(t)
     if (s2) setSub(s2)

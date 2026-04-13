@@ -140,7 +140,9 @@ export default function FaturamentoPage() {
       supabase.from('remessas').select('*').order('created_at',{ascending:false}),
       supabase.from('subscriptions').select('*').eq('tenant_id',tid||profile?.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
     ])
-    setOperators(ops||[]); setMetas((ms||[]).filter(m=>!m.deleted_at)); setRemessas(rs||[])
+    const activeMetas = (ms||[]).filter(m=>!m.deleted_at)
+    const activeMetaIds = new Set(activeMetas.map(m=>m.id))
+    setOperators(ops||[]); setMetas(activeMetas); setRemessas((rs||[]).filter(r=>activeMetaIds.has(r.meta_id)))
     if(subRow) setSubData(subRow)
     setLoading(false)
   }

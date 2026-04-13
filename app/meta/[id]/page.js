@@ -289,21 +289,28 @@ export default function MetaPage() {
       setFeedback(fb)
       setTimeout(() => setFeedback(null), 6000)
     }
-    // Push motivacional pro operador quando registra lucro
+    // Push pro operador em toda remessa
+    const perConta = nContasRem > 0 ? Math.abs(diff) / nContasRem : Math.abs(diff)
+    let pushTitle, pushBody
     if (diff >= 0) {
-      const msgs = [
-        'Mandou bem! Continua nesse ritmo.',
-        'Boa remessa! Segue firme.',
-        'Ai sim! Operacao no caminho certo.',
-        'Show de bola! Bora pra cima.',
-        'Ta voando! Mantem o foco.',
-      ]
-      const msg = msgs[Math.floor(Math.random() * msgs.length)]
-      fetch('/api/push/send', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: user?.id, title: 'Remessa registrada!', body: `+R$ ${fmt(diff)} — ${msg}`, url: `/meta/${id}` }),
-      }).catch(() => {})
+      const msgs = ['Mandou bem! Continua nesse ritmo.', 'Boa remessa! Segue firme.', 'Ai sim! Bora pra cima.', 'Show! Mantem o foco.', 'Ta voando!']
+      pushTitle = 'Remessa registrada!'
+      pushBody = `+R$ ${fmt(diff)} — ${msgs[Math.floor(Math.random() * msgs.length)]}`
+    } else if (perConta <= 8) {
+      const msgs = ['Faz parte da operacao. Segue firme.', 'Prejuizo controlado. Continua.', 'Normal, bora pra proxima!']
+      pushTitle = 'Remessa registrada'
+      pushBody = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta) — ${msgs[Math.floor(Math.random() * msgs.length)]}`
+    } else if (perConta <= 14) {
+      pushTitle = 'Remessa registrada'
+      pushBody = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta) — Fique atento nas proximas.`
+    } else {
+      pushTitle = 'Atencao na operacao'
+      pushBody = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta) — Prejuizo alto. Avalie com o admin.`
     }
+    fetch('/api/push/send', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: user?.id, title: pushTitle, body: pushBody, url: `/meta/${id}` }),
+    }).catch(() => {})
   }
 
   async function handleAdd(e) {

@@ -80,7 +80,7 @@ function SlotCard({ slot, index, isPro }) {
               objectFit: 'cover',
               transition: 'transform 0.4s, filter 0.3s',
               transform: hovered && !locked ? 'scale(1.05)' : 'scale(1)',
-              filter: locked ? 'blur(14px) brightness(0.35) saturate(0.3)' : 'none',
+              filter: locked ? 'blur(8px) brightness(0.6) saturate(0.6)' : 'none',
             }}
           />
         ) : (
@@ -95,7 +95,7 @@ function SlotCard({ slot, index, isPro }) {
         {locked && (
           <div style={{
             position: 'absolute', inset: 0, zIndex: 2,
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%)',
+            background: 'linear-gradient(180deg, transparent 20%, rgba(0,0,0,0.35) 100%)',
           }} />
         )}
 
@@ -131,16 +131,17 @@ function SlotCard({ slot, index, isPro }) {
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
           }}>
             <div style={{
-              width: 40, height: 40, borderRadius: 12,
-              background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.25)',
+              width: 36, height: 36, borderRadius: 10,
+              background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round">
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.8" strokeLinecap="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" />
                 <path d="M7 11V7a5 5 0 0110 0v4" />
               </svg>
             </div>
-            <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.08em' }}>EXCLUSIVO PRO</span>
+            <span style={{ fontSize: 8, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em' }}>PRO</span>
           </div>
         )}
       </div>
@@ -152,8 +153,8 @@ function SlotCard({ slot, index, isPro }) {
         {/* Name — skeleton for locked */}
         {locked ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ height: 14, width: '75%', borderRadius: 4, background: 'rgba(255,255,255,0.06)', animation: 'shimmer 2s ease-in-out infinite', backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%)' }} />
-            <div style={{ height: 10, width: '50%', borderRadius: 3, background: 'rgba(255,255,255,0.04)', animation: 'shimmer 2s ease-in-out infinite 0.3s', backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%)' }} />
+            <div style={{ height: 12, width: '70%', borderRadius: 4, backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%)', animation: 'shimmer 2.5s ease-in-out infinite' }} />
+            <div style={{ height: 8, width: '45%', borderRadius: 3, backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.03) 75%)', animation: 'shimmer 2.5s ease-in-out infinite 0.4s' }} />
           </div>
         ) : (
           <>

@@ -31,37 +31,72 @@ function Stars({ count }) {
 function SlotCard({ slot, index, isPro }) {
   const [hovered, setHovered] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [denied, setDenied] = useState(false)
+  const [clicked, setClicked] = useState(false)
   const [imgError, setImgError] = useState(false)
   const locked = !isPro
   const hasImage = slot.image && !imgError
 
+  // Slight blur variation per card for organic feel
+  const blurVar = 7 + (slot.id % 4)
+  const brightVar = 0.55 + (slot.id % 3) * 0.05
+
+  function handleClick() {
+    if (!locked) return
+    setClicked(true)
+    setTimeout(() => setClicked(false), 600)
+  }
+
   function copyName() {
-    if (locked) { setDenied(true); setTimeout(() => setDenied(false), 2000); return }
+    if (locked) { handleClick(); return }
     navigator.clipboard.writeText(slot.name)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
   const isAlta = slot.performance === 'alta'
+  const lvColor = isAlta ? '#22c55e' : slot.performance === 'baixa' ? '#60a5fa' : '#f59e0b'
 
   return (
     <motion.div
-      {...fadeUp(index, 0.1)}
+      {...fadeUp(index, 0.08)}
+      onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      animate={clicked ? { scale: [1, 0.97, 1] } : {}}
+      transition={clicked ? { duration: 0.35 } : {}}
       style={{
-        background: 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
-        border: `1px solid ${hovered ? (locked ? 'rgba(229,57,53,0.15)' : 'rgba(255,255,255,0.1)') : 'rgba(255,255,255,0.05)'}`,
+        background: locked
+          ? 'linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005))'
+          : 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
+        border: `1px solid ${hovered
+          ? locked ? 'rgba(229,57,53,0.18)' : 'rgba(255,255,255,0.1)'
+          : locked ? 'rgba(229,57,53,0.06)' : 'rgba(255,255,255,0.05)'}`,
         borderRadius: 18,
         overflow: 'hidden',
-        transform: hovered && !locked ? 'translateY(-3px) scale(1.01)' : 'none',
-        boxShadow: hovered ? (locked ? '0 0 20px rgba(229,57,53,0.06)' : '0 16px 50px rgba(0,0,0,0.4)') : 'none',
+        transform: hovered ? (locked ? 'scale(1.008)' : 'translateY(-3px) scale(1.01)') : 'none',
+        boxShadow: hovered
+          ? locked ? '0 0 25px rgba(229,57,53,0.08), inset 0 0 20px rgba(229,57,53,0.02)' : '0 16px 50px rgba(0,0,0,0.4)'
+          : 'none',
         transition: 'all 0.3s ease',
         display: 'flex', flexDirection: 'column',
         position: 'relative',
+        cursor: locked ? 'pointer' : 'default',
       }}
     >
+      {/* Shimmer sweep on locked cards */}
+      {locked && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 5, pointerEvents: 'none', overflow: 'hidden', borderRadius: 18,
+        }}>
+          <div style={{
+            position: 'absolute', top: 0, left: '-100%', width: '60%', height: '100%',
+            background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.03) 48%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.03) 52%, transparent 60%)',
+            animation: `shine ${6 + (slot.id % 3)}s ease-in-out infinite`,
+            animationDelay: `${(slot.id % 5) * 0.8}s`,
+          }} />
+        </div>
+      )}
+
       {/* Image area */}
       <div style={{
         position: 'relative', aspectRatio: '16/10',
@@ -69,7 +104,6 @@ function SlotCard({ slot, index, isPro }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
       }}>
-        {/* Real image or fallback */}
         {hasImage ? (
           <img
             src={slot.image}
@@ -80,30 +114,30 @@ function SlotCard({ slot, index, isPro }) {
               objectFit: 'cover',
               transition: 'transform 0.4s, filter 0.3s',
               transform: hovered && !locked ? 'scale(1.05)' : 'scale(1)',
-              filter: locked ? 'blur(8px) brightness(0.6) saturate(0.6)' : 'none',
+              filter: locked ? `blur(${blurVar}px) brightness(${brightVar}) saturate(0.55)` : 'none',
             }}
           />
         ) : (
           <div style={{
             position: 'absolute', inset: 0,
-            background: `linear-gradient(145deg, #0c1220 0%, ${isAlta ? 'rgba(229,57,53,0.06)' : 'rgba(245,158,11,0.06)'} 100%)`,
-            filter: locked ? 'brightness(0.4)' : 'none',
+            background: `linear-gradient(145deg, #0c1220, ${isAlta ? 'rgba(229,57,53,0.06)' : 'rgba(245,158,11,0.06)'})`,
+            filter: locked ? 'brightness(0.5)' : 'none',
           }} />
         )}
 
-        {/* Dark overlay for locked */}
+        {/* Gradient overlay for locked */}
         {locked && (
           <div style={{
             position: 'absolute', inset: 0, zIndex: 2,
-            background: 'linear-gradient(180deg, transparent 20%, rgba(0,0,0,0.35) 100%)',
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%)',
           }} />
         )}
 
-        {/* Provider badge — always visible */}
+        {/* Provider badge */}
         <div style={{
           position: 'absolute', top: 10, left: 10, zIndex: 4,
           padding: '4px 10px', borderRadius: 7,
-          background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)',
+          background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.08)',
           fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.7)',
           textTransform: 'uppercase', letterSpacing: '0.04em',
           backdropFilter: 'blur(4px)',
@@ -111,46 +145,51 @@ function SlotCard({ slot, index, isPro }) {
           {slot.provider.toUpperCase()}
         </div>
 
-        {/* Performance badge — always visible */}
+        {/* Performance badge */}
         <div style={{
           position: 'absolute', top: 10, right: 10, zIndex: 4,
           padding: '4px 10px', borderRadius: 7,
-          background: isAlta ? 'rgba(34,197,94,0.2)' : slot.performance === 'baixa' ? 'rgba(59,130,246,0.2)' : 'rgba(245,158,11,0.2)',
-          border: `1px solid ${isAlta ? 'rgba(34,197,94,0.3)' : slot.performance === 'baixa' ? 'rgba(59,130,246,0.3)' : 'rgba(245,158,11,0.3)'}`,
+          background: `${lvColor}18`, border: `1px solid ${lvColor}30`,
           fontSize: 9, fontWeight: 700, letterSpacing: '0.06em',
-          color: isAlta ? '#22c55e' : slot.performance === 'baixa' ? '#60a5fa' : '#f59e0b',
-          textTransform: 'uppercase',
+          color: lvColor, textTransform: 'uppercase',
         }}>
           {isAlta ? 'Alta' : slot.performance === 'baixa' ? 'Baixa' : 'Media'}
         </div>
 
-        {/* Lock icon — center of image */}
+        {/* Lock element — glassmorphism center */}
         {locked && (
-          <div style={{
-            position: 'relative', zIndex: 3,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-          }}>
+          <motion.div
+            animate={{ scale: [1, 1.04, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            style={{
+              position: 'relative', zIndex: 3,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
+            }}
+          >
             <div style={{
-              width: 36, height: 36, borderRadius: 10,
-              background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
+              width: 38, height: 38, borderRadius: 11,
+              background: 'rgba(0,0,0,0.35)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.3), 0 0 20px rgba(229,57,53,0.06)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.8" strokeLinecap="round">
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="1.8" strokeLinecap="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" />
                 <path d="M7 11V7a5 5 0 0110 0v4" />
               </svg>
             </div>
-            <span style={{ fontSize: 8, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em' }}>PRO</span>
-          </div>
+            <span style={{
+              fontSize: 8, fontWeight: 700, letterSpacing: '0.08em',
+              color: 'rgba(255,255,255,0.3)',
+              textShadow: '0 1px 4px rgba(0,0,0,0.5)',
+            }}>EXCLUSIVO PRO</span>
+          </motion.div>
         )}
       </div>
 
       {/* Content */}
-      <div style={{
-        padding: '14px 14px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8,
-      }}>
-        {/* Name — skeleton for locked */}
+      <div style={{ padding: '14px 14px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {locked ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ height: 12, width: '70%', borderRadius: 4, backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%)', animation: 'shimmer 2.5s ease-in-out infinite' }} />
@@ -158,45 +197,45 @@ function SlotCard({ slot, index, isPro }) {
           </div>
         ) : (
           <>
-            <h3 style={{
-              fontSize: 15, fontWeight: 700, color: '#fff', margin: 0,
-              letterSpacing: '-0.01em',
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-            }}>
-              {slot.name}
-            </h3>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.name}</h3>
             <Stars count={slot.rating} />
             <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
               {slot.tags.map(tag => (
-                <span key={tag} style={{
-                  fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 6,
-                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)',
-                  color: 'rgba(255,255,255,0.45)',
-                }}>
-                  {tag}
-                </span>
+                <span key={tag} style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 6, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.45)' }}>{tag}</span>
               ))}
             </div>
           </>
         )}
 
-        {/* Spacer */}
         <div style={{ flex: 1 }} />
 
-        {/* Button */}
+        {/* Clicked feedback */}
+        {locked && clicked && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{ fontSize: 10, fontWeight: 600, color: '#e53935', textAlign: 'center', marginBottom: 4 }}
+          >
+            Disponivel no PRO
+          </motion.div>
+        )}
+
         {locked ? (
-          <Link href="/billing" style={{
+          <Link href="/billing" onClick={e => e.stopPropagation()} style={{
             width: '100%', padding: '10px 14px', borderRadius: 10,
             fontSize: 11, fontWeight: 700, textDecoration: 'none',
-            background: 'rgba(229,57,53,0.1)', color: '#e53935',
+            background: 'linear-gradient(135deg, rgba(229,57,53,0.12), rgba(229,57,53,0.06))',
+            color: '#e53935',
             border: '1px solid rgba(229,57,53,0.18)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            boxShadow: '0 0 15px rgba(229,57,53,0.04)',
             transition: 'all 0.2s',
           }}>
             <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
             </svg>
-            Desbloquear
+            Acessar PRO
           </Link>
         ) : (
           <motion.button

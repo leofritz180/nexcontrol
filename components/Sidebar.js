@@ -93,6 +93,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                     marginLeft:'auto', fontSize:8, fontWeight:700, padding:'2px 6px', borderRadius:4,
                     background:'rgba(229,57,53,0.12)', color:'#ff4444',
                     border:'1px solid rgba(229,57,53,0.2)', letterSpacing:'0.06em',
+                    boxShadow:'0 0 8px rgba(229,57,53,0.1)',
+                    animation:'breathe 3s ease-in-out infinite',
                   }}>PRO</span>
                 )}
               </Link>

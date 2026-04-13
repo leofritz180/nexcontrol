@@ -1105,7 +1105,8 @@ export default function OperadoresPage() {
                     <button key={slot.id} onClick={async () => {
                       const current = tenant?.favorite_slots || []
                       const newArray = selected ? current.filter(n => n !== slot.name) : [...current, slot.name]
-                      await supabase.from('tenants').update({ favorite_slots: newArray }).eq('id', profile.tenant_id)
+                      const { error: saveErr } = await supabase.from('tenants').update({ favorite_slots: newArray }).eq('id', profile.tenant_id)
+                      if (saveErr) { console.error('Erro ao salvar slots:', saveErr); alert('Erro ao salvar: ' + saveErr.message); return }
                       setTenant(prev => ({ ...prev, favorite_slots: newArray }))
                     }} style={{
                       background: selected ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.02)',

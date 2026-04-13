@@ -710,7 +710,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Info cards */}
-                <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:12,marginBottom:20}}>
+                <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:16,marginBottom:20}}>
                   {[
                     {l:'Rede',v:m.rede||'—',c:'var(--brand-bright)'},
                     {l:'Plataforma',v:m.plataforma||'—',c:'var(--t1)'},
@@ -725,7 +725,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* KPIs */}
-                <div className="g-5" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:20}}>
+                <div className="g-5" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:16,marginBottom:20}}>
                   {[
                     {l:'Remessas',v:focusRem.length,c:'var(--info)',isNum:true},
                     {l:'Lucro',v:`R$ ${fmt(lucroR)}`,c:'var(--profit)',raw:lucroR},
@@ -1266,7 +1266,7 @@ export default function AdminPage() {
           })()}
 
           {/* ── HERO + KPIs — side by side ── */}
-          <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:16, marginBottom:24 }}>
+          <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:24, marginBottom:28 }}>
 
             {/* LEFT — Hero card */}
             <motion.div
@@ -1352,7 +1352,7 @@ export default function AdminPage() {
             </motion.div>
 
             {/* RIGHT — 4 stacked KPI cards */}
-            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+            <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
               {[
                 { label:'Total depositado', value:global.totalDep, prefix:'R$ ', accent:'rgba(59,130,246,0.4)' },
                 { label:'Total sacado', value:global.totalSaq, prefix:'R$ ', accent:'rgba(245,158,11,0.4)' },

@@ -130,29 +130,51 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
               <input className="input" type="number" step="0.01" min="0" value={bau} onChange={e=>setBau(e.target.value)} placeholder="0,00"/>
             </div>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns: apenasBau ? '1fr' : '1fr 1fr', gap:12 }}>
-            <div>
-              <label className="t-label" style={{ display:'block',marginBottom:8 }}>Custo fixo (R$)</label>
-              <p className="t-small" style={{ margin:'0 0 8px' }}>Despesas da operacao (-)</p>
-              <input className="input" type="number" step="0.01" min="0" value={custo} onChange={e=>setCusto(e.target.value)} placeholder="0,00"/>
-            </div>
-            {!apenasBau && (
-              <div>
-                <label className="t-label" style={{ display:'block',marginBottom:8 }}>Taxa agente/blogueira (R$)</label>
-                <p className="t-small" style={{ margin:'0 0 8px' }}>Comissao paga (-)</p>
-                <input className="input" type="number" step="0.01" min="0" value={taxa} onChange={e=>setTaxa(e.target.value)} placeholder="0,00"/>
-              </div>
-            )}
+          {/* Taxa agente — sempre visivel */}
+          <div>
+            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Taxa agente/blogueira (R$) <span style={{color:'var(--loss)',fontWeight:700}}>- PREJUIZO</span></label>
+            <p className="t-small" style={{ margin:'0 0 8px' }}>Comissao paga ao agente ou blogueira</p>
+            <input className="input" type="number" step="0.01" min="0" value={taxa} onChange={e=>setTaxa(e.target.value)} placeholder="0,00"/>
           </div>
 
-          <div style={{ background:lucroFinal>=0?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${lucroFinal>=0?'var(--profit-border)':'var(--loss-border)'}`,borderRadius:12,padding:'18px 22px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12 }}>
-            <div>
-              <p className="t-label" style={{ marginBottom:4 }}>Lucro final da meta</p>
-              <p className="t-small">{apenasBau ? 'Resultado + bau - custo' : 'Resultado + salario + bau - custo - taxa'}</p>
+          {/* Gastos operacionais detalhados */}
+          <div>
+            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Gastos operacionais (R$) <span style={{color:'var(--loss)',fontWeight:700}}>- PREJUIZO</span></label>
+            <p className="t-small" style={{ margin:'0 0 8px' }}>Selecione o tipo de gasto e informe o valor total</p>
+            <div style={{ display:'flex', gap:6, marginBottom:10, flexWrap:'wrap' }}>
+              {['Proxy','SMS','Outros gastos'].map(tipo => (
+                <button key={tipo} type="button" onClick={() => {}} style={{
+                  padding:'6px 14px', borderRadius:8, fontSize:11, fontWeight:600, border:'none', cursor:'default',
+                  background:'rgba(255,255,255,0.04)', color:'var(--t3)',
+                  border:'1px solid rgba(255,255,255,0.06)',
+                }}>{tipo}</button>
+              ))}
             </div>
-            <p className="t-num" style={{ fontSize:28,fontWeight:800,color:lucroFinal>=0?'var(--profit)':'var(--loss)' }}>
-              {lucroFinal>=0?'+':''}R$ {fmt(lucroFinal)}
-            </p>
+            <input className="input" type="number" step="0.01" min="0" value={custo} onChange={e=>setCusto(e.target.value)} placeholder="0,00"/>
+          </div>
+
+          {/* Resultado final */}
+          <div style={{ background:lucroFinal>=0?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${lucroFinal>=0?'var(--profit-border)':'var(--loss-border)'}`,borderRadius:12,padding:'18px 22px' }}>
+            <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8,flexWrap:'wrap',gap:8 }}>
+              <div>
+                <p style={{ fontSize:12,fontWeight:600,color:'var(--t2)',margin:0 }}>Lucro final</p>
+                <p className="t-small" style={{ margin:'2px 0 0' }}>Acumulado + Salario + BAU</p>
+              </div>
+              <p className="t-num" style={{ fontSize:20,fontWeight:800,color:'var(--profit)',margin:0 }}>R$ {fmt(liqRem + Number(salario||0) + Number(bau||0))}</p>
+            </div>
+            <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12,flexWrap:'wrap',gap:8 }}>
+              <div>
+                <p style={{ fontSize:12,fontWeight:600,color:'var(--t2)',margin:0 }}>Prejuizo final</p>
+                <p className="t-small" style={{ margin:'2px 0 0' }}>Acumulado + Gastos</p>
+              </div>
+              <p className="t-num" style={{ fontSize:20,fontWeight:800,color:'var(--loss)',margin:0 }}>R$ {fmt(Number(custo||0) + Number(taxa||0))}</p>
+            </div>
+            <div style={{ borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:12,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8 }}>
+              <p style={{ fontSize:14,fontWeight:800,color:'var(--t1)',margin:0 }}>Resultado final</p>
+              <p className="t-num" style={{ fontSize:28,fontWeight:800,color:lucroFinal>=0?'var(--profit)':'var(--loss)',margin:0 }}>
+                {lucroFinal>=0?'+':''}R$ {fmt(lucroFinal)}
+              </p>
+            </div>
           </div>
 
           {/* Pagamento do operador */}

@@ -28,7 +28,7 @@ export default function PushManager({ userId, tenantId }) {
         // Send welcome push
         fetch('/api/push/send', {
           method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ user_id: userId, title: 'Teste gratis ativado', body: 'Seu acesso de teste foi ativado com sucesso. Voce tem 7 dias gratis para usar o NexControl.', url: '/billing' }),
+          body: JSON.stringify({ user_id: userId, title: 'Notificações ativadas', body: 'Você receberá alertas de metas, remessas e lucro em tempo real.', url: '/admin' }),
         }).catch(() => {})
       } else {
         setState('error')

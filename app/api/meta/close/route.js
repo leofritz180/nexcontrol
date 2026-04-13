@@ -41,8 +41,8 @@ export async function POST(req) {
         // Notify admin
         const fmt = v => Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         await sendPushToTenant(supabase, meta.tenant_id, {
-          title: 'Meta fechada automaticamente',
-          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} encerrada - Lucro final: R$ ${fmt(lucroFinal)}`,
+          title: 'Meta fechada',
+          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} encerrada — Lucro final: R$ ${fmt(lucroFinal)}`,
           url: '/admin',
         })
 
@@ -58,7 +58,7 @@ export async function POST(req) {
 
         await sendPushToTenant(supabase, meta.tenant_id, {
           title: 'Meta finalizada',
-          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} finalizado - Resultado: ${liq >= 0 ? 'Lucro' : 'Prejuizo'}: R$ ${fmt(liq)}`,
+          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} finalizada — ${liq >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(liq)}`,
           url: '/admin',
         })
 

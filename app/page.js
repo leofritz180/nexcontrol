@@ -214,16 +214,25 @@ export default function HomePage() {
             transition={{ duration:0.5, delay:0.15, ease }}
             style={{ fontSize:40, fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 14px', lineHeight:1.12 }}
           >
-            Aumente seu lucro com<br/>dados reais em tempo real
+            Voce nao sabe se esta lucrando de verdade.
           </motion.h1>
 
           <motion.p
             initial={{ opacity:0, y:8 }}
             animate={{ opacity:1, y:0 }}
             transition={{ duration:0.5, delay:0.25, ease }}
-            style={{ fontSize:16, color:'var(--t2)', marginBottom:36, lineHeight:1.6 }}
+            style={{ fontSize:16, color:'var(--t2)', marginBottom:16, lineHeight:1.6 }}
           >
-            Pare de operar no escuro. Veja onde voce ganha e perde dinheiro — com inteligencia e performance.
+            Controle depositantes, metas e resultado em tempo real — sem operar no escuro.
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity:0, y:6 }}
+            animate={{ opacity:1, y:0 }}
+            transition={{ duration:0.5, delay:0.3, ease }}
+            style={{ fontSize:14, color:'var(--t3)', marginBottom:36, lineHeight:1.6 }}
+          >
+            Acompanhe cada remessa, receba alertas e veja exatamente onde esta o lucro ou prejuizo da sua operacao.
           </motion.p>
 
           <motion.div
@@ -239,6 +248,7 @@ export default function HomePage() {
               Ja tenho conta
             </Link>
           </motion.div>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12, textAlign: 'center' }}>3 dias gratis • Sem compromisso</p>
 
           <motion.div
             initial={{ opacity:0 }}
@@ -272,15 +282,16 @@ export default function HomePage() {
       </section>
 
       {/* ═══ LIVE DASHBOARD DEMO ═══ */}
+      <p style={{ fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: 20 }}>Veja sua operacao acontecendo em tempo real:</p>
       <LiveDashboardDemo/>
 
       {/* ═══ 3 PILARES ═══ */}
       <section style={{ padding:'40px 24px 80px', maxWidth:900, margin:'0 auto' }}>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }} className="g-4">
           {[
-            { icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z', t:'Inteligencia em tempo real', d:'Performance da operacao atualizada a cada 30 segundos. Lucro, metas e remessas ao vivo.' },
-            { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe com performance', d:'Cada operador com acesso proprio. Ranking, resultados e accountability em um lugar.' },
-            { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real, nao estimativa', d:'Fechamento com salario, custos e taxa do agente. O numero que importa, nao achismo.' },
+            { icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z', t:'Inteligencia em tempo real', d:'Veja o que esta acontecendo na sua operacao agora — nao depois.' },
+            { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe com performance', d:'Saiba exatamente quem esta performando e quem esta te fazendo perder dinheiro.' },
+            { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real, nao estimativa', d:'Pare de operar no achismo. Veja o resultado real da sua operacao.' },
           ].map(({icon,t,d},i) => (
             <motion.div key={i}
               initial={{ opacity:0, y:16 }}
@@ -299,6 +310,30 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ═══ PAIN SECTION ═══ */}
+      <motion.div
+        initial={{ opacity:0, y:16 }}
+        whileInView={{ opacity:1, y:0 }}
+        viewport={{ once:true }}
+        transition={{ duration:0.4, delay:0.1, ease }}
+        style={{ maxWidth: 700, margin: '0 auto', padding: '60px 20px', textAlign: 'center' }}
+      >
+        <h2 style={{ fontSize: 26, fontWeight: 800, color: '#fff', marginBottom: 24, letterSpacing: '-0.03em' }}>
+          Se voce nao controla isso, voce ja perdeu dinheiro:
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, textAlign: 'left', maxWidth: 440, margin: '0 auto 28px' }}>
+          {['Depositantes desorganizados', 'Metas sem controle', 'Prejuizo escondido', 'Operacao no feeling', 'Falta de visao real'].map((item, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 10, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.08)' }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item}</span>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--loss)', lineHeight: 1.5 }}>
+          Sem controle, qualquer operacao vira prejuizo invisivel.
+        </p>
+      </motion.div>
+
       {/* ═══ CTA FINAL ═══ */}
       <section style={{ padding:'40px 24px 80px', textAlign:'center' }}>
         <motion.div
@@ -307,8 +342,8 @@ export default function HomePage() {
           viewport={{ once:true }}
           transition={{ duration:0.5 }}
         >
-          <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pronto pra operar com inteligencia?</h2>
-          <p style={{ fontSize:14, color:'var(--t3)', marginBottom:28 }}>3 dias gratis. Decisoes baseadas em dados reais.</p>
+          <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pare de operar no escuro.</h2>
+          <p style={{ fontSize:14, color:'var(--t3)', marginBottom:28 }}>Comece a ver sua operacao como ela realmente e.</p>
           <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:240, justifyContent:'center', fontSize:15, fontWeight:700 }}>
             Comecar agora
           </Link>

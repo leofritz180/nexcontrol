@@ -1387,7 +1387,7 @@ export default function AdminPage() {
               initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
               transition={{duration:0.35,delay:0.25,ease}}
               style={{
-                padding:'20px 24px', borderRadius:14,
+                padding:'20px 24px', borderRadius:14, marginBottom:20,
                 background:'linear-gradient(145deg, #0c1424, #080e1a)',
                 border:`1px solid ${global.lucroPerConta>=0?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)'}`,
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
@@ -1436,7 +1436,7 @@ export default function AdminPage() {
               initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
               transition={{duration:0.35,delay:0.28,ease}}
               style={{
-                padding:'20px 24px', borderRadius:14,
+                padding:'20px 24px', borderRadius:14, marginBottom:20,
                 background:'linear-gradient(145deg, #0c1424, #080e1a)',
                 border:'1px solid rgba(245,158,11,0.12)',
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',

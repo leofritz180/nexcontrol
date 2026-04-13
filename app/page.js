@@ -272,12 +272,18 @@ export default function HomePage() {
         {/* Scroll indicator */}
         <motion.div
           initial={{ opacity:0 }}
-          animate={{ opacity:0.3, y:[0,8,0] }}
-          transition={{ opacity:{delay:2,duration:0.5}, y:{duration:2,repeat:Infinity,ease:'easeInOut'} }}
-          style={{ position:'absolute', bottom:32, display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}
+          animate={{ opacity:1, y:[0,10,0] }}
+          transition={{ opacity:{delay:1.5,duration:0.6}, y:{duration:1.8,repeat:Infinity,ease:'easeInOut'} }}
+          style={{ position:'absolute', bottom:36, display:'flex', flexDirection:'column', alignItems:'center', gap:8, cursor:'pointer' }}
+          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         >
-          <span style={{ fontSize:10, color:'rgba(255,255,255,0.25)', letterSpacing:'0.1em' }}>VEJA COMO FUNCIONA</span>
-          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <span style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.6)', letterSpacing:'0.12em' }}>VEJA COMO FUNCIONA</span>
+          <motion.div
+            animate={{ y:[0,5,0] }}
+            transition={{ duration:1.2, repeat:Infinity, ease:'easeInOut', delay:0.3 }}
+          >
+            <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth={2.5} strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </motion.div>
         </motion.div>
       </section>
 

@@ -634,7 +634,6 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .g-form { grid-template-columns: 1fr !important; gap: 10px !important; }
 
   /* ── Inline-style grids → mobile-friendly ── */
-  /* Catches every gridTemplateColumns inline that isn't already 1fr */
   div[style*="gridTemplateColumns"][style*="repeat(4"] {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
@@ -651,35 +650,55 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 8px !important;
   }
-  div[style*="gridTemplateColumns: '1fr 1fr'"],
-  div[style*="gridTemplateColumns:'1fr 1fr'"],
-  div[style*="gridTemplateColumns: '2fr 1fr'"],
-  div[style*="gridTemplateColumns:'2fr 1fr'"],
-  div[style*="gridTemplateColumns: '1.6fr 1fr'"],
-  div[style*="gridTemplateColumns:'1.6fr 1fr'"],
-  div[style*="gridTemplateColumns: '1.55fr 1fr'"],
-  div[style*="gridTemplateColumns:'1.55fr 1fr'"],
-  div[style*="gridTemplateColumns: '1fr 320px'"],
-  div[style*="gridTemplateColumns:'1fr 320px'"],
-  div[style*="gridTemplateColumns: '1fr 1.1fr'"],
-  div[style*="gridTemplateColumns:'1fr 1.1fr'"],
-  div[style*="gridTemplateColumns: '1.4fr 1fr'"],
-  div[style*="gridTemplateColumns:'1.4fr 1fr'"],
-  div[style*="gridTemplateColumns: '380px 1fr'"],
-  div[style*="gridTemplateColumns:'380px 1fr'"] {
+  /* Explicit multi-column grids → stack */
+  div[style*="gridTemplateColumns"][style*="1fr 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  div[style*="gridTemplateColumns"][style*="1fr 1fr 1fr 1fr"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  /* Ratio grids → stack */
+  div[style*="1.6fr 1fr"],
+  div[style*="1.55fr 1fr"],
+  div[style*="1.4fr 1fr"],
+  div[style*="2fr 1fr"],
+  div[style*="1fr 1.1fr"],
+  div[style*="1fr 1fr"] {
     grid-template-columns: 1fr !important;
     gap: 12px !important;
+  }
+  /* Fixed-width sidebar grids → stack */
+  div[style*="1fr 320px"],
+  div[style*="1fr 340px"],
+  div[style*="380px 1fr"],
+  div[style*="420px 1fr"],
+  div[style*="1fr 300px"],
+  div[style*="1fr 360px"] {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  /* Multi-column table grids → stack or scroll */
+  div[style*="1.2fr 0.8fr 0.8fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
   }
 
   /* Card padding shrink */
   .card { border-radius: 14px !important; }
-  div[style*="padding: 36"] { padding: 22px 20px !important; }
-  div[style*="padding:36"] { padding: 22px 20px !important; }
-  div[style*="padding: 32"] { padding: 20px 18px !important; }
-  div[style*="padding:32"] { padding: 20px 18px !important; }
-  div[style*="padding: 28"] { padding: 18px 16px !important; }
-  div[style*="padding: 24"] { padding: 18px 16px !important; }
-  div[style*="padding:24"] { padding: 18px 16px !important; }
+  div[style*="padding: 40"],
+  div[style*="padding:40"] { padding: 22px 18px !important; }
+  div[style*="padding: 36"],
+  div[style*="padding:36"] { padding: 20px 16px !important; }
+  div[style*="padding: 32"],
+  div[style*="padding:32"] { padding: 18px 16px !important; }
+  div[style*="padding: 28"],
+  div[style*="padding:28"] { padding: 16px 14px !important; }
+  div[style*="padding: 24"],
+  div[style*="padding:24"] { padding: 16px 14px !important; }
+  div[style*="padding:'40px 40px"],
+  div[style*="padding:'32px 40px"] { padding: 22px 18px !important; }
 
   /* Tabs → horizontal scroll, no shrink */
   .tabs-scroll { width: 100% !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100%; }
@@ -690,8 +709,27 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   div[style*="position: fixed"][style*="inset"] > div,
   div[style*="position:fixed"][style*="inset"] > div {
     max-width: calc(100vw - 24px) !important;
-    max-height: calc(100vh - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
     overflow-y: auto !important;
+    margin: 12px !important;
+  }
+  /* Modal containers with fixed maxWidth → fit screen */
+  div[style*="maxWidth: 520"],
+  div[style*="maxWidth:520"],
+  div[style*="maxWidth: 580"],
+  div[style*="maxWidth:580"],
+  div[style*="maxWidth: 600"],
+  div[style*="maxWidth:600"],
+  div[style*="maxWidth: 700"],
+  div[style*="maxWidth:700"] {
+    max-width: calc(100vw - 24px) !important;
+  }
+  /* Modal padding reduction */
+  div[style*="position: fixed"] div[style*="padding: 32px 36px"],
+  div[style*="position:fixed"] div[style*="padding:32px 36px"],
+  div[style*="position: fixed"] div[style*="padding: 24px 36px"],
+  div[style*="position:fixed"] div[style*="padding:24px 36px"] {
+    padding: 20px 18px !important;
   }
 
   /* Page detail panels (focus meta) → fit screen */
@@ -717,16 +755,26 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   p[style*="fontSize:26"][style*="mono"] { font-size: 20px !important; }
 
   /* ── auto-fit grids: reduce min column ── */
-  div[style*="minmax(200px"] {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
-    gap: 10px !important;
-  }
+  div[style*="minmax(200px"],
   div[style*="minmax(220px"],
   div[style*="minmax(240px"],
   div[style*="minmax(260px"] {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
     gap: 10px !important;
   }
+  div[style*="minmax(280px"],
+  div[style*="minmax(300px"],
+  div[style*="minmax(320px"] {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* ── Page-specific layout classes ── */
+  .nxc-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+  .nxc-main-layout { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .nxc-demo-layout { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .nxc-form-row1 { grid-template-columns: 1fr !important; }
+  .nxc-form-row2 { grid-template-columns: 1fr !important; }
 
   /* ── Drawers: full width on mobile ── */
   div[style*="maxWidth: 420"],
@@ -781,11 +829,28 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     padding-right: 16px !important;
   }
 
-  /* ── Landing page iPhone mockup ── */
+  /* ── Landing page ── */
   div[style*="width: 280"],
   div[style*="width:280"] {
     width: 200px !important;
     height: auto !important;
+  }
+  /* Landing hero */
+  section[style*="minHeight:'100vh'"] h1[style*="fontSize:40"],
+  section[style*="minHeight:'100vh'"] h1[style*="fontSize: 40"] {
+    font-size: 28px !important;
+    line-height: 1.15 !important;
+  }
+  /* Landing badges row */
+  div[style*="gap:24"][style*="justifyContent:'center'"],
+  div[style*="gap: 24"][style*="justifyContent"] {
+    gap: 14px !important;
+  }
+  /* Landing 3 pilares, social proof — use g-4 */
+  /* Ticker speed */
+  @keyframes tickerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
   }
 
   /* ── Sidebar mobile toggle safe area ── */
@@ -869,42 +934,58 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .g-5 { grid-template-columns: 1fr !important; }
   .g-6 { grid-template-columns: repeat(2, 1fr) !important; }
 
-  /* KPI grids → 2 columns on small phones */
+  /* All grids stack on small phones */
+  .nxc-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  div[style*="gridTemplateColumns"][style*="repeat(4"],
+  div[style*="gridTemplateColumns"][style*="repeat(3"],
+  div[style*="gridTemplateColumns"][style*="1fr 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  div[style*="gridTemplateColumns"][style*="repeat(5"],
+  div[style*="gridTemplateColumns"][style*="repeat(6"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
   div[style*="minmax(140px"],
   div[style*="minmax(200px"] {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
   }
 
-  /* Inline grids → 1 column on small phones */
-  div[style*="gridTemplateColumns"][style*="repeat(4"],
-  div[style*="gridTemplateColumns"][style*="repeat(3"] {
-    grid-template-columns: 1fr !important;
-  }
-  div[style*="gridTemplateColumns"][style*="repeat(6"] {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 6px !important;
-  }
+  /* Card padding extra shrink */
+  div[style*="padding: 22"],
+  div[style*="padding:22"],
+  div[style*="padding: 20"],
+  div[style*="padding:20"] { padding: 14px 12px !important; }
+  div[style*="padding: 24"],
+  div[style*="padding:24"],
+  div[style*="padding: 28"],
+  div[style*="padding:28"] { padding: 14px 12px !important; }
 
-  /* Ranking card: reduce padding, lucro font */
+  /* Mono numbers scale down */
   p[style*="fontSize: 20"][style*="mono"],
   p[style*="fontSize:20"][style*="mono"] { font-size: 14px !important; }
   p[style*="fontSize: 28"][style*="mono"],
   p[style*="fontSize:28"][style*="mono"] { font-size: 20px !important; }
+  p[style*="fontSize: 18"][style*="fontWeight"],
+  p[style*="fontSize:18"][style*="fontWeight"] { font-size: 14px !important; }
 
-  /* Card padding extra reduction */
-  div[style*="padding: 20px 22px"],
-  div[style*="padding:20px 22px"] { padding: 14px 14px !important; }
-  div[style*="padding: 22px 24px"],
-  div[style*="padding:22px 24px"] { padding: 16px 14px !important; }
-  div[style*="padding: 24px 22px"],
-  div[style*="padding:24px 22px"] { padding: 16px 14px !important; }
-
-  /* Flex stats row → stack on very small screens */
+  /* Flex stats row → wrap on small screens */
   div[style*="gap: 14"][style*="alignItems"] { gap: 8px !important; }
 
-  /* Stats horizontal bar → wrap */
-  div[style*="display:'flex'"][style*="alignItems:'center'"] { flex-wrap: wrap; }
+  /* Hero section font */
+  h1[style*="fontSize:40"],
+  h1[style*="fontSize: 40"] { font-size: 24px !important; }
+  h1[style*="fontSize:28"],
+  h1[style*="fontSize: 28"] { font-size: 20px !important; }
+
+  /* Landing hero badges */
+  div[style*="gap:24"][style*="justifyContent"] { gap: 10px !important; flex-wrap: wrap !important; }
+
+  /* Demo banner compact */
+  .demo-banner { padding: 10px 14px !important; }
+  .demo-banner span { font-size: 11px !important; }
 
   /* Card glass — no blur on small devices */
   .card-glass {

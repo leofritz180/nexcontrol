@@ -158,6 +158,7 @@ export default function MetaPage() {
   const [editSaq, setEditSaq] = useState('')
   const [editSaving, setEditSaving] = useState(false)
   const [contasRemessa, setContasRemessa] = useState('')
+  const [feedback, setFeedback] = useState(null)
 
   useEffect(()=>{ if(id) fetchData() },[id])
 
@@ -179,6 +180,76 @@ export default function MetaPage() {
     setLoading(false)
   }
 
+  // ── Feedback operacional instantaneo ──
+  function getOperationalFeedback(diff, statusProblema, nContas) {
+    const perConta = nContas > 0 ? diff / nContas : diff
+    const avgPrej = remessas.length > 0
+      ? remessas.filter(r => Number(r.resultado || 0) < 0).reduce((a, r) => a + Math.abs(Number(r.resultado || 0)), 0) / Math.max(remessas.filter(r => Number(r.resultado || 0) < 0).length, 1)
+      : 0
+
+    // 1. Bloqueio
+    if (statusProblema === 'conta_bloqueada') {
+      return { type: 'critical', title: 'Bloqueio registrado', text: 'Avise o ADMIN para acompanhamento imediato.', icon: 'lock' }
+    }
+
+    // 2. Saque pendente
+    if (statusProblema === 'saque_pendente') {
+      return { type: 'warn', title: 'Saque pendente detectado', text: 'Lembrete: alinhe com o ADMIN sobre essa remessa.', icon: 'clock' }
+    }
+
+    // 3. Banco em analise
+    if (statusProblema === 'banco_analise') {
+      return { type: 'warn', title: 'Banco em analise', text: 'Informe o ADMIN. Aguarde confirmacao antes de prosseguir.', icon: 'alert' }
+    }
+
+    // 4. Prejuizo muito alto (> 2x media ou > R$5/conta)
+    if (diff < 0 && (Math.abs(diff) > avgPrej * 2 || perConta < -5)) {
+      const msgs = [
+        'Prejuizo fora do padrao. Consulte o ADMIN antes de continuar.',
+        'Resultado muito abaixo — ja testou outro slot?',
+        'Prejuizo elevado. Considere pausar e alinhar com o ADMIN.',
+      ]
+      return { type: 'critical', title: `Prejuizo alto: R$ ${fmt(Math.abs(diff))}`, text: msgs[Math.floor(Math.random() * msgs.length)], icon: 'x' }
+    }
+
+    // 5. Prejuizo leve (ate R$3/conta)
+    if (diff < 0 && perConta >= -3) {
+      return { type: 'warn', title: `Prejuizo leve: R$ ${fmt(Math.abs(diff))}`, text: 'Dentro do esperado. Segue operando normalmente.', icon: 'alert' }
+    }
+
+    // 6. Prejuizo moderado
+    if (diff < 0) {
+      return { type: 'warn', title: `Prejuizo: R$ ${fmt(Math.abs(diff))}`, text: 'Monitore as proximas remessas com atencao.', icon: 'alert' }
+    }
+
+    // 7. Lucro controlado (ate R$3/conta) — motivacional
+    if (diff >= 0 && perConta <= 3) {
+      const msgs = [
+        'Mandou bem, continua assim!',
+        'Ai sim, bora pra cima!',
+        'Boa! Mantém esse ritmo.',
+        'Ta no controle, segue firme!',
+        'Show! Operacao no caminho certo.',
+      ]
+      return { type: 'good', title: `+R$ ${fmt(diff)}`, text: msgs[Math.floor(Math.random() * msgs.length)], icon: 'check' }
+    }
+
+    // 8. Lucro alto
+    if (diff > 0) {
+      return { type: 'good', title: `Lucro: +R$ ${fmt(diff)}`, text: 'Excelente resultado! Mantem o foco.', icon: 'check' }
+    }
+
+    return null
+  }
+
+  function showFeedback(diff, statusProblema) {
+    const fb = getOperationalFeedback(diff, statusProblema, Number(meta?.quantidade_contas || 0))
+    if (fb) {
+      setFeedback(fb)
+      setTimeout(() => setFeedback(null), 6000)
+    }
+  }
+
   async function handleAdd(e) {
     e.preventDefault()
     if (!dep||!saq||salvando) return
@@ -198,6 +269,7 @@ export default function MetaPage() {
     setSalvando(false)
     if (err) { setError(err.message); return }
     setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa('')
+    showFeedback(diff, statusProb)
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
     fetchData()
   }
@@ -260,9 +332,54 @@ export default function MetaPage() {
 
   const pctAcerto = remessas.length>0?Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100):0
 
+  const fbCfg = {
+    good: { bg: 'var(--profit-dim)', border: 'var(--profit-border)', color: 'var(--profit)', iconPath: 'M20 6L9 17l-5-5' },
+    warn: { bg: 'var(--warn-dim)', border: 'var(--warn-border)', color: 'var(--warn)', iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' },
+    critical: { bg: 'var(--loss-dim)', border: 'var(--loss-border)', color: 'var(--loss)', iconPath: 'M18 6L6 18M6 6l12 12' },
+  }
+
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
       <Header userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role==='admin'} userId={user?.id} tenantId={profile?.tenant_id}/>
+
+      {/* Feedback toast */}
+      <AnimatePresence>
+        {feedback && (() => {
+          const c = fbCfg[feedback.type]
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+              style={{
+                position: 'fixed', top: 20, right: 20, zIndex: 9999,
+                maxWidth: 380, padding: '16px 20px', borderRadius: 14,
+                background: c.bg, border: `1px solid ${c.border}`,
+                boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+                display: 'flex', alignItems: 'flex-start', gap: 12,
+                cursor: 'pointer',
+              }}
+              onClick={() => setFeedback(null)}
+            >
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={c.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+                <path d={c.iconPath} />
+              </svg>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: c.color, margin: '0 0 3px' }}>{feedback.title}</p>
+                <p style={{ fontSize: 12, color: 'var(--t2)', margin: 0, lineHeight: 1.4 }}>{feedback.text}</p>
+              </div>
+              {/* Progress bar timer */}
+              <motion.div
+                initial={{ width: '100%' }}
+                animate={{ width: '0%' }}
+                transition={{ duration: 6, ease: 'linear' }}
+                style={{ position: 'absolute', bottom: 0, left: 0, height: 2, borderRadius: '0 0 14px 14px', background: c.color, opacity: 0.4 }}
+              />
+            </motion.div>
+          )
+        })()}
+      </AnimatePresence>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
         {/* Header */}

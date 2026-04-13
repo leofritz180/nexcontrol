@@ -32,7 +32,9 @@ function SlotCard({ slot, index, isPro }) {
   const [hovered, setHovered] = useState(false)
   const [copied, setCopied] = useState(false)
   const [denied, setDenied] = useState(false)
+  const [imgError, setImgError] = useState(false)
   const locked = !isPro
+  const hasImage = slot.image && !imgError
 
   function copyName() {
     if (locked) { setDenied(true); setTimeout(() => setDenied(false), 2000); return }
@@ -69,6 +71,36 @@ function SlotCard({ slot, index, isPro }) {
         filter: locked ? 'blur(2px) brightness(0.55)' : 'none',
         transition: 'filter 0.3s',
       }}>
+        {/* Real image or fallback */}
+        {hasImage ? (
+          <img
+            src={slot.image}
+            alt={slot.name}
+            onError={() => setImgError(true)}
+            style={{
+              position: 'absolute', inset: 0, width: '100%', height: '100%',
+              objectFit: 'cover',
+              transition: 'transform 0.4s',
+              transform: hovered && !locked ? 'scale(1.05)' : 'scale(1)',
+            }}
+          />
+        ) : (
+          /* Fallback — premium placeholder */
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: `linear-gradient(145deg, #0c1220 0%, ${isAlta ? 'rgba(229,57,53,0.06)' : 'rgba(245,158,11,0.06)'} 100%)`,
+          }}>
+            <p style={{
+              fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.2)',
+              textTransform: 'uppercase', letterSpacing: '0.04em',
+              textAlign: 'center', padding: '0 16px', lineHeight: 1.3,
+            }}>
+              {slot.name}
+            </p>
+          </div>
+        )}
+
         {/* Performance badge */}
         <div style={{
           position: 'absolute', top: 10, left: 10, zIndex: 2,
@@ -86,27 +118,13 @@ function SlotCard({ slot, index, isPro }) {
         <div style={{
           position: 'absolute', top: 10, right: 10, zIndex: 2,
           padding: '4px 10px', borderRadius: 7,
-          background: 'rgba(255,255,255,0.06)',
+          background: 'rgba(0,0,0,0.4)',
           border: '1px solid rgba(255,255,255,0.08)',
-          fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)',
+          fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.6)',
           textTransform: 'uppercase', letterSpacing: '0.04em',
+          backdropFilter: 'blur(4px)',
         }}>
           {slot.provider.toUpperCase()}
-        </div>
-
-        {/* Placeholder icon */}
-        <div style={{
-          width: 60, height: 60, borderRadius: 16,
-          background: `linear-gradient(135deg, ${isAlta ? 'rgba(229,57,53,0.15)' : 'rgba(245,158,11,0.15)'}, rgba(255,255,255,0.04))`,
-          border: `1px solid ${isAlta ? 'rgba(229,57,53,0.2)' : 'rgba(245,158,11,0.2)'}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'transform 0.3s',
-          transform: hovered && !locked ? 'scale(1.1)' : 'scale(1)',
-        }}>
-          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={isAlta ? '#e53935' : '#f59e0b'} strokeWidth="1.5" strokeLinecap="round">
-            <rect x="2" y="4" width="20" height="16" rx="2" />
-            <path d="M12 8v8M8 12h8" />
-          </svg>
         </div>
       </div>
 

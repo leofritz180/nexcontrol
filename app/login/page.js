@@ -338,11 +338,11 @@ export default function LoginPage() {
                     borderRadius: 13, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
                     color: 'white', position: 'relative', overflow: 'hidden',
                     background: loading
-                      ? 'linear-gradient(145deg, rgba(229,57,53,0.4), rgba(61,92,224,0.3))'
-                      : 'linear-gradient(145deg, #5a7af8, #6c5ce7)',
+                      ? 'linear-gradient(145deg, rgba(59,130,246,0.4), rgba(59,130,246,0.3))'
+                      : 'linear-gradient(145deg, #3B82F6, #2563EB)',
                     boxShadow: loading
                       ? 'none'
-                      : '0 4px 24px rgba(229,57,53,0.4), 0 0 40px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.2)',
+                      : '0 4px 24px rgba(59,130,246,0.4), 0 0 40px rgba(59,130,246,0.12), inset 0 1px 0 rgba(255,255,255,0.2)',
                     opacity: loading ? 0.6 : 1,
                     transition: 'opacity 0.2s',
                   }}

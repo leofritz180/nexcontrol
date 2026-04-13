@@ -11,9 +11,9 @@ self.addEventListener('activate', (e) => {
 // Receive push
 self.addEventListener('push', (e) => {
   const data = e.data ? e.data.json() : {}
-  const title = data.title || 'NexControl'
+  const title = ' '
   const options = {
-    body: data.body || '',
+    body: data.body || data.title || '',
     icon: '/icons/icon-192.png',
     badge: '/icons/icon-192.png',
     tag: data.tag || 'nexcontrol-' + Date.now(),

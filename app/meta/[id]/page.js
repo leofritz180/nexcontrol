@@ -157,6 +157,7 @@ export default function MetaPage() {
   const [editDep, setEditDep] = useState('')
   const [editSaq, setEditSaq] = useState('')
   const [editSaving, setEditSaving] = useState(false)
+  const [contasRemessa, setContasRemessa] = useState('')
 
   useEffect(()=>{ if(id) fetchData() },[id])
 
@@ -192,10 +193,11 @@ export default function MetaPage() {
       resultado_por_conta:meta?.quantidade_contas&&Number(meta.quantidade_contas)>0?Number((Math.abs(diff)/Number(meta.quantidade_contas)).toFixed(2)):0,
       tenant_id:profile?.tenant_id,
       status_problema:statusProb,
+      contas_remessa:Number(contasRemessa||0),
     })
     setSalvando(false)
     if (err) { setError(err.message); return }
-    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal')
+    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa('')
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
     fetchData()
   }
@@ -300,6 +302,24 @@ export default function MetaPage() {
           </div>
         </div>
 
+        {/* Progress bar - contas processadas */}
+        {meta && (() => {
+          const target = Number(meta.quantidade_contas || 0)
+          const done = remessas.reduce((sum, r) => sum + Number(r.contas_remessa || 0), 0)
+          const pct = target > 0 ? Math.min(Math.round((done / target) * 100), 100) : 0
+          return target > 0 ? (
+            <div style={{ marginBottom: 22, background: 'var(--raised)', border: '1px solid var(--b1)', borderRadius: 14, padding: '16px 20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Progresso: {done}/{target} contas</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: pct >= 100 ? 'var(--profit)' : 'var(--brand-bright)' }}>{pct}%</span>
+              </div>
+              <div style={{ width: '100%', height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)' }}>
+                <div style={{ width: `${pct}%`, height: '100%', borderRadius: 3, background: pct >= 100 ? 'var(--profit)' : 'linear-gradient(90deg, #22c55e, #16a34a)', transition: 'width 0.4s ease' }} />
+              </div>
+            </div>
+          ) : null
+        })()}
+
         <div className="g-side" style={{ display:'grid', gridTemplateColumns:'420px 1fr', gap:22 }}>
           {/* Form */}
           <div className="card a2" style={{ padding:26, height:'fit-content', position:'sticky', top:78 }}>
@@ -329,6 +349,10 @@ export default function MetaPage() {
               <div>
                 <label className="t-label" style={{ display:'block', marginBottom:8 }}>Saldo inicial (R$)</label>
                 <input className="input" type="number" step="0.01" value={saldoIni} onChange={e=>setSaldoIni(e.target.value)}/>
+              </div>
+              <div>
+                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Contas nesta remessa</label>
+                <input className="input" type="number" min="0" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="Ex: 5"/>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
                 <div>

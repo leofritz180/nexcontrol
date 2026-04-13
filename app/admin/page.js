@@ -472,7 +472,15 @@ export default function AdminPage() {
     const lucroFinalTotal = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const totalContasFechadas = fechadas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
     const lucroPerConta = totalContasFechadas>0 ? lucroFinalTotal/totalContasFechadas : 0
-    return { lucro,prej,liq:lucro-prej,totalDep,totalSaq,lucroHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal,lucroPerConta,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length }
+    const lucroPerMeta = fechadas.length>0 ? lucroFinalTotal/fechadas.length : 0
+    // Break-even calculation
+    const totalBauFechadas = fechadas.reduce((a,m)=>a+Number(m.bau||0),0)
+    const totalCustosFechadas = fechadas.reduce((a,m)=>a+Number(m.custo_fixo||0)+Number(m.taxa_agente||0)+Number(m.salario||0),0)
+    const avgBauPerConta = totalContasFechadas>0 ? totalBauFechadas/totalContasFechadas : 0
+    const avgCustoPorMeta = fechadas.length>0 ? totalCustosFechadas/fechadas.length : 0
+    const avgPrejPerConta = totalContasFechadas>0 ? prej/totalContasFechadas : 0
+    const breakEvenContas = avgBauPerConta>avgPrejPerConta ? Math.ceil(avgCustoPorMeta/(avgBauPerConta-avgPrejPerConta)) : 0
+    return { lucro,prej,liq:lucro-prej,totalDep,totalSaq,lucroHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal,lucroPerConta,lucroPerMeta,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas }
   },[operators,metas,remessas])
 
   // ── Hero card: lucro final por periodo selecionado ──
@@ -540,6 +548,17 @@ export default function AdminPage() {
       redeMap[m.rede].nMetas++
     })
     return Object.values(redeMap).sort((a,b)=>b.lucroFinal-a.lucroFinal)
+  },[metas])
+
+  const rentabilidadeRedes = useMemo(()=>{
+    const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.rede)
+    const map = {}
+    fechadas.forEach(m=>{
+      if(!map[m.rede]) map[m.rede]={rede:m.rede,lucro:0,contas:0}
+      map[m.rede].lucro += Number(m.lucro_final||0)
+      map[m.rede].contas += Number(m.quantidade_contas||0)
+    })
+    return Object.values(map).filter(r=>r.contas>0).map(r=>({...r,lucroPorConta:r.lucro/r.contas})).sort((a,b)=>b.lucroPorConta-a.lucroPorConta).slice(0,5)
   },[metas])
 
   const convStats = useMemo(()=>({
@@ -1203,6 +1222,97 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {/* Previsao de lucro */}
+          {global.fechadas > 0 && (
+            <motion.div
+              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
+              transition={{duration:0.35,delay:0.25,ease}}
+              style={{
+                padding:'20px 24px', borderRadius:14,
+                background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                border:`1px solid ${global.lucroPerConta>=0?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)'}`,
+                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+                display:'flex', alignItems:'center', gap:24, flexWrap:'wrap',
+              }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                <div style={{
+                  width:34, height:34, borderRadius:10,
+                  background:global.lucroPerConta>=0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)',
+                  border:`1px solid ${global.lucroPerConta>=0?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)'}`,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={global.lucroPerConta>=0?'var(--profit)':'var(--loss)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points={global.lucroPerConta>=0?"23 6 13.5 15.5 8.5 10.5 1 18":"1 18 10.5 8.5 15.5 13.5 23 6"}/>
+                    <polyline points={global.lucroPerConta>=0?"17 6 23 6 23 12":"17 6 23 6 23 12"}/>
+                  </svg>
+                </div>
+                <p style={{ fontSize:12, fontWeight:700, color:'var(--t2)', margin:0, letterSpacing:'0.03em', textTransform:'uppercase' }}>Previsao</p>
+              </div>
+              <div style={{ display:'flex', gap:28, flexWrap:'wrap', flex:1 }}>
+                <div>
+                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Lucro medio / meta</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:global.lucroPerMeta>=0?'var(--profit)':'var(--loss)', margin:0 }}>
+                    {global.lucroPerMeta>=0?'+':''}R$ {fmt(global.lucroPerMeta)}
+                  </p>
+                </div>
+                <div>
+                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Lucro medio / conta</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', margin:0 }}>
+                    {global.lucroPerConta>=0?'+':''}R$ {fmt(global.lucroPerConta)}
+                  </p>
+                </div>
+                <div>
+                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Estimativa proximas 50 contas</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:global.lucroPerConta*50>=0?'var(--profit)':'var(--loss)', margin:0 }}>
+                    {global.lucroPerConta*50>=0?'+':''}R$ {fmt(global.lucroPerConta*50)}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Break-even insight */}
+          {global.fechadas > 0 && global.breakEvenContas > 0 && (
+            <motion.div
+              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
+              transition={{duration:0.35,delay:0.28,ease}}
+              style={{
+                padding:'20px 24px', borderRadius:14,
+                background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                border:'1px solid rgba(245,158,11,0.12)',
+                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+                display:'flex', alignItems:'center', gap:24, flexWrap:'wrap',
+              }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                <div style={{
+                  width:34, height:34, borderRadius:10,
+                  background:'rgba(245,158,11,0.1)',
+                  border:'1px solid rgba(245,158,11,0.2)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgb(245,158,11)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                  </svg>
+                </div>
+                <p style={{ fontSize:12, fontWeight:700, color:'var(--t2)', margin:0, letterSpacing:'0.03em', textTransform:'uppercase' }}>Break-even</p>
+              </div>
+              <div style={{ display:'flex', gap:28, flexWrap:'wrap', flex:1 }}>
+                <div>
+                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Para cobrir custos, precisa de</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:'rgb(245,158,11)', margin:0 }}>
+                    {global.breakEvenContas} contas com bau / meta
+                  </p>
+                </div>
+                <div>
+                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Bau medio por conta</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>
+                    R$ {fmt(global.avgBauPerConta)}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Activity — feed + operators */}
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:20 }}>
 
@@ -1582,6 +1692,42 @@ export default function AdminPage() {
                     </motion.div>
                   )
                 })}
+              </div>
+            )}
+
+            {/* ── Rentabilidade por Rede ── */}
+            {rentabilidadeRedes.length>0 && (
+              <div style={{marginTop:32}}>
+                <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="1.5" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  <span style={{fontSize:15,fontWeight:800,color:'var(--t1)'}}>Rentabilidade por Rede</span>
+                  <span className="t-small" style={{marginLeft:4}}>Lucro por conta (metas fechadas)</span>
+                </div>
+                <div style={{background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:14,overflow:'hidden'}}>
+                  <table style={{width:'100%',borderCollapse:'collapse',fontSize:13,fontFamily:'var(--mono)'}}>
+                    <thead>
+                      <tr style={{borderBottom:'1px solid var(--b1)'}}>
+                        <th style={{textAlign:'left',padding:'10px 16px',fontSize:11,fontWeight:700,color:'var(--t3)',textTransform:'uppercase',letterSpacing:'0.05em'}}>#</th>
+                        <th style={{textAlign:'left',padding:'10px 16px',fontSize:11,fontWeight:700,color:'var(--t3)',textTransform:'uppercase',letterSpacing:'0.05em'}}>Rede</th>
+                        <th style={{textAlign:'right',padding:'10px 16px',fontSize:11,fontWeight:700,color:'var(--t3)',textTransform:'uppercase',letterSpacing:'0.05em'}}>Lucro/conta</th>
+                        <th style={{textAlign:'right',padding:'10px 16px',fontSize:11,fontWeight:700,color:'var(--t3)',textTransform:'uppercase',letterSpacing:'0.05em'}}>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rentabilidadeRedes.map((r,i)=>{
+                        const pos=r.lucroPorConta>=0
+                        return(
+                          <tr key={r.rede} style={{borderBottom:i<rentabilidadeRedes.length-1?'1px solid var(--b1)':'none'}}>
+                            <td style={{padding:'9px 16px',fontWeight:800,color:i===0?'#FFD700':'var(--t3)'}}>{i+1}</td>
+                            <td style={{padding:'9px 16px',fontWeight:700,color:'var(--t1)'}}>{r.rede}</td>
+                            <td style={{padding:'9px 16px',textAlign:'right',fontWeight:800,color:pos?'#22C55E':'#EF4444'}}>{pos?'+':''}R$ {fmt(r.lucroPorConta)}</td>
+                            <td style={{padding:'9px 16px',textAlign:'right',fontWeight:700,color:pos?'var(--profit)':'#EF4444'}}>{pos?'+':''}R$ {fmt(r.lucro)}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </motion.div>

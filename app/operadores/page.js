@@ -657,13 +657,11 @@ export default function OperadoresPage() {
       if (opClosed.length === 0) return null
       const totalDeposit = opClosed.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
       const lucroFinal = opClosed.reduce((a, m) => a + Number(m.lucro_final || 0), 0)
-      const deps = totalDeposit
-      const lucro = lucroFinal
       let valor = 0
       if (payModel === 'percentual') {
-        valor = lucro > 0 ? lucro * (payValue / 100) : 0
+        valor = lucroFinal > 0 ? lucroFinal * (payValue / 100) : 0
       } else {
-        valor = deps * payValue
+        valor = totalDeposit * payValue
       }
       return { ...op, closedCount: opClosed.length, totalDeposit, lucroFinal, pagamento: valor, payModel, payValue }
     }).filter(Boolean).sort((a, b) => b.pagamento - a.pagamento)

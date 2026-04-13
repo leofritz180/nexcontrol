@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '../lib/supabase/client'
 
-const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/', '/owner', '/slots', '/proxy']
+const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/', '/owner', '/slots', '/proxy', '/performance']
 
 export default function SubscriptionGate({ children }) {
   const router = useRouter()

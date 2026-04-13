@@ -43,14 +43,14 @@ export async function GET(req) {
       let title, body
 
       if (daysLeft >= 3) {
-        title = 'Seu teste grátis está ativo'
-        body = `Você ainda tem ${daysLeft} dias grátis para testar o NexControl.`
+        title = `Teste grátis ativo - ${daysLeft} dias restantes`
+        body = ''
       } else if (daysLeft >= 2) {
-        title = 'Seu teste grátis está acabando'
-        body = `Faltam ${daysLeft} dias para o seu período grátis terminar. Escolha um plano.`
+        title = `Seu teste acaba em ${daysLeft} dias - escolha um plano`
+        body = ''
       } else {
-        title = 'Último dia do seu teste grátis'
-        body = 'Seu acesso grátis termina amanhã. Escolha um plano para continuar.'
+        title = 'Último dia grátis - assine para não perder acesso'
+        body = ''
       }
 
       await sendPushToTenant(supabase, t.id, { title, body, url: '/billing' })
@@ -60,8 +60,8 @@ export async function GET(req) {
     } else if (!t.trial_expired_notified) {
       // Trial expired — send expiration notice + update status
       await sendPushToTenant(supabase, t.id, {
-        title: 'Seu teste grátis expirou',
-        body: 'Seu período de teste terminou. Escolha um plano para continuar usando o NexControl.',
+        title: 'Teste expirado - assine para continuar usando o NexControl',
+        body: '',
         url: '/billing',
       })
 

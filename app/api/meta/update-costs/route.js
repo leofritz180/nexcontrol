@@ -34,8 +34,8 @@ export async function POST(req) {
       if (meta) {
         const val = Math.abs(Number(lucro_final || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         await sendPushToTenant(supabase, meta.tenant_id, {
-          title: 'Meta fechada',
-          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} encerrada — Resultado final: R$ ${val}`,
+          title: `Meta encerrada - ${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} - Resultado: R$ ${val}`,
+          body: '',
           url: '/admin',
         })
       }

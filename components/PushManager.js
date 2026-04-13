@@ -28,7 +28,7 @@ export default function PushManager({ userId, tenantId }) {
         // Send welcome push
         fetch('/api/push/send', {
           method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ user_id: userId, title: 'Notificações ativadas', body: 'Você receberá alertas de metas, remessas e lucro em tempo real.', url: '/admin' }),
+          body: JSON.stringify({ user_id: userId, title: 'Notificações ativadas - você receberá alertas em tempo real', body: '', url: '/admin' }),
         }).catch(() => {})
       } else {
         setState('error')

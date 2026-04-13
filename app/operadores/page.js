@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
 import { SLOTS } from '../../lib/slots-data'
+import { DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_METAS, DEMO_REMESSAS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -668,6 +669,19 @@ export default function OperadoresPage() {
     }).filter(Boolean).sort((a, b) => b.pagamento - a.pagamento)
   }, [operators, closedMetas, tenant, folhaPeriod])
 
+  const isDemo = !loading && shouldShowDemo(metas)
+
+  const DemoBanner = () => (
+    <motion.div {...fadeUp(0)} style={{
+      display: 'flex', alignItems: 'center', gap: 10, padding: '12px 18px', marginBottom: 20,
+      background: 'linear-gradient(135deg, rgba(229,57,53,0.12), rgba(229,57,53,0.04))',
+      border: '1px solid rgba(229,57,53,0.18)', borderRadius: 12,
+    }}>
+      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', flexShrink: 0, animation: 'pulse 2s ease-in-out infinite' }} />
+      <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(229,57,53,0.85)', margin: 0 }}>{DEMO_BANNER_TEXT}</p>
+    </motion.div>
+  )
+
   if (loading || !profile) {
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #0c1424, #080e1a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -722,17 +736,120 @@ export default function OperadoresPage() {
 
             {/* KPIs */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
-              <KpiCard label="Operadores" value={operators.length} rgb="148,163,184" i={0} />
-              <KpiCard label="Ativos" value={totalActive} rgb="148,163,184" i={1} />
-              <KpiCard label="Depositantes" value={totalDeps} rgb="148,163,184" i={2} />
-              <KpiCard label="Acerto medio" value={avgWinRate} suffix="%" rgb="148,163,184" i={3} />
-              <KpiCard label="Lucro da equipe" value={totalLucro} rgb="34,197,94" i={4} isCurrency dynamicColor />
+              <KpiCard label="Operadores" value={isDemo && !operators.length ? 3 : operators.length} rgb="148,163,184" i={0} />
+              <KpiCard label="Ativos" value={isDemo && !totalActive ? 2 : totalActive} rgb="148,163,184" i={1} />
+              <KpiCard label="Depositantes totais" value={isDemo && !totalDeps ? 160 : totalDeps} rgb="148,163,184" i={2} />
+              <KpiCard label="Acerto medio" value={isDemo && !avgWinRate ? 80 : avgWinRate} suffix="%" rgb="148,163,184" i={3} />
+              <KpiCard label="Lucro equipe" value={isDemo && !totalLucro ? 829.70 : totalLucro} rgb="34,197,94" i={4} isCurrency dynamicColor />
             </div>
 
             {/* Ranking list */}
-            {ranking.length === 0 ? (
+            {ranking.length === 0 && !isDemo ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)', marginBottom: 28 }}>
                 <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)' }}>Nenhuma meta fechada ainda.</p>
+              </div>
+            ) : ranking.length === 0 && isDemo ? (
+              <div style={{ marginBottom: 32 }}>
+                <DemoBanner />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {DEMO_OPERATOR_RANKING.map((op, idx) => {
+                    const demoMaxLucro = Math.max(...DEMO_OPERATOR_RANKING.map(o => Math.abs(o.lucroFinal)), 1)
+                    const isProfit = op.lucroFinal >= 0
+                    const isTop1 = idx === 0
+                    const isTop2 = idx === 1
+                    const isTop3 = idx < 3
+                    const posColor = isTop1 ? 'var(--profit)' : isTop2 ? 'var(--t1)' : isTop3 ? 'var(--t2)' : 'var(--t4)'
+                    const posBg = isTop1 ? 'rgba(34,197,94,0.14)' : isTop2 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)'
+                    const posBorder = isTop1 ? 'rgba(34,197,94,0.25)' : isTop2 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'
+                    return (
+                      <motion.div key={op.id} {...fadeUp(idx, 0.06)} style={{
+                        padding: '20px 22px', borderRadius: 16, position: 'relative', overflow: 'hidden',
+                        background: isTop1
+                          ? 'linear-gradient(145deg, rgba(34,197,94,0.05), rgba(34,197,94,0.015))'
+                          : isTop2
+                            ? 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))'
+                            : 'linear-gradient(145deg, var(--surface), rgba(8,12,22,0.8))',
+                        border: `1px solid ${isTop1 ? 'rgba(34,197,94,0.1)' : 'var(--b1)'}`,
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
+                          <div style={{
+                            width: 38, height: 38, borderRadius: 11, flexShrink: 0,
+                            background: posBg, border: `1.5px solid ${posBorder}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 15, fontWeight: 900, color: posColor, fontFamily: 'var(--mono, monospace)',
+                          }}>{idx + 1}</div>
+                          <div style={{
+                            width: 46, height: 46, borderRadius: 14, flexShrink: 0,
+                            background: isProfit
+                              ? 'linear-gradient(135deg, rgba(34,197,94,0.18), rgba(34,197,94,0.06))'
+                              : 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.06))',
+                            border: `1.5px solid ${isProfit ? 'var(--profit-border)' : 'var(--loss-border)'}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 19, fontWeight: 800, color: 'var(--t1)',
+                          }}>{getInitial(op)}</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+                              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>{getName(op)}</p>
+                              {op.trend !== 'stable' && (
+                                <span style={{
+                                  fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 5,
+                                  color: op.trend === 'up' ? 'var(--profit)' : 'var(--loss)',
+                                  background: op.trend === 'up' ? 'var(--profit-dim)' : 'var(--loss-dim)',
+                                  border: `1px solid ${op.trend === 'up' ? 'var(--profit-border)' : 'var(--loss-border)'}`,
+                                }}>{op.trend === 'up' ? '\u2191' : '\u2193'}</span>
+                              )}
+                              {op.badge && (
+                                <span style={{
+                                  fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 5,
+                                  color: op.badge === 'Top performer' ? '#22c55e' : op.badge === 'Em alta' ? '#22c55e' : '#f59e0b',
+                                  background: op.badge === 'Oscilando' ? 'rgba(245,158,11,0.08)' : 'rgba(34,197,94,0.08)',
+                                  border: `1px solid ${op.badge === 'Oscilando' ? 'rgba(245,158,11,0.18)' : 'rgba(34,197,94,0.18)'}`,
+                                }}>{op.badge}</span>
+                              )}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>
+                                {op.totalDeposit} deps
+                                <span style={{ color: 'var(--t4)', margin: '0 4px' }}>&middot;</span>
+                                {op.metasFechadas} meta{op.metasFechadas !== 1 ? 's' : ''}
+                              </span>
+                              {op.totalDeposit > 0 && (
+                                <span style={{
+                                  fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
+                                  padding: '2px 8px', borderRadius: 5,
+                                  background: 'var(--brand-dim)', color: 'var(--brand-bright)',
+                                  border: '1px solid var(--brand-border)',
+                                }}>R$ {fmt(op.lucroPerConta)}/conta</span>
+                              )}
+                            </div>
+                          </div>
+                          <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 120 }}>
+                            <p style={{
+                              fontSize: 22, fontWeight: 800, margin: 0, fontFamily: 'var(--mono, monospace)',
+                              color: isProfit ? 'var(--profit)' : 'var(--loss)', letterSpacing: '-0.03em', lineHeight: 1,
+                            }}>
+                              {isProfit ? '+' : ''}R$ {fmt(op.lucroFinal)}
+                            </p>
+                            <p style={{ fontSize: 10, color: 'var(--t4)', margin: '4px 0 0', fontWeight: 500 }}>{op.totalDeposit} depositantes</p>
+                          </div>
+                        </div>
+                        <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.035)', overflow: 'hidden' }}>
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${demoMaxLucro > 0 ? Math.min((Math.abs(op.lucroFinal) / demoMaxLucro) * 100, 100) : 0}%` }}
+                            transition={{ duration: 1.2, delay: 0.15 + idx * 0.05, ease }}
+                            style={{
+                              height: '100%', borderRadius: 3,
+                              background: isProfit
+                                ? 'linear-gradient(90deg, var(--profit), rgba(74,222,128,0.5))'
+                                : 'linear-gradient(90deg, var(--loss), rgba(248,113,113,0.5))',
+                            }}
+                          />
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 32 }}>
@@ -818,13 +935,59 @@ export default function OperadoresPage() {
             <div style={{ marginBottom: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Equipe ({operators.length})</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Equipe ({isDemo && !operators.length ? DEMO_OPERATORS.length : operators.length})</span>
               </div>
             </div>
 
-            {operators.length === 0 ? (
+            {operators.length === 0 && !isDemo ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)' }}>
                 <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>Nenhum operador na equipe.</p>
+              </div>
+            ) : operators.length === 0 && isDemo ? (
+              <div>
+                <DemoBanner />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {DEMO_OPERATOR_RANKING.map((op, idx) => {
+                    const isActiveOp = op.metasAtivas > 0
+                    return (
+                      <motion.div key={op.id} {...fadeUp(idx, 0.04)} style={{
+                        display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px',
+                        background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+                        borderRadius: 14,
+                      }}>
+                        <div style={{
+                          width: 40, height: 40, borderRadius: 12,
+                          background: op.lucroFinal >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
+                          border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: 16, fontWeight: 700, color: '#fff', flexShrink: 0,
+                        }}>{getInitial(op)}</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0 }}>{getName(op)}</p>
+                            <span style={{
+                              fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
+                              color: '#94A3B8', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
+                            }}>Operador</span>
+                          </div>
+                          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.email}</p>
+                        </div>
+                        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: isActiveOp ? '#22c55e' : 'rgba(255,255,255,0.15)' }} />
+                          <span style={{ fontSize: 10, color: isActiveOp ? '#22c55e' : 'rgba(255,255,255,0.25)' }}>
+                            {isActiveOp ? 'Ativo' : 'Inativo'}
+                          </span>
+                        </div>
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? '#22c55e' : '#ef4444' }}>
+                            {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
+                          </p>
+                          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasFechadas + op.metasAtivas} metas</p>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -912,16 +1075,94 @@ export default function OperadoresPage() {
               </div>
               <div style={{ display: 'flex', gap: 16 }}>
                 <div style={{ textAlign: 'center' }}>
-                  <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--profit)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(folhaData.reduce((a, o) => a + o.pagamento, 0))}</p>
+                  <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--profit)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(folhaData.length > 0 ? folhaData.reduce((a, o) => a + o.pagamento, 0) : (isDemo ? DEMO_OPERATOR_RANKING.filter(o => o.metasFechadas > 0).reduce((a, o) => a + o.totalDeposit * 2, 0) : 0))}</p>
                   <p style={{ fontSize: 10, color: 'var(--t4)', margin: '2px 0 0' }}>Total a pagar</p>
                 </div>
               </div>
             </div>
 
             {/* Table */}
-            {folhaData.length === 0 ? (
+            {folhaData.length === 0 && !isDemo ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--surface)', borderRadius: 14, border: '1px solid var(--b1)' }}>
                 <p style={{ fontSize: 14, color: 'var(--t3)' }}>Nenhum operador com metas fechadas.</p>
+              </div>
+            ) : folhaData.length === 0 && isDemo ? (
+              <div>
+                <DemoBanner />
+                {(() => {
+                  const demoFolha = DEMO_OPERATOR_RANKING.filter(op => op.metasFechadas > 0).map(op => ({
+                    ...op,
+                    pagamento: op.totalDeposit * 2,
+                  }))
+                  const totalPag = demoFolha.reduce((a, o) => a + o.pagamento, 0)
+                  const totalDep = demoFolha.reduce((a, o) => a + o.totalDeposit, 0)
+                  const totalMF = demoFolha.reduce((a, o) => a + o.metasFechadas, 0)
+                  const totalLF = demoFolha.reduce((a, o) => a + o.lucroFinal, 0)
+                  return (
+                    <>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 16 }}>
+                        <div style={{ textAlign: 'center' }}>
+                          <p style={{ fontSize: 20, fontWeight: 800, color: 'var(--profit)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(totalPag)}</p>
+                          <p style={{ fontSize: 10, color: 'var(--t4)', margin: '2px 0 0' }}>Total a pagar (demo)</p>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid var(--b1)' }}>
+                        <div style={{
+                          display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
+                          padding: '12px 20px', background: 'rgba(255,255,255,0.03)',
+                          borderBottom: '1px solid var(--b1)',
+                        }}>
+                          {['Operador', 'Metas', 'Deps', 'Lucro', 'A pagar'].map(h => (
+                            <p key={h} style={{ fontSize: 10, fontWeight: 600, color: 'var(--t4)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: h === 'Operador' ? 'left' : 'right' }}>{h}</p>
+                          ))}
+                        </div>
+                        {demoFolha.map((op, i) => (
+                          <motion.div key={op.id} {...fadeUp(i, 0.04)} style={{
+                            display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
+                            padding: '14px 20px', alignItems: 'center',
+                            background: i % 2 === 0 ? 'var(--surface)' : 'rgba(255,255,255,0.015)',
+                            borderBottom: i < demoFolha.length - 1 ? '1px solid var(--b1)' : 'none',
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <div style={{
+                                width: 32, height: 32, borderRadius: 9, flexShrink: 0,
+                                background: 'var(--profit-dim)', border: '1px solid var(--profit-border)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 13, fontWeight: 700, color: 'var(--t1)',
+                              }}>{getInitial(op)}</div>
+                              <div>
+                                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', margin: 0 }}>{getName(op)}</p>
+                                <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>{op.email}</p>
+                              </div>
+                            </div>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>{op.metasFechadas}</p>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>{op.totalDeposit}</p>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>
+                              {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
+                            </p>
+                            <div style={{ textAlign: 'right' }}>
+                              <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--brand-bright)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>
+                                R$ {fmt(op.pagamento)}
+                              </p>
+                              <p style={{ fontSize: 9, color: 'var(--t4)', margin: '1px 0 0' }}>{op.totalDeposit} x R$ {fmt(2)}</p>
+                            </div>
+                          </motion.div>
+                        ))}
+                        <div style={{
+                          display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
+                          padding: '14px 20px', background: 'rgba(229,57,53,0.04)',
+                          borderTop: '1px solid var(--brand-border)',
+                        }}>
+                          <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Total</p>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>{totalMF}</p>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>{totalDep}</p>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--profit)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(totalLF)}</p>
+                          <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--brand-bright)', margin: 0, textAlign: 'right', fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(totalPag)}</p>
+                        </div>
+                      </div>
+                    </>
+                  )
+                })()}
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid var(--b1)' }}>

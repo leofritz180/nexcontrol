@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
+import { DEMO_COSTS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || '?'
@@ -96,13 +97,16 @@ export default function CustosPage() {
     loadData()
   }
 
+  const isDemo = !loading && shouldShowDemo(metas)
+  const displayCosts = isDemo ? DEMO_COSTS : costs
+
   const today = new Date().toISOString().slice(0, 10)
   const currentMonth = new Date().toISOString().slice(0, 7)
   const daysElapsed = new Date().getDate()
 
   const kpis = useMemo(() => {
-    const custoHoje = costs.filter(c => c.date === today).reduce((a, c) => a + Number(c.amount || 0), 0)
-    const custoMes = costs.filter(c => (c.date || '').slice(0, 7) === currentMonth).reduce((a, c) => a + Number(c.amount || 0), 0)
+    const custoHoje = displayCosts.filter(c => c.date === today).reduce((a, c) => a + Number(c.amount || 0), 0)
+    const custoMes = displayCosts.filter(c => (c.date || '').slice(0, 7) === currentMonth).reduce((a, c) => a + Number(c.amount || 0), 0)
 
     const lucroHoje = metas
       .filter(m => (m.fechada_em || '').slice(0, 10) === today)
@@ -114,12 +118,12 @@ export default function CustosPage() {
     const lucroLiquido = lucroHoje - custoHoje
 
     return { custoHoje, custoMes, lucroHoje, lucroTotal, lucroLiquido, mediaDia, pctLucro }
-  }, [costs, metas, today, currentMonth, daysElapsed])
+  }, [displayCosts, metas, today, currentMonth, daysElapsed])
 
   // Chart data: costs grouped by type
   const chartData = useMemo(() => {
     const grouped = {}
-    costs.forEach(c => {
+    displayCosts.forEach(c => {
       const key = c.type || 'outros'
       grouped[key] = (grouped[key] || 0) + Number(c.amount || 0)
     })
@@ -133,7 +137,7 @@ export default function CustosPage() {
       pct: (total / max) * 100,
       ct: typeMap[type] || typeMap['outros'],
     }))
-  }, [costs])
+  }, [displayCosts])
 
   if (loading) return (
     <main style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
@@ -173,6 +177,15 @@ export default function CustosPage() {
               Adicionar custo
             </motion.button>
           </div>
+
+          {/* Demo Banner */}
+          {isDemo && (
+            <motion.div initial={{ opacity:0, y:-8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }}
+              style={{ padding:'12px 20px', borderRadius:12, marginBottom:24, background:'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))', border:'1px solid rgba(229,57,53,0.15)', display:'flex', alignItems:'center', gap:10 }}>
+              <div style={{ width:8, height:8, borderRadius:'50%', background:'#e53935', boxShadow:'0 0 8px rgba(229,57,53,0.4)', flexShrink:0 }} />
+              <span style={{ fontSize:13, color:'var(--t2)', fontWeight:500 }}>{DEMO_BANNER_TEXT}</span>
+            </motion.div>
+          )}
 
           {/* KPI Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 32 }}>
@@ -321,7 +334,7 @@ export default function CustosPage() {
               <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Historico de custos</p>
             </div>
 
-            {costs.length === 0 ? (
+            {displayCosts.length === 0 ? (
               <div style={{ padding: '56px 24px', textAlign: 'center' }}>
                 <svg width={44} height={44} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth={1.2} strokeLinecap="round" style={{ marginBottom: 16, opacity: 0.4 }}>
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
@@ -346,7 +359,7 @@ export default function CustosPage() {
               </div>
             ) : (
               <div>
-                {costs.map((cost, i) => {
+                {displayCosts.map((cost, i) => {
                   const ct = typeMap[cost.type] || typeMap['outros']
                   const isEven = i % 2 === 0
                   return (
@@ -360,7 +373,7 @@ export default function CustosPage() {
                         display: 'flex', alignItems: 'center', gap: 14,
                         padding: '14px 24px',
                         background: isEven ? 'transparent' : 'rgba(255,255,255,0.015)',
-                        borderBottom: i < costs.length - 1 ? '1px solid var(--b1)' : 'none',
+                        borderBottom: i < displayCosts.length - 1 ? '1px solid var(--b1)' : 'none',
                         transition: 'all 0.15s',
                         cursor: 'default',
                         position: 'relative',
@@ -413,8 +426,8 @@ export default function CustosPage() {
                         {cost.date ? new Date(cost.date + 'T12:00:00').toLocaleDateString('pt-BR') : '-'}
                       </p>
 
-                      {/* Delete — hidden until hover */}
-                      <motion.button
+                      {/* Delete — hidden until hover (hidden in demo mode) */}
+                      {!isDemo && <motion.button
                         className="del-btn"
                         whileHover={{ scale: 1.15 }}
                         whileTap={{ scale: 0.9 }}
@@ -431,7 +444,7 @@ export default function CustosPage() {
                         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth={2.2} strokeLinecap="round">
                           <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                         </svg>
-                      </motion.button>
+                      </motion.button>}
                     </motion.div>
                   )
                 })}

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaCreated } from '../../lib/notify'
-import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, shouldShowDemo } from '../../lib/demo-data'
+import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -232,7 +232,7 @@ function DemoOperatorDashboard({ onCreateMeta }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', boxShadow: '0 0 8px rgba(229,57,53,0.4)' }} />
           <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>
-            Visualizacao demonstrativa — seus dados reais comecam quando criar sua primeira meta
+            {DEMO_BANNER_TEXT}
           </span>
         </div>
       </motion.div>

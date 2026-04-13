@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
+import { DEMO_REDES_RANKING, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const fmtInt = v => Number(v || 0).toLocaleString('pt-BR')
@@ -563,6 +564,8 @@ export default function RedesPage() {
     setLoading(false)
   }
 
+  const isDemo = !loading && shouldShowDemo(metas)
+
   /* ── Compute redes data with Network Score ── */
   const redesData = useMemo(() => {
     const closed = metas.filter(m => m.status_fechamento === 'fechada')
@@ -849,16 +852,180 @@ export default function RedesPage() {
             </div>
           </motion.div>
 
+          {/* ── Demo Mode ── */}
+          {isDemo && (() => {
+            const demoAvgScore = DEMO_REDES_RANKING.length > 0
+              ? Math.round(DEMO_REDES_RANKING.reduce((s, r) => s + r.score, 0) / DEMO_REDES_RANKING.length)
+              : 0
+            return (
+              <>
+                {/* Demo Banner */}
+                <motion.div {...fadeUp(1)} style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '12px 20px', borderRadius: 12, marginBottom: 24,
+                  background: 'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))',
+                  border: '1px solid rgba(229,57,53,0.15)',
+                }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', flexShrink: 0, boxShadow: '0 0 8px rgba(229,57,53,0.4)' }} />
+                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{DEMO_BANNER_TEXT}</span>
+                </motion.div>
+
+                {/* Demo KPI Cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 28 }}>
+                  <KpiCard label="Total de redes" value={4} rgb="99,102,241" i={2} />
+                  <KpiCard label="Redes lucrativas" value={3} rgb="34,197,94" i={3} />
+                  <KpiCard label="Lucro total" value={0} prefix="R$ " rgb="34,197,94" i={4} isProfit={true} rawValue={829.70} />
+                  <KpiCard label="Score medio" value={demoAvgScore} rgb="168,85,247" i={5} suffix="/100" />
+                </div>
+
+                {/* Demo Ranking */}
+                <motion.div {...fadeUp(6)} style={{ marginBottom: 32 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+                    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9' }}>Ranking por Network Score</span>
+                    <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4 }}>{DEMO_REDES_RANKING.length} redes</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {DEMO_REDES_RANKING.map((rede, i) => {
+                      const scoreColor = rede.score >= 70 ? '#22C55E' : rede.score >= 40 ? '#F59E0B' : '#EF4444'
+                      const scoreRgb = rede.score >= 70 ? '34,197,94' : rede.score >= 40 ? '245,158,11' : '239,68,68'
+                      const isTop = i === 0
+                      const bgIntensity = isTop ? 0.1 : 0.05
+
+                      return (
+                        <motion.div key={rede.rede} {...fadeUp(7 + i)}>
+                          <div style={{
+                            padding: '20px 22px', position: 'relative', overflow: 'hidden',
+                            borderRadius: 16, cursor: 'default',
+                            background: `linear-gradient(145deg, rgba(${scoreRgb},${bgIntensity}), rgba(${scoreRgb},${bgIntensity * 0.2}) 50%, rgba(12,18,32,0.95))`,
+                            border: `1px solid rgba(${scoreRgb},${bgIntensity + 0.08})`,
+                            boxShadow: isTop ? `0 0 40px rgba(${scoreRgb},${bgIntensity * 0.6}), 0 8px 32px rgba(0,0,0,0.2)` : 'none',
+                            transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
+                          }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.transform = 'scale(1.015) translateY(-2px)'
+                            e.currentTarget.style.filter = 'brightness(1.06)'
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'none'
+                            e.currentTarget.style.filter = 'none'
+                          }}
+                          >
+                            {isTop && (
+                              <div style={{
+                                position: 'absolute', top: -60, right: -60, width: 200, height: 200,
+                                borderRadius: '50%', pointerEvents: 'none',
+                                background: `radial-gradient(circle, rgba(${scoreRgb},${bgIntensity * 0.6}), transparent 70%)`,
+                              }} />
+                            )}
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
+                              {/* Score Ring */}
+                              <ScoreRing score={rede.score} size={52} strokeWidth={4} />
+
+                              {/* Rank + Name */}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 5, flexWrap: 'wrap' }}>
+                                  <span style={{
+                                    fontSize: 11, fontWeight: 800, color: '#64748B', fontFamily: 'var(--mono, monospace)',
+                                    minWidth: 24,
+                                  }}>#{i + 1}</span>
+                                  <span style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9' }}>{rede.rede}</span>
+                                  {/* Trend badge */}
+                                  <span style={{
+                                    fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 6,
+                                    textTransform: 'uppercase', letterSpacing: '0.05em',
+                                    background: rede.trend === 'up' ? 'rgba(34,197,94,0.1)' : rede.trend === 'down' ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.04)',
+                                    color: rede.trend === 'up' ? '#22C55E' : rede.trend === 'down' ? '#EF4444' : '#94A3B8',
+                                    border: `1px solid ${rede.trend === 'up' ? 'rgba(34,197,94,0.15)' : rede.trend === 'down' ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.06)'}`,
+                                  }}>
+                                    {rede.trend === 'up' ? '\u2191 Alta' : rede.trend === 'down' ? '\u2193 Queda' : '\u2194 Estavel'}
+                                  </span>
+                                </div>
+                                {/* Metrics row */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                                    <span style={{ fontWeight: 700, color: '#94A3B8' }}>{rede.metas}</span> metas
+                                  </span>
+                                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                                    <span style={{ fontWeight: 700, color: '#94A3B8' }}>{rede.contas}</span> contas
+                                  </span>
+                                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                                    <span style={{ fontWeight: 700, color: '#94A3B8' }}>{rede.remessas}</span> rem.
+                                  </span>
+                                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                                    win <span style={{ fontWeight: 700, color: rede.winRate >= 50 ? '#22C55E' : '#EF4444', fontFamily: 'var(--mono, monospace)' }}>{rede.winRate}%</span>
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Lucro per conta badge */}
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end', flexShrink: 0 }}>
+                                <span style={{
+                                  fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
+                                  padding: '3px 8px', borderRadius: 6,
+                                  color: rede.lucroPerConta >= 0 ? '#60a5fa' : '#EF4444',
+                                  background: 'rgba(59,130,246,0.06)',
+                                  border: '1px solid rgba(59,130,246,0.1)',
+                                }}>
+                                  R$ {fmt(rede.lucroPerConta)}/conta
+                                </span>
+                              </div>
+
+                              {/* Lucro */}
+                              <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 100 }}>
+                                <p style={{
+                                  fontSize: 20, fontWeight: 800, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em',
+                                  color: rede.lucroFinal >= 0 ? '#22C55E' : '#EF4444',
+                                  textShadow: rede.lucroFinal >= 0 ? '0 0 16px rgba(34,197,94,0.2)' : 'none',
+                                  marginBottom: 2, margin: 0,
+                                }}>
+                                  {rede.lucroFinal >= 0 ? '+' : ''}R$ {fmt(rede.lucroFinal)}
+                                </p>
+                                <p style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>lucro total</p>
+                              </div>
+                            </div>
+
+                            {/* Performance bar */}
+                            <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.03)', overflow: 'hidden' }}>
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${clamp(rede.score, 0, 100)}%` }}
+                                transition={{ duration: 1, delay: 0.3 + i * 0.06, ease }}
+                                style={{
+                                  height: '100%', borderRadius: 2,
+                                  background: rede.score >= 70
+                                    ? 'linear-gradient(90deg, rgba(34,197,94,0.6), #22C55E)'
+                                    : rede.score >= 40
+                                      ? 'linear-gradient(90deg, rgba(245,158,11,0.6), #F59E0B)'
+                                      : 'linear-gradient(90deg, rgba(239,68,68,0.6), #EF4444)',
+                                  boxShadow: rede.score >= 70 ? '0 0 8px rgba(34,197,94,0.15)' : 'none',
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </motion.div>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+              </>
+            )
+          })()}
+
           {/* ── KPI Cards ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 28 }}>
+          {!isDemo && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 28 }}>
             <KpiCard label="Total de redes" value={kpis.totalRedes} rgb="99,102,241" i={1} />
             <KpiCard label="Redes lucrativas" value={kpis.redesLucrativas} rgb="34,197,94" i={2} />
             <KpiCard label="Lucro total" value={0} prefix="R$ " rgb="34,197,94" i={3} isProfit={true} rawValue={kpis.lucroTotal} />
             <KpiCard label="Score medio" value={kpis.avgScore} rgb="168,85,247" i={4} suffix="/100" />
-          </div>
+          </div>}
 
           {/* ── AI Recommendations Box ── */}
-          {aiRecommendations.length > 0 && (
+          {!isDemo && aiRecommendations.length > 0 && (
             <motion.div {...fadeUp(5)} style={{ marginBottom: 28 }}>
               <div style={{
                 padding: '22px 24px', borderRadius: 16,
@@ -909,7 +1076,7 @@ export default function RedesPage() {
           )}
 
           {/* ── Strategic Alerts ── */}
-          {strategicAlerts.length > 0 && (
+          {!isDemo && strategicAlerts.length > 0 && (
             <motion.div {...fadeUp(7)} style={{ marginBottom: 28 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                 <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth={2} strokeLinecap="round">
@@ -927,7 +1094,7 @@ export default function RedesPage() {
           )}
 
           {/* ── Network Ranking with Heatmap ── */}
-          <motion.div {...fadeUp(9)} style={{ marginBottom: 32 }}>
+          {!isDemo && <motion.div {...fadeUp(9)} style={{ marginBottom: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
               <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -1111,7 +1278,7 @@ export default function RedesPage() {
                 })}
               </div>
             )}
-          </motion.div>
+          </motion.div>}
         </div>
       </AppLayout>
 

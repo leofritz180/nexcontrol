@@ -5,6 +5,7 @@ import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { generateInsights, getHealthStatus } from '../../lib/insights'
 import { ProLockedCard } from '../../components/pro/ProGate'
+import { DEMO_METAS, DEMO_REMESSAS, DEMO_OPERATORS, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 import dynamic from 'next/dynamic'
 const ProfitShowcase = dynamic(() => import('../../components/ProfitShowcase'), { ssr: false })
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
@@ -117,8 +118,19 @@ export default function FaturamentoPage() {
   const [savingGoal,setSavingGoal]=useState(false)
   const [showShowcase,setShowShowcase]=useState(false)
   const [subData,setSubData]=useState(null)
+  const [demoMode,setDemoMode]=useState(false)
 
   useEffect(()=>{ checkAndLoad() },[])
+
+  /* ── Demo mode: inject demo data when no real metas exist ── */
+  useEffect(()=>{
+    if(!loading && shouldShowDemo(metas) && !demoMode) {
+      setMetas(DEMO_METAS)
+      setRemessas(DEMO_REMESSAS)
+      setOperators(DEMO_OPERATORS)
+      setDemoMode(true)
+    }
+  },[loading, metas, demoMode])
 
   const isPro = subData?.status === 'active' && (!subData.expires_at || new Date(subData.expires_at) > new Date())
 
@@ -134,6 +146,7 @@ export default function FaturamentoPage() {
 
   async function loadAll(tid) {
     setLoading(true)
+    setDemoMode(false)
     const [{data:ops},{data:ms},{data:rs},{data:subRow}]=await Promise.all([
       supabase.from('profiles').select('*').eq('role','operator').order('created_at',{ascending:false}),
       supabase.from('metas').select('*').order('created_at',{ascending:false}),
@@ -309,6 +322,19 @@ export default function FaturamentoPage() {
             </button>
           </div>
         </div>
+
+        {/* Demo Banner */}
+        {demoMode && (
+          <div className="a1" style={{
+            marginBottom:20, padding:'14px 20px', borderRadius:14,
+            background:'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04) 60%, transparent)',
+            border:'1px solid rgba(239,68,68,0.18)',
+            display:'flex', alignItems:'center', gap:12,
+          }}>
+            <span style={{width:8,height:8,borderRadius:'50%',background:'#EF4444',flexShrink:0,boxShadow:'0 0 8px rgba(239,68,68,0.5)',animation:'pulse 2s ease-in-out infinite'}}/>
+            <p style={{fontSize:13,color:'rgba(255,255,255,0.85)',fontWeight:500,margin:0,lineHeight:1.5}}>{DEMO_BANNER_TEXT}</p>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="a2 tabs-scroll" style={{display:'flex',gap:4,marginBottom:24,background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:12,padding:5,width:'fit-content'}}>

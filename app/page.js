@@ -44,10 +44,11 @@ const STATUS_LINES = [
 ]
 
 /* ── Count-up with live fluctuation ── */
-function SocialProofNumber({ target, suffix, active }) {
+/* mode: 'up' = only increases, 'fixed' = no fluctuation after count-up */
+function SocialProofNumber({ target, suffix, active, mode }) {
   const [val, setVal] = useState(0)
   const [done, setDone] = useState(false)
-  const [delta, setDelta] = useState(0) // +1, -1, 0
+  const [delta, setDelta] = useState(0)
   const rafRef = useRef(null)
   const flickerRef = useRef(null)
 
@@ -66,30 +67,26 @@ function SocialProofNumber({ target, suffix, active }) {
     return () => cancelAnimationFrame(rafRef.current)
   }, [active, target])
 
-  // Live micro-fluctuations after count-up
+  // Live micro-fluctuations after count-up (skip if 'fixed')
   useEffect(() => {
-    if (!done) return
+    if (!done || mode === 'fixed') return
     const flicker = () => {
-      const r = Math.random()
-      const change = r < 0.4 ? 1 : r < 0.7 ? -1 : r < 0.85 ? 2 : 0
+      const change = Math.random() < 0.6 ? 1 : Math.random() < 0.5 ? 2 : 0
+      if (change === 0) return
       setDelta(change)
-      setVal(prev => {
-        const next = prev + change
-        return Math.max(target - 3, Math.min(target + 4, next))
-      })
-      // Reset delta color after 400ms
+      setVal(prev => prev + change)
       setTimeout(() => setDelta(0), 400)
     }
     flickerRef.current = setInterval(flicker, 2800 + Math.random() * 1200)
     return () => clearInterval(flickerRef.current)
-  }, [done, target])
+  }, [done, target, mode])
 
   const display = target >= 1000000
     ? `${(val / 1000000).toFixed(val < target ? 1 : 0)}`
     : target >= 1000 ? val.toLocaleString('pt-BR') : String(val)
 
-  const numColor = delta > 0 ? '#22C55E' : delta < 0 ? '#EF4444' : '#fff'
-  const glowColor = delta > 0 ? 'rgba(34,197,94,0.2)' : delta < 0 ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.06)'
+  const numColor = delta > 0 ? '#22C55E' : '#fff'
+  const glowColor = delta > 0 ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'
 
   return (
     <motion.p
@@ -283,9 +280,9 @@ function SocialProofSection() {
   }, [])
 
   const stats = [
-    { target: 400, suffix: '+', label: 'Operadores ativos' },
-    { target: 1, suffix: 'M+', label: 'Monitorados em operacoes' },
-    { target: 3000, suffix: '+', label: 'Metas analisadas' },
+    { target: 400, suffix: '+', label: 'Operadores ativos', mode: 'up' },
+    { target: 1, suffix: 'M+', label: 'Monitorados em operacoes', mode: 'fixed' },
+    { target: 3000, suffix: '+', label: 'Metas analisadas', mode: 'up' },
   ]
 
   return (
@@ -334,7 +331,7 @@ function SocialProofSection() {
       </motion.p>
 
       <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:20 }} className="g-4">
-        {stats.map(({ target, suffix, label }, i) => (
+        {stats.map(({ target, suffix, label, mode }, i) => (
           <motion.div
             key={i}
             initial={{ opacity:0, y:14 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
@@ -348,7 +345,7 @@ function SocialProofSection() {
             onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow='0 8px 30px rgba(0,0,0,0.3)' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.04)'; e.currentTarget.style.boxShadow='none' }}
           >
-            <SocialProofNumber target={target} suffix={suffix} active={active} />
+            <SocialProofNumber target={target} suffix={suffix} active={active} mode={mode} />
             <p style={{ fontSize:13, color:'rgba(255,255,255,0.4)', margin:'8px 0 0', fontWeight:500 }}>{label}</p>
           </motion.div>
         ))}

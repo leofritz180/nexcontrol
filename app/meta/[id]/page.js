@@ -317,6 +317,7 @@ export default function MetaPage() {
   async function handleAdd(e) {
     e.preventDefault()
     if (!dep||!saq||salvando) return
+    if (tipo !== 'redeposito' && (!contasRemessa || Number(contasRemessa) <= 0)) { setError('Informe o numero de contas nesta remessa.'); return }
     if (meta?.status==='finalizada'||meta?.status_fechamento==='fechada') { setError('Meta finalizada. Nao e possivel registrar.'); return }
     setSalvando(true); setError('')
     const d=Number(dep),s=Number(saq),si=Number(saldoIni||0),diff=s-d
@@ -725,8 +726,8 @@ export default function MetaPage() {
                 <input className="input" type="number" step="0.01" value={saldoIni} onChange={e=>setSaldoIni(e.target.value)}/>
               </div>
               <div>
-                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Contas nesta remessa</label>
-                <input className="input" type="number" min="0" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="Ex: 5"/>
+                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Contas nesta remessa {tipo !== 'redeposito' && <span style={{color:'var(--loss)'}}>*</span>}</label>
+                <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="Ex: 5" required={tipo !== 'redeposito'}/>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
                 <div>
@@ -822,7 +823,7 @@ export default function MetaPage() {
 
               {error && <div className="alert-error" style={{ display:'flex', alignItems:'center', gap:8 }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
 
-              <button type="submit" className="btn btn-profit" disabled={salvando||!dep||!saq} style={{ width:'100%', padding:'13px', fontSize:14 }}>
+              <button type="submit" className="btn btn-profit" disabled={salvando||!dep||!saq||(tipo!=='redeposito'&&(!contasRemessa||Number(contasRemessa)<=0))} style={{ width:'100%', padding:'13px', fontSize:14 }}>
                 {salvando?<><div className="spinner" style={{ width:14,height:14,borderTopColor:'#012b1c' }}/> Registrando...</>:<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Registrar remessa</>}
               </button>
             </form>

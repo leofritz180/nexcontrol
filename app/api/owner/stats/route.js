@@ -27,9 +27,9 @@ export async function POST(req) {
       { data: remessas },
       { data: payments },
     ] = await Promise.all([
-      sb.from('profiles').select('id,email,role,tenant_id,created_at,updated_at'),
+      sb.from('profiles').select('*'),
       sb.from('tenants').select('id,name,created_at,trial_end,subscription_status'),
-      sb.from('subscriptions').select('id,tenant_id,status,plan,operator_qty,expires_at,created_at'),
+      sb.from('subscriptions').select('*'),
       sb.from('metas').select('id,operator_id,tenant_id,status,status_fechamento,quantidade_contas,lucro_final,created_at,fechada_em,deleted_at'),
       sb.from('remessas').select('id,meta_id,lucro,prejuizo,deposito,saque,resultado,created_at'),
       sb.from('asaas_payments').select('id,tenant_id,amount,status,created_at').order('created_at', { ascending: false }),

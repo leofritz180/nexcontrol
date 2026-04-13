@@ -325,14 +325,14 @@ export default function FaturamentoPage() {
 
         {/* Demo Banner */}
         {demoMode && (
-          <div className="a1" style={{
+          <div className="demo-banner" style={{
             marginBottom:20, padding:'14px 20px', borderRadius:14,
-            background:'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.04) 60%, transparent)',
-            border:'1px solid rgba(239,68,68,0.18)',
+            background:'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))',
+            border:'1px solid rgba(229,57,53,0.15)',
             display:'flex', alignItems:'center', gap:12,
           }}>
-            <span style={{width:8,height:8,borderRadius:'50%',background:'#EF4444',flexShrink:0,boxShadow:'0 0 8px rgba(239,68,68,0.5)',animation:'pulse 2s ease-in-out infinite'}}/>
-            <p style={{fontSize:13,color:'rgba(255,255,255,0.85)',fontWeight:500,margin:0,lineHeight:1.5}}>{DEMO_BANNER_TEXT}</p>
+            <span className="demo-banner-dot" style={{width:8,height:8,borderRadius:'50%',background:'#e53935',flexShrink:0}}/>
+            <p style={{fontSize:13,color:'var(--t2)',fontWeight:500,margin:0,lineHeight:1.5}}>{DEMO_BANNER_TEXT}</p>
           </div>
         )}
 

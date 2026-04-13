@@ -217,7 +217,7 @@ function DemoOperatorDashboard({ onCreateMeta }) {
   return (
     <div>
       {/* Demo banner */}
-      <motion.div
+      <motion.div className="demo-banner"
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
@@ -225,16 +225,13 @@ function DemoOperatorDashboard({ onCreateMeta }) {
           padding: '12px 20px', borderRadius: 12, marginBottom: 24,
           background: 'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))',
           border: '1px solid rgba(229,57,53,0.15)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: 12,
+          display: 'flex', alignItems: 'center', gap: 12,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', boxShadow: '0 0 8px rgba(229,57,53,0.4)' }} />
-          <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>
-            {DEMO_BANNER_TEXT}
-          </span>
-        </div>
+        <div className="demo-banner-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', flexShrink: 0 }} />
+        <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>
+          {DEMO_BANNER_TEXT}
+        </span>
       </motion.div>
 
       {/* Demo KPIs */}

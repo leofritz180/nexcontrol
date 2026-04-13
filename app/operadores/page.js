@@ -672,12 +672,12 @@ export default function OperadoresPage() {
   const isDemo = !loading && shouldShowDemo(metas)
 
   const DemoBanner = () => (
-    <motion.div {...fadeUp(0)} style={{
+    <motion.div className="demo-banner" {...fadeUp(0)} style={{
       display: 'flex', alignItems: 'center', gap: 10, padding: '12px 18px', marginBottom: 20,
       background: 'linear-gradient(135deg, rgba(229,57,53,0.12), rgba(229,57,53,0.04))',
       border: '1px solid rgba(229,57,53,0.18)', borderRadius: 12,
     }}>
-      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', flexShrink: 0, animation: 'pulse 2s ease-in-out infinite' }} />
+      <span className="demo-banner-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', flexShrink: 0 }} />
       <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(229,57,53,0.85)', margin: 0 }}>{DEMO_BANNER_TEXT}</p>
     </motion.div>
   )

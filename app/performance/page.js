@@ -70,6 +70,9 @@ function IconRefresh() {
 function IconStar() {
   return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
 }
+function IconGamepad() {
+  return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><line x1="6" y1="12" x2="10" y2="12" /><line x1="8" y1="10" x2="8" y2="14" /><line x1="15" y1="13" x2="15.01" y2="13" /><line x1="18" y1="11" x2="18.01" y2="11" /><rect x="2" y="6" width="20" height="12" rx="2" /></svg>
+}
 
 /* ── Animation variants ── */
 const fadeUp = {
@@ -258,7 +261,7 @@ export default function PerformancePage() {
     const metaIds = activeMetas.map(x => x.id)
     let allRem = []
     if (metaIds.length > 0) {
-      const { data: r } = await supabase.from('remessas').select('id,meta_id,deposito,saque,status_problema,created_at').in('meta_id', metaIds).order('created_at', { ascending: false })
+      const { data: r } = await supabase.from('remessas').select('id,meta_id,deposito,saque,resultado,contas_remessa,slot_name,status_problema,created_at').in('meta_id', metaIds).order('created_at', { ascending: false })
       allRem = r || []
     }
     setRemessas(allRem)
@@ -370,6 +373,22 @@ export default function PerformancePage() {
       { label: '100 remessas', achieved: totalRem >= 100, current: totalRem, target: 100 },
     ]
   }, [myMetas, remessas])
+
+  /* ── Slot stats ── */
+  const slotStats = useMemo(() => {
+    const groups = {}
+    remessas.forEach(r => {
+      if (!r.slot_name) return
+      if (!groups[r.slot_name]) groups[r.slot_name] = { name: r.slot_name, total: 0, count: 0, contas: 0 }
+      groups[r.slot_name].total += Number(r.resultado || 0)
+      groups[r.slot_name].count++
+      groups[r.slot_name].contas += Number(r.contas_remessa || 0)
+    })
+    return Object.values(groups)
+      .filter(s => s.count >= 2)
+      .map(s => ({ ...s, perConta: s.contas > 0 ? s.total / s.contas : 0 }))
+      .sort((a, b) => b.perConta - a.perConta)
+  }, [remessas])
 
   /* ── Active alerts ── */
   const alertas = useMemo(() => {
@@ -632,6 +651,103 @@ export default function PerformancePage() {
                   <AchievementBadge key={a.label} label={a.label} achieved={a.achieved} current={a.current} target={a.target} index={10 + i} />
                 ))}
               </motion.div>
+
+              {/* ══════ SECTION 4.5: SEUS SLOTS ══════ */}
+              {slotStats.length > 0 && (
+                <>
+                  <SectionHead icon={<IconGamepad />} title="Seus Slots" index={15} />
+                  <motion.div
+                    custom={16}
+                    variants={fadeUp}
+                    initial="hidden"
+                    animate="visible"
+                    style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
+                  >
+                    {/* Best slot */}
+                    <div style={{
+                      padding: '16px 20px', borderRadius: 12,
+                      background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
+                      display: 'flex', alignItems: 'center', gap: 10,
+                    }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 8,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)',
+                        color: '#22C55E',
+                      }}>
+                        <IconStar />
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E' }}>
+                        {slotStats[0].name}
+                      </span>
+                      <span style={{ fontSize: 12, color: 'var(--t3)' }}>
+                        — seu melhor slot (R$ {slotStats[0].perConta.toFixed(0)}/conta)
+                      </span>
+                    </div>
+
+                    {/* Worst slot warning */}
+                    {slotStats.length > 1 && slotStats[slotStats.length - 1].perConta < -8 && (
+                      <div style={{
+                        padding: '16px 20px', borderRadius: 12,
+                        background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)',
+                        display: 'flex', alignItems: 'center', gap: 10,
+                      }}>
+                        <div style={{
+                          width: 28, height: 28, borderRadius: 8,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)',
+                          color: '#F59E0B',
+                        }}>
+                          <IconAlert />
+                        </div>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#F59E0B' }}>
+                          {slotStats[slotStats.length - 1].name}
+                        </span>
+                        <span style={{ fontSize: 12, color: 'var(--t3)' }}>
+                          — considere evitar (R$ {slotStats[slotStats.length - 1].perConta.toFixed(0)}/conta)
+                        </span>
+                      </div>
+                    )}
+
+                    {/* All slots list */}
+                    <motion.div
+                      custom={17}
+                      variants={fadeUp}
+                      initial="hidden"
+                      animate="visible"
+                      style={{
+                        borderRadius: 14,
+                        background: 'var(--surface)',
+                        border: '1px solid var(--b1)',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {slotStats.map((s, i) => (
+                        <div
+                          key={s.name}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 12,
+                            padding: '12px 20px',
+                            background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
+                            borderBottom: i < slotStats.length - 1 ? '1px solid var(--b1)' : 'none',
+                          }}
+                        >
+                          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', flex: 1, minWidth: 120 }}>{s.name}</span>
+                          <span style={{ fontSize: 11, color: 'var(--t3)', minWidth: 80 }}>
+                            <span style={{ fontFamily: 'var(--mono)', color: 'var(--t2)', fontWeight: 600 }}>{s.count}</span> remessas
+                          </span>
+                          <span style={{
+                            fontSize: 12, fontFamily: 'var(--mono)', fontWeight: 700, minWidth: 90, textAlign: 'right',
+                            color: s.perConta >= 0 ? '#22C55E' : '#EF4444',
+                          }}>
+                            R$ {s.perConta.toFixed(0)}/conta
+                          </span>
+                        </div>
+                      ))}
+                    </motion.div>
+                  </motion.div>
+                </>
+              )}
 
               {/* ══════ SECTION 5: ALERTAS ATIVOS ══════ */}
               {alertas.total > 0 && (

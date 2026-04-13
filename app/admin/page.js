@@ -583,6 +583,22 @@ export default function AdminPage() {
     return { value: Number(worst.prejuizo), avg: avgLoss }
   }, [remessas])
 
+  const slotRanking = useMemo(() => {
+    const groups = {}
+    remessas.forEach(r => {
+      if (!r.slot_name) return
+      if (!groups[r.slot_name]) groups[r.slot_name] = { name: r.slot_name, total: 0, count: 0, contas: 0 }
+      groups[r.slot_name].total += Number(r.resultado || 0)
+      groups[r.slot_name].count++
+      groups[r.slot_name].contas += Number(r.contas_remessa || 0)
+    })
+    return Object.values(groups)
+      .filter(s => s.count >= 2)
+      .map(s => ({ ...s, perConta: s.contas > 0 ? s.total / s.contas : 0, avg: s.total / s.count }))
+      .sort((a, b) => b.perConta - a.perConta)
+      .slice(0, 8)
+  }, [remessas])
+
   const kpis = [
     { label:'Lucro hoje', rawValue:Math.abs(global.lucroHoje), value:`R$ ${fmt(Math.abs(global.lucroHoje))}`, sub:global.lucroHoje>=0?'Fechamentos de hoje':'Resultado negativo', color:global.lucroHoje>=0?'var(--profit)':'var(--loss)', card:global.lucroHoje>=0?'card-profit':'card-loss', badge:'ao vivo', isLive: true },
     { label:'Lucro final total', rawValue:global.lucroFinalTotal, value:`R$ ${fmt(global.lucroFinalTotal)}`, sub:'Metas 100% fechadas', color:'var(--brand-bright)', card:'card-primary', badge:'fechado' },
@@ -1722,6 +1738,44 @@ export default function AdminPage() {
                             <td style={{padding:'9px 16px',fontWeight:700,color:'var(--t1)'}}>{r.rede}</td>
                             <td style={{padding:'9px 16px',textAlign:'right',fontWeight:800,color:pos?'#22C55E':'#EF4444'}}>{pos?'+':''}R$ {fmt(r.lucroPorConta)}</td>
                             <td style={{padding:'9px 16px',textAlign:'right',fontWeight:700,color:pos?'var(--profit)':'#EF4444'}}>{pos?'+':''}R$ {fmt(r.lucro)}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* ── Performance por Slot ── */}
+            {slotRanking.length > 0 && (
+              <div style={{ marginTop: 32 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="1.5" strokeLinecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)' }}>Performance por Slot</span>
+                  <span className="t-small" style={{ marginLeft: 4 }}>Resultado por conta (min. 2 remessas)</span>
+                </div>
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--b1)', borderRadius: 14, overflow: 'hidden' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, fontFamily: 'var(--mono)' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--b1)' }}>
+                        <th style={{ textAlign: 'left', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>#</th>
+                        <th style={{ textAlign: 'left', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Slot</th>
+                        <th style={{ textAlign: 'center', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Remessas</th>
+                        <th style={{ textAlign: 'right', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Res/conta</th>
+                        <th style={{ textAlign: 'right', padding: '10px 16px', fontSize: 11, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {slotRanking.map((s, i) => {
+                        const pos = s.perConta >= 0
+                        return (
+                          <tr key={s.name} style={{ borderBottom: i < slotRanking.length - 1 ? '1px solid var(--b1)' : 'none' }}>
+                            <td style={{ padding: '9px 16px', fontWeight: 800, color: i === 0 ? '#FFD700' : 'var(--t3)' }}>{i + 1}</td>
+                            <td style={{ padding: '9px 16px', fontWeight: 700, color: 'var(--t1)' }}>{s.name}</td>
+                            <td style={{ padding: '9px 16px', textAlign: 'center', fontWeight: 600, color: 'var(--t3)' }}>{s.count}</td>
+                            <td style={{ padding: '9px 16px', textAlign: 'right', fontWeight: 800, color: pos ? '#22C55E' : '#EF4444' }}>{pos ? '+' : ''}R$ {fmt(s.perConta)}</td>
+                            <td style={{ padding: '9px 16px', textAlign: 'right', fontWeight: 700, color: pos ? 'var(--profit)' : '#EF4444' }}>{s.total >= 0 ? '+' : ''}R$ {fmt(s.total)}</td>
                           </tr>
                         )
                       })}

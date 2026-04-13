@@ -531,6 +531,39 @@ export default function MetaPage() {
             else if (second < first * 0.3 && Math.abs(second) > 5) insights.push({ text: `Queda significativa nos resultados`, type: 'warn', action: 'Observar proximas remessas' })
           }
 
+          // E) Slot-based insights
+          const slotGroups = {}
+          remessas.forEach(r => {
+            if (!r.slot_name) return
+            if (!slotGroups[r.slot_name]) slotGroups[r.slot_name] = []
+            slotGroups[r.slot_name].push(r)
+          })
+
+          const slotStats = Object.entries(slotGroups)
+            .filter(([_, rems]) => rems.length >= 2)
+            .map(([name, rems]) => {
+              const totalRes = rems.reduce((a, r) => a + Number(r.resultado || 0), 0)
+              const totalContas = rems.reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+              return { name, avg: totalRes / rems.length, perConta: totalContas > 0 ? totalRes / totalContas : 0, count: rems.length }
+            })
+            .sort((a, b) => b.perConta - a.perConta)
+
+          if (slotStats.length > 0) {
+            const best = slotStats[0]
+            insights.push({ text: `Melhor slot: ${best.name} com media de R$ ${fmt(best.avg)}/remessa`, type: 'good', action: 'Priorizar esse slot nas proximas remessas' })
+
+            const worst = slotStats[slotStats.length - 1]
+            if (worst.perConta < -8 && worst.name !== best.name) {
+              insights.push({ text: `${worst.name} com R$ ${fmt(worst.perConta)}/conta de prejuizo — considere trocar`, type: worst.perConta < -12 ? 'critical' : 'warn', action: 'Testar outros slots no lugar desse' })
+            }
+          }
+
+          // Repeated negative slot: last 2+ remessas same slot and all negative
+          const recentWithSlot = ordered.filter(r => r.slot_name).slice(-2)
+          if (recentWithSlot.length >= 2 && recentWithSlot[0].slot_name === recentWithSlot[1].slot_name && recentWithSlot.every(r => Number(r.resultado || 0) < 0)) {
+            insights.push({ text: `2 remessas negativas seguidas no ${recentWithSlot[0].slot_name} — teste outro slot`, type: 'warn', action: 'Trocar de slot pode quebrar a sequencia negativa' })
+          }
+
           if (insights.length === 0) insights.push({ text: `Operacao estavel — ${remessas.length} remessas registradas`, type: 'good', action: 'Tudo dentro do esperado. Continuar normalmente.' })
 
           // Score (0-100) — calibrado: prejuizo leve nao penaliza

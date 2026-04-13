@@ -180,9 +180,11 @@ export default function MetaPage() {
     // Admin can view all metas in their tenant; operator only their own
     if (m && m.operator_id !== u.id && p?.role !== 'admin') { router.push('/operator'); return }
     setMeta(m||null); setRemessas(r||[])
-    if (m?.tenant_id) {
-      const { data: tenantData } = await supabase.from('tenants').select('favorite_slots').eq('id', m.tenant_id).maybeSingle()
-      setTenantSlots(tenantData?.favorite_slots || [])
+    const tid = m?.tenant_id || p?.tenant_id
+    if (tid) {
+      const { data: tenantData } = await supabase.from('tenants').select('favorite_slots').eq('id', tid).maybeSingle()
+      const slots = tenantData?.favorite_slots
+      setTenantSlots(Array.isArray(slots) ? slots : [])
     }
     setLoading(false)
   }

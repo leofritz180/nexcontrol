@@ -1090,7 +1090,13 @@ export default function OperadoresPage() {
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Slots favoritos</span>
               </div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: '0 0 14px' }}>Selecione os slots mais usados na sua operacao</p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: 0 }}>Selecione os slots mais usados na sua operacao</p>
+                <span style={{ fontSize: 11, fontWeight: 700, color: (tenant?.favorite_slots || []).length > 0 ? 'var(--profit)' : 'var(--t4)', display: 'flex', alignItems: 'center', gap: 5 }}>
+                  {(tenant?.favorite_slots || []).length > 0 && <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                  {(tenant?.favorite_slots || []).length} selecionado{(tenant?.favorite_slots || []).length !== 1 ? 's' : ''}
+                </span>
+              </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: 8 }}>
                 {SLOTS.map(slot => {
                   const favs = tenant?.favorite_slots || []

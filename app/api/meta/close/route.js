@@ -23,14 +23,15 @@ export async function POST(req) {
     const liq = (remessas || []).reduce((a, r) => a + Number(r.lucro || 0) - Number(r.prejuizo || 0), 0)
 
     const sal = Number(meta.salario || 0)
+    const bauVal = Number(meta.bau || 0)
     const cst = Number(meta.custo_fixo || 0)
     const tax = Number(meta.taxa_agente || 0)
-    const hasPre = sal > 0 || cst > 0 || tax > 0
+    const hasPre = sal > 0 || bauVal > 0 || cst > 0 || tax > 0
 
     if (action === 'finalize') {
       if (hasPre) {
         // Auto-close with pre-configured values
-        const lucroFinal = liq + sal - cst - tax
+        const lucroFinal = liq + sal + bauVal - cst - tax
         await supabase.from('metas').update({
           status: 'finalizada',
           status_fechamento: 'fechada',

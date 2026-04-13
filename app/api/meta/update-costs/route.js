@@ -4,7 +4,7 @@ import { sendPushToTenant } from '../../../../lib/push'
 
 export async function POST(req) {
   try {
-    const { meta_id, salario, custo_fixo, taxa_agente, close, lucro_final } = await req.json()
+    const { meta_id, salario, bau, custo_fixo, taxa_agente, close, lucro_final } = await req.json()
     if (!meta_id) return NextResponse.json({ error: 'Missing meta_id' }, { status: 400 })
 
     const supabase = createClient(
@@ -14,6 +14,7 @@ export async function POST(req) {
 
     const update = {
       salario: Number(salario || 0),
+      bau: Number(bau || 0),
       custo_fixo: Number(custo_fixo || 0),
       taxa_agente: Number(taxa_agente || 0),
     }

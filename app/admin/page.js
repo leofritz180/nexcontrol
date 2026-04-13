@@ -41,18 +41,19 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
   const prejRem  = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
   const liqRem   = lucroRem-prejRem
   const [salario,setSalario]=useState(String(meta.salario||''))
+  const [bau,    setBau]    =useState(String(meta.bau||''))
   const [custo,  setCusto]  =useState(String(meta.custo_fixo||''))
   const [taxa,   setTaxa]   =useState(String(meta.taxa_agente||''))
   const [saving, setSaving] =useState(false)
   const [error,  setError]  =useState('')
 
-  const lucroFinal = useMemo(()=>liqRem+Number(salario||0)-Number(custo||0)-Number(taxa||0),[salario,custo,taxa,liqRem])
+  const lucroFinal = useMemo(()=>liqRem+Number(salario||0)+Number(bau||0)-Number(custo||0)-Number(taxa||0),[salario,bau,custo,taxa,liqRem])
 
   async function save() {
     if (saving) return
     setSaving(true); setError('')
     const { data:updated, error:err } = await supabase.from('metas').update({
-      salario:Number(salario||0), custo_fixo:Number(custo||0), taxa_agente:Number(taxa||0),
+      salario:Number(salario||0), bau:Number(bau||0), custo_fixo:Number(custo||0), taxa_agente:Number(taxa||0),
       lucro_final:lucroFinal, status:'finalizada',
       status_fechamento:'fechada', fechada_em:new Date().toISOString(),
     }).eq('id',meta.id).neq('status_fechamento','fechada').select()
@@ -105,26 +106,35 @@ function ModalFechamento({ meta, remessas, operador, onClose, onSaved }) {
         </div>
 
         <div style={{ display:'flex',flexDirection:'column',gap:15 }}>
-          <div>
-            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Meu salario nesta meta (R$)</label>
-            <p className="t-small" style={{ margin:'0 0 8px' }}>Valor recebido por bater a meta — soma ao resultado (+)</p>
-            <input className="input" type="number" step="0.01" min="0" value={salario} onChange={e=>setSalario(e.target.value)} placeholder="0,00"/>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+            <div>
+              <label className="t-label" style={{ display:'block',marginBottom:8 }}>Salario da meta (R$)</label>
+              <p className="t-small" style={{ margin:'0 0 8px' }}>Valor recebido por bater a meta (+)</p>
+              <input className="input" type="number" step="0.01" min="0" value={salario} onChange={e=>setSalario(e.target.value)} placeholder="0,00"/>
+            </div>
+            <div>
+              <label className="t-label" style={{ display:'block',marginBottom:8 }}>Bau (R$)</label>
+              <p className="t-small" style={{ margin:'0 0 8px' }}>Bonus coletado nas contas (+)</p>
+              <input className="input" type="number" step="0.01" min="0" value={bau} onChange={e=>setBau(e.target.value)} placeholder="0,00"/>
+            </div>
           </div>
-          <div>
-            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Custo fixo da operacao (R$)</label>
-            <p className="t-small" style={{ margin:'0 0 8px' }}>Salario do operador + despesas — deduzido (-)</p>
-            <input className="input" type="number" step="0.01" min="0" value={custo} onChange={e=>setCusto(e.target.value)} placeholder="0,00"/>
-          </div>
-          <div>
-            <label className="t-label" style={{ display:'block',marginBottom:8 }}>Taxa agente/blogueira (R$)</label>
-            <p className="t-small" style={{ margin:'0 0 8px' }}>Comissao paga ao agente, blogueira ou parceiro — deduzido (-)</p>
-            <input className="input" type="number" step="0.01" min="0" value={taxa} onChange={e=>setTaxa(e.target.value)} placeholder="0,00"/>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+            <div>
+              <label className="t-label" style={{ display:'block',marginBottom:8 }}>Custo fixo (R$)</label>
+              <p className="t-small" style={{ margin:'0 0 8px' }}>Despesas da operacao (-)</p>
+              <input className="input" type="number" step="0.01" min="0" value={custo} onChange={e=>setCusto(e.target.value)} placeholder="0,00"/>
+            </div>
+            <div>
+              <label className="t-label" style={{ display:'block',marginBottom:8 }}>Taxa agente/blogueira (R$)</label>
+              <p className="t-small" style={{ margin:'0 0 8px' }}>Comissao paga (-)</p>
+              <input className="input" type="number" step="0.01" min="0" value={taxa} onChange={e=>setTaxa(e.target.value)} placeholder="0,00"/>
+            </div>
           </div>
 
-          <div style={{ background:lucroFinal>=0?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${lucroFinal>=0?'var(--profit-border)':'var(--loss-border)'}`,borderRadius:12,padding:'18px 22px',display:'flex',justifyContent:'space-between',alignItems:'center' }}>
+          <div style={{ background:lucroFinal>=0?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${lucroFinal>=0?'var(--profit-border)':'var(--loss-border)'}`,borderRadius:12,padding:'18px 22px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12 }}>
             <div>
               <p className="t-label" style={{ marginBottom:4 }}>Lucro final da meta</p>
-              <p className="t-small">Resultado + salario - custo - taxa agente</p>
+              <p className="t-small">Resultado + salario + bau - custo - taxa</p>
             </div>
             <p className="t-num" style={{ fontSize:28,fontWeight:800,color:lucroFinal>=0?'var(--profit)':'var(--loss)' }}>
               {lucroFinal>=0?'+':''}R$ {fmt(lucroFinal)}
@@ -152,21 +162,23 @@ function SalaryPanel({ meta, liqCalc, onSaved }) {
   const isFinalizedNotClosed = !fechada && meta.status === 'finalizada'
 
   const [salario, setSalario] = useState(String(meta.salario ?? ''))
+  const [bauVal, setBauVal]   = useState(String(meta.bau ?? ''))
   const [custo, setCusto]     = useState(String(meta.custo_fixo ?? ''))
   const [taxa, setTaxa]       = useState(String(meta.taxa_agente ?? ''))
   const [saving, setSaving]   = useState(false)
 
-  // Sync only on meta id change (new meta opened) — NOT on every focusMeta update
   useEffect(() => {
     setSalario(String(meta.salario ?? ''))
+    setBauVal(String(meta.bau ?? ''))
     setCusto(String(meta.custo_fixo ?? ''))
     setTaxa(String(meta.taxa_agente ?? ''))
   }, [meta.id])
 
   const sal = Number(salario || 0)
+  const bv  = Number(bauVal || 0)
   const cst = Number(custo || 0)
   const tax = Number(taxa || 0)
-  const newLucro = liqCalc + sal - cst - tax
+  const newLucro = liqCalc + sal + bv - cst - tax
 
   async function save() {
     if (saving) return
@@ -176,12 +188,12 @@ function SalaryPanel({ meta, liqCalc, onSaved }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        meta_id: meta.id, salario: sal, custo_fixo: cst, taxa_agente: tax,
+        meta_id: meta.id, salario: sal, bau: bv, custo_fixo: cst, taxa_agente: tax,
         close: isClosed, lucro_final: isClosed ? newLucro : undefined,
       }),
     })
     setSaving(false)
-    onSaved({ ...meta, salario: sal, custo_fixo: cst, taxa_agente: tax, lucro_final: isClosed ? newLucro : meta.lucro_final, status_fechamento: isClosed ? 'fechada' : meta.status_fechamento })
+    onSaved({ ...meta, salario: sal, bau: bv, custo_fixo: cst, taxa_agente: tax, lucro_final: isClosed ? newLucro : meta.lucro_final, status_fechamento: isClosed ? 'fechada' : meta.status_fechamento })
   }
 
   return (
@@ -196,11 +208,17 @@ function SalaryPanel({ meta, liqCalc, onSaved }) {
         {isFinalizedNotClosed && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--warn)', marginLeft: 4 }}>Operador finalizou — defina valores e feche</span>}
         {fechada && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--profit)', marginLeft: 4 }}>Meta fechada — ajuste se necessario</span>}
       </div>
-      <div className="g-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
+      <div className="g-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
         <div>
           <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Salario (R$)</label>
           <input className="input" type="number" step="0.01" min="0" value={salario}
             onChange={e => setSalario(e.target.value)}
+            placeholder="0,00" style={{ padding: '10px 12px', fontSize: 14 }}/>
+        </div>
+        <div>
+          <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Bau (R$)</label>
+          <input className="input" type="number" step="0.01" min="0" value={bauVal}
+            onChange={e => setBauVal(e.target.value)}
             placeholder="0,00" style={{ padding: '10px 12px', fontSize: 14 }}/>
         </div>
         <div>

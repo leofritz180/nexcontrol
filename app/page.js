@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,6 +15,36 @@ const DEMO_OPS = [
   { name:'Maria', value:68 },
   { name:'Carlos', value:120 },
 ]
+
+function SocialProofNumber({ target, suffix }) {
+  const [val, setVal] = useState(0)
+  const [started, setStarted] = useState(false)
+  const ref = useRef(null)
+  const rafRef = useRef(null)
+  useEffect(() => {
+    if (!started) return
+    const dur = 1200, start = performance.now()
+    const tick = now => {
+      const t = Math.min((now - start) / dur, 1)
+      const eased = 1 - Math.pow(1 - t, 3)
+      setVal(Math.round(target * eased))
+      if (t < 1) rafRef.current = requestAnimationFrame(tick)
+    }
+    rafRef.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [started, target])
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setStarted(true); obs.disconnect() } }, { threshold: 0.5 })
+    if (ref.current) obs.observe(ref.current)
+    return () => obs.disconnect()
+  }, [])
+  const display = target >= 1000000 ? `${(val / 1000000).toFixed(val < target ? 1 : 0)}` : target >= 1000 ? val.toLocaleString('pt-BR') : String(val)
+  return (
+    <p ref={ref} style={{ fontSize: 36, fontWeight: 900, color: '#fff', margin: 0, fontFamily: 'var(--mono, "JetBrains Mono", monospace)', letterSpacing: '-0.03em', textShadow: '0 0 30px rgba(255,255,255,0.08)' }}>
+      {display}{suffix}
+    </p>
+  )
+}
 
 function LiveDashboardDemo() {
   const [total, setTotal] = useState(3058)
@@ -285,6 +315,41 @@ export default function HomePage() {
             <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth={2.5} strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
           </motion.div>
         </motion.div>
+      </section>
+
+      {/* ═══ PROVA SOCIAL ═══ */}
+      <section style={{ padding: '48px 24px 40px', maxWidth: 800, margin: '0 auto', textAlign: 'center' }}>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          transition={{ duration: 0.4 }}
+          style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', marginBottom: 28 }}
+        >
+          QUEM USA NEXCONTROL NAO OPERA NO ESCURO:
+        </motion.p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }} className="g-4">
+          {[
+            { target: 400, suffix: '+', label: 'Operadores ativos' },
+            { target: 1, suffix: 'M+', label: 'Monitorados em operacoes' },
+            { target: 3000, suffix: '+', label: 'Metas analisadas' },
+          ].map(({ target, suffix, label }, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.12 }}
+              style={{ padding: '20px 16px' }}
+            >
+              <SocialProofNumber target={target} suffix={suffix} />
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', margin: '8px 0 0', fontWeight: 500 }}>{label}</p>
+            </motion.div>
+          ))}
+        </div>
+        <motion.p
+          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+          style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 20 }}
+        >
+          Dados atualizados continuamente pela plataforma
+        </motion.p>
       </section>
 
       {/* ═══ LIVE DASHBOARD DEMO ═══ */}

@@ -789,14 +789,14 @@ export default function MetaPage() {
                 ) : (
                   <div style={{ position: 'relative' }}>
                     {/* Seta esquerda */}
-                    <button onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: -200, behavior: 'smooth' }) }}
+                    <button type="button" onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: -200, behavior: 'smooth' }) }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.15)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.4)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)' }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.08)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.25)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)' }}
                       style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 32, height: 32, borderRadius: 10, border: '1px solid rgba(229,57,53,0.25)', background: 'rgba(229,57,53,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e53935', boxShadow: '0 4px 12px rgba(0,0,0,0.4), 0 0 8px rgba(229,57,53,0.1)', transition: 'all 0.2s ease' }}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
                     </button>
                     {/* Seta direita */}
-                    <button onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: 200, behavior: 'smooth' }) }}
+                    <button type="button" onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: 200, behavior: 'smooth' }) }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.15)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.4)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)' }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.08)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.25)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)' }}
                       style={{ position: 'absolute', right: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 32, height: 32, borderRadius: 10, border: '1px solid rgba(229,57,53,0.25)', background: 'rgba(229,57,53,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e53935', boxShadow: '0 4px 12px rgba(0,0,0,0.4), 0 0 8px rgba(229,57,53,0.1)', transition: 'all 0.2s ease' }}>

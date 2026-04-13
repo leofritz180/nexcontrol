@@ -202,39 +202,58 @@ export default function MetaPage() {
       return { type: 'warn', title: 'Banco em analise', text: 'Informe o ADMIN. Aguarde confirmacao antes de prosseguir.', icon: 'alert' }
     }
 
-    // 4. Prejuizo muito alto (> 2x media ou > R$5/conta)
-    if (diff < 0 && (Math.abs(diff) > avgPrej * 2 || perConta < -5)) {
+    // Faixas por conta (valor absoluto do prejuizo):
+    // Lucro ou prejuizo ate 3/conta: BOM
+    // Prejuizo 4-8/conta: dentro do esperado
+    // Prejuizo 9-12/conta: comecou ficar ruim
+    // Prejuizo 13-16/conta: muito ruim
+    // Prejuizo >16/conta: pessimo, alerta critico
+
+    const absPer = Math.abs(perConta)
+
+    if (diff < 0 && absPer > 16) {
       const msgs = [
-        'Prejuizo fora do padrao. Consulte o ADMIN antes de continuar.',
-        'Resultado muito abaixo — ja testou outro slot?',
-        'Prejuizo elevado. Considere pausar e alinhar com o ADMIN.',
+        'Prejuizo critico. Pare e consulte o ADMIN imediatamente.',
+        'Resultado pessimo — considere pausar a operacao agora.',
+        'Alerta maximo. Nao continue sem alinhar com o ADMIN.',
       ]
-      return { type: 'critical', title: `Prejuizo alto: R$ ${fmt(Math.abs(diff))}`, text: msgs[Math.floor(Math.random() * msgs.length)], icon: 'x' }
+      return { type: 'critical', title: `Prejuizo critico: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: msgs[Math.floor(Math.random() * msgs.length)], icon: 'x' }
     }
 
-    // 5. Prejuizo leve (ate R$3/conta)
-    if (diff < 0 && perConta >= -3) {
-      return { type: 'warn', title: `Prejuizo leve: R$ ${fmt(Math.abs(diff))}`, text: 'Dentro do esperado. Segue operando normalmente.', icon: 'alert' }
+    if (diff < 0 && absPer > 12) {
+      return { type: 'critical', title: `Prejuizo alto: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: 'Situacao muito ruim. Avise o ADMIN e avalie trocar de slot.', icon: 'x' }
     }
 
-    // 6. Prejuizo moderado
-    if (diff < 0) {
-      return { type: 'warn', title: `Prejuizo: R$ ${fmt(Math.abs(diff))}`, text: 'Monitore as proximas remessas com atencao.', icon: 'alert' }
+    if (diff < 0 && absPer > 8) {
+      return { type: 'warn', title: `Prejuizo elevado: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: 'Comecou a ficar ruim. Monitore com atencao as proximas.', icon: 'alert' }
     }
 
-    // 7. Lucro controlado (ate R$3/conta) — motivacional
-    if (diff >= 0 && perConta <= 3) {
+    if (diff < 0 && absPer > 3) {
+      return { type: 'warn', title: `Prejuizo: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: 'Dentro do esperado. Segue operando normalmente.', icon: 'alert' }
+    }
+
+    if (diff < 0 && absPer <= 3) {
+      const msgs = [
+        'Prejuizo minimo, ta de boa! Segue firme.',
+        'Resultado controlado. Faz parte, bora pra proxima!',
+        'Leve prejuizo, nada preocupante. Continua.',
+      ]
+      return { type: 'good', title: `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: msgs[Math.floor(Math.random() * msgs.length)], icon: 'check' }
+    }
+
+    // Lucro (qualquer valor ate 3/conta ou acima)
+    if (diff >= 0) {
       const msgs = [
         'Mandou bem, continua assim!',
         'Ai sim, bora pra cima!',
-        'Boa! Mantém esse ritmo.',
+        'Boa! Mantem esse ritmo.',
         'Ta no controle, segue firme!',
         'Show! Operacao no caminho certo.',
       ]
-      return { type: 'good', title: `+R$ ${fmt(diff)}`, text: msgs[Math.floor(Math.random() * msgs.length)], icon: 'check' }
+      return { type: 'good', title: `+R$ ${fmt(diff)}${nContas > 0 ? ` (R$ ${fmt(perConta)}/conta)` : ''}`, text: msgs[Math.floor(Math.random() * msgs.length)], icon: 'check' }
     }
 
-    // 8. Lucro alto
+    // Fallback
     if (diff > 0) {
       return { type: 'good', title: `Lucro: +R$ ${fmt(diff)}`, text: 'Excelente resultado! Mantem o foco.', icon: 'check' }
     }

@@ -28,11 +28,14 @@ function Stars({ count }) {
 }
 
 /* ── Slot Card ── */
-function SlotCard({ slot, index }) {
+function SlotCard({ slot, index, isPro }) {
   const [hovered, setHovered] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [denied, setDenied] = useState(false)
+  const locked = !isPro
 
   function copyName() {
+    if (locked) { setDenied(true); setTimeout(() => setDenied(false), 2000); return }
     navigator.clipboard.writeText(slot.name)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -47,13 +50,14 @@ function SlotCard({ slot, index }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         background: 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
-        border: `1px solid ${hovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`,
+        border: `1px solid ${hovered ? (locked ? 'rgba(229,57,53,0.15)' : 'rgba(255,255,255,0.1)') : 'rgba(255,255,255,0.05)'}`,
         borderRadius: 18,
         overflow: 'hidden',
-        transform: hovered ? 'translateY(-3px) scale(1.01)' : 'none',
-        boxShadow: hovered ? '0 16px 50px rgba(0,0,0,0.4)' : 'none',
+        transform: hovered && !locked ? 'translateY(-3px) scale(1.01)' : 'none',
+        boxShadow: hovered ? (locked ? '0 0 20px rgba(229,57,53,0.06)' : '0 16px 50px rgba(0,0,0,0.4)') : 'none',
         transition: 'all 0.3s ease',
         display: 'flex', flexDirection: 'column',
+        position: 'relative',
       }}
     >
       {/* Image area */}
@@ -62,6 +66,8 @@ function SlotCard({ slot, index }) {
         background: `linear-gradient(135deg, ${isAlta ? 'rgba(229,57,53,0.08)' : 'rgba(245,158,11,0.08)'}, rgba(255,255,255,0.02))`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
+        filter: locked ? 'blur(2px) brightness(0.55)' : 'none',
+        transition: 'filter 0.3s',
       }}>
         {/* Performance badge */}
         <div style={{
@@ -95,7 +101,7 @@ function SlotCard({ slot, index }) {
           border: `1px solid ${isAlta ? 'rgba(229,57,53,0.2)' : 'rgba(245,158,11,0.2)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'transform 0.3s',
-          transform: hovered ? 'scale(1.1)' : 'scale(1)',
+          transform: hovered && !locked ? 'scale(1.1)' : 'scale(1)',
         }}>
           <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={isAlta ? '#e53935' : '#f59e0b'} strokeWidth="1.5" strokeLinecap="round">
             <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -104,8 +110,34 @@ function SlotCard({ slot, index }) {
         </div>
       </div>
 
+      {/* Lock overlay — only image area */}
+      {locked && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0,
+          aspectRatio: '16/10',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 3,
+        }}>
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+            padding: '12px 18px', borderRadius: 12,
+            background: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+          }}>
+            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="rgba(229,57,53,0.8)" strokeWidth="1.8" strokeLinecap="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg>
+            <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.06em' }}>EXCLUSIVO PRO</span>
+          </div>
+        </div>
+      )}
+
       {/* Content */}
-      <div style={{ padding: '16px 16px 14px', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{
+        padding: '16px 16px 14px', flex: 1, display: 'flex', flexDirection: 'column', gap: 10,
+        opacity: locked ? 0.7 : 1, transition: 'opacity 0.3s',
+      }}>
         {/* Name */}
         <h3 style={{
           fontSize: 15, fontWeight: 700, color: '#fff', margin: 0,
@@ -134,33 +166,49 @@ function SlotCard({ slot, index }) {
         {/* Spacer */}
         <div style={{ flex: 1 }} />
 
-        {/* Copy button */}
-        <motion.button
-          onClick={copyName}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
-          style={{
+        {/* Button */}
+        {locked ? (
+          <Link href="/billing" style={{
             width: '100%', padding: '10px 14px', borderRadius: 10,
-            fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
-            background: copied ? 'rgba(34,197,94,0.12)' : 'rgba(229,57,53,0.08)',
-            color: copied ? '#22c55e' : '#e53935',
-            border: `1px solid ${copied ? 'rgba(34,197,94,0.2)' : 'rgba(229,57,53,0.15)'}`,
+            fontSize: 11, fontWeight: 700, textDecoration: 'none',
+            background: 'rgba(229,57,53,0.1)', color: '#e53935',
+            border: '1px solid rgba(229,57,53,0.18)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
             transition: 'all 0.2s',
-          }}
-        >
-          {copied ? (
-            <>
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
-              Copiado!
-            </>
-          ) : (
-            <>
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
-              Copiar Nome
-            </>
-          )}
-        </motion.button>
+          }}>
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+            Seja PRO
+          </Link>
+        ) : (
+          <motion.button
+            onClick={copyName}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            style={{
+              width: '100%', padding: '10px 14px', borderRadius: 10,
+              fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
+              background: copied ? 'rgba(34,197,94,0.12)' : 'rgba(229,57,53,0.08)',
+              color: copied ? '#22c55e' : '#e53935',
+              border: `1px solid ${copied ? 'rgba(34,197,94,0.2)' : 'rgba(229,57,53,0.15)'}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              transition: 'all 0.2s',
+            }}
+          >
+            {copied ? (
+              <>
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+                Copiado!
+              </>
+            ) : (
+              <>
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
+                Copiar Nome
+              </>
+            )}
+          </motion.button>
+        )}
       </div>
     </motion.div>
   )
@@ -318,92 +366,25 @@ export default function SlotsPage() {
               ))}
             </motion.div>
 
-            {/* Grid — with PRO gate */}
-            <div style={{ position: 'relative' }}>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={filter}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                    gap: 16,
-                    filter: isPro ? 'none' : 'blur(3px) brightness(0.6)',
-                    opacity: isPro ? 1 : 0.65,
-                    pointerEvents: isPro ? 'auto' : 'none',
-                    transition: 'filter 0.3s, opacity 0.3s',
-                  }}
-                >
-                  {filtered.map((slot, i) => (
-                    <SlotCard key={slot.id} slot={slot} index={i} />
-                  ))}
-                </motion.div>
-              </AnimatePresence>
-
-              {/* PRO overlay */}
-              {!isPro && filtered.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, ease }}
-                  style={{
-                    position: 'absolute', top: '50%', left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: '100%', maxWidth: 400, padding: '40px 32px',
-                    background: 'rgba(10,14,24,0.85)',
-                    backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-                    border: '1px solid rgba(229,57,53,0.15)',
-                    borderRadius: 24,
-                    boxShadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(229,57,53,0.06)',
-                    textAlign: 'center', zIndex: 10,
-                  }}
-                >
-                  {/* Crown icon */}
-                  <motion.div
-                    animate={{ boxShadow: ['0 0 20px rgba(229,57,53,0.15)', '0 0 35px rgba(229,57,53,0.25)', '0 0 20px rgba(229,57,53,0.15)'] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                    style={{
-                      width: 56, height: 56, borderRadius: 16, margin: '0 auto 20px',
-                      background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.2)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}
-                  >
-                    <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2 4l3 12h14l3-12-5 4-5-4-5 4-3-4z" />
-                      <path d="M5 16h14v2H5z" />
-                    </svg>
-                  </motion.div>
-
-                  <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 8, letterSpacing: '-0.02em' }}>
-                    Conteudo exclusivo PRO
-                  </h3>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24, lineHeight: 1.5 }}>
-                    Desbloqueie os melhores slots e analises avancadas do catalogo premium.
-                  </p>
-
-                  <Link href="/billing" style={{
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    padding: '14px 32px', borderRadius: 14,
-                    fontSize: 15, fontWeight: 700, textDecoration: 'none',
-                    background: 'linear-gradient(135deg, #e53935, #c62828)', color: '#fff',
-                    boxShadow: '0 6px 24px rgba(229,57,53,0.3)',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                  }}>
-                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                    </svg>
-                    Seja PRO
-                  </Link>
-
-                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 16 }}>
-                    A partir de R$ 39,90/mes
-                  </p>
-                </motion.div>
-              )}
-            </div>
+            {/* Grid */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={filter}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                  gap: 16,
+                }}
+              >
+                {filtered.map((slot, i) => (
+                  <SlotCard key={slot.id} slot={slot} index={i} isPro={isPro} />
+                ))}
+              </motion.div>
+            </AnimatePresence>
 
             {filtered.length === 0 && (
               <div style={{ textAlign: 'center', padding: '60px 20px' }}>

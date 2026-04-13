@@ -730,9 +730,12 @@ export default function MetaPage() {
                 </div>
               </div>
 
-              {tenantSlots.length > 0 && (
-                <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:8 }}>Slot <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
+              {/* Slot selector — always show section, msg if none configured */}
+              <div>
+                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Slot <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
+                {tenantSlots.length === 0 ? (
+                  <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>Nenhum slot configurado pelo admin</p>
+                ) : (
                   <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
                     {tenantSlots.map(name => {
                       const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/&/g, 'e').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
@@ -750,8 +753,8 @@ export default function MetaPage() {
                       )
                     })}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
 
               {(dep||saq) && (
                 <div style={{ background:prev.pos?'var(--profit-dim)':'var(--loss-dim)', border:`1px solid ${prev.pos?'var(--profit-border)':'var(--loss-border)'}`, borderRadius:12, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', transition:'all 0.3s' }}>

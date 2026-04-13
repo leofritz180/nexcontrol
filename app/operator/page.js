@@ -840,7 +840,7 @@ export default function OperatorPage() {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                             <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>
-                              {activeMeta.titulo}
+                              {activeMeta.quantidade_contas || 0} DEP {activeMeta.rede || ''}
                             </h3>
                             <RedeBadge rede={activeMeta.rede} />
                             <StatusBadge status="ativa" />
@@ -950,7 +950,7 @@ export default function OperatorPage() {
                                   letterSpacing: '-0.01em', whiteSpace: 'nowrap',
                                   overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220,
                                 }}>
-                                  {meta.titulo}
+                                  {meta.quantidade_contas || 0} DEP {meta.rede || ''}
                                 </h4>
                                 <RedeBadge rede={meta.rede} />
                                 <StatusBadge status={status} />

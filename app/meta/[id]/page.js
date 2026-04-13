@@ -302,6 +302,75 @@ export default function MetaPage() {
           </div>
         </div>
 
+        {/* Insights da operacao */}
+        {remessas.length >= 2 && (() => {
+          const insights = []
+          const reversed = [...remessas].reverse()
+
+          // A) Sequencia de prejuizo
+          let streak = 0
+          for (let i = reversed.length - 1; i >= 0; i--) {
+            if (Number(reversed[i].resultado || 0) < 0) streak++
+            else break
+          }
+          if (streak >= 3) insights.push({ text: `Risco elevado — ${streak} remessas consecutivas com prejuizo`, type: 'critical', action: 'Avaliar pausa na operacao' })
+          else if (streak >= 2) insights.push({ text: `Atencao — ${streak} remessas seguidas com prejuizo`, type: 'warn', action: 'Operar com cautela' })
+
+          // B) Media por conta
+          const avgPerConta = meta?.quantidade_contas > 0 ? totais.liq / Number(meta.quantidade_contas) : 0
+          if (avgPerConta > 2) insights.push({ text: `Operacao saudavel — media de R$ ${fmt(avgPerConta)} por conta`, type: 'good', action: 'Continuar operacao' })
+          else if (avgPerConta >= -1) insights.push({ text: `Resultado instavel — media de R$ ${fmt(avgPerConta)} por conta`, type: 'warn', action: 'Monitorar proximas remessas' })
+          else if (avgPerConta < -1) insights.push({ text: `Resultado negativo — media de R$ ${fmt(avgPerConta)} por conta`, type: 'critical', action: 'Revisar estrategia' })
+
+          // C) Status operacionais
+          const probs = remessas.filter(r => r.status_problema && r.status_problema !== 'normal')
+          if (probs.length > 0) {
+            const sp = probs.filter(r => r.status_problema === 'saque_pendente').length
+            const cb = probs.filter(r => r.status_problema === 'conta_bloqueada').length
+            const ba = probs.filter(r => r.status_problema === 'banco_analise').length
+            const parts = []
+            if (sp) parts.push(`${sp} saque${sp > 1 ? 's' : ''} pendente${sp > 1 ? 's' : ''}`)
+            if (cb) parts.push(`${cb} conta${cb > 1 ? 's' : ''} bloqueada${cb > 1 ? 's' : ''}`)
+            if (ba) parts.push(`${ba} banco${ba > 1 ? 's' : ''} em analise`)
+            insights.push({ text: `Pendencias operacionais — ${parts.join(', ')}`, type: 'warn', action: 'Resolver pendencias antes de continuar' })
+          }
+
+          // D) Tendencia (ultimas 3 vs anteriores 3)
+          if (reversed.length >= 6) {
+            const last3 = reversed.slice(-3).reduce((a, r) => a + Number(r.resultado || 0), 0)
+            const prev3 = reversed.slice(-6, -3).reduce((a, r) => a + Number(r.resultado || 0), 0)
+            if (last3 > prev3 && last3 > 0) insights.push({ text: 'Tendencia de melhora — ultimas remessas com resultado crescente', type: 'good', action: 'Manter ritmo' })
+            else if (last3 < prev3 && last3 < 0) insights.push({ text: 'Tendencia de queda — resultados piorando nas ultimas remessas', type: 'critical', action: 'Considerar pausa' })
+          }
+
+          if (insights.length === 0 && totais.liq >= 0) insights.push({ text: 'Operacao estavel — sem alertas detectados', type: 'good', action: 'Continuar operacao normalmente' })
+
+          const cfg = { good: { bg: 'var(--profit-dim)', border: 'var(--profit-border)', color: 'var(--profit)', icon: 'M20 6L9 17l-5-5' }, warn: { bg: 'var(--warn-dim)', border: 'var(--warn-border)', color: 'var(--warn)', icon: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' }, critical: { bg: 'var(--loss-dim)', border: 'var(--loss-border)', color: 'var(--loss)', icon: 'M18 6L6 18M6 6l12 12' } }
+
+          return (
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>Insights da operacao</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {insights.map((ins, i) => {
+                  const c = cfg[ins.type]
+                  return (
+                    <div key={i} style={{ padding: '14px 18px', borderRadius: 12, background: c.bg, border: `1px solid ${c.border}`, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={c.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}><path d={c.icon}/></svg>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: c.color, margin: '0 0 4px' }}>{ins.text}</p>
+                        <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>{ins.action}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })()}
+
         {/* Progress bar - contas processadas */}
         {meta && (() => {
           const target = Number(meta.quantidade_contas || 0)

@@ -16,14 +16,7 @@ const fadeUp = (i, base = 0) => ({
   transition: { duration: 0.4, delay: base + i * 0.05, ease },
 })
 
-/* ── Score (secondary metric) ── */
-const LEAGUES = [
-  { name: 'Bronze', min: 0, max: 299 },
-  { name: 'Prata', min: 300, max: 599 },
-  { name: 'Ouro', min: 600, max: 899 },
-  { name: 'Elite', min: 900, max: Infinity },
-]
-function getLeague(score) { return LEAGUES.find(l => score >= l.min && score <= l.max) || LEAGUES[0] }
+/* ── Score (internal metric) ── */
 function calcScore(op) {
   const lucroScore = Math.min(Math.max(op.lucroFinal / 50, 0), 400)
   const winScore = (op.winRate / 100) * 300
@@ -31,7 +24,7 @@ function calcScore(op) {
   return Math.round(lucroScore + winScore + volumeScore)
 }
 
-/* ── Badges (max 1 shown, discrete) ── */
+/* ── Badges (max 1 shown) ── */
 function getBadge(op) {
   if (op.winRate >= 70 && op.closedCount >= 3) return { text: 'Top performer', color: '#22c55e' }
   if (op.trend === 'up' && op.closedCount >= 3) return { text: 'Em alta', color: '#22c55e' }
@@ -39,7 +32,7 @@ function getBadge(op) {
   return null
 }
 
-/* ── Count-up ── */
+/* ── Count-up hook ── */
 function useCountUp(target, duration = 1200, decimals = 0) {
   const [val, setVal] = useState(0)
   const raf = useRef(null)
@@ -57,7 +50,7 @@ function useCountUp(target, duration = 1200, decimals = 0) {
   return decimals > 0 ? val.toFixed(decimals) : Math.round(val)
 }
 
-/* ── KPI Card (clean) ── */
+/* ── KPI Card ── */
 function KpiCard({ label, value, suffix, rgb, i, isCurrency, dynamicColor }) {
   const [h, setH] = useState(false)
   const numVal = typeof value === 'number' ? value : parseFloat(value) || 0
@@ -84,7 +77,7 @@ function KpiCard({ label, value, suffix, rgb, i, isCurrency, dynamicColor }) {
   )
 }
 
-/* ── Performance Bar (clean) ── */
+/* ── Performance Bar ── */
 function PerfBar({ value, max, delay = 0 }) {
   const pct = max > 0 ? Math.min((Math.abs(value) / max) * 100, 100) : 0
   const color = value >= 0 ? '#22c55e' : '#ef4444'
@@ -97,64 +90,6 @@ function PerfBar({ value, max, delay = 0 }) {
         style={{ height: '100%', borderRadius: 2, background: color }}
       />
     </div>
-  )
-}
-
-/* ── Mini Sparkline ── */
-function MiniSparkline({ data }) {
-  if (!data || data.length === 0) return null
-  const max = Math.max(...data.map(Math.abs), 1)
-  return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, height: 24, flexShrink: 0 }}>
-      {data.map((v, i) => {
-        const h = Math.max((Math.abs(v) / max) * 100, 8)
-        return (
-          <motion.div key={i}
-            initial={{ height: 0 }}
-            animate={{ height: `${h}%` }}
-            transition={{ duration: 0.6, delay: i * 0.06, ease }}
-            style={{
-              width: 3, borderRadius: 1.5, minHeight: 2,
-              background: v >= 0 ? '#22c55e' : '#ef4444',
-              opacity: 0.35 + (i / data.length) * 0.65,
-            }}
-          />
-        )
-      })}
-    </div>
-  )
-}
-
-/* ── Live Alerts (clean, green/red only) ── */
-function LiveAlerts({ alerts }) {
-  const [visible, setVisible] = useState(0)
-  useEffect(() => {
-    if (alerts.length <= 1) return
-    const iv = setInterval(() => setVisible(v => (v + 1) % alerts.length), 4500)
-    return () => clearInterval(iv)
-  }, [alerts.length])
-  if (alerts.length === 0) return null
-  const a = alerts[visible]
-  const isUp = a.type === 'up'
-  return (
-    <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
-      <AnimatePresence mode="wait">
-        <motion.div key={visible}
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.3 }}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 12, padding: '12px 18px',
-            background: isUp ? 'rgba(34,197,94,0.05)' : 'rgba(239,68,68,0.05)',
-            border: `1px solid ${isUp ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}`,
-            borderRadius: 12,
-          }}>
-          <span style={{ fontSize: 14, color: isUp ? '#22c55e' : '#ef4444', flexShrink: 0 }}>
-            {isUp ? '↑' : '↓'}
-          </span>
-          <p style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.6)', margin: 0, flex: 1 }}>{a.text}</p>
-        </motion.div>
-      </AnimatePresence>
-    </motion.div>
   )
 }
 
@@ -171,8 +106,6 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
   const totalDeposit = opClosed.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
   const winRate = opClosed.length > 0 ? (opClosed.filter(m => Number(m.lucro_final || 0) > 0).length / opClosed.length * 100) : 0
   const lucroPerRemessa = opRemessas.length > 0 ? lucroFinal / opRemessas.length : 0
-  const score = op.score || 0
-  const league = getLeague(score)
   const recentMetas = opClosed.slice(0, 10)
 
   const weeklyProfit = useMemo(() => {
@@ -234,10 +167,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
             }}>{getInitial(op)}</div>
             <div>
               <h3 style={{ fontSize: 17, fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>{getName(op)}</h3>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>{league.name}</span>
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--mono, monospace)' }}>{score} pts</span>
-              </div>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: 0 }}>{op.email}</p>
             </div>
           </div>
           <button onClick={onClose} style={{
@@ -265,7 +195,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
             { label: 'Remessas', value: opRemessas.length, color: 'rgba(255,255,255,0.6)' },
             { label: 'Metas', value: opClosed.length, color: 'rgba(255,255,255,0.6)' },
             { label: 'Lucro/remessa', value: `R$${fmt(lucroPerRemessa)}`, color: lucroPerRemessa >= 0 ? '#22c55e' : '#ef4444' },
-            { label: 'Score', value: score, color: 'rgba(255,255,255,0.4)' },
+            { label: 'Tendencia', value: op.trend === 'up' ? 'Alta' : op.trend === 'down' ? 'Queda' : 'Estavel', color: op.trend === 'up' ? '#22c55e' : op.trend === 'down' ? '#ef4444' : 'rgba(255,255,255,0.4)' },
           ].map((s, i) => (
             <div key={i} style={{ padding: '12px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
               <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 5px' }}>{s.label}</p>
@@ -349,6 +279,136 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
   )
 }
 
+/* ── Ranking Card ── */
+function RankingCard({ op, idx, maxLucro, onClick }) {
+  const [h, setH] = useState(false)
+  const isTop1 = idx === 0
+  const isTop3 = idx < 3
+  const badge = op.badge
+
+  return (
+    <motion.div
+      {...fadeUp(idx, 0.06)}
+      onClick={onClick}
+      onMouseEnter={() => setH(true)}
+      onMouseLeave={() => setH(false)}
+      style={{
+        padding: '20px 22px', borderRadius: 14, cursor: 'pointer', position: 'relative', overflow: 'hidden',
+        background: isTop1
+          ? h ? 'rgba(34,197,94,0.06)' : 'rgba(34,197,94,0.03)'
+          : h ? 'rgba(255,255,255,0.035)' : 'rgba(255,255,255,0.02)',
+        border: `1px solid ${isTop1
+          ? h ? 'rgba(34,197,94,0.18)' : 'rgba(34,197,94,0.1)'
+          : h ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`,
+        transform: h ? 'translateY(-1px)' : 'none',
+        transition: 'all 0.3s ease',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 10 }}>
+        {/* Position */}
+        <div style={{
+          width: 32, height: 32, borderRadius: 9, flexShrink: 0,
+          background: isTop3 ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.06)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 13, fontWeight: 800, color: isTop3 ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.25)',
+          fontFamily: 'var(--mono, monospace)',
+        }}>
+          {idx + 1}
+        </div>
+
+        {/* Avatar */}
+        <div style={{
+          width: 42, height: 42, borderRadius: 12, flexShrink: 0,
+          background: op.lucroFinal >= 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+          border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 17, fontWeight: 800, color: '#fff',
+        }}>
+          {getInitial(op)}
+        </div>
+
+        {/* Name + trend + badge */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
+            {op.trend !== 'stable' && (
+              <span style={{ fontSize: 11, fontWeight: 600, color: op.trend === 'up' ? '#22c55e' : '#ef4444' }}>
+                {op.trend === 'up' ? '\u2191' : '\u2193'}
+              </span>
+            )}
+            {badge && (
+              <span style={{
+                fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
+                color: badge.color, background: `${badge.color}0c`,
+                border: `1px solid ${badge.color}15`,
+              }}>{badge.text}</span>
+            )}
+          </div>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{op.closedCount} meta{op.closedCount !== 1 ? 's' : ''} fechada{op.closedCount !== 1 ? 's' : ''}</span>
+        </div>
+
+        {/* Lucro */}
+        <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 110 }}>
+          <p style={{
+            fontSize: 20, fontWeight: 800, margin: 0, fontFamily: 'var(--mono, monospace)',
+            color: op.lucroFinal >= 0 ? '#22c55e' : '#ef4444',
+            letterSpacing: '-0.02em',
+          }}>
+            {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
+          </p>
+        </div>
+      </div>
+
+      {/* Performance bar */}
+      <PerfBar value={op.lucroFinal} max={maxLucro} delay={0.05 + idx * 0.04} />
+    </motion.div>
+  )
+}
+
+/* ── Invite Card ── */
+function InviteCard({ inv, onCopy, onDelete }) {
+  const [h, setH] = useState(false)
+  const link = typeof window !== 'undefined' ? `${window.location.origin}/invite?token=${inv.token}` : ''
+  const createdAt = inv.created_at ? new Date(inv.created_at).toLocaleDateString('pt-BR') : ''
+  const used = inv.used_by || inv.status === 'used'
+
+  return (
+    <div
+      onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px',
+        background: h ? 'rgba(255,255,255,0.035)' : 'rgba(255,255,255,0.02)',
+        border: `1px solid ${h ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)'}`,
+        borderRadius: 12, transition: 'all 0.2s ease',
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', margin: '0 0 3px', fontFamily: 'var(--mono, monospace)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {inv.token}
+        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{createdAt}</span>
+          {used && <span style={{ fontSize: 9, fontWeight: 600, color: '#22c55e', padding: '1px 6px', borderRadius: 4, background: 'rgba(34,197,94,0.1)' }}>Usado</span>}
+          {!used && <span style={{ fontSize: 9, fontWeight: 600, color: '#f59e0b', padding: '1px 6px', borderRadius: 4, background: 'rgba(245,158,11,0.1)' }}>Pendente</span>}
+        </div>
+      </div>
+      {!used && (
+        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+          <button onClick={() => { navigator.clipboard.writeText(link); onCopy() }} style={{
+            padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 8, border: '1px solid rgba(59,130,246,0.2)',
+            background: 'rgba(59,130,246,0.08)', color: '#3B82F6', cursor: 'pointer', transition: 'all 0.2s',
+          }}>Copiar</button>
+          <button onClick={() => onDelete(inv.id)} style={{
+            padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 8, border: '1px solid rgba(239,68,68,0.2)',
+            background: 'rgba(239,68,68,0.08)', color: '#EF4444', cursor: 'pointer', transition: 'all 0.2s',
+          }}>Excluir</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 /* ═══════════════════════════════════════════════ */
 /* ── Main Page ── */
 /* ═══════════════════════════════════════════════ */
@@ -361,6 +421,7 @@ export default function OperadoresPage() {
   const [operators, setOperators] = useState([])
   const [metas, setMetas] = useState([])
   const [remessas, setRemessas] = useState([])
+  const [invites, setInvites] = useState([])
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('ranking')
   const [selectedOp, setSelectedOp] = useState(null)
@@ -383,16 +444,18 @@ export default function OperadoresPage() {
   async function loadAll(forceTenantId) {
     setLoading(true)
     const tid = forceTenantId || profile?.tenant_id
-    const [{ data: ops }, { data: ms }, { data: rs }, { data: t }, { data: s2 }] = await Promise.all([
+    const [{ data: ops }, { data: ms }, { data: rs }, { data: t }, { data: s2 }, { data: inv }] = await Promise.all([
       supabase.from('profiles').select('*').eq('role', 'operator').order('created_at', { ascending: false }),
       supabase.from('metas').select('*').order('created_at', { ascending: false }),
       supabase.from('remessas').select('*').order('created_at', { ascending: false }),
       supabase.from('tenants').select('*').eq('id', tid).maybeSingle(),
       supabase.from('subscriptions').select('*').eq('tenant_id', tid).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      supabase.from('invites').select('*').order('created_at', { ascending: false }),
     ])
     setOperators(ops || [])
     setMetas((ms || []).filter(m => !m.deleted_at))
     setRemessas(rs || [])
+    setInvites(inv || [])
     if (t) setTenant(t)
     if (s2) setSub(s2)
     setLoading(false)
@@ -409,8 +472,14 @@ export default function OperadoresPage() {
     if (err) { setInvMsg('Erro: ' + err.message); return }
     const link = `${window.location.origin}/invite?token=${data.token}`
     await navigator.clipboard.writeText(link)
+    setInvites(prev => [data, ...prev])
     setInvMsg('Link copiado!')
     setTimeout(() => setInvMsg(''), 4000)
+  }
+
+  async function deleteInvite(id) {
+    await supabase.from('invites').delete().eq('id', id)
+    setInvites(prev => prev.filter(i => i.id !== id))
   }
 
   const closedMetas = useMemo(() => metas.filter(m => m.status_fechamento === 'fechada'), [metas])
@@ -434,24 +503,15 @@ export default function OperadoresPage() {
       const prev3 = opClosed.slice(3, 6).reduce((a, m) => a + Number(m.lucro_final || 0), 0)
       const trend = opClosed.length >= 4 ? (recent3 >= prev3 ? 'up' : 'down') : 'stable'
 
-      const sparkline = []
-      const now = Date.now()
-      for (let w = 5; w >= 0; w--) {
-        const start = now - (w + 1) * 7 * 86400000
-        const end = now - w * 7 * 86400000
-        sparkline.push(opClosed.filter(m => { const d = new Date(m.created_at).getTime(); return d >= start && d < end })
-          .reduce((a, m) => a + Number(m.lucro_final || 0), 0))
-      }
-
       const base = { ...op, metasCount: opMetas.length, closedCount: opClosed.length, remessasCount: opRemessas.length,
-        totalDeposit, lucroFinal, activeMetas: activeMetas.length, winRate, isActive, lucroPerRemessa, trend, sparkline }
+        totalDeposit, lucroFinal, activeMetas: activeMetas.length, winRate, isActive, lucroPerRemessa, trend }
       base.score = calcScore(base)
       base.badge = getBadge(base)
       return base
     })
   }, [operators, metas, closedMetas, remessas])
 
-  // RANKING BY LUCRO FINAL (not score)
+  // RANKING BY LUCRO FINAL
   const ranking = useMemo(() =>
     [...operatorStats].filter(o => o.closedCount > 0).sort((a, b) => b.lucroFinal - a.lucroFinal),
     [operatorStats]
@@ -465,16 +525,6 @@ export default function OperadoresPage() {
     if (withClosed.length === 0) return 0
     return withClosed.reduce((a, o) => a + o.winRate, 0) / withClosed.length
   }, [operatorStats])
-
-  const alerts = useMemo(() => {
-    const a = []
-    if (ranking.length > 0) a.push({ text: `${getName(ranking[0])} lidera com R$ ${fmt(ranking[0].lucroFinal)} de lucro.`, type: 'up' })
-    const falling = operatorStats.filter(o => o.trend === 'down' && o.lucroFinal < 0)
-    if (falling.length > 0) a.push({ text: `${getName(falling[0])} em queda — resultado negativo.`, type: 'down' })
-    const rising = operatorStats.filter(o => o.trend === 'up' && o.closedCount >= 3)
-    if (rising.length > 0) a.push({ text: `${getName(rising[0])} em tendencia de crescimento.`, type: 'up' })
-    return a
-  }, [ranking, operatorStats])
 
   const insights = useMemo(() => {
     const lines = []
@@ -490,6 +540,12 @@ export default function OperadoresPage() {
     }
     const inactive = operatorStats.filter(o => !o.isActive && o.metasCount > 0)
     if (inactive.length > 0) lines.push({ text: `${inactive.length} operador(es) inativo(s) ha 7+ dias.`, type: 'warn' })
+    // Best efficiency
+    const withRemessas = operatorStats.filter(o => o.lucroPerRemessa > 0 && o.closedCount >= 2)
+    if (withRemessas.length > 0) {
+      const best = withRemessas.sort((a, b) => b.lucroPerRemessa - a.lucroPerRemessa)[0]
+      lines.push({ text: `Melhor eficiencia: ${getName(best)} com R$ ${fmt(best.lucroPerRemessa)}/remessa.`, type: 'up' })
+    }
     if (lines.length === 0) lines.push({ text: 'Sem dados suficientes.', type: 'neutral' })
     return lines
   }, [ranking, operatorStats])
@@ -521,17 +577,6 @@ export default function OperadoresPage() {
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', margin: 0 }}>Ranking por lucro e performance individual da equipe.</p>
         </motion.div>
 
-        {/* Alerts */}
-        <LiveAlerts alerts={alerts} />
-
-        {/* KPIs */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
-          <KpiCard label="Total operadores" value={operators.length} rgb="59,130,246" i={0} />
-          <KpiCard label="Ativos" value={totalActive} rgb="34,197,94" i={1} />
-          <KpiCard label="Acerto medio" value={avgWinRate} suffix="%" rgb="168,85,247" i={2} />
-          <KpiCard label="Lucro da equipe" value={totalLucro} rgb="34,197,94" i={3} isCurrency dynamicColor />
-        </div>
-
         {/* Tabs */}
         <motion.div {...fadeUp(1)} style={{
           display: 'flex', gap: 4, marginBottom: 32,
@@ -552,9 +597,19 @@ export default function OperadoresPage() {
           ))}
         </motion.div>
 
-        {/* RANKING */}
+        {/* ═══════════ TAB 1: RANKING ═══════════ */}
         {tab === 'ranking' && (
           <motion.div key="ranking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+
+            {/* KPIs */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
+              <KpiCard label="Total operadores" value={operators.length} rgb="59,130,246" i={0} />
+              <KpiCard label="Ativos" value={totalActive} rgb="34,197,94" i={1} />
+              <KpiCard label="Acerto medio" value={avgWinRate} suffix="%" rgb="229,57,53" i={2} />
+              <KpiCard label="Lucro da equipe" value={totalLucro} rgb="34,197,94" i={3} isCurrency dynamicColor />
+            </div>
+
+            {/* Ranking list */}
             {ranking.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)', marginBottom: 28 }}>
                 <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)' }}>Nenhuma meta fechada ainda.</p>
@@ -567,7 +622,7 @@ export default function OperadoresPage() {
               </div>
             )}
 
-            {/* Insights */}
+            {/* Insights — Radar da equipe */}
             <motion.div {...fadeUp(3)} style={{
               background: 'rgba(168,85,247,0.04)',
               border: '1px solid rgba(168,85,247,0.1)',
@@ -584,7 +639,7 @@ export default function OperadoresPage() {
                     background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)',
                   }}>
                     <span style={{ fontSize: 13, fontWeight: 600, flexShrink: 0, color: ins.type === 'up' ? '#22c55e' : ins.type === 'down' ? '#ef4444' : ins.type === 'warn' ? '#f59e0b' : 'rgba(255,255,255,0.3)' }}>
-                      {ins.type === 'up' ? '↑' : ins.type === 'down' ? '↓' : ins.type === 'warn' ? '!' : '•'}
+                      {ins.type === 'up' ? '\u2191' : ins.type === 'down' ? '\u2193' : ins.type === 'warn' ? '!' : '\u2022'}
                     </span>
                     <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', margin: 0 }}>{ins.text}</p>
                   </div>
@@ -594,24 +649,58 @@ export default function OperadoresPage() {
           </motion.div>
         )}
 
-        {/* EQUIPE */}
+        {/* ═══════════ TAB 2: EQUIPE ═══════════ */}
         {tab === 'equipe' && (
           <motion.div key="equipe" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
-            <motion.div {...fadeUp(0)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, marginBottom: 20 }}>
-              {invMsg && (
-                <span style={{ fontSize: 12, fontWeight: 600, color: invMsg.startsWith('Erro') ? '#ef4444' : '#22c55e' }}>{invMsg}</span>
+
+            {/* Invite section */}
+            <div style={{
+              padding: '22px 20px', marginBottom: 24,
+              background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Convites</span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <button onClick={sendInvite} disabled={invSaving} style={{
+                  padding: '10px 20px', fontSize: 13, fontWeight: 600,
+                  background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)',
+                  borderRadius: 10, color: '#22c55e', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 7, transition: 'all 0.2s ease',
+                  opacity: invSaving ? 0.6 : 1,
+                }}>
+                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  {invSaving ? 'Gerando...' : 'Gerar link de convite'}
+                </button>
+                {invMsg && (
+                  <span style={{ fontSize: 12, fontWeight: 600, color: invMsg.startsWith('Erro') ? '#ef4444' : '#22c55e' }}>{invMsg}</span>
+                )}
+              </div>
+
+              {/* Pending invites list */}
+              {invites.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {invites.map(inv => (
+                    <InviteCard
+                      key={inv.id}
+                      inv={inv}
+                      onCopy={() => { setInvMsg('Link copiado!'); setTimeout(() => setInvMsg(''), 3000) }}
+                      onDelete={deleteInvite}
+                    />
+                  ))}
+                </div>
               )}
-              <button onClick={sendInvite} disabled={invSaving} style={{
-                padding: '9px 18px', fontSize: 13, fontWeight: 600,
-                background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)',
-                borderRadius: 10, color: '#22c55e', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 7, transition: 'all 0.2s ease',
-                opacity: invSaving ? 0.6 : 1,
-              }}>
-                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                {invSaving ? 'Gerando...' : 'Gerar link de convite'}
-              </button>
-            </motion.div>
+            </div>
+
+            {/* Operators list */}
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Equipe ({operators.length})</span>
+              </div>
+            </div>
 
             {operators.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -619,52 +708,77 @@ export default function OperadoresPage() {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {operatorStats.map((op, idx) => (
-                  <motion.div key={op.id} {...fadeUp(idx, 0.04)}
-                    onClick={() => setSelectedOp(op)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px',
-                      background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
-                      borderRadius: 14, cursor: 'pointer', transition: 'all 0.25s ease',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)' }}
-                  >
-                    <div style={{
-                      width: 40, height: 40, borderRadius: 12,
-                      background: op.lucroFinal >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
-                      border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 16, fontWeight: 700, color: '#fff', flexShrink: 0,
-                    }}>{getInitial(op)}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: '0 0 2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.email}</p>
-                    </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? '#22c55e' : '#ef4444' }}>
-                        {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
-                      </p>
-                      <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasCount} metas</p>
-                    </div>
-                  </motion.div>
-                ))}
+                {operatorStats.map((op, idx) => {
+                  const isActiveOp = op.isActive || op.activeMetas > 0
+                  return (
+                    <motion.div key={op.id} {...fadeUp(idx, 0.04)}
+                      onClick={() => setSelectedOp(op)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px',
+                        background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+                        borderRadius: 14, cursor: 'pointer', transition: 'all 0.25s ease',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)' }}
+                    >
+                      {/* Avatar */}
+                      <div style={{
+                        width: 40, height: 40, borderRadius: 12,
+                        background: op.lucroFinal >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
+                        border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 16, fontWeight: 700, color: '#fff', flexShrink: 0,
+                      }}>{getInitial(op)}</div>
+
+                      {/* Name + email */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
+                          <span style={{
+                            fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
+                            color: '#94A3B8', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
+                          }}>Operador</span>
+                        </div>
+                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.email}</p>
+                      </div>
+
+                      {/* Status */}
+                      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{
+                          width: 6, height: 6, borderRadius: '50%',
+                          background: isActiveOp ? '#22c55e' : 'rgba(255,255,255,0.15)',
+                        }} />
+                        <span style={{ fontSize: 10, color: isActiveOp ? '#22c55e' : 'rgba(255,255,255,0.25)' }}>
+                          {isActiveOp ? 'Ativo' : 'Inativo'}
+                        </span>
+                      </div>
+
+                      {/* Lucro */}
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? '#22c55e' : '#ef4444' }}>
+                          {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
+                        </p>
+                        <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasCount} metas</p>
+                      </div>
+                    </motion.div>
+                  )
+                })}
               </div>
             )}
           </motion.div>
         )}
 
-        {/* CONFIG */}
+        {/* ═══════════ TAB 3: CONFIGURACOES ═══════════ */}
         {tab === 'config' && (
           <motion.div key="config" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
 
             {/* Modelo de operacao padrao */}
-            <div style={{ padding: 20, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <div style={{ padding: '22px 20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14, marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Modelo de operacao padrao</span>
-                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>Pode ser alterado por meta</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Modelo de operacao padrao</span>
               </div>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: '0 0 14px' }}>Pode ser alterado por meta</p>
               <div style={{ display: 'flex', gap: 10 }}>
                 {[
                   { key: 'salario_bau', label: 'Salario + Bau', desc: 'Com contrato de plataforma' },
@@ -676,7 +790,7 @@ export default function OperadoresPage() {
                       await supabase.from('tenants').update({ operation_model: opt.key }).eq('id', profile.tenant_id)
                       setTenant(prev => ({ ...prev, operation_model: opt.key }))
                     }} style={{
-                      flex: 1, padding: '14px 16px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                      flex: 1, padding: '14px 16px', borderRadius: 12, cursor: 'pointer',
                       background: active ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.02)',
                       border: `1px solid ${active ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.05)'}`,
                       textAlign: 'left', transition: 'all 0.2s',
@@ -690,10 +804,10 @@ export default function OperadoresPage() {
             </div>
 
             {/* Pagamento de operadores */}
-            <div style={{ padding: 20, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16 }}>
+            <div style={{ padding: '22px 20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Pagamento de operadores</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Pagamento de operadores</span>
               </div>
               <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
                 {[
@@ -706,7 +820,7 @@ export default function OperadoresPage() {
                       await supabase.from('tenants').update({ operator_payment_model: opt.key }).eq('id', profile.tenant_id)
                       setTenant(prev => ({ ...prev, operator_payment_model: opt.key }))
                     }} style={{
-                      flex: 1, padding: '12px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                      flex: 1, padding: '12px 14px', borderRadius: 10, cursor: 'pointer',
                       background: active ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.02)',
                       border: `1px solid ${active ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.05)'}`,
                       textAlign: 'left', transition: 'all 0.2s',
@@ -736,110 +850,12 @@ export default function OperadoresPage() {
         )}
       </div>
 
+      {/* Operator Drawer */}
       <AnimatePresence>
         {selectedOp && (
           <OperatorDrawer op={selectedOp} onClose={() => setSelectedOp(null)} allMetas={metas} allRemessas={remessas} />
         )}
       </AnimatePresence>
     </AppLayout>
-  )
-}
-
-/* ═══════════════════════════════════════════════ */
-/* ── Ranking Card — clean, lucro-focused ── */
-/* ═══════════════════════════════════════════════ */
-function RankingCard({ op, idx, maxLucro, onClick }) {
-  const [h, setH] = useState(false)
-  const isTop1 = idx === 0
-  const isTop3 = idx < 3
-  const badge = op.badge
-  const score = op.score || 0
-  const league = getLeague(score)
-
-  return (
-    <motion.div
-      {...fadeUp(idx, 0.06)}
-      onClick={onClick}
-      onMouseEnter={() => setH(true)}
-      onMouseLeave={() => setH(false)}
-      style={{
-        padding: '20px 22px', borderRadius: 14, cursor: 'pointer', position: 'relative', overflow: 'hidden',
-        background: isTop1
-          ? h ? 'rgba(34,197,94,0.06)' : 'rgba(34,197,94,0.03)'
-          : h ? 'rgba(255,255,255,0.035)' : 'rgba(255,255,255,0.02)',
-        border: `1px solid ${isTop1
-          ? h ? 'rgba(34,197,94,0.18)' : 'rgba(34,197,94,0.1)'
-          : h ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)'}`,
-        transform: h ? 'translateY(-2px)' : 'none',
-        boxShadow: h && isTop1 ? '0 0 30px rgba(34,197,94,0.06)' : 'none',
-        transition: 'all 0.3s ease',
-      }}
-    >
-      {/* Row: Position + Avatar + Name/Badge + Sparkline + Lucro */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 10 }}>
-        {/* Position */}
-        <div style={{
-          width: 32, height: 32, borderRadius: 9, flexShrink: 0,
-          background: isTop3 ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
-          border: `1px solid rgba(255,255,255,0.06)`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 13, fontWeight: 800, color: isTop3 ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.25)',
-          fontFamily: 'var(--mono, monospace)',
-        }}>
-          {idx + 1}
-        </div>
-
-        {/* Avatar */}
-        <div style={{
-          width: 42, height: 42, borderRadius: 12, flexShrink: 0,
-          background: op.lucroFinal >= 0 ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-          border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 17, fontWeight: 800, color: '#fff',
-        }}>
-          {getInitial(op)}
-        </div>
-
-        {/* Name + trend + badge */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
-            {op.trend !== 'stable' && (
-              <span style={{ fontSize: 11, fontWeight: 600, color: op.trend === 'up' ? '#22c55e' : '#ef4444' }}>
-                {op.trend === 'up' ? '↑' : '↓'}
-              </span>
-            )}
-            {badge && (
-              <span style={{
-                fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
-                color: badge.color, background: `${badge.color}0c`,
-                border: `1px solid ${badge.color}15`,
-              }}>{badge.text}</span>
-            )}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{op.closedCount} meta{op.closedCount !== 1 ? 's' : ''}</span>
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', fontFamily: 'var(--mono, monospace)' }}>{league.name} {score}pts</span>
-          </div>
-        </div>
-
-        {/* Sparkline */}
-        <MiniSparkline data={op.sparkline} />
-
-        {/* Lucro — BIGGEST */}
-        <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 110 }}>
-          <p style={{
-            fontSize: 20, fontWeight: 800, margin: 0, fontFamily: 'var(--mono, monospace)',
-            color: op.lucroFinal >= 0 ? '#22c55e' : '#ef4444',
-            letterSpacing: '-0.02em',
-          }}>
-            {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
-          </p>
-        </div>
-      </div>
-
-      {/* Performance bar */}
-      <PerfBar value={op.lucroFinal} max={maxLucro} delay={0.05 + idx * 0.04} />
-    </motion.div>
   )
 }

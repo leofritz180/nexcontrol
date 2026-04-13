@@ -638,6 +638,23 @@ export default function OperadoresPage() {
     return lines
   }, [ranking, operatorStats])
 
+  // Folha de pagamento data
+  const folhaData = useMemo(() => {
+    const payModel = tenant?.operator_payment_model || 'fixo_dep'
+    const payValue = Number(tenant?.operator_payment_value ?? 2)
+    return operatorStats.filter(o => o.closedCount > 0).map(op => {
+      const deps = op.totalDeposit
+      const lucro = op.lucroFinal
+      let valor = 0
+      if (payModel === 'percentual') {
+        valor = lucro > 0 ? lucro * (payValue / 100) : 0
+      } else {
+        valor = deps * payValue
+      }
+      return { ...op, pagamento: valor, payModel, payValue }
+    }).sort((a, b) => b.pagamento - a.pagamento)
+  }, [operatorStats, tenant])
+
   if (loading || !profile) {
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #0c1424, #080e1a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -655,23 +672,6 @@ export default function OperadoresPage() {
     { key: 'folha', label: 'Folha de pagamento' },
     { key: 'config', label: 'Configuracoes' },
   ]
-
-  // Folha de pagamento data
-  const folhaData = useMemo(() => {
-    const payModel = tenant?.operator_payment_model || 'fixo_dep'
-    const payValue = Number(tenant?.operator_payment_value ?? 2)
-    return operatorStats.filter(o => o.closedCount > 0).map(op => {
-      const deps = op.totalDeposit
-      const lucro = op.lucroFinal
-      let valor = 0
-      if (payModel === 'percentual') {
-        valor = lucro > 0 ? lucro * (payValue / 100) : 0
-      } else {
-        valor = deps * payValue
-      }
-      return { ...op, pagamento: valor, payModel, payValue }
-    }).sort((a, b) => b.pagamento - a.pagamento)
-  }, [operatorStats, tenant])
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>

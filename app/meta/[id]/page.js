@@ -1035,57 +1035,88 @@ export default function MetaPage() {
 
           const cfgI = { good:'var(--profit)', warn:'var(--warn)', critical:'var(--loss)' }
 
+          // Timing sequence: 0→150→300→400→700→900→1100→1300ms
+          const T = { overlay:0, card:0.15, header:0.3, result:0.5, metrics:0.6, insights:0.9, improve:1.1, cta:1.3 }
+          const glowColor = liq >= 0 ? '34,197,94' : '239,68,68'
+
           return (
             <motion.div
               key="finale"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              style={{ position:'fixed', inset:0, zIndex:10000, background:'rgba(2,4,8,0.92)', backdropFilter:'blur(16px)', display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              style={{ position:'fixed', inset:0, zIndex:10000, background:'radial-gradient(ellipse at 50% 40%, rgba(2,4,8,0.88), rgba(2,4,8,0.95))', backdropFilter:'blur(20px)', WebkitBackdropFilter:'blur(20px)', display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}
               onClick={e => { if (e.target === e.currentTarget) { setShowFinalePopup(false); router.push('/operator') } }}
             >
               {/* Ambient glow */}
-              <div style={{ position:'absolute', top:'30%', left:'50%', width:400, height:400, marginLeft:-200, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.03), transparent 70%)', pointerEvents:'none' }} />
+              <motion.div initial={{opacity:0,scale:0.8}} animate={{opacity:1,scale:1}} transition={{duration:1,delay:0.2}}
+                style={{ position:'absolute', top:'25%', left:'50%', width:500, height:500, marginLeft:-250, borderRadius:'50%', background:`radial-gradient(circle, rgba(${glowColor},0.04), transparent 65%)`, pointerEvents:'none' }} />
 
               <motion.div
-                initial={{ opacity:0, scale:0.9, y:40 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.95 }}
-                transition={{ duration:0.55, ease:[0.33,1,0.68,1] }}
+                initial={{ opacity:0, scale:0.96, y:20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.97 }}
+                transition={{ duration:0.5, delay:T.card, ease:[0.33,1,0.68,1] }}
                 onClick={e => e.stopPropagation()}
-                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:28, background:'linear-gradient(160deg, #10141e, #080b14)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:'0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(34,197,94,0.04), inset 0 1px 0 rgba(255,255,255,0.03)' }}
+                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:28, background:'linear-gradient(160deg, #10141e, #080b14)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:`0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(${glowColor},0.04), inset 0 1px 0 rgba(255,255,255,0.03)` }}
               >
                 {/* Header */}
-                <div style={{ padding:'36px 32px 28px', textAlign:'center', borderBottom:'1px solid rgba(255,255,255,0.04)', background:'linear-gradient(180deg, rgba(34,197,94,0.05), transparent)', position:'relative', overflow:'hidden' }}>
-                  <div style={{ position:'absolute', top:-40, left:'50%', marginLeft:-100, width:200, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.08), transparent 70%)', pointerEvents:'none' }} />
+                <div style={{ padding:'40px 32px 28px', textAlign:'center', borderBottom:'1px solid rgba(255,255,255,0.04)', background:`linear-gradient(180deg, rgba(${glowColor},0.05), transparent)`, position:'relative', overflow:'hidden' }}>
+                  <div style={{ position:'absolute', top:-50, left:'50%', marginLeft:-120, width:240, height:140, borderRadius:'50%', background:`radial-gradient(circle, rgba(${glowColor},0.1), transparent 70%)`, pointerEvents:'none' }} />
+
+                  {/* Check icon with pulse */}
                   <motion.div
-                    initial={{scale:0, rotate:-20}} animate={{scale:1, rotate:0}} transition={{delay:0.15, type:'spring', stiffness:180, damping:12}}
-                    style={{ width:64, height:64, borderRadius:18, background:'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.06))', border:'1.5px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 18px', boxShadow:'0 0 40px rgba(34,197,94,0.15), 0 0 80px rgba(34,197,94,0.05)', position:'relative' }}
+                    initial={{scale:0, rotate:-15}} animate={{scale:1, rotate:0}} transition={{delay:T.header, type:'spring', stiffness:160, damping:10}}
+                    style={{ width:68, height:68, borderRadius:20, background:`linear-gradient(135deg, rgba(${glowColor},0.18), rgba(${glowColor},0.06))`, border:`1.5px solid rgba(${glowColor},0.3)`, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px', position:'relative' }}
                   >
-                    <svg width={30} height={30} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <motion.div
+                      initial={{opacity:0.6,scale:1}} animate={{opacity:0,scale:1.8}}
+                      transition={{delay:T.header+0.2, duration:0.8, ease:'easeOut'}}
+                      style={{ position:'absolute', inset:-8, borderRadius:24, border:`2px solid rgba(${glowColor},0.2)`, pointerEvents:'none' }}
+                    />
+                    <svg width={32} height={32} viewBox="0 0 24 24" fill="none" stroke={liq>=0?'var(--profit)':'var(--loss)'} strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <motion.div
+                      initial={{opacity:0}} animate={{opacity:[0,0.3,0]}} transition={{delay:T.header+0.1, duration:1.2}}
+                      style={{ position:'absolute', inset:0, borderRadius:20, boxShadow:`0 0 40px rgba(${glowColor},0.25)`, pointerEvents:'none' }}
+                    />
                   </motion.div>
-                  <motion.h2 initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:0.3, duration:0.4}} style={{ fontSize:24, fontWeight:900, color:'#fff', margin:'0 0 8px', letterSpacing:'-0.03em' }}>
+
+                  <motion.h2 initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:T.header+0.1, duration:0.45, ease:[0.33,1,0.68,1]}} style={{ fontSize:26, fontWeight:900, color:'#fff', margin:'0 0 8px', letterSpacing:'-0.03em' }}>
                     Operacao concluida
                   </motion.h2>
-                  <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.4}} style={{ fontSize:14, color:'var(--t3)', margin:0 }}>
+                  <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:T.header+0.2, duration:0.4}} style={{ fontSize:14, color:'var(--t3)', margin:0 }}>
                     {nContas} DEP · {meta.rede || ''} · {new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' })}
                   </motion.p>
                 </div>
 
                 <div style={{ padding:'28px 32px 32px' }}>
-                  {/* Resultado destaque */}
-                  <motion.div initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} transition={{delay:0.45}} style={{
-                    padding:'20px 24px', borderRadius:16, marginBottom:24, textAlign:'center',
-                    background: liq>=0 ? 'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02))' : 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02))',
-                    border: `1px solid ${liq>=0 ? 'var(--profit-border)' : 'var(--loss-border)'}`,
-                    boxShadow: liq>=0 ? '0 0 30px rgba(34,197,94,0.06)' : '0 0 30px rgba(239,68,68,0.06)',
-                  }}>
-                    <p style={{ fontSize:10, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.08em', margin:'0 0 8px', fontWeight:600 }}>Resultado da meta</p>
-                    <p style={{ fontSize:32, fontWeight:900, color:liq>=0?'var(--profit)':'var(--loss)', margin:0, fontFamily:'var(--mono)', letterSpacing:'-0.03em', textShadow:`0 0 30px ${liq>=0?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)'}` }}>
+                  {/* Resultado — CLIMAX */}
+                  <motion.div
+                    initial={{opacity:0,scale:0.93}} animate={{opacity:1,scale:1}}
+                    transition={{delay:T.result, duration:0.5, ease:[0.33,1,0.68,1]}}
+                    style={{
+                      padding:'24px 28px', borderRadius:18, marginBottom:28, textAlign:'center', position:'relative', overflow:'hidden',
+                      background: `linear-gradient(135deg, rgba(${glowColor},0.08), rgba(${glowColor},0.02))`,
+                      border: `1px solid rgba(${glowColor},0.2)`,
+                      boxShadow: `0 0 40px rgba(${glowColor},0.06)`,
+                    }}
+                  >
+                    {/* Shine pass — once */}
+                    <motion.div
+                      initial={{left:'-100%'}} animate={{left:'200%'}}
+                      transition={{delay:T.result+0.3, duration:0.8, ease:'easeInOut'}}
+                      style={{ position:'absolute', top:0, width:'40%', height:'100%', background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)', pointerEvents:'none' }}
+                    />
+                    <p style={{ fontSize:10, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.08em', margin:'0 0 10px', fontWeight:600 }}>Resultado da meta</p>
+                    <motion.p
+                      initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}}
+                      transition={{delay:T.result+0.15, duration:0.4, type:'spring', stiffness:200}}
+                      style={{ fontSize:36, fontWeight:900, color:liq>=0?'var(--profit)':'var(--loss)', margin:0, fontFamily:'var(--mono)', letterSpacing:'-0.03em', textShadow:`0 0 40px rgba(${glowColor},0.25)` }}
+                    >
                       {liq>=0?'+':''}R$ {fmt(liq)}
-                    </p>
-                    <p style={{ fontSize:11, color:'var(--t4)', margin:'6px 0 0' }}>R$ {fmt(Math.abs(avgPerConta))}/conta · {taxaAcerto}% de acerto</p>
+                    </motion.p>
+                    <p style={{ fontSize:12, color:'var(--t4)', margin:'8px 0 0' }}>R$ {fmt(Math.abs(avgPerConta))}/conta · {taxaAcerto}% de acerto</p>
                   </motion.div>
 
-                  {/* Metricas grid */}
-                  <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:24 }}>
+                  {/* Metricas — stagger cascade */}
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:28 }}>
                     {[
                       { l:'Remessas', v:remessas.length, c:'var(--t1)' },
                       { l:'Contas', v:`${contasDone}/${nContas}`, c:'var(--t1)' },
@@ -1094,47 +1125,47 @@ export default function MetaPage() {
                       { l:'Sacado', v:`R$ ${fmt(totalSaq)}`, c:'var(--t2)' },
                       { l:'Media/remessa', v:`R$ ${fmt(Math.abs(avgPerRemessa))}`, c:avgPerRemessa>=0?'var(--profit)':'var(--t2)' },
                     ].map(({l,v,c},i) => (
-                      <motion.div key={l} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:0.55+i*0.05}}
-                        style={{ padding:'14px 16px', borderRadius:14, background:'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008))', border:'1px solid rgba(255,255,255,0.05)', textAlign:'center', transition:'all 0.2s' }}
-                        onMouseEnter={e => { e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)' }}
-                        onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.borderColor='rgba(255,255,255,0.05)' }}
+                      <motion.div key={l} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:T.metrics+i*0.08, duration:0.4, ease:[0.33,1,0.68,1]}}
+                        style={{ padding:'14px 16px', borderRadius:14, background:'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008))', border:'1px solid rgba(255,255,255,0.05)', textAlign:'center', cursor:'default', transition:'all 0.25s ease' }}
+                        onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px) scale(1.02)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.3)' }}
+                        onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow='none' }}
                       >
                         <p style={{ fontSize:9, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.06em', margin:'0 0 6px', fontWeight:600 }}>{l}</p>
-                        <p style={{ fontSize:17, fontWeight:800, color:c, margin:0, fontFamily:'var(--mono)' }}>{v}</p>
+                        <p style={{ fontSize:18, fontWeight:800, color:c, margin:0, fontFamily:'var(--mono)' }}>{v}</p>
                       </motion.div>
                     ))}
                   </div>
 
-                  {/* Insights */}
-                  <motion.div initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:0.8}} style={{ marginBottom:24 }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
+                  {/* Insights — "analysis feel" */}
+                  <motion.div initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:T.insights, duration:0.45}} style={{ marginBottom:24 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                       <span style={{ fontSize:13, fontWeight:700, color:'var(--t1)' }}>Analise da operacao</span>
                       <span style={{ fontSize:9, fontWeight:700, color:'#a855f7', background:'rgba(168,85,247,0.1)', padding:'2px 7px', borderRadius:5 }}>AI</span>
                     </div>
                     <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                       {insights.map((ins,i) => (
-                        <motion.div key={i} initial={{opacity:0,x:-12}} animate={{opacity:1,x:0}} transition={{delay:0.9+i*0.1, ease:[0.33,1,0.68,1]}}
-                          style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px', borderRadius:12, background:'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008))', border:'1px solid rgba(255,255,255,0.05)', transition:'all 0.2s' }}
-                          onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; e.currentTarget.style.transform='translateX(2px)' }}
+                        <motion.div key={i} initial={{opacity:0,x:-14}} animate={{opacity:1,x:0}} transition={{delay:T.insights+0.1+i*0.12, duration:0.4, ease:[0.33,1,0.68,1]}}
+                          style={{ display:'flex', alignItems:'center', gap:12, padding:'13px 16px', borderRadius:12, background:'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008))', border:'1px solid rgba(255,255,255,0.05)', cursor:'default', transition:'all 0.25s ease' }}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'; e.currentTarget.style.transform='translateX(3px)' }}
                           onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'; e.currentTarget.style.transform='none' }}
                         >
-                          <div style={{ width:8, height:8, borderRadius:'50%', background:cfgI[ins.type], flexShrink:0, boxShadow:`0 0 8px ${cfgI[ins.type]}` }} />
-                          <span style={{ fontSize:12, color:'var(--t2)', lineHeight:1.4 }}>{ins.text}</span>
+                          <div style={{ width:8, height:8, borderRadius:'50%', background:cfgI[ins.type], flexShrink:0, boxShadow:`0 0 10px ${cfgI[ins.type]}` }} />
+                          <span style={{ fontSize:13, color:'var(--t2)', lineHeight:1.4 }}>{ins.text}</span>
                         </motion.div>
                       ))}
                     </div>
                   </motion.div>
 
                   {/* Melhorias */}
-                  <motion.div initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:1.1}} style={{ padding:'18px 20px', borderRadius:16, background:'linear-gradient(145deg, rgba(245,158,11,0.04), rgba(245,158,11,0.01))', border:'1px solid rgba(245,158,11,0.1)', marginBottom:28 }}>
+                  <motion.div initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:T.improve, duration:0.45}} style={{ padding:'18px 20px', borderRadius:16, background:'linear-gradient(145deg, rgba(245,158,11,0.04), rgba(245,158,11,0.01))', border:'1px solid rgba(245,158,11,0.12)', marginBottom:28 }}>
                     <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
                       <span style={{ fontSize:13, fontWeight:700, color:'var(--warn)' }}>Proxima meta</span>
                     </div>
-                    <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                    <div style={{ display:'flex', flexDirection:'column', gap:7 }}>
                       {melhorias.map((m,i) => (
-                        <motion.div key={i} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.2+i*0.07}} style={{ display:'flex', alignItems:'center', gap:10 }}>
+                        <motion.div key={i} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:T.improve+0.1+i*0.08}} style={{ display:'flex', alignItems:'center', gap:10 }}>
                           <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="2.5" strokeLinecap="round" style={{flexShrink:0}}><polyline points="9 18 15 12 9 6"/></svg>
                           <span style={{ fontSize:12, color:'var(--t3)', lineHeight:1.4 }}>{m}</span>
                         </motion.div>
@@ -1144,15 +1175,15 @@ export default function MetaPage() {
 
                   {/* CTA */}
                   <motion.button
-                    initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:1.3}}
-                    whileHover={{ scale:1.02, boxShadow:'0 8px 32px rgba(34,197,94,0.35)' }}
-                    whileTap={{ scale:0.97 }}
+                    initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:T.cta, duration:0.4}}
+                    whileHover={{ scale:1.02, boxShadow:`0 10px 36px rgba(${glowColor},0.35)` }}
+                    whileTap={{ scale:0.96 }}
                     onClick={() => { setShowFinalePopup(false); router.push('/operator') }}
                     style={{
                       width:'100%', padding:'16px 28px', borderRadius:14, border:'none', cursor:'pointer',
                       fontSize:15, fontWeight:700, color:'#fff',
-                      background:'linear-gradient(135deg, #22c55e, #16a34a)',
-                      boxShadow:'0 6px 24px rgba(34,197,94,0.3)',
+                      background: liq>=0 ? 'linear-gradient(135deg, #22c55e, #16a34a)' : 'linear-gradient(135deg, #e53935, #c62828)',
+                      boxShadow: `0 6px 24px rgba(${glowColor},0.3)`,
                       display:'flex', alignItems:'center', justifyContent:'center', gap:8,
                     }}
                   >

@@ -485,6 +485,174 @@ function InviteCard({ inv, onCopy, onDelete }) {
 }
 
 /* ═══════════════════════════════════════════════ */
+/* ── Payment Model Configuration (with confirmation) ── */
+/* ═══════════════════════════════════════════════ */
+function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
+  const currentModel = tenant?.operator_payment_model || 'fixo_dep'
+  const [pendingModel, setPendingModel] = useState(null) // model being considered
+  const [pendingValue, setPendingValue] = useState('')
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  const MODELS = [
+    { key:'fixo_dep', label:'Fixo por depositante', desc:'Ex: R$ 2,00 por dep', valueLabel:'Valor por dep (R$)', placeholder:'2.00' },
+    { key:'percentual', label:'% do lucro final', desc:'Ex: 15% do lucro', valueLabel:'Percentual (%)', placeholder:'15' },
+    { key:'divisao_resultado', label:'Divisao de resultado', desc:'Split lucro e prejuizo', valueLabel:'% do operador', placeholder:'50' },
+  ]
+
+  function selectModel(key) {
+    if (key === currentModel) return
+    setPendingModel(key)
+    setPendingValue(key === 'divisao_resultado' ? '50' : key === 'percentual' ? '15' : '2')
+    setShowConfirm(true)
+  }
+
+  async function confirmChange() {
+    setSaving(true)
+    await supabase.from('tenants').update({
+      operator_payment_model: pendingModel,
+      operator_payment_value: Number(pendingValue || 0),
+    }).eq('id', profileTenantId)
+    setTenant(prev => ({ ...prev, operator_payment_model: pendingModel, operator_payment_value: Number(pendingValue || 0) }))
+    setSaving(false)
+    setShowConfirm(false)
+    setPendingModel(null)
+  }
+
+  async function updateValue(val) {
+    const num = Number(val)
+    await supabase.from('tenants').update({ operator_payment_value: num }).eq('id', profileTenantId)
+    setTenant(prev => ({ ...prev, operator_payment_value: num }))
+  }
+
+  const activeInfo = MODELS.find(m => m.key === currentModel)
+  const isDivisao = currentModel === 'divisao_resultado'
+
+  return (
+    <div style={{ padding:'22px 20px', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:14 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
+        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span style={{ fontSize:14, fontWeight:700, color:'#fff' }}>Pagamento de operadores</span>
+        {isDivisao && <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'rgba(168,85,247,0.1)', color:'#a855f7', border:'1px solid rgba(168,85,247,0.2)' }}>SPLIT {tenant?.operator_payment_value || 50}%</span>}
+      </div>
+
+      {/* Model selector */}
+      <div style={{ display:'flex', gap:8, marginBottom:14, flexWrap:'wrap' }}>
+        {MODELS.map(opt => {
+          const active = currentModel === opt.key
+          const accentColor = opt.key === 'divisao_resultado' ? '#a855f7' : '#22c55e'
+          return (
+            <button key={opt.key} type="button" onClick={() => active ? null : selectModel(opt.key)} style={{
+              flex:1, minWidth:120, padding:'12px 14px', borderRadius:10, cursor: active ? 'default' : 'pointer',
+              background: active ? `${accentColor}15` : 'rgba(255,255,255,0.02)',
+              border: `1px solid ${active ? `${accentColor}33` : 'rgba(255,255,255,0.05)'}`,
+              textAlign:'left', transition:'all 0.2s',
+            }}>
+              <p style={{ fontSize:12, fontWeight:700, color: active ? accentColor : 'rgba(255,255,255,0.5)', margin:'0 0 2px' }}>{opt.label}</p>
+              <p style={{ fontSize:10, color: active ? `${accentColor}88` : 'rgba(255,255,255,0.2)', margin:0 }}>{opt.desc}</p>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Current value editor */}
+      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+        <label style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.4)', flexShrink:0 }}>
+          {activeInfo?.valueLabel || 'Valor'}
+        </label>
+        <input className="input" type="number" step="0.01" min="0"
+          value={tenant?.operator_payment_value ?? 2}
+          onChange={e => updateValue(e.target.value)}
+          style={{ padding:'8px 12px', fontSize:14, maxWidth:100 }}
+        />
+      </div>
+
+      {/* Divisao info */}
+      {isDivisao && (
+        <div style={{ marginTop:12, padding:'10px 14px', borderRadius:10, background:'rgba(168,85,247,0.04)', border:'1px solid rgba(168,85,247,0.1)', fontSize:11, color:'rgba(168,85,247,0.7)', lineHeight:1.5 }}>
+          Lucro e prejuizo serao divididos: operador recebe {tenant?.operator_payment_value || 50}%, admin fica com {100 - (tenant?.operator_payment_value || 50)}%. Valido para novas metas.
+        </div>
+      )}
+
+      {/* ── Confirmation Modal ── */}
+      {showConfirm && pendingModel && (
+        <div style={{ position:'fixed', inset:0, zIndex:10000, background:'rgba(2,4,8,0.9)', backdropFilter:'blur(12px)', display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}
+          onClick={() => { setShowConfirm(false); setPendingModel(null) }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            width:'100%', maxWidth:480, padding:28, borderRadius:20,
+            background:'linear-gradient(160deg, #10141e, #080b14)',
+            border:'1px solid rgba(255,255,255,0.08)',
+            boxShadow:'0 40px 100px rgba(0,0,0,0.7)',
+          }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
+              <div style={{ width:40, height:40, borderRadius:12, background:'rgba(245,158,11,0.1)', border:'1px solid rgba(245,158,11,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div>
+                <h3 style={{ fontSize:16, fontWeight:800, color:'#F1F5F9', margin:'0 0 2px' }}>Confirmar alteracao de modelo</h3>
+                <p style={{ fontSize:12, color:'#94A3B8', margin:0 }}>Esta acao vale apenas para novas metas</p>
+              </div>
+            </div>
+
+            {/* Summary */}
+            <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, padding:16, marginBottom:16 }}>
+              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
+                <span style={{ fontSize:11, color:'#64748B' }}>Modelo atual</span>
+                <span style={{ fontSize:12, fontWeight:600, color:'#94A3B8' }}>{MODELS.find(m=>m.key===currentModel)?.label}</span>
+              </div>
+              <div style={{ width:'100%', height:1, background:'rgba(255,255,255,0.04)', margin:'0 0 10px' }} />
+              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
+                <span style={{ fontSize:11, color:'#64748B' }}>Novo modelo</span>
+                <span style={{ fontSize:12, fontWeight:700, color: pendingModel === 'divisao_resultado' ? '#a855f7' : '#22c55e' }}>{MODELS.find(m=>m.key===pendingModel)?.label}</span>
+              </div>
+              {/* Value input for new model */}
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                <span style={{ fontSize:11, color:'#64748B' }}>{MODELS.find(m=>m.key===pendingModel)?.valueLabel}</span>
+                <input className="input" type="number" step="0.01" min="0" max={pendingModel==='divisao_resultado'?100:undefined}
+                  value={pendingValue}
+                  onChange={e => setPendingValue(e.target.value)}
+                  style={{ padding:'6px 10px', fontSize:14, maxWidth:80, textAlign:'right' }}
+                />
+              </div>
+            </div>
+
+            {/* Warnings */}
+            <div style={{ display:'flex', flexDirection:'column', gap:6, marginBottom:20 }}>
+              {[
+                'A mudanca vale apenas para novas metas criadas',
+                'Metas anteriores continuam com o modelo antigo',
+                pendingModel === 'divisao_resultado' ? `Operador recebera ${pendingValue}% do lucro E assumira ${pendingValue}% do prejuizo` : null,
+              ].filter(Boolean).map((text, i) => (
+                <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:8 }}>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" style={{ marginTop:2, flexShrink:0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span style={{ fontSize:11, color:'#94A3B8', lineHeight:1.4 }}>{text}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display:'flex', gap:10 }}>
+              <button type="button" onClick={() => { setShowConfirm(false); setPendingModel(null) }}
+                style={{ flex:1, padding:'12px', borderRadius:10, border:'1px solid rgba(255,255,255,0.08)', background:'transparent', color:'#94A3B8', fontSize:13, fontWeight:600, cursor:'pointer' }}>
+                Cancelar
+              </button>
+              <button type="button" onClick={confirmChange} disabled={saving || !pendingValue || Number(pendingValue) <= 0}
+                style={{
+                  flex:2, padding:'12px', borderRadius:10, border:'none', cursor:'pointer',
+                  background: pendingModel === 'divisao_resultado' ? 'linear-gradient(135deg, #7c3aed, #a855f7)' : '#22c55e',
+                  color:'#fff', fontSize:13, fontWeight:700,
+                  opacity: saving || !pendingValue || Number(pendingValue) <= 0 ? 0.5 : 1,
+                }}>
+                {saving ? 'Salvando...' : 'Confirmar alteracao'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════ */
 /* ── Main Page ── */
 /* ═══════════════════════════════════════════════ */
 export default function OperadoresPage() {
@@ -660,7 +828,11 @@ export default function OperadoresPage() {
       const totalDeposit = opClosed.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
       const lucroFinal = opClosed.reduce((a, m) => a + Number(m.lucro_final || 0), 0)
       let valor = 0
-      if (payModel === 'percentual') {
+      if (payModel === 'divisao_resultado') {
+        // For split model, use stored resultado_operador if available, else calculate
+        const stored = opClosed.reduce((a, m) => a + Number(m.resultado_operador || 0), 0)
+        valor = stored !== 0 ? stored : lucroFinal * (payValue / 100)
+      } else if (payModel === 'percentual') {
         valor = lucroFinal > 0 ? lucroFinal * (payValue / 100) : 0
       } else {
         valor = totalDeposit * payValue
@@ -1282,48 +1454,7 @@ export default function OperadoresPage() {
             </div>
 
             {/* Pagamento de operadores */}
-            <div style={{ padding: '22px 20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Pagamento de operadores</span>
-              </div>
-              <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
-                {[
-                  { key: 'fixo_dep', label: 'Fixo por depositante', desc: 'Ex: R$ 2,00 por dep' },
-                  { key: 'percentual', label: '% do lucro final', desc: 'Ex: 15% do lucro' },
-                ].map(opt => {
-                  const active = (tenant?.operator_payment_model || 'fixo_dep') === opt.key
-                  return (
-                    <button key={opt.key} onClick={async () => {
-                      await supabase.from('tenants').update({ operator_payment_model: opt.key }).eq('id', profile.tenant_id)
-                      setTenant(prev => ({ ...prev, operator_payment_model: opt.key }))
-                    }} style={{
-                      flex: 1, padding: '12px 14px', borderRadius: 10, cursor: 'pointer',
-                      background: active ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.02)',
-                      border: `1px solid ${active ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.05)'}`,
-                      textAlign: 'left', transition: 'all 0.2s',
-                    }}>
-                      <p style={{ fontSize: 12, fontWeight: 700, color: active ? '#22c55e' : 'rgba(255,255,255,0.5)', margin: '0 0 2px' }}>{opt.label}</p>
-                      <p style={{ fontSize: 10, color: active ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.2)', margin: 0 }}>{opt.desc}</p>
-                    </button>
-                  )
-                })}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', flexShrink: 0 }}>
-                  {(tenant?.operator_payment_model || 'fixo_dep') === 'fixo_dep' ? 'Valor por dep (R$)' : 'Percentual (%)'}
-                </label>
-                <input className="input" type="number" step="0.01" min="0"
-                  value={tenant?.operator_payment_value ?? 2}
-                  onChange={async (e) => {
-                    const val = Number(e.target.value)
-                    await supabase.from('tenants').update({ operator_payment_value: val }).eq('id', profile.tenant_id)
-                    setTenant(prev => ({ ...prev, operator_payment_value: val }))
-                  }}
-                  style={{ padding: '8px 12px', fontSize: 14, maxWidth: 100 }}
-                />
-              </div>
-            </div>
+            <PaymentModelConfig tenant={tenant} setTenant={setTenant} profileTenantId={profile.tenant_id} />
 
             {/* Slots favoritos — apenas PRO */}
             {sub?.status === 'active' && (!sub.expires_at || new Date(sub.expires_at) > new Date()) ? (

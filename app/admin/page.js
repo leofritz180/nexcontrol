@@ -53,21 +53,36 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
 
   // Calculo automatico pagamento operador
   const deps = Number(meta.quantidade_contas || 0)
+  const isDivisao = payModel === 'divisao_resultado'
+  const splitPct = isDivisao ? (payValue || 50) : 0
+
   const pgtoOp = useMemo(() => {
-    if (!operador || meta.operator_id === meta.admin_id) return 0 // admin nao paga a si mesmo
+    if (!operador || meta.operator_id === meta.admin_id) return 0
+    if (isDivisao) return lucroFinal * (splitPct / 100) // both profit AND loss
     if (payModel === 'percentual') return lucroFinal > 0 ? lucroFinal * (payValue / 100) : 0
     return deps * payValue // fixo por dep
-  }, [payModel, payValue, lucroFinal, deps, operador])
+  }, [payModel, payValue, lucroFinal, deps, operador, isDivisao, splitPct])
+
+  const resultadoAdmin = isDivisao ? lucroFinal - pgtoOp : lucroFinal
+  const resultadoOperador = isDivisao ? pgtoOp : 0
 
   async function save() {
     if (saving) return
     setSaving(true); setError('')
-    const { data:updated, error:err } = await supabase.from('metas').update({
+    const updateData = {
       salario:Number(salario||0), bau:Number(bau||0), custo_fixo:Number(custo||0), taxa_agente:Number(taxa||0),
-      pagamento_operador: pgtoOp,
+      pagamento_operador: isDivisao ? Math.abs(pgtoOp) : pgtoOp,
       lucro_final:lucroFinal, status:'finalizada',
       status_fechamento:'fechada', fechada_em:new Date().toISOString(),
-    }).eq('id',meta.id).neq('status_fechamento','fechada').select()
+    }
+    // Save split data if divisao model
+    if (isDivisao) {
+      updateData.resultado_operador = resultadoOperador
+      updateData.resultado_admin = resultadoAdmin
+      updateData.percentual_operador = splitPct
+      updateData.modelo_remuneracao = 'divisao_resultado'
+    }
+    const { data:updated, error:err } = await supabase.from('metas').update(updateData).eq('id',meta.id).neq('status_fechamento','fechada').select()
     setSaving(false)
     if (err) { setError(err.message); return }
     if (!updated||updated.length===0) { setError('Meta ja foi fechada por outro usuario.'); return }
@@ -178,8 +193,29 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
             </div>
           </div>
 
-          {/* Pagamento do operador */}
-          {pgtoOp > 0 && operador && (
+          {/* Pagamento do operador / Divisao de resultado */}
+          {isDivisao && operador ? (
+            <div style={{ background:'rgba(168,85,247,0.06)', border:'1px solid rgba(168,85,247,0.15)', borderRadius:12, padding:'18px 22px' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
+                <span style={{ fontSize:10, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'rgba(168,85,247,0.12)', color:'#a855f7', border:'1px solid rgba(168,85,247,0.25)' }}>SPLIT {splitPct}%</span>
+                <span style={{ fontSize:11, color:'#94A3B8' }}>Divisao de resultado com {getName(operador)}</span>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                <div style={{ padding:'12px 14px', borderRadius:10, background: resultadoOperador >= 0 ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)', border:`1px solid ${resultadoOperador >= 0 ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}`, textAlign:'center' }}>
+                  <p style={{ fontSize:10, color:'#94A3B8', margin:'0 0 6px', fontWeight:600 }}>Operador ({splitPct}%)</p>
+                  <p className="t-num" style={{ fontSize:18, fontWeight:800, color: resultadoOperador >= 0 ? 'var(--profit)' : 'var(--loss)', margin:0 }}>
+                    {resultadoOperador >= 0 ? '+' : ''}R$ {fmt(resultadoOperador)}
+                  </p>
+                </div>
+                <div style={{ padding:'12px 14px', borderRadius:10, background: resultadoAdmin >= 0 ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)', border:`1px solid ${resultadoAdmin >= 0 ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}`, textAlign:'center' }}>
+                  <p style={{ fontSize:10, color:'#94A3B8', margin:'0 0 6px', fontWeight:600 }}>Admin ({100 - splitPct}%)</p>
+                  <p className="t-num" style={{ fontSize:18, fontWeight:800, color: resultadoAdmin >= 0 ? 'var(--profit)' : 'var(--loss)', margin:0 }}>
+                    {resultadoAdmin >= 0 ? '+' : ''}R$ {fmt(resultadoAdmin)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : pgtoOp > 0 && operador ? (
             <div style={{ background:'rgba(59,130,246,0.06)', border:'1px solid rgba(59,130,246,0.12)', borderRadius:12, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:8 }}>
               <div>
                 <p className="t-label" style={{ marginBottom:2 }}>Pagar a {getName(operador)}</p>
@@ -187,7 +223,7 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
               </div>
               <p className="t-num" style={{ fontSize:18, fontWeight:700, color:'#60a5fa' }}>R$ {fmt(pgtoOp)}</p>
             </div>
-          )}
+          ) : null}
 
           {error && <div className="alert-error" style={{ display:'flex', alignItems:'center', gap:8 }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
 

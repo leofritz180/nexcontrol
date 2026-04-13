@@ -1231,25 +1231,39 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease }}>
 
-          {/* ── Alerta de prejuizo anormal ── */}
-          {abnormalLossAlert && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease }}
-              style={{
-                padding: '14px 20px', borderRadius: 14, marginBottom: 20,
-                background: 'var(--loss-dim)', border: '1px solid var(--loss-border)',
-                display: 'flex', alignItems: 'center', gap: 12,
-              }}>
-              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--loss)' }}>
-                Remessa com prejuizo anormal detectada: R$ {fmt(abnormalLossAlert.value)} (media: R$ {fmt(abnormalLossAlert.avg)})
-              </p>
-            </motion.div>
-          )}
+          {/* ── Insights rotativos ── */}
+          {(() => {
+            const tips = []
+            // Alerta prejuizo anormal
+            if (abnormalLossAlert) tips.push({ text: `Remessa com prejuizo anormal: R$ ${fmt(abnormalLossAlert.value)} (media: R$ ${fmt(abnormalLossAlert.avg)})`, type: 'loss' })
+            // Positivos
+            if (global.lucroHoje > 0) tips.push({ text: `Lucro do dia: +R$ ${fmt(global.lucroHoje)} — operacao no positivo`, type: 'profit' })
+            if (global.lucroFinalTotal > 0) tips.push({ text: `Lucro total acumulado: +R$ ${fmt(global.lucroFinalTotal)}`, type: 'profit' })
+            if (global.lucroPerConta > 0) tips.push({ text: `Media de R$ ${fmt(global.lucroPerConta)}/conta — rentabilidade positiva`, type: 'profit' })
+            // Negativos
+            if (global.lucroHoje < 0) tips.push({ text: `Resultado do dia negativo: R$ ${fmt(Math.abs(global.lucroHoje))} de prejuizo`, type: 'loss' })
+            if (global.custosHoje > 0) tips.push({ text: `Custos hoje: R$ ${fmt(global.custosHoje)} — impacto de ${global.lucroHoje!==0?Math.round(global.custosHoje/Math.abs(global.lucroHoje+global.custosHoje)*100):0}% no resultado`, type: 'warn' })
+            // Dicas
+            tips.push({ text: `${global.ativas} meta${global.ativas!==1?'s':''} ativa${global.ativas!==1?'s':''} e ${global.fechadas} fechada${global.fechadas!==1?'s':''}`, type: 'info' })
+            if (global.ops > 0) tips.push({ text: `${global.ops} operadores na equipe — ${global.totalRem} remessas registradas`, type: 'info' })
+            if (global.breakEvenContas > 0) tips.push({ text: `Break-even: ${global.breakEvenContas} contas com bau por meta pra cobrir custos`, type: 'info' })
+            if (tips.length === 0) return null
+            const cfgT = { profit: { bg:'var(--profit-dim)', border:'var(--profit-border)', color:'var(--profit)' }, loss: { bg:'var(--loss-dim)', border:'var(--loss-border)', color:'var(--loss)' }, warn: { bg:'var(--warn-dim)', border:'var(--warn-border)', color:'var(--warn)' }, info: { bg:'rgba(59,130,246,0.06)', border:'rgba(59,130,246,0.12)', color:'var(--info)' } }
+            const idx = Math.floor(Date.now() / 8000) % tips.length
+            const tip = tips[idx]
+            const c = cfgT[tip.type]
+            return (
+              <motion.div
+                key={tip.text}
+                initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.3 }}
+                style={{ padding:'12px 18px', borderRadius:12, marginBottom:20, background:c.bg, border:`1px solid ${c.border}`, display:'flex', alignItems:'center', gap:10 }}
+              >
+                <div style={{ width:6, height:6, borderRadius:'50%', background:c.color, flexShrink:0 }} />
+                <p style={{ margin:0, fontSize:13, fontWeight:500, color:c.color }}>{tip.text}</p>
+              </motion.div>
+            )
+          })()}
 
           {/* ── HERO + KPIs — side by side ── */}
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:16, marginBottom:24 }}>

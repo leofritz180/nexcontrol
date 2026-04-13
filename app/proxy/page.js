@@ -63,10 +63,10 @@ export default function ProxyPage() {
               fontSize: 9, fontWeight: 700, padding: '3px 10px', borderRadius: 6,
               background: 'rgba(59,130,246,0.1)', color: '#60a5fa',
               border: '1px solid rgba(59,130,246,0.2)', letterSpacing: '0.06em',
-            }}>PARCEIRO</span>
+            }}>PARCEIRO OFICIAL</span>
           </div>
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', margin: 0 }}>
-            Proxies premium para sua operacao — integrado ao NexControl
+            Infraestrutura de proxy para operacoes em escala
           </p>
         </motion.div>
 
@@ -79,7 +79,7 @@ export default function ProxyPage() {
             borderRadius: 24, overflow: 'hidden', position: 'relative',
             background: 'linear-gradient(160deg, #0e1322, #0a0e18)',
             border: '1px solid rgba(255,255,255,0.06)',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02), 0 0 80px rgba(59,130,246,0.04)',
           }}
         >
           {/* Top visual area */}
@@ -102,7 +102,7 @@ export default function ProxyPage() {
               width: 64, height: 64, borderRadius: 18, margin: '0 auto 24px',
               background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 30px rgba(59,130,246,0.1)',
+              boxShadow: '0 0 40px rgba(59,130,246,0.12)',
               position: 'relative',
             }}>
               <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -111,17 +111,17 @@ export default function ProxyPage() {
             </div>
 
             <h2 style={{
-              fontSize: 24, fontWeight: 800, color: '#fff',
-              letterSpacing: '-0.03em', marginBottom: 10,
+              fontSize: 26, fontWeight: 800, color: '#fff',
+              letterSpacing: '-0.03em', marginBottom: 12,
               position: 'relative',
             }}>
-              Bettify Proxy
+              Proxies Premium de Alta Performance
             </h2>
             <p style={{
-              fontSize: 14, color: 'rgba(255,255,255,0.45)', maxWidth: 420,
+              fontSize: 14, color: 'rgba(255,255,255,0.45)', maxWidth: 460,
               margin: '0 auto 28px', lineHeight: 1.6, position: 'relative',
             }}>
-              Acesse a loja oficial de proxies parceira do NexControl. Conexoes seguras e de alta velocidade para sua operacao.
+              Parceiro oficial do NexControl para conexoes rapidas, seguras e preparadas para alta demanda operacional. Escale sua operacao com infraestrutura profissional.
             </p>
 
             {/* Stats */}
@@ -130,9 +130,9 @@ export default function ProxyPage() {
               position: 'relative',
             }}>
               {[
-                { icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', label: 'Alta velocidade' },
-                { icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', label: 'Seguro' },
-                { icon: 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z', label: 'Global' },
+                { icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', label: 'Baixa latencia' },
+                { icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', label: 'Protecao avancada' },
+                { icon: 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z', label: 'Cobertura global' },
               ].map((s, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(59,130,246,0.5)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -152,10 +152,10 @@ export default function ProxyPage() {
               marginBottom: 28, maxWidth: 400, margin: '0 auto 28px',
             }}>
               {[
-                { icon: 'M9 12l2 2 4-4', label: 'Proxies residenciais' },
-                { icon: 'M9 12l2 2 4-4', label: 'Suporte dedicado' },
-                { icon: 'M9 12l2 2 4-4', label: 'Painel de controle' },
-                { icon: 'M9 12l2 2 4-4', label: 'Precos exclusivos' },
+                { icon: 'M9 12l2 2 4-4', label: 'IPs residenciais de alta qualidade' },
+                { icon: 'M9 12l2 2 4-4', label: 'Suporte tecnico especializado' },
+                { icon: 'M9 12l2 2 4-4', label: 'Gerenciamento completo de conexoes' },
+                { icon: 'M9 12l2 2 4-4', label: 'Condicoes exclusivas NexControl' },
               ].map((f, i) => (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'center', gap: 8,
@@ -191,11 +191,11 @@ export default function ProxyPage() {
                 <polyline points="15 3 21 3 21 9" />
                 <line x1="10" y1="14" x2="21" y2="3" />
               </svg>
-              Abrir Loja Proxy
+              Acessar Proxy Premium
             </a>
 
             <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 16 }}>
-              Abre em nova aba — ambiente externo seguro
+              Acesso externo seguro — plataforma verificada
             </p>
           </div>
         </motion.div>
@@ -210,10 +210,10 @@ export default function ProxyPage() {
             marginTop: 24,
           }}
         >
-          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.8" strokeLinecap="round">
+          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.8" strokeLinecap="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.15)' }}>Parceiro oficial NexControl</span>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>Infraestrutura verificada — Parceiro oficial NexControl</span>
         </motion.div>
       </div>
     </AppLayout>

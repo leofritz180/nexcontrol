@@ -302,27 +302,35 @@ export default function MetaPage() {
           </div>
         </div>
 
-        {/* Insights da operacao */}
+        {/* Insights + Previsao + Score */}
         {remessas.length >= 2 && (() => {
           const insights = []
-          const reversed = [...remessas].reverse()
+          const ordered = [...remessas].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+          const nContas = Number(meta?.quantidade_contas || 0)
+          const avgPerConta = nContas > 0 ? totais.liq / nContas : 0
+          const avgPerRemessa = remessas.length > 0 ? totais.liq / remessas.length : 0
 
-          // A) Sequencia de prejuizo
+          // A) Sequencia de prejuizo — com dados reais
           let streak = 0
-          for (let i = reversed.length - 1; i >= 0; i--) {
-            if (Number(reversed[i].resultado || 0) < 0) streak++
+          let streakTotal = 0
+          for (let i = ordered.length - 1; i >= 0; i--) {
+            const res = Number(ordered[i].resultado || 0)
+            if (res < 0) { streak++; streakTotal += res }
             else break
           }
-          if (streak >= 3) insights.push({ text: `Risco elevado — ${streak} remessas consecutivas com prejuizo`, type: 'critical', action: 'Avaliar pausa na operacao' })
-          else if (streak >= 2) insights.push({ text: `Atencao — ${streak} remessas seguidas com prejuizo`, type: 'warn', action: 'Operar com cautela' })
+          const streakAvg = streak > 0 && nContas > 0 ? streakTotal / nContas : 0
+          if (streak >= 3) insights.push({ text: `${streak} remessas consecutivas negativas — prejuizo acumulado de R$ ${fmt(Math.abs(streakTotal))} (R$ ${fmt(Math.abs(streakAvg))}/conta)`, type: 'critical', action: 'Reduzir contas na proxima remessa ou avaliar pausa' })
+          else if (streak >= 2) insights.push({ text: `${streak} remessas seguidas com prejuizo — R$ ${fmt(Math.abs(streakTotal))} perdidos nas ultimas ${streak}`, type: 'warn', action: 'Manter volume atual e observar proxima remessa' })
 
-          // B) Media por conta
-          const avgPerConta = meta?.quantidade_contas > 0 ? totais.liq / Number(meta.quantidade_contas) : 0
-          if (avgPerConta > 2) insights.push({ text: `Operacao saudavel — media de R$ ${fmt(avgPerConta)} por conta`, type: 'good', action: 'Continuar operacao' })
-          else if (avgPerConta >= -1) insights.push({ text: `Resultado instavel — media de R$ ${fmt(avgPerConta)} por conta`, type: 'warn', action: 'Monitorar proximas remessas' })
-          else if (avgPerConta < -1) insights.push({ text: `Resultado negativo — media de R$ ${fmt(avgPerConta)} por conta`, type: 'critical', action: 'Revisar estrategia' })
+          // B) Media por conta — com contexto
+          if (nContas > 0) {
+            if (avgPerConta > 5) insights.push({ text: `Media excelente: R$ ${fmt(avgPerConta)}/conta em ${remessas.length} remessas`, type: 'good', action: 'Possivel aumentar volume de contas' })
+            else if (avgPerConta > 2) insights.push({ text: `Media positiva: R$ ${fmt(avgPerConta)}/conta — operacao saudavel`, type: 'good', action: 'Continuar no ritmo atual' })
+            else if (avgPerConta >= -1) insights.push({ text: `Media instavel: R$ ${fmt(avgPerConta)}/conta em ${remessas.length} remessas`, type: 'warn', action: 'Manter operacao e monitorar proximas 2-3 remessas' })
+            else insights.push({ text: `Media negativa: R$ ${fmt(avgPerConta)}/conta — ${remessas.length} remessas analisadas`, type: 'critical', action: 'Revisar estrategia — considerar trocar rede ou reduzir volume' })
+          }
 
-          // C) Status operacionais
+          // C) Pendencias — com urgencia
           const probs = remessas.filter(r => r.status_problema && r.status_problema !== 'normal')
           if (probs.length > 0) {
             const sp = probs.filter(r => r.status_problema === 'saque_pendente').length
@@ -331,27 +339,72 @@ export default function MetaPage() {
             const parts = []
             if (sp) parts.push(`${sp} saque${sp > 1 ? 's' : ''} pendente${sp > 1 ? 's' : ''}`)
             if (cb) parts.push(`${cb} conta${cb > 1 ? 's' : ''} bloqueada${cb > 1 ? 's' : ''}`)
-            if (ba) parts.push(`${ba} banco${ba > 1 ? 's' : ''} em analise`)
-            insights.push({ text: `Pendencias operacionais — ${parts.join(', ')}`, type: 'warn', action: 'Resolver pendencias antes de continuar' })
+            if (ba) parts.push(`${ba} em analise bancaria`)
+            insights.push({ text: `${probs.length} pendencia${probs.length > 1 ? 's' : ''} ativa${probs.length > 1 ? 's' : ''}: ${parts.join(', ')}`, type: cb > 0 ? 'critical' : 'warn', action: 'Resolver pendencias antes de registrar novas remessas' })
           }
 
-          // D) Tendencia (ultimas 3 vs anteriores 3)
-          if (reversed.length >= 6) {
-            const last3 = reversed.slice(-3).reduce((a, r) => a + Number(r.resultado || 0), 0)
-            const prev3 = reversed.slice(-6, -3).reduce((a, r) => a + Number(r.resultado || 0), 0)
-            if (last3 > prev3 && last3 > 0) insights.push({ text: 'Tendencia de melhora — ultimas remessas com resultado crescente', type: 'good', action: 'Manter ritmo' })
-            else if (last3 < prev3 && last3 < 0) insights.push({ text: 'Tendencia de queda — resultados piorando nas ultimas remessas', type: 'critical', action: 'Considerar pausa' })
+          // D) Tendencia antecipada
+          if (ordered.length >= 4) {
+            const half = Math.floor(ordered.length / 2)
+            const first = ordered.slice(0, half).reduce((a, r) => a + Number(r.resultado || 0), 0) / half
+            const second = ordered.slice(half).reduce((a, r) => a + Number(r.resultado || 0), 0) / (ordered.length - half)
+            if (second > first && second > 0) insights.push({ text: `Tendencia de melhora: media subiu de R$ ${fmt(first)} para R$ ${fmt(second)} por remessa`, type: 'good', action: 'Manter ritmo — operacao em crescimento' })
+            else if (second < first && second < first * 0.5) insights.push({ text: `Tendencia de queda: media caiu de R$ ${fmt(first)} para R$ ${fmt(second)} por remessa`, type: 'critical', action: 'Considerar pausa ou reduzir volume' })
+            else if (second < first && streak === 0) insights.push({ text: `Leve queda detectada: media de R$ ${fmt(first)} caiu para R$ ${fmt(second)} por remessa`, type: 'warn', action: 'Observar proximas remessas com atencao' })
           }
 
-          if (insights.length === 0 && totais.liq >= 0) insights.push({ text: 'Operacao estavel — sem alertas detectados', type: 'good', action: 'Continuar operacao normalmente' })
+          if (insights.length === 0 && totais.liq >= 0) insights.push({ text: `Operacao estavel — R$ ${fmt(avgPerConta)}/conta em ${remessas.length} remessas`, type: 'good', action: 'Sem alertas. Continuar normalmente.' })
+
+          // Score (0-100)
+          let score = 50
+          if (avgPerConta > 5) score += 25; else if (avgPerConta > 2) score += 15; else if (avgPerConta > 0) score += 5; else if (avgPerConta > -1) score -= 10; else score -= 25
+          if (streak >= 3) score -= 20; else if (streak >= 2) score -= 10
+          if (probs.length > 0) score -= probs.length * 5
+          const pctDone = nContas > 0 ? (remessas.reduce((a, r) => a + Number(r.contas_remessa || 0), 0) / nContas) : 0
+          score += Math.round(pctDone * 15)
+          if (ordered.length >= 4) { const h = Math.floor(ordered.length / 2); const f = ordered.slice(0, h).reduce((a, r) => a + Number(r.resultado || 0), 0) / h; const s = ordered.slice(h).reduce((a, r) => a + Number(r.resultado || 0), 0) / (ordered.length - h); if (s > f) score += 10; else if (s < f * 0.5) score -= 10 }
+          score = Math.max(0, Math.min(100, score))
+          const scoreColor = score >= 70 ? 'var(--profit)' : score >= 40 ? 'var(--warn)' : 'var(--loss)'
+
+          // Previsao
+          const contasRestantes = nContas - remessas.reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+          const previsaoFinal = nContas > 0 ? avgPerConta * nContas : 0
 
           const cfg = { good: { bg: 'var(--profit-dim)', border: 'var(--profit-border)', color: 'var(--profit)', icon: 'M20 6L9 17l-5-5' }, warn: { bg: 'var(--warn-dim)', border: 'var(--warn-border)', color: 'var(--warn)', icon: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' }, critical: { bg: 'var(--loss-dim)', border: 'var(--loss-border)', color: 'var(--loss)', icon: 'M18 6L6 18M6 6l12 12' } }
 
           return (
             <div style={{ marginBottom: 24 }}>
+              {/* Score + Previsao row */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                {/* Score */}
+                <div style={{ padding: '18px 20px', borderRadius: 14, background: 'var(--surface)', border: `1px solid ${score >= 70 ? 'var(--profit-border)' : score >= 40 ? 'var(--warn-border)' : 'var(--loss-border)'}`, display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: 14, background: `${scoreColor}15`, border: `2px solid ${scoreColor}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 20, fontWeight: 800, color: scoreColor, fontFamily: 'var(--mono, monospace)' }}>{score}</span>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 3px' }}>Score da operacao</p>
+                    <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>{score >= 70 ? 'Operacao saudavel' : score >= 40 ? 'Requer atencao' : 'Situacao critica'}</p>
+                  </div>
+                </div>
+
+                {/* Previsao */}
+                <div style={{ padding: '18px 20px', borderRadius: 14, background: 'var(--surface)', border: `1px solid ${previsaoFinal >= 0 ? 'var(--profit-border)' : 'var(--loss-border)'}` }}>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Previsao da meta</p>
+                  <p style={{ fontSize: 20, fontWeight: 800, color: previsaoFinal >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '0 0 4px', fontFamily: 'var(--mono, monospace)' }}>
+                    {previsaoFinal >= 0 ? '+' : ''}R$ {fmt(previsaoFinal)}
+                  </p>
+                  <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>
+                    {nContas} contas × R$ {fmt(avgPerConta)}/conta
+                    {contasRestantes > 0 ? ` · ${contasRestantes} restantes` : ''}
+                  </p>
+                </div>
+              </div>
+
+              {/* Insights */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                 <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>Insights da operacao</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: '#a855f7', background: 'rgba(168,85,247,0.1)', padding: '2px 7px', borderRadius: 5 }}>AI</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {insights.map((ins, i) => {

@@ -47,9 +47,6 @@ function IconDown({ open }) {
 function IconTarget() {
   return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
 }
-function IconTrend() {
-  return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-}
 function IconBox() {
   return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
 }
@@ -59,14 +56,20 @@ function IconUsers() {
 function IconPercent() {
   return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
 }
-function IconDollar() {
-  return <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-}
-function IconFire() {
-  return <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.04-2-4-1.398 1-2 2-4 1z"/></svg>
-}
 function IconAward() {
   return <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+}
+function IconAlert() {
+  return <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+}
+function IconCheck() {
+  return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+}
+function IconLock() {
+  return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+}
+function IconPlay() {
+  return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
 }
 
 /* ── Fade up animation variant ── */
@@ -79,8 +82,7 @@ const fadeUp = {
 }
 
 /* ── KPI Card component ── */
-function KpiCard({ icon, label, value, sub, color, prefix, suffix, integer, index }) {
-  const dynamicColor = color || 'var(--t1)'
+function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
   return (
     <motion.div
       custom={index}
@@ -106,7 +108,7 @@ function KpiCard({ icon, label, value, sub, color, prefix, suffix, integer, inde
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           background: 'var(--raised)',
           border: '1px solid var(--b1)',
-          color: dynamicColor,
+          color: 'var(--t2)',
         }}>
           {icon}
         </div>
@@ -114,7 +116,7 @@ function KpiCard({ icon, label, value, sub, color, prefix, suffix, integer, inde
       </div>
       <p style={{
         fontFamily: 'var(--mono)', fontSize: 26, fontWeight: 800,
-        color: dynamicColor, margin: 0, lineHeight: 1, letterSpacing: '-0.02em'
+        color: 'var(--t2)', margin: 0, lineHeight: 1, letterSpacing: '-0.02em'
       }}>
         <CountUp value={Math.abs(Number(value || 0))} prefix={prefix || ''} suffix={suffix || ''} integer={!!integer} />
       </p>
@@ -123,138 +125,64 @@ function KpiCard({ icon, label, value, sub, color, prefix, suffix, integer, inde
   )
 }
 
-/* ── Tab button ── */
-function TabBtn({ label, active, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: '8px 20px',
-        fontSize: 13,
-        fontWeight: active ? 700 : 500,
-        color: active ? 'var(--t1)' : 'var(--t3)',
-        background: active ? 'var(--surface)' : 'transparent',
-        border: active ? '1px solid var(--b1)' : '1px solid transparent',
-        borderRadius: 10,
-        cursor: 'pointer',
-        transition: 'all 0.2s ease',
-      }}
-    >
-      {label}
-    </button>
-  )
-}
-
 /* ── Status badge ── */
 function StatusBadge({ status }) {
   const cfg = {
-    ativa: { bg: 'rgba(59,130,246,0.12)', color: '#3B82F6', border: 'rgba(59,130,246,0.25)', label: 'Ativa' },
+    ativa: { bg: 'rgba(34,197,94,0.12)', color: '#22C55E', border: 'rgba(34,197,94,0.25)', label: 'ATIVA' },
     finalizada: { bg: 'rgba(245,158,11,0.12)', color: '#F59E0B', border: 'rgba(245,158,11,0.25)', label: 'Finalizada' },
-    fechada: { bg: 'rgba(34,197,94,0.12)', color: '#22C55E', border: 'rgba(34,197,94,0.25)', label: 'Fechada' },
+    fechada: { bg: 'rgba(59,130,246,0.12)', color: '#3B82F6', border: 'rgba(59,130,246,0.25)', label: 'Fechada' },
   }
   const c = cfg[status] || cfg.ativa
   return (
     <span style={{
-      fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 6,
+      fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 6,
       background: c.bg, color: c.color, border: `1px solid ${c.border}`,
+      letterSpacing: '0.03em',
     }}>
       {c.label}
     </span>
   )
 }
 
-/* ── Meta card ── */
-function MetaCard({ meta, remessas, index, onClick }) {
-  const mRem = remessas.filter(r => r.meta_id === meta.id)
-  const lucro = mRem.reduce((a, r) => a + Number(r.lucro || 0), 0)
-  const prej = mRem.reduce((a, r) => a + Number(r.prejuizo || 0), 0)
-  const liq = lucro - prej
-  const pct = (lucro + prej) > 0 ? Math.round((lucro / (lucro + prej)) * 100) : 0
-  const fechada = meta.status_fechamento === 'fechada'
-  const finalizada = meta.status === 'finalizada'
-  const status = fechada ? 'fechada' : finalizada ? 'finalizada' : 'ativa'
-  const hasDeposit = meta.observacoes && meta.observacoes.toLowerCase().includes('redeposito')
-
+/* ── Rede badge ── */
+function RedeBadge({ rede }) {
+  if (!rede) return null
   return (
-    <motion.div
-      custom={index}
-      variants={fadeUp}
-      initial="hidden"
-      animate="visible"
-      whileHover={{ y: -2, borderColor: 'rgba(229,57,53,0.3)', transition: { duration: 0.15 } }}
-      onClick={onClick}
-      style={{
-        padding: '18px 20px',
-        borderRadius: 14,
-        background: 'var(--surface)',
-        border: '1px solid var(--b1)',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-        cursor: 'pointer',
-        transition: 'all 0.2s ease',
-      }}
-    >
-      {/* Top row: title + badges + result */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220 }}>
-            {meta.titulo}
-          </h3>
-          {meta.rede && (
-            <span style={{
-              fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 5,
-              background: 'rgba(229,57,53,0.1)', color: '#e53935',
-              border: '1px solid rgba(229,57,53,0.2)',
-            }}>
-              {meta.rede}
-            </span>
-          )}
-          <StatusBadge status={status} />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <span style={{
-            fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 700,
-            color: liq >= 0 ? 'var(--profit)' : 'var(--loss)',
-          }}>
-            {liq >= 0 ? '+' : '-'}R$ {fmt(Math.abs(liq))}
-          </span>
-          <IconChevron />
-        </div>
-      </div>
+    <span style={{
+      fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 5,
+      background: 'rgba(229,57,53,0.1)', color: '#e53935',
+      border: '1px solid rgba(229,57,53,0.2)',
+    }}>
+      {rede}
+    </span>
+  )
+}
 
-      {/* Info row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: mRem.length > 0 ? 12 : 0 }}>
-        {meta.plataforma && (
-          <span style={{
-            fontSize: 10, fontWeight: 500, padding: '2px 7px', borderRadius: 5,
-            background: 'var(--raised)', color: 'var(--t2)', border: '1px solid var(--b1)',
-          }}>
-            {meta.plataforma}
-          </span>
-        )}
-        <span style={{ fontSize: 11, color: 'var(--t3)' }}>
-          {meta.quantidade_contas || 0} contas · {mRem.length} remessas
-        </span>
-        {!hasDeposit && (
-          <span style={{ fontSize: 10, color: 'var(--t4)', fontStyle: 'italic' }}>sem redeposito</span>
-        )}
+/* ── Milestone badge ── */
+function MilestoneBadge({ label, achieved }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 8,
+      padding: '8px 12px', borderRadius: 8,
+      background: achieved ? 'rgba(34,197,94,0.08)' : 'var(--raised)',
+      border: `1px solid ${achieved ? 'rgba(34,197,94,0.2)' : 'var(--b1)'}`,
+      opacity: achieved ? 1 : 0.4,
+    }}>
+      <div style={{
+        width: 20, height: 20, borderRadius: 6,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: achieved ? 'rgba(34,197,94,0.15)' : 'transparent',
+        color: achieved ? '#22C55E' : 'var(--t4)',
+      }}>
+        {achieved ? <IconCheck /> : <IconLock />}
       </div>
-
-      {/* Progress bar */}
-      {mRem.length > 0 && (
-        <>
-          <div style={{ height: 3, borderRadius: 2, background: 'var(--b1)', overflow: 'hidden', marginBottom: 6 }}>
-            <div style={{
-              width: `${pct}%`, height: '100%', borderRadius: 2,
-              background: pct >= 50 ? 'var(--profit)' : 'var(--loss)',
-              transition: 'width 0.6s ease',
-            }} />
-          </div>
-          <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>
-            {pct}% acerto · L: R$ {fmt(lucro)} · P: R$ {fmt(prej)}
-          </p>
-        </>
-      )}
-    </motion.div>
+      <span style={{
+        fontSize: 12, fontWeight: achieved ? 600 : 500,
+        color: achieved ? 'var(--t1)' : 'var(--t4)',
+      }}>
+        {label}
+      </span>
+    </div>
   )
 }
 
@@ -277,7 +205,6 @@ export default function OperatorPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
-  const [activeTab, setActiveTab] = useState('metas')
   const redeRef = useRef(null)
 
   const REDES = ['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
@@ -311,7 +238,7 @@ export default function OperatorPage() {
     const metaIds = activeMetas.map(x => x.id)
     let allRem = []
     if (metaIds.length > 0) {
-      const { data: r } = await supabase.from('remessas').select('lucro,prejuizo,resultado,meta_id,created_at').in('meta_id', metaIds).order('created_at', { ascending: false })
+      const { data: r } = await supabase.from('remessas').select('id,meta_id,deposito,saque,status_problema,created_at').in('meta_id', metaIds).order('created_at', { ascending: false })
       allRem = r || []
     }
     setRemessas(allRem)
@@ -344,67 +271,73 @@ export default function OperatorPage() {
 
   /* ── Computed stats ── */
   const stats = useMemo(() => {
-    const lucro = remessas.reduce((a, r) => a + Number(r.lucro || 0), 0)
-    const prej = remessas.reduce((a, r) => a + Number(r.prejuizo || 0), 0)
-    const today = new Date().toISOString().slice(0, 10)
-    const remHoje = remessas.filter(r => (r.created_at || '').slice(0, 10) === today)
-    const lucroHoje = remHoje.reduce((a, r) => {
-      const res = r.resultado != null ? Number(r.resultado) : (Number(r.lucro || 0) - Number(r.prejuizo || 0))
-      return a + res
-    }, 0)
-    const ativas = metas.filter(m => (m.status || 'ativa') === 'ativa').length
+    const ativas = metas.filter(m => (m.status || 'ativa') === 'ativa' && m.status_fechamento !== 'fechada').length
     const fechadas = metas.filter(m => m.status_fechamento === 'fechada')
-    const positivas = remessas.filter(r => {
-      const res = r.resultado != null ? Number(r.resultado) : (Number(r.lucro || 0) - Number(r.prejuizo || 0))
-      return res > 0
-    }).length
-    const taxa = remessas.length > 0 ? Math.round((positivas / remessas.length) * 100) : 0
-    const totalDepositantes = fechadas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    const totalDepositantes = metas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    const taxaConclusao = metas.length > 0 ? Math.round((fechadas.length / metas.length) * 100) : 0
     return {
-      lucro, prej, liq: lucro - prej,
-      lucroHoje, ativas, taxa,
-      total: metas.length, nRem: remessas.length,
+      ativas,
+      total: metas.length,
+      nRem: remessas.length,
       fechadas: fechadas.length,
       totalDepositantes,
+      taxaConclusao,
     }
   }, [metas, remessas])
 
-  /* ── Performance stats ── */
+  /* ── Performance stats for sidebar ── */
   const perfStats = useMemo(() => {
     const fechadas = metas.filter(m => m.status_fechamento === 'fechada')
-    if (fechadas.length === 0) return null
-
-    // compute lucro per meta
-    const metaLucros = fechadas.map(m => {
-      const mRem = remessas.filter(r => r.meta_id === m.id)
-      const lucro = mRem.reduce((a, r) => a + Number(r.lucro || 0), 0)
-      const prej = mRem.reduce((a, r) => a + Number(r.prejuizo || 0), 0)
-      return { ...m, lucroFinal: m.lucro_final != null ? Number(m.lucro_final) : lucro - prej }
-    })
-
-    const totalLucro = metaLucros.reduce((a, m) => a + m.lucroFinal, 0)
-    const mediaPorMeta = totalLucro / metaLucros.length
-    const totalContas = fechadas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
-    const mediaPorConta = totalContas > 0 ? totalLucro / totalContas : 0
-    const sorted = [...metaLucros].sort((a, b) => b.lucroFinal - a.lucroFinal)
-    const melhor = sorted[0]
-    const pior = sorted[sorted.length - 1]
-
-    // streak - consecutive profitable from most recent
-    const byDate = [...metaLucros].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-    let streak = 0
-    for (const m of byDate) {
-      if (m.lucroFinal > 0) streak++
-      else break
+    const totalDeps = metas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    const mediaDeps = metas.length > 0 ? Math.round(totalDeps / metas.length) : 0
+    const mediaRem = metas.length > 0 ? Math.round(remessas.length / metas.length) : 0
+    return {
+      fechadasCount: fechadas.length,
+      totalDeps,
+      mediaDeps,
+      mediaRem,
     }
-
-    // last 10
-    const last10 = byDate.slice(0, 10)
-
-    return { totalLucro, mediaPorMeta, mediaPorConta, melhor, pior, streak, last10 }
   }, [metas, remessas])
 
-  const hojeColor = stats.lucroHoje >= 0 ? 'var(--profit)' : 'var(--loss)'
+  /* ── Alertas: remessas with status_problema !== 'normal' ── */
+  const alertas = useMemo(() => {
+    const probs = remessas.filter(r => r.status_problema && r.status_problema !== 'normal')
+    const sp = probs.filter(r => r.status_problema === 'saque_pendente').length
+    const cb = probs.filter(r => r.status_problema === 'conta_bloqueada').length
+    const ba = probs.filter(r => r.status_problema === 'banco_analise').length
+    return { total: probs.length, sp, cb, ba }
+  }, [remessas])
+
+  /* ── Milestones ── */
+  const milestones = useMemo(() => {
+    const closedCount = metas.filter(m => m.status_fechamento === 'fechada').length
+    const totalDeps = metas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    const anyMeta = metas.length > 0
+    return [
+      { label: 'Primeira meta', achieved: anyMeta },
+      { label: '10 metas fechadas', achieved: closedCount >= 10 },
+      { label: '50 depositantes', achieved: totalDeps >= 50 },
+      { label: '100 depositantes', achieved: totalDeps >= 100 },
+      { label: '500 depositantes', achieved: totalDeps >= 500 },
+    ]
+  }, [metas])
+
+  /* ── Active meta ── */
+  const activeMeta = useMemo(() => {
+    return metas.find(m => (m.status || 'ativa') === 'ativa' && m.status_fechamento !== 'fechada') || null
+  }, [metas])
+
+  /* ── Helper: get remessas for a meta ── */
+  function getMetaRemessas(metaId) {
+    return remessas.filter(r => r.meta_id === metaId)
+  }
+
+  /* ── Helper: meta status string ── */
+  function getMetaStatus(meta) {
+    if (meta.status_fechamento === 'fechada') return 'fechada'
+    if (meta.status === 'finalizada') return 'finalizada'
+    return 'ativa'
+  }
 
   /* ═══════ RENDER ═══════ */
   return (
@@ -454,24 +387,15 @@ export default function OperatorPage() {
             </div>
           </div>
 
-          {/* ── KPI CARDS ── */}
+          {/* ── KPI CARDS (4 cards, neutral) ── */}
           <div className="nxc-kpi-grid" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(5, 1fr)',
+            gridTemplateColumns: 'repeat(4, 1fr)',
             gap: 14,
             marginBottom: 24,
           }}>
             <KpiCard
               index={0}
-              icon={<IconTrend />}
-              label="Resultado hoje"
-              value={stats.lucroHoje}
-              prefix={stats.lucroHoje >= 0 ? '+R$ ' : '-R$ '}
-              color={hojeColor}
-              sub={stats.lucroHoje >= 0 ? 'Lucro do dia' : 'Prejuizo do dia'}
-            />
-            <KpiCard
-              index={1}
               icon={<IconTarget />}
               label="Metas ativas"
               value={stats.ativas}
@@ -479,7 +403,7 @@ export default function OperatorPage() {
               sub={`${stats.total} total`}
             />
             <KpiCard
-              index={2}
+              index={1}
               icon={<IconBox />}
               label="Total remessas"
               value={stats.nRem}
@@ -487,29 +411,29 @@ export default function OperatorPage() {
               sub="Registradas"
             />
             <KpiCard
-              index={3}
+              index={2}
               icon={<IconUsers />}
               label="Total depositantes"
               value={stats.totalDepositantes}
               integer
-              sub={`${stats.fechadas} metas fechadas`}
+              sub={`Soma de contas de todas as metas`}
             />
             <KpiCard
-              index={4}
+              index={3}
               icon={<IconPercent />}
-              label="Taxa de acerto"
-              value={stats.taxa}
+              label="Taxa de conclusao"
+              value={stats.taxaConclusao}
               suffix="%"
               integer
-              sub={`${stats.nRem} remessas analisadas`}
+              sub={`${stats.fechadas} de ${stats.total} metas fechadas`}
             />
           </div>
 
-          {/* ── RESPONSIVE: add style tag for grid breakpoints ── */}
+          {/* ── RESPONSIVE STYLES ── */}
           <style>{`
             @media (max-width: 1100px) {
-              .nxc-kpi-grid { grid-template-columns: repeat(3, 1fr) !important; }
-              .nxc-main-grid { grid-template-columns: 1fr !important; }
+              .nxc-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+              .nxc-main-layout { grid-template-columns: 1fr !important; }
             }
             @media (max-width: 700px) {
               .nxc-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -518,6 +442,9 @@ export default function OperatorPage() {
             }
             @media (max-width: 480px) {
               .nxc-kpi-grid { grid-template-columns: 1fr !important; }
+            }
+            @keyframes spin {
+              to { transform: rotate(360deg); }
             }
           `}</style>
 
@@ -705,337 +632,358 @@ export default function OperatorPage() {
             )}
           </AnimatePresence>
 
-          {/* ── MAIN GRID: content + sidebar ── */}
-          <div className="nxc-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20 }}>
+          {/* ── MAIN TWO-COLUMN LAYOUT ── */}
+          <div className="nxc-main-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20 }}>
 
-            {/* ── LEFT: Tabs content ── */}
+            {/* ════════════════════════════════════════════
+                LEFT COLUMN: Metas
+               ════════════════════════════════════════════ */}
             <div>
-              {/* Tab bar */}
-              <div style={{ display: 'flex', gap: 4, marginBottom: 20, padding: 4, background: 'var(--raised)', borderRadius: 12, width: 'fit-content' }}>
-                <TabBtn label="Metas" active={activeTab === 'metas'} onClick={() => setActiveTab('metas')} />
-                <TabBtn label="Performance" active={activeTab === 'performance'} onClick={() => setActiveTab('performance')} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', margin: '0 0 2px' }}>Suas metas</h2>
+                  <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Acompanhe o progresso das suas operacoes</p>
+                </div>
+                <span style={{ fontSize: 11, color: 'var(--t3)', fontFamily: 'var(--mono)' }}>{stats.ativas} ativas</span>
               </div>
 
-              {/* ── TAB: METAS ── */}
-              {activeTab === 'metas' && (
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                    <div>
-                      <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', margin: '0 0 2px' }}>Centro de metas</h2>
-                      <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Performance individual em tempo real</p>
-                    </div>
-                    <span style={{ fontSize: 11, color: 'var(--t3)', fontFamily: 'var(--mono)' }}>{stats.ativas} ativas</span>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {loading ? (
-                      <div style={{ padding: 60, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                        <div style={{ width: 20, height: 20, border: '2px solid var(--b2)', borderTopColor: '#e53935', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
-                        <p style={{ fontSize: 12, color: 'var(--t3)' }}>Carregando...</p>
-                      </div>
-                    ) : metas.length === 0 ? (
-                      <div style={{
-                        border: '1px dashed var(--b2)', borderRadius: 16,
-                        padding: 60, textAlign: 'center',
-                      }}>
-                        <div style={{
-                          width: 48, height: 48, borderRadius: 12,
-                          background: 'var(--raised)', display: 'flex',
-                          alignItems: 'center', justifyContent: 'center',
-                          margin: '0 auto 16px',
-                        }}>
-                          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                        </div>
-                        <p style={{ color: 'var(--t2)', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Nenhuma meta criada</p>
-                        <p style={{ fontSize: 12, color: 'var(--t3)', marginBottom: 20 }}>Inicie sua primeira operacao agora.</p>
-                        <button
-                          onClick={() => setShowForm(true)}
-                          style={{
-                            padding: '10px 24px', fontSize: 13, fontWeight: 700,
-                            color: '#fff', background: '#e53935', border: 'none',
-                            borderRadius: 10, cursor: 'pointer',
-                            boxShadow: '0 2px 12px rgba(229,57,53,0.25)',
-                          }}
-                        >
-                          + Criar primeira meta
-                        </button>
-                      </div>
-                    ) : metas.map((m, i) => (
-                      <MetaCard
-                        key={m.id}
-                        meta={m}
-                        remessas={remessas}
-                        index={i}
-                        onClick={() => router.push(`/meta/${m.id}`)}
-                      />
-                    ))}
-                  </div>
+              {loading ? (
+                <div style={{ padding: 60, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 20, height: 20, border: '2px solid var(--b2)', borderTopColor: '#e53935', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
+                  <p style={{ fontSize: 12, color: 'var(--t3)' }}>Carregando...</p>
                 </div>
-              )}
-
-              {/* ── TAB: PERFORMANCE ── */}
-              {activeTab === 'performance' && (
-                <div>
-                  <div style={{ marginBottom: 20 }}>
-                    <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', margin: '0 0 2px' }}>Performance pessoal</h2>
-                    <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Analise detalhada das suas metas fechadas</p>
+              ) : metas.length === 0 ? (
+                <div style={{
+                  border: '1px dashed var(--b2)', borderRadius: 16,
+                  padding: 60, textAlign: 'center',
+                }}>
+                  <div style={{
+                    width: 48, height: 48, borderRadius: 12,
+                    background: 'var(--raised)', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center',
+                    margin: '0 auto 16px',
+                  }}>
+                    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                   </div>
+                  <p style={{ color: 'var(--t2)', fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Nenhuma meta criada</p>
+                  <p style={{ fontSize: 12, color: 'var(--t3)', marginBottom: 20 }}>Inicie sua primeira operacao agora.</p>
+                  <button
+                    onClick={() => setShowForm(true)}
+                    style={{
+                      padding: '10px 24px', fontSize: 13, fontWeight: 700,
+                      color: '#fff', background: '#e53935', border: 'none',
+                      borderRadius: 10, cursor: 'pointer',
+                      boxShadow: '0 2px 12px rgba(229,57,53,0.25)',
+                    }}
+                  >
+                    + Criar primeira meta
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-                  {!perfStats ? (
-                    <div style={{
-                      padding: 60, textAlign: 'center', borderRadius: 14,
-                      background: 'var(--surface)', border: '1px solid var(--b1)',
-                    }}>
-                      <p style={{ color: 'var(--t3)', fontSize: 13 }}>Nenhuma meta fechada ainda. Feche metas para ver sua performance.</p>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Big stats row */}
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 20 }}>
-                        {/* Lucro total */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.35, delay: 0 }}
-                          style={{
-                            padding: '24px 22px', borderRadius: 14,
-                            background: 'var(--surface)', border: '1px solid var(--b1)',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                            <div style={{ color: 'var(--profit)' }}><IconDollar /></div>
-                            <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>Seu lucro total</span>
-                          </div>
-                          <p style={{
-                            fontFamily: 'var(--mono)', fontSize: 28, fontWeight: 800,
-                            color: perfStats.totalLucro >= 0 ? 'var(--profit)' : 'var(--loss)',
-                            margin: 0, lineHeight: 1,
-                          }}>
-                            <CountUp
-                              value={Math.abs(perfStats.totalLucro)}
-                              prefix={perfStats.totalLucro >= 0 ? 'R$ ' : '-R$ '}
-                            />
-                          </p>
-                        </motion.div>
-
-                        {/* Lucro medio por meta */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.35, delay: 0.06 }}
-                          style={{
-                            padding: '24px 22px', borderRadius: 14,
-                            background: 'var(--surface)', border: '1px solid var(--b1)',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                            <div style={{ color: 'var(--t2)' }}><IconTarget /></div>
-                            <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>Lucro medio por meta</span>
-                          </div>
-                          <p style={{
-                            fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 700,
-                            color: perfStats.mediaPorMeta >= 0 ? 'var(--profit)' : 'var(--loss)',
-                            margin: 0, lineHeight: 1,
-                          }}>
-                            <CountUp
-                              value={Math.abs(perfStats.mediaPorMeta)}
-                              prefix={perfStats.mediaPorMeta >= 0 ? 'R$ ' : '-R$ '}
-                            />
-                          </p>
-                        </motion.div>
-
-                        {/* Lucro medio por conta */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.35, delay: 0.12 }}
-                          style={{
-                            padding: '24px 22px', borderRadius: 14,
-                            background: 'var(--surface)', border: '1px solid var(--b1)',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                            <div style={{ color: 'var(--t2)' }}><IconUsers /></div>
-                            <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>Lucro medio por conta</span>
-                          </div>
-                          <p style={{
-                            fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 700,
-                            color: perfStats.mediaPorConta >= 0 ? 'var(--profit)' : 'var(--loss)',
-                            margin: 0, lineHeight: 1,
-                          }}>
-                            <CountUp
-                              value={Math.abs(perfStats.mediaPorConta)}
-                              prefix={perfStats.mediaPorConta >= 0 ? 'R$ ' : '-R$ '}
-                            />
-                          </p>
-                        </motion.div>
-                      </div>
-
-                      {/* Melhor / Pior / Streak row */}
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 20 }}>
-                        {/* Melhor meta */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.35, delay: 0.18 }}
-                          style={{
-                            padding: '20px 22px', borderRadius: 14,
-                            background: 'var(--surface)', border: '1px solid var(--b1)',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                            <div style={{ color: 'var(--profit)' }}><IconAward /></div>
-                            <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>Melhor meta</span>
-                          </div>
-                          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', margin: '0 0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {perfStats.melhor?.titulo || '-'}
-                          </p>
-                          <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 700, color: 'var(--profit)', margin: 0 }}>
-                            +R$ {fmt(Math.abs(perfStats.melhor?.lucroFinal || 0))}
-                          </p>
-                        </motion.div>
-
-                        {/* Pior meta */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.35, delay: 0.24 }}
-                          style={{
-                            padding: '20px 22px', borderRadius: 14,
-                            background: 'var(--surface)', border: '1px solid var(--b1)',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                            <div style={{ color: 'var(--loss)' }}><IconAward /></div>
-                            <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>Pior meta</span>
-                          </div>
-                          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', margin: '0 0 4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {perfStats.pior?.titulo || '-'}
-                          </p>
-                          <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 700, color: perfStats.pior?.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)', margin: 0 }}>
-                            {perfStats.pior?.lucroFinal >= 0 ? '+' : '-'}R$ {fmt(Math.abs(perfStats.pior?.lucroFinal || 0))}
-                          </p>
-                        </motion.div>
-
-                        {/* Streak */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.35, delay: 0.3 }}
-                          style={{
-                            padding: '20px 22px', borderRadius: 14,
-                            background: 'var(--surface)', border: '1px solid var(--b1)',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                            <div style={{ color: '#F59E0B' }}><IconFire /></div>
-                            <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>Sequencia lucrativa</span>
-                          </div>
-                          <p style={{ fontFamily: 'var(--mono)', fontSize: 28, fontWeight: 800, color: perfStats.streak > 0 ? '#F59E0B' : 'var(--t3)', margin: '0 0 4px', lineHeight: 1 }}>
-                            {perfStats.streak}
-                          </p>
-                          <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>
-                            {perfStats.streak === 1 ? 'meta consecutiva no lucro' : 'metas consecutivas no lucro'}
-                          </p>
-                        </motion.div>
-                      </div>
-
-                      {/* Evolution: last 10 */}
+                  {/* ── META ATIVA EM DESTAQUE ── */}
+                  {activeMeta && (() => {
+                    const mRem = getMetaRemessas(activeMeta.id)
+                    const target = Number(activeMeta.quantidade_contas || 0)
+                    const progress = target > 0 ? Math.min(Math.round((mRem.length / target) * 100), 100) : 0
+                    const totalDep = mRem.reduce((a, r) => a + Number(r.deposito || 0), 0)
+                    const totalSaq = mRem.reduce((a, r) => a + Number(r.saque || 0), 0)
+                    return (
                       <motion.div
-                        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.35, delay: 0.36 }}
+                        custom={0}
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate="visible"
                         style={{
-                          padding: '22px 24px', borderRadius: 14,
-                          background: 'var(--surface)', border: '1px solid var(--b1)',
+                          padding: '24px 28px',
+                          borderRadius: 16,
+                          background: 'var(--surface)',
+                          border: '1px solid rgba(34,197,94,0.25)',
+                          boxShadow: '0 4px 20px rgba(0,0,0,0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
                         }}
                       >
-                        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: '0 0 16px' }}>Evolucao — ultimas {perfStats.last10.length} metas fechadas</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                          {perfStats.last10.map((m, i) => (
-                            <div
-                              key={m.id}
-                              style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                padding: '10px 0',
-                                borderBottom: i < perfStats.last10.length - 1 ? '1px solid var(--b1)' : 'none',
-                              }}
-                            >
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                                <span style={{
-                                  fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--t4)',
-                                  width: 20, textAlign: 'right', flexShrink: 0,
-                                }}>
-                                  {i + 1}.
-                                </span>
-                                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                  {m.titulo}
-                                </span>
-                                {m.rede && (
-                                  <span style={{ fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4, background: 'var(--raised)', color: 'var(--t3)', flexShrink: 0 }}>
-                                    {m.rede}
-                                  </span>
-                                )}
-                              </div>
-                              <span style={{
-                                fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, flexShrink: 0, marginLeft: 12,
-                                color: m.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)',
-                              }}>
-                                {m.lucroFinal >= 0 ? '+' : '-'}R$ {fmt(Math.abs(m.lucroFinal))}
-                              </span>
-                            </div>
-                          ))}
+                        {/* Green accent line at top */}
+                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #22C55E, rgba(34,197,94,0.3))' }} />
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                            <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>
+                              {activeMeta.titulo}
+                            </h3>
+                            <RedeBadge rede={activeMeta.rede} />
+                            <StatusBadge status="ativa" />
+                          </div>
                         </div>
+
+                        {/* Progress bar */}
+                        <div style={{ marginBottom: 16 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                            <span style={{ fontSize: 12, color: 'var(--t3)' }}>Progresso</span>
+                            <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>
+                              {mRem.length}/{target} contas
+                            </span>
+                          </div>
+                          <div style={{ height: 6, borderRadius: 3, background: 'var(--b1)', overflow: 'hidden' }}>
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${progress}%` }}
+                              transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
+                              style={{
+                                height: '100%', borderRadius: 3,
+                                background: 'linear-gradient(90deg, #22C55E, #16A34A)',
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Stats row */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 18 }}>
+                          <div style={{ textAlign: 'center', padding: '10px 8px', borderRadius: 10, background: 'var(--raised)' }}>
+                            <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: 'var(--t2)', margin: '0 0 2px' }}>{mRem.length}</p>
+                            <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>Remessas</p>
+                          </div>
+                          <div style={{ textAlign: 'center', padding: '10px 8px', borderRadius: 10, background: 'var(--raised)' }}>
+                            <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: '0 0 2px' }}>R$ {fmt(totalDep)}</p>
+                            <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>Deposito</p>
+                          </div>
+                          <div style={{ textAlign: 'center', padding: '10px 8px', borderRadius: 10, background: 'var(--raised)' }}>
+                            <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: 'var(--t2)', margin: '0 0 2px' }}>R$ {fmt(totalSaq)}</p>
+                            <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>Saque</p>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => router.push(`/meta/${activeMeta.id}`)}
+                          style={{
+                            width: '100%', padding: '12px 24px',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                            fontSize: 14, fontWeight: 700, color: '#fff',
+                            background: '#22C55E', border: 'none', borderRadius: 11,
+                            cursor: 'pointer', boxShadow: '0 2px 12px rgba(34,197,94,0.25)',
+                            transition: 'all 0.2s ease',
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#16A34A' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#22C55E' }}
+                        >
+                          <IconPlay /> Continuar operando
+                        </button>
                       </motion.div>
-                    </>
-                  )}
+                    )
+                  })()}
+
+                  {/* ── LISTA DE METAS ── */}
+                  <div style={{ marginTop: activeMeta ? 8 : 0 }}>
+                    {activeMeta && (
+                      <h3 style={{ fontSize: 13, fontWeight: 600, color: 'var(--t3)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Todas as metas</h3>
+                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {metas.map((meta, i) => {
+                        const mRem = getMetaRemessas(meta.id)
+                        const status = getMetaStatus(meta)
+                        const totalDep = mRem.reduce((a, r) => a + Number(r.deposito || 0), 0)
+                        const totalSaq = mRem.reduce((a, r) => a + Number(r.saque || 0), 0)
+
+                        return (
+                          <motion.div
+                            key={meta.id}
+                            custom={i + (activeMeta ? 1 : 0)}
+                            variants={fadeUp}
+                            initial="hidden"
+                            animate="visible"
+                            whileHover={{ y: -2, borderColor: 'rgba(229,57,53,0.3)', transition: { duration: 0.15 } }}
+                            onClick={() => router.push(`/meta/${meta.id}`)}
+                            style={{
+                              padding: '16px 20px',
+                              borderRadius: 14,
+                              background: 'var(--surface)',
+                              border: '1px solid var(--b1)',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            {/* Top row */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>
+                                <h4 style={{
+                                  fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0,
+                                  letterSpacing: '-0.01em', whiteSpace: 'nowrap',
+                                  overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220,
+                                }}>
+                                  {meta.titulo}
+                                </h4>
+                                <RedeBadge rede={meta.rede} />
+                                <StatusBadge status={status} />
+                              </div>
+                              <IconChevron />
+                            </div>
+
+                            {/* Info row */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                              {meta.plataforma && (
+                                <span style={{
+                                  fontSize: 10, fontWeight: 500, padding: '2px 7px', borderRadius: 5,
+                                  background: 'var(--raised)', color: 'var(--t2)', border: '1px solid var(--b1)',
+                                }}>
+                                  {meta.plataforma}
+                                </span>
+                              )}
+                              <span style={{ fontSize: 11, color: 'var(--t3)' }}>
+                                {meta.quantidade_contas || 0} contas
+                              </span>
+                              <span style={{ fontSize: 11, color: 'var(--t4)' }}>
+                                {mRem.length} remessas
+                              </span>
+                              {mRem.length > 0 && (
+                                <>
+                                  <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--t3)' }}>
+                                    D: R$ {fmt(totalDep)}
+                                  </span>
+                                  <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--t3)' }}>
+                                    S: R$ {fmt(totalSaq)}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* ── RIGHT SIDEBAR ── */}
+            {/* ════════════════════════════════════════════
+                RIGHT SIDEBAR
+               ════════════════════════════════════════════ */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-              {/* Resultado acumulado */}
+              {/* ── Stats pessoais ── */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.1 }}
                 style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
               >
-                <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 16px' }}>Resultado acumulado</h3>
-                {[
-                  { l: 'Lucro bruto', v: `R$ ${fmt(stats.lucro)}`, c: 'var(--profit)' },
-                  { l: 'Prejuizo bruto', v: `R$ ${fmt(stats.prej)}`, c: 'var(--loss)' },
-                  { l: 'Resultado liquido', v: `${stats.liq >= 0 ? '+' : '-'}R$ ${fmt(Math.abs(stats.liq))}`, c: stats.liq >= 0 ? 'var(--profit)' : 'var(--loss)' },
-                ].map((s, i) => (
-                  <div key={i} style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    padding: '10px 0', borderBottom: i < 2 ? '1px solid var(--b1)' : 'none',
-                  }}>
-                    <span style={{ fontSize: 12, color: 'var(--t3)' }}>{s.l}</span>
-                    <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: s.c }}>{s.v}</span>
-                  </div>
-                ))}
-              </motion.div>
-
-              {/* Metas mini stats */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, delay: 0.16 }}
-                style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
-              >
-                <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px' }}>Metas</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 16px' }}>Stats pessoais</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                   {[
-                    { l: 'Total', v: stats.total },
-                    { l: 'Ativas', v: stats.ativas },
-                    { l: 'Fechadas', v: stats.fechadas },
-                  ].map(({ l, v }) => (
-                    <div key={l} style={{ textAlign: 'center', padding: '12px 8px', borderRadius: 10, background: 'var(--raised)' }}>
-                      <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: 'var(--t1)', margin: '0 0 2px' }}>{v}</p>
-                      <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>{l}</p>
+                    { label: 'Metas fechadas', value: String(perfStats.fechadasCount) },
+                    { label: 'Total de depositantes', value: String(perfStats.totalDeps) },
+                    { label: 'Media depositantes/meta', value: String(perfStats.mediaDeps) },
+                    { label: 'Media remessas/meta', value: String(perfStats.mediaRem) },
+                  ].map((item, i) => (
+                    <div key={i} style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '10px 0',
+                      borderBottom: i < 3 ? '1px solid var(--b1)' : 'none',
+                    }}>
+                      <span style={{ fontSize: 12, color: 'var(--t3)' }}>{item.label}</span>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: 'var(--t2)' }}>{item.value}</span>
                     </div>
                   ))}
                 </div>
               </motion.div>
 
-              {/* Acoes rapidas */}
+              {/* ── Ranking pessoal ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.16 }}
+                style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                  <div style={{ color: '#F59E0B' }}><IconAward /></div>
+                  <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Ranking pessoal</h3>
+                </div>
+                <div style={{
+                  padding: '14px 16px', borderRadius: 10, background: 'var(--raised)',
+                  textAlign: 'center',
+                }}>
+                  <p style={{ fontFamily: 'var(--mono)', fontSize: 28, fontWeight: 800, color: '#F59E0B', margin: '0 0 4px', lineHeight: 1 }}>
+                    {perfStats.totalDeps}
+                  </p>
+                  <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>depositantes totais</p>
+                </div>
+              </motion.div>
+
+              {/* ── Conquistas / Marcos ── */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.22 }}
+                style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
+              >
+                <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px' }}>Conquistas</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {milestones.map((m, i) => (
+                    <MilestoneBadge key={i} label={m.label} achieved={m.achieved} />
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* ── Alertas ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.28 }}
+                style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                  <div style={{ color: alertas.total > 0 ? '#F59E0B' : 'var(--t3)' }}><IconAlert /></div>
+                  <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Alertas</h3>
+                  {alertas.total > 0 && (
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10,
+                      background: 'rgba(245,158,11,0.15)', color: '#F59E0B',
+                      border: '1px solid rgba(245,158,11,0.25)',
+                    }}>
+                      {alertas.total}
+                    </span>
+                  )}
+                </div>
+                {alertas.total === 0 ? (
+                  <p style={{ fontSize: 12, color: 'var(--t4)', margin: 0 }}>Nenhum alerta no momento.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {alertas.sp > 0 && (
+                      <div style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '8px 12px', borderRadius: 8,
+                        background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)',
+                      }}>
+                        <span style={{ fontSize: 12, color: '#F59E0B', fontWeight: 600 }}>Saque pendente</span>
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: '#F59E0B' }}>{alertas.sp}</span>
+                      </div>
+                    )}
+                    {alertas.cb > 0 && (
+                      <div style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '8px 12px', borderRadius: 8,
+                        background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+                      }}>
+                        <span style={{ fontSize: 12, color: '#EF4444', fontWeight: 600 }}>Conta bloqueada</span>
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: '#EF4444' }}>{alertas.cb}</span>
+                      </div>
+                    )}
+                    {alertas.ba > 0 && (
+                      <div style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '8px 12px', borderRadius: 8,
+                        background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)',
+                      }}>
+                        <span style={{ fontSize: 12, color: '#3B82F6', fontWeight: 600 }}>Banco em analise</span>
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: '#3B82F6' }}>{alertas.ba}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+
+              {/* ── Acoes rapidas ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.34 }}
                 style={{ padding: 22, borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}
               >
                 <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px' }}>Acoes rapidas</h3>
@@ -1053,9 +1001,9 @@ export default function OperatorPage() {
                   >
                     <IconPlus /> Iniciar nova meta
                   </button>
-                  {metas.find(m => (m.status || 'ativa') === 'ativa') && (
+                  {activeMeta && (
                     <button
-                      onClick={() => router.push(`/meta/${metas.find(m => (m.status || 'ativa') === 'ativa').id}`)}
+                      onClick={() => router.push(`/meta/${activeMeta.id}`)}
                       style={{
                         width: '100%', padding: '10px 16px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
@@ -1065,22 +1013,15 @@ export default function OperatorPage() {
                         transition: 'all 0.2s ease',
                       }}
                     >
-                      Abrir meta ativa
+                      <IconPlay /> Abrir meta ativa
                     </button>
                   )}
                 </div>
               </motion.div>
+
             </div>
           </div>
         </div>
-
-        {/* Spinner keyframes */}
-        <style>{`
-          @keyframes spin {
-            to { transform: rotate(360deg); }
-          }
-        `}</style>
-
       </AppLayout>
     </main>
   )

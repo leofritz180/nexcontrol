@@ -1003,53 +1003,168 @@ export default function AdminPage() {
                   ))}
                 </div>
 
+                {/* Modal Modo Operacao Admin */}
                 <AnimatePresence>
                 {myShowForm && (
                   <motion.div
-                    initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, ease }}
-                    className="card card-primary" style={{ padding:24,marginBottom:20,overflow:'hidden' }}>
-                    <h3 className="t-h3" style={{fontSize:14,marginBottom:14}}>Criar minha meta</h3>
-                    <form onSubmit={createMyMeta} className="g-form" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    style={{ position:'fixed', inset:0, zIndex:9000, background:'rgba(2,4,8,0.85)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}
+                    onClick={e => { if (e.target === e.currentTarget) setMyShowForm(false) }}
+                  >
+                  <motion.div
+                    initial={{ opacity:0, scale:0.95, y:20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.95, y:20 }}
+                    transition={{ duration:0.35, ease }}
+                    onClick={e => e.stopPropagation()}
+                    style={{ width:'100%', maxWidth:560, maxHeight:'calc(100dvh - 40px)', overflowY:'auto', padding:32, borderRadius:20, background:'linear-gradient(160deg, #10141e, #080b14)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:'0 40px 100px rgba(0,0,0,0.7)' }}
+                  >
+                    {/* Header */}
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24 }}>
                       <div>
-                        <label className="t-label" style={{display:'block',marginBottom:6}}>Plataforma *</label>
-                        <input className="input" value={myPlat} onChange={e=>setMyPlat(e.target.value)} placeholder="Nome da plataforma" required/>
+                        <h2 style={{ fontSize:20, fontWeight:800, color:'var(--t1)', margin:'0 0 4px', letterSpacing:'-0.02em' }}>Nova operacao</h2>
+                        <p style={{ fontSize:12, color:'var(--t3)', margin:0 }}>Configure e inicie sua meta</p>
                       </div>
+                      <button onClick={() => setMyShowForm(false)} style={{ width:34, height:34, borderRadius:10, border:'1px solid var(--b2)', background:'transparent', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'var(--t3)' }}>
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </button>
+                    </div>
+
+                    <form onSubmit={createMyMeta} style={{ display:'flex', flexDirection:'column', gap:16 }}>
+                      {/* Plataforma + Rede */}
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                        <div>
+                          <label className="t-label" style={{display:'block',marginBottom:6}}>Plataforma *</label>
+                          <input className="input" value={myPlat} onChange={e=>setMyPlat(e.target.value)} placeholder="Nome da plataforma" required/>
+                        </div>
+                        <div>
+                          <label className="t-label" style={{display:'block',marginBottom:6}}>Rede *</label>
+                          <select className="input" value={myRede} onChange={e=>setMyRede(e.target.value)} required>
+                            <option value="">Selecione</option>
+                            {REDES.map(r=><option key={r} value={r}>{r}</option>)}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Titulo + Contas */}
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 120px', gap:12 }}>
+                        <div>
+                          <label className="t-label" style={{display:'block',marginBottom:6}}>Titulo *</label>
+                          <input className="input" value={myTitulo} onChange={e=>setMyTitulo(e.target.value)} placeholder="Ex: Meta Abril" required/>
+                        </div>
+                        <div>
+                          <label className="t-label" style={{display:'block',marginBottom:6}}>Contas</label>
+                          <input className="input" type="number" min="1" value={myContas} onChange={e=>setMyContas(e.target.value)} style={{fontFamily:'var(--mono)'}}/>
+                        </div>
+                      </div>
+
+                      {/* Selecao rapida contas */}
                       <div>
-                        <label className="t-label" style={{display:'block',marginBottom:6}}>Rede *</label>
-                        <select className="input" value={myRede} onChange={e=>setMyRede(e.target.value)} required>
-                          <option value="">Selecione</option>
-                          {REDES.map(r=><option key={r} value={r}>{r}</option>)}
-                        </select>
+                        <label className="t-label" style={{display:'block',marginBottom:6}}>Selecao rapida</label>
+                        <div style={{display:'flex',gap:8}}>
+                          {[20,30,50,60].map(n=>(
+                            <button key={n} type="button" onClick={()=>setMyContas(String(n))} style={{
+                              flex:1, padding:'9px 0', borderRadius:10, fontSize:13, fontWeight:700,
+                              fontFamily:'var(--mono)', border:'none', cursor:'pointer',
+                              background: Number(myContas)===n ? 'rgba(229,57,53,0.12)' : 'var(--raised)',
+                              color: Number(myContas)===n ? '#e53935' : 'var(--t3)',
+                              border:`1px solid ${Number(myContas)===n ? 'rgba(229,57,53,0.25)' : 'var(--b1)'}`,
+                              transition:'all 0.2s',
+                            }}>{n}</button>
+                          ))}
+                        </div>
                       </div>
+
+                      {/* Modelo */}
                       <div>
-                        <label className="t-label" style={{display:'block',marginBottom:6}}>Titulo *</label>
-                        <input className="input" value={myTitulo} onChange={e=>setMyTitulo(e.target.value)} placeholder="Ex: Meta Abril" required/>
-                      </div>
-                      <div>
-                        <label className="t-label" style={{display:'block',marginBottom:6}}>Depositantes</label>
-                        <input className="input" type="number" min="1" value={myContas} onChange={e=>setMyContas(e.target.value)}/>
-                      </div>
-                      <div style={{gridColumn:'1/-1'}}>
                         <label className="t-label" style={{display:'block',marginBottom:6}}>Modelo da meta</label>
                         <div style={{display:'flex',gap:8}}>
                           {[{k:'salario_bau',l:'Salario + Bau'},{k:'apenas_bau',l:'Apenas Bau'}].map(o=>(
                             <button key={o.k} type="button" onClick={()=>setMyOpModel(o.k)} style={{
                               flex:1, padding:'10px 14px', borderRadius:10, border:'none', cursor:'pointer',
                               background: myOpModel===o.k ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.02)',
-                              border: `1px solid ${myOpModel===o.k ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.05)'}`,
+                              border:`1px solid ${myOpModel===o.k ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.05)'}`,
                               fontSize:12, fontWeight:600, color: myOpModel===o.k ? '#e53935' : 'var(--t3)',
                               transition:'all 0.2s',
                             }}>{o.l}</button>
                           ))}
                         </div>
                       </div>
-                      <div style={{gridColumn:'1/-1'}}>
-                        <motion.button type="submit" className="btn btn-brand btn-lg" disabled={mySaving} style={{width:'100%',justifyContent:'center'}} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }}>
-                          {mySaving?'Criando...':'Iniciar meta'}
-                        </motion.button>
-                      </div>
+
+                      {/* Slots favoritos (se PRO e tem slots) */}
+                      {tenant?.favorite_slots?.length > 0 && (
+                        <div>
+                          <label className="t-label" style={{display:'block',marginBottom:6}}>Slot principal <span style={{color:'var(--t4)'}}>(opcional)</span></label>
+                          <div style={{display:'flex',gap:8,overflowX:'auto',paddingBottom:4}}>
+                            {tenant.favorite_slots.map(name => {
+                              const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,'e').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+                              return (
+                                <div key={name} style={{minWidth:80,textAlign:'center',padding:6,borderRadius:10,background:'var(--raised)',border:'1px solid var(--b1)',flexShrink:0}}>
+                                  <img src={`/slots/${slug}.webp`} alt={name} style={{width:'100%',height:55,objectFit:'cover',borderRadius:6,marginBottom:4}} onError={e=>{e.currentTarget.style.display='none'}}/>
+                                  <p style={{fontSize:9,fontWeight:600,color:'var(--t3)',margin:0,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{name}</p>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Insights do admin */}
+                      {myMetas.length > 0 && (
+                        <div style={{ padding:'14px 16px', borderRadius:12, background:'rgba(168,85,247,0.04)', border:'1px solid rgba(168,85,247,0.1)' }}>
+                          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+                            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+                            <span style={{fontSize:11,fontWeight:700,color:'var(--t2)'}}>Insights da sua operacao</span>
+                          </div>
+                          <div style={{display:'flex',flexDirection:'column',gap:4}}>
+                            {(() => {
+                              const tips = []
+                              const fechadas = myMetas.filter(m=>m.status_fechamento==='fechada')
+                              const totalContas = fechadas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+                              const totalLucro = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+                              if (fechadas.length > 0 && totalContas > 0) {
+                                const avg = totalLucro / totalContas
+                                tips.push({t:`Media geral: R$ ${fmt(Math.abs(avg))}/conta ${avg>=0?'(lucro)':'(prejuizo)'}`,c:avg>=0?'var(--profit)':'var(--t3)'})
+                              }
+                              if (fechadas.length > 0) tips.push({t:`${fechadas.length} meta${fechadas.length>1?'s':''} fechada${fechadas.length>1?'s':''} · ${totalContas} depositantes`,c:'var(--t3)'})
+                              const lastMeta = myMetas[0]
+                              if (lastMeta && lastMeta.rede) tips.push({t:`Ultima rede: ${lastMeta.rede}`,c:'var(--t3)'})
+                              return tips.map((tip,i) => (
+                                <div key={i} style={{display:'flex',alignItems:'center',gap:6}}>
+                                  <div style={{width:4,height:4,borderRadius:'50%',background:'rgba(168,85,247,0.4)',flexShrink:0}}/>
+                                  <span style={{fontSize:11,color:tip.c}}>{tip.t}</span>
+                                </div>
+                              ))
+                            })()}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Resumo */}
+                      {myPlat && myRede && (
+                        <div style={{padding:'12px 16px',borderRadius:12,background:'var(--raised)',border:'1px solid var(--b1)'}}>
+                          <p style={{fontSize:10,fontWeight:600,color:'var(--t4)',textTransform:'uppercase',letterSpacing:'0.06em',margin:'0 0 6px'}}>Resumo</p>
+                          <div style={{display:'flex',gap:14}}>
+                            <span style={{fontSize:12,color:'var(--t2)'}}>{myPlat}</span>
+                            <span style={{fontSize:12,color:'var(--t3)'}}>{myRede}</span>
+                            <span style={{fontSize:12,color:'var(--t2)',fontFamily:'var(--mono)'}}>{myContas} contas</span>
+                            <span style={{fontSize:11,color:'var(--t4)'}}>{myOpModel==='apenas_bau'?'Apenas Bau':'Salario + Bau'}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* CTA */}
+                      <motion.button type="submit" disabled={mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede} whileHover={{scale:1.02}} whileTap={{scale:0.96}}
+                        style={{
+                          width:'100%', padding:'15px 24px', borderRadius:14, border:'none', cursor:'pointer',
+                          fontSize:15, fontWeight:700, color:'#fff',
+                          background:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?'rgba(229,57,53,0.4)':'linear-gradient(135deg, #e53935, #c62828)',
+                          boxShadow:'0 4px 16px rgba(229,57,53,0.25)',
+                          display:'flex',alignItems:'center',justifyContent:'center',gap:8,
+                        }}>
+                        {mySaving ? 'Criando...' : (<><svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Iniciar operacao</>)}
+                      </motion.button>
                     </form>
+                  </motion.div>
                   </motion.div>
                 )}
                 </AnimatePresence>

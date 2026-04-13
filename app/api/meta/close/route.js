@@ -58,7 +58,7 @@ export async function POST(req) {
 
         await sendPushToTenant(supabase, meta.tenant_id, {
           title: 'Meta finalizada!',
-          body: `Op. ${opName} finalizou ${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} - ${liq >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(liq)}`,
+          body: `${opName} finalizou ${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} - ${liq >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(liq)}`,
           url: '/admin',
         })
 

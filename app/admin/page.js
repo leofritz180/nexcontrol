@@ -470,7 +470,9 @@ export default function AdminPage() {
     const lucroHoje = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&new Date(m.fechada_em).toDateString()===today).reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const fechadas  = metas.filter(m=>m.status_fechamento==='fechada')
     const lucroFinalTotal = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-    return { lucro,prej,liq:lucro-prej,totalDep,totalSaq,lucroHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length }
+    const totalContasFechadas = fechadas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+    const lucroPerConta = totalContasFechadas>0 ? lucroFinalTotal/totalContasFechadas : 0
+    return { lucro,prej,liq:lucro-prej,totalDep,totalSaq,lucroHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal,lucroPerConta,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length }
   },[operators,metas,remessas])
 
   // ── Hero card: lucro final por periodo selecionado ──
@@ -546,11 +548,28 @@ export default function AdminPage() {
     totalRemessas: remessas.length,
   }),[remessas,metas])
 
+  // ── Alerta de prejuizo anormal ──
+  const abnormalLossAlert = useMemo(() => {
+    const remsWithLoss = remessas.filter(r => Number(r.prejuizo || 0) > 0)
+    if (remsWithLoss.length < 2) return null
+    const totalPrej = remsWithLoss.reduce((a, r) => a + Number(r.prejuizo || 0), 0)
+    const avgLoss = totalPrej / remsWithLoss.length
+    const cutoff24h = new Date(Date.now() - 24 * 60 * 60 * 1000)
+    const recent = remsWithLoss.filter(r => {
+      const d = new Date(r.created_at)
+      return d >= cutoff24h && Number(r.prejuizo || 0) > 2 * avgLoss
+    })
+    if (recent.length === 0) return null
+    const worst = recent.reduce((a, r) => Number(r.prejuizo || 0) > Number(a.prejuizo || 0) ? r : a, recent[0])
+    return { value: Number(worst.prejuizo), avg: avgLoss }
+  }, [remessas])
+
   const kpis = [
     { label:'Lucro hoje', rawValue:Math.abs(global.lucroHoje), value:`R$ ${fmt(Math.abs(global.lucroHoje))}`, sub:global.lucroHoje>=0?'Fechamentos de hoje':'Resultado negativo', color:global.lucroHoje>=0?'var(--profit)':'var(--loss)', card:global.lucroHoje>=0?'card-profit':'card-loss', badge:'ao vivo', isLive: true },
     { label:'Lucro final total', rawValue:global.lucroFinalTotal, value:`R$ ${fmt(global.lucroFinalTotal)}`, sub:'Metas 100% fechadas', color:'var(--brand-bright)', card:'card-primary', badge:'fechado' },
     { label:'Total depositado', rawValue:global.totalDep, value:`R$ ${fmt(global.totalDep)}`, sub:'Admin + operadores', color:'var(--info)', card:'card-info', badge:'depositos' },
     { label:'Total sacado', rawValue:global.totalSaq, value:`R$ ${fmt(global.totalSaq)}`, sub:'Admin + operadores', color:'var(--warn)', card:'card-warn', badge:'saques' },
+    { label:'Lucro/conta', rawValue:Math.abs(global.lucroPerConta), value:`R$ ${fmt(Math.abs(global.lucroPerConta))}`, sub:'Media por depositante', color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', card:global.lucroPerConta>=0?'card-profit':'card-loss', badge:'rentabilidade' },
   ]
 
   const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['trash','Lixeira']]
@@ -1047,6 +1066,26 @@ export default function AdminPage() {
           <motion.div key="overview"
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease }}>
+
+          {/* ── Alerta de prejuizo anormal ── */}
+          {abnormalLossAlert && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease }}
+              style={{
+                padding: '14px 20px', borderRadius: 14, marginBottom: 20,
+                background: 'var(--loss-dim)', border: '1px solid var(--loss-border)',
+                display: 'flex', alignItems: 'center', gap: 12,
+              }}>
+              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--loss)' }}>
+                Remessa com prejuizo anormal detectada: R$ {fmt(abnormalLossAlert.value)} (media: R$ {fmt(abnormalLossAlert.avg)})
+              </p>
+            </motion.div>
+          )}
 
           {/* ── HERO + KPIs — side by side ── */}
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:16, marginBottom:24 }}>

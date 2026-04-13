@@ -500,6 +500,7 @@ export default function OperadoresPage() {
   const [selectedOp, setSelectedOp] = useState(null)
   const [invSaving, setInvSaving] = useState(false)
   const [invMsg, setInvMsg] = useState('')
+  const [folhaPeriod, setFolhaPeriod] = useState('30')
 
   useEffect(() => { checkAndLoad() }, [])
 
@@ -642,18 +643,31 @@ export default function OperadoresPage() {
   const folhaData = useMemo(() => {
     const payModel = tenant?.operator_payment_model || 'fixo_dep'
     const payValue = Number(tenant?.operator_payment_value ?? 2)
-    return operatorStats.filter(o => o.closedCount > 0).map(op => {
-      const deps = op.totalDeposit
-      const lucro = op.lucroFinal
+    const now = new Date()
+    const periodMetas = closedMetas.filter(m => {
+      if (folhaPeriod === 'all') return true
+      if (!m.fechada_em) return false
+      const d = new Date(m.fechada_em)
+      if (folhaPeriod === 'hoje') return d.toDateString() === now.toDateString()
+      const days = folhaPeriod === '7' ? 7 : 30
+      return (now - d) < days * 86400000
+    })
+    return operators.map(op => {
+      const opClosed = periodMetas.filter(m => m.operator_id === op.id)
+      if (opClosed.length === 0) return null
+      const totalDeposit = opClosed.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+      const lucroFinal = opClosed.reduce((a, m) => a + Number(m.lucro_final || 0), 0)
+      const deps = totalDeposit
+      const lucro = lucroFinal
       let valor = 0
       if (payModel === 'percentual') {
         valor = lucro > 0 ? lucro * (payValue / 100) : 0
       } else {
         valor = deps * payValue
       }
-      return { ...op, pagamento: valor, payModel, payValue }
-    }).sort((a, b) => b.pagamento - a.pagamento)
-  }, [operatorStats, tenant])
+      return { ...op, closedCount: opClosed.length, totalDeposit, lucroFinal, pagamento: valor, payModel, payValue }
+    }).filter(Boolean).sort((a, b) => b.pagamento - a.pagamento)
+  }, [operators, closedMetas, tenant, folhaPeriod])
 
   if (loading || !profile) {
     return (
@@ -879,6 +893,17 @@ export default function OperadoresPage() {
         {/* FOLHA DE PAGAMENTO */}
         {tab === 'folha' && (
           <motion.div key="folha" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+            {/* Period filter */}
+            <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+              {[{ v: 'hoje', l: 'Hoje' }, { v: '7', l: '7 dias' }, { v: '30', l: '30 dias' }, { v: 'all', l: 'Tudo' }].map(p => (
+                <button key={p.v} onClick={() => setFolhaPeriod(p.v)} style={{
+                  padding: '6px 16px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                  border: 'none', transition: 'all 0.2s',
+                  background: folhaPeriod === p.v ? 'rgba(255,255,255,0.07)' : 'transparent',
+                  color: folhaPeriod === p.v ? '#fff' : 'rgba(255,255,255,0.35)',
+                }}>{p.l}</button>
+              ))}
+            </div>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
               <div>

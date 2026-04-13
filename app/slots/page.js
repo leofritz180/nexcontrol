@@ -18,7 +18,7 @@ const fadeUp = (i, base = 0) => ({
 function Stars({ count }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
-      {[1, 2, 3, 4, 5].map(i => (
+      {[1, 2, 3].map(i => (
         <svg key={i} width={12} height={12} viewBox="0 0 24 24" fill={i <= count ? '#F59E0B' : 'none'} stroke={i <= count ? '#F59E0B' : 'rgba(255,255,255,0.15)'} strokeWidth="1.5">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
         </svg>

@@ -679,7 +679,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Info cards */}
-                <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12,marginBottom:20}}>
+                <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:12,marginBottom:20}}>
                   {[
                     {l:'Rede',v:m.rede||'—',c:'var(--brand-bright)'},
                     {l:'Plataforma',v:m.plataforma||'—',c:'var(--t1)'},
@@ -694,7 +694,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* KPIs */}
-                <div className="g-5" style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:12,marginBottom:20}}>
+                <div className="g-5" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:20}}>
                   {[
                     {l:'Remessas',v:focusRem.length,c:'var(--info)',isNum:true},
                     {l:'Lucro',v:`R$ ${fmt(lucroR)}`,c:'var(--profit)',raw:lucroR},
@@ -983,7 +983,7 @@ export default function AdminPage() {
                   </motion.button>
                 </div>
 
-                <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:20}}>
+                <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:14,marginBottom:20}}>
                   {[
                     {l:'Minhas metas',v:myMetas.length,c:'var(--brand-bright)'},
                     {l:'Remessas',v:myRem.length,c:'var(--info)'},
@@ -1478,7 +1478,7 @@ export default function AdminPage() {
             </div>
 
             {/* Grid */}
-            <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16}}>
+            <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:16}}>
               {filteredMetas.map((m,i)=>{
                 const mRem=remessas.filter(r=>r.meta_id===m.id)
                 const lucroR=mRem.reduce((a,r)=>a+Number(r.lucro||0),0)

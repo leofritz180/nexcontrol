@@ -1084,7 +1084,8 @@ export default function OperadoresPage() {
               </div>
             </div>
 
-            {/* Slots favoritos */}
+            {/* Slots favoritos — apenas PRO */}
+            {sub?.status === 'active' && (!sub.expires_at || new Date(sub.expires_at) > new Date()) ? (
             <div style={{ padding: '22px 20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14, marginTop: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -1128,6 +1129,15 @@ export default function OperadoresPage() {
                 })}
               </div>
             </div>
+            ) : (
+            <div style={{ padding: '18px 20px', background: 'rgba(229,57,53,0.04)', border: '1px solid rgba(229,57,53,0.1)', borderRadius: 14, marginTop: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 600, color: '#e53935', margin: '0 0 2px' }}>Slots favoritos — exclusivo PRO</p>
+                <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>Assine o PRO para configurar slots para seus operadores</p>
+              </div>
+            </div>
+            )}
           </motion.div>
         )}
       </div>

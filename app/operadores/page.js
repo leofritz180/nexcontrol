@@ -279,13 +279,20 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
   )
 }
 
-/* ── Ranking Card ── */
+/* ── Ranking Card — Leaderboard Premium ── */
 function RankingCard({ op, idx, maxLucro, onClick }) {
   const [h, setH] = useState(false)
   const isTop1 = idx === 0
+  const isTop2 = idx === 1
   const isTop3 = idx < 3
   const badge = op.badge
   const lucroPerConta = op.totalDeposit > 0 ? op.lucroFinal / op.totalDeposit : 0
+  const isProfit = op.lucroFinal >= 0
+
+  // Position colors
+  const posColor = isTop1 ? 'var(--profit)' : isTop2 ? 'var(--t1)' : isTop3 ? 'var(--t2)' : 'var(--t4)'
+  const posBg = isTop1 ? 'rgba(34,197,94,0.14)' : isTop2 ? 'rgba(255,255,255,0.08)' : isTop3 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.025)'
+  const posBorder = isTop1 ? 'rgba(34,197,94,0.25)' : isTop2 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'
 
   return (
     <motion.div
@@ -294,134 +301,137 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
       onMouseEnter={() => setH(true)}
       onMouseLeave={() => setH(false)}
       style={{
-        padding: '18px 20px', borderRadius: 16, cursor: 'pointer', position: 'relative', overflow: 'hidden',
+        padding: '20px 22px', borderRadius: 16, cursor: 'pointer', position: 'relative', overflow: 'hidden',
         background: isTop1
-          ? `linear-gradient(145deg, rgba(34,197,94,0.04), rgba(34,197,94,0.01))`
-          : `linear-gradient(145deg, var(--surface), rgba(12,18,32,0.6))`,
-        border: `1px solid ${isTop1
-          ? h ? 'var(--profit-border)' : 'rgba(34,197,94,0.1)'
-          : h ? 'var(--b3)' : 'var(--b1)'}`,
-        transform: h ? 'translateY(-2px)' : 'none',
+          ? 'linear-gradient(145deg, rgba(34,197,94,0.05), rgba(34,197,94,0.015))'
+          : isTop2
+            ? 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))'
+            : 'linear-gradient(145deg, var(--surface), rgba(8,12,22,0.8))',
+        border: `1px solid ${h
+          ? isTop1 ? 'var(--profit-border)' : 'var(--b3)'
+          : isTop1 ? 'rgba(34,197,94,0.1)' : 'var(--b1)'}`,
+        transform: h ? 'translateY(-3px) scale(1.005)' : 'none',
         boxShadow: h
-          ? isTop1 ? '0 8px 30px rgba(0,0,0,0.3), 0 0 20px rgba(34,197,94,0.04)' : '0 8px 30px rgba(0,0,0,0.3)'
-          : '0 2px 8px rgba(0,0,0,0.15)',
-        transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+          ? isTop1
+            ? '0 12px 40px rgba(0,0,0,0.35), 0 0 30px rgba(34,197,94,0.06)'
+            : '0 12px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04)'
+          : '0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.02)',
+        transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
       }}
     >
-      {/* Subtle inner highlight */}
+      {/* Top edge shine on hover */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: 1,
-        background: h ? 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)' : 'transparent',
-        transition: 'background 0.3s',
+        background: h ? `linear-gradient(90deg, transparent 10%, ${isTop1 ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)'} 50%, transparent 90%)` : 'transparent',
+        transition: 'background 0.35s',
       }} />
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12, position: 'relative' }}>
-        {/* Position */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14, position: 'relative' }}>
+        {/* Position badge */}
         <div style={{
-          width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-          background: isTop1 ? 'rgba(34,197,94,0.12)' : isTop3 ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
-          border: `1px solid ${isTop1 ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}`,
+          width: 38, height: 38, borderRadius: 11, flexShrink: 0,
+          background: posBg, border: `1.5px solid ${posBorder}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 13, fontWeight: 800,
-          color: isTop1 ? 'var(--profit)' : isTop3 ? 'var(--t2)' : 'var(--t4)',
+          fontSize: 15, fontWeight: 900, color: posColor,
           fontFamily: 'var(--mono, monospace)',
-          boxShadow: isTop1 ? '0 0 12px rgba(34,197,94,0.08)' : 'none',
+          boxShadow: isTop1 ? '0 0 16px rgba(34,197,94,0.1)' : isTop2 ? '0 0 10px rgba(255,255,255,0.03)' : 'none',
+          transition: 'box-shadow 0.3s',
         }}>
           {idx + 1}
         </div>
 
         {/* Avatar */}
         <div style={{
-          width: 44, height: 44, borderRadius: 13, flexShrink: 0,
-          background: op.lucroFinal >= 0
-            ? 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.06))'
-            : 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.06))',
-          border: `1px solid ${op.lucroFinal >= 0 ? 'var(--profit-border)' : 'var(--loss-border)'}`,
+          width: 46, height: 46, borderRadius: 14, flexShrink: 0,
+          background: isProfit
+            ? 'linear-gradient(135deg, rgba(34,197,94,0.18), rgba(34,197,94,0.06))'
+            : 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.06))',
+          border: `1.5px solid ${isProfit ? 'var(--profit-border)' : 'var(--loss-border)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 18, fontWeight: 800, color: 'var(--t1)',
-          boxShadow: h ? `0 0 16px ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)'}` : 'none',
+          fontSize: 19, fontWeight: 800, color: 'var(--t1)',
+          boxShadow: h
+            ? `0 0 20px ${isProfit ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'}`
+            : `inset 0 1px 0 ${isProfit ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'}`,
           transition: 'box-shadow 0.3s',
         }}>
           {getInitial(op)}
         </div>
 
-        {/* Name + trend + badge */}
+        {/* Name + info */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
             <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
             {op.trend !== 'stable' && (
               <span style={{
-                fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
+                fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 5,
                 color: op.trend === 'up' ? 'var(--profit)' : 'var(--loss)',
-                background: op.trend === 'up' ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
+                background: op.trend === 'up' ? 'var(--profit-dim)' : 'var(--loss-dim)',
+                border: `1px solid ${op.trend === 'up' ? 'var(--profit-border)' : 'var(--loss-border)'}`,
+                display: 'flex', alignItems: 'center', gap: 2,
               }}>
                 {op.trend === 'up' ? '\u2191' : '\u2193'}
               </span>
             )}
             {badge && (
               <span style={{
-                fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 5,
-                color: badge.color, background: `${badge.color}0a`,
-                border: `1px solid ${badge.color}18`,
+                fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 5,
+                color: badge.color, background: `${badge.color}0c`,
+                border: `1px solid ${badge.color}1a`,
                 letterSpacing: '0.02em',
               }}>{badge.text}</span>
             )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 10, color: 'var(--t3)' }}>{op.closedCount} meta{op.closedCount !== 1 ? 's' : ''}</span>
-            <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--t4)' }} />
-            <span style={{ fontSize: 10, color: 'var(--t3)' }}>{op.totalDeposit} deps</span>
+          {/* Compact info line */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>
+              {op.totalDeposit} deps
+              <span style={{ color: 'var(--t4)', margin: '0 4px' }}>&middot;</span>
+              {op.closedCount} meta{op.closedCount !== 1 ? 's' : ''}
+            </span>
             {op.totalDeposit > 0 && (
-              <>
-                <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--t4)' }} />
-                <span style={{
-                  fontSize: 9, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
-                  padding: '2px 8px', borderRadius: 5,
-                  background: 'var(--brand-dim)', color: 'var(--brand-bright)',
-                  border: '1px solid var(--brand-border)',
-                }}>
-                  R$ {fmt(lucroPerConta)}/conta
-                </span>
-              </>
+              <span style={{
+                fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
+                padding: '2px 8px', borderRadius: 5,
+                background: 'var(--brand-dim)', color: 'var(--brand-bright)',
+                border: '1px solid var(--brand-border)',
+              }}>
+                R$ {fmt(lucroPerConta)}/conta
+              </span>
             )}
           </div>
         </div>
 
-        {/* Stats right */}
-        <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexShrink: 0 }}>
-          <div style={{ textAlign: 'right' }}>
-            <p style={{ fontSize: 9, color: 'var(--t4)', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Deps</p>
-            <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t2)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>{op.totalDeposit}</p>
-          </div>
-          <div style={{ textAlign: 'right', minWidth: 110 }}>
-            <p style={{ fontSize: 9, color: 'var(--t4)', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Lucro</p>
-            <p style={{
-              fontSize: 20, fontWeight: 800, margin: 0, fontFamily: 'var(--mono, monospace)',
-              color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)',
-              letterSpacing: '-0.02em',
-              textShadow: h ? `0 0 20px ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}` : 'none',
-              transition: 'text-shadow 0.3s',
-            }}>
-              {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
-            </p>
-          </div>
+        {/* Lucro — HERO element */}
+        <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 120 }}>
+          <p style={{
+            fontSize: 22, fontWeight: 800, margin: 0, fontFamily: 'var(--mono, monospace)',
+            color: isProfit ? 'var(--profit)' : 'var(--loss)',
+            letterSpacing: '-0.03em', lineHeight: 1,
+            textShadow: h ? `0 0 24px ${isProfit ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}` : 'none',
+            transition: 'text-shadow 0.35s',
+          }}>
+            {isProfit ? '+' : ''}R$ {fmt(op.lucroFinal)}
+          </p>
+          <p style={{ fontSize: 10, color: 'var(--t4)', margin: '4px 0 0', fontWeight: 500 }}>
+            {op.totalDeposit} depositantes
+          </p>
         </div>
       </div>
 
       {/* Performance bar */}
-      <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
+      <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.035)', overflow: 'hidden', position: 'relative' }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${maxLucro > 0 ? Math.min((Math.abs(op.lucroFinal) / maxLucro) * 100, 100) : 0}%` }}
-          transition={{ duration: 1, delay: 0.1 + idx * 0.04, ease }}
+          transition={{ duration: 1.2, delay: 0.15 + idx * 0.05, ease }}
           style={{
             height: '100%', borderRadius: 3,
-            background: op.lucroFinal >= 0
-              ? 'linear-gradient(90deg, var(--profit), rgba(34,197,94,0.4))'
-              : 'linear-gradient(90deg, var(--loss), rgba(239,68,68,0.4))',
-            boxShadow: op.lucroFinal >= 0
-              ? '0 0 8px rgba(34,197,94,0.15)'
-              : '0 0 8px rgba(239,68,68,0.15)',
+            background: isProfit
+              ? 'linear-gradient(90deg, var(--profit), rgba(74,222,128,0.5))'
+              : 'linear-gradient(90deg, var(--loss), rgba(248,113,113,0.5))',
+            boxShadow: isProfit
+              ? '0 0 10px rgba(34,197,94,0.2), 0 0 3px rgba(34,197,94,0.3)'
+              : '0 0 10px rgba(239,68,68,0.2), 0 0 3px rgba(239,68,68,0.3)',
           }}
         />
       </div>

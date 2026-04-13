@@ -731,58 +731,12 @@ export default function OperatorPage() {
             </div>
           </div>
 
-          {/* ══ DEMO MODE ══ */}
-          {isDemo ? (
-            <DemoOperatorDashboard onCreateMeta={() => setShowForm(true)} />
-          ) : (
-          <>
-          {/* ── KPI CARDS (4 cards, neutral) ── */}
-          <div className="nxc-kpi-grid" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 16,
-            marginBottom: 32,
-          }}>
-            <KpiCard
-              index={0}
-              icon={<IconTarget />}
-              label="Metas ativas"
-              value={stats.ativas}
-              integer
-              sub={`${stats.total} total`}
-            />
-            <KpiCard
-              index={1}
-              icon={<IconBox />}
-              label="Total remessas"
-              value={stats.nRem}
-              integer
-              sub="Registradas"
-            />
-            <KpiCard
-              index={2}
-              icon={<IconUsers />}
-              label="Total depositantes"
-              value={stats.totalDepositantes}
-              integer
-              sub={`Soma de contas de todas as metas`}
-            />
-            <KpiCard
-              index={3}
-              icon={<IconPercent />}
-              label="Taxa de conclusao"
-              value={stats.taxaConclusao}
-              suffix="%"
-              integer
-              sub={`${stats.fechadas} de ${stats.total} metas fechadas`}
-            />
-          </div>
-
-          {/* ── RESPONSIVE STYLES ── */}
+          {/* ── RESPONSIVE STYLES (always rendered) ── */}
           <style>{`
             @media (max-width: 1100px) {
               .nxc-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
               .nxc-main-layout { grid-template-columns: 1fr !important; }
+              .nxc-demo-layout { grid-template-columns: 1fr !important; }
             }
             @media (max-width: 700px) {
               .nxc-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
@@ -797,7 +751,7 @@ export default function OperatorPage() {
             }
           `}</style>
 
-          {/* ── MODO OPERACAO — Modal fullscreen ── */}
+          {/* ── MODO OPERACAO — Modal fullscreen (always rendered, outside demo conditional) ── */}
           <AnimatePresence>
             {showForm && (
               <motion.div
@@ -1091,6 +1045,53 @@ export default function OperatorPage() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* ══ DEMO MODE ══ */}
+          {isDemo ? (
+            <DemoOperatorDashboard onCreateMeta={() => setShowForm(true)} />
+          ) : (
+          <>
+          {/* ── KPI CARDS (4 cards, neutral) ── */}
+          <div className="nxc-kpi-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 16,
+            marginBottom: 32,
+          }}>
+            <KpiCard
+              index={0}
+              icon={<IconTarget />}
+              label="Metas ativas"
+              value={stats.ativas}
+              integer
+              sub={`${stats.total} total`}
+            />
+            <KpiCard
+              index={1}
+              icon={<IconBox />}
+              label="Total remessas"
+              value={stats.nRem}
+              integer
+              sub="Registradas"
+            />
+            <KpiCard
+              index={2}
+              icon={<IconUsers />}
+              label="Total depositantes"
+              value={stats.totalDepositantes}
+              integer
+              sub={`Soma de contas de todas as metas`}
+            />
+            <KpiCard
+              index={3}
+              icon={<IconPercent />}
+              label="Taxa de conclusao"
+              value={stats.taxaConclusao}
+              suffix="%"
+              integer
+              sub={`${stats.fechadas} de ${stats.total} metas fechadas`}
+            />
+          </div>
 
           {/* ── MAIN TWO-COLUMN LAYOUT ── */}
           <div className="nxc-main-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20 }}>

@@ -736,22 +736,35 @@ export default function MetaPage() {
                 {tenantSlots.length === 0 ? (
                   <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>Nenhum slot configurado pelo admin</p>
                 ) : (
-                  <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
-                    {tenantSlots.map(name => {
-                      const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/&/g, 'e').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-                      const active = selectedSlot === name
-                      return (
-                        <div key={name} onClick={() => setSelectedSlot(active ? '' : name)} style={{
-                          minWidth:80, maxWidth:80, cursor:'pointer', borderRadius:10, padding:6, textAlign:'center',
-                          border: active ? '2px solid var(--profit)' : '1px solid var(--b2)',
-                          background: active ? 'var(--profit-dim)' : 'var(--raised)',
-                          transition:'all 0.2s', flexShrink:0,
-                        }}>
-                          <img src={`/slots/${slug}.webp`} alt={name} style={{ width:'100%', height:60, objectFit:'contain', borderRadius:6, marginBottom:4 }} onError={e => { e.currentTarget.style.display='none' }}/>
-                          <p style={{ fontSize:10, fontWeight:600, color: active ? 'var(--profit)' : 'var(--t2)', margin:0, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{name}</p>
-                        </div>
-                      )
-                    })}
+                  <div style={{ position: 'relative' }}>
+                    {/* Seta esquerda */}
+                    <button onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: -200, behavior: 'smooth' }) }}
+                      style={{ position: 'absolute', left: -4, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 28, height: 28, borderRadius: 8, border: '1px solid var(--b2)', background: 'var(--surface)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--t3)', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                    {/* Seta direita */}
+                    <button onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: 200, behavior: 'smooth' }) }}
+                      style={{ position: 'absolute', right: -4, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 28, height: 28, borderRadius: 8, border: '1px solid var(--b2)', background: 'var(--surface)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--t3)', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                    <div id="slot-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none', padding: '0 30px' }}>
+                      <style>{`#slot-scroll::-webkit-scrollbar{display:none}`}</style>
+                      {tenantSlots.map(name => {
+                        const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/&/g, 'e').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                        const active = selectedSlot === name
+                        return (
+                          <div key={name} onClick={() => setSelectedSlot(active ? '' : name)} style={{
+                            minWidth: 100, maxWidth: 100, cursor: 'pointer', borderRadius: 12, padding: 8, textAlign: 'center',
+                            border: active ? '2px solid var(--profit)' : '1px solid var(--b2)',
+                            background: active ? 'var(--profit-dim)' : 'var(--raised)',
+                            transition: 'all 0.2s', flexShrink: 0,
+                          }}>
+                            <img src={`/slots/${slug}.webp`} alt={name} style={{ width: '100%', height: 75, objectFit: 'cover', borderRadius: 8, marginBottom: 6 }} onError={e => { e.currentTarget.style.display = 'none' }}/>
+                            <p style={{ fontSize: 11, fontWeight: 600, color: active ? 'var(--profit)' : 'var(--t2)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</p>
+                          </div>
+                        )
+                      })}
+                    </div>
                   </div>
                 )}
               </div>

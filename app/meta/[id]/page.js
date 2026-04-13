@@ -160,6 +160,8 @@ export default function MetaPage() {
   const [editSaving, setEditSaving] = useState(false)
   const [contasRemessa, setContasRemessa] = useState('')
   const [feedback, setFeedback] = useState(null)
+  const [tenantSlots, setTenantSlots] = useState([])
+  const [selectedSlot, setSelectedSlot] = useState('')
 
   useEffect(()=>{ if(id) fetchData() },[id])
 
@@ -178,6 +180,10 @@ export default function MetaPage() {
     // Admin can view all metas in their tenant; operator only their own
     if (m && m.operator_id !== u.id && p?.role !== 'admin') { router.push('/operator'); return }
     setMeta(m||null); setRemessas(r||[])
+    if (m?.tenant_id) {
+      const { data: tenantData } = await supabase.from('tenants').select('favorite_slots').eq('id', m.tenant_id).maybeSingle()
+      setTenantSlots(tenantData?.favorite_slots || [])
+    }
     setLoading(false)
   }
 
@@ -305,10 +311,11 @@ export default function MetaPage() {
       tenant_id:profile?.tenant_id,
       status_problema:statusProb,
       contas_remessa: tipo === 'redeposito' ? 0 : Number(contasRemessa||0),
+      slot_name: selectedSlot || null,
     })
     setSalvando(false)
     if (err) { setError(err.message); return }
-    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa('')
+    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot('')
     showFeedback(diff, statusProb, Number(contasRemessa||0))
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
     fetchData()
@@ -681,6 +688,29 @@ export default function MetaPage() {
                 </div>
               </div>
 
+              {tenantSlots.length > 0 && (
+                <div>
+                  <label className="t-label" style={{ display:'block', marginBottom:8 }}>Slot <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
+                  <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
+                    {tenantSlots.map(name => {
+                      const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/&/g, 'e').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                      const active = selectedSlot === name
+                      return (
+                        <div key={name} onClick={() => setSelectedSlot(active ? '' : name)} style={{
+                          minWidth:80, maxWidth:80, cursor:'pointer', borderRadius:10, padding:6, textAlign:'center',
+                          border: active ? '2px solid var(--profit)' : '1px solid var(--b2)',
+                          background: active ? 'var(--profit-dim)' : 'var(--raised)',
+                          transition:'all 0.2s', flexShrink:0,
+                        }}>
+                          <img src={`/slots/${slug}.webp`} alt={name} style={{ width:'100%', height:60, objectFit:'contain', borderRadius:6, marginBottom:4 }} onError={e => { e.currentTarget.style.display='none' }}/>
+                          <p style={{ fontSize:10, fontWeight:600, color: active ? 'var(--profit)' : 'var(--t2)', margin:0, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{name}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
               {(dep||saq) && (
                 <div style={{ background:prev.pos?'var(--profit-dim)':'var(--loss-dim)', border:`1px solid ${prev.pos?'var(--profit-border)':'var(--loss-border)'}`, borderRadius:12, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', transition:'all 0.3s' }}>
                   <div>
@@ -764,6 +794,7 @@ export default function MetaPage() {
                             )}
                           </div>
                           <p className="t-small">{r.tipo} · {new Date(r.created_at).toLocaleString('pt-BR')}</p>
+                          {r.slot_name && <span style={{ display:'inline-block', marginTop:3, padding:'2px 8px', borderRadius:6, fontSize:9, fontWeight:600, background:'rgba(59,130,246,0.1)', border:'1px solid rgba(59,130,246,0.2)', color:'var(--info)' }}>{r.slot_name}</span>}
                         </div>
                         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                           <div style={{ textAlign:'right' }}>

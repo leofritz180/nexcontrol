@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
+import { SLOTS } from '../../lib/slots-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -1080,6 +1081,44 @@ export default function OperadoresPage() {
                   }}
                   style={{ padding: '8px 12px', fontSize: 14, maxWidth: 100 }}
                 />
+              </div>
+            </div>
+
+            {/* Slots favoritos */}
+            <div style={{ padding: '22px 20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14, marginTop: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Slots favoritos</span>
+              </div>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: '0 0 14px' }}>Selecione os slots mais usados na sua operacao</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: 8 }}>
+                {SLOTS.map(slot => {
+                  const favs = tenant?.favorite_slots || []
+                  const selected = favs.includes(slot.name)
+                  return (
+                    <button key={slot.id} onClick={async () => {
+                      const current = tenant?.favorite_slots || []
+                      const newArray = selected ? current.filter(n => n !== slot.name) : [...current, slot.name]
+                      await supabase.from('tenants').update({ favorite_slots: newArray }).eq('id', profile.tenant_id)
+                      setTenant(prev => ({ ...prev, favorite_slots: newArray }))
+                    }} style={{
+                      background: selected ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.02)',
+                      border: `1.5px solid ${selected ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                      borderRadius: 10, padding: 6, cursor: 'pointer', textAlign: 'center',
+                      transition: 'all 0.15s', position: 'relative',
+                    }}>
+                      {selected && (
+                        <div style={{ position: 'absolute', top: 4, right: 4, width: 16, height: 16, borderRadius: '50%', background: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                      )}
+                      <div style={{ width: '100%', height: 60, borderRadius: 6, overflow: 'hidden', marginBottom: 4, background: 'rgba(0,0,0,0.2)' }}>
+                        <img src={slot.image} alt={slot.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: selected ? 1 : 0.5, transition: 'opacity 0.15s' }} />
+                      </div>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: selected ? '#22c55e' : 'rgba(255,255,255,0.4)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.name}</p>
+                    </button>
+                  )
+                })}
               </div>
             </div>
           </motion.div>

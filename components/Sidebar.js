@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -29,6 +29,16 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [ownSub, setOwnSub] = useState(null)
+
+  // Sidebar fetches subscription independently — never depends on parent passing it
+  useEffect(() => {
+    if (!tenantId) return
+    supabase.from('subscriptions').select('status,expires_at')
+      .eq('tenant_id', tenantId).eq('status', 'active')
+      .order('created_at', { ascending: false }).limit(1).maybeSingle()
+      .then(({ data }) => { if (data) setOwnSub(data) })
+  }, [tenantId])
 
   async function logout() { await supabase.auth.signOut(); router.push('/login') }
 
@@ -40,7 +50,9 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
     ...(isAdmin && userEmail === OWNER_EMAIL ? [{ href:'/owner', label:'Owner', icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' }] : []),
   ]
 
-  const subActive = subscription?.status === 'active' && (!subscription.expires_at || new Date(subscription.expires_at) > new Date())
+  // Use own fetch OR parent prop — whichever confirms PRO
+  const sub = ownSub || subscription
+  const subActive = sub?.status === 'active' && (!sub.expires_at || new Date(sub.expires_at) > new Date())
 
   const content = (
     <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>

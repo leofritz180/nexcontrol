@@ -501,10 +501,19 @@ export default function MetaPage() {
           // Sequencia de 2-3 com prejuizo leve NAO gera alerta (e normal)
 
           // B) Media por conta — calibrada pro modelo real
-          // Prejuizo ate R$8/conta e NORMAL na operacao (salario compensa)
+          // Lucro nas remessas e RARO e deve ser elogiado
+          // Prejuizo ate R$8/conta e NORMAL (salario compensa)
           if (nContas > 0) {
-            if (avgPerConta > 2) insights.push({ text: `Operacao positiva: R$ ${fmt(avgPerConta)}/conta em ${remessas.length} remessas`, type: 'good', action: 'Continuar no ritmo atual' })
-            else if (avgPerConta >= -8) insights.push({ text: `Operacao dentro do esperado: R$ ${fmt(avgPerConta)}/conta`, type: 'good', action: 'Prejuizo controlado — faz parte da operacao' })
+            if (totais.liq > 0 && avgPerConta > 0) {
+              const msgs = [
+                `Operacao no lucro! +R$ ${fmt(totais.liq)} com media de R$ ${fmt(avgPerConta)}/conta — resultado excelente!`,
+                `Impressionante! Lucro de R$ ${fmt(totais.liq)} em ${remessas.length} remessas — voce ta voando!`,
+                `Meta no positivo! R$ ${fmt(avgPerConta)}/conta de lucro — muito acima da media!`,
+              ]
+              insights.push({ text: msgs[Math.floor(Math.random() * msgs.length)], type: 'good', action: 'Resultado raro e excelente. Mantem esse ritmo!' })
+            }
+            else if (avgPerConta > -3) insights.push({ text: `Resultado otimo: R$ ${fmt(avgPerConta)}/conta — quase no lucro`, type: 'good', action: 'Excelente controle. Continua assim!' })
+            else if (avgPerConta >= -8) insights.push({ text: `Operacao dentro do esperado: R$ ${fmt(avgPerConta)}/conta em ${remessas.length} remessas`, type: 'good', action: 'Prejuizo controlado — faz parte da operacao' })
             else if (avgPerConta >= -12) insights.push({ text: `Atencao: media de R$ ${fmt(avgPerConta)}/conta — acima do ideal`, type: 'warn', action: 'Monitorar proximas remessas com cuidado' })
             else insights.push({ text: `Media alta de prejuizo: R$ ${fmt(avgPerConta)}/conta`, type: 'critical', action: 'Considerar trocar rede ou reduzir volume' })
           }

@@ -26,18 +26,32 @@ const FEED_EVENTS = [
   { text:'Nova remessa processada', color:'#e53935' },
 ]
 
+const TICKER_ITEMS = [
+  '+R$ 120 registrado',
+  'Meta concluida',
+  'Novo operador ativo',
+  '+R$ 68 registrado',
+  'Deposito confirmado',
+  '+R$ 340 processado',
+  'Remessa finalizada',
+  '+R$ 95 registrado',
+]
+
 const STATUS_LINES = [
   'Operacao sendo atualizada em tempo real',
   'Dados sendo processados agora',
   'Nova atividade detectada',
 ]
 
-/* ── Count-up with glow + pulse ── */
+/* ── Count-up with live fluctuation ── */
 function SocialProofNumber({ target, suffix, active }) {
   const [val, setVal] = useState(0)
   const [done, setDone] = useState(false)
+  const [delta, setDelta] = useState(0) // +1, -1, 0
   const rafRef = useRef(null)
+  const flickerRef = useRef(null)
 
+  // Count-up animation
   useEffect(() => {
     if (!active) return
     const dur = 1800, start = performance.now()
@@ -52,22 +66,42 @@ function SocialProofNumber({ target, suffix, active }) {
     return () => cancelAnimationFrame(rafRef.current)
   }, [active, target])
 
+  // Live micro-fluctuations after count-up
+  useEffect(() => {
+    if (!done) return
+    const flicker = () => {
+      const r = Math.random()
+      const change = r < 0.4 ? 1 : r < 0.7 ? -1 : r < 0.85 ? 2 : 0
+      setDelta(change)
+      setVal(prev => {
+        const next = prev + change
+        return Math.max(target - 3, Math.min(target + 4, next))
+      })
+      // Reset delta color after 400ms
+      setTimeout(() => setDelta(0), 400)
+    }
+    flickerRef.current = setInterval(flicker, 2800 + Math.random() * 1200)
+    return () => clearInterval(flickerRef.current)
+  }, [done, target])
+
   const display = target >= 1000000
     ? `${(val / 1000000).toFixed(val < target ? 1 : 0)}`
     : target >= 1000 ? val.toLocaleString('pt-BR') : String(val)
 
-  const glowOpacity = active && !done ? 0.18 : done ? 0.06 : 0
+  const numColor = delta > 0 ? '#22C55E' : delta < 0 ? '#EF4444' : '#fff'
+  const glowColor = delta > 0 ? 'rgba(34,197,94,0.2)' : delta < 0 ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.06)'
 
   return (
     <motion.p
-      animate={done ? { scale:[1, 1.02, 1] } : {}}
-      transition={done ? { duration:3, repeat:Infinity, ease:'easeInOut' } : {}}
+      animate={done ? { scale:[1, 1.015, 1] } : {}}
+      transition={done ? { duration:4, repeat:Infinity, ease:'easeInOut' } : {}}
       style={{
-        fontSize:36, fontWeight:900, color:'#fff', margin:0,
+        fontSize:36, fontWeight:900, margin:0,
         fontFamily:'var(--mono, "JetBrains Mono", monospace)',
         letterSpacing:'-0.03em',
-        textShadow:`0 0 ${active ? 25 : 0}px rgba(255,255,255,${glowOpacity})`,
-        transition:'text-shadow 0.6s ease',
+        color: numColor,
+        textShadow:`0 0 20px ${glowColor}`,
+        transition:'color 0.2s ease, text-shadow 0.3s ease',
       }}
     >
       {display}{suffix}
@@ -75,14 +109,94 @@ function SocialProofNumber({ target, suffix, active }) {
   )
 }
 
-/* ── Live feed (events appearing one by one) ── */
-function LiveFeed({ active }) {
-  const [index, setIndex] = useState(0)
+/* ── Horizontal Ticker (infinite scroll) ── */
+function Ticker({ active }) {
+  if (!active) return null
+  const items = [...TICKER_ITEMS, ...TICKER_ITEMS]
+  return (
+    <div style={{
+      overflow:'hidden', marginTop:24, position:'relative',
+      maskImage:'linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)',
+      WebkitMaskImage:'linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)',
+    }}>
+      <div style={{
+        display:'flex', gap:32, whiteSpace:'nowrap',
+        animation:'tickerScroll 28s linear infinite',
+      }}>
+        {items.map((text, i) => (
+          <span key={i} style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+            <span style={{ width:4, height:4, borderRadius:'50%', background:'rgba(255,255,255,0.15)' }} />
+            <span style={{ fontSize:12, color:'rgba(255,255,255,0.3)', fontWeight:500 }}>{text}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ── Mini Sparkline Chart ── */
+function MiniChart({ active }) {
+  const [points, setPoints] = useState(() => {
+    const pts = []
+    let v = 50
+    for (let i = 0; i < 30; i++) {
+      v += (Math.random() - 0.42) * 8
+      v = Math.max(15, Math.min(85, v))
+      pts.push(v)
+    }
+    return pts
+  })
 
   useEffect(() => {
     if (!active) return
     const iv = setInterval(() => {
+      setPoints(prev => {
+        const last = prev[prev.length - 1]
+        const next = Math.max(15, Math.min(85, last + (Math.random() - 0.42) * 7))
+        return [...prev.slice(1), next]
+      })
+    }, 1200)
+    return () => clearInterval(iv)
+  }, [active])
+
+  if (!active) return null
+
+  const w = 200, h = 40
+  const step = w / (points.length - 1)
+  const d = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${i * step},${h - (p / 100) * h}`).join(' ')
+  const areaD = d + ` L${w},${h} L0,${h} Z`
+
+  return (
+    <div style={{ display:'flex', justifyContent:'center', marginTop:16 }}>
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow:'visible' }}>
+        <defs>
+          <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#22C55E" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#22C55E" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path d={areaD} fill="url(#chartGrad)" />
+        <path d={d} fill="none" stroke="#22C55E" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" style={{ filter:'drop-shadow(0 0 4px rgba(34,197,94,0.3))' }} />
+        {/* Live dot at end */}
+        <circle cx={w} cy={h - (points[points.length - 1] / 100) * h} r="2.5" fill="#22C55E" style={{ filter:'drop-shadow(0 0 6px rgba(34,197,94,0.5))' }}>
+          <animate attributeName="r" values="2.5;3.5;2.5" dur="2s" repeatCount="indefinite" />
+        </circle>
+      </svg>
+    </div>
+  )
+}
+
+/* ── Live feed with event flash ── */
+function LiveFeed({ active }) {
+  const [index, setIndex] = useState(0)
+  const [flash, setFlash] = useState(false)
+
+  useEffect(() => {
+    if (!active) return
+    const iv = setInterval(() => {
+      setFlash(true)
       setIndex(prev => (prev + 1) % FEED_EVENTS.length)
+      setTimeout(() => setFlash(false), 350)
     }, 2500)
     return () => clearInterval(iv)
   }, [active])
@@ -91,15 +205,24 @@ function LiveFeed({ active }) {
   const ev = FEED_EVENTS[index]
 
   return (
-    <div style={{ minHeight:24, display:'flex', alignItems:'center', justifyContent:'center', marginTop:20 }}>
+    <div style={{ minHeight:24, display:'flex', alignItems:'center', justifyContent:'center', marginTop:20, position:'relative' }}>
+      {/* Event flash */}
+      {flash && (
+        <div style={{
+          position:'absolute', inset:'-8px -24px',
+          background:`radial-gradient(ellipse, ${ev.color}08, transparent 70%)`,
+          pointerEvents:'none', borderRadius:12,
+          animation:'eventFlash 0.35s ease-out forwards',
+        }} />
+      )}
       <AnimatePresence mode="wait">
         <motion.div
           key={index}
           initial={{ opacity:0, y:10 }}
           animate={{ opacity:1, y:0 }}
           exit={{ opacity:0, y:-10 }}
-          transition={{ duration:0.35 }}
-          style={{ display:'flex', alignItems:'center', gap:8 }}
+          transition={{ duration:0.3 }}
+          style={{ display:'flex', alignItems:'center', gap:8, position:'relative', zIndex:1 }}
         >
           <span style={{ width:6, height:6, borderRadius:'50%', background:ev.color, boxShadow:`0 0 8px ${ev.color}44`, flexShrink:0 }} />
           <span style={{ fontSize:13, color:'rgba(255,255,255,0.55)', fontWeight:500 }}>{ev.text}</span>
@@ -189,6 +312,17 @@ function SocialProofSection() {
           90% { opacity: 1; }
           100% { top: 100%; opacity: 0; }
         }
+        @keyframes tickerScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes eventFlash {
+          0% { opacity: 0.6; }
+          100% { opacity: 0; }
+        }
+        @media (max-width: 640px) {
+          .miniChartWrap { display: none !important; }
+        }
       `}</style>
 
       <motion.p
@@ -218,6 +352,14 @@ function SocialProofSection() {
             <p style={{ fontSize:13, color:'rgba(255,255,255,0.4)', margin:'8px 0 0', fontWeight:500 }}>{label}</p>
           </motion.div>
         ))}
+      </div>
+
+      {/* Ticker strip */}
+      <Ticker active={active} />
+
+      {/* Mini sparkline chart */}
+      <div className="miniChartWrap" style={{ display:'flex', justifyContent:'center' }}>
+        <MiniChart active={active} />
       </div>
 
       {/* Live feed */}

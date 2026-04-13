@@ -152,6 +152,7 @@ export default function MetaPage() {
   const [dep,     setDep]     = useState('')
   const [showAdminClose, setShowAdminClose] = useState(false)
   const [saq,     setSaq]     = useState('')
+  const [statusProb, setStatusProb] = useState('normal')
   const [editRem, setEditRem] = useState(null)
   const [editDep, setEditDep] = useState('')
   const [editSaq, setEditSaq] = useState('')
@@ -190,10 +191,11 @@ export default function MetaPage() {
       lucro:diff>0?diff:0, prejuizo:diff<0?Math.abs(diff):0, resultado:diff,
       resultado_por_conta:meta?.quantidade_contas&&Number(meta.quantidade_contas)>0?Number((Math.abs(diff)/Number(meta.quantidade_contas)).toFixed(2)):0,
       tenant_id:profile?.tenant_id,
+      status_problema:statusProb,
     })
     setSalvando(false)
     if (err) { setError(err.message); return }
-    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq('')
+    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal')
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
     fetchData()
   }
@@ -339,6 +341,26 @@ export default function MetaPage() {
                 </div>
               </div>
 
+              <div>
+                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Status</label>
+                <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                  {[
+                    { k:'normal', l:'Normal', c:'var(--profit)', bg:'var(--profit-dim)', b:'var(--profit-border)' },
+                    { k:'saque_pendente', l:'Saque pendente', c:'var(--warn)', bg:'var(--warn-dim)', b:'var(--warn-border)' },
+                    { k:'conta_bloqueada', l:'Conta bloqueada', c:'var(--loss)', bg:'var(--loss-dim)', b:'var(--loss-border)' },
+                    { k:'banco_analise', l:'Banco em analise', c:'var(--info)', bg:'var(--info-dim)', b:'var(--info-border)' },
+                  ].map(s=>(
+                    <button key={s.k} type="button" onClick={()=>setStatusProb(s.k)} style={{
+                      padding:'6px 12px', borderRadius:8, fontSize:11, fontWeight:600, border:'none', cursor:'pointer',
+                      background: statusProb===s.k ? s.bg : 'rgba(255,255,255,0.02)',
+                      color: statusProb===s.k ? s.c : 'var(--t4)',
+                      border: `1px solid ${statusProb===s.k ? s.b : 'var(--b1)'}`,
+                      transition:'all 0.2s',
+                    }}>{s.l}</button>
+                  ))}
+                </div>
+              </div>
+
               {(dep||saq) && (
                 <div style={{ background:prev.pos?'var(--profit-dim)':'var(--loss-dim)', border:`1px solid ${prev.pos?'var(--profit-border)':'var(--loss-border)'}`, borderRadius:12, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', transition:'all 0.3s' }}>
                   <div>
@@ -358,6 +380,31 @@ export default function MetaPage() {
               </button>
             </form>
           </div>
+
+          {/* Alertas de problemas */}
+          {(()=>{
+            const probs = remessas.filter(r=>r.status_problema && r.status_problema !== 'normal')
+            const sp = probs.filter(r=>r.status_problema==='saque_pendente').length
+            const cb = probs.filter(r=>r.status_problema==='conta_bloqueada').length
+            const ba = probs.filter(r=>r.status_problema==='banco_analise').length
+            if (probs.length === 0) return null
+            return (
+              <div style={{ display:'flex', gap:8, marginBottom:16, flexWrap:'wrap' }}>
+                {sp > 0 && <div style={{ padding:'8px 14px', borderRadius:10, background:'var(--warn-dim)', border:'1px solid var(--warn-border)', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:600, color:'var(--warn)' }}>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  {sp} saque{sp>1?'s':''} pendente{sp>1?'s':''}
+                </div>}
+                {cb > 0 && <div style={{ padding:'8px 14px', borderRadius:10, background:'var(--loss-dim)', border:'1px solid var(--loss-border)', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:600, color:'var(--loss)' }}>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                  {cb} conta{cb>1?'s':''} bloqueada{cb>1?'s':''}
+                </div>}
+                {ba > 0 && <div style={{ padding:'8px 14px', borderRadius:10, background:'var(--info-dim)', border:'1px solid var(--info-border)', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:600, color:'var(--info)' }}>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  {ba} banco{ba>1?'s':''} em analise
+                </div>}
+              </div>
+            )
+          })()}
 
           {/* Histórico */}
           <div>
@@ -390,6 +437,11 @@ export default function MetaPage() {
                           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
                             <h4 style={{ fontSize:13,fontWeight:700,color:'var(--t1)',margin:0 }}>{r.titulo||`Registro ${remessas.length-i}`}</h4>
                             <span className={`badge ${pos?'badge-profit':'badge-loss'}`} style={{ fontSize:9, display:'inline-flex', alignItems:'center', gap:3 }}><svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points={pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>{pos?'Lucro':'Prejuizo'}</span>
+                            {r.status_problema && r.status_problema !== 'normal' && (
+                              <span className={`badge ${r.status_problema==='saque_pendente'?'badge-warn':r.status_problema==='conta_bloqueada'?'badge-loss':'badge-info'}`} style={{ fontSize:9 }}>
+                                {r.status_problema==='saque_pendente'?'Saque pendente':r.status_problema==='conta_bloqueada'?'Conta bloqueada':'Banco em analise'}
+                              </span>
+                            )}
                           </div>
                           <p className="t-small">{r.tipo} · {new Date(r.created_at).toLocaleString('pt-BR')}</p>
                         </div>

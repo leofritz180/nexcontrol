@@ -567,7 +567,7 @@ export default function OperadoresPage() {
       lines.push({ text: `Melhor eficiencia: ${getName(best)} com R$ ${fmt(best.lucroPerRemessa)}/remessa.`, type: 'up' })
     }
     // Best lucro/conta
-    const withDeps = operatorStats.filter(o => o.totalDeposit > 0 && o.closedCount >= 2)
+    const withDeps = operatorStats.filter(o => o.totalDeposit > 0 && o.closedCount >= 1)
     if (withDeps.length > 0) {
       const sorted = [...withDeps].sort((a, b) => (b.lucroFinal / b.totalDeposit) - (a.lucroFinal / a.totalDeposit))
       const best = sorted[0]

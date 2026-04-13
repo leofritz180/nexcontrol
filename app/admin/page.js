@@ -1091,23 +1091,6 @@ export default function AdminPage() {
                       </div>
 
                       {/* Slots favoritos (se PRO e tem slots) */}
-                      {tenant?.favorite_slots?.length > 0 && (
-                        <div>
-                          <label className="t-label" style={{display:'block',marginBottom:6}}>Slot principal <span style={{color:'var(--t4)'}}>(opcional)</span></label>
-                          <div style={{display:'flex',gap:8,overflowX:'auto',paddingBottom:4}}>
-                            {tenant.favorite_slots.map(name => {
-                              const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,'e').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
-                              return (
-                                <div key={name} style={{minWidth:80,textAlign:'center',padding:6,borderRadius:10,background:'var(--raised)',border:'1px solid var(--b1)',flexShrink:0}}>
-                                  <img src={`/slots/${slug}.webp`} alt={name} style={{width:'100%',height:55,objectFit:'cover',borderRadius:6,marginBottom:4}} onError={e=>{e.currentTarget.style.display='none'}}/>
-                                  <p style={{fontSize:9,fontWeight:600,color:'var(--t3)',margin:0,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{name}</p>
-                                </div>
-                              )
-                            })}
-                          </div>
-                        </div>
-                      )}
-
                       {/* Insights do admin */}
                       {myMetas.length > 0 && (
                         <div style={{ padding:'14px 16px', borderRadius:12, background:'rgba(168,85,247,0.04)', border:'1px solid rgba(168,85,247,0.1)' }}>

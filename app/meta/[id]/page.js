@@ -268,6 +268,21 @@ export default function MetaPage() {
       setFeedback(fb)
       setTimeout(() => setFeedback(null), 6000)
     }
+    // Push motivacional pro operador quando registra lucro
+    if (diff >= 0) {
+      const msgs = [
+        'Mandou bem! Continua nesse ritmo.',
+        'Boa remessa! Segue firme.',
+        'Ai sim! Operacao no caminho certo.',
+        'Show de bola! Bora pra cima.',
+        'Ta voando! Mantem o foco.',
+      ]
+      const msg = msgs[Math.floor(Math.random() * msgs.length)]
+      fetch('/api/push/send', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user?.id, title: 'Remessa registrada!', body: `+R$ ${fmt(diff)} — ${msg}`, url: `/meta/${id}` }),
+      }).catch(() => {})
+    }
   }
 
   async function handleAdd(e) {

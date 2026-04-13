@@ -317,8 +317,8 @@ export default function MetaPage() {
     if (err) { setError(err.message); return }
     setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot('')
     showFeedback(diff, statusProb, Number(contasRemessa||0))
+    await fetchData()
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
-    fetchData()
   }
 
   async function toggleStatus() {

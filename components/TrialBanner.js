@@ -62,10 +62,15 @@ export function ConversionModal({ tenant, subscription, stats }) {
   useEffect(() => {
     if (!t || t.subActive || dismissed) return
     if (t.trialExpired || (t.trialActive && t.days <= 2)) {
-      const timer = setTimeout(() => setShow(true), t.trialExpired ? 500 : 3000)
+      // Wait at least 1 min from account creation before showing
+      const created = tenant?.created_at ? new Date(tenant.created_at).getTime() : 0
+      const elapsed = created ? Date.now() - created : Infinity
+      const minDelay = Math.max(0, 60000 - elapsed)
+      const baseDelay = t.trialExpired ? 500 : 3000
+      const timer = setTimeout(() => setShow(true), Math.max(baseDelay, minDelay))
       return () => clearTimeout(timer)
     }
-  }, [t, dismissed])
+  }, [t, dismissed, tenant?.created_at])
 
   if (!show || !t) return null
   const cfg = CFG[t.level]
@@ -186,6 +191,20 @@ export function ConversionModal({ tenant, subscription, stats }) {
 export default function TrialBanner({ tenant, subscription, stats }) {
   const router = useRouter()
   const t = useTrialState(tenant, subscription)
+  const [ready, setReady] = useState(false)
+
+  // Delay: only show after 1 minute from account creation
+  useEffect(() => {
+    if (!tenant?.created_at) { setReady(true); return }
+    const created = new Date(tenant.created_at).getTime()
+    const elapsed = Date.now() - created
+    const DELAY = 60 * 1000 // 1 minute
+    if (elapsed >= DELAY) { setReady(true); return }
+    const timer = setTimeout(() => setReady(true), DELAY - elapsed)
+    return () => clearTimeout(timer)
+  }, [tenant?.created_at])
+
+  if (!ready) return null
   if (!t || t.subActive) return null
   if (!t.trialActive && !t.trialExpired) return null
 

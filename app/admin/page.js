@@ -2048,7 +2048,11 @@ export default function AdminPage() {
             {/* Grid */}
             <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:16}}>
               {[...filteredMetas].sort((a,b) => {
-                // Visual priority: prejuizo first, then neutro, then lucro, then fechada
+                // When filtering by fechadas: most recent first
+                if (metaStatus === 'fechada') {
+                  return new Date(b.fechada_em || b.created_at) - new Date(a.fechada_em || a.created_at)
+                }
+                // Default: prejuizo first, then neutro, then lucro, then fechada
                 const getVal = m => {
                   const mRem = remessas.filter(r => r.meta_id === m.id)
                   const liq = mRem.reduce((s,r)=>s+Number(r.lucro||0),0) - mRem.reduce((s,r)=>s+Number(r.prejuizo||0),0)

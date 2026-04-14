@@ -745,43 +745,31 @@ export default function AdminPage() {
     return { lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),liq:Number((lucro-prej).toFixed(2)),totalDep:Number(totalDep.toFixed(2)),totalSaq:Number(totalSaq.toFixed(2)),lucroHoje:Number(lucroHoje.toFixed(2)),custosHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal:Number(lucroFinalTotal.toFixed(2)),custosTotal,lucroPerConta:Number(lucroPerConta.toFixed(2)),lucroPerMeta:Number(lucroPerMeta.toFixed(2)),ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas }
   },[operators,metas,remessas,costs])
 
-  // ── Hero card: lucro final por periodo selecionado ──
-  // Hero card: lucro final por periodo — valores BRUTOS, custos separados
+  // Hero card: lucro final por periodo — BRUTO por periodo, custos TOTAIS fixos
   const heroLucro = useMemo(()=>{
     const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em)
-    if(heroPeriod==='all') {
-      const lucro = Number(fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0).toFixed(2))
-      const c = Number(costs.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
-      return { value: lucro, count: fechadas.length, custos: c }
-    }
-    const now = new Date()
+    const custosTotalFixo = Number(costs.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
     let filtered = fechadas
-    let filteredCosts = costs
-    if(heroPeriod==='today') {
-      const t = now.toDateString()
-      const todayISO = now.toISOString().slice(0,10)
-      filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===t)
-      filteredCosts = costs.filter(c=>c.date===todayISO)
-    } else if(heroPeriod==='yesterday') {
-      const y = new Date(now); y.setDate(y.getDate()-1)
-      const yStr = y.toDateString()
-      const yISO = y.toISOString().slice(0,10)
-      filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===yStr)
-      filteredCosts = costs.filter(c=>c.date===yISO)
-    } else if(heroPeriod==='7d') {
-      const d = new Date(now); d.setDate(d.getDate()-7)
-      const dISO = d.toISOString().slice(0,10)
-      filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
-      filteredCosts = costs.filter(c=>c.date>=dISO)
-    } else if(heroPeriod==='30d') {
-      const d = new Date(now); d.setDate(d.getDate()-30)
-      const dISO = d.toISOString().slice(0,10)
-      filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
-      filteredCosts = costs.filter(c=>c.date>=dISO)
+    if(heroPeriod!=='all') {
+      const now = new Date()
+      if(heroPeriod==='today') {
+        const t = now.toDateString()
+        filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===t)
+      } else if(heroPeriod==='yesterday') {
+        const y = new Date(now); y.setDate(y.getDate()-1)
+        filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===y.toDateString())
+      } else if(heroPeriod==='7d') {
+        const d = new Date(now); d.setDate(d.getDate()-7)
+        filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
+      } else if(heroPeriod==='30d') {
+        const d = new Date(now); d.setDate(d.getDate()-30)
+        filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
+      }
     }
-    const periodCustos = Number(filteredCosts.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
     const lucro = Number(filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0).toFixed(2))
-    return { value: lucro, count: filtered.length, custos: periodCustos }
+    // Custos so subtraidos no periodo "Tudo" — periodos parciais mostram lucro bruto do periodo
+    const custos = heroPeriod === 'all' ? custosTotalFixo : 0
+    return { value: lucro, count: filtered.length, custos }
   },[metas,heroPeriod,costs])
 
   const ranking = useMemo(()=>

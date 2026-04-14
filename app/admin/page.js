@@ -1477,6 +1477,34 @@ export default function AdminPage() {
             />
           ) : (<>
 
+          {/* ── Status global da operacao ── */}
+          {(() => {
+            const liq = global.lucroFinalTotal
+            const ativas = global.ativas
+            const remsHoje = remessas.filter(r=>new Date(r.created_at).toDateString()===new Date().toDateString())
+            const negHoje = remsHoje.filter(r=>Number(r.resultado||0)<0).length
+            const posHoje = remsHoje.filter(r=>Number(r.resultado||0)>=0).length
+            let opStatus, opColor, opText
+            if (liq > 0 && negHoje <= posHoje) { opStatus='Saudavel'; opColor='#22C55E'; opText='Operacao acelerando — resultado consistente' }
+            else if (liq >= 0 && negHoje > posHoje) { opStatus='Oscilando'; opColor='#F59E0B'; opText='Oscilacao detectada — resultados variando' }
+            else if (liq < 0) { opStatus='Atencao'; opColor='#EF4444'; opText='Resultado acumulado negativo — fique atento' }
+            else { opStatus='Estavel'; opColor='#3B82F6'; opText='Operacao estavel — aguardando mais dados' }
+            return (
+              <motion.div initial={{ opacity:0, y:-6 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3 }}
+                style={{ padding:'12px 18px', borderRadius:12, marginBottom:16, background:`${opColor}06`, border:`1px solid ${opColor}18`, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                  <motion.div animate={{ boxShadow:[`0 0 0 0 ${opColor}00`,`0 0 0 6px ${opColor}20`,`0 0 0 0 ${opColor}00`] }} transition={{ duration:2.5, repeat:Infinity, ease:'easeInOut' }}
+                    style={{ width:10, height:10, borderRadius:'50%', background:opColor, flexShrink:0 }}/>
+                  <div>
+                    <p style={{ fontSize:12, fontWeight:700, color:opColor, margin:0 }}>Status: {opStatus}</p>
+                    <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{opText}</p>
+                  </div>
+                </div>
+                <span style={{ fontSize:9, color:'var(--t4)', fontWeight:500 }}>Atualizado agora</span>
+              </motion.div>
+            )
+          })()}
+
           {/* ── Insights rotativos ── */}
           {(() => {
             const tips = []
@@ -1557,26 +1585,47 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <motion.div
-                  animate={{ textShadow: heroLucro.value>=0
-                    ? ['0 0 40px rgba(34,197,94,0.15)','0 0 80px rgba(34,197,94,0.25)','0 0 40px rgba(34,197,94,0.15)']
-                    : ['0 0 40px rgba(239,68,68,0.15)','0 0 80px rgba(239,68,68,0.25)','0 0 40px rgba(239,68,68,0.15)']
-                  }}
-                  transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
-                >
-                  <AnimatedNumber
-                    value={Math.abs(heroLucro.value)}
-                    key={heroPeriod}
-                    prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
-                    style={{
-                      fontFamily:'var(--mono)', fontSize:52, fontWeight:900,
-                      color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
-                      lineHeight:1, letterSpacing:'-0.03em', display:'block',
+                <div style={{ position:'relative', overflow:'hidden', display:'inline-block' }}>
+                  <motion.div
+                    animate={{ textShadow: heroLucro.value>=0
+                      ? ['0 0 40px rgba(34,197,94,0.15)','0 0 80px rgba(34,197,94,0.25)','0 0 40px rgba(34,197,94,0.15)']
+                      : ['0 0 40px rgba(239,68,68,0.15)','0 0 80px rgba(239,68,68,0.25)','0 0 40px rgba(239,68,68,0.15)']
                     }}
-                  />
-                </motion.div>
+                    transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
+                  >
+                    <AnimatedNumber
+                      value={Math.abs(heroLucro.value)}
+                      key={heroPeriod}
+                      prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
+                      style={{
+                        fontFamily:'var(--mono)', fontSize:52, fontWeight:900,
+                        color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
+                        lineHeight:1, letterSpacing:'-0.03em', display:'block',
+                      }}
+                    />
+                  </motion.div>
+                  {/* Shimmer */}
+                  <div style={{ position:'absolute', top:0, bottom:0, width:'30%', background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)', animation:'heroShimmer 4s ease-in-out infinite', pointerEvents:'none' }}/>
+                  <style>{`@keyframes heroShimmer { 0% { left:-30%; } 100% { left:130%; } }`}</style>
+                </div>
+                {/* Dynamic label */}
+                {(() => {
+                  const v = heroLucro.value
+                  const c = heroLucro.custos || 0
+                  let label, lColor
+                  if (v > 0 && heroPeriod !== 'all') { label = 'Operacao acelerando'; lColor = '#4ade80' }
+                  else if (v > 0) { label = 'Resultado positivo'; lColor = '#4ade80' }
+                  else if (v < 0) { label = 'Oscilando — atencao'; lColor = '#fca5a5' }
+                  else { label = 'Estavel'; lColor = '#94A3B8' }
+                  return (
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:10 }}>
+                      <span style={{ fontSize:11, fontWeight:600, color:lColor }}>{label}</span>
+                      {c > 0 && <span style={{ fontSize:10, color:'var(--t4)' }}>· Custos: -R$ {fmt(c)}</span>}
+                    </div>
+                  )
+                })()}
 
-                <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:20, marginTop:24, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:20, marginTop:20, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
                   <div>
                     <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2, letterSpacing:'0.05em', textTransform:'uppercase' }}>Fechadas</p>
                     <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)', margin:0 }}>{heroLucro.count}</p>

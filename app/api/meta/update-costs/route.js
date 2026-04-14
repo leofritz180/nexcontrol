@@ -38,9 +38,10 @@ export async function POST(req) {
       const { data: meta } = await supabase.from('metas').select('tenant_id,titulo,rede,quantidade_contas').eq('id', meta_id).single()
       if (meta) {
         const val = Math.abs(Number(lucro_final || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        const pos = Number(lucro_final || 0) >= 0
         await sendPushToTenant(supabase, meta.tenant_id, {
           title: 'Meta finalizada!',
-          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} encerrada - Resultado: R$ ${val}`,
+          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} finalizada — Resultado: ${pos?'+':'-'}R$ ${val}`,
           url: '/admin',
         })
       }

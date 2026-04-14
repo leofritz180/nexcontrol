@@ -601,7 +601,9 @@ export default function MetaPage() {
         {remessas.length >= 2 && (() => {
           const insights = []
           const ordered = [...remessas].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-          const nContas = Number(meta?.quantidade_contas || 0)
+          // Contas JA FEITAS (soma de contas_remessa, excluindo redeposito)
+          const contasFeitas = remessas.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+          const nContas = contasFeitas || 0
           const avgPerConta = nContas > 0 ? totais.liq / nContas : 0
           const avgPerRemessa = remessas.length > 0 ? totais.liq / remessas.length : 0
 
@@ -714,14 +716,15 @@ export default function MetaPage() {
           else score -= 25 // Critico
           if (streak >= 5) score -= 15; else if (streak >= 3 && streakPerConta > 8) score -= 8
           if (probs.length > 3) score -= 5 // Muitas pendencias
-          const pctDone = nContas > 0 ? (remessas.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0) / nContas) : 0
+          const metaTotalContas = Number(meta?.quantidade_contas || 0)
+          const pctDone = metaTotalContas > 0 ? (nContas / metaTotalContas) : 0
           score += Math.round(pctDone * 15) // Progresso bonus
           score = Math.max(0, Math.min(100, score))
           const scoreColor = score >= 70 ? 'var(--profit)' : score >= 40 ? 'var(--warn)' : 'var(--loss)'
 
-          // Previsao
-          const contasRestantes = nContas - remessas.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
-          const previsaoFinal = nContas > 0 ? avgPerConta * nContas : 0
+          // Previsao (projecao pra meta inteira baseado no avg real por conta feita)
+          const contasRestantes = metaTotalContas - nContas
+          const previsaoFinal = metaTotalContas > 0 ? avgPerConta * metaTotalContas : 0
 
           const cfg = { good: { bg: 'var(--profit-dim)', border: 'var(--profit-border)', color: 'var(--profit)', icon: 'M20 6L9 17l-5-5' }, warn: { bg: 'var(--warn-dim)', border: 'var(--warn-border)', color: 'var(--warn)', icon: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' }, critical: { bg: 'var(--loss-dim)', border: 'var(--loss-border)', color: 'var(--loss)', icon: 'M18 6L6 18M6 6l12 12' } }
 
@@ -913,7 +916,7 @@ export default function MetaPage() {
                 <div style={{ background:prev.pos?'var(--profit-dim)':'var(--loss-dim)', border:`1px solid ${prev.pos?'var(--profit-border)':'var(--loss-border)'}`, borderRadius:12, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', transition:'all 0.3s' }}>
                   <div>
                     <p className="t-label" style={{ color:prev.pos?'var(--profit)':'var(--loss)', marginBottom:4, display:'flex', alignItems:'center', gap:4 }}><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points={prev.pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>{prev.pos?'Lucro estimado':'Prejuizo estimado'}</p>
-                    {meta?.quantidade_contas&&Number(meta.quantidade_contas)>0 && <p className="t-small">R$ {fmt(Math.abs(prev.diff)/Number(meta.quantidade_contas))} / conta</p>}
+                    {Number(contasRemessa||0) > 0 && <p className="t-small">R$ {fmt(Math.abs(prev.diff)/Number(contasRemessa))} / conta</p>}
                   </div>
                   <p className="t-num" style={{ fontSize:24, fontWeight:800, color:prev.pos?'var(--profit)':'var(--loss)' }}>
                     {prev.pos?'+':'−'}R$ {fmt(Math.abs(prev.diff))}
@@ -1096,10 +1099,10 @@ export default function MetaPage() {
           const totalLucro = remessas.reduce((a,r) => a + Number(r.lucro||0), 0)
           const totalPrej = remessas.reduce((a,r) => a + Number(r.prejuizo||0), 0)
           const liq = totalLucro - totalPrej
+          const contasDone = remessas.filter(r=>r.tipo!=='redeposito').reduce((a,r)=>a+Number(r.contas_remessa||0),0)
           const nContas = Number(meta.quantidade_contas||0)
           const avgPerRemessa = remessas.length > 0 ? liq / remessas.length : 0
-          const avgPerConta = nContas > 0 ? liq / nContas : 0
-          const contasDone = remessas.filter(r=>r.tipo!=='redeposito').reduce((a,r)=>a+Number(r.contas_remessa||0),0)
+          const avgPerConta = contasDone > 0 ? liq / contasDone : 0
           const pctConclusao = nContas > 0 ? Math.min(Math.round((contasDone/nContas)*100),100) : 0
           const positivas = remessas.filter(r=>Number(r.resultado||0)>=0).length
           const taxaAcerto = remessas.length > 0 ? Math.round((positivas/remessas.length)*100) : 0

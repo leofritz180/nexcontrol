@@ -691,11 +691,48 @@ export default function MetaPage() {
 
           if (slotStats.length > 0) {
             const best = slotStats[0]
-            insights.push({ text: `Melhor slot: ${best.name} com media de R$ ${fmt(best.avg)}/remessa`, type: 'good', action: 'Priorizar esse slot nas proximas remessas' })
-
             const worst = slotStats[slotStats.length - 1]
+            const allNeg = slotStats.every(s => s.perConta < 0)
+
+            if (allNeg && slotStats.length >= 2) {
+              // Todos os slots estao negativos — contextualizar
+              const diff = Math.abs(worst.perConta) - Math.abs(best.perConta)
+              if (diff > 1) {
+                insights.push({
+                  text: `${best.name} teve menor prejuizo (R$ ${fmt(best.perConta)}/conta) vs ${worst.name} (R$ ${fmt(worst.perConta)}/conta)`,
+                  type: 'warn',
+                  action: `Diferenca de R$ ${fmt(diff)}/conta entre slots — ${best.name} perdeu menos`
+                })
+              } else {
+                insights.push({
+                  text: `Todos os slots com prejuizo similar — nenhum se destaca positivamente`,
+                  type: 'warn',
+                  action: 'Considere testar outros slots ou ajustar a estrategia'
+                })
+              }
+            } else if (best.perConta >= 0) {
+              // Melhor slot no positivo — elogio real
+              insights.push({
+                text: `${best.name} no positivo: R$ ${fmt(best.perConta)}/conta em ${best.count} remessas`,
+                type: 'good',
+                action: 'Priorizar esse slot nas proximas remessas'
+              })
+            } else {
+              // Melhor slot negativo mas outros piores — contextualizar
+              insights.push({
+                text: `${best.name} com menor prejuizo: R$ ${fmt(best.perConta)}/conta (${best.count} remessas)`,
+                type: 'warn',
+                action: 'Menos pior entre os slots usados — ainda no negativo'
+              })
+            }
+
+            // Pior slot com destaque se muito ruim
             if (worst.perConta < -8 && worst.name !== best.name) {
-              insights.push({ text: `${worst.name} com R$ ${fmt(worst.perConta)}/conta de prejuizo — considere trocar`, type: worst.perConta < -12 ? 'critical' : 'warn', action: 'Testar outros slots no lugar desse' })
+              insights.push({
+                text: `${worst.name}: R$ ${fmt(worst.perConta)}/conta de prejuizo — pior desempenho`,
+                type: worst.perConta < -12 ? 'critical' : 'warn',
+                action: 'Considere trocar esse slot'
+              })
             }
           }
 

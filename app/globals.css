@@ -834,28 +834,92 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     padding-right: 16px !important;
   }
 
-  /* ── Landing page ── */
-  div[style*="width: 280"],
-  div[style*="width:280"] {
-    width: 200px !important;
-    height: auto !important;
+  /* ══ LANDING PAGE MOBILE ══ */
+
+  /* Hero section */
+  section[style*="minHeight:'100vh'"] {
+    padding: 40px 20px !important;
+    min-height: 100dvh !important;
   }
-  /* Landing hero */
-  section[style*="minHeight:'100vh'"] h1[style*="fontSize:40"],
-  section[style*="minHeight:'100vh'"] h1[style*="fontSize: 40"] {
+  section[style*="minHeight:'100vh'"] h1 {
     font-size: 28px !important;
     line-height: 1.15 !important;
   }
-  /* Landing badges row */
+  section[style*="minHeight:'100vh'"] > div[style*="maxWidth:580"],
+  section[style*="minHeight:'100vh'"] > div[style*="maxWidth: 580"] {
+    max-width: 100% !important;
+  }
+
+  /* Hero CTA buttons — stack vertically */
+  section[style*="minHeight:'100vh'"] div[style*="gap:12"][style*="justifyContent:'center'"] {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  section[style*="minHeight:'100vh'"] div[style*="gap:12"][style*="justifyContent:'center'"] a {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+
+  /* Hero badges row */
   div[style*="gap:24"][style*="justifyContent:'center'"],
   div[style*="gap: 24"][style*="justifyContent"] {
-    gap: 14px !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
   }
-  /* Landing 3 pilares, social proof — use g-4 */
-  /* Ticker speed */
-  @keyframes tickerScroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+
+  /* Social proof numbers */
+  section[style*="maxWidth:800"] p[style*="fontSize:36"] {
+    font-size: 28px !important;
+  }
+  section[style*="maxWidth:800"] {
+    padding: 36px 16px 32px !important;
+  }
+
+  /* Dashboard demo — stack KPI grid */
+  section[style*="maxWidth:700"] {
+    padding: 0 16px 60px !important;
+  }
+  section[style*="maxWidth:700"] div[style*="gridTemplateColumns:'1.6fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  section[style*="maxWidth:700"] p[style*="fontSize:28"] {
+    font-size: 22px !important;
+  }
+
+  /* 3 Pilares */
+  section[style*="maxWidth:900"] {
+    padding: 30px 16px 60px !important;
+  }
+
+  /* Pain section */
+  div[style*="maxWidth: 700"][style*="padding: '60px"] {
+    padding: 40px 16px !important;
+  }
+  div[style*="maxWidth: 440"] {
+    max-width: 100% !important;
+  }
+
+  /* Scroll indicator — hide on small mobile */
+  div[style*="bottom:36"][style*="flexDirection:'column'"] {
+    bottom: 20px !important;
+  }
+
+  /* Live demo section title */
+  p[style*="fontSize: 20"][style*="textAlign: 'center'"] {
+    font-size: 16px !important;
+    padding: 0 16px !important;
+  }
+
+  /* Ambient blurs — reduce on mobile for performance */
+  div[style*="width:500"][style*="height:500"][style*="filter:'blur"] {
+    width: 300px !important;
+    height: 300px !important;
+  }
+  div[style*="width:400"][style*="height:400"][style*="filter:'blur"] {
+    width: 250px !important;
+    height: 250px !important;
   }
 
   /* ── Sidebar mobile toggle safe area ── */
@@ -934,6 +998,24 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   p[style*="40px"] { font-size: 22px !important; }
 
   header nav a { padding: 4px 8px !important; font-size: 10px !important; }
+
+  /* ── Landing small phones ── */
+  section[style*="minHeight:'100vh'"] h1 {
+    font-size: 24px !important;
+    line-height: 1.12 !important;
+  }
+  section[style*="minHeight:'100vh'"] {
+    padding: 32px 16px !important;
+  }
+  section[style*="maxWidth:800"] p[style*="fontSize:36"] {
+    font-size: 24px !important;
+  }
+  section[style*="maxWidth:700"] p[style*="fontSize:28"] {
+    font-size: 18px !important;
+  }
+  /* Hide heavy effects on small phones */
+  div[style*="filter:'blur(80px)"] { display: none !important; }
+  div[style*="filter:'blur(60px)"] { display: none !important; }
 
   .g-4 { grid-template-columns: 1fr !important; }
   .g-5 { grid-template-columns: 1fr !important; }

@@ -540,7 +540,38 @@ export default function OwnerPage() {
           )}
         </motion.div>
 
-        {/* ═══ 7. QUICK STATS ═══ */}
+        {/* ═══ 7. MOVIMENTACAO TOTAL ═══ */}
+        {(() => {
+          const globalDep = adminStats.reduce((a, s) => a + Number(s.totalDep || 0), 0)
+          const globalSaq = adminStats.reduce((a, s) => a + Number(s.totalSaq || 0), 0)
+          const globalMov = globalDep + globalSaq
+          return (
+            <motion.div {...fadeUp(0, 0.35)} style={{ ...card, marginBottom: 28 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>Movimentacao total da plataforma</h3>
+                <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 22, fontWeight: 900, color: '#F1F5F9', margin: 0 }}>
+                  <CountUp value={globalMov} prefix="R$ " />
+                </p>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                <div style={{ padding: '18px 20px', borderRadius: 14, background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.1)' }}>
+                  <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Total depositado</p>
+                  <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 26, fontWeight: 800, color: '#22C55E', margin: 0, lineHeight: 1 }}>
+                    <CountUp value={globalDep} prefix="R$ " />
+                  </p>
+                </div>
+                <div style={{ padding: '18px 20px', borderRadius: 14, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.1)' }}>
+                  <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Total sacado</p>
+                  <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 26, fontWeight: 800, color: '#EF4444', margin: 0, lineHeight: 1 }}>
+                    <CountUp value={globalSaq} prefix="R$ " />
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )
+        })()}
+
+        {/* ═══ 8. QUICK STATS ═══ */}
         <motion.div {...fadeUp(0, 0.4)}>
           <h3 style={{ fontSize: 14, fontWeight: 700, color: '#94A3B8', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Numeros gerais</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>

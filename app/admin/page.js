@@ -802,6 +802,7 @@ export default function AdminPage() {
       list=list.filter(m=>{
         const d=new Date(m.created_at)
         if(metaPeriod==='today') return d.toDateString()===now.toDateString()
+        if(metaPeriod==='yesterday'){const y=new Date(now);y.setDate(y.getDate()-1);return d.toDateString()===y.toDateString()}
         if(metaPeriod==='week'){const w=new Date(now);w.setDate(w.getDate()-7);return d>=w}
         if(metaPeriod==='month'){const mo=new Date(now);mo.setDate(mo.getDate()-30);return d>=mo}
         return true
@@ -1952,7 +1953,7 @@ export default function AdminPage() {
                 <motion.button key={k} onClick={()=>setMetaStatus(k)} className={`btn btn-sm ${metaStatus===k?'btn-brand':'btn-ghost'}`} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>{l}</motion.button>
               ))}
               <div style={{display:'flex',gap:4,background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:10,padding:4,marginLeft:'auto'}}>
-                {[['all','Tudo'],['today','Hoje'],['week','7 dias'],['month','30 dias']].map(([k,l])=>(
+                {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['week','7 dias'],['month','30 dias']].map(([k,l])=>(
                   <motion.button key={k} onClick={()=>setMetaPeriod(k)} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                     style={{fontFamily:'Inter,sans-serif',fontSize:11,fontWeight:600,padding:'5px 12px',borderRadius:7,cursor:'pointer',transition:'all 0.15s',border:'none',background:metaPeriod===k?'var(--raised)':'transparent',color:metaPeriod===k?'var(--t1)':'var(--t3)'}}>{l}</motion.button>
                 ))}

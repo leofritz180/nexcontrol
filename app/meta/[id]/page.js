@@ -871,76 +871,83 @@ export default function MetaPage() {
           ) : null
         })()}
 
-        <div className="g-side" style={{ display:'grid', gridTemplateColumns:'420px 1fr', gap:22 }}>
-          {/* Form */}
-          <div className="card a2" style={{ padding:26, height:'fit-content', position:'sticky', top:78 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:22 }}>
+        <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
+          {/* Form — horizontal layout */}
+          <div className="card a2" style={{ padding:26 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:18 }}>
               <div style={{ width:34,height:34,borderRadius:9,background:'var(--brand-dim)',border:'1px solid var(--brand-border)',display:'flex',alignItems:'center',justifyContent:'center' }}>
                 <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </div>
               <div>
                 <h2 className="t-h3">Registrar remessa</h2>
-                <p className="t-small">Cada registro é calculado individualmente</p>
+                <p className="t-small">Cada registro e calculado individualmente</p>
               </div>
             </div>
 
-            <form onSubmit={handleAdd} style={{ display:'flex', flexDirection:'column', gap:15 }}>
-              <div>
-                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Título <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
-                <input className="input" value={tituloR} onChange={e=>setTituloR(e.target.value)} placeholder="Ex: 1ª remessa, 2º redepósito..."/>
-              </div>
-              <div>
-                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Tipo</label>
-                <select className="input" value={tipo} onChange={e=>setTipo(e.target.value)}>
-                  <option value="remessa">Remessa</option>
-                  <option value="redeposito">Redepósito</option>
-                  <option value="ajuste">Ajuste</option>
-                </select>
-              </div>
-              <div>
-                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Saldo inicial (R$)</label>
-                <input className="input" type="number" step="0.01" value={saldoIni} onChange={e=>setSaldoIni(e.target.value)}/>
-              </div>
-              <div>
-                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Contas nesta remessa {tipo !== 'redeposito' && <span style={{color:'var(--loss)'}}>*</span>}</label>
-                <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="Ex: 5" required={tipo !== 'redeposito'}/>
-              </div>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+            <form onSubmit={handleAdd} style={{ display:'flex', flexDirection:'column', gap:14 }}>
+              {/* Row 1: Titulo + Tipo + Saldo + Contas */}
+              <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1.5fr 1fr 1fr 1fr', gap:12 }}>
                 <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:8 }}>Depósito *</label>
+                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Titulo <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
+                  <input className="input" value={tituloR} onChange={e=>setTituloR(e.target.value)} placeholder="Ex: 1a remessa"/>
+                </div>
+                <div>
+                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Tipo</label>
+                  <select className="input" value={tipo} onChange={e=>setTipo(e.target.value)}>
+                    <option value="remessa">Remessa</option>
+                    <option value="redeposito">Redeposito</option>
+                    <option value="ajuste">Ajuste</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Saldo inicial</label>
+                  <input className="input" type="number" step="0.01" value={saldoIni} onChange={e=>setSaldoIni(e.target.value)}/>
+                </div>
+                <div>
+                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Contas {tipo !== 'redeposito' && <span style={{color:'var(--loss)'}}>*</span>}</label>
+                  <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="5" required={tipo !== 'redeposito'}/>
+                </div>
+              </div>
+              {/* Row 2: Deposito + Saque + Status + Submit */}
+              <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1.5fr auto', gap:12, alignItems:'end' }}>
+                <div>
+                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Deposito *</label>
                   <input className="input" type="number" step="0.01" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="0,00"/>
                 </div>
                 <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:8 }}>Saque *</label>
+                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Saque *</label>
                   <input className="input" type="number" step="0.01" value={saq} onChange={e=>setSaq(e.target.value)} required placeholder="0,00"/>
                 </div>
-              </div>
 
-              <div>
-                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Status</label>
-                <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-                  {[
-                    { k:'normal', l:'Normal', c:'var(--profit)', bg:'var(--profit-dim)', b:'var(--profit-border)' },
-                    { k:'saque_pendente', l:'Saque pendente', c:'var(--warn)', bg:'var(--warn-dim)', b:'var(--warn-border)' },
-                    { k:'conta_bloqueada', l:'Conta bloqueada', c:'var(--loss)', bg:'var(--loss-dim)', b:'var(--loss-border)' },
-                    { k:'banco_analise', l:'Banco em analise', c:'var(--info)', bg:'var(--info-dim)', b:'var(--info-border)' },
-                  ].map(s=>(
-                    <button key={s.k} type="button" onClick={()=>setStatusProb(s.k)} style={{
-                      padding:'6px 12px', borderRadius:8, fontSize:11, fontWeight:600, border:'none', cursor:'pointer',
-                      background: statusProb===s.k ? s.bg : 'rgba(255,255,255,0.02)',
-                      color: statusProb===s.k ? s.c : 'var(--t4)',
-                      border: `1px solid ${statusProb===s.k ? s.b : 'var(--b1)'}`,
-                      transition:'all 0.2s',
-                    }}>{s.l}</button>
-                  ))}
+                <div>
+                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Status</label>
+                  <div style={{ display:'flex', gap:4, flexWrap:'wrap' }}>
+                    {[
+                      { k:'normal', l:'Normal', c:'var(--profit)', bg:'var(--profit-dim)', b:'var(--profit-border)' },
+                      { k:'saque_pendente', l:'Pendente', c:'var(--warn)', bg:'var(--warn-dim)', b:'var(--warn-border)' },
+                      { k:'conta_bloqueada', l:'Bloqueada', c:'var(--loss)', bg:'var(--loss-dim)', b:'var(--loss-border)' },
+                      { k:'banco_analise', l:'Analise', c:'var(--info)', bg:'var(--info-dim)', b:'var(--info-border)' },
+                    ].map(s=>(
+                      <button key={s.k} type="button" onClick={()=>setStatusProb(s.k)} style={{
+                        padding:'5px 10px', borderRadius:7, fontSize:10, fontWeight:600, cursor:'pointer',
+                        background: statusProb===s.k ? s.bg : 'rgba(255,255,255,0.02)',
+                        color: statusProb===s.k ? s.c : 'var(--t4)',
+                        border: `1px solid ${statusProb===s.k ? s.b : 'var(--b1)'}`,
+                        transition:'all 0.2s',
+                      }}>{s.l}</button>
+                    ))}
+                  </div>
                 </div>
+                <button type="submit" className="btn btn-profit" disabled={salvando||!dep||!saq||(tipo!=='redeposito'&&(!contasRemessa||Number(contasRemessa)<=0))} style={{ padding:'10px 24px', fontSize:13, whiteSpace:'nowrap', alignSelf:'end' }}>
+                  {salvando?'Registrando...':'Registrar'}
+                </button>
               </div>
-
-              {/* Observacoes */}
-              <div>
-                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Observacoes <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
-                <input className="input" value={obsRemessa} onChange={e=>setObsRemessa(e.target.value)} placeholder="Detalhes sobre esta remessa..." style={{ fontSize:13 }}/>
-              </div>
+              {/* Row 3: Obs + Preview */}
+              <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                <div>
+                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Observacoes <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
+                  <input className="input" value={obsRemessa} onChange={e=>setObsRemessa(e.target.value)} placeholder="Detalhes..." style={{ fontSize:13 }}/>
+                </div>
 
               {/* Slot selector — always show section, msg if none configured */}
               <div>
@@ -985,23 +992,21 @@ export default function MetaPage() {
                 )}
               </div>
 
+              {/* Preview inline */}
               {(dep||saq) && (
-                <div style={{ background:prev.pos?'var(--profit-dim)':'var(--loss-dim)', border:`1px solid ${prev.pos?'var(--profit-border)':'var(--loss-border)'}`, borderRadius:12, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', transition:'all 0.3s' }}>
+                <div style={{ background:prev.pos?'var(--profit-dim)':'var(--loss-dim)', border:`1px solid ${prev.pos?'var(--profit-border)':'var(--loss-border)'}`, borderRadius:10, padding:'10px 14px', display:'flex', justifyContent:'space-between', alignItems:'center', transition:'all 0.3s' }}>
                   <div>
-                    <p className="t-label" style={{ color:prev.pos?'var(--profit)':'var(--loss)', marginBottom:4, display:'flex', alignItems:'center', gap:4 }}><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points={prev.pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>{prev.pos?'Lucro estimado':'Prejuizo estimado'}</p>
-                    {Number(contasRemessa||0) > 0 && <p className="t-small">R$ {fmt(Math.abs(prev.diff)/Number(contasRemessa))} / conta</p>}
+                    <p className="t-label" style={{ color:prev.pos?'var(--profit)':'var(--loss)', marginBottom:2, display:'flex', alignItems:'center', gap:4, fontSize:10 }}><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points={prev.pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>{prev.pos?'Lucro estimado':'Prejuizo estimado'}</p>
+                    {Number(contasRemessa||0) > 0 && <p className="t-small" style={{margin:0}}>R$ {fmt(Math.abs(prev.diff)/Number(contasRemessa))} / conta</p>}
                   </div>
-                  <p className="t-num" style={{ fontSize:24, fontWeight:800, color:prev.pos?'var(--profit)':'var(--loss)' }}>
-                    {prev.pos?'+':'−'}R$ {fmt(Math.abs(prev.diff))}
+                  <p className="t-num" style={{ fontSize:20, fontWeight:800, color:prev.pos?'var(--profit)':'var(--loss)', margin:0 }}>
+                    {prev.pos?'+':'\u2212'}R$ {fmt(Math.abs(prev.diff))}
                   </p>
                 </div>
               )}
+              </div>
 
               {error && <div className="alert-error" style={{ display:'flex', alignItems:'center', gap:8 }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
-
-              <button type="submit" className="btn btn-profit" disabled={salvando||!dep||!saq||(tipo!=='redeposito'&&(!contasRemessa||Number(contasRemessa)<=0))} style={{ width:'100%', padding:'13px', fontSize:14 }}>
-                {salvando?<><div className="spinner" style={{ width:14,height:14,borderTopColor:'#012b1c' }}/> Registrando...</>:<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Registrar remessa</>}
-              </button>
             </form>
           </div>
 

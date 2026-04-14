@@ -1867,9 +1867,41 @@ export default function AdminPage() {
               </div>
             </div>
 
+            {/* Resumo inteligente */}
+            {filteredMetas.length > 0 && (() => {
+              const metaStats = filteredMetas.map(m => {
+                const mRem = remessas.filter(r => r.meta_id === m.id)
+                const liq = mRem.reduce((a,r)=>a+Number(r.lucro||0),0) - mRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
+                const val = m.status_fechamento === 'fechada' && m.lucro_final != null ? Number(m.lucro_final) : liq
+                return val
+              })
+              const emPrej = metaStats.filter(v => v < 0).length
+              const emLucro = metaStats.filter(v => v > 0).length
+              const neutras = metaStats.filter(v => v === 0).length
+              const fechadas = filteredMetas.filter(m => m.status_fechamento === 'fechada').length
+              return (
+                <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3 }}
+                  style={{ display:'flex', alignItems:'center', gap:16, marginBottom:20, padding:'12px 18px', borderRadius:12, background:'var(--surface)', border:'1px solid var(--b1)', flexWrap:'wrap' }}>
+                  <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>Resumo:</span>
+                  {emLucro > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#22C55E', fontWeight:600 }}><span style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}/>{emLucro} em lucro</span>}
+                  {emPrej > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#EF4444', fontWeight:600 }}><span style={{ width:6, height:6, borderRadius:'50%', background:'#EF4444' }}/>{emPrej} em prejuizo</span>}
+                  {neutras > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#F59E0B', fontWeight:600 }}><span style={{ width:6, height:6, borderRadius:'50%', background:'#F59E0B' }}/>{neutras} neutras</span>}
+                  {fechadas > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'var(--t4)', fontWeight:600 }}><span style={{ width:6, height:6, borderRadius:'50%', background:'var(--t4)' }}/>{fechadas} concluidas</span>}
+                </motion.div>
+              )
+            })()}
+
             {/* Grid */}
-            <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:16}}>
-              {filteredMetas.map((m,i)=>{
+            <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:16}}>
+              {[...filteredMetas].sort((a,b) => {
+                // Visual priority: prejuizo first, then neutro, then lucro, then fechada
+                const getVal = m => {
+                  const mRem = remessas.filter(r => r.meta_id === m.id)
+                  const liq = mRem.reduce((s,r)=>s+Number(r.lucro||0),0) - mRem.reduce((s,r)=>s+Number(r.prejuizo||0),0)
+                  return m.status_fechamento === 'fechada' ? 99999 + (Number(m.lucro_final||0)) : liq
+                }
+                return getVal(a) - getVal(b)
+              }).map((m,i)=>{
                 const mRem=remessas.filter(r=>r.meta_id===m.id)
                 const lucroR=mRem.reduce((a,r)=>a+Number(r.lucro||0),0)
                 const prejR=mRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
@@ -1883,66 +1915,97 @@ export default function AdminPage() {
                 const displayVal=fechada&&m.lucro_final!=null?Number(m.lucro_final):liqR
                 const isPos=displayVal>=0
                 const metaDate=new Date(m.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'})
+                const isAtiva = !fechada && (m.status||'ativa')==='ativa'
+
+                // Insight per card
+                const last3 = [...mRem].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,3)
+                const negSeq = last3.filter(r=>Number(r.resultado||0)<0).length
+                const posSeq = last3.filter(r=>Number(r.resultado||0)>=0).length
+                const acerto = mRem.length > 0 ? Math.round(mRem.filter(r=>Number(r.resultado||0)>=0).length/mRem.length*100) : 0
+                let insightText = '', insightColor = ''
+                if (fechada) { insightText = ''; insightColor = '' }
+                else if (displayVal < 0 && negSeq >= 2) { insightText = `${negSeq} perdas seguidas`; insightColor = '#EF4444' }
+                else if (acerto < 40 && mRem.length >= 3) { insightText = 'Baixo acerto'; insightColor = '#F59E0B' }
+                else if (displayVal < 0) { insightText = 'Em prejuizo'; insightColor = '#EF4444' }
+                else if (posSeq >= 2 && displayVal > 0) { insightText = 'Boa consistencia'; insightColor = '#22C55E' }
+                else if (mRem.length > 0) { insightText = 'Oscilando'; insightColor = '#F59E0B' }
+
+                // Status badge
+                const statusLabel = fechada ? 'CONCLUIDA' : displayVal < 0 ? 'EM PREJUIZO' : displayVal > 0 ? 'EM LUCRO' : 'EM RISCO'
+                const statusColor = fechada ? '#94A3B8' : displayVal < 0 ? '#EF4444' : displayVal > 0 ? '#22C55E' : '#F59E0B'
+
+                // Progress bar color based on result
+                const progColor = fechada ? 'linear-gradient(90deg, #22C55E, #4ADE80)' : displayVal >= 0 ? `linear-gradient(90deg, #22C55E, #4ADE80)` : `linear-gradient(90deg, #EF4444, #F87171)`
 
                 return (
                   <motion.div key={m.id} onClick={()=>openMetaDetail(m)}
                     initial={{opacity:0,y:16,scale:0.97}} animate={{opacity:1,y:0,scale:1}}
-                    transition={{duration:0.35,delay:i*0.05,ease}}
+                    transition={{duration:0.35,delay:Math.min(i*0.04,0.5),ease}}
                     whileHover={{
-                      y:-4,scale:1.015,
-                      boxShadow:`0 0 35px hsla(${nc.h},0.18), 0 12px 30px rgba(0,0,0,0.4)`,
-                      borderColor:`hsla(${nc.h},0.55)`,
+                      y:-5,scale:1.025,
+                      boxShadow:`0 0 30px ${statusColor}18, 0 16px 40px rgba(0,0,0,0.45)`,
+                      borderColor:`${statusColor}55`,
                       transition:{duration:0.2}
                     }}
+                    whileTap={{ scale:0.98 }}
                     style={{
                     borderRadius:18,overflow:'hidden',position:'relative',
-                    background:`linear-gradient(160deg, hsla(${nc.h},0.32) 0%, hsla(${nc.h},0.15) 45%, #0a1220 100%)`,
-                    border:`1px solid hsla(${nc.h},0.4)`,
-                    boxShadow:`0 0 25px hsla(${nc.h},0.1), 0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 hsla(${nc.h},0.12)`,
+                    background:`linear-gradient(160deg, ${statusColor}12 0%, ${statusColor}06 40%, #0a1220 100%)`,
+                    border:`1px solid ${statusColor}30`,
+                    boxShadow:`0 0 20px ${statusColor}08, 0 4px 20px rgba(0,0,0,0.35)`,
                     cursor:'pointer',
                   }}>
-                    <div style={{height:3,background:`linear-gradient(90deg, ${nc.hex}, ${nc.hex}88)`}}/>
-                    <div style={{padding:'18px 20px 16px',position:'relative',zIndex:1}}>
-                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:4}}>
-                        <div style={{display:'flex',alignItems:'center',gap:6}}>
-                          <div style={{width:8,height:8,borderRadius:'50%',background:nc.hex,boxShadow:`0 0 8px ${nc.hex}88`}}/>
-                          <span style={{fontSize:15,fontWeight:900,color:nc.hex,letterSpacing:'0.02em'}}>{totalContas} DEP {m.rede||'—'}</span>
-                        </div>
-                        <span style={{
-                          fontSize:9,fontWeight:700,letterSpacing:'0.05em',
-                          padding:'2px 8px',borderRadius:99,
-                          background:fechada?'rgba(34,197,94,0.18)':'rgba(255,255,255,0.06)',
-                          color:fechada?'#22C55E':'var(--t3)',
-                          border:`1px solid ${fechada?'rgba(34,197,94,0.3)':'var(--b1)'}`,
-                        }}>
-                          {fechada?'Concluida':(m.status||'ativa')==='ativa'?'Ativa':'Finalizada'}
+                    {/* Top accent */}
+                    <div style={{height:3,background:`linear-gradient(90deg, ${nc.hex}, ${nc.hex}66)`}}/>
+                    <div style={{padding:'16px 18px 14px',position:'relative',zIndex:1}}>
+                      {/* Status badge */}
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
+                        <span style={{fontSize:8,fontWeight:800,letterSpacing:'0.08em',padding:'2px 8px',borderRadius:4,background:`${statusColor}15`,color:statusColor,border:`1px solid ${statusColor}25`}}>
+                          {statusLabel}
                         </span>
-                      </div>
-                      <p style={{fontSize:10,color:'var(--t4)',margin:'0 0 14px',paddingLeft:14}}>{metaDate}</p>
-                      <div style={{marginBottom:14}}>
-                        <div style={{display:'flex',justifyContent:'flex-end',marginBottom:5}}>
-                          <span style={{fontSize:11,fontWeight:600,color:fechada?'var(--t3)':nc.hex+'99',fontFamily:'var(--mono)'}}>{fechada?`${totalContas}/${totalContas}`:`${depDone}/${totalContas}`}</span>
-                        </div>
-                        <div style={{height:5,background:'rgba(255,255,255,0.06)',borderRadius:99,overflow:'hidden'}}>
+                        {isAtiva && (
                           <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progPct}%` }}
-                            transition={{ duration: 1, delay: i * 0.05 + 0.2, ease: [0.4,0,0.2,1] }}
-                            style={{
-                            height:'100%',borderRadius:99,
-                            background:fechada?'linear-gradient(90deg, #22C55E, #4ADE80)':`linear-gradient(90deg, ${nc.hex}, ${nc.hex}bb)`,
-                            boxShadow:fechada?'0 0 10px rgba(34,197,94,0.3)':`0 0 6px ${nc.hex}30`,
-                          }}/>
+                            animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0)','0 0 0 4px rgba(34,197,94,0.15)','0 0 0 0 rgba(34,197,94,0)'] }}
+                            transition={{ duration:2, repeat:Infinity }}
+                            style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}
+                          />
+                        )}
+                      </div>
+                      {/* Title */}
+                      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
+                        <div style={{width:7,height:7,borderRadius:'50%',background:nc.hex,boxShadow:`0 0 6px ${nc.hex}66`,flexShrink:0}}/>
+                        <span style={{fontSize:14,fontWeight:900,color:'var(--t1)',letterSpacing:'0.01em'}}>{totalContas} DEP {m.rede||'—'}</span>
+                      </div>
+                      {/* Insight */}
+                      {insightText && (
+                        <p style={{fontSize:9,fontWeight:600,color:insightColor,margin:'2px 0 0',paddingLeft:13,opacity:0.85}}>{insightText}</p>
+                      )}
+                      <p style={{fontSize:10,color:'var(--t4)',margin:'4px 0 12px',paddingLeft:13}}>{metaDate} · {remDone} remessas</p>
+                      {/* Progress */}
+                      <div style={{marginBottom:12}}>
+                        <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                          <span style={{fontSize:9,color:'var(--t4)'}}>Progresso</span>
+                          <span style={{fontSize:10,fontWeight:600,color:'var(--t3)',fontFamily:'var(--mono)'}}>{depDone}/{totalContas}</span>
+                        </div>
+                        <div style={{height:5,background:'rgba(255,255,255,0.05)',borderRadius:99,overflow:'hidden'}}>
+                          <motion.div
+                            initial={{ width:0 }}
+                            animate={{ width:`${progPct}%` }}
+                            transition={{ duration:1, delay:Math.min(i*0.04,0.5)+0.2, ease:[0.4,0,0.2,1] }}
+                            style={{ height:'100%',borderRadius:99,background:progColor,boxShadow:`0 0 8px ${statusColor}20` }}
+                          />
                         </div>
                       </div>
+                      {/* Value */}
                       <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end'}}>
-                        <span style={{
-                          fontFamily:'var(--mono)',fontSize:20,fontWeight:800,
-                          color:isPos?'#22C55E':'#EF4444',
-                          opacity:0.9,
-                        }}>
+                        <motion.span
+                          style={{
+                            fontFamily:'var(--mono)',fontSize:22,fontWeight:900,
+                            color:isPos?'#22C55E':'#EF4444',
+                            textShadow:`0 0 12px ${isPos?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.15)'}`,
+                          }}>
                           {isPos?'+':'-'}R$ {fmt(Math.abs(displayVal))}
-                        </span>
+                        </motion.span>
                       </div>
                     </div>
                   </motion.div>

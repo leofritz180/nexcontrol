@@ -563,7 +563,7 @@ export default function HomePage() {
           </div>
 
           <h1 style={{ fontSize:40, fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 14px', lineHeight:1.12, animation:'fade-up 0.5s ease 0.1s both' }}>
-            Voce nao sabe se esta lucrando de verdade.
+            Você não sabe se está lucrando de verdade.
           </h1>
 
           <p className="lp-sub1" style={{ fontSize:16, color:'var(--t2)', marginBottom:16, lineHeight:1.6, animation:'fade-up 0.5s ease 0.2s both' }}>
@@ -571,23 +571,23 @@ export default function HomePage() {
           </p>
 
           <p className="lp-sub2" style={{ fontSize:14, color:'var(--t3)', marginBottom:36, lineHeight:1.6, animation:'fade-up 0.5s ease 0.25s both' }}>
-            Acompanhe cada remessa, receba alertas e veja exatamente onde esta o lucro ou prejuizo da sua operacao.
+            Acompanhe cada remessa, receba alertas e veja exatamente onde está o lucro ou prejuízo da sua operação.
           </p>
 
           <div className="lp-ctas" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', animation:'fade-up 0.5s ease 0.3s both' }}>
             <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:220, justifyContent:'center', fontSize:15, fontWeight:700 }}>
-              Comecar agora
+              Começar agora
             </Link>
             <Link href="/login" className="btn btn-ghost btn-lg" style={{ minWidth:180, justifyContent:'center', fontSize:14 }}>
-              Ja tenho conta
+              Já tenho conta
             </Link>
           </div>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12, textAlign: 'center' }}>3 dias gratis • Sem compromisso</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12, textAlign: 'center' }}>3 dias grátis • Sem compromisso</p>
 
           <div className="lp-badges" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:24, marginTop:40, animation:'fade-in 0.4s ease 0.4s both' }}>
             {[
-              { v:'3 dias', l:'teste gratis' },
-              { v:'Tempo real', l:'atualizacao 30s' },
+              { v:'3 dias', l:'teste grátis' },
+              { v:'Tempo real', l:'atualização 30s' },
               { v:'App celular', l:'iPhone e Android' },
             ].map(({ v, l }) => (
               <div key={v} style={{ textAlign:'center' }}>
@@ -610,16 +610,16 @@ export default function HomePage() {
       <SocialProofSection />
 
       {/* ═══ LIVE DASHBOARD DEMO ═══ */}
-      <p className="lp-demo-title" style={{ fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: 20 }}>Veja sua operacao acontecendo em tempo real:</p>
+      <p className="lp-demo-title" style={{ fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: 20 }}>Veja sua operação acontecendo em tempo real:</p>
       <LiveDashboardDemo/>
 
       {/* ═══ 3 PILARES ═══ */}
       <section className="lp-pilares" style={{ padding:'40px 24px 80px', maxWidth:900, margin:'0 auto' }}>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }} className="g-4">
           {[
-            { icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z', t:'Inteligencia em tempo real', d:'Veja o que esta acontecendo na sua operacao agora — nao depois.' },
-            { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe com performance', d:'Saiba exatamente quem esta performando e quem esta te fazendo perder dinheiro.' },
-            { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real, nao estimativa', d:'Pare de operar no achismo. Veja o resultado real da sua operacao.' },
+            { icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z', t:'Inteligência em tempo real', d:'Veja o que está acontecendo na sua operação agora — não depois.' },
+            { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe com performance', d:'Saiba exatamente quem está performando e quem está te fazendo perder dinheiro.' },
+            { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real, não estimativa', d:'Pare de operar no achismo. Veja o resultado real da sua operação.' },
           ].map(({icon,t,d},i) => (
             <div key={i} style={{ padding:'28px 24px', borderRadius:14, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.05)' }}>
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:16 }}>
@@ -635,10 +635,10 @@ export default function HomePage() {
       {/* ═══ PAIN SECTION ═══ */}
       <div className="lp-pain" style={{ maxWidth: 700, margin: '0 auto', padding: '60px 20px', textAlign: 'center' }}>
         <h2 style={{ fontSize: 26, fontWeight: 800, color: '#fff', marginBottom: 24, letterSpacing: '-0.03em' }}>
-          Se voce nao controla isso, voce ja perdeu dinheiro:
+          Se você não controla isso, você já perdeu dinheiro:
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, textAlign: 'left', maxWidth: 440, margin: '0 auto 28px' }}>
-          {['Depositantes desorganizados', 'Metas sem controle', 'Prejuizo escondido', 'Operacao no feeling', 'Falta de visao real'].map((item, i) => (
+          {['Depositantes desorganizados', 'Metas sem controle', 'Prejuízo escondido', 'Operação no feeling', 'Falta de visão real'].map((item, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 10, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.08)' }}>
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item}</span>
@@ -646,7 +646,7 @@ export default function HomePage() {
           ))}
         </div>
         <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--loss)', lineHeight: 1.5 }}>
-          Sem controle, qualquer operacao vira prejuizo invisivel.
+          Sem controle, qualquer operação vira prejuízo invisível.
         </p>
       </div>
 
@@ -654,9 +654,9 @@ export default function HomePage() {
       <section className="lp-cta-final" style={{ padding:'40px 24px 80px', textAlign:'center' }}>
         <div>
           <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pare de operar no escuro.</h2>
-          <p style={{ fontSize:14, color:'var(--t3)', marginBottom:28 }}>Comece a ver sua operacao como ela realmente e.</p>
+          <p style={{ fontSize:14, color:'var(--t3)', marginBottom:28 }}>Comece a ver sua operação como ela realmente é.</p>
           <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:240, justifyContent:'center', fontSize:15, fontWeight:700 }}>
-            Comecar agora
+            Começar agora
           </Link>
         </div>
 

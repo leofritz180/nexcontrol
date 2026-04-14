@@ -836,8 +836,8 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 
   /* ══ LANDING PAGE MOBILE ══ */
 
-  /* Kill fixed ambient blurs — massive performance hit on mobile Safari */
-  .lp-ambient { display: none !important; }
+  /* Reduce ambient on tablet — keep visible but smaller */
+  .lp-ambient { opacity: 0.5 !important; width: 350px !important; height: 350px !important; }
 
   /* Hero */
   .lp-hero { padding: 32px 20px !important; min-height: 100dvh !important; }
@@ -956,6 +956,7 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   header nav a { padding: 4px 8px !important; font-size: 10px !important; }
 
   /* ── Landing small phones ── */
+  .lp-ambient { display: none !important; }
   .lp-hero { padding: 24px 16px !important; }
   .lp-hero h1 { font-size: 22px !important; }
   .lp-hero .lp-sub1 { font-size: 13px !important; }

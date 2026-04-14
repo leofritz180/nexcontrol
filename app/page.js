@@ -542,9 +542,15 @@ export default function HomePage() {
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1, overflow:'hidden' }}>
 
-      {/* Ambient — hidden on mobile via CSS */}
-      <div className="lp-ambient" style={{ position:'fixed', top:'-10%', left:'20%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.04), transparent 55%)', filter:'blur(80px)', pointerEvents:'none' }}/>
-      <div className="lp-ambient" style={{ position:'fixed', bottom:'5%', right:'15%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.03), transparent 55%)', filter:'blur(60px)', pointerEvents:'none' }}/>
+      {/* Ambient glow orbs — same style as login, CSS animated, hidden on phones */}
+      <div className="lp-ambient" style={{ position:'fixed', top:'-15%', left:'-10%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb1 20s ease-in-out infinite' }}/>
+      <div className="lp-ambient" style={{ position:'fixed', bottom:'-15%', right:'-8%', width:550, height:550, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
+      <div className="lp-ambient" style={{ position:'fixed', top:'35%', right:'15%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.05) 0%, transparent 65%)', filter:'blur(80px)', pointerEvents:'none', animation:'lpOrb3 30s ease-in-out infinite' }}/>
+      <style>{`
+        @keyframes lpOrb1 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(30px,-20px) scale(1.05); } 66% { transform:translate(-20px,15px) scale(0.97); } }
+        @keyframes lpOrb2 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(-25px,20px) scale(0.96); } 66% { transform:translate(15px,-10px) scale(1.04); } }
+        @keyframes lpOrb3 { 0%,100% { transform:translate(0,0); } 50% { transform:translate(40px,-30px); } }
+      `}</style>
 
       {/* ═══ HERO ═══ */}
       <section className="lp-hero" style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px 24px', textAlign:'center', position:'relative' }}>

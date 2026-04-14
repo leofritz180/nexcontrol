@@ -136,12 +136,12 @@ export default function OwnerPage() {
               <p style={{ fontSize: 13, color: '#64748B', margin: 0, textTransform: 'capitalize' }}>{dateStr}</p>
             </div>
             <button
-              onClick={async () => { await supabase.auth.signOut(); router.push('/login') }}
-              style={{ fontSize: 12, fontWeight: 600, padding: '8px 20px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.06)', color: '#EF4444', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.target.style.background = 'rgba(239,68,68,0.12)' }}
-              onMouseLeave={e => { e.target.style.background = 'rgba(239,68,68,0.06)' }}
+              onClick={() => router.push('/admin')}
+              style={{ fontSize: 12, fontWeight: 600, padding: '8px 20px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#94A3B8', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,0.08)'; e.target.style.color = '#F1F5F9' }}
+              onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.04)'; e.target.style.color = '#94A3B8' }}
             >
-              Sair
+              Voltar ao painel
             </button>
           </div>
         </motion.div>

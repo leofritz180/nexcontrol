@@ -348,18 +348,31 @@ export default function MetaPage() {
       observacoes: obsRemessa.trim() || null,
     })
     if (err) { setSalvando(false); setError(err.message); return }
-    // Limpar form ANTES de refresh pra evitar duplo clique
+    // Limpar form e desbloquear IMEDIATAMENTE
+    const formContas = Number(contasRemessa||0)
     setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot(''); setObsRemessa('')
-    showFeedback(diff, statusProb, Number(contasRemessa||0))
-    await refreshRemessas()
     setSalvando(false)
+    showFeedback(diff, statusProb, formContas)
+    // Adicionar remessa otimisticamente no state local (aparece instantaneo no historico)
+    const optimistic = {
+      id: `temp-${Date.now()}`, meta_id: Number(id),
+      titulo: tituloR.trim() || `${tipo==='redeposito'?'Redepósito':'Remessa'} ${remessas.length+1}`,
+      tipo, deposito: d, saque: s, lucro: diff>0?diff:0, prejuizo: diff<0?Math.abs(diff):0, resultado: diff,
+      contas_remessa: tipo === 'redeposito' ? 0 : formContas,
+      slot_name: selectedSlot || null, status_problema: statusProb,
+      observacoes: obsRemessa.trim() || null,
+      created_at: new Date().toISOString(),
+    }
+    setRemessas(prev => [...prev, optimistic])
+    // Notificacao e refresh em paralelo (nao bloqueia)
     notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
-    // Insights inteligentes (camada separada, nao altera notify.js)
     evaluateAfterRemessa({
-      remessas, meta,
-      novaRemessa: { resultado: diff, contas_remessa: Number(contasRemessa||0) },
+      remessas: [...remessas, optimistic], meta,
+      novaRemessa: { resultado: diff, contas_remessa: formContas },
       userId: user?.id,
     })
+    // Refresh real em background (substitui o optimistic pelo dado real)
+    refreshRemessas().catch(() => {})
   }
 
   async function toggleStatus() {

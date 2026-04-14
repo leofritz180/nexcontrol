@@ -47,6 +47,7 @@ export default function RootLayout({ children }) {
             navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})
               .then(r=>r.update()).catch(()=>{})
           }
+          document.addEventListener('wheel',function(e){if(e.target.type==='number')e.target.blur()},{passive:true})
         `}} />
       </head>
       <body>

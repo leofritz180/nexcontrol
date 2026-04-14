@@ -538,6 +538,11 @@ a, button, [role="button"] { transition: all 0.2s ease; }
   box-shadow: 0 6px 20px rgba(0,0,0,0.35);
 }
 
+/* ── Disable scroll changing number inputs ── */
+input[type="number"] { -moz-appearance: textfield; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
 /* ══════════════════════════════
    RESPONSIVE — FULL MOBILE
 ══════════════════════════════ */

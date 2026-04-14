@@ -743,17 +743,28 @@ export default function MetaPage() {
                   </div>
                 </div>
 
-                {/* Previsao */}
-                <div style={{ padding: '18px 20px', borderRadius: 14, background: 'var(--surface)', border: `1px solid ${previsaoFinal >= 0 ? 'var(--profit-border)' : 'var(--loss-border)'}` }}>
-                  <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Previsao da meta</p>
-                  <p style={{ fontSize: 20, fontWeight: 800, color: previsaoFinal >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '0 0 4px', fontFamily: 'var(--mono, monospace)' }}>
-                    {previsaoFinal >= 0 ? '+' : ''}R$ {fmt(previsaoFinal)}
-                  </p>
-                  <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>
-                    {nContas} contas × R$ {fmt(avgPerConta)}/conta
-                    {contasRestantes > 0 ? ` · ${contasRestantes} restantes` : ''}
-                  </p>
-                </div>
+                {/* Previsao — apenas para metas ativas (nao fechadas) */}
+                {meta?.status_fechamento !== 'fechada' && contasRestantes > 0 ? (
+                  <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--t4)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estimativa final</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: previsaoFinal >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '0 0 4px', fontFamily: 'var(--mono, monospace)', opacity: 0.7 }}>
+                      {previsaoFinal >= 0 ? '+' : ''}R$ {fmt(previsaoFinal)}
+                    </p>
+                    <p style={{ fontSize: 9, color: 'var(--t4)', margin: 0 }}>
+                      {nContas}/{metaTotalContas} contas · R$ {fmt(avgPerConta)}/conta · {contasRestantes} restantes
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--t4)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Media por conta</p>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: avgPerConta >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '0 0 4px', fontFamily: 'var(--mono, monospace)' }}>
+                      R$ {fmt(avgPerConta)}
+                    </p>
+                    <p style={{ fontSize: 9, color: 'var(--t4)', margin: 0 }}>
+                      {nContas} contas processadas
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Insights */}

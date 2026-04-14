@@ -1826,41 +1826,76 @@ export default function AdminPage() {
                 border:'1px solid rgba(255,255,255,0.05)',
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:22 }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
                 <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Top operadores</h3>
-                <span style={{ fontSize:11, color:'var(--t4)' }}>{operators.length} ativos</span>
+                <span style={{ fontSize:10, color:'var(--t4)' }}>{operators.length} na equipe</span>
               </div>
-              <div style={{ display:'flex', flexDirection:'column', gap:4 }}>
-                {operators.map(op=>{
+              {(() => {
+                const ranked = operators.map(op => {
                   const opMetasFechadas = metas.filter(m=>m.operator_id===op.id&&m.status_fechamento==='fechada')
                   const lucroFinal = opMetasFechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
                   const ativas = metas.filter(m=>m.operator_id===op.id&&(m.status||'ativa')==='ativa').length
-                  return { ...op, lucroFinal, ativas, fechadas: opMetasFechadas.length }
-                }).sort((a,b)=>b.lucroFinal-a.lucroFinal).slice(0,5).map((op,i)=>(
-                    <motion.div key={op.id}
-                      initial={{opacity:0,y:6}} animate={{opacity:1,y:0}}
-                      transition={{duration:0.25,delay:i*0.04}}
-                      whileHover={{ background:'rgba(255,255,255,0.03)', transition:{duration:0.15} }}
-                      style={{
-                        padding:'12px 10px', display:'flex', alignItems:'center', gap:10,
-                        borderBottom: i<4 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                        borderRadius:8, margin:'0 -10px', transition:'background 0.15s',
-                      }}>
-                      <div style={{ width:32, height:32, borderRadius:8, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                        <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>{getName(op)[0].toUpperCase()}</span>
-                      </div>
-                      <div style={{ flex:1 }}>
-                        <p style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:0 }}>{getName(op)}</p>
-                        <p style={{ fontSize:11, color:'var(--t3)', margin:'2px 0 0' }}>{op.ativas} ativa{op.ativas!==1?'s':''} · {op.fechadas} fechada{op.fechadas!==1?'s':''}</p>
-                      </div>
-                      <div style={{ textAlign:'right' }}>
-                        <span className="t-num" style={{ fontSize:14, fontWeight:700, color:op.lucroFinal>=0?'var(--profit)':'var(--loss)' }}>
-                          {op.lucroFinal>=0?'+':'-'}R$ {fmt(Math.abs(op.lucroFinal))}
-                        </span>
-                      </div>
-                    </motion.div>
-                  ))}
-              </div>
+                  const totalRem = remessas.filter(r=>metas.some(m=>m.id===r.meta_id&&m.operator_id===op.id)).length
+                  return { ...op, lucroFinal, ativas, fechadas: opMetasFechadas.length, totalRem }
+                }).sort((a,b)=>b.lucroFinal-a.lucroFinal).slice(0,5)
+                const maxLucro = Math.max(...ranked.map(o=>Math.abs(o.lucroFinal)),1)
+                const medals = ['#FFD700','#C0C0C0','#CD7F32']
+                return (
+                  <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+                    {ranked.map((op,i) => {
+                      const isTop3 = i < 3
+                      const barPct = Math.round((Math.abs(op.lucroFinal)/maxLucro)*100)
+                      const isPos = op.lucroFinal >= 0
+                      const recentMetas = metas.filter(m=>m.operator_id===op.id&&m.status_fechamento==='fechada').slice(0,3)
+                      const recentTrend = recentMetas.length >= 2
+                        ? recentMetas.slice(0,1).reduce((a,m)=>a+Number(m.lucro_final||0),0) >= recentMetas.slice(1,2).reduce((a,m)=>a+Number(m.lucro_final||0),0) ? 'up' : 'down'
+                        : 'stable'
+                      return (
+                        <motion.div key={op.id}
+                          initial={{opacity:0,x:-8}} animate={{opacity:1,x:0}}
+                          transition={{duration:0.3,delay:i*0.06}}
+                          whileHover={{ background:'rgba(255,255,255,0.03)', x:4, transition:{duration:0.15} }}
+                          style={{
+                            padding:'14px 12px', display:'flex', alignItems:'center', gap:12,
+                            borderBottom: i<ranked.length-1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                            borderRadius:10, margin:'0 -12px', cursor:'default',
+                          }}>
+                          {/* Position */}
+                          <div style={{
+                            width:28, height:28, borderRadius:8, flexShrink:0,
+                            background: isTop3 ? `${medals[i]}15` : 'var(--raised)',
+                            border: isTop3 ? `1px solid ${medals[i]}33` : '1px solid var(--b1)',
+                            display:'flex', alignItems:'center', justifyContent:'center',
+                            boxShadow: i===0 ? `0 0 12px ${medals[0]}20` : 'none',
+                          }}>
+                            <span style={{ fontSize:11, fontWeight:900, color: isTop3 ? medals[i] : 'var(--t4)' }}>{i+1}</span>
+                          </div>
+                          {/* Info */}
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3 }}>
+                              <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{getName(op)}</p>
+                              {recentTrend === 'up' && <span style={{ fontSize:8, fontWeight:700, padding:'1px 5px', borderRadius:4, background:'rgba(34,197,94,0.1)', color:'#22C55E', border:'1px solid rgba(34,197,94,0.2)' }}>EM ALTA</span>}
+                              {recentTrend === 'down' && <span style={{ fontSize:8, fontWeight:700, padding:'1px 5px', borderRadius:4, background:'rgba(239,68,68,0.1)', color:'#EF4444', border:'1px solid rgba(239,68,68,0.2)' }}>EM QUEDA</span>}
+                            </div>
+                            {/* Performance bar */}
+                            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                              <div style={{ flex:1, height:3, borderRadius:2, background:'rgba(255,255,255,0.04)', overflow:'hidden' }}>
+                                <motion.div initial={{width:0}} animate={{width:`${barPct}%`}} transition={{duration:0.8,delay:0.2+i*0.08,ease:[0.4,0,0.2,1]}}
+                                  style={{ height:'100%', borderRadius:2, background:isPos?'#22C55E':'#EF4444', opacity:0.7 }}/>
+                              </div>
+                              <span style={{ fontSize:9, color:'var(--t4)', flexShrink:0 }}>{op.fechadas}m · {op.totalRem}r</span>
+                            </div>
+                          </div>
+                          {/* Value */}
+                          <span className="t-num" style={{ fontSize:15, fontWeight:800, color:isPos?'var(--profit)':'var(--loss)', flexShrink:0 }}>
+                            {isPos?'+':'-'}R$ {fmt(Math.abs(op.lucroFinal))}
+                          </span>
+                        </motion.div>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
             </motion.div>
           </div>
 

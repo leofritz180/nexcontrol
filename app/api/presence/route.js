@@ -17,7 +17,7 @@ export async function POST(req) {
         { onConflict: 'user_id' }
       )
     }
-    const cutoff = new Date(Date.now() - 90000).toISOString() // 90s ago
+    const cutoff = new Date(Date.now() - 300000).toISOString() // 5min ago
     const { count } = await sb.from('presence').select('*', { count: 'exact', head: true }).gte('last_seen', cutoff)
     return NextResponse.json({ online: count || 0 })
   } catch (err) {
@@ -27,7 +27,7 @@ export async function POST(req) {
 
 export async function GET() {
   try {
-    const cutoff = new Date(Date.now() - 90000).toISOString()
+    const cutoff = new Date(Date.now() - 300000).toISOString() // 5min ago
     const { count } = await sb.from('presence').select('*', { count: 'exact', head: true }).gte('last_seen', cutoff)
     return NextResponse.json({ online: count || 0 })
   } catch {

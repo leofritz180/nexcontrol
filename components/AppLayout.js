@@ -1,5 +1,4 @@
 'use client'
-import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
@@ -13,22 +12,6 @@ const pageVariants = {
 
 export default function AppLayout({ children, userName, userEmail, isAdmin, tenant, subscription, userId, tenantId }) {
   const pathname = usePathname()
-
-  // Presence ping (silent — counts user as online)
-  const pingRef = useRef(null)
-  useEffect(() => {
-    if (!userId) return
-    const ping = () => {
-      fetch('/api/presence', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId }),
-      }).catch(() => {})
-    }
-    ping()
-    pingRef.current = setInterval(ping, 30000)
-    return () => clearInterval(pingRef.current)
-  }, [userId])
 
   return (
     <>

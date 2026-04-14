@@ -41,6 +41,8 @@ const SORT_OPTIONS = [
   { key: 'plan', label: 'Plano' },
 ]
 
+const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
 export default function AdminsPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -48,6 +50,7 @@ export default function AdminsPage() {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
   const [sortBy, setSortBy] = useState('metas')
+  const [selectedAdmin, setSelectedAdmin] = useState(null)
 
   useEffect(() => {
     async function init() {
@@ -206,8 +209,9 @@ export default function AdminsPage() {
                   const days = a.daysSinceActivity
                   const activityDot = days <= 1 ? '#22C55E' : days <= 7 ? '#F59E0B' : '#EF4444'
                   return (
-                    <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                    <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.15s', cursor: 'pointer' }}
+                      onClick={() => setSelectedAdmin(selectedAdmin?.id === a.id ? null : a)}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
                       <td style={{ padding: '12px 14px', fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontWeight: 700, color: i < 3 ? '#22C55E' : '#64748B', fontSize: 13 }}>
@@ -258,7 +262,7 @@ export default function AdminsPage() {
               const days = a.daysSinceActivity
               const activityDot = days <= 1 ? '#22C55E' : days <= 7 ? '#F59E0B' : '#EF4444'
               return (
-                <div key={a.id} style={{ ...card, padding: '16px 18px' }}>
+                <div key={a.id} onClick={() => setSelectedAdmin(selectedAdmin?.id === a.id ? null : a)} style={{ ...card, padding: '16px 18px', cursor: 'pointer' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                     <div style={{ position: 'relative', flexShrink: 0 }}>
                       <div style={{ width: 36, height: 36, borderRadius: 9, background: i < 3 ? 'rgba(34,197,94,0.1)' : '#0c1424', border: `1px solid ${i < 3 ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -304,6 +308,114 @@ export default function AdminsPage() {
         </motion.div>
 
       </div>
+
+      {/* ═══ ADMIN DETAIL MODAL ═══ */}
+      {selectedAdmin && (
+        <div
+          onClick={() => setSelectedAdmin(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(4,8,16,0.9)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.3, ease }}
+            onClick={e => e.stopPropagation()}
+            style={{ width: '100%', maxWidth: 520, padding: 28, borderRadius: 20, background: 'linear-gradient(160deg, #10141e, #080b14)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 100px rgba(0,0,0,0.7)', position: 'relative', maxHeight: 'calc(100dvh - 48px)', overflowY: 'auto' }}
+          >
+            <button onClick={() => setSelectedAdmin(null)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 4 }}>
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 20, fontWeight: 800, color: '#e53935' }}>{(selectedAdmin.name || selectedAdmin.email)[0].toUpperCase()}</span>
+              </div>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: '#F1F5F9', margin: '0 0 2px', letterSpacing: '-0.02em' }}>{selectedAdmin.name || selectedAdmin.email.split('@')[0]}</h3>
+                <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>{selectedAdmin.email}</p>
+              </div>
+              {(() => {
+                const plan = planColors[selectedAdmin.planStatus] || planColors.FREE
+                return <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 12px', borderRadius: 6, background: plan.bg, color: plan.color, border: `1px solid ${plan.border}` }}>{selectedAdmin.planStatus}</span>
+              })()}
+            </div>
+
+            {/* Lucro final */}
+            <div style={{ padding: '16px 18px', borderRadius: 14, marginBottom: 14, background: (selectedAdmin.lucroFinal||0) >= 0 ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${(selectedAdmin.lucroFinal||0) >= 0 ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Lucro final</p>
+                <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>{selectedAdmin.totalContas || 0} contas · R$ {fmt(selectedAdmin.lucroPerConta || 0)}/conta</p>
+              </div>
+              <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 24, fontWeight: 900, color: (selectedAdmin.lucroFinal||0) >= 0 ? '#22C55E' : '#EF4444', margin: 0 }}>
+                {(selectedAdmin.lucroFinal||0) >= 0 ? '+' : ''}R$ {fmt(selectedAdmin.lucroFinal || 0)}
+              </p>
+            </div>
+
+            {/* KPIs */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
+              {[
+                { l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' },
+                { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#22C55E' },
+                { l: 'Operadores', v: selectedAdmin.operators, c: '#F1F5F9' },
+                { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' },
+              ].map((s, i) => (
+                <div key={i} style={{ textAlign: 'center', padding: '12px 6px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 20, fontWeight: 800, color: s.c, margin: '0 0 3px' }}>{s.v}</p>
+                  <p style={{ fontSize: 8, color: '#64748B', margin: 0, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{s.l}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Movimentacao */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+              <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Depositado</p>
+                <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>R$ {fmt(selectedAdmin.totalDep || 0)}</p>
+              </div>
+              <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Sacado</p>
+                <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>R$ {fmt(selectedAdmin.totalSaq || 0)}</p>
+              </div>
+            </div>
+
+            {/* Top redes */}
+            {selectedAdmin.topRedes && selectedAdmin.topRedes.length > 0 && (
+              <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', marginBottom: 14 }}>
+                <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Melhores redes</p>
+                {selectedAdmin.topRedes.map((r, i) => (
+                  <div key={r.rede} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', borderBottom: i < selectedAdmin.topRedes.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#e53935', width: 14, textAlign: 'center' }}>{i + 1}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9' }}>{r.rede}</span>
+                      <span style={{ fontSize: 10, color: '#64748B' }}>{r.metas} meta{r.metas !== 1 ? 's' : ''}</span>
+                    </div>
+                    <span style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 12, fontWeight: 700, color: r.lucro >= 0 ? '#22C55E' : '#EF4444' }}>
+                      {r.lucro >= 0 ? '+' : ''}R$ {fmt(r.lucro)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Footer */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+              <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <p style={{ fontSize: 8, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Pago</p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: selectedAdmin.totalPaid > 0 ? '#22C55E' : '#64748B', margin: 0 }}>R$ {fmt(selectedAdmin.totalPaid)}</p>
+              </div>
+              <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <p style={{ fontSize: 8, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Atividade</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: selectedAdmin.daysSinceActivity <= 0 ? '#22C55E' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444', margin: 0 }}>{relativeTime(selectedAdmin.lastActivity)}</p>
+              </div>
+              <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <p style={{ fontSize: 8, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Criado</p>
+                <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>{selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '--'}</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Responsive styles */}
       <style jsx global>{`

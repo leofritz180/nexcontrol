@@ -362,7 +362,7 @@ export default function MetaPage() {
     if (tipo !== 'redeposito' && (!contasRemessa || Number(contasRemessa) <= 0)) { setError('Informe o numero de contas nesta remessa.'); return }
     if (meta?.status==='finalizada'||meta?.status_fechamento==='fechada') { setError('Meta finalizada. Nao e possivel registrar.'); return }
     setSalvando(true); setError('')
-    const d=Number(dep),s=Number(saq),si=Number(saldoIni||0),diff=s-d
+    const d=parseVal(dep),s=parseVal(saq),si=parseVal(saldoIni),diff=s-d
     const { error:err } = await supabase.from('remessas').insert({
       meta_id:Number(id),
       titulo:tituloR.trim()||`${tipo==='redeposito'?'Redepósito':tipo==='ajuste'?'Ajuste':'Remessa'} ${remessas.length+1}`,
@@ -462,7 +462,9 @@ export default function MetaPage() {
     return {lucro,prej,d,s,liq:lucro-prej}
   },[remessas])
 
-  const prev = useMemo(()=>{ const diff=Number(saq||0)-Number(dep||0); return{diff,pos:diff>=0} },[dep,saq])
+  // Parse value: handle Brazilian format (1.055 = 1055, 1.055,00 = 1055)
+  const parseVal = v => { const s = String(v||'0'); if (s.includes(',')) return Number(s.replace(/\./g,'').replace(',','.')); return Number(s) }
+  const prev = useMemo(()=>{ const diff=parseVal(saq)-parseVal(dep); return{diff,pos:diff>=0} },[dep,saq])
 
   const pctAcerto = remessas.length>0?Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100):0
 
@@ -933,11 +935,11 @@ export default function MetaPage() {
                 <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1.3fr', gap:8, alignItems:'end' }}>
                   <div>
                     <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>DEPOSITO *</label>
-                    <input className="input" type="number" step="0.01" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="0,00" style={{ fontSize:13, fontWeight:600, padding:'8px 10px' }}/>
+                    <input className="input" type="text" inputMode="decimal" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="Ex: 1055" style={{ fontSize:13, fontWeight:600, padding:'8px 10px' }}/>
                   </div>
                   <div>
                     <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>SAQUE *</label>
-                    <input className="input" type="number" step="0.01" value={saq} onChange={e=>setSaq(e.target.value)} required placeholder="0,00" style={{ fontSize:13, fontWeight:600, padding:'8px 10px' }}/>
+                    <input className="input" type="text" inputMode="decimal" value={saq} onChange={e=>setSaq(e.target.value)} required placeholder="Ex: 941" style={{ fontSize:13, fontWeight:600, padding:'8px 10px' }}/>
                   </div>
                   {(dep||saq) ? (
                     <div style={{

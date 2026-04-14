@@ -706,7 +706,9 @@ export default function AdminPage() {
         supabase.from('activity_logs').select('*').eq('meta_id',focusMeta.id).order('created_at',{ascending:false}).limit(50),
         supabase.from('metas').select('*').eq('id',focusMeta.id).single(),
       ])
-      if(r) setFocusRem(r); if(l) setFocusLogs(l); if(m) setFocusMeta(m)
+      if(r) setFocusRem(r); if(l) setFocusLogs(l)
+      // Only update meta data, never clear focusMeta
+      if(m) setFocusMeta(prev => prev ? {...prev, ...m} : prev)
     },10000)
     return()=>clearInterval(iv)
   },[focusMeta?.id,focusMeta?.status])
@@ -901,7 +903,7 @@ export default function AdminPage() {
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          style={{position:'fixed',inset:0,zIndex:1000,background:'rgba(4,8,16,0.92)',backdropFilter:'blur(16px)',display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'40px 24px',overflowY:'auto'}} onClick={()=>setFocusMeta(null)}>
+          style={{position:'fixed',inset:0,zIndex:1000,background:'rgba(4,8,16,0.92)',backdropFilter:'blur(16px)',display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'40px 24px',overflowY:'auto'}}>
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}

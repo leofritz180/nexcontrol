@@ -1784,30 +1784,36 @@ export default function AdminPage() {
                 <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Remessas recentes</h3>
                 <span style={{ fontSize:11, color:'var(--t4)' }}>{remessas.length} total</span>
               </div>
-              <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                {remessas.slice(0,5).map((r,i)=>{
+              <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+                {remessas.slice(0,6).map((r,i)=>{
                   const m   = metas.find(x=>x.id===r.meta_id)
                   const op  = operators.find(o=>o.id===m?.operator_id)
                   const pos = Number(r.resultado||0)>=0
                   const val = Math.abs(Number(r.resultado||0))
+                  const accentC = pos ? '#22C55E' : '#EF4444'
                   return (
                     <motion.div key={r.id}
-                      initial={{opacity:0,y:6}} animate={{opacity:1,y:0}}
-                      transition={{duration:0.25,delay:i*0.04}}
-                      whileHover={{ background:'rgba(255,255,255,0.03)', transition:{duration:0.15} }}
+                      initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}}
+                      transition={{duration:0.3,delay:i*0.05}}
+                      whileHover={{ background:'rgba(255,255,255,0.03)', x:3, transition:{duration:0.15} }}
                       style={{
-                      padding:'12px 10px', display:'flex', alignItems:'center', gap:12,
-                      borderBottom: i<4 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                      borderRadius:8, margin:'0 -10px', transition:'background 0.15s',
+                      padding:'12px 10px', display:'flex', alignItems:'center', gap:10,
+                      borderBottom: i<5 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                      borderRadius:8, margin:'0 -10px', position:'relative',
                     }}>
-                      <div style={{ width:32, height:32, borderRadius:8, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                        <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>{getName(op)[0]?.toUpperCase()}</span>
+                      {/* Accent line */}
+                      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:2, background:accentC, opacity:0.5 }}/>
+                      <div style={{ width:30, height:30, borderRadius:8, background:`${accentC}10`, border:`1px solid ${accentC}20`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <span style={{ fontSize:11, fontWeight:700, color:accentC }}>{getName(op)[0]?.toUpperCase()}</span>
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
-                        <span style={{ fontSize:13, fontWeight:600, color:'var(--t1)' }}>{getName(op)}</span>
-                        <p style={{ fontSize:11, color:'var(--t3)', margin:'2px 0 0' }}>{r.titulo||'Remessa'} · {new Date(r.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</p>
+                        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                          <span style={{ fontSize:12, fontWeight:600, color:'var(--t1)' }}>{getName(op)}</span>
+                          <span style={{ fontSize:8, fontWeight:700, padding:'1px 5px', borderRadius:3, background:`${accentC}12`, color:accentC, border:`1px solid ${accentC}20` }}>{pos?'LUCRO':'PERDA'}</span>
+                        </div>
+                        <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0' }}>{m?.rede||''} · {new Date(r.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</p>
                       </div>
-                      <span className="t-num" style={{ fontSize:15, fontWeight:800, color:pos?'var(--profit)':'var(--loss)', flexShrink:0 }}>
+                      <span className="t-num" style={{ fontSize:14, fontWeight:800, color:accentC, flexShrink:0, textShadow:`0 0 8px ${accentC}15` }}>
                         {pos?'+':'-'}R$ {fmt(val)}
                       </span>
                     </motion.div>

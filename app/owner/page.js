@@ -3,6 +3,7 @@ import { useEffect, useState, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
+import OnlineCounter from '../../components/OnlineCounter'
 
 const OWNER = 'leofritz180@gmail.com'
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -64,6 +65,7 @@ export default function OwnerPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState(null)
+  const [userId, setUserId] = useState(null)
   const [chartRange, setChartRange] = useState(30)
   const [hoveredBar, setHoveredBar] = useState(null)
   const [adminSearch, setAdminSearch] = useState('')
@@ -74,6 +76,7 @@ export default function OwnerPage() {
       const { data: s } = await supabase.auth.getSession()
       const u = s?.session?.user
       if (!u || u.email !== OWNER) { router.push('/admin'); return }
+      setUserId(u.id)
       const res = await fetch('/api/owner/stats', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: u.email }),
@@ -198,7 +201,10 @@ export default function OwnerPage() {
             <h1 style={{ fontSize: 24, fontWeight: 800, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.03em' }}>
               Centro de Comando
             </h1>
-            <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'capitalize' }}>{dateStr}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 2 }}>
+              <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'capitalize' }}>{dateStr}</p>
+              <OnlineCounter userId={userId} />
+            </div>
           </div>
           <button onClick={() => router.push('/admin')}
             style={{ fontSize: 12, fontWeight: 600, padding: '8px 20px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#94A3B8', transition: 'all 0.2s' }}

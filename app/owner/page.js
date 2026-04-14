@@ -397,58 +397,71 @@ export default function OwnerPage() {
           </div>
         </motion.div>
 
-        {/* ═══ ADMIN DETAIL DRAWER ═══ */}
+        {/* ═══ ADMIN DETAIL MODAL ═══ */}
         {selectedAdmin && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25 }}
-            style={{ ...card, marginBottom: 28, position: 'relative' }}
+          <div
+            onClick={() => setSelectedAdmin(null)}
+            style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(4,8,16,0.9)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
           >
-            <button onClick={() => setSelectedAdmin(null)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 4 }}>
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: 18, fontWeight: 800, color: '#e53935' }}>{(selectedAdmin.name || selectedAdmin.email)[0].toUpperCase()}</span>
-              </div>
-              <div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9', margin: '0 0 2px' }}>{selectedAdmin.name || selectedAdmin.email.split('@')[0]}</h3>
-                <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>{selectedAdmin.email}</p>
-              </div>
-              {(() => {
-                const planColors = { PRO: { bg: 'rgba(34,197,94,0.08)', color: '#22C55E', border: 'rgba(34,197,94,0.2)' }, TRIAL: { bg: 'rgba(245,158,11,0.08)', color: '#F59E0B', border: 'rgba(245,158,11,0.2)' }, FREE: { bg: 'rgba(100,116,139,0.08)', color: '#64748B', border: 'rgba(100,116,139,0.2)' } }
-                const plan = planColors[selectedAdmin.planStatus] || planColors.FREE
-                return <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 12px', borderRadius: 6, background: plan.bg, color: plan.color, border: `1px solid ${plan.border}`, marginLeft: 'auto' }}>{selectedAdmin.planStatus}</span>
-              })()}
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
-              {[
-                { l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' },
-                { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#22C55E' },
-                { l: 'Operadores', v: selectedAdmin.operators, c: '#F1F5F9' },
-                { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' },
-              ].map((s, i) => (
-                <div key={i} style={{ textAlign: 'center', padding: '14px 8px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 22, fontWeight: 800, color: s.c, margin: '0 0 4px' }}>{s.v}</p>
-                  <p style={{ fontSize: 10, color: '#64748B', margin: 0, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{s.l}</p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.3, ease }}
+              onClick={e => e.stopPropagation()}
+              style={{ width: '100%', maxWidth: 520, padding: 28, borderRadius: 20, background: 'linear-gradient(160deg, #10141e, #080b14)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 100px rgba(0,0,0,0.7)', position: 'relative' }}
+            >
+              <button onClick={() => setSelectedAdmin(null)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 4 }}>
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: 20, fontWeight: 800, color: '#e53935' }}>{(selectedAdmin.name || selectedAdmin.email)[0].toUpperCase()}</span>
                 </div>
-              ))}
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Total pago</p>
-                <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 18, fontWeight: 700, color: selectedAdmin.totalPaid > 0 ? '#22C55E' : '#64748B', margin: 0 }}>R$ {fmt(selectedAdmin.totalPaid)}</p>
+                <div style={{ flex: 1 }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 800, color: '#F1F5F9', margin: '0 0 2px', letterSpacing: '-0.02em' }}>{selectedAdmin.name || selectedAdmin.email.split('@')[0]}</h3>
+                  <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>{selectedAdmin.email}</p>
+                </div>
+                {(() => {
+                  const planColors = { PRO: { bg: 'rgba(34,197,94,0.08)', color: '#22C55E', border: 'rgba(34,197,94,0.2)' }, TRIAL: { bg: 'rgba(245,158,11,0.08)', color: '#F59E0B', border: 'rgba(245,158,11,0.2)' }, FREE: { bg: 'rgba(100,116,139,0.08)', color: '#64748B', border: 'rgba(100,116,139,0.2)' } }
+                  const plan = planColors[selectedAdmin.planStatus] || planColors.FREE
+                  return <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 12px', borderRadius: 6, background: plan.bg, color: plan.color, border: `1px solid ${plan.border}` }}>{selectedAdmin.planStatus}</span>
+                })()}
               </div>
-              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Ultima atividade</p>
-                <p style={{ fontSize: 14, fontWeight: 600, color: selectedAdmin.daysSinceActivity <= 0 ? '#22C55E' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444', margin: 0 }}>{relativeTime(selectedAdmin.lastActivity)}</p>
+
+              {/* KPIs */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+                {[
+                  { l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' },
+                  { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#22C55E' },
+                  { l: 'Operadores', v: selectedAdmin.operators, c: '#F1F5F9' },
+                  { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' },
+                ].map((s, i) => (
+                  <div key={i} style={{ textAlign: 'center', padding: '14px 8px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 22, fontWeight: 800, color: s.c, margin: '0 0 4px' }}>{s.v}</p>
+                    <p style={{ fontSize: 9, color: '#64748B', margin: 0, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{s.l}</p>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
-              <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Conta criada em</p>
-              <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>{selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '--'}</p>
-            </div>
-          </motion.div>
+
+              {/* Details */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+                <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Total pago</p>
+                  <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 18, fontWeight: 700, color: selectedAdmin.totalPaid > 0 ? '#22C55E' : '#64748B', margin: 0 }}>R$ {fmt(selectedAdmin.totalPaid)}</p>
+                </div>
+                <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Ultima atividade</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: selectedAdmin.daysSinceActivity <= 0 ? '#22C55E' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444', margin: 0 }}>{relativeTime(selectedAdmin.lastActivity)}</p>
+                </div>
+              </div>
+              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Conta criada em</p>
+                <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>{selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '--'}</p>
+              </div>
+            </motion.div>
+          </div>
         )}
 
         {/* ═══ 6. ALERTS ═══ */}

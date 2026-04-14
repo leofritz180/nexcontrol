@@ -550,9 +550,16 @@ export default function HomePage() {
       <section className="lp-hero" style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px 24px', textAlign:'center', position:'relative' }}>
 
         <div className="lp-hero-wrap" style={{ maxWidth:580, position:'relative', zIndex:1, animation:'fade-in 0.5s ease both' }}>
-          {/* Logo */}
-          <div className="lp-logo" style={{ display:'flex', justifyContent:'center', marginBottom:28 }}>
+          {/* Logo + Brand */}
+          <div className="lp-logo" style={{ display:'flex', flexDirection:'column', alignItems:'center', marginBottom:28 }}>
             <Logo size={1.88} showText={false} glow/>
+            <h2 style={{ fontSize:28, fontWeight:900, letterSpacing:'-0.03em', margin:'14px 0 0', lineHeight:1 }}>
+              <span style={{ color:'#F1F5F9' }}>Nex</span><span style={{ color:'#e53935' }}>Control</span>
+            </h2>
+            <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:8 }}>
+              <span style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E', boxShadow:'0 0 8px rgba(34,197,94,0.5)' }}/>
+              <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.4)', letterSpacing:'0.12em', textTransform:'uppercase' }}>Sistema operacional ativo</span>
+            </div>
           </div>
 
           <h1 style={{ fontSize:40, fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 14px', lineHeight:1.12, animation:'fade-up 0.5s ease 0.1s both' }}>
@@ -653,10 +660,16 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div style={{ marginTop:48, display:'flex', alignItems:'center', justifyContent:'center' }}>
-          <Logo size={0.75} textSize={13} style={{ gap:8, opacity:0.4 }}/>
+        <div style={{ marginTop:48, display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
+          <Logo size={0.75} showText={false} style={{ opacity:0.5 }}/>
+          <p style={{ fontSize:14, fontWeight:800, margin:0 }}>
+            <span style={{ color:'rgba(255,255,255,0.4)' }}>Nex</span><span style={{ color:'rgba(229,57,53,0.5)' }}>Control</span>
+          </p>
+          <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+            <span style={{ width:4, height:4, borderRadius:'50%', background:'rgba(34,197,94,0.4)' }}/>
+            <span style={{ fontSize:9, color:'var(--t4)', letterSpacing:'0.1em', textTransform:'uppercase' }}>Sistema operacional ativo</span>
+          </div>
         </div>
-        <p style={{ fontSize:10, color:'var(--t4)', marginTop:6 }}>Sistema operacional de resultados</p>
       </section>
     </main>
   )

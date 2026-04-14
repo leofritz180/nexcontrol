@@ -849,7 +849,8 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .lp-hero .lp-ctas a { width: 100% !important; min-width: unset !important; }
   .lp-hero .lp-badges { gap: 16px !important; margin-top: 28px !important; }
   .lp-hero .lp-logo { margin-bottom: 20px !important; }
-  .lp-hero .lp-logo > div { transform: scale(0.85) !important; }
+  .lp-hero .lp-logo > div:first-child { transform: scale(0.85) !important; }
+  .lp-hero .lp-logo h2 { font-size: 24px !important; }
   .lp-scroll-hint { display: none !important; }
 
   /* Social proof */

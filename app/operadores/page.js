@@ -671,6 +671,7 @@ export default function OperadoresPage() {
   const [invSaving, setInvSaving] = useState(false)
   const [invMsg, setInvMsg] = useState('')
   const [folhaPeriod, setFolhaPeriod] = useState('30')
+  const [costs, setCosts] = useState([])
 
   useEffect(() => { checkAndLoad() }, [])
 
@@ -688,13 +689,14 @@ export default function OperadoresPage() {
   async function loadAll(forceTenantId) {
     setLoading(true)
     const tid = forceTenantId || profile?.tenant_id
-    const [{ data: ops }, { data: ms }, { data: rs }, { data: t }, { data: s2 }, { data: inv }] = await Promise.all([
+    const [{ data: ops }, { data: ms }, { data: rs }, { data: t }, { data: s2 }, { data: inv }, { data: costsData }] = await Promise.all([
       supabase.from('profiles').select('*').eq('role', 'operator').order('created_at', { ascending: false }),
       supabase.from('metas').select('*').order('created_at', { ascending: false }),
       supabase.from('remessas').select('*').order('created_at', { ascending: false }),
       supabase.from('tenants').select('*').eq('id', tid).maybeSingle(),
       supabase.from('subscriptions').select('*').eq('tenant_id', tid).order('created_at', { ascending: false }).limit(1).maybeSingle(),
       supabase.from('invites').select('*').order('created_at', { ascending: false }),
+      supabase.from('costs').select('amount,date').eq('tenant_id', tid),
     ])
     const activeMetas = (ms || []).filter(m => !m.deleted_at)
     const activeMetaIds = new Set(activeMetas.map(m => m.id))
@@ -702,6 +704,7 @@ export default function OperadoresPage() {
     setMetas(activeMetas)
     setRemessas((rs || []).filter(r => activeMetaIds.has(r.meta_id)))
     setInvites(inv || [])
+    setCosts(costsData || [])
     if (t) setTenant(t)
     if (s2) setSub(s2)
     setLoading(false)
@@ -766,7 +769,8 @@ export default function OperadoresPage() {
   const maxLucro = useMemo(() => ranking.length > 0 ? Math.max(...ranking.map(o => Math.abs(o.lucroFinal)), 1) : 1, [ranking])
   const totalActive = useMemo(() => operatorStats.filter(o => o.activeMetas > 0).length, [operatorStats])
   const totalDeps = useMemo(() => operatorStats.reduce((a, o) => a + o.totalDeposit, 0), [operatorStats])
-  const totalLucro = useMemo(() => closedMetas.reduce((a, m) => a + Number(m.lucro_final || 0), 0), [closedMetas])
+  const custosTotal = useMemo(() => costs.reduce((a, c) => a + Number(c.amount || 0), 0), [costs])
+  const totalLucro = useMemo(() => closedMetas.reduce((a, m) => a + Number(m.lucro_final || 0), 0) - custosTotal, [closedMetas, custosTotal])
   const avgWinRate = useMemo(() => {
     const withClosed = operatorStats.filter(o => o.closedCount > 0)
     if (withClosed.length === 0) return 0

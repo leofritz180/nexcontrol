@@ -530,6 +530,7 @@ export default function RedesPage() {
   const [sub, setSub] = useState(null)
   const [metas, setMetas] = useState([])
   const [remessas, setRemessas] = useState([])
+  const [costs, setCosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedRede, setSelectedRede] = useState(null)
 
@@ -553,14 +554,17 @@ export default function RedesPage() {
 
   async function loadData() {
     setLoading(true)
-    const [{ data: ms }, { data: rs }] = await Promise.all([
+    const tid = profile?.tenant_id
+    const [{ data: ms }, { data: rs }, { data: costsData }] = await Promise.all([
       supabase.from('metas').select('*').order('created_at', { ascending: false }),
       supabase.from('remessas').select('*').order('created_at', { ascending: false }),
+      tid ? supabase.from('costs').select('amount,date').eq('tenant_id', tid) : { data: [] },
     ])
     const activeMetas = (ms || []).filter(m => !m.deleted_at)
     const activeMetaIds = new Set(activeMetas.map(m => m.id))
     setMetas(activeMetas)
     setRemessas((rs || []).filter(r => activeMetaIds.has(r.meta_id)))
+    setCosts(costsData || [])
     setLoading(false)
   }
 
@@ -671,11 +675,12 @@ export default function RedesPage() {
   const kpis = useMemo(() => {
     const totalRedes = redesData.length
     const redesLucrativas = redesData.filter(r => r.lucroFinal > 0).length
-    const lucroTotal = redesData.reduce((s, r) => s + r.lucroFinal, 0)
+    const custosTotal = costs.reduce((a, c) => a + Number(c.amount || 0), 0)
+    const lucroTotal = redesData.reduce((s, r) => s + r.lucroFinal, 0) - custosTotal
     const avgScore = totalRedes > 0 ? Math.round(redesData.reduce((s, r) => s + r.score, 0) / totalRedes) : 0
     const bestEff = redesData.filter(r => r.remessaCount > 0).sort((a, b) => b.lucroPorRemessa - a.lucroPorRemessa)[0]
-    return { totalRedes, redesLucrativas, lucroTotal, avgScore, bestEff }
-  }, [redesData])
+    return { totalRedes, redesLucrativas, lucroTotal, custosTotal, avgScore, bestEff }
+  }, [redesData, costs])
 
   /* ── AI Recommendations ── */
   const aiRecommendations = useMemo(() => {

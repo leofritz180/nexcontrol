@@ -742,27 +742,40 @@ export default function AdminPage() {
   // ── Hero card: lucro final por periodo selecionado ──
   const heroLucro = useMemo(()=>{
     const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em)
+    const custosTotal = costs.reduce((a,c)=>a+Number(c.amount||0),0)
     if(heroPeriod==='all') {
-      return { value: fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0), count: fechadas.length }
+      const lucro = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+      return { value: lucro - custosTotal, count: fechadas.length, custos: custosTotal }
     }
     const now = new Date()
     let filtered = fechadas
+    let filteredCosts = costs
     if(heroPeriod==='today') {
       const t = now.toDateString()
+      const todayISO = now.toISOString().slice(0,10)
       filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===t)
+      filteredCosts = costs.filter(c=>c.date===todayISO)
     } else if(heroPeriod==='yesterday') {
       const y = new Date(now); y.setDate(y.getDate()-1)
       const yStr = y.toDateString()
+      const yISO = y.toISOString().slice(0,10)
       filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===yStr)
+      filteredCosts = costs.filter(c=>c.date===yISO)
     } else if(heroPeriod==='7d') {
       const d = new Date(now); d.setDate(d.getDate()-7)
+      const dISO = d.toISOString().slice(0,10)
       filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
+      filteredCosts = costs.filter(c=>c.date>=dISO)
     } else if(heroPeriod==='30d') {
       const d = new Date(now); d.setDate(d.getDate()-30)
+      const dISO = d.toISOString().slice(0,10)
       filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
+      filteredCosts = costs.filter(c=>c.date>=dISO)
     }
-    return { value: filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0), count: filtered.length }
-  },[metas,heroPeriod])
+    const periodCustos = filteredCosts.reduce((a,c)=>a+Number(c.amount||0),0)
+    const lucro = filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    return { value: lucro - periodCustos, count: filtered.length, custos: periodCustos }
+  },[metas,heroPeriod,costs])
 
   const ranking = useMemo(()=>
     operators.map(op=>{

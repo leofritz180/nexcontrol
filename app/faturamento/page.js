@@ -119,6 +119,7 @@ export default function FaturamentoPage() {
   const [showShowcase,setShowShowcase]=useState(false)
   const [subData,setSubData]=useState(null)
   const [demoMode,setDemoMode]=useState(false)
+  const [costs,setCosts]=useState([])
 
   useEffect(()=>{ checkAndLoad() },[])
 
@@ -147,15 +148,17 @@ export default function FaturamentoPage() {
   async function loadAll(tid) {
     setLoading(true)
     setDemoMode(false)
-    const [{data:ops},{data:ms},{data:rs},{data:subRow}]=await Promise.all([
+    const [{data:ops},{data:ms},{data:rs},{data:subRow},{data:costsData}]=await Promise.all([
       supabase.from('profiles').select('*').eq('role','operator').order('created_at',{ascending:false}),
       supabase.from('metas').select('*').order('created_at',{ascending:false}),
       supabase.from('remessas').select('*').order('created_at',{ascending:false}),
       supabase.from('subscriptions').select('*').eq('tenant_id',tid||profile?.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
+      supabase.from('costs').select('amount,date').eq('tenant_id',tid||profile?.tenant_id),
     ])
     const activeMetas = (ms||[]).filter(m=>!m.deleted_at)
     const activeMetaIds = new Set(activeMetas.map(m=>m.id))
     setOperators(ops||[]); setMetas(activeMetas); setRemessas((rs||[]).filter(r=>activeMetaIds.has(r.meta_id)))
+    setCosts(costsData||[])
     if(subRow) setSubData(subRow)
     setLoading(false)
   }
@@ -197,9 +200,11 @@ export default function FaturamentoPage() {
     const taxa=fRem.length>0?Math.round((pos/fRem.length)*100):0
     // Lucro final das metas fechadas (valor real pos salario/custo)
     const fechadas=metas.filter(m=>m.status_fechamento==='fechada')
-    const lucroFinal=fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-    return {lucro,prej,liq,dep,saq,roi,taxa,total:fRem.length,pos,lucroFinal,fechadas:fechadas.length}
-  },[fRem,metas])
+    const lucroFinalBruto=fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    const custosTotal=costs.reduce((a,c)=>a+Number(c.amount||0),0)
+    const lucroFinal=lucroFinalBruto-custosTotal
+    return {lucro,prej,liq,dep,saq,roi,taxa,total:fRem.length,pos,lucroFinal,lucroFinalBruto,custosTotal,fechadas:fechadas.length}
+  },[fRem,metas,costs])
 
   /* ── Chart data ── */
   const chartData = useMemo(()=>{

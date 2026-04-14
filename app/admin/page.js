@@ -1867,6 +1867,68 @@ export default function AdminPage() {
               </div>
             </div>
 
+            {/* Shimmer + breathing keyframes */}
+            <style>{`
+              @keyframes metaBreath { 0%,100% { transform:scale(1); box-shadow:0 0 20px rgba(239,68,68,0.06); } 50% { transform:scale(1.008); box-shadow:0 0 30px rgba(239,68,68,0.12); } }
+              @keyframes progShimmer { 0% { left:-100%; } 100% { left:200%; } }
+            `}</style>
+
+            {/* Leitura da operacao (AI insight) */}
+            {filteredMetas.length >= 2 && (() => {
+              const aiInsights = []
+              // Analyze redes
+              const redePerf = {}
+              filteredMetas.filter(m=>m.status_fechamento!=='fechada').forEach(m => {
+                const r = m.rede || 'Outros'
+                const mRem = remessas.filter(rm=>rm.meta_id===m.id)
+                const liq = mRem.reduce((a,rm)=>a+Number(rm.lucro||0),0) - mRem.reduce((a,rm)=>a+Number(rm.prejuizo||0),0)
+                if (!redePerf[r]) redePerf[r] = { total:0, count:0 }
+                redePerf[r].total += liq; redePerf[r].count++
+              })
+              const worstRede = Object.entries(redePerf).filter(([,v])=>v.total<0).sort((a,b)=>a[1].total-b[1].total)[0]
+              if (worstRede) aiInsights.push({ text:`Maioria dos prejuizos vem da rede ${worstRede[0]}`, type:'warn' })
+              // Sequence check
+              const ativas = filteredMetas.filter(m=>m.status_fechamento!=='fechada')
+              const emSeqNeg = ativas.filter(m=>{
+                const mRem=[...remessas.filter(r=>r.meta_id===m.id)].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,2)
+                return mRem.length>=2 && mRem.every(r=>Number(r.resultado||0)<0)
+              }).length
+              if (emSeqNeg>0) aiInsights.push({ text:`${emSeqNeg} meta${emSeqNeg>1?'s':''} em sequencia negativa`, type:'critical' })
+              // Best performing contas size
+              const fechadasPos = filteredMetas.filter(m=>m.status_fechamento==='fechada'&&Number(m.lucro_final||0)>0)
+              if (fechadasPos.length >= 2) {
+                const avg = fechadasPos.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)/fechadasPos.length
+                aiInsights.push({ text:`Metas com ~${Math.round(avg)} contas estao performando melhor`, type:'profit' })
+              }
+              // Positive
+              const posCount = ativas.filter(m=>{
+                const mRem=remessas.filter(r=>r.meta_id===m.id)
+                return mRem.reduce((a,r)=>a+Number(r.lucro||0),0)-mRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)>0
+              }).length
+              if (posCount > ativas.length * 0.6 && ativas.length >= 2) aiInsights.push({ text:`${posCount} de ${ativas.length} metas ativas no positivo`, type:'profit' })
+              if (aiInsights.length === 0) return null
+              const colors = { profit:'#22C55E', warn:'#F59E0B', critical:'#EF4444' }
+              return (
+                <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35 }}
+                  style={{ padding:'16px 20px', borderRadius:14, marginBottom:20, background:'linear-gradient(135deg, rgba(168,85,247,0.06), rgba(59,130,246,0.03))', border:'1px solid rgba(168,85,247,0.12)' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+                    <span style={{ fontSize:13, fontWeight:700, color:'#a855f7' }}>Leitura da operacao</span>
+                    <span style={{ fontSize:9, color:'var(--t4)', marginLeft:'auto' }}>Atualizado agora</span>
+                  </div>
+                  <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                    {aiInsights.slice(0,4).map((ins,j) => (
+                      <motion.div key={j} initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.25, delay:0.1+j*0.08 }}
+                        style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <div style={{ width:5, height:5, borderRadius:'50%', background:colors[ins.type]||'#a855f7', flexShrink:0 }}/>
+                        <span style={{ fontSize:11, color:colors[ins.type]||'#a855f7', lineHeight:1.4, fontWeight:500 }}>{ins.text}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )
+            })()}
+
             {/* Resumo inteligente */}
             {filteredMetas.length > 0 && (() => {
               const metaStats = filteredMetas.map(m => {
@@ -1951,9 +2013,10 @@ export default function AdminPage() {
                     style={{
                     borderRadius:18,overflow:'hidden',position:'relative',
                     background:`linear-gradient(160deg, ${statusColor}12 0%, ${statusColor}06 40%, #0a1220 100%)`,
-                    border:`1px solid ${statusColor}30`,
-                    boxShadow:`0 0 20px ${statusColor}08, 0 4px 20px rgba(0,0,0,0.35)`,
+                    border:`1px solid ${statusColor}${!isPos&&!fechada?'50':'30'}`,
+                    boxShadow:`0 0 ${!isPos&&!fechada?'25':'20'}px ${statusColor}${!isPos&&!fechada?'12':'08'}, 0 4px 20px rgba(0,0,0,0.35)`,
                     cursor:'pointer',
+                    animation: !isPos && !fechada ? 'metaBreath 3s ease-in-out infinite' : 'none',
                   }}>
                     {/* Top accent */}
                     <div style={{height:3,background:`linear-gradient(90deg, ${nc.hex}, ${nc.hex}66)`}}/>
@@ -1992,8 +2055,10 @@ export default function AdminPage() {
                             initial={{ width:0 }}
                             animate={{ width:`${progPct}%` }}
                             transition={{ duration:1, delay:Math.min(i*0.04,0.5)+0.2, ease:[0.4,0,0.2,1] }}
-                            style={{ height:'100%',borderRadius:99,background:progColor,boxShadow:`0 0 8px ${statusColor}20` }}
-                          />
+                            style={{ height:'100%',borderRadius:99,background:progColor,boxShadow:`0 0 8px ${statusColor}20`,position:'relative',overflow:'hidden' }}
+                          >
+                            {!fechada && <div style={{ position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)',animation:'progShimmer 2s ease-in-out infinite' }}/>}
+                          </motion.div>
                         </div>
                       </div>
                       {/* Value */}

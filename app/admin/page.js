@@ -268,17 +268,21 @@ function SalaryPanel({ meta, liqCalc, tenantOpModel, onSaved }) {
   async function save() {
     if (saving) return
     setSaving(true)
-    const isClosed = fechada || isFinalizedNotClosed
+    // Only close if not already closed (isFinalizedNotClosed = needs closing)
+    // If already fechada, just update costs + recalc lucro_final without re-closing
+    const needsClose = isFinalizedNotClosed && !fechada
+    const newLucroRounded = Number(newLucro.toFixed(2))
     await fetch('/api/meta/update-costs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         meta_id: meta.id, salario: sal, bau: bv, custo_fixo: cst, taxa_agente: tax,
-        close: isClosed, lucro_final: isClosed ? newLucro : undefined,
+        close: needsClose, lucro_final: (needsClose || fechada) ? newLucroRounded : undefined,
+        update_lucro_only: fechada, // flag to update lucro without re-closing
       }),
     })
     setSaving(false)
-    onSaved({ ...meta, salario: sal, bau: bv, custo_fixo: cst, taxa_agente: tax, lucro_final: isClosed ? newLucro : meta.lucro_final, status_fechamento: isClosed ? 'fechada' : meta.status_fechamento })
+    onSaved({ ...meta, salario: sal, bau: bv, custo_fixo: cst, taxa_agente: tax, lucro_final: (needsClose || fechada) ? newLucroRounded : meta.lucro_final, status_fechamento: needsClose ? 'fechada' : meta.status_fechamento })
   }
 
   return (

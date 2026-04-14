@@ -4,7 +4,7 @@ import { sendPushToTenant } from '../../../../lib/push'
 
 export async function POST(req) {
   try {
-    const { meta_id, salario, bau, custo_fixo, taxa_agente, close, lucro_final } = await req.json()
+    const { meta_id, salario, bau, custo_fixo, taxa_agente, close, lucro_final, update_lucro_only } = await req.json()
     if (!meta_id) return NextResponse.json({ error: 'Missing meta_id' }, { status: 400 })
 
     const supabase = createClient(
@@ -20,16 +20,20 @@ export async function POST(req) {
     }
 
     if (close) {
+      // First-time close: set status + fechada_em
       update.status = 'finalizada'
       update.status_fechamento = 'fechada'
-      update.lucro_final = Number(lucro_final || 0)
+      update.lucro_final = Number(Number(lucro_final || 0).toFixed(2))
       update.fechada_em = new Date().toISOString()
+    } else if (update_lucro_only && lucro_final !== undefined) {
+      // Editing already-closed meta: only update lucro_final, DON'T re-close or change fechada_em
+      update.lucro_final = Number(Number(lucro_final || 0).toFixed(2))
     }
 
     const { error } = await supabase.from('metas').update(update).eq('id', meta_id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    // Send push notification when meta is closed
+    // Send push notification ONLY on first close (not edits)
     if (close) {
       const { data: meta } = await supabase.from('metas').select('tenant_id,titulo,rede,quantidade_contas').eq('id', meta_id).single()
       if (meta) {

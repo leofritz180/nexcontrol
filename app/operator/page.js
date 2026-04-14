@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaCreated } from '../../lib/notify'
+import OnlineCounter from '../../components/OnlineCounter'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
@@ -696,9 +697,12 @@ export default function OperatorPage() {
               <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--t1)', margin: '0 0 4px' }}>
                 Ola, {getName(profile)}
               </h1>
-              <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, opacity: 0.75 }}>
-                {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 2 }}>
+                <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, opacity: 0.75 }}>
+                  {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                </p>
+                <OnlineCounter userId={user?.id} />
+              </div>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               <button

@@ -9,6 +9,7 @@ import { supabase } from '../../lib/supabase/client'
 import { notifyMetaClosed } from '../../lib/notify'
 import { ProLockedCard } from '../../components/pro/ProGate'
 import ProBanner from '../../components/pro/ProBanner'
+import OnlineCounter from '../../components/OnlineCounter'
 import dynamic from 'next/dynamic'
 const Onboarding = dynamic(() => import('../../components/Onboarding'), { ssr: false })
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
@@ -1146,6 +1147,7 @@ export default function AdminPage() {
                 transition={{ duration:2, repeat:Infinity }}
               />
               <span style={{ fontSize:12, color:'var(--t3)' }}>Dados em tempo real</span>
+              <OnlineCounter userId={user?.id} />
             </div>
           </div>
           <motion.button

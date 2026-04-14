@@ -286,7 +286,7 @@ function SocialProofSection() {
   ]
 
   return (
-    <section ref={sectionRef} style={{ padding:'48px 24px 40px', maxWidth:800, margin:'0 auto', textAlign:'center', position:'relative' }}>
+    <section ref={sectionRef} className="lp-social" style={{ padding:'48px 24px 40px', maxWidth:800, margin:'0 auto', textAlign:'center', position:'relative' }}>
 
       {/* HUD scan line */}
       {active && (
@@ -325,6 +325,7 @@ function SocialProofSection() {
       <motion.p
         initial={{ opacity:0, y:10 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
         transition={{ duration:0.4 }}
+        className="lp-social-label"
         style={{ fontSize:13, fontWeight:600, color:'rgba(255,255,255,0.4)', letterSpacing:'0.06em', marginBottom:28 }}
       >
         QUEM USA NEXCONTROL JA TEM CONTROLE REAL DA OPERACAO:
@@ -395,7 +396,7 @@ function LiveDashboardDemo() {
   const op = DEMO_OPS[idx]
 
   return (
-    <section style={{ padding:'0 24px 80px', maxWidth:700, margin:'0 auto', position:'relative' }}>
+    <section className="lp-demo-section" style={{ padding:'0 24px 80px', maxWidth:700, margin:'0 auto', position:'relative' }}>
       <motion.div
         initial={{ opacity:0, y:30 }}
         whileInView={{ opacity:1, y:0 }}
@@ -404,7 +405,7 @@ function LiveDashboardDemo() {
         style={{
           borderRadius:16, overflow:'hidden', position:'relative',
           border:'1px solid rgba(255,255,255,0.06)',
-          boxShadow:`0 20px 60px rgba(0,0,0,0.5)${flash?', 0 0 40px rgba(34,197,94,0.06)':''}`,
+          boxShadow:'0 20px 60px rgba(0,0,0,0.5)',
           background:'linear-gradient(145deg, #0c1424, #080e1a)',
           padding:'20px 24px 24px',
           transition:'box-shadow 0.5s ease',
@@ -429,7 +430,6 @@ function LiveDashboardDemo() {
               style={{
                 padding:'10px 14px', borderRadius:12,
                 background:'rgba(255,255,255,0.06)',
-                backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)',
                 border:'1px solid rgba(255,255,255,0.06)',
                 display:'flex', alignItems:'center', gap:10,
                 boxShadow:'0 4px 16px rgba(0,0,0,0.3)',
@@ -542,72 +542,42 @@ export default function HomePage() {
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1, overflow:'hidden' }}>
 
-      {/* Ambient */}
-      <div style={{ position:'fixed', top:'-10%', left:'20%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.04), transparent 55%)', filter:'blur(80px)', pointerEvents:'none' }}/>
-      <div style={{ position:'fixed', bottom:'5%', right:'15%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.03), transparent 55%)', filter:'blur(60px)', pointerEvents:'none' }}/>
+      {/* Ambient — hidden on mobile via CSS */}
+      <div className="lp-ambient" style={{ position:'fixed', top:'-10%', left:'20%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.04), transparent 55%)', filter:'blur(80px)', pointerEvents:'none' }}/>
+      <div className="lp-ambient" style={{ position:'fixed', bottom:'5%', right:'15%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.03), transparent 55%)', filter:'blur(60px)', pointerEvents:'none' }}/>
 
       {/* ═══ HERO ═══ */}
-      <section style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px 24px', textAlign:'center', position:'relative' }}>
+      <section className="lp-hero" style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px 24px', textAlign:'center', position:'relative' }}>
 
-        <motion.div
-          initial={{ opacity:0, y:16 }}
-          animate={{ opacity:1, y:0 }}
-          transition={{ duration:0.6, ease }}
-          style={{ maxWidth:580, position:'relative', zIndex:1 }}
-        >
+        <div className="lp-hero-wrap" style={{ maxWidth:580, position:'relative', zIndex:1, animation:'fade-in 0.5s ease both' }}>
           {/* Logo */}
-          <div style={{ display:'flex', justifyContent:'center', marginBottom:28 }}>
+          <div className="lp-logo" style={{ display:'flex', justifyContent:'center', marginBottom:28 }}>
             <Logo size={1.88} showText={false} glow/>
           </div>
 
-          <motion.h1
-            initial={{ opacity:0, y:10 }}
-            animate={{ opacity:1, y:0 }}
-            transition={{ duration:0.5, delay:0.15, ease }}
-            style={{ fontSize:40, fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 14px', lineHeight:1.12 }}
-          >
+          <h1 style={{ fontSize:40, fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 14px', lineHeight:1.12, animation:'fade-up 0.5s ease 0.1s both' }}>
             Voce nao sabe se esta lucrando de verdade.
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity:0, y:8 }}
-            animate={{ opacity:1, y:0 }}
-            transition={{ duration:0.5, delay:0.25, ease }}
-            style={{ fontSize:16, color:'var(--t2)', marginBottom:16, lineHeight:1.6 }}
-          >
+          <p className="lp-sub1" style={{ fontSize:16, color:'var(--t2)', marginBottom:16, lineHeight:1.6, animation:'fade-up 0.5s ease 0.2s both' }}>
             Controle depositantes, metas e resultado em tempo real — sem operar no escuro.
-          </motion.p>
+          </p>
 
-          <motion.p
-            initial={{ opacity:0, y:6 }}
-            animate={{ opacity:1, y:0 }}
-            transition={{ duration:0.5, delay:0.3, ease }}
-            style={{ fontSize:14, color:'var(--t3)', marginBottom:36, lineHeight:1.6 }}
-          >
+          <p className="lp-sub2" style={{ fontSize:14, color:'var(--t3)', marginBottom:36, lineHeight:1.6, animation:'fade-up 0.5s ease 0.25s both' }}>
             Acompanhe cada remessa, receba alertas e veja exatamente onde esta o lucro ou prejuizo da sua operacao.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity:0, y:8 }}
-            animate={{ opacity:1, y:0 }}
-            transition={{ duration:0.5, delay:0.35, ease }}
-            style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}
-          >
+          <div className="lp-ctas" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', animation:'fade-up 0.5s ease 0.3s both' }}>
             <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:220, justifyContent:'center', fontSize:15, fontWeight:700 }}>
               Comecar agora
             </Link>
             <Link href="/login" className="btn btn-ghost btn-lg" style={{ minWidth:180, justifyContent:'center', fontSize:14 }}>
               Ja tenho conta
             </Link>
-          </motion.div>
+          </div>
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12, textAlign: 'center' }}>3 dias gratis • Sem compromisso</p>
 
-          <motion.div
-            initial={{ opacity:0 }}
-            animate={{ opacity:1 }}
-            transition={{ duration:0.4, delay:0.5 }}
-            style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:24, marginTop:40 }}
-          >
+          <div className="lp-badges" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:24, marginTop:40, animation:'fade-in 0.4s ease 0.4s both' }}>
             {[
               { v:'3 dias', l:'teste gratis' },
               { v:'Tempo real', l:'atualizacao 30s' },
@@ -618,67 +588,45 @@ export default function HomePage() {
                 <p style={{ fontSize:10, color:'var(--t3)', margin:0 }}>{l}</p>
               </div>
             ))}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity:0 }}
-          animate={{ opacity:1, y:[0,10,0] }}
-          transition={{ opacity:{delay:1.5,duration:0.6}, y:{duration:1.8,repeat:Infinity,ease:'easeInOut'} }}
-          style={{ position:'absolute', bottom:36, display:'flex', flexDirection:'column', alignItems:'center', gap:8, cursor:'pointer' }}
-          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
-        >
+        {/* Scroll indicator — hidden on mobile */}
+        <div className="lp-scroll-hint" style={{ position:'absolute', bottom:36, display:'flex', flexDirection:'column', alignItems:'center', gap:8, cursor:'pointer', animation:'fade-in 0.6s ease 1.5s both' }}
+          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}>
           <span style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.6)', letterSpacing:'0.12em' }}>VEJA COMO FUNCIONA</span>
-          <motion.div
-            animate={{ y:[0,5,0] }}
-            transition={{ duration:1.2, repeat:Infinity, ease:'easeInOut', delay:0.3 }}
-          >
-            <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth={2.5} strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </motion.div>
-        </motion.div>
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth={2.5} strokeLinecap="round" style={{ animation:'float 1.8s ease-in-out infinite' }}><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
       </section>
 
       {/* ═══ PROVA SOCIAL ═══ */}
       <SocialProofSection />
 
       {/* ═══ LIVE DASHBOARD DEMO ═══ */}
-      <p style={{ fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: 20 }}>Veja sua operacao acontecendo em tempo real:</p>
+      <p className="lp-demo-title" style={{ fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: 20 }}>Veja sua operacao acontecendo em tempo real:</p>
       <LiveDashboardDemo/>
 
       {/* ═══ 3 PILARES ═══ */}
-      <section style={{ padding:'40px 24px 80px', maxWidth:900, margin:'0 auto' }}>
+      <section className="lp-pilares" style={{ padding:'40px 24px 80px', maxWidth:900, margin:'0 auto' }}>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }} className="g-4">
           {[
             { icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z', t:'Inteligencia em tempo real', d:'Veja o que esta acontecendo na sua operacao agora — nao depois.' },
             { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe com performance', d:'Saiba exatamente quem esta performando e quem esta te fazendo perder dinheiro.' },
             { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real, nao estimativa', d:'Pare de operar no achismo. Veja o resultado real da sua operacao.' },
           ].map(({icon,t,d},i) => (
-            <motion.div key={i}
-              initial={{ opacity:0, y:16 }}
-              whileInView={{ opacity:1, y:0 }}
-              viewport={{ once:true }}
-              transition={{ duration:0.4, delay:i*0.1, ease }}
-              style={{ padding:'28px 24px', borderRadius:14, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.05)' }}
-            >
+            <div key={i} style={{ padding:'28px 24px', borderRadius:14, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.05)' }}>
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:16 }}>
                 <path d={icon}/>
               </svg>
               <h3 style={{ fontSize:16, fontWeight:700, color:'var(--t1)', margin:'0 0 8px' }}>{t}</h3>
               <p style={{ fontSize:13, color:'var(--t3)', margin:0, lineHeight:1.5 }}>{d}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </section>
 
       {/* ═══ PAIN SECTION ═══ */}
-      <motion.div
-        initial={{ opacity:0, y:16 }}
-        whileInView={{ opacity:1, y:0 }}
-        viewport={{ once:true }}
-        transition={{ duration:0.4, delay:0.1, ease }}
-        style={{ maxWidth: 700, margin: '0 auto', padding: '60px 20px', textAlign: 'center' }}
-      >
+      <div className="lp-pain" style={{ maxWidth: 700, margin: '0 auto', padding: '60px 20px', textAlign: 'center' }}>
         <h2 style={{ fontSize: 26, fontWeight: 800, color: '#fff', marginBottom: 24, letterSpacing: '-0.03em' }}>
           Se voce nao controla isso, voce ja perdeu dinheiro:
         </h2>
@@ -693,22 +641,17 @@ export default function HomePage() {
         <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--loss)', lineHeight: 1.5 }}>
           Sem controle, qualquer operacao vira prejuizo invisivel.
         </p>
-      </motion.div>
+      </div>
 
       {/* ═══ CTA FINAL ═══ */}
-      <section style={{ padding:'40px 24px 80px', textAlign:'center' }}>
-        <motion.div
-          initial={{ opacity:0 }}
-          whileInView={{ opacity:1 }}
-          viewport={{ once:true }}
-          transition={{ duration:0.5 }}
-        >
+      <section className="lp-cta-final" style={{ padding:'40px 24px 80px', textAlign:'center' }}>
+        <div>
           <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pare de operar no escuro.</h2>
           <p style={{ fontSize:14, color:'var(--t3)', marginBottom:28 }}>Comece a ver sua operacao como ela realmente e.</p>
           <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:240, justifyContent:'center', fontSize:15, fontWeight:700 }}>
             Comecar agora
           </Link>
-        </motion.div>
+        </div>
 
         <div style={{ marginTop:48, display:'flex', alignItems:'center', justifyContent:'center' }}>
           <Logo size={0.75} textSize={13} style={{ gap:8, opacity:0.4 }}/>

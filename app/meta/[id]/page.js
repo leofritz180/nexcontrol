@@ -129,12 +129,15 @@ function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, onClose, onSaved 
 
 function KPI({ label, value, color, small=false }) {
   return (
-    <div style={{ background:'var(--raised)', border:'1px solid var(--b1)', borderRadius:12, padding:small?'12px 14px':'16px 18px', transition:'all 0.2s' }}
-      onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--b2)';e.currentTarget.style.transform='translateY(-2px)'}}
-      onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--b1)';e.currentTarget.style.transform=''}}>
-      <p className="t-label" style={{ marginBottom:6 }}>{label}</p>
+    <motion.div
+      initial={{ opacity:0, y:10 }}
+      animate={{ opacity:1, y:0 }}
+      transition={{ duration:0.35, ease:[0.33,1,0.68,1] }}
+      whileHover={{ y:-3, boxShadow:'0 8px 24px rgba(0,0,0,0.3)', transition:{ duration:0.15 } }}
+      style={{ background:'var(--raised)', border:'1px solid var(--b1)', borderRadius:14, padding:small?'12px 14px':'18px 20px', cursor:'default' }}>
+      <p className="t-label" style={{ marginBottom:8 }}>{label}</p>
       <p className="t-num" style={{ fontSize:small?16:20, fontWeight:700, color }}>{value}</p>
-    </div>
+    </motion.div>
   )
 }
 
@@ -511,18 +514,87 @@ export default function MetaPage() {
           </div>
         </div>
 
+        {/* Insight da operacao */}
+        {!loading && remessas.length > 0 && (() => {
+          const last3 = [...remessas].sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,3)
+          const negSeq = last3.filter(r => Number(r.resultado||0) < 0).length
+          const posSeq = last3.filter(r => Number(r.resultado||0) >= 0).length
+          const liq = totais.liq
+          let insightStatus, insightColor, insightText, insightSub
+          if (liq < 0 && negSeq >= 2) {
+            insightStatus = 'Critica'; insightColor = '#EF4444'
+            insightText = 'Meta em prejuizo com sequencia negativa'
+            insightSub = `${negSeq} das ultimas 3 remessas negativas`
+          } else if (liq < 0) {
+            insightStatus = 'Atencao'; insightColor = '#F59E0B'
+            insightText = 'Meta em prejuizo — fique atento'
+            insightSub = 'Resultado acumulado negativo'
+          } else if (negSeq >= 2) {
+            insightStatus = 'Atencao'; insightColor = '#F59E0B'
+            insightText = 'Oscilacao detectada, atencao'
+            insightSub = `${negSeq} remessas negativas recentes apesar de lucro geral`
+          } else if (posSeq >= 2 && liq > 0) {
+            insightStatus = 'Saudavel'; insightColor = '#22C55E'
+            insightText = 'Meta saudavel com boa consistencia'
+            insightSub = `${posSeq} remessas positivas consecutivas`
+          } else {
+            insightStatus = 'Normal'; insightColor = '#3B82F6'
+            insightText = 'Operacao em andamento'
+            insightSub = `${remessas.length} remessas registradas`
+          }
+          return (
+            <motion.div
+              initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }}
+              transition={{ duration:0.35, delay:0.1 }}
+              style={{
+                padding:'14px 20px', borderRadius:14, marginBottom:20,
+                background:`${insightColor}08`, border:`1px solid ${insightColor}20`,
+                display:'flex', alignItems:'center', gap:12,
+                boxShadow:`0 0 20px ${insightColor}06`,
+              }}
+            >
+              <motion.div
+                animate={{ boxShadow:[`0 0 0 0 ${insightColor}00`, `0 0 0 6px ${insightColor}20`, `0 0 0 0 ${insightColor}00`] }}
+                transition={{ duration:2.5, repeat:Infinity, ease:'easeInOut' }}
+                style={{ width:10, height:10, borderRadius:'50%', background:insightColor, flexShrink:0 }}
+              />
+              <div style={{ flex:1 }}>
+                <p style={{ fontSize:13, fontWeight:700, color:insightColor, margin:'0 0 2px' }}>{insightText}</p>
+                <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{insightSub}</p>
+              </div>
+              <span style={{ fontSize:9, fontWeight:700, padding:'3px 10px', borderRadius:6, background:`${insightColor}12`, color:insightColor, border:`1px solid ${insightColor}22`, textTransform:'uppercase', letterSpacing:'0.04em' }}>{insightStatus}</span>
+            </motion.div>
+          )
+        })()}
+
         {/* KPIs */}
         <div className="g-5" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:14, marginBottom:28 }}>
-          <KPI label="Depósito total"    value={`R$ ${fmt(totais.d)}`}   color="var(--t2)"/>
+          <KPI label="Deposito total"    value={`R$ ${fmt(totais.d)}`}   color="var(--t2)"/>
           <KPI label="Saque total"       value={`R$ ${fmt(totais.s)}`}   color="var(--t2)"/>
           <KPI label="Lucro acumulado"   value={`R$ ${fmt(totais.lucro)}`} color="var(--profit)"/>
-          <KPI label="Prejuízo acum."    value={`R$ ${fmt(totais.prej)}`}  color="var(--loss)"/>
-          <div style={{ background:totais.liq>=0?'var(--profit-dim)':'var(--loss-dim)', border:`1px solid ${totais.liq>=0?'var(--profit-border)':'var(--loss-border)'}`, borderRadius:12, padding:'16px 18px', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
-            <p className="t-label" style={{ marginBottom:8 }}>Resultado líquido</p>
-            <p className="t-num" style={{ fontSize:22, fontWeight:800, color:totais.liq>=0?'var(--profit)':'var(--loss)' }}>
-              <span style={{ display:'inline-flex', alignItems:'center', gap:4 }}><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points={totais.liq>=0?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>{totais.liq>=0?'+':''}</span>R$ {fmt(Math.abs(totais.liq))}
-            </p>
-          </div>
+          <KPI label="Prejuizo acum."    value={`R$ ${fmt(totais.prej)}`}  color="var(--loss)"/>
+          <motion.div
+            initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
+            transition={{ duration:0.4 }}
+            whileHover={{ y:-3, transition:{ duration:0.15 } }}
+            style={{
+              background: totais.liq>=0
+                ? 'linear-gradient(145deg, rgba(34,197,94,0.08), rgba(34,197,94,0.03))'
+                : 'linear-gradient(145deg, rgba(239,68,68,0.08), rgba(239,68,68,0.03))',
+              border:`1px solid ${totais.liq>=0?'var(--profit-border)':'var(--loss-border)'}`,
+              borderRadius:14, padding:'18px 20px', display:'flex', flexDirection:'column', justifyContent:'space-between',
+              boxShadow: `0 0 24px ${totais.liq>=0?'rgba(34,197,94,0.06)':'rgba(239,68,68,0.06)'}`,
+              cursor:'default', position:'relative', overflow:'hidden',
+            }}>
+            <div style={{ position:'absolute', top:'-30%', right:'-10%', width:80, height:80, borderRadius:'50%', background:`radial-gradient(circle, ${totais.liq>=0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}, transparent 70%)`, pointerEvents:'none' }} />
+            <p className="t-label" style={{ marginBottom:8, position:'relative', zIndex:1 }}>Resultado liquido</p>
+            <motion.p
+              animate={{ textShadow:[`0 0 8px ${totais.liq>=0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}`, `0 0 20px ${totais.liq>=0?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)'}`, `0 0 8px ${totais.liq>=0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}`] }}
+              transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
+              className="t-num" style={{ fontSize:24, fontWeight:900, color:totais.liq>=0?'var(--profit)':'var(--loss)', position:'relative', zIndex:1 }}>
+              {totais.liq>=0?'+':'-'}R$ {fmt(Math.abs(totais.liq))}
+            </motion.p>
+          </motion.div>
         </div>
 
         {/* Insights + Previsao + Score */}
@@ -905,8 +977,13 @@ export default function MetaPage() {
               ) : [...remessas].reverse().map((r,i)=>{
                 const pos = Number(r.resultado||0)>=0
                 return (
-                  <div key={r.id} className="row-card a1" style={{ animationDelay:`${i*30}ms`, padding:'16px 20px', cursor:'default' }}>
-                    <div className="accent" style={{ background:pos?'linear-gradient(180deg,var(--profit),#04b876)':'linear-gradient(180deg,var(--loss),#c0294e)' }}/>
+                  <motion.div key={r.id}
+                    initial={{ opacity:0, x:-12 }}
+                    animate={{ opacity:1, x:0 }}
+                    transition={{ duration:0.3, delay:i*0.04, ease:[0.33,1,0.68,1] }}
+                    whileHover={{ x:4, boxShadow:`0 4px 20px ${pos?'rgba(34,197,94,0.08)':'rgba(239,68,68,0.08)'}`, borderColor:pos?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)', transition:{duration:0.15} }}
+                    className="row-card" style={{ padding:'16px 20px', cursor:'default' }}>
+                    <div className="accent" style={{ background:pos?'linear-gradient(180deg,var(--profit),#04b876)':'linear-gradient(180deg,var(--loss),#c0294e)', boxShadow:pos?'0 0 8px rgba(34,197,94,0.15)':'0 0 8px rgba(239,68,68,0.15)' }}/>
                     <div style={{ paddingLeft:14 }}>
                       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:12 }}>
                         <div>
@@ -954,7 +1031,7 @@ export default function MetaPage() {
                         ))}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>

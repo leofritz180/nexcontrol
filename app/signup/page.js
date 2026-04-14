@@ -73,8 +73,9 @@ export default function SignupPage() {
   return (
     <main style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:24, position:'relative', zIndex:1, overflow:'hidden' }}>
       {/* Ambient orbs */}
-      <div style={{ position:'fixed', top:'-18%', left:'-12%', width:700, height:700, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb1 20s ease-in-out infinite' }}/>
-      <div style={{ position:'fixed', bottom:'-18%', right:'-8%', width:600, height:600, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
+      <div style={{ position:'fixed', top:'-18%', left:'-12%', width:750, height:750, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.18) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb1 20s ease-in-out infinite' }}/>
+      <div style={{ position:'fixed', bottom:'-18%', right:'-8%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
+      <div style={{ position:'fixed', top:'40%', right:'20%', width:450, height:450, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.07) 0%, transparent 65%)', filter:'blur(80px)', pointerEvents:'none' }}/>
       <style>{`
         @keyframes lpOrb1 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(30px,-20px) scale(1.05); } 66% { transform:translate(-20px,15px) scale(0.97); } }
         @keyframes lpOrb2 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(-25px,20px) scale(0.96); } 66% { transform:translate(15px,-10px) scale(1.04); } }

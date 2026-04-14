@@ -542,10 +542,10 @@ export default function HomePage() {
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1, overflow:'hidden' }}>
 
-      {/* Ambient glow orbs — same style as login, CSS animated, hidden on phones */}
-      <div className="lp-ambient" style={{ position:'fixed', top:'-15%', left:'-10%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb1 20s ease-in-out infinite' }}/>
-      <div className="lp-ambient" style={{ position:'fixed', bottom:'-15%', right:'-8%', width:550, height:550, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
-      <div className="lp-ambient" style={{ position:'fixed', top:'35%', right:'15%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.05) 0%, transparent 65%)', filter:'blur(80px)', pointerEvents:'none', animation:'lpOrb3 30s ease-in-out infinite' }}/>
+      {/* Ambient glow orbs — strong red/green like login page */}
+      <div className="lp-ambient" style={{ position:'fixed', top:'-18%', left:'-12%', width:750, height:750, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.18) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb1 20s ease-in-out infinite' }}/>
+      <div className="lp-ambient" style={{ position:'fixed', bottom:'-18%', right:'-10%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
+      <div className="lp-ambient" style={{ position:'fixed', top:'40%', right:'10%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.08) 0%, transparent 65%)', filter:'blur(70px)', pointerEvents:'none', animation:'lpOrb3 30s ease-in-out infinite' }}/>
       <style>{`
         @keyframes lpOrb1 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(30px,-20px) scale(1.05); } 66% { transform:translate(-20px,15px) scale(0.97); } }
         @keyframes lpOrb2 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(-25px,20px) scale(0.96); } 66% { transform:translate(15px,-10px) scale(1.04); } }

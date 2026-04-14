@@ -120,11 +120,27 @@ export default function OwnerPage() {
   const globalSaq = adminStats.reduce((a, s) => a + Number(s.totalSaq || 0), 0)
   const globalLiq = globalDep - globalSaq
 
-  // Intelligence insights
-  const insights = []
-  const convRate = kpis.totalAdmins > 0 ? Math.round((funnel.withSub / kpis.totalAdmins) * 100) : 0
-  if (convRate < 20) insights.push({ text: `Taxa de conversao em ${convRate}% — abaixo do esperado`, type: 'warn' })
+  // ── Operation health status ──
   const inactiveAdmins = adminStats.filter(a => a.daysSinceActivity > 7).length
+  const convRate = kpis.totalAdmins > 0 ? Math.round((funnel.withSub / kpis.totalAdmins) * 100) : 0
+  const metaConvPct = funnel.registered > 0 ? Math.round((funnel.withMeta / funnel.registered) * 100) : 0
+  const activeRate = kpis.totalAdmins > 0 ? Math.round(((kpis.totalAdmins - inactiveAdmins) / kpis.totalAdmins) * 100) : 0
+
+  const opHealth = (() => {
+    let score = 50
+    if (variation > 10) score += 20; else if (variation > 0) score += 10; else if (variation < -10) score -= 20; else if (variation < 0) score -= 10
+    if (convRate >= 30) score += 15; else if (convRate < 10) score -= 15
+    if (activeRate >= 70) score += 10; else if (activeRate < 40) score -= 15
+    if (kpis.revenueToday > 0) score += 5
+    score = Math.max(0, Math.min(100, score))
+    if (score >= 65) return { status: 'Saudavel', color: '#22C55E', bg: 'rgba(34,197,94,0.06)', border: 'rgba(34,197,94,0.15)', text: 'Sua operacao esta saudavel, com crescimento consistente.' }
+    if (score >= 40) return { status: 'Atencao', color: '#F59E0B', bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.15)', text: 'Atencao: alguns indicadores precisam de melhoria.' }
+    return { status: 'Critica', color: '#EF4444', bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.15)', text: 'Situacao critica: queda na conversao e atividade abaixo do ideal.' }
+  })()
+
+  // ── Intelligence insights ──
+  const insights = []
+  if (convRate < 20) insights.push({ text: `Taxa de conversao em ${convRate}% — abaixo do esperado`, type: 'warn' })
   if (inactiveAdmins > 2) insights.push({ text: `${inactiveAdmins} admins inativos ha mais de 7 dias`, type: 'warn' })
   const topAdmin = adminStats[0]
   if (topAdmin && topAdmin.metas > 0) {
@@ -135,12 +151,30 @@ export default function OwnerPage() {
   if (variation > 15) insights.push({ text: `Crescimento forte: +${variation}% vs semana anterior`, type: 'profit' })
   if (kpis.revenueToday > 0) insights.push({ text: `Receita registrada hoje: R$ ${fmt(kpis.revenueToday)}`, type: 'profit' })
 
-  // Actions
+  // ── "O que esta acontecendo agora" ──
+  const happeningNow = []
+  // Principal problema
+  if (metaConvPct < 50 && funnel.registered > 5) happeningNow.push({ label: 'Principal problema', text: `Baixa conversao de contas para metas (${metaConvPct}%)`, type: 'warn', icon: 'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z' })
+  // Maior oportunidade
+  if (inactiveAdmins > 0) {
+    const potentialRev = Math.round(inactiveAdmins * (kpis.avgTicket || 39.9) * 0.3)
+    happeningNow.push({ label: 'Maior oportunidade', text: `Reativar ${inactiveAdmins} admins pode gerar +R$ ${fmt(potentialRev)}/mes`, type: 'profit', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' })
+  }
+  // Tendencia
+  if (variation !== 0) happeningNow.push({ label: 'Tendencia', text: `${variationUp ? 'Crescimento' : 'Queda'} de ${variationUp ? '+' : ''}${variation}% vs ultimos 7 dias`, type: variationUp ? 'profit' : 'critical', icon: variationUp ? 'M23 6l-9.5 9.5-5-5L1 18' : 'M23 18l-9.5-9.5-5 5L1 6' })
+
+  // ── Prediction (7 days) ──
+  const avgDailyRev = sparkValues.length > 0 ? sparkValues.reduce((a, v) => a + v, 0) / sparkValues.length : 0
+  const last7Avg = sparkValues.length >= 7 ? sparkValues.slice(-7).reduce((a, v) => a + v, 0) / 7 : avgDailyRev
+  const predicted7d = last7Avg * 7
+  const optimistic7d = predicted7d * (1 + Math.max(variation, 10) / 100)
+
+  // ── Actions with priority ──
   const actions = []
-  if (funnel.withMeta < funnel.registered * 0.5) actions.push('Incentivar criacao de metas — muitos admins sem meta')
-  if (inactiveAdmins > 0) actions.push(`Reativar ${inactiveAdmins} admin${inactiveAdmins > 1 ? 's' : ''} inativo${inactiveAdmins > 1 ? 's' : ''}`)
-  if (convRate < 30) actions.push('Melhorar funil de conversao — poucos assinantes')
-  if (kpis.churnRate > 10) actions.push(`Reduzir churn (${kpis.churnRate}%) — investigar cancelamentos`)
+  if (inactiveAdmins > 0) actions.push({ text: `Reativar ${inactiveAdmins} admin${inactiveAdmins > 1 ? 's' : ''} inativo${inactiveAdmins > 1 ? 's' : ''}`, impact: 'Alto', priority: 1 })
+  if (funnel.withMeta < funnel.registered * 0.5) actions.push({ text: 'Incentivar criacao de metas — muitos admins sem meta', impact: 'Alto', priority: 2 })
+  if (convRate < 30) actions.push({ text: 'Melhorar funil de conversao — poucos assinantes', impact: 'Medio', priority: 3 })
+  if (kpis.churnRate > 10) actions.push({ text: `Reduzir churn (${kpis.churnRate}%) — investigar cancelamentos`, impact: 'Medio', priority: 4 })
 
   const card = {
     borderRadius: 18,
@@ -171,6 +205,28 @@ export default function OwnerPage() {
             onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,0.08)'; e.target.style.color = '#F1F5F9' }}
             onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.04)'; e.target.style.color = '#94A3B8' }}
           >Voltar ao painel</button>
+        </motion.div>
+
+        {/* ═══ OPERATION HEALTH STATUS ═══ */}
+        <motion.div {...fadeUp(1)} style={{ marginBottom: 20 }}>
+          <div style={{ ...card, padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, borderColor: opHealth.border, background: opHealth.bg }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <motion.div
+                animate={{ boxShadow: [`0 0 0 0 ${opHealth.color}00`, `0 0 0 8px ${opHealth.color}20`, `0 0 0 0 ${opHealth.color}00`] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ width: 12, height: 12, borderRadius: '50%', background: opHealth.color, flexShrink: 0 }}
+              />
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 700, color: opHealth.color, margin: '0 0 2px' }}>Estado da operacao: {opHealth.status}</p>
+                <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>{opHealth.text}</p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 10, color: '#64748B' }}>
+              <span>{activeRate}% ativos</span>
+              <span>{convRate}% conversao</span>
+              <span>{variationUp ? '+' : ''}{variation}% receita</span>
+            </div>
+          </div>
         </motion.div>
 
         {/* ═══ LEVEL 1: HERO ═══ */}
@@ -228,6 +284,59 @@ export default function OwnerPage() {
               {item.sub && <p style={{ fontSize: 10, color: '#64748B', margin: '6px 0 0' }}>{item.sub}</p>}
             </motion.div>
           ))}
+        </div>
+
+        {/* ═══ "O QUE ESTA ACONTECENDO AGORA" + PREVISAO ═══ */}
+        <div className="g-side" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20, marginBottom: 28 }}>
+          {/* Happening now */}
+          {happeningNow.length > 0 && (
+            <motion.div {...fadeUp(0, 0.15)} style={{ ...card, padding: 24 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                O que esta acontecendo agora
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {happeningNow.map((h, i) => {
+                  const colors = { profit: '#22C55E', warn: '#F59E0B', critical: '#EF4444' }
+                  const c = colors[h.type] || '#3b82f6'
+                  return (
+                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35, delay: 0.2 + i * 0.1 }}
+                      style={{ padding: '12px 14px', borderRadius: 12, background: `${c}08`, border: `1px solid ${c}18`, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0, marginTop: 1 }}><path d={h.icon} /></svg>
+                      <div>
+                        <p style={{ fontSize: 9, fontWeight: 700, color: c, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 3px' }}>{h.label}</p>
+                        <p style={{ fontSize: 12, color: '#F1F5F9', margin: 0, lineHeight: 1.4 }}>{h.text}</p>
+                      </div>
+                    </motion.div>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Previsao 7 dias */}
+          <motion.div {...fadeUp(1, 0.2)} style={{ ...card, padding: 24 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+              Previsao (7 dias)
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.1)' }}>
+                <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.06em' }}>Cenario atual</p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: '#22C55E', margin: 0 }}>+R$ <CountUp value={predicted7d} /></p>
+                <p style={{ fontSize: 10, color: '#64748B', margin: '4px 0 0' }}>Mantendo o padrao atual</p>
+              </div>
+              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(168,85,247,0.04)', border: '1px solid rgba(168,85,247,0.1)' }}>
+                <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.06em' }}>Cenario otimista</p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: '#a855f7', margin: 0 }}>+R$ <CountUp value={optimistic7d} /></p>
+                <p style={{ fontSize: 10, color: '#64748B', margin: '4px 0 0' }}>Se melhorar conversao</p>
+              </div>
+              <div style={{ padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 10, color: '#64748B' }}>Media diaria</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 700, color: '#F1F5F9' }}>R$ {fmt(last7Avg)}</span>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* ═══ LEVEL 2: DECISION ROW ═══ */}
@@ -376,20 +485,27 @@ export default function OwnerPage() {
             </div>
           </motion.div>
 
-          {/* O que fazer agora */}
+          {/* O que fazer agora — com prioridades */}
           {actions.length > 0 && (
             <motion.div {...fadeUp(1, 0.35)} style={{ ...card, padding: 24 }}>
               <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
-                O que fazer agora
+                Prioridades
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {actions.map((a, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: 'rgba(229,57,53,0.04)', border: '1px solid rgba(229,57,53,0.1)' }}>
-                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6" /></svg>
-                    <span style={{ fontSize: 11, color: '#F1F5F9', lineHeight: 1.4 }}>{a}</span>
-                  </div>
-                ))}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {actions.map((a, i) => {
+                  const impactC = a.impact === 'Alto' ? '#EF4444' : '#F59E0B'
+                  return (
+                    <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.3 + i * 0.08 }}
+                      style={{ padding: '12px 14px', borderRadius: 12, background: 'rgba(229,57,53,0.03)', border: '1px solid rgba(229,57,53,0.08)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                        <span style={{ fontSize: 9, fontWeight: 800, color: '#e53935', fontFamily: 'var(--mono)' }}>#{a.priority}</span>
+                        <span style={{ fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: `${impactC}12`, color: impactC, border: `1px solid ${impactC}25`, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Impacto {a.impact}</span>
+                      </div>
+                      <p style={{ fontSize: 11, color: '#F1F5F9', margin: 0, lineHeight: 1.4 }}>{a.text}</p>
+                    </motion.div>
+                  )
+                })}
               </div>
             </motion.div>
           )}
@@ -488,6 +604,53 @@ export default function OwnerPage() {
             </table>
           </div>
         </motion.div>
+
+        {/* ═══ LUCRO REAL + HEATMAP ═══ */}
+        <div className="g-side" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 28 }}>
+          {/* Lucro real */}
+          <motion.div {...fadeUp(0, 0.45)} style={{ ...card, padding: 24 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 16px' }}>Lucro real da operacao</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <span style={{ fontSize: 11, color: '#94A3B8' }}>Receita total</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: '#22C55E' }}>R$ <CountUp value={kpis.totalRevenue} /></span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <span style={{ fontSize: 11, color: '#94A3B8' }}>Custos estimados</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: '#EF4444' }}>--</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0' }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9' }}>Lucro liquido</span>
+                <motion.span
+                  animate={{ textShadow: ['0 0 10px rgba(34,197,94,0.1)', '0 0 25px rgba(34,197,94,0.2)', '0 0 10px rgba(34,197,94,0.1)'] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 900, color: '#22C55E' }}>R$ <CountUp value={kpis.totalRevenue} /></motion.span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Heatmap de performance */}
+          <motion.div {...fadeUp(1, 0.45)} style={{ ...card, padding: 24 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 16px' }}>Performance dos admins</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {adminStats.slice(0, 8).map((a, i) => {
+                const perf = a.metas > 5 && a.daysSinceActivity <= 3 ? 'high' : a.metas > 0 && a.daysSinceActivity <= 7 ? 'mid' : 'low'
+                const perfC = perf === 'high' ? '#22C55E' : perf === 'mid' ? '#F59E0B' : '#EF4444'
+                const maxM = Math.max(...adminStats.slice(0, 8).map(x => x.metas), 1)
+                return (
+                  <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', cursor: 'pointer' }} onClick={() => setSelectedAdmin(a)}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: perfC, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, color: '#94A3B8', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 120 }}>{a.name || a.email.split('@')[0]}</span>
+                    <div style={{ flex: 1, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${(a.metas / maxM) * 100}%`, borderRadius: 2, background: perfC, opacity: 0.7 }} />
+                    </div>
+                    <span style={{ fontFamily: 'var(--mono)', fontSize: 10, fontWeight: 700, color: perfC, width: 30, textAlign: 'right' }}>{a.metas}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </motion.div>
+        </div>
 
         {/* ═══ LEVEL 3: QUICK STATS ═══ */}
         <motion.div {...fadeUp(0, 0.45)}>

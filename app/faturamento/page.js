@@ -202,8 +202,8 @@ export default function FaturamentoPage() {
     const fechadas=metas.filter(m=>m.status_fechamento==='fechada')
     const lucroFinalBruto=fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const custosTotal=costs.reduce((a,c)=>a+Number(c.amount||0),0)
-    const lucroFinal=lucroFinalBruto-custosTotal
-    return {lucro,prej,liq,dep,saq,roi,taxa,total:fRem.length,pos,lucroFinal,lucroFinalBruto,custosTotal,fechadas:fechadas.length}
+    const lucroFinal=Number((lucroFinalBruto-custosTotal).toFixed(2))
+    return {lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),liq:Number(liq.toFixed(2)),dep:Number(dep.toFixed(2)),saq:Number(saq.toFixed(2)),roi,taxa,total:fRem.length,pos,lucroFinal,lucroFinalBruto:Number(lucroFinalBruto.toFixed(2)),custosTotal:Number(custosTotal.toFixed(2)),fechadas:fechadas.length}
   },[fRem,metas,costs])
 
   /* ── Chart data ── */

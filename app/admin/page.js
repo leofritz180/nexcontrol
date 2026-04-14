@@ -49,7 +49,7 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
   const [saving, setSaving] =useState(false)
   const [error,  setError]  =useState('')
 
-  const lucroFinal = useMemo(()=>liqRem+Number(salario||0)+Number(bau||0)-Number(custo||0)-Number(taxa||0),[salario,bau,custo,taxa,liqRem])
+  const lucroFinal = useMemo(()=>Number((liqRem+Number(salario||0)+Number(bau||0)-Number(custo||0)-Number(taxa||0)).toFixed(2)),[salario,bau,custo,taxa,liqRem])
 
   // Calculo automatico pagamento operador
   const deps = Number(meta.quantidade_contas || 0)
@@ -736,9 +736,9 @@ export default function AdminPage() {
     const todayISO = new Date().toISOString().slice(0,10)
     const custosHoje = costs.filter(c=>c.date===todayISO).reduce((a,c)=>a+Number(c.amount||0),0)
     const custosTotal = costs.reduce((a,c)=>a+Number(c.amount||0),0)
-    const lucroHojeNet = lucroHoje - custosHoje
-    const lucroFinalTotalNet = lucroFinalTotal - custosTotal
-    return { lucro,prej,liq:lucro-prej,totalDep,totalSaq,lucroHoje:lucroHojeNet,custosHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal:lucroFinalTotalNet,custosTotal,lucroPerConta,lucroPerMeta,ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas }
+    const lucroHojeNet = Number((lucroHoje - custosHoje).toFixed(2))
+    const lucroFinalTotalNet = Number((lucroFinalTotal - custosTotal).toFixed(2))
+    return { lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),liq:Number((lucro-prej).toFixed(2)),totalDep:Number(totalDep.toFixed(2)),totalSaq:Number(totalSaq.toFixed(2)),lucroHoje:lucroHojeNet,custosHoje:Number(custosHoje.toFixed(2)),ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal:lucroFinalTotalNet,custosTotal:Number(custosTotal.toFixed(2)),lucroPerConta:Number(lucroPerConta.toFixed(2)),lucroPerMeta:Number(lucroPerMeta.toFixed(2)),ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas }
   },[operators,metas,remessas,costs])
 
   // ── Hero card: lucro final por periodo selecionado ──
@@ -747,7 +747,7 @@ export default function AdminPage() {
     const custosTotal = costs.reduce((a,c)=>a+Number(c.amount||0),0)
     if(heroPeriod==='all') {
       const lucro = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-      return { value: lucro - custosTotal, count: fechadas.length, custos: custosTotal }
+      return { value: Number((lucro - custosTotal).toFixed(2)), count: fechadas.length, custos: Number(custosTotal.toFixed(2)) }
     }
     const now = new Date()
     let filtered = fechadas
@@ -776,7 +776,7 @@ export default function AdminPage() {
     }
     const periodCustos = filteredCosts.reduce((a,c)=>a+Number(c.amount||0),0)
     const lucro = filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-    return { value: lucro - periodCustos, count: filtered.length, custos: periodCustos }
+    return { value: Number((lucro - periodCustos).toFixed(2)), count: filtered.length, custos: Number(periodCustos.toFixed(2)) }
   },[metas,heroPeriod,costs])
 
   const ranking = useMemo(()=>

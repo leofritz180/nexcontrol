@@ -362,7 +362,7 @@ export default function MetaPage() {
     if (tipo !== 'redeposito' && (!contasRemessa || Number(contasRemessa) <= 0)) { setError('Informe o numero de contas nesta remessa.'); return }
     if (meta?.status==='finalizada'||meta?.status_fechamento==='fechada') { setError('Meta finalizada. Nao e possivel registrar.'); return }
     setSalvando(true); setError('')
-    const d=parseVal(dep),s=parseVal(saq),si=parseVal(saldoIni),diff=s-d
+    const d=Number(parseVal(dep).toFixed(2)),s=Number(parseVal(saq).toFixed(2)),si=Number(parseVal(saldoIni).toFixed(2)),diff=Number((s-d).toFixed(2))
     const { error:err } = await supabase.from('remessas').insert({
       meta_id:Number(id),
       titulo:tituloR.trim()||`${tipo==='redeposito'?'Redepósito':tipo==='ajuste'?'Ajuste':'Remessa'} ${remessas.length+1}`,
@@ -459,7 +459,7 @@ export default function MetaPage() {
   const totais = useMemo(()=>{
     let lucro=0,prej=0,d=0,s=0
     remessas.forEach(r=>{lucro+=Number(r.lucro||0);prej+=Number(r.prejuizo||0);d+=Number(r.deposito||0);s+=Number(r.saque||0)})
-    return {lucro,prej,d,s,liq:lucro-prej}
+    return {lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),d:Number(d.toFixed(2)),s:Number(s.toFixed(2)),liq:Number((lucro-prej).toFixed(2))}
   },[remessas])
 
   // Parse value: handle Brazilian format (1.055 = 1055, 1.055,00 = 1055)

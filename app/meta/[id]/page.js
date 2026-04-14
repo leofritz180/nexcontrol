@@ -872,141 +872,166 @@ export default function MetaPage() {
         })()}
 
         <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
-          {/* Form — horizontal layout */}
-          <div className="card a2" style={{ padding:26 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:18 }}>
-              <div style={{ width:34,height:34,borderRadius:9,background:'var(--brand-dim)',border:'1px solid var(--brand-border)',display:'flex',alignItems:'center',justifyContent:'center' }}>
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          {/* ══ REGISTRAR REMESSA — 3 blocos ══ */}
+          <div className="card a2" style={{ padding:0, overflow:'hidden' }}>
+            {/* Header */}
+            <div style={{ padding:'18px 24px', borderBottom:'1px solid var(--b1)', display:'flex', alignItems:'center', gap:10 }}>
+              <div style={{ width:32,height:32,borderRadius:8,background:'var(--brand-dim)',border:'1px solid var(--brand-border)',display:'flex',alignItems:'center',justifyContent:'center' }}>
+                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </div>
               <div>
-                <h2 className="t-h3">Registrar remessa</h2>
-                <p className="t-small">Cada registro e calculado individualmente</p>
+                <h2 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Registrar remessa</h2>
+                <p style={{ fontSize:10, color:'var(--t4)', margin:0 }}>Cada registro e calculado individualmente</p>
               </div>
             </div>
 
-            <form onSubmit={handleAdd} style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              {/* Row 1: Titulo + Tipo + Saldo + Contas */}
-              <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1.5fr 1fr 1fr 1fr', gap:12 }}>
-                <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Titulo <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
-                  <input className="input" value={tituloR} onChange={e=>setTituloR(e.target.value)} placeholder="Ex: 1a remessa"/>
-                </div>
-                <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Tipo</label>
-                  <select className="input" value={tipo} onChange={e=>setTipo(e.target.value)}>
-                    <option value="remessa">Remessa</option>
-                    <option value="redeposito">Redeposito</option>
-                    <option value="ajuste">Ajuste</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Saldo inicial</label>
-                  <input className="input" type="number" step="0.01" value={saldoIni} onChange={e=>setSaldoIni(e.target.value)}/>
-                </div>
-                <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Contas {tipo !== 'redeposito' && <span style={{color:'var(--loss)'}}>*</span>}</label>
-                  <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="5" required={tipo !== 'redeposito'}/>
-                </div>
-              </div>
-              {/* Row 2: Deposito + Saque + Status + Submit */}
-              <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1.5fr auto', gap:12, alignItems:'end' }}>
-                <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Deposito *</label>
-                  <input className="input" type="number" step="0.01" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="0,00"/>
-                </div>
-                <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Saque *</label>
-                  <input className="input" type="number" step="0.01" value={saq} onChange={e=>setSaq(e.target.value)} required placeholder="0,00"/>
-                </div>
-
-                <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Status</label>
-                  <div style={{ display:'flex', gap:4, flexWrap:'wrap' }}>
-                    {[
-                      { k:'normal', l:'Normal', c:'var(--profit)', bg:'var(--profit-dim)', b:'var(--profit-border)' },
-                      { k:'saque_pendente', l:'Pendente', c:'var(--warn)', bg:'var(--warn-dim)', b:'var(--warn-border)' },
-                      { k:'conta_bloqueada', l:'Bloqueada', c:'var(--loss)', bg:'var(--loss-dim)', b:'var(--loss-border)' },
-                      { k:'banco_analise', l:'Analise', c:'var(--info)', bg:'var(--info-dim)', b:'var(--info-border)' },
-                    ].map(s=>(
-                      <button key={s.k} type="button" onClick={()=>setStatusProb(s.k)} style={{
-                        padding:'5px 10px', borderRadius:7, fontSize:10, fontWeight:600, cursor:'pointer',
-                        background: statusProb===s.k ? s.bg : 'rgba(255,255,255,0.02)',
-                        color: statusProb===s.k ? s.c : 'var(--t4)',
-                        border: `1px solid ${statusProb===s.k ? s.b : 'var(--b1)'}`,
-                        transition:'all 0.2s',
-                      }}>{s.l}</button>
-                    ))}
+            <form onSubmit={handleAdd}>
+              {/* BLOCO 1 — Dados da remessa */}
+              <div style={{ padding:'16px 24px', borderBottom:'1px solid var(--b1)' }}>
+                <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.08em', margin:'0 0 10px' }}>Dados da remessa</p>
+                <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1.5fr 1fr 1fr 1fr', gap:10 }}>
+                  <div>
+                    <label className="t-label" style={{ display:'block', marginBottom:5, fontSize:9 }}>Titulo</label>
+                    <input className="input" value={tituloR} onChange={e=>setTituloR(e.target.value)} placeholder="1a remessa..." style={{ fontSize:13 }}/>
+                  </div>
+                  <div>
+                    <label className="t-label" style={{ display:'block', marginBottom:5, fontSize:9 }}>Tipo</label>
+                    <select className="input" value={tipo} onChange={e=>setTipo(e.target.value)} style={{ fontSize:13 }}>
+                      <option value="remessa">Remessa</option>
+                      <option value="redeposito">Redeposito</option>
+                      <option value="ajuste">Ajuste</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="t-label" style={{ display:'block', marginBottom:5, fontSize:9 }}>Saldo inicial</label>
+                    <input className="input" type="number" step="0.01" value={saldoIni} onChange={e=>setSaldoIni(e.target.value)} style={{ fontSize:13 }}/>
+                  </div>
+                  <div>
+                    <label className="t-label" style={{ display:'block', marginBottom:5, fontSize:9 }}>Contas {tipo !== 'redeposito' && <span style={{color:'var(--loss)'}}>*</span>}</label>
+                    <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="5" required={tipo !== 'redeposito'} style={{ fontSize:13 }}/>
                   </div>
                 </div>
-                <button type="submit" className="btn btn-profit" disabled={salvando||!dep||!saq||(tipo!=='redeposito'&&(!contasRemessa||Number(contasRemessa)<=0))} style={{ padding:'10px 24px', fontSize:13, whiteSpace:'nowrap', alignSelf:'end' }}>
-                  {salvando?'Registrando...':'Registrar'}
-                </button>
               </div>
-              {/* Row 3: Obs + Preview */}
-              <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                <div>
-                  <label className="t-label" style={{ display:'block', marginBottom:6 }}>Observacoes <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
-                  <input className="input" value={obsRemessa} onChange={e=>setObsRemessa(e.target.value)} placeholder="Detalhes..." style={{ fontSize:13 }}/>
-                </div>
 
-              {/* Slot selector — always show section, msg if none configured */}
-              <div>
-                <label className="t-label" style={{ display:'block', marginBottom:8 }}>Slot <span style={{ color:'var(--t4)' }}>(opcional)</span></label>
-                {tenantSlots.length === 0 ? (
-                  <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>Nenhum slot configurado pelo admin</p>
-                ) : (
-                  <div style={{ position: 'relative' }}>
-                    {/* Seta esquerda */}
-                    <button type="button" onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: -200, behavior: 'smooth' }) }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.15)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.4)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.08)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.25)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)' }}
-                      style={{ position: 'absolute', left: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 32, height: 32, borderRadius: 10, border: '1px solid rgba(229,57,53,0.25)', background: 'rgba(229,57,53,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e53935', boxShadow: '0 4px 12px rgba(0,0,0,0.4), 0 0 8px rgba(229,57,53,0.1)', transition: 'all 0.2s ease' }}>
-                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-                    </button>
-                    {/* Seta direita */}
-                    <button type="button" onClick={() => { const el = document.getElementById('slot-scroll'); if (el) el.scrollBy({ left: 200, behavior: 'smooth' }) }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.15)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.4)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.08)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.25)'; e.currentTarget.style.transform = 'translateY(-50%) scale(1)' }}
-                      style={{ position: 'absolute', right: -6, top: '50%', transform: 'translateY(-50%)', zIndex: 2, width: 32, height: 32, borderRadius: 10, border: '1px solid rgba(229,57,53,0.25)', background: 'rgba(229,57,53,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e53935', boxShadow: '0 4px 12px rgba(0,0,0,0.4), 0 0 8px rgba(229,57,53,0.1)', transition: 'all 0.2s ease' }}>
-                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </button>
-                    <div id="slot-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4, scrollbarWidth: 'none', padding: '0 30px' }}>
-                      <style>{`#slot-scroll::-webkit-scrollbar{display:none}`}</style>
-                      {tenantSlots.map(name => {
-                        const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/&/g, 'e').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-                        const active = selectedSlot === name
-                        return (
-                          <div key={name} onClick={() => setSelectedSlot(active ? '' : name)} style={{
-                            minWidth: 100, maxWidth: 100, cursor: 'pointer', borderRadius: 12, padding: 8, textAlign: 'center',
-                            border: active ? '2px solid var(--profit)' : '1px solid var(--b2)',
-                            background: active ? 'var(--profit-dim)' : 'var(--raised)',
-                            transition: 'all 0.2s', flexShrink: 0,
-                          }}>
-                            <img src={`/slots/${slug}.webp`} alt={name} style={{ width: '100%', height: 75, objectFit: 'cover', borderRadius: 8, marginBottom: 6 }} onError={e => { e.currentTarget.style.display = 'none' }}/>
-                            <p style={{ fontSize: 11, fontWeight: 600, color: active ? 'var(--profit)' : 'var(--t2)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</p>
-                          </div>
-                        )
-                      })}
+              {/* BLOCO 2 — Valores operacionais */}
+              <div style={{ padding:'16px 24px', borderBottom:'1px solid var(--b1)' }}>
+                <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.08em', margin:'0 0 10px' }}>Valores operacionais</p>
+                <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1.2fr', gap:10, alignItems:'end' }}>
+                  <div>
+                    <label className="t-label" style={{ display:'block', marginBottom:5, fontSize:9 }}>Deposito *</label>
+                    <input className="input" type="number" step="0.01" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="0,00" style={{ fontSize:14, fontWeight:600 }}/>
+                  </div>
+                  <div>
+                    <label className="t-label" style={{ display:'block', marginBottom:5, fontSize:9 }}>Saque *</label>
+                    <input className="input" type="number" step="0.01" value={saq} onChange={e=>setSaq(e.target.value)} required placeholder="0,00" style={{ fontSize:14, fontWeight:600 }}/>
+                  </div>
+                  {/* Resultado em tempo real */}
+                  {(dep||saq) ? (
+                    <div style={{
+                      padding:'10px 16px', borderRadius:10,
+                      background:prev.pos?'rgba(34,197,94,0.06)':'rgba(239,68,68,0.06)',
+                      border:`1px solid ${prev.pos?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.15)'}`,
+                      display:'flex', alignItems:'center', justifyContent:'space-between',
+                      boxShadow:`0 0 12px ${prev.pos?'rgba(34,197,94,0.05)':'rgba(239,68,68,0.05)'}`,
+                    }}>
+                      <div>
+                        <p style={{ fontSize:9, fontWeight:600, color:prev.pos?'#22C55E':'#EF4444', margin:'0 0 2px', textTransform:'uppercase' }}>{prev.pos?'Lucro':'Prejuizo'}</p>
+                        {Number(contasRemessa||0) > 0 && <p style={{ fontSize:9, color:'var(--t4)', margin:0 }}>R$ {fmt(Math.abs(prev.diff)/Number(contasRemessa))}/conta</p>}
+                      </div>
+                      <span style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:900, color:prev.pos?'#22C55E':'#EF4444' }}>
+                        {prev.pos?'+':'\u2212'}R$ {fmt(Math.abs(prev.diff))}
+                      </span>
+                    </div>
+                  ) : (
+                    <div style={{ padding:'10px 16px', borderRadius:10, background:'rgba(255,255,255,0.02)', border:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <span style={{ fontSize:11, color:'var(--t4)' }}>Resultado aparece aqui</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* BLOCO 3 — Contexto + Acao */}
+              <div style={{ padding:'16px 24px' }}>
+                <p style={{ fontSize:9, fontWeight:700, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.08em', margin:'0 0 10px' }}>Contexto e acao</p>
+                <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                  {/* Status pills + Obs */}
+                  <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                    <div>
+                      <label className="t-label" style={{ display:'block', marginBottom:5, fontSize:9 }}>Status</label>
+                      <div style={{ display:'flex', gap:3, background:'rgba(255,255,255,0.02)', borderRadius:8, padding:3, border:'1px solid var(--b1)' }}>
+                        {[
+                          { k:'normal', l:'Normal', c:'#22C55E' },
+                          { k:'saque_pendente', l:'Pendente', c:'#F59E0B' },
+                          { k:'conta_bloqueada', l:'Bloqueada', c:'#EF4444' },
+                          { k:'banco_analise', l:'Analise', c:'#3B82F6' },
+                        ].map(s=>(
+                          <button key={s.k} type="button" onClick={()=>setStatusProb(s.k)} style={{
+                            flex:1, padding:'6px 4px', borderRadius:6, fontSize:9, fontWeight:600, cursor:'pointer',
+                            background: statusProb===s.k ? `${s.c}15` : 'transparent',
+                            color: statusProb===s.k ? s.c : 'var(--t4)',
+                            border:'none',
+                            transition:'all 0.15s',
+                          }}>{s.l}</button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="t-label" style={{ display:'block', marginBottom:5, fontSize:9 }}>Notas da operacao</label>
+                      <input className="input" value={obsRemessa} onChange={e=>setObsRemessa(e.target.value)} placeholder="Detalhes opcionais..." style={{ fontSize:12 }}/>
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* Preview inline */}
-              {(dep||saq) && (
-                <div style={{ background:prev.pos?'var(--profit-dim)':'var(--loss-dim)', border:`1px solid ${prev.pos?'var(--profit-border)':'var(--loss-border)'}`, borderRadius:10, padding:'10px 14px', display:'flex', justifyContent:'space-between', alignItems:'center', transition:'all 0.3s' }}>
-                  <div>
-                    <p className="t-label" style={{ color:prev.pos?'var(--profit)':'var(--loss)', marginBottom:2, display:'flex', alignItems:'center', gap:4, fontSize:10 }}><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points={prev.pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>{prev.pos?'Lucro estimado':'Prejuizo estimado'}</p>
-                    {Number(contasRemessa||0) > 0 && <p className="t-small" style={{margin:0}}>R$ {fmt(Math.abs(prev.diff)/Number(contasRemessa))} / conta</p>}
-                  </div>
-                  <p className="t-num" style={{ fontSize:20, fontWeight:800, color:prev.pos?'var(--profit)':'var(--loss)', margin:0 }}>
-                    {prev.pos?'+':'\u2212'}R$ {fmt(Math.abs(prev.diff))}
-                  </p>
+                  {/* Slots */}
+                  {tenantSlots.length > 0 && (
+                    <div>
+                      <label className="t-label" style={{ display:'block', marginBottom:6, fontSize:9 }}>Slot</label>
+                      <div style={{ position:'relative' }}>
+                        <button type="button" onClick={()=>{const el=document.getElementById('slot-scroll');if(el)el.scrollBy({left:-200,behavior:'smooth'})}}
+                          style={{ position:'absolute',left:-4,top:'50%',transform:'translateY(-50%)',zIndex:2,width:28,height:28,borderRadius:8,border:'1px solid rgba(229,57,53,0.2)',background:'rgba(229,57,53,0.06)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',color:'#e53935',transition:'all 0.2s' }}>
+                          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        <button type="button" onClick={()=>{const el=document.getElementById('slot-scroll');if(el)el.scrollBy({left:200,behavior:'smooth'})}}
+                          style={{ position:'absolute',right:-4,top:'50%',transform:'translateY(-50%)',zIndex:2,width:28,height:28,borderRadius:8,border:'1px solid rgba(229,57,53,0.2)',background:'rgba(229,57,53,0.06)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',color:'#e53935',transition:'all 0.2s' }}>
+                          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                        <div id="slot-scroll" style={{ display:'flex',gap:8,overflowX:'auto',scrollbarWidth:'none',padding:'0 28px',scrollSnapType:'x mandatory' }}>
+                          <style>{`#slot-scroll::-webkit-scrollbar{display:none}`}</style>
+                          {tenantSlots.map(name=>{
+                            const slug=name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/&/g,'e').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+                            const active=selectedSlot===name
+                            return (
+                              <div key={name} onClick={()=>setSelectedSlot(active?'':name)} style={{
+                                minWidth:90,maxWidth:90,cursor:'pointer',borderRadius:10,padding:6,textAlign:'center',
+                                border:active?'2px solid var(--profit)':'1px solid var(--b2)',
+                                background:active?'var(--profit-dim)':'var(--raised)',
+                                transition:'all 0.2s',flexShrink:0,scrollSnapAlign:'start',
+                              }}
+                                onMouseEnter={e=>{if(!active)e.currentTarget.style.borderColor='rgba(255,255,255,0.15)'}}
+                                onMouseLeave={e=>{if(!active)e.currentTarget.style.borderColor='var(--b2)'}}
+                              >
+                                <img src={`/slots/${slug}.webp`} alt={name} style={{width:'100%',height:65,objectFit:'cover',borderRadius:7,marginBottom:4}} onError={e=>{e.currentTarget.style.display='none'}}/>
+                                <p style={{fontSize:9,fontWeight:600,color:active?'var(--profit)':'var(--t3)',margin:0,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{name}</p>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {error && <div className="alert-error" style={{display:'flex',alignItems:'center',gap:8,fontSize:12}}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
+
+                  {/* Botao registrar */}
+                  <button type="submit" className="btn btn-profit" disabled={salvando||!dep||!saq||(tipo!=='redeposito'&&(!contasRemessa||Number(contasRemessa)<=0))}
+                    style={{ width:'100%',padding:'14px',fontSize:14,fontWeight:700,borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center',gap:8 }}>
+                    {salvando ? (
+                      <><div className="spinner" style={{width:14,height:14,borderTopColor:'#012b1c'}}/> Registrando...</>
+                    ) : (
+                      <><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Registrar remessa</>
+                    )}
+                  </button>
                 </div>
-              )}
               </div>
-
-              {error && <div className="alert-error" style={{ display:'flex', alignItems:'center', gap:8 }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
             </form>
           </div>
 

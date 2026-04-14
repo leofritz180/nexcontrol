@@ -301,11 +301,29 @@ export default function MetaPage() {
     return null
   }
 
-  function showFeedback(diff, statusProblema, nContasRem) {
+  function showFeedback(diff, statusProblema, nContasRem, slotUsed) {
     const fb = getOperationalFeedback(diff, statusProblema, nContasRem)
     if (fb) {
+      // Add slot insight if available
+      if (slotUsed && remessas.length >= 2) {
+        const slotRems = remessas.filter(r => r.slot_name === slotUsed)
+        if (slotRems.length >= 1) {
+          const slotContas = slotRems.filter(r=>r.tipo!=='redeposito').reduce((a,r)=>a+Number(r.contas_remessa||0),0)
+          const slotLiq = slotRems.reduce((a,r)=>a+Number(r.resultado||0),0) + diff
+          const slotAvg = (slotContas + nContasRem) > 0 ? slotLiq / (slotContas + nContasRem) : 0
+          const negStreak = [...slotRems].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))
+            .filter(r=>Number(r.resultado||0)<0).length
+          if (negStreak >= 2 && diff < 0) {
+            fb.insight = `${slotUsed}: ${negStreak+1} remessas negativas seguidas — considere trocar`
+          } else if (slotAvg < -10) {
+            fb.insight = `${slotUsed}: media de R$ ${fmt(slotAvg)}/conta — performance baixa`
+          } else if (slotAvg >= 0) {
+            fb.insight = `${slotUsed}: media positiva de R$ ${fmt(slotAvg)}/conta`
+          }
+        }
+      }
       setFeedback(fb)
-      setTimeout(() => setFeedback(null), 6000)
+      setTimeout(() => setFeedback(null), 8000)
     }
     // Push pro operador em toda remessa
     const perConta = nContasRem > 0 ? Math.abs(diff) / nContasRem : Math.abs(diff)
@@ -354,8 +372,9 @@ export default function MetaPage() {
     // Limpar form e desbloquear IMEDIATAMENTE
     const formContas = Number(contasRemessa||0)
     setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot(''); setObsRemessa('')
+    const formSlot = selectedSlot || ''
     setSalvando(false)
-    showFeedback(diff, statusProb, formContas)
+    showFeedback(diff, statusProb, formContas, formSlot)
     // Adicionar remessa otimisticamente no state local (aparece instantaneo no historico)
     const optimistic = {
       id: `temp-${Date.now()}`, meta_id: Number(id),
@@ -456,13 +475,13 @@ export default function MetaPage() {
           const c = fbCfg[feedback.type]
           return (
             <motion.div
-              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
               style={{
-                position: 'fixed', top: 20, right: 20, zIndex: 9999,
-                maxWidth: 400, padding: '18px 22px', borderRadius: 16,
+                position: 'fixed', bottom: 24, right: 20, zIndex: 9999,
+                maxWidth: 420, padding: '18px 22px', borderRadius: 16,
                 background: c.bg, border: `1.5px solid ${c.border}`,
                 boxShadow: '0 16px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03)',
                 backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
@@ -474,9 +493,15 @@ export default function MetaPage() {
               <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={c.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
                 <path d={c.iconPath} />
               </svg>
-              <div>
+              <div style={{ flex:1 }}>
                 <p style={{ fontSize: 14, fontWeight: 700, color: c.color, margin: '0 0 4px' }}>{feedback.title}</p>
                 <p style={{ fontSize: 12, color: '#CBD5E1', margin: 0, lineHeight: 1.5 }}>{feedback.text}</p>
+                {feedback.insight && (
+                  <div style={{ marginTop:8, padding:'6px 10px', borderRadius:8, background:'rgba(168,85,247,0.06)', border:'1px solid rgba(168,85,247,0.12)', display:'flex', alignItems:'center', gap:6 }}>
+                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/></svg>
+                    <span style={{ fontSize:10, color:'#c4b5fd', fontWeight:500 }}>{feedback.insight}</span>
+                  </div>
+                )}
               </div>
               {/* Progress bar timer */}
               <motion.div

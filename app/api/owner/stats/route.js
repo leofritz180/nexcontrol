@@ -123,6 +123,25 @@ export async function POST(req) {
       // Last seen: profile updated_at or lastActivity
       const lastSeen = a.updated_at || lastActivity
 
+      // Lucro final
+      const lucroFinal = fechadas.reduce((s, m) => s + Number(m.lucro_final || 0), 0)
+      const totalContas = fechadas.reduce((s, m) => s + Number(m.quantidade_contas || 0), 0)
+      const lucroPerConta = totalContas > 0 ? lucroFinal / totalContas : 0
+
+      // Top redes (by lucro)
+      const redeMap = {}
+      fechadas.forEach(m => {
+        const r = m.rede || 'Outros'
+        if (!redeMap[r]) redeMap[r] = { rede: r, lucro: 0, metas: 0 }
+        redeMap[r].lucro += Number(m.lucro_final || 0)
+        redeMap[r].metas++
+      })
+      const topRedes = Object.values(redeMap).sort((a, b) => b.lucro - a.lucro).slice(0, 3)
+
+      // Deposito/saque totais
+      const totalDep = rems.reduce((s, r) => s + Number(r.deposito || 0), 0)
+      const totalSaq = rems.reduce((s, r) => s + Number(r.saque || 0), 0)
+
       return {
         id: a.id, email: a.email, name: a.email.split('@')[0], tenant_id: tid, created_at: a.created_at,
         operators: ops, metas: ms.length, fechadas: fechadas.length,
@@ -131,6 +150,7 @@ export async function POST(req) {
         lastActivity, lastSeen,
         hasActiveSub: hasSub, planStatus,
         daysSinceActivity: lastActivity ? Math.floor((now - new Date(lastActivity)) / 86400000) : 999,
+        lucroFinal, totalContas, lucroPerConta, topRedes, totalDep, totalSaq,
       }
     }).sort((a, b) => b.metas - a.metas || b.operators - a.operators || (new Date(b.lastActivity || 0) - new Date(a.lastActivity || 0)))
 

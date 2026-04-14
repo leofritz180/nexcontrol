@@ -430,35 +430,77 @@ export default function OwnerPage() {
                 })()}
               </div>
 
+              {/* Lucro final destaque */}
+              <div style={{ padding: '16px 18px', borderRadius: 14, marginBottom: 14, background: (selectedAdmin.lucroFinal||0) >= 0 ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${(selectedAdmin.lucroFinal||0) >= 0 ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Lucro final</p>
+                  <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>{selectedAdmin.totalContas || 0} contas · R$ {fmt(selectedAdmin.lucroPerConta || 0)}/conta</p>
+                </div>
+                <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 24, fontWeight: 900, color: (selectedAdmin.lucroFinal||0) >= 0 ? '#22C55E' : '#EF4444', margin: 0 }}>
+                  {(selectedAdmin.lucroFinal||0) >= 0 ? '+' : ''}R$ {fmt(selectedAdmin.lucroFinal || 0)}
+                </p>
+              </div>
+
               {/* KPIs */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
                 {[
                   { l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' },
                   { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#22C55E' },
                   { l: 'Operadores', v: selectedAdmin.operators, c: '#F1F5F9' },
                   { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' },
                 ].map((s, i) => (
-                  <div key={i} style={{ textAlign: 'center', padding: '14px 8px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 22, fontWeight: 800, color: s.c, margin: '0 0 4px' }}>{s.v}</p>
-                    <p style={{ fontSize: 9, color: '#64748B', margin: 0, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{s.l}</p>
+                  <div key={i} style={{ textAlign: 'center', padding: '12px 6px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 20, fontWeight: 800, color: s.c, margin: '0 0 3px' }}>{s.v}</p>
+                    <p style={{ fontSize: 8, color: '#64748B', margin: 0, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{s.l}</p>
                   </div>
                 ))}
               </div>
 
-              {/* Details */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
-                <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Total pago</p>
-                  <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 18, fontWeight: 700, color: selectedAdmin.totalPaid > 0 ? '#22C55E' : '#64748B', margin: 0 }}>R$ {fmt(selectedAdmin.totalPaid)}</p>
+              {/* Movimentacao */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+                <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Depositado</p>
+                  <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>R$ {fmtInt(selectedAdmin.totalDep || 0)}</p>
                 </div>
-                <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Ultima atividade</p>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: selectedAdmin.daysSinceActivity <= 0 ? '#22C55E' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444', margin: 0 }}>{relativeTime(selectedAdmin.lastActivity)}</p>
+                <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Sacado</p>
+                  <p style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>R$ {fmtInt(selectedAdmin.totalSaq || 0)}</p>
                 </div>
               </div>
-              <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
-                <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Conta criada em</p>
-                <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>{selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '--'}</p>
+
+              {/* Top redes */}
+              {selectedAdmin.topRedes && selectedAdmin.topRedes.length > 0 && (
+                <div style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', marginBottom: 14 }}>
+                  <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Melhores redes</p>
+                  {selectedAdmin.topRedes.map((r, i) => (
+                    <div key={r.rede} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0', borderBottom: i < selectedAdmin.topRedes.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: '#e53935', width: 14, textAlign: 'center' }}>{i + 1}</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9' }}>{r.rede}</span>
+                        <span style={{ fontSize: 10, color: '#64748B' }}>{r.metas} meta{r.metas !== 1 ? 's' : ''}</span>
+                      </div>
+                      <span style={{ fontFamily: 'var(--mono, "JetBrains Mono", monospace)', fontSize: 12, fontWeight: 700, color: r.lucro >= 0 ? '#22C55E' : '#EF4444' }}>
+                        {r.lucro >= 0 ? '+' : ''}R$ {fmt(r.lucro)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Footer: pago + atividade + criacao */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                  <p style={{ fontSize: 8, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Pago</p>
+                  <p style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: selectedAdmin.totalPaid > 0 ? '#22C55E' : '#64748B', margin: 0 }}>R$ {fmt(selectedAdmin.totalPaid)}</p>
+                </div>
+                <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                  <p style={{ fontSize: 8, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Atividade</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: selectedAdmin.daysSinceActivity <= 0 ? '#22C55E' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444', margin: 0 }}>{relativeTime(selectedAdmin.lastActivity)}</p>
+                </div>
+                <div style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                  <p style={{ fontSize: 8, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Criado</p>
+                  <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>{selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '--'}</p>
+                </div>
               </div>
             </motion.div>
           </div>

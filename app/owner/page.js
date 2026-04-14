@@ -201,10 +201,7 @@ export default function OwnerPage() {
             <h1 style={{ fontSize: 24, fontWeight: 800, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.03em' }}>
               Centro de Comando
             </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 2 }}>
-              <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'capitalize' }}>{dateStr}</p>
-              <OnlineCounter userId={userId} />
-            </div>
+            <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'capitalize' }}>{dateStr}</p>
           </div>
           <button onClick={() => router.push('/admin')}
             style={{ fontSize: 12, fontWeight: 600, padding: '8px 20px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#94A3B8', transition: 'all 0.2s' }}
@@ -234,6 +231,11 @@ export default function OwnerPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* ═══ ONLINE COUNTER CARD ═══ */}
+        <div style={{ marginBottom: 20 }}>
+          <OnlineCounter userId={userId} variant="card" />
+        </div>
 
         {/* ═══ LEVEL 1: HERO ═══ */}
         <motion.div {...fadeUp(1)} style={{ marginBottom: 16 }}>

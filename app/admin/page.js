@@ -736,22 +736,23 @@ export default function AdminPage() {
     const avgCustoPorMeta = fechadas.length>0 ? totalCustosFechadas/fechadas.length : 0
     const avgPrejPerConta = totalContasFechadas>0 ? prej/totalContasFechadas : 0
     const breakEvenContas = avgBauPerConta>avgPrejPerConta ? Math.ceil(avgCustoPorMeta/(avgBauPerConta-avgPrejPerConta)) : 0
-    // Costs subtraction
+    // Costs — stored separately, subtracted ONCE at display time
     const todayISO = new Date().toISOString().slice(0,10)
-    const custosHoje = costs.filter(c=>c.date===todayISO).reduce((a,c)=>a+Number(c.amount||0),0)
-    const custosTotal = costs.reduce((a,c)=>a+Number(c.amount||0),0)
-    const lucroHojeNet = Number((lucroHoje - custosHoje).toFixed(2))
-    const lucroFinalTotalNet = Number((lucroFinalTotal - custosTotal).toFixed(2))
-    return { lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),liq:Number((lucro-prej).toFixed(2)),totalDep:Number(totalDep.toFixed(2)),totalSaq:Number(totalSaq.toFixed(2)),lucroHoje:lucroHojeNet,custosHoje:Number(custosHoje.toFixed(2)),ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal:lucroFinalTotalNet,custosTotal:Number(custosTotal.toFixed(2)),lucroPerConta:Number(lucroPerConta.toFixed(2)),lucroPerMeta:Number(lucroPerMeta.toFixed(2)),ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas }
+    const custosHoje = Number(costs.filter(c=>c.date===todayISO).reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
+    const custosTotal = Number(costs.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
+    // ALL values returned BRUTO (without costs subtracted)
+    // Costs subtraction happens ONCE in the UI, not here
+    return { lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),liq:Number((lucro-prej).toFixed(2)),totalDep:Number(totalDep.toFixed(2)),totalSaq:Number(totalSaq.toFixed(2)),lucroHoje:Number(lucroHoje.toFixed(2)),custosHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal:Number(lucroFinalTotal.toFixed(2)),custosTotal,lucroPerConta:Number(lucroPerConta.toFixed(2)),lucroPerMeta:Number(lucroPerMeta.toFixed(2)),ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas }
   },[operators,metas,remessas,costs])
 
   // ── Hero card: lucro final por periodo selecionado ──
+  // Hero card: lucro final por periodo — valores BRUTOS, custos separados
   const heroLucro = useMemo(()=>{
     const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em)
-    const custosTotal = costs.reduce((a,c)=>a+Number(c.amount||0),0)
     if(heroPeriod==='all') {
-      const lucro = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-      return { value: Number((lucro - custosTotal).toFixed(2)), count: fechadas.length, custos: Number(custosTotal.toFixed(2)) }
+      const lucro = Number(fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0).toFixed(2))
+      const c = Number(costs.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
+      return { value: lucro, count: fechadas.length, custos: c }
     }
     const now = new Date()
     let filtered = fechadas
@@ -778,9 +779,9 @@ export default function AdminPage() {
       filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
       filteredCosts = costs.filter(c=>c.date>=dISO)
     }
-    const periodCustos = filteredCosts.reduce((a,c)=>a+Number(c.amount||0),0)
-    const lucro = filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-    return { value: Number((lucro - periodCustos).toFixed(2)), count: filtered.length, custos: Number(periodCustos.toFixed(2)) }
+    const periodCustos = Number(filteredCosts.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
+    const lucro = Number(filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0).toFixed(2))
+    return { value: lucro, count: filtered.length, custos: periodCustos }
   },[metas,heroPeriod,costs])
 
   const ranking = useMemo(()=>
@@ -876,8 +877,8 @@ export default function AdminPage() {
   }, [remessas])
 
   const kpis = [
-    { label:'Lucro hoje', rawValue:Math.abs(global.lucroHoje), value:`R$ ${fmt(Math.abs(global.lucroHoje))}`, sub:global.custosHoje>0?`Custos: -R$ ${fmt(global.custosHoje)}`:(global.lucroHoje>=0?'Fechamentos de hoje':'Resultado negativo'), color:global.lucroHoje>=0?'var(--profit)':'var(--loss)', card:global.lucroHoje>=0?'card-profit':'card-loss', badge:'ao vivo', isLive: true },
-    { label:'Lucro final total', rawValue:global.lucroFinalTotal, value:`R$ ${fmt(global.lucroFinalTotal)}`, sub:global.custosTotal>0?`Custos: -R$ ${fmt(global.custosTotal)}`:'Metas 100% fechadas', color:'var(--brand-bright)', card:'card-primary', badge:'fechado' },
+    { label:'Lucro hoje', rawValue:Math.abs(global.lucroHoje - global.custosHoje), value:`R$ ${fmt(Math.abs(global.lucroHoje - global.custosHoje))}`, sub:global.custosHoje>0?`Bruto: R$ ${fmt(global.lucroHoje)} · Custos: -R$ ${fmt(global.custosHoje)}`:(global.lucroHoje>=0?'Fechamentos de hoje':'Resultado negativo'), color:(global.lucroHoje - global.custosHoje)>=0?'var(--profit)':'var(--loss)', card:(global.lucroHoje - global.custosHoje)>=0?'card-profit':'card-loss', badge:'ao vivo', isLive: true },
+    { label:'Lucro final total', rawValue:global.lucroFinalTotal - global.custosTotal, value:`R$ ${fmt(global.lucroFinalTotal - global.custosTotal)}`, sub:global.custosTotal>0?`Bruto: R$ ${fmt(global.lucroFinalTotal)} · Custos: -R$ ${fmt(global.custosTotal)}`:'Metas 100% fechadas', color:'var(--brand-bright)', card:'card-primary', badge:'fechado' },
     { label:'Total depositado', rawValue:global.totalDep, value:`R$ ${fmt(global.totalDep)}`, sub:'Admin + operadores', color:'var(--info)', card:'card-info', badge:'depositos' },
     { label:'Total sacado', rawValue:global.totalSaq, value:`R$ ${fmt(global.totalSaq)}`, sub:'Admin + operadores', color:'var(--warn)', card:'card-warn', badge:'saques' },
     { label:'Lucro/conta', rawValue:Math.abs(global.lucroPerConta), value:`R$ ${fmt(Math.abs(global.lucroPerConta))}`, sub:'Media por depositante', color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', card:global.lucroPerConta>=0?'card-profit':'card-loss', badge:'rentabilidade' },
@@ -1486,7 +1487,7 @@ export default function AdminPage() {
 
           {/* ── Status global da operacao ── */}
           {(() => {
-            const liq = global.lucroFinalTotal
+            const liq = global.lucroFinalTotal - global.custosTotal
             const ativas = global.ativas
             const remsHoje = remessas.filter(r=>new Date(r.created_at).toDateString()===new Date().toDateString())
             const negHoje = remsHoje.filter(r=>Number(r.resultado||0)<0).length
@@ -1518,12 +1519,14 @@ export default function AdminPage() {
             // Alerta prejuizo anormal
             if (abnormalLossAlert) tips.push({ text: `Remessa com prejuizo anormal: R$ ${fmt(abnormalLossAlert.value)} (media: R$ ${fmt(abnormalLossAlert.avg)})`, type: 'loss' })
             // Positivos
-            if (global.lucroHoje > 0) tips.push({ text: `Lucro do dia: +R$ ${fmt(global.lucroHoje)} — operacao no positivo`, type: 'profit' })
-            if (global.lucroFinalTotal > 0) tips.push({ text: `Lucro total acumulado: +R$ ${fmt(global.lucroFinalTotal)}`, type: 'profit' })
+            const lucroHojeNet = global.lucroHoje - global.custosHoje
+            const lucroTotalNet = global.lucroFinalTotal - global.custosTotal
+            if (lucroHojeNet > 0) tips.push({ text: `Lucro do dia: +R$ ${fmt(lucroHojeNet)} — operacao no positivo`, type: 'profit' })
+            if (lucroTotalNet > 0) tips.push({ text: `Lucro total acumulado: +R$ ${fmt(lucroTotalNet)}`, type: 'profit' })
             if (global.lucroPerConta > 0) tips.push({ text: `Media de R$ ${fmt(global.lucroPerConta)}/conta — rentabilidade positiva`, type: 'profit' })
             // Negativos
-            if (global.lucroHoje < 0) tips.push({ text: `Resultado do dia negativo: R$ ${fmt(Math.abs(global.lucroHoje))} de prejuizo`, type: 'loss' })
-            if (global.custosHoje > 0) tips.push({ text: `Custos hoje: R$ ${fmt(global.custosHoje)} — impacto de ${global.lucroHoje!==0?Math.round(global.custosHoje/Math.abs(global.lucroHoje+global.custosHoje)*100):0}% no resultado`, type: 'warn' })
+            if (lucroHojeNet < 0) tips.push({ text: `Resultado do dia negativo: R$ ${fmt(Math.abs(lucroHojeNet))} de prejuizo`, type: 'loss' })
+            if (global.custosHoje > 0) tips.push({ text: `Custos hoje: R$ ${fmt(global.custosHoje)}`, type: 'warn' })
             // Dicas
             tips.push({ text: `${global.ativas} meta${global.ativas!==1?'s':''} ativa${global.ativas!==1?'s':''} e ${global.fechadas} fechada${global.fechadas!==1?'s':''}`, type: 'info' })
             if (global.ops > 0) tips.push({ text: `${global.ops} operadores na equipe — ${global.totalRem} remessas registradas`, type: 'info' })
@@ -1547,6 +1550,10 @@ export default function AdminPage() {
           })()}
 
           {/* ── HERO + KPIs — side by side ── */}
+          {(() => {
+            // Compute NET hero value ONCE (bruto - custos do periodo)
+            const heroNet = Number((heroLucro.value - heroLucro.custos).toFixed(2))
+            return (
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:24, marginBottom:28 }}>
 
             {/* LEFT — Hero card */}
@@ -1564,7 +1571,7 @@ export default function AdminPage() {
               {/* Ambient glow */}
               <div style={{
                 position:'absolute', top:'5%', left:'0%', width:450, height:350, borderRadius:'50%',
-                background: heroLucro.value>=0
+                background: heroNet>=0
                   ? 'radial-gradient(circle, rgba(34,197,94,0.08), transparent 60%)'
                   : 'radial-gradient(circle, rgba(239,68,68,0.08), transparent 60%)',
                 filter:'blur(50px)', pointerEvents:'none',
@@ -1594,19 +1601,19 @@ export default function AdminPage() {
 
                 <div style={{ position:'relative', overflow:'hidden', display:'inline-block' }}>
                   <motion.div
-                    animate={{ textShadow: heroLucro.value>=0
+                    animate={{ textShadow: heroNet>=0
                       ? ['0 0 40px rgba(34,197,94,0.15)','0 0 80px rgba(34,197,94,0.25)','0 0 40px rgba(34,197,94,0.15)']
                       : ['0 0 40px rgba(239,68,68,0.15)','0 0 80px rgba(239,68,68,0.25)','0 0 40px rgba(239,68,68,0.15)']
                     }}
                     transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
                   >
                     <AnimatedNumber
-                      value={Math.abs(heroLucro.value)}
+                      value={Math.abs(heroNet)}
                       key={heroPeriod}
-                      prefix={`${heroLucro.value>=0?'+':'-'}R$ `}
+                      prefix={`${heroNet>=0?'+':'-'}R$ `}
                       style={{
                         fontFamily:'var(--mono)', fontSize:52, fontWeight:900,
-                        color: heroLucro.value>=0 ? 'var(--profit)' : 'var(--loss)',
+                        color: heroNet>=0 ? 'var(--profit)' : 'var(--loss)',
                         lineHeight:1, letterSpacing:'-0.03em', display:'block',
                       }}
                     />
@@ -1640,8 +1647,8 @@ export default function AdminPage() {
                   <div style={{ width:1, height:28, background:'rgba(255,255,255,0.05)' }}/>
                   <div>
                     <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2, letterSpacing:'0.05em', textTransform:'uppercase' }}>Status</p>
-                    <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:heroLucro.value>=0?'var(--profit)':'var(--loss)', margin:0 }}>
-                      {heroLucro.value>=0?'Positivo':'Negativo'}
+                    <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:heroNet>=0?'var(--profit)':'var(--loss)', margin:0 }}>
+                      {heroNet>=0?'Positivo':'Negativo'}
                     </p>
                   </div>
                   <div style={{ width:1, height:28, background:'rgba(255,255,255,0.05)' }}/>
@@ -1682,6 +1689,8 @@ export default function AdminPage() {
               ))}
             </div>
           </div>
+            )
+          })()}
 
           {/* Previsao de lucro */}
           {global.fechadas > 0 && (

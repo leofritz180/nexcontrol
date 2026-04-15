@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 
 /* ═══════════════════════════════
    TRIAL & CONVERSION SYSTEM
@@ -73,117 +74,199 @@ export function ConversionModal({ tenant, subscription, stats }) {
   }, [t, dismissed, tenant?.created_at])
 
   if (!show || !t) return null
-  const cfg = CFG[t.level]
   const moved = stats?.totalMoved || 0
   const metas = stats?.totalMetas || 0
   const remessas = stats?.totalRemessas || 0
 
+  // Tempo restante dinamico: dias se > 1, senao horas
+  const showHours = t.trialActive && t.days <= 1 && t.hours > 0
+  const badgeLabel = t.trialExpired
+    ? 'Acesso expirado'
+    : showHours
+      ? `Faltam apenas ${t.hours}h`
+      : `Faltam apenas ${t.days} dia${t.days !== 1 ? 's' : ''}`
+
   return (
-    <div style={{
-      position:'fixed',inset:0,zIndex:10000,
-      background:'rgba(4,8,16,0.92)',backdropFilter:'blur(16px)',
-      display:'flex',alignItems:'center',justifyContent:'center',padding:24,
-      animation:'fade-in 0.3s ease both',
-    }} onClick={()=>{if(!t.trialExpired){setShow(false);setDismissed(true)}}}>
-      <div onClick={e=>e.stopPropagation()} style={{
-        maxWidth:520,width:'100%',
-        background:'var(--surface)',borderRadius:28,overflow:'hidden',
-        border:`1px solid ${t.trialExpired?'rgba(239,68,68,0.2)':'rgba(59,130,246,0.2)'}`,
-        boxShadow:`0 0 100px ${t.trialExpired?'rgba(239,68,68,0.1)':'rgba(59,130,246,0.1)'}, 0 40px 80px rgba(0,0,0,0.5)`,
-        animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',
-      }}>
-        {/* Top gradient */}
-        <div style={{
-          padding:'32px 36px 24px',
-          background:t.trialExpired
-            ?'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.03))'
-            :'linear-gradient(135deg, rgba(59,130,246,0.12), rgba(34,197,94,0.06))',
-          borderBottom:`1px solid ${t.trialExpired?'rgba(239,68,68,0.1)':'rgba(59,130,246,0.1)'}`,
-          textAlign:'center',
-        }}>
-          {/* Countdown */}
-          {t.trialActive && (
-            <div style={{
-              display:'inline-flex',alignItems:'center',gap:8,
-              padding:'8px 20px',borderRadius:99,marginBottom:16,
-              background:`rgba(${cfg.rgb},0.1)`,border:`1px solid rgba(${cfg.rgb},0.2)`,
-            }}>
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={cfg.color} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span style={{fontSize:13,fontWeight:700,color:cfg.color}}>
-                {t.days > 0 ? `${t.days} dia${t.days!==1?'s':''} restante${t.days!==1?'s':''}` : `${t.hours}h restante${t.hours!==1?'s':''}`}
-              </span>
-            </div>
-          )}
-          {t.trialExpired && (
-            <div style={{width:52,height:52,borderRadius:15,background:'var(--loss-dim)',border:'1px solid var(--loss-border)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px'}}>
-              <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-          )}
-          <h2 style={{fontSize:22,fontWeight:900,color:'var(--t1)',marginBottom:6}}>
-            {t.trialExpired?'Seu acesso foi bloqueado':t.days===1?'Ultimo dia de acesso gratuito':'Seu teste esta acabando'}
-          </h2>
-          <p style={{fontSize:14,color:'var(--t2)'}}>
-            {t.trialExpired?'Assine agora para desbloquear todas as funcionalidades.':'Garanta seu acesso antes que expire.'}
-          </p>
-        </div>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 10000,
+          background: 'rgba(4,8,16,0.78)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+        }}
+        onClick={() => { if (!t.trialExpired) { setShow(false); setDismissed(true) } }}
+      >
+        {/* Glow vermelho de urgencia (ambiente) */}
+        <motion.div
+          aria-hidden
+          animate={{ opacity: [0.35, 0.55, 0.35] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            width: 'min(720px, 95vw)', height: 'min(540px, 80vh)',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(239,68,68,0.16), transparent 65%)',
+            filter: 'blur(60px)', pointerEvents: 'none',
+          }}
+        />
 
-        <div style={{padding:'24px 36px 32px'}}>
-          {/* Social proof — user stats */}
-          {(moved>0||metas>0) && (
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10,marginBottom:24}}>
-              {[
-                {l:'Movimentado',v:`R$ ${Number(moved).toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0})}`,c:'var(--profit)'},
-                {l:'Metas criadas',v:metas,c:'var(--brand-bright)'},
-                {l:'Remessas',v:remessas,c:'var(--info)'},
-              ].map(({l,v,c})=>(
-                <div key={l} style={{background:'var(--raised)',border:'1px solid var(--b1)',borderRadius:12,padding:'14px 12px',textAlign:'center'}}>
-                  <p className="t-num" style={{fontSize:18,fontWeight:800,color:c,marginBottom:2}}>{v}</p>
-                  <p style={{fontSize:10,color:'var(--t3)',letterSpacing:'0.04em',fontWeight:600}}>{l}</p>
-                </div>
-              ))}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 18 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.96, y: 10 }}
+          transition={{ duration: 0.38, ease: [0.33, 1, 0.68, 1] }}
+          onClick={e => e.stopPropagation()}
+          style={{
+            position: 'relative', zIndex: 1,
+            width: '100%', maxWidth: 480,
+            background: 'linear-gradient(155deg, rgba(14,20,35,0.95), rgba(8,12,22,0.95))',
+            borderRadius: 24, overflow: 'hidden',
+            border: '1px solid rgba(239,68,68,0.18)',
+            boxShadow: '0 0 0 1px rgba(255,255,255,0.02), 0 30px 70px rgba(0,0,0,0.6), 0 0 80px rgba(239,68,68,0.12)',
+          }}
+        >
+          {/* Linha superior com brilho sutil */}
+          <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(239,68,68,0.45), transparent)' }} />
+
+          {/* Top */}
+          <div style={{ padding: '32px 32px 22px', textAlign: 'center', position: 'relative' }}>
+            {/* Badge pulsante */}
+            <motion.div
+              animate={{ boxShadow: ['0 0 0 0 rgba(239,68,68,0)', '0 0 0 6px rgba(239,68,68,0.14)', '0 0 0 0 rgba(239,68,68,0)'] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '7px 16px', borderRadius: 99, marginBottom: 18,
+                background: 'rgba(239,68,68,0.08)',
+                border: '1px solid rgba(239,68,68,0.22)',
+                fontSize: 12, fontWeight: 700, color: '#fca5a5', letterSpacing: '0.02em',
+              }}
+            >
+              <motion.svg
+                width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#fca5a5" strokeWidth="2.2" strokeLinecap="round"
+                animate={{ rotate: [0, -6, 6, 0] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </motion.svg>
+              {badgeLabel}
+            </motion.div>
+
+            <h2 style={{ fontSize: 21, fontWeight: 900, color: '#F1F5F9', margin: '0 0 8px', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
+              {t.trialExpired ? 'Seu acesso foi interrompido' : 'Seu acesso está prestes a ser interrompido'}
+            </h2>
+            <p style={{ fontSize: 13.5, color: '#CBD5E1', margin: '0 0 6px', lineHeight: 1.5 }}>
+              Não perca seus dados, metas e histórico da sua operação
+            </p>
+            <p style={{ fontSize: 12, color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+              Continue acompanhando lucro, operadores e resultados em tempo real
+            </p>
+          </div>
+
+          {/* Social proof compacto quando tem dados */}
+          {(moved > 0 || metas > 0) && (
+            <div style={{ padding: '0 32px 12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                {[
+                  { l: 'Movimentado', v: `R$ ${Number(moved).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, c: '#22C55E' },
+                  { l: 'Metas', v: metas, c: '#60A5FA' },
+                  { l: 'Remessas', v: remessas, c: '#a855f7' },
+                ].map(({ l, v, c }) => (
+                  <div key={l} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
+                    <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: c, margin: '0 0 2px' }}>{v}</p>
+                    <p style={{ fontSize: 9, color: '#64748B', letterSpacing: '0.04em', fontWeight: 600, margin: 0 }}>{l}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
-          {moved>0 && (
-            <div style={{background:'var(--raised)',border:'1px solid var(--b1)',borderRadius:12,padding:'14px 18px',marginBottom:24,display:'flex',alignItems:'center',gap:12}}>
-              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <p style={{fontSize:13,color:'var(--t2)',flex:1}}>
-                Voce ja movimentou <strong style={{color:'var(--profit)'}}>R$ {Number(moved).toLocaleString('pt-BR',{minimumFractionDigits:2})}</strong> no sistema. Nao perca o controle da sua operacao.
-              </p>
-            </div>
-          )}
-
-          {/* Pricing preview */}
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'16px 0',borderBottom:'1px solid var(--b1)',marginBottom:20}}>
-            <span style={{fontSize:13,color:'var(--t2)'}}>A partir de</span>
-            <div style={{textAlign:'right'}}>
-              <span className="t-num" style={{fontSize:28,fontWeight:900,color:'var(--brand-bright)'}}>R$ 39,90</span>
-              <span style={{fontSize:12,color:'var(--t3)'}}> /mes</span>
+          {/* Pricing */}
+          <div style={{ padding: '18px 32px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', padding: '14px 18px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <div>
+                <p style={{ fontSize: 11, color: '#64748B', margin: '0 0 2px', fontWeight: 600 }}>A partir de</p>
+                <p style={{ fontSize: 10, color: '#94A3B8', margin: 0 }}>Menos que 1 operação perdida por dia</p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: '#22C55E', letterSpacing: '-0.02em' }}>R$ 39,90</span>
+                <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4, fontWeight: 600 }}>/mês</span>
+              </div>
             </div>
           </div>
 
           {/* CTA */}
-          <button onClick={()=>router.push('/billing')} className="btn btn-profit btn-lg" style={{
-            width:'100%',justifyContent:'center',fontSize:16,fontWeight:800,padding:'16px 24px',
-            boxShadow:'0 0 0 0 rgba(34,197,94,0.5)',
-            animation:'cta-pulse 2.5s ease-in-out infinite',
-          }}>
-            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            {t.trialExpired?'Desbloquear acesso':'Assinar agora'}
-          </button>
+          <div style={{ padding: '18px 32px 28px' }}>
+            <motion.button
+              onClick={() => router.push('/billing')}
+              whileHover={{ scale: 1.015, boxShadow: '0 0 0 1px rgba(34,197,94,0.35), 0 12px 28px rgba(34,197,94,0.28), 0 0 42px rgba(34,197,94,0.22)' }}
+              whileTap={{ scale: 0.98 }}
+              className="nc-unlock-cta"
+              style={{
+                position: 'relative', overflow: 'hidden',
+                width: '100%', padding: '15px 22px', borderRadius: 12,
+                border: 'none', cursor: 'pointer',
+                background: 'linear-gradient(180deg, #22c55e, #16a34a)',
+                color: '#04120a',
+                fontSize: 15, fontWeight: 800,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                boxShadow: '0 0 0 1px rgba(34,197,94,0.2), 0 8px 22px rgba(34,197,94,0.22), 0 0 30px rgba(34,197,94,0.18)',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+              </svg>
+              Liberar acesso completo
+              {/* Shimmer loop */}
+              <span aria-hidden className="nc-unlock-shimmer" />
+            </motion.button>
 
-          {!t.trialExpired && (
-            <button onClick={()=>{setShow(false);setDismissed(true)}} style={{
-              display:'block',width:'100%',marginTop:12,padding:10,
-              background:'none',border:'none',cursor:'pointer',
-              fontSize:12,color:'var(--t4)',textAlign:'center',
-            }}>
-              Continuar no trial
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+            <p style={{ textAlign: 'center', fontSize: 11, color: '#64748B', margin: '10px 0 0', fontWeight: 500 }}>
+              Ativação imediata · Sem perder dados
+            </p>
+
+            {!t.trialExpired && (
+              <button
+                onClick={() => { setShow(false); setDismissed(true) }}
+                style={{
+                  display: 'block', width: '100%', marginTop: 14, padding: 8,
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  fontSize: 11, color: '#64748B', textAlign: 'center',
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = '#94A3B8'}
+                onMouseLeave={e => e.currentTarget.style.color = '#64748B'}
+              >
+                Continuar no trial
+              </button>
+            )}
+          </div>
+
+          <style>{`
+            .nc-unlock-cta .nc-unlock-shimmer {
+              position: absolute; top: 0; left: -40%; height: 100%; width: 40%;
+              background: linear-gradient(90deg, transparent, rgba(255,255,255,0.32), transparent);
+              transform: skewX(-20deg);
+              animation: ncShimmerLoop 3.2s ease-in-out infinite;
+              pointer-events: none;
+            }
+            @keyframes ncShimmerLoop {
+              0% { left: -50%; }
+              60% { left: 120%; }
+              100% { left: 120%; }
+            }
+            @media (max-width: 520px) {
+              .nc-unlock-cta { font-size: 14px !important; padding: 13px 18px !important; }
+            }
+          `}</style>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 

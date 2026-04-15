@@ -1,6 +1,6 @@
 'use client'
-import { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useMemo, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
@@ -26,6 +26,7 @@ function Particles() {
 
 export default function SignupPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [nome, setNome] = useState('')
@@ -34,6 +35,34 @@ export default function SignupPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [showPass, setShowPass] = useState(false)
+
+  // Captura ?ref=CODIGO e persiste em sessionStorage (sobrevive ao redirect de confirmacao)
+  useEffect(() => {
+    const ref = searchParams?.get('ref')
+    if (ref && typeof window !== 'undefined') {
+      try { sessionStorage.setItem('nx_ref', ref) } catch {}
+    }
+  }, [searchParams])
+
+  async function attachRef(userEmail) {
+    if (typeof window === 'undefined') return
+    let ref = null
+    try { ref = sessionStorage.getItem('nx_ref') } catch {}
+    if (!ref) return
+    // Retry curto — o profile/tenant pode ser criado por trigger assincrono
+    for (let i = 0; i < 5; i++) {
+      try {
+        const res = await fetch('/api/affiliate/attach', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userEmail, ref }),
+        })
+        const j = await res.json()
+        if (j.ok) { try { sessionStorage.removeItem('nx_ref') } catch {} ; return }
+        if (j.msg === 'profile_not_ready') { await new Promise(r => setTimeout(r, 800)); continue }
+        return
+      } catch { return }
+    }
+  }
 
   async function handleSignup(e) {
     e.preventDefault()
@@ -48,9 +77,12 @@ export default function SignupPage() {
     const { data: session } = await supabase.auth.getSession()
     if (session?.session?.user) {
       markJustSignedUp()
+      await attachRef(email)
       router.push('/admin')
       return
     }
+    // Signup com confirmacao por email — tenta attach mesmo assim (cliente fez retry)
+    attachRef(email)
     setSuccess(true)
   }
 

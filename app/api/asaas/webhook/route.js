@@ -57,6 +57,36 @@ export async function POST(req) {
         starts_at: new Date().toISOString(),
         expires_at: expires.toISOString(),
       })
+
+      // Comissao de afiliado (recorrente: cada pagamento aprovado gera 1 comissao)
+      try {
+        const { data: ref } = await supabase
+          .from('referrals').select('affiliate_tenant_id')
+          .eq('referred_tenant_id', existing.tenant_id).maybeSingle()
+        if (ref?.affiliate_tenant_id) {
+          const { data: aff } = await supabase
+            .from('affiliates').select('enabled,commission_rate')
+            .eq('tenant_id', ref.affiliate_tenant_id).maybeSingle()
+          if (aff?.enabled) {
+            const rate = Number(aff.commission_rate || 0.30)
+            const amount = Number(payment.value || 0)
+            const commission = Number((amount * rate).toFixed(2))
+            // UNIQUE(asaas_payment_id) evita duplicidade em reentradas do webhook
+            await supabase.from('affiliate_commissions').insert({
+              affiliate_tenant_id: ref.affiliate_tenant_id,
+              referred_tenant_id: existing.tenant_id,
+              asaas_payment_id: payment.id,
+              payment_amount: amount,
+              commission_amount: commission,
+              rate,
+              status: 'pending',
+            })
+          }
+        }
+      } catch (e) {
+        // nao bloqueia o webhook se comissao falhar
+        console.error('affiliate commission error', e?.message)
+      }
     }
 
     return NextResponse.json({ ok: true, status: payment.status })

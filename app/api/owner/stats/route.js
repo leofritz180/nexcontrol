@@ -19,6 +19,15 @@ export async function POST(req) {
     const d7 = new Date(now); d7.setDate(d7.getDate() - 7)
     const d30 = new Date(now); d30.setDate(d30.getDate() - 30)
 
+    // Timezone BR: chave YYYY-MM-DD em America/Sao_Paulo (servidor Vercel roda em UTC)
+    const BR_TZ = 'America/Sao_Paulo'
+    const brDateKey = d => {
+      if (!d) return ''
+      const dt = d instanceof Date ? d : new Date(d)
+      if (isNaN(dt)) return ''
+      return dt.toLocaleDateString('en-CA', { timeZone: BR_TZ })
+    }
+
     const [
       { data: profiles },
       { data: tenants },
@@ -50,11 +59,11 @@ export async function POST(req) {
     const paidPayments = allPay.filter(p => p.status === 'RECEIVED' || p.status === 'CONFIRMED')
     const totalRevenue = paidPayments.reduce((a, p) => a + Number(p.amount || 0), 0)
 
-    const today = now.toISOString().slice(0, 10)
-    const revenueToday = paidPayments.filter(p => (p.created_at || '').slice(0, 10) === today).reduce((a, p) => a + Number(p.amount || 0), 0)
+    const today = brDateKey(now)
+    const revenueToday = paidPayments.filter(p => brDateKey(p.created_at) === today).reduce((a, p) => a + Number(p.amount || 0), 0)
 
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-    const revenueMonth = paidPayments.filter(p => p.created_at >= monthStart).reduce((a, p) => a + Number(p.amount || 0), 0)
+    const monthPrefix = today.slice(0, 7) // YYYY-MM no horario BR
+    const revenueMonth = paidPayments.filter(p => brDateKey(p.created_at).startsWith(monthPrefix)).reduce((a, p) => a + Number(p.amount || 0), 0)
 
     const rev30 = paidPayments.filter(p => new Date(p.created_at) >= d30).reduce((a, p) => a + Number(p.amount || 0), 0)
     const rev7 = paidPayments.filter(p => new Date(p.created_at) >= d7).reduce((a, p) => a + Number(p.amount || 0), 0)
@@ -85,7 +94,7 @@ export async function POST(req) {
     const withSub = activeSubs.length
 
     // Activity
-    const activeToday = new Set(allRem.filter(r => new Date(r.created_at).toDateString() === now.toDateString()).map(r => {
+    const activeToday = new Set(allRem.filter(r => brDateKey(r.created_at) === today).map(r => {
       const m = allMetas.find(x => x.id === r.meta_id); return m?.tenant_id
     }).filter(Boolean)).size
     const active7 = new Set(allRem.filter(r => new Date(r.created_at) >= d7).map(r => {
@@ -168,13 +177,18 @@ export async function POST(req) {
     const expiredNoSub = expired.filter(t => !allSubs.find(s => s.tenant_id === t.id && s.status === 'active'))
     if (expiredNoSub.length > 0) alerts.push({ text: `${expiredNoSub.length} trial(s) expirado(s) sem assinatura`, type: 'critical' })
 
-    // Revenue by day (last 30 days) for chart
+    // Revenue by day (last 30 days) for chart — indexado por chave BR para casar com "hoje"
+    const payByDayBR = {}
+    for (const p of paidPayments) {
+      const k = brDateKey(p.created_at)
+      if (!k) continue
+      payByDayBR[k] = (payByDayBR[k] || 0) + Number(p.amount || 0)
+    }
     const revenueByDay = []
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now); d.setDate(d.getDate() - i)
-      const dateStr = d.toISOString().slice(0, 10)
-      const dayRev = paidPayments.filter(p => (p.created_at || '').slice(0, 10) === dateStr).reduce((a, p) => a + Number(p.amount || 0), 0)
-      revenueByDay.push({ date: dateStr, value: dayRev })
+      const dateStr = brDateKey(d)
+      revenueByDay.push({ date: dateStr, value: payByDayBR[dateStr] || 0 })
     }
 
     // Insights

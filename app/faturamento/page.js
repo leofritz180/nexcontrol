@@ -259,10 +259,11 @@ export default function FaturamentoPage() {
   /* ── Predictions (based on closed metas lucro_final) ── */
   const predictions = useMemo(()=>{
     const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em)
-    if(fechadas.length===0) return {trend:'neutral',lucroFinalTotal:0,mediaPorMeta:0,metasFechadas:0,liqLast:0,liqPrev:0,pctChange:0}
+    if(fechadas.length===0) return {trend:'neutral',lucroFinalTotal:0,mediaPorMeta:0,metasFechadas:0,liqLast:0,liqPrev:0,pctChange:0,dailyAvg:0}
     const now = new Date()
     const d7 = new Date(now); d7.setDate(d7.getDate()-7)
     const d14 = new Date(now); d14.setDate(d14.getDate()-14)
+    const d30 = new Date(now); d30.setDate(d30.getDate()-30)
     const last7 = fechadas.filter(m=>new Date(m.fechada_em)>=d7)
     const prev7 = fechadas.filter(m=>{const d=new Date(m.fechada_em); return d>=d14&&d<d7})
     const liqLast = last7.reduce((a,m)=>a+Number(m.lucro_final||0),0)
@@ -270,7 +271,31 @@ export default function FaturamentoPage() {
     const trend = liqLast>liqPrev?'up':liqLast<liqPrev?'down':'neutral'
     const lucroFinalTotal = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const mediaPorMeta = fechadas.length > 0 ? lucroFinalTotal / fechadas.length : 0
-    return {trend,lucroFinalTotal,mediaPorMeta,metasFechadas:fechadas.length,liqLast,liqPrev,pctChange:liqPrev!==0?Math.round(((liqLast-liqPrev)/Math.abs(liqPrev))*100):0,dailyAvg:mediaPorMeta}
+
+    // Media por DIA ATIVO (dias em que houve fechamento) nos ultimos 30 dias
+    // Usar timezone BR para agrupar — evita divergencia entre UTC e data local
+    const brKey = d => new Date(d).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+    const recentFechadas = fechadas.filter(m => new Date(m.fechada_em) >= d30)
+    const byDay = {}
+    recentFechadas.forEach(m => {
+      const k = brKey(m.fechada_em)
+      byDay[k] = (byDay[k] || 0) + Number(m.lucro_final || 0)
+    })
+    const activeDays = Object.keys(byDay).length
+    const sum30 = Object.values(byDay).reduce((a, v) => a + v, 0)
+    // Fallback: se nao ha dados em 30d, usa media total por dia ativo historico
+    let dailyAvg = 0
+    if (activeDays > 0) dailyAvg = sum30 / activeDays
+    else {
+      const allByDay = {}
+      fechadas.forEach(m => { const k = brKey(m.fechada_em); allByDay[k] = (allByDay[k] || 0) + Number(m.lucro_final || 0) })
+      const n = Object.keys(allByDay).length
+      dailyAvg = n > 0 ? Object.values(allByDay).reduce((a, v) => a + v, 0) / n : 0
+    }
+    // Leve viés otimista quando tendencia esta subindo (projeta melhoria recente)
+    if (trend === 'up' && dailyAvg > 0) dailyAvg *= 1.15
+
+    return {trend,lucroFinalTotal,mediaPorMeta,metasFechadas:fechadas.length,liqLast,liqPrev,pctChange:liqPrev!==0?Math.round(((liqLast-liqPrev)/Math.abs(liqPrev))*100):0,dailyAvg,activeDays}
   },[metas])
 
   /* ── Goal progress ── */

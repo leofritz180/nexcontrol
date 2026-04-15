@@ -2076,7 +2076,10 @@ export default function AdminPage() {
                 const nc=getNC(m.rede)
                 const totalContas=m.quantidade_contas||0
                 const remDone=mRem.length
-                const depDone=fechada?totalContas:Math.min(remDone,totalContas)
+                // Progresso por DEPOSITANTES (contas processadas), nao por numero de remessas
+                // Redeposito nao conta na progressao (regra do projeto)
+                const contasFeitas = mRem.filter(r => r.tipo !== 'redeposito').reduce((s,r)=>s+Number(r.contas_remessa||0),0)
+                const depDone=fechada?totalContas:Math.min(contasFeitas,totalContas)
                 const progPct=fechada?100:(totalContas>0?Math.min(100,(depDone/totalContas)*100):0)
                 const displayVal=fechada&&m.lucro_final!=null?Number(m.lucro_final):liqR
                 const isPos=displayVal>=0

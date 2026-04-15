@@ -114,6 +114,13 @@ export default function OwnerPage() {
   const { kpis, funnel, activity, adminStats, alerts, revenueByDay, recentSales = [] } = data
   const variation = kpis.revenueVariation || 0
   const variationUp = variation >= 0
+
+  // Lucro total da plataforma: soma de lucro_final de metas fechadas de todos os admins
+  // (adminStats.lucroFinal ja vem calculado no backend sobre metas com status_fechamento='fechada')
+  const globalLucroPlataforma = adminStats.reduce((s, a) => s + Number(a.lucroFinal || 0), 0)
+  const lucroPos = globalLucroPlataforma >= 0
+  const lucroColor = lucroPos ? '#22C55E' : '#EF4444'
+  const lucroRgb   = lucroPos ? '34,197,94' : '239,68,68'
   const chartData = chartRange === 7 ? (revenueByDay || []).slice(-7) : (revenueByDay || [])
   const maxChart = Math.max(...chartData.map(d => d.value), 1)
   const sparkValues = (revenueByDay || []).map(d => d.value)
@@ -287,6 +294,55 @@ export default function OwnerPage() {
                   <p style={{ fontSize: 9, color: '#64748B', margin: '6px 0 0', textAlign: 'right' }}>Ultimos 30 dias</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ═══ LUCRO TOTAL DA PLATAFORMA ═══ */}
+        <motion.div {...fadeUp(1, 0.06)} style={{ marginBottom: 16 }}>
+          <div style={{
+            ...card,
+            position: 'relative', overflow: 'hidden', padding: '28px 32px',
+            border: `1px solid rgba(${lucroRgb}, 0.22)`,
+            boxShadow: `0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03), 0 0 60px rgba(${lucroRgb},0.08)`,
+          }}>
+            {/* Glow dinamico no fundo baseado no sinal */}
+            <motion.div
+              aria-hidden
+              animate={{ opacity: [0.4, 0.7, 0.4] }}
+              transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute', top: '-30%', right: '-10%',
+                width: 420, height: 300, borderRadius: '50%',
+                background: `radial-gradient(circle, rgba(${lucroRgb},0.14), transparent 65%)`,
+                filter: 'blur(60px)', pointerEvents: 'none',
+              }}
+            />
+            <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: `linear-gradient(90deg, transparent, rgba(${lucroRgb},0.35), transparent)` }} />
+
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: `rgba(${lucroRgb},0.1)`, border: `1px solid rgba(${lucroRgb},0.22)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={lucroColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d={lucroPos ? 'M23 6l-9.5 9.5-5-5L1 18' : 'M23 18l-9.5-9.5-5 5L1 6'} />
+                    <polyline points={lucroPos ? '17 6 23 6 23 12' : '17 18 23 18 23 12'} />
+                  </svg>
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, margin: '0 0 3px' }}>Lucro total da plataforma</p>
+                  <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Soma de todos os admins · metas fechadas</p>
+                </div>
+              </div>
+              <motion.p
+                animate={{ textShadow: [`0 0 24px rgba(${lucroRgb},0.12)`, `0 0 48px rgba(${lucroRgb},0.22)`, `0 0 24px rgba(${lucroRgb},0.12)`] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                style={{
+                  fontFamily: 'var(--mono)', fontSize: 38, fontWeight: 900,
+                  color: lucroColor, lineHeight: 1, letterSpacing: '-0.03em', margin: 0, whiteSpace: 'nowrap',
+                }}
+              >
+                {lucroPos ? '+' : '-'}<CountUp value={Math.abs(globalLucroPlataforma)} prefix="R$ " />
+              </motion.p>
             </div>
           </div>
         </motion.div>

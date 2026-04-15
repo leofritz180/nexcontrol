@@ -192,6 +192,16 @@ export async function POST(req) {
     // Revenue variation percentage (7d vs prev 7d)
     const revenueVariation = prevRevenue7d > 0 ? Math.round(((rev7 - prevRevenue7d) / prevRevenue7d) * 100) : rev7 > 0 ? 100 : 0
 
+    // Recent sales (last 10 paid) — paidPayments already ordered desc by created_at
+    const tenantNameMap = Object.fromEntries((tenants || []).map(t => [t.id, t.name]))
+    const recentSales = paidPayments.slice(0, 10).map(p => ({
+      id: p.id,
+      tenant_id: p.tenant_id,
+      tenant_name: tenantNameMap[p.tenant_id] || 'Cliente',
+      amount: Number(p.amount || 0),
+      created_at: p.created_at,
+    }))
+
     return NextResponse.json({
       kpis: {
         totalAdmins: admins.length, totalOperators: operators.length,
@@ -210,6 +220,7 @@ export async function POST(req) {
       alerts,
       insights,
       revenueByDay,
+      recentSales,
     })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })

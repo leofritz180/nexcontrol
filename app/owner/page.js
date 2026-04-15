@@ -71,21 +71,37 @@ export default function OwnerPage() {
   const [adminSearch, setAdminSearch] = useState('')
   const [selectedAdmin, setSelectedAdmin] = useState(null)
 
+  const emailRef = useRef(null)
+
+  async function fetchStats(email) {
+    try {
+      const res = await fetch('/api/owner/stats', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      if (!res.ok) return false
+      setData(await res.json())
+      return true
+    } catch { return false }
+  }
+
   useEffect(() => {
+    let interval
     async function init() {
       const { data: s } = await supabase.auth.getSession()
       const u = s?.session?.user
       if (!u || u.email !== OWNER) { router.push('/admin'); return }
       setUserId(u.id)
-      const res = await fetch('/api/owner/stats', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: u.email }),
-      })
-      if (!res.ok) { router.push('/admin'); return }
-      setData(await res.json())
+      emailRef.current = u.email
+      const ok = await fetchStats(u.email)
+      if (!ok) { router.push('/admin'); return }
       setLoading(false)
+      interval = setInterval(() => {
+        if (emailRef.current) fetchStats(emailRef.current)
+      }, 20000)
     }
     init()
+    return () => { if (interval) clearInterval(interval) }
   }, [])
 
   if (loading) return (
@@ -95,7 +111,7 @@ export default function OwnerPage() {
   )
   if (!data) return null
 
-  const { kpis, funnel, activity, adminStats, alerts, revenueByDay } = data
+  const { kpis, funnel, activity, adminStats, alerts, revenueByDay, recentSales = [] } = data
   const variation = kpis.revenueVariation || 0
   const variationUp = variation >= 0
   const chartData = chartRange === 7 ? (revenueByDay || []).slice(-7) : (revenueByDay || [])
@@ -470,6 +486,53 @@ export default function OwnerPage() {
               return <div key={day.date} style={{ flex: 1, textAlign: 'center' }}>{show && <span style={{ fontSize: 8, color: '#64748B' }}>{day.date.slice(5)}</span>}</div>
             })}
           </div>
+        </motion.div>
+
+        {/* ═══ VENDAS RECENTES ═══ */}
+        <motion.div {...fadeUp(0, 0.32)} style={{ ...card, padding: 24, marginBottom: 28 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+              <motion.div
+                animate={{ boxShadow: ['0 0 0 0 rgba(34,197,94,0)', '0 0 0 6px rgba(34,197,94,0.18)', '0 0 0 0 rgba(34,197,94,0)'] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ width: 8, height: 8, borderRadius: '50%', background: '#22C55E', flexShrink: 0 }}
+              />
+              Vendas recentes
+            </h3>
+            <span style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Ao vivo • atualiza a cada 20s</span>
+          </div>
+          {recentSales.length === 0 ? (
+            <div style={{ padding: '24px 0', textAlign: 'center' }}>
+              <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>Nenhuma venda registrada ainda</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <AnimatePresence initial={false}>
+                {recentSales.map(s => (
+                  <motion.div
+                    key={s.id}
+                    layout
+                    initial={{ opacity: 0, x: -18 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 18 }}
+                    transition={{ duration: 0.38, ease }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', borderRadius: 10, background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.12)', gap: 12 }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
+                      </div>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.tenant_name}</p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
+                      <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{relativeTime(s.created_at)}</span>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#22C55E' }}>+R$ {fmt(s.amount)}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
         </motion.div>
 
         {/* ═══ LEVEL 2.5: MOVIMENTACAO + ACTIONS ═══ */}

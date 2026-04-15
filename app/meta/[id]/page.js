@@ -127,6 +127,122 @@ function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, onClose, onSaved 
   )
 }
 
+const REDES_LIST = ['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
+
+function EditMetaModal({ meta, userId, onClose, onSaved, contasMinimo }) {
+  const [titulo, setTitulo] = useState(meta.titulo || '')
+  const [rede, setRede] = useState(meta.rede || '')
+  const [plataforma, setPlataforma] = useState(meta.plataforma || '')
+  const [contas, setContas] = useState(String(meta.quantidade_contas || ''))
+  const [obs, setObs] = useState(meta.observacoes || '')
+  const [saving, setSaving] = useState(false)
+  const [err, setErr] = useState('')
+
+  async function save() {
+    if (saving) return
+    const nContas = Math.floor(Number(contas || 0))
+    if (!titulo.trim()) { setErr('Titulo obrigatorio'); return }
+    if (!rede.trim()) { setErr('Rede obrigatoria'); return }
+    if (!Number.isFinite(nContas) || nContas < 1) { setErr('Quantidade de contas invalida'); return }
+    if (contasMinimo != null && nContas < contasMinimo) {
+      setErr(`Ja existem ${contasMinimo} contas processadas — nao e possivel reduzir abaixo disso`)
+      return
+    }
+    setSaving(true); setErr('')
+    const res = await fetch('/api/meta/update', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        meta_id: meta.id, user_id: userId,
+        titulo: titulo.trim(), rede: rede.trim().toUpperCase(),
+        plataforma: plataforma.trim(), quantidade_contas: nContas,
+        observacoes: obs.trim() || null,
+      }),
+    })
+    const json = await res.json().catch(() => ({}))
+    setSaving(false)
+    if (!res.ok || json.error) { setErr(json.error || 'Falha ao salvar'); return }
+    onSaved(json.meta || null)
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(4,8,16,0.92)', backdropFilter: 'blur(16px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 10 }}
+        transition={{ duration: 0.28, ease: [0.33,1,0.68,1] }}
+        onClick={e => e.stopPropagation()}
+        style={{ width: '100%', maxWidth: 520, background: 'var(--surface)', borderRadius: 20, border: '1px solid rgba(59,130,246,0.2)', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', overflow: 'hidden' }}
+      >
+        <div style={{ padding: '22px 26px', borderBottom: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </div>
+            <div>
+              <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)', margin: '0 0 2px' }}>Editar meta</h3>
+              <p className="t-small" style={{ margin: 0 }}>Alteracoes aparecem em todos os calculos e no histórico</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="btn btn-ghost btn-sm" style={{ padding: '6px 8px' }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Titulo</label>
+            <input className="input" value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Ex: 30 DEP W1" />
+          </div>
+          <div className="g-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div>
+              <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Rede</label>
+              <select className="input" value={rede} onChange={e => setRede(e.target.value)}>
+                <option value="">Selecione...</option>
+                {REDES_LIST.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Quantidade de contas</label>
+              <input className="input" type="number" min="1" step="1" value={contas} onChange={e => setContas(e.target.value)} />
+              {contasMinimo > 0 && (
+                <p className="t-small" style={{ margin: '4px 0 0', color: 'var(--t4)', fontSize: 10 }}>Minimo permitido: {contasMinimo} (ja processadas)</p>
+              )}
+            </div>
+          </div>
+          <div>
+            <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Plataforma</label>
+            <input className="input" value={plataforma} onChange={e => setPlataforma(e.target.value)} placeholder="Ex: BetFury" />
+          </div>
+          <div>
+            <label className="t-label" style={{ display: 'block', marginBottom: 6 }}>Observacoes</label>
+            <textarea className="input" value={obs} onChange={e => setObs(e.target.value)} rows={2} style={{ resize: 'vertical' }} />
+          </div>
+
+          {err && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderRadius: 10, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', fontSize: 12, color: '#fca5a5' }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              {err}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+            <button onClick={onClose} className="btn btn-ghost" style={{ flex: 1 }}>Cancelar</button>
+            <motion.button
+              whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.97 }}
+              onClick={save} disabled={saving} className="btn btn-profit" style={{ flex: 2 }}>
+              {saving ? <><div className="spinner" style={{ width: 14, height: 14, borderTopColor: '#012b1c' }}/> Salvando...</> : (<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Salvar alteracoes</>)}
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 function KPI({ label, value, color, small=false }) {
   return (
     <motion.div
@@ -168,6 +284,7 @@ export default function MetaPage() {
   const [feedback, setFeedback] = useState(null)
   const [tenantSlots, setTenantSlots] = useState([])
   const [selectedSlot, setSelectedSlot] = useState('')
+  const [showEdit, setShowEdit] = useState(false)
 
   useEffect(()=>{ if(id) fetchData() },[id])
 
@@ -542,11 +659,36 @@ export default function MetaPage() {
               {meta?.observacoes && <p className="t-body" style={{ marginBottom:4 }}>{meta.observacoes}</p>}
               <p className="t-small">{meta?.quantidade_contas||0} contas · {remessas.length} remessas · {pctAcerto}% de acerto</p>
             </div>
-            <button onClick={toggleStatus} className={`btn ${meta?.status==='finalizada'?'btn-profit':'btn-danger'}`}>
-              {meta?.status==='finalizada'?<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Reativar meta</>:<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Finalizar meta</>}
-            </button>
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+              {meta && meta.status_fechamento !== 'fechada' && (
+                <button onClick={()=>setShowEdit(true)} className="btn btn-ghost" title="Editar meta">
+                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  Editar meta
+                </button>
+              )}
+              <button onClick={toggleStatus} className={`btn ${meta?.status==='finalizada'?'btn-profit':'btn-danger'}`}>
+                {meta?.status==='finalizada'?<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Reativar meta</>:<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Finalizar meta</>}
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* ── Edit meta modal ── */}
+        <AnimatePresence>
+          {showEdit && meta && (
+            <EditMetaModal
+              meta={meta}
+              userId={user?.id}
+              contasMinimo={remessas.filter(r=>r.tipo!=='redeposito').reduce((s,r)=>s+Number(r.contas_remessa||0),0)}
+              onClose={()=>setShowEdit(false)}
+              onSaved={(updated)=>{
+                setShowEdit(false)
+                if (updated) setMeta(prev => ({...prev, ...updated}))
+                else fetchData()
+              }}
+            />
+          )}
+        </AnimatePresence>
 
         {/* Insight da operacao */}
         {!loading && remessas.length > 0 && (() => {

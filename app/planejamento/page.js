@@ -69,6 +69,8 @@ export default function PlanejamentoPage() {
   const [_showAdd, _setShowAdd] = useState(false) // unused — kept for compat
   const [expandedId, setExpandedId] = useState(null)
   const [saving, setSaving] = useState(null)
+  const [saveStatus, setSaveStatus] = useState(null) // 'saving' | 'saved' | 'error'
+  const saveTimerRef = useRef(null)
   const debounceRef = useRef({})
 
   const getName = op => op?.nome || op?.email?.split('@')[0] || 'Operador'
@@ -103,6 +105,8 @@ export default function PlanejamentoPage() {
 
   async function saveRow(row) {
     setSaving(row.id || 'new')
+    setSaveStatus('saving')
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     const res = await fetch('/api/admin/planilha', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: user.email, row }),
@@ -115,6 +119,11 @@ export default function PlanejamentoPage() {
         if (idx >= 0) { const next = [...prev]; next[idx] = j.row; return next }
         return [...prev, j.row]
       })
+      setSaveStatus('saved')
+      saveTimerRef.current = setTimeout(() => setSaveStatus(null), 2000)
+    } else {
+      setSaveStatus('error')
+      saveTimerRef.current = setTimeout(() => setSaveStatus(null), 3000)
     }
     return j
   }
@@ -122,7 +131,8 @@ export default function PlanejamentoPage() {
   function debounceSave(row, field) {
     const key = row.id + '_' + field
     if (debounceRef.current[key]) clearTimeout(debounceRef.current[key])
-    debounceRef.current[key] = setTimeout(() => saveRow(row), 600)
+    setSaveStatus('saving')
+    debounceRef.current[key] = setTimeout(() => saveRow(row), 400)
   }
 
   function updateField(id, field, value) {
@@ -205,7 +215,23 @@ export default function PlanejamentoPage() {
               <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Planejamento de metas e plataformas</p>
             </div>
           </div>
-          {/* botao "Nova linha" movido pra baixo da tabela */}
+          {/* Indicador de salvamento */}
+          <AnimatePresence>
+            {saveStatus && (
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 8,
+                  background: saveStatus === 'saving' ? 'rgba(59,130,246,0.1)' : saveStatus === 'saved' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                  border: `1px solid ${saveStatus === 'saving' ? 'rgba(59,130,246,0.2)' : saveStatus === 'saved' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                }}>
+                {saveStatus === 'saving' && <div className="spinner" style={{ width: 10, height: 10, borderTopColor: '#3B82F6', borderWidth: 2 }} />}
+                {saveStatus === 'saved' && <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                {saveStatus === 'error' && <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}
+                <span style={{ fontSize: 10, fontWeight: 600, color: saveStatus === 'saving' ? '#60A5FA' : saveStatus === 'saved' ? '#22C55E' : '#EF4444' }}>
+                  {saveStatus === 'saving' ? 'Salvando...' : saveStatus === 'saved' ? 'Salvo' : 'Erro ao salvar'}
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* KPIs */}

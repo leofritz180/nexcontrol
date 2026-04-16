@@ -196,14 +196,10 @@ export default function PlanejamentoPage() {
 
   const isRowEmpty = r => !r.rede && !r.agente && Number(r.quantidade || 0) === 0
 
-  // Ordenacao automatica por estado: problema > em_andamento > pendente > vazia > concluido
-  const statusOrder = { problema: 0, em_andamento: 1, pendente: 2, concluido: 4 }
-  const getRowOrder = r => isRowEmpty(r) ? 3 : (statusOrder[r.status || 'pendente'] ?? 2)
-  const sorted = [...rows].sort((a, b) => getRowOrder(a) - getRowOrder(b))
-
-  const filtered = filter === 'todos' ? sorted
-    : filter === 'vazia' ? sorted.filter(r => isRowEmpty(r))
-    : sorted.filter(r => (r.status || 'pendente') === filter)
+  // Ordem fixa por created_at (mesma do banco) — nunca embaralha
+  const filtered = filter === 'todos' ? rows
+    : filter === 'vazia' ? rows.filter(r => isRowEmpty(r))
+    : rows.filter(r => (r.status || 'pendente') === filter)
 
   // KPIs
   const totalRows = rows.length

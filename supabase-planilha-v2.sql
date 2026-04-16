@@ -1,4 +1,6 @@
--- v2: adicionar coluna status (pendente | em_andamento | concluido | problema)
--- Migra dados existentes: concluido=true vira 'concluido', resto vira 'pendente'
+-- v2: novas colunas para planilha operacional
 ALTER TABLE admin_planilha ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pendente';
 UPDATE admin_planilha SET status = 'concluido' WHERE concluido = true AND status = 'pendente';
+
+ALTER TABLE admin_planilha ADD COLUMN IF NOT EXISTS lucro_parcial NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE admin_planilha ADD COLUMN IF NOT EXISTS tipo_resultado TEXT NOT NULL DEFAULT 'prejuizo';

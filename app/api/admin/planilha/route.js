@@ -38,7 +38,9 @@ export async function POST(req) {
   const prej = Number(row.prejuizo || 0)
   const custos = Number(row.custos || 0)
   const salBau = Number(row.salario_bau || 0)
-  const lucro = salBau - prej - custos
+  const isLucro = (row.tipo_resultado || 'prejuizo') === 'lucro'
+  const resultado = isLucro ? prej : -prej
+  const lucro = salBau + resultado - custos
   const status = row.status || 'pendente'
   const payload = {
     ...row,

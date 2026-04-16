@@ -28,7 +28,7 @@ const STATUSES = [
 ]
 const getStatus = k => STATUSES.find(s => s.key === k) || STATUSES[0]
 
-const EMPTY_ROW = { rede: '', quantidade: 0, agente: '', apostas: '', link: '', operator_id: null, operator_name: '', status: 'pendente', concluido: false, observacao: '', prejuizo: 0, custos: 0, salario_bau: 0, lucro_final: 0 }
+const EMPTY_ROW = { rede: '', quantidade: 0, agente: '', apostas: '', link: '', operator_id: null, operator_name: '', status: 'pendente', concluido: false, observacao: '', prejuizo: 0, tipo_resultado: 'prejuizo', custos: 0, salario_bau: 0, lucro_final: 0, lucro_parcial: 0 }
 
 function StatusIcon({ icon, size = 10, color }) {
   const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2.5, strokeLinecap: 'round' }
@@ -66,8 +66,7 @@ export default function PlanejamentoPage() {
   const [rows, setRows] = useState([])
   const [operators, setOperators] = useState([])
   const [filter, setFilter] = useState('todos')
-  const [showAdd, setShowAdd] = useState(false)
-  const [newRow, setNewRow] = useState({ ...EMPTY_ROW })
+  const [_showAdd, _setShowAdd] = useState(false) // unused — kept for compat
   const [expandedId, setExpandedId] = useState(null)
   const [saving, setSaving] = useState(null)
   const debounceRef = useRef({})
@@ -130,8 +129,10 @@ export default function PlanejamentoPage() {
     setRows(prev => prev.map(r => {
       if (r.id !== id) return r
       const updated = { ...r, [field]: value }
-      if (['prejuizo', 'custos', 'salario_bau'].includes(field)) {
-        updated.lucro_final = Number((Number(updated.salario_bau || 0) - Number(updated.prejuizo || 0) - Number(updated.custos || 0)).toFixed(2))
+      if (['prejuizo', 'custos', 'salario_bau', 'tipo_resultado'].includes(field)) {
+        const val = Number(updated.prejuizo || 0)
+        const resultado = (updated.tipo_resultado === 'lucro') ? val : -val
+        updated.lucro_final = Number((Number(updated.salario_bau || 0) + resultado - Number(updated.custos || 0)).toFixed(2))
       }
       debounceSave(updated, field)
       return updated
@@ -146,9 +147,7 @@ export default function PlanejamentoPage() {
   }
 
   async function addRow() {
-    if (!newRow.rede) return
-    const j = await saveRow({ ...newRow, sort_order: rows.length })
-    if (j.ok) { setShowAdd(false); setNewRow({ ...EMPTY_ROW }) }
+    await saveRow({ ...EMPTY_ROW, sort_order: rows.length })
   }
 
   async function deleteRow(id) {
@@ -183,6 +182,7 @@ export default function PlanejamentoPage() {
   const totalPrej = rows.reduce((s, r) => s + Number(r.prejuizo || 0), 0)
   const totalSalBau = rows.reduce((s, r) => s + Number(r.salario_bau || 0), 0)
   const totalLucro = rows.reduce((s, r) => s + Number(r.lucro_final || 0), 0)
+  const totalLucroParcial = rows.reduce((s, r) => s + Number(r.lucro_parcial || 0), 0)
   const problemas = rows.filter(r => r.status === 'problema').length
 
   // Operator color map (stable per operator)
@@ -205,11 +205,7 @@ export default function PlanejamentoPage() {
               <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Planejamento de metas e plataformas</p>
             </div>
           </div>
-          <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={() => setShowAdd(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#e53935', color: '#fff', fontSize: 13, fontWeight: 700, boxShadow: '0 4px 16px rgba(229,57,53,0.25)' }}>
-            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nova linha
-          </motion.button>
+          {/* botao "Nova linha" movido pra baixo da tabela */}
         </motion.div>
 
         {/* KPIs */}
@@ -221,7 +217,8 @@ export default function PlanejamentoPage() {
               { l: 'Com prejuizo', v: withPrej, c: '#EF4444', sub: `R$ ${fmt(totalPrej)}` },
               { l: 'Problemas', v: problemas, c: problemas > 0 ? '#EF4444' : '#64748B', sub: problemas > 0 ? 'Atencao!' : 'Nenhum' },
               { l: 'Sal. + Bau', v: `R$ ${fmt(totalSalBau)}`, c: '#a855f7' },
-              { l: 'Lucro final', v: `${totalLucro >= 0 ? '+' : ''}R$ ${fmt(totalLucro)}`, c: totalLucro >= 0 ? '#22C55E' : '#EF4444' },
+              { l: 'Lucro parcial', v: `${totalLucroParcial >= 0 ? '+' : ''}R$ ${fmt(totalLucroParcial)}`, c: totalLucroParcial >= 0 ? '#22C55E' : '#EF4444', sub: 'Soma parcial' },
+              { l: 'Lucro total', v: `${totalLucro >= 0 ? '+' : ''}R$ ${fmt(totalLucro)}`, c: totalLucro >= 0 ? '#22C55E' : '#EF4444' },
             ].map((k, i) => (
               <motion.div key={k.l} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.04 + i * 0.03, ease }}
                 style={{ borderRadius: 12, padding: '14px 16px', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -255,7 +252,7 @@ export default function PlanejamentoPage() {
               <thead>
                 <tr style={{ background: 'rgba(229,57,53,0.04)' }}>
                   <th style={{ width: 5, padding: 0 }}/>
-                  {['REDE', 'QTD', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS/FALTA', 'PREJUIZO', 'CUSTOS', 'SAL+BAU', 'LUCRO', ''].map((h, i) => (
+                  {['REDE', 'QTD', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS/FALTA', 'PREJ./LUCRO', 'CUSTOS', 'SAL+BAU', 'LUCRO TOTAL', 'LUCRO PARCIAL', ''].map((h, i) => (
                     <th key={i} style={{ padding: '11px 8px', textAlign: 'left', fontSize: 9, fontWeight: 700, color: '#64748B', letterSpacing: '0.08em', whiteSpace: 'nowrap', borderBottom: '2px solid rgba(229,57,53,0.2)' }}>{h}</th>
                   ))}
                 </tr>
@@ -356,10 +353,22 @@ export default function PlanejamentoPage() {
                         <td style={{ padding: '4px 2px', minWidth: 110 }} onClick={e => e.stopPropagation()}>
                           <CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="Obs..." style={{ fontSize: 11, color: 'var(--t3)' }} />
                         </td>
-                        {/* Prejuizo */}
-                        <td style={{ padding: '4px 2px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
-                          <CellInput type="number" value={r.prejuizo} onChange={v => updateField(r.id, 'prejuizo', Number(v) || 0)} mono step="0.01"
-                            style={{ color: Number(r.prejuizo || 0) > 0 ? '#EF4444' : 'var(--t4)', fontWeight: Number(r.prejuizo || 0) > 0 ? 700 : 400 }} />
+                        {/* Prej./Lucro */}
+                        <td style={{ padding: '4px 2px', minWidth: 95 }} onClick={e => e.stopPropagation()}>
+                          {(() => {
+                            const isLucro = (r.tipo_resultado || 'prejuizo') === 'lucro'
+                            const val = Number(r.prejuizo || 0)
+                            return (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <button type="button" onClick={() => updateField(r.id, 'tipo_resultado', isLucro ? 'prejuizo' : 'lucro')} title={isLucro ? 'Lucro (clique p/ prejuizo)' : 'Prejuizo (clique p/ lucro)'}
+                                  style={{ flexShrink: 0, width: 20, height: 20, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isLucro ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.12)', transition: 'all 0.15s' }}>
+                                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={isLucro ? '#22C55E' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
+                                </button>
+                                <CellInput type="number" value={r.prejuizo} onChange={v => updateField(r.id, 'prejuizo', Number(v) || 0)} mono step="0.01"
+                                  style={{ color: val > 0 ? (isLucro ? '#22C55E' : '#EF4444') : 'var(--t4)', fontWeight: val > 0 ? 700 : 400 }} />
+                              </div>
+                            )
+                          })()}
                         </td>
                         {/* Custos */}
                         <td style={{ padding: '4px 2px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
@@ -369,7 +378,7 @@ export default function PlanejamentoPage() {
                         <td style={{ padding: '4px 2px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
                           <CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ color: '#a855f7' }} />
                         </td>
-                        {/* Lucro */}
+                        {/* Lucro Total (auto-calculado) */}
                         <td style={{ padding: '6px 8px', minWidth: 90 }}>
                           <span style={{
                             fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800,
@@ -378,6 +387,13 @@ export default function PlanejamentoPage() {
                           }}>
                             {lf === 0 ? '—' : `${isPos ? '+' : ''}R$ ${fmt(lf)}`}
                           </span>
+                        </td>
+                        {/* Lucro Parcial (manual) */}
+                        <td style={{ padding: '4px 2px', minWidth: 90 }} onClick={e => e.stopPropagation()}>
+                          {(() => { const lp = Number(r.lucro_parcial || 0); const lpPos = lp >= 0; return (
+                            <CellInput type="number" value={r.lucro_parcial} onChange={v => updateField(r.id, 'lucro_parcial', Number(v) || 0)} mono step="0.01"
+                              style={{ color: lp === 0 ? 'var(--t4)' : lpPos ? '#4ade80' : '#fca5a5', fontWeight: 700 }} />
+                          )})()}
                         </td>
                         {/* Actions */}
                         <td style={{ padding: '4px 6px', width: 32 }} onClick={e => e.stopPropagation()}>
@@ -403,6 +419,16 @@ export default function PlanejamentoPage() {
             </div>
           )}
         </motion.div>
+
+        {/* Botao nova linha (abaixo da tabela) */}
+        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={addRow}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '12px 20px', marginTop: 12, marginBottom: 8, borderRadius: 12, border: '1px dashed rgba(229,57,53,0.3)', background: 'rgba(229,57,53,0.04)', color: '#e53935', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.08)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.5)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.04)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.3)' }}
+          className="plan-add-btn">
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova linha
+        </motion.button>
 
         {/* ═══ MOBILE CARDS ═══ */}
         <div className="plan-mobile-cards">
@@ -483,81 +509,7 @@ export default function PlanejamentoPage() {
           })}
         </div>
 
-        {/* ═══ ADD MODAL ═══ */}
-        <AnimatePresence>
-          {showAdd && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(4,8,16,0.92)', backdropFilter: 'blur(16px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
-              onClick={() => setShowAdd(false)}>
-              <motion.div initial={{ opacity: 0, scale: 0.96, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.28, ease }} onClick={e => e.stopPropagation()}
-                style={{ width: '100%', maxWidth: 560, background: 'var(--surface)', borderRadius: 20, border: '1px solid rgba(229,57,53,0.2)', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', overflow: 'hidden' }}>
-                <div style={{ padding: '22px 26px', borderBottom: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    </div>
-                    <h3 style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>Nova linha</h3>
-                  </div>
-                  <button onClick={() => setShowAdd(false)} className="btn btn-ghost btn-sm" style={{ padding: '6px 8px' }}>
-                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  </button>
-                </div>
-                <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <div className="g-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-                    <div>
-                      <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Rede *</label>
-                      <select className="input" value={newRow.rede} onChange={e => setNewRow(p => ({ ...p, rede: e.target.value }))}>
-                        <option value="">Selecione</option>
-                        {REDES.map(r => <option key={r} value={r}>{r}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Quantidade</label>
-                      <input className="input" type="number" min="0" value={newRow.quantidade} onChange={e => setNewRow(p => ({ ...p, quantidade: Number(e.target.value) || 0 }))} />
-                    </div>
-                    <div>
-                      <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Agente/Blog</label>
-                      <input className="input" value={newRow.agente} onChange={e => setNewRow(p => ({ ...p, agente: e.target.value }))} placeholder="Nome" />
-                    </div>
-                  </div>
-                  <div className="g-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                    <div>
-                      <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Apostas</label>
-                      <input className="input" value={newRow.apostas} onChange={e => setNewRow(p => ({ ...p, apostas: e.target.value }))} placeholder="70 - 1,5X" />
-                    </div>
-                    <div>
-                      <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Operador</label>
-                      <select className="input" value={newRow.operator_id || ''} onChange={e => {
-                        const op = operators.find(o => o.id === e.target.value)
-                        setNewRow(p => ({ ...p, operator_id: e.target.value || null, operator_name: op ? getName(op) : '' }))
-                      }}>
-                        <option value="">Disponivel</option>
-                        {operators.map(op => <option key={op.id} value={op.id}>{getName(op)}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Link</label>
-                    <input className="input" value={newRow.link} onChange={e => setNewRow(p => ({ ...p, link: e.target.value }))} placeholder="https://..." />
-                  </div>
-                  <div>
-                    <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Observacao</label>
-                    <input className="input" value={newRow.observacao} onChange={e => setNewRow(p => ({ ...p, observacao: e.target.value }))} />
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
-                    <button onClick={() => setShowAdd(false)} className="btn btn-ghost" style={{ flex: 1 }}>Cancelar</button>
-                    <motion.button whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.97 }} onClick={addRow} disabled={!newRow.rede}
-                      style={{ flex: 2, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '11px 20px', borderRadius: 10, border: 'none', cursor: newRow.rede ? 'pointer' : 'not-allowed', background: newRow.rede ? '#e53935' : '#333', color: '#fff', fontSize: 13, fontWeight: 700, opacity: newRow.rede ? 1 : 0.5 }}>
-                      <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                      Adicionar
-                    </motion.button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* modal removido — botao Nova linha cria direto */}
 
         <style>{`
           .plan-mobile-cards { display: none; }

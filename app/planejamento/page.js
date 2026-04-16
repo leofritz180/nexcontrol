@@ -351,19 +351,8 @@ export default function PlanejamentoPage() {
                           <CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="..." style={{ color: '#94A3B8' }} />
                         </td>
                         {/* Link */}
-                        <td style={{ padding: '6px 8px', minWidth: 70 }} onClick={e => e.stopPropagation()}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="Cole aqui..." style={{ fontSize: 10, color: '#475569', maxWidth: 0, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }} />
-                            {r.link && (
-                              <a href={r.link} target="_blank" rel="noopener noreferrer" title={r.link}
-                                style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, fontSize: 9, fontWeight: 600, color: '#60A5FA', background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
-                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.14)'; e.currentTarget.style.textDecoration = 'underline' }}
-                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.06)'; e.currentTarget.style.textDecoration = 'none' }}>
-                                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                                Abrir
-                              </a>
-                            )}
-                          </div>
+                        <td style={{ padding: '6px 8px', minWidth: 220 }} onClick={e => e.stopPropagation()}>
+                          <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 11, color: r.link ? '#60A5FA' : '#334155' }} />
                         </td>
                         {/* Operador */}
                         <td style={{ padding: '4px 6px', minWidth: 140 }} onClick={e => e.stopPropagation()}>

@@ -196,10 +196,16 @@ export default function PlanejamentoPage() {
 
   const isRowEmpty = r => !r.rede && !r.agente && Number(r.quantidade || 0) === 0
 
-  // Ordem fixa por created_at (mesma do banco) — nunca embaralha
-  const filtered = filter === 'todos' ? rows
-    : filter === 'vazia' ? rows.filter(r => isRowEmpty(r))
-    : rows.filter(r => (r.status || 'pendente') === filter)
+  // Ordenar por rede (redes iguais ficam juntas), vazia por ultimo
+  const sorted = [...rows].sort((a, b) => {
+    const ra = (a.rede || '').toUpperCase() || 'ZZZZZ'
+    const rb = (b.rede || '').toUpperCase() || 'ZZZZZ'
+    if (ra !== rb) return ra.localeCompare(rb)
+    return new Date(a.created_at) - new Date(b.created_at)
+  })
+  const filtered = filter === 'todos' ? sorted
+    : filter === 'vazia' ? sorted.filter(r => isRowEmpty(r))
+    : sorted.filter(r => (r.status || 'pendente') === filter)
 
   // KPIs
   const totalRows = rows.length

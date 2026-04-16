@@ -137,7 +137,11 @@ export default function PlanejamentoPage() {
     </AppLayout>
   )
 
-  const filtered = filter === 'todos' ? rows : filter === 'concluido' ? rows.filter(r => r.concluido) : rows.filter(r => !r.concluido)
+  const isRowEmpty = r => !r.rede && !r.agente && Number(r.quantidade || 0) === 0
+  const filtered = filter === 'todos' ? rows
+    : filter === 'concluido' ? rows.filter(r => r.concluido)
+    : filter === 'pendente' ? rows.filter(r => !r.concluido && !isRowEmpty(r))
+    : rows.filter(r => isRowEmpty(r) && !r.concluido)
 
   // Totalizadores
   const totalPrej = rows.reduce((s, r) => s + Number(r.prejuizo || 0), 0)
@@ -190,7 +194,7 @@ export default function PlanejamentoPage() {
 
         {/* Filters */}
         <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
-          {[['todos', 'Todos'], ['pendente', 'Pendentes'], ['concluido', 'Concluidos']].map(([k, l]) => (
+          {[['todos', 'Todos'], ['pendente', 'Pendentes'], ['concluido', 'Concluidos'], ['vazia', 'Vazias']].map(([k, l]) => (
             <button key={k} onClick={() => setFilter(k)} style={{
               padding: '6px 16px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer',
               background: filter === k ? 'rgba(229,57,53,0.12)' : 'rgba(255,255,255,0.03)',
@@ -218,22 +222,42 @@ export default function PlanejamentoPage() {
                   {filtered.map((r, i) => {
                     const lf = Number(r.lucro_final || 0)
                     const isPos = lf >= 0
+                    // Estado visual: vazia (sem rede preenchida), pendente (tem rede, nao concluido), concluida
+                    const isEmpty = !r.rede && !r.agente && Number(r.quantidade || 0) === 0
+                    const isPending = !isEmpty && !r.concluido
+                    const isDone = !!r.concluido
+                    const hasHighLoss = lf < -100 && !isDone
+
+                    const rowBg = isDone
+                      ? 'rgba(34,197,94,0.05)'
+                      : hasHighLoss
+                        ? 'rgba(239,68,68,0.04)'
+                        : isPending
+                          ? 'rgba(245,158,11,0.03)'
+                          : 'rgba(255,255,255,0.01)'
+                    const rowBorder = isDone
+                      ? 'rgba(34,197,94,0.1)'
+                      : isPending
+                        ? 'rgba(245,158,11,0.06)'
+                        : 'rgba(255,255,255,0.03)'
+                    const accentColor = isDone ? '#22C55E' : isPending ? '#F59E0B' : hasHighLoss ? '#EF4444' : 'rgba(255,255,255,0.06)'
+
                     return (
                       <motion.tr key={r.id} layout
                         initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
                         transition={{ duration: 0.25, ease }}
                         style={{
-                          borderBottom: '1px solid rgba(255,255,255,0.04)',
-                          background: r.concluido ? 'rgba(34,197,94,0.03)' : lf < -100 ? 'rgba(239,68,68,0.03)' : 'transparent',
-                          opacity: r.concluido ? 0.7 : 1,
+                          borderBottom: `1px solid ${rowBorder}`,
+                          background: rowBg,
+                          opacity: isDone ? 0.6 : isEmpty ? 0.45 : 1,
                           transition: 'background 0.2s, opacity 0.2s',
                         }}
-                        onMouseEnter={e => { if (!r.concluido) e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
-                        onMouseLeave={e => { if (!r.concluido) e.currentTarget.style.background = lf < -100 ? 'rgba(239,68,68,0.03)' : 'transparent' }}
+                        onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = isDone ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.03)' }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = isDone ? '0.6' : isEmpty ? '0.45' : '1'; e.currentTarget.style.background = rowBg }}
                       >
-                        {/* Cor rede */}
+                        {/* Barra lateral de status */}
                         <td style={{ width: 4, padding: 0 }}>
-                          <div style={{ width: 4, height: '100%', minHeight: 42, background: r.concluido ? '#22C55E' : r.rede ? '#e53935' : 'rgba(255,255,255,0.06)' }} />
+                          <div style={{ width: 4, height: '100%', minHeight: 42, background: accentColor, borderRadius: '0 2px 2px 0' }} />
                         </td>
                         {/* Rede */}
                         <td style={{ padding: '4px 6px', minWidth: 80 }}>
@@ -279,16 +303,24 @@ export default function PlanejamentoPage() {
                           </select>
                         </td>
                         {/* Status */}
-                        <td style={{ padding: '4px 8px', minWidth: 90 }}>
-                          <motion.button whileTap={{ scale: 0.9 }} onClick={() => toggleConcluido(r)}
+                        <td style={{ padding: '4px 8px', minWidth: 100 }}>
+                          <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={() => toggleConcluido(r)}
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 5,
-                              padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                              padding: '5px 12px', borderRadius: 6, cursor: 'pointer',
                               fontSize: 10, fontWeight: 700, letterSpacing: '0.04em',
-                              background: r.concluido ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.1)',
-                              color: r.concluido ? '#22C55E' : '#F59E0B',
+                              background: isDone ? 'rgba(34,197,94,0.14)' : isEmpty ? 'rgba(100,116,139,0.08)' : 'rgba(245,158,11,0.12)',
+                              color: isDone ? '#22C55E' : isEmpty ? '#64748B' : '#F59E0B',
+                              border: `1px solid ${isDone ? 'rgba(34,197,94,0.25)' : isEmpty ? 'rgba(100,116,139,0.15)' : 'rgba(245,158,11,0.22)'}`,
+                              transition: 'all 0.15s',
                             }}>
-                            {r.concluido ? (<><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>FEITO</>) : 'PENDENTE'}
+                            {isDone ? (
+                              <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>CONCLUIDO</>
+                            ) : isEmpty ? (
+                              'VAZIA'
+                            ) : (
+                              <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>PENDENTE</>
+                            )}
                           </motion.button>
                         </td>
                         {/* Obs */}

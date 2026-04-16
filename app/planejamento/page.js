@@ -58,7 +58,7 @@ function CellInput({ value, onChange, type = 'text', placeholder, mono, style: s
     <input type={type} value={value ?? ''} onChange={e => onChange(type === 'number' ? e.target.value : e.target.value)}
       onKeyDown={handleKey}
       placeholder={placeholder} {...rest}
-      style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: 'var(--t1)', fontSize: 12, fontWeight: 500, padding: '8px 10px', fontFamily: mono ? 'var(--mono)' : 'inherit', ...s }}
+      style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: 'var(--t1)', fontSize: 13, fontWeight: 500, padding: '10px 10px', fontFamily: mono ? 'var(--mono)' : 'inherit', ...s }}
     />
   )
 }
@@ -245,7 +245,7 @@ export default function PlanejamentoPage() {
 
   return (
     <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} userId={user?.id} tenantId={profile?.tenant_id}>
-      <main style={{ minHeight: '100vh', padding: '32px 24px 80px', maxWidth: 1600, margin: '0 auto' }}>
+      <main style={{ minHeight: '100vh', padding: '32px 24px 80px', maxWidth: 1800, margin: '0 auto', fontSize: 14 }}>
 
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14, marginBottom: 22 }}>
@@ -297,9 +297,9 @@ export default function PlanejamentoPage() {
               { l: 'Lucro parcial', v: `${totalLucroParcial >= 0 ? '+' : ''}R$ ${fmt(totalLucroParcial)}`, c: totalLucroParcial >= 0 ? '#22C55E' : '#EF4444' },
               { l: 'Lucro total', v: `${totalLucro >= 0 ? '+' : ''}R$ ${fmt(totalLucro)}`, c: totalLucro >= 0 ? '#22C55E' : '#EF4444' },
             ].map((k, i) => (
-              <div key={k.l} style={{ borderRadius: 10, padding: '14px 16px', background: '#0a1018', border: '1px solid rgba(255,255,255,0.04)' }}>
-                <p style={{ fontSize: 9, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, margin: '0 0 6px' }}>{k.l}</p>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>{k.v}</p>
+              <div key={k.l} style={{ borderRadius: 10, padding: '16px 18px', background: '#0a1018', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <p style={{ fontSize: 10, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, margin: '0 0 6px' }}>{k.l}</p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>{k.v}</p>
               </div>
             ))}
           </div>
@@ -329,7 +329,7 @@ export default function PlanejamentoPage() {
                   <th style={{ width: 5, padding: 0 }}/>
                   {['REDE', 'DEP', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS', 'PREJ./LUCRO', 'CUSTOS', 'SAL+BAU', 'LUCRO TOTAL', 'L. PARCIAL', ''].map((h, i) => {
                     const isNum = i >= 8 && i <= 12
-                    return <th key={i} style={{ padding: '12px 10px', textAlign: isNum ? 'right' : 'left', fontSize: 9, fontWeight: 700, color: '#475569', letterSpacing: '0.08em', whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{h}</th>
+                    return <th key={i} style={{ padding: '13px 10px', textAlign: isNum ? 'right' : 'left', fontSize: 10, fontWeight: 700, color: '#475569', letterSpacing: '0.08em', whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{h}</th>
                   })}
                 </tr>
               </thead>
@@ -359,12 +359,12 @@ export default function PlanejamentoPage() {
                       >
                         {/* Accent bar */}
                         <td style={{ width: 5, padding: 0 }}>
-                          <div style={{ width: 5, height: '100%', minHeight: 44, background: empty ? 'rgba(255,255,255,0.04)' : `linear-gradient(180deg, ${redeC}, ${redeC}88)`, borderRadius: '0 3px 3px 0' }} />
+                          <div style={{ width: 5, height: '100%', minHeight: 48, background: empty ? 'rgba(255,255,255,0.04)' : `linear-gradient(180deg, ${redeC}, ${redeC}88)`, borderRadius: '0 3px 3px 0' }} />
                         </td>
                         {/* Rede */}
                         <td style={{ padding: '6px 8px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
                           <select value={r.rede || ''} onChange={e => updateField(r.id, 'rede', e.target.value)}
-                            style={{ background: 'transparent', border: 'none', color: redeC, fontSize: 14, fontWeight: 900, cursor: 'pointer', outline: 'none', width: '100%', padding: '4px 2px', letterSpacing: '0.03em' }}>
+                            style={{ background: 'transparent', border: 'none', color: redeC, fontSize: 15, fontWeight: 900, cursor: 'pointer', outline: 'none', width: '100%', padding: '6px 4px', letterSpacing: '0.03em' }}>
                             <option value="" style={{ background: '#0a1018' }}>--</option>
                             {REDES.map(rd => <option key={rd} value={rd} style={{ background: '#0a1018' }}>{rd}</option>)}
                           </select>
@@ -449,7 +449,7 @@ export default function PlanejamentoPage() {
                         </td>
                         {/* Lucro Total */}
                         <td style={{ padding: '6px 10px', minWidth: 95, textAlign: 'right' }}>
-                          <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: lf === 0 ? '#334155' : isPos ? '#22C55E' : '#EF4444' }}>
+                          <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: lf === 0 ? '#334155' : isPos ? '#22C55E' : '#EF4444' }}>
                             {lf === 0 ? '—' : `${isPos ? '+' : ''}R$ ${fmt(lf)}`}
                           </span>
                         </td>

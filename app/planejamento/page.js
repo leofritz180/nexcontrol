@@ -28,7 +28,7 @@ const STATUSES = [
 ]
 const getStatus = k => STATUSES.find(s => s.key === k) || STATUSES[0]
 
-const EMPTY_ROW = { rede: '', quantidade: 0, agente: '', apostas: '', link: '', operator_id: null, operator_name: '', status: 'pendente', concluido: false, observacao: '', prejuizo: 0, tipo_resultado: 'prejuizo', custos: 0, salario_bau: 0, lucro_final: 0, lucro_parcial: 0 }
+const EMPTY_ROW = { rede: '', quantidade: 0, agente: '', apostas: '', link: '', operator_id: null, operator_name: '', status: 'pendente', concluido: false, observacao: '', prejuizo: 0, tipo_resultado: 'prejuizo', custos: 0, salario_bau: 0, lucro_final: 0, lucro_parcial: 0, tipo_parcial: 'lucro' }
 
 function StatusIcon({ icon, size = 10, color }) {
   const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2.5, strokeLinecap: 'round' }
@@ -208,7 +208,10 @@ export default function PlanejamentoPage() {
   const totalPrej = rows.reduce((s, r) => s + Number(r.prejuizo || 0), 0)
   const totalSalBau = rows.reduce((s, r) => s + Number(r.salario_bau || 0), 0)
   const totalLucro = rows.reduce((s, r) => s + Number(r.lucro_final || 0), 0)
-  const totalLucroParcial = rows.reduce((s, r) => s + Number(r.lucro_parcial || 0), 0)
+  const totalLucroParcial = rows.reduce((s, r) => {
+    const v = Number(r.lucro_parcial || 0)
+    return s + ((r.tipo_parcial || 'lucro') === 'lucro' ? v : -v)
+  }, 0)
   const problemas = rows.filter(r => r.status === 'problema').length
 
   // Operator color map (stable per operator)
@@ -443,12 +446,23 @@ export default function PlanejamentoPage() {
                             {lf === 0 ? '—' : `${isPos ? '+' : ''}R$ ${fmt(lf)}`}
                           </span>
                         </td>
-                        {/* Lucro Parcial (manual) */}
-                        <td style={{ padding: '4px 2px', minWidth: 90 }} onClick={e => e.stopPropagation()}>
-                          {(() => { const lp = Number(r.lucro_parcial || 0); const lpPos = lp >= 0; return (
-                            <CellInput type="number" value={r.lucro_parcial} onChange={v => updateField(r.id, 'lucro_parcial', Number(v) || 0)} mono step="0.01"
-                              style={{ color: lp === 0 ? 'var(--t4)' : lpPos ? '#4ade80' : '#fca5a5', fontWeight: 700 }} />
-                          )})()}
+                        {/* Lucro Parcial (manual, toggle lucro/prejuizo) */}
+                        <td style={{ padding: '4px 2px', minWidth: 110 }} onClick={e => e.stopPropagation()}>
+                          {(() => {
+                            const isParcialLucro = (r.tipo_parcial || 'lucro') === 'lucro'
+                            const lp = Number(r.lucro_parcial || 0)
+                            const displayColor = lp === 0 ? 'var(--t4)' : isParcialLucro ? '#4ade80' : '#fca5a5'
+                            return (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <button type="button" onClick={() => updateField(r.id, 'tipo_parcial', isParcialLucro ? 'prejuizo' : 'lucro')} title={isParcialLucro ? 'Lucro (clique p/ prejuizo)' : 'Prejuizo (clique p/ lucro)'}
+                                  style={{ flexShrink: 0, width: 20, height: 20, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isParcialLucro ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.12)', transition: 'all 0.15s' }}>
+                                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={isParcialLucro ? '#22C55E' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isParcialLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
+                                </button>
+                                <CellInput type="number" value={r.lucro_parcial} onChange={v => updateField(r.id, 'lucro_parcial', Number(v) || 0)} mono step="0.01"
+                                  style={{ color: displayColor, fontWeight: 700 }} />
+                              </div>
+                            )
+                          })()}
                         </td>
                         {/* Actions */}
                         <td style={{ padding: '4px 6px', width: 32 }} onClick={e => e.stopPropagation()}>

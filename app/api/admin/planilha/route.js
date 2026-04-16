@@ -60,6 +60,7 @@ export async function POST(req) {
     lucro_final: Number(lucro.toFixed(2)),
     lucro_parcial: Number(row.lucro_parcial || 0),
     tipo_resultado: row.tipo_resultado || 'prejuizo',
+    tipo_parcial: row.tipo_parcial || 'lucro',
     sort_order: row.sort_order ?? 0,
     updated_at: new Date().toISOString(),
   }
@@ -72,6 +73,7 @@ export async function POST(req) {
       delete payload.status
       delete payload.lucro_parcial
       delete payload.tipo_resultado
+      delete payload.tipo_parcial
       const r2 = await sb().from('admin_planilha').update(payload).eq('id', row.id).eq('tenant_id', prof.tenant_id).select().maybeSingle()
       data = r2.data; error = r2.error
     }
@@ -86,6 +88,7 @@ export async function POST(req) {
       delete payload.status
       delete payload.lucro_parcial
       delete payload.tipo_resultado
+      delete payload.tipo_parcial
       const r2 = await sb().from('admin_planilha').insert(payload).select().maybeSingle()
       data = r2.data; error = r2.error
     }

@@ -348,17 +348,24 @@ export default function PlanejamentoPage() {
                           <CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="70 - 1,5X" style={{ color: '#22C55E', fontWeight: 600 }} />
                         </td>
                         {/* Link */}
-                        <td style={{ padding: '4px 6px', minWidth: 90, maxWidth: 160 }} onClick={e => e.stopPropagation()}>
+                        <td style={{ padding: '4px 6px', minWidth: 220 }} onClick={e => e.stopPropagation()}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis' }} />
+                            <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 11 }} />
                             {r.link && (
-                              <a href={r.link} target="_blank" rel="noopener noreferrer" title="Abrir"
-                                className="plan-link-icon"
-                                style={{ flexShrink: 0, display: 'flex', alignItems: 'center', padding: 4, borderRadius: 4, transition: 'background 0.15s' }}
-                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(59,130,246,0.12)'}
-                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                              </a>
+                              <>
+                                <button type="button" title="Ver link completo" onClick={() => alert(r.link)}
+                                  style={{ flexShrink: 0, display: 'flex', alignItems: 'center', padding: 4, borderRadius: 4, background: 'none', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                </button>
+                                <a href={r.link} target="_blank" rel="noopener noreferrer" title="Abrir link"
+                                  style={{ flexShrink: 0, display: 'flex', alignItems: 'center', padding: 4, borderRadius: 4, transition: 'background 0.15s' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(59,130,246,0.12)'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                </a>
+                              </>
                             )}
                           </div>
                         </td>

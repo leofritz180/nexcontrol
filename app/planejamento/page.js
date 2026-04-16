@@ -579,7 +579,18 @@ export default function PlanejamentoPage() {
                             <div><label style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 700 }}>LINK</label>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                 <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 11 }} />
-                                {r.link && <a href={r.link} target="_blank" rel="noopener noreferrer" style={{ padding: 2 }}><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>}
+                                {r.link && (
+                                  <button type="button" onClick={async () => {
+                                    const text = String(r.link || '').trim()
+                                    if (!text) return
+                                    try { await navigator.clipboard.writeText(text); setCopiedLink(r.id); setTimeout(() => setCopiedLink(null), 1500) } catch {}
+                                  }} style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: copiedLink === r.id ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)' }}>
+                                    {copiedLink === r.id
+                                      ? <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                      : <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                                    }
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>

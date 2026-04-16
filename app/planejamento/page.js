@@ -172,6 +172,22 @@ export default function PlanejamentoPage() {
     updateField(row.id, 'status', next)
   }
 
+  async function refreshAndSave() {
+    // Flush todos os debounces pendentes
+    Object.values(debounceRef.current).forEach(t => clearTimeout(t))
+    debounceRef.current = {}
+    setSaveStatus('saving')
+    // Salvar todas as rows que podem ter edição pendente
+    for (const row of rows) {
+      if (row.id) await saveRow(row)
+    }
+    // Refetch do banco pra garantir sincronia
+    await fetchRows(user.email)
+    setSaveStatus('saved')
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    saveTimerRef.current = setTimeout(() => setSaveStatus(null), 2500)
+  }
+
   async function addRow() {
     await saveRow({ ...EMPTY_ROW, sort_order: rows.length })
   }
@@ -242,6 +258,14 @@ export default function PlanejamentoPage() {
               <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Planejamento de metas e plataformas</p>
             </div>
           </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Botao salvar + atualizar */}
+          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={refreshAndSave}
+            disabled={saveStatus === 'saving'}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(34,197,94,0.08)', color: '#22C55E', fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Salvar e atualizar
+          </motion.button>
           {/* Indicador de salvamento */}
           <AnimatePresence>
             {saveStatus && (
@@ -259,6 +283,7 @@ export default function PlanejamentoPage() {
               </motion.div>
             )}
           </AnimatePresence>
+          </div>
         </motion.div>
 
         {/* KPIs */}

@@ -41,19 +41,29 @@ export async function POST(req) {
   const isLucro = (row.tipo_resultado || 'prejuizo') === 'lucro'
   const resultado = isLucro ? prej : -prej
   const lucro = salBau + resultado - custos
-  const status = row.status || 'pendente'
+  const rowStatus = row.status || 'pendente'
+  // Construir payload com campos explícitos (evita enviar campos desconhecidos ao Supabase)
   const payload = {
-    ...row,
     tenant_id: prof.tenant_id,
+    rede: row.rede ?? '',
+    quantidade: Number(row.quantidade || 0),
+    agente: row.agente ?? '',
+    apostas: row.apostas ?? '',
+    link: row.link ?? '',
+    operator_id: row.operator_id || null,
+    operator_name: row.operator_name ?? '',
+    concluido: rowStatus === 'concluido',
+    status: rowStatus,
+    observacao: row.observacao ?? '',
     prejuizo: prej,
     custos,
     salario_bau: salBau,
     lucro_final: Number(lucro.toFixed(2)),
-    status,
-    concluido: status === 'concluido',
+    lucro_parcial: Number(row.lucro_parcial || 0),
+    tipo_resultado: row.tipo_resultado || 'prejuizo',
+    sort_order: row.sort_order ?? 0,
     updated_at: new Date().toISOString(),
   }
-  delete payload.created_at
 
   let result
   if (row.id) {

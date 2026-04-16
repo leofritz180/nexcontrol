@@ -254,7 +254,8 @@ export default function PlanejamentoPage() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.04, ease }}>
           <div className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 18 }}>
             {[
-              { l: 'Linhas', v: totalRows, c: 'var(--t1)', sub: `${totalContas} contas` },
+              { l: 'Linhas', v: totalRows, c: 'var(--t1)' },
+              { l: 'Depositantes', v: totalContas, c: '#60A5FA', sub: 'Total de contas' },
               { l: 'Concluido', v: `${pctDone}%`, c: '#22C55E', sub: `${done}/${totalRows}` },
               { l: 'Com prejuizo', v: withPrej, c: '#EF4444', sub: `R$ ${fmt(totalPrej)}` },
               { l: 'Problemas', v: problemas, c: problemas > 0 ? '#EF4444' : '#64748B', sub: problemas > 0 ? 'Atencao!' : 'Nenhum' },
@@ -294,7 +295,7 @@ export default function PlanejamentoPage() {
               <thead>
                 <tr style={{ background: 'rgba(229,57,53,0.04)' }}>
                   <th style={{ width: 5, padding: 0 }}/>
-                  {['REDE', 'QTD', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS/FALTA', 'PREJ./LUCRO', 'CUSTOS', 'SAL+BAU', 'LUCRO TOTAL', 'LUCRO PARCIAL', ''].map((h, i) => (
+                  {['REDE', 'DEP', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS/FALTA', 'PREJ./LUCRO', 'CUSTOS', 'SAL+BAU', 'LUCRO TOTAL', 'LUCRO PARCIAL', ''].map((h, i) => (
                     <th key={i} style={{ padding: '11px 8px', textAlign: 'left', fontSize: 9, fontWeight: 700, color: '#64748B', letterSpacing: '0.08em', whiteSpace: 'nowrap', borderBottom: '2px solid rgba(229,57,53,0.2)' }}>{h}</th>
                   ))}
                 </tr>

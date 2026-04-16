@@ -39,6 +39,7 @@ export async function POST(req) {
   const custos = Number(row.custos || 0)
   const salBau = Number(row.salario_bau || 0)
   const lucro = salBau - prej - custos
+  const status = row.status || 'pendente'
   const payload = {
     ...row,
     tenant_id: prof.tenant_id,
@@ -46,6 +47,8 @@ export async function POST(req) {
     custos,
     salario_bau: salBau,
     lucro_final: Number(lucro.toFixed(2)),
+    status,
+    concluido: status === 'concluido',
     updated_at: new Date().toISOString(),
   }
   delete payload.created_at

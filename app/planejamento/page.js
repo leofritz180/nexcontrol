@@ -11,21 +11,51 @@ const ease = [0.33, 1, 0.68, 1]
 
 const REDES = ['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
 
-const EMPTY_ROW = { rede: '', quantidade: 0, agente: '', apostas: '', link: '', operator_id: null, operator_name: '', concluido: false, observacao: '', prejuizo: 0, custos: 0, salario_bau: 0, lucro_final: 0 }
+const REDE_COLORS = {
+  W1:'#e53935',WE:'#2979FF',VOY:'#ab47bc','91':'#ff9800',DZ:'#00e676',A8:'#ffeb3b',
+  OKOK:'#ff5722',ANJO:'#ec407a',XW:'#26c6da',EK:'#8d6e63',DY:'#66bb6a','777':'#ffd600',
+  '888':'#ef5350',WP:'#42a5f5',BRA:'#66bb6a',GAME:'#ab47bc',ALFA:'#29b6f6',KK:'#ffa726',
+  MK:'#9ccc65',M9:'#7e57c2',KF:'#26a69a',PU:'#ec407a',COROA:'#fdd835',MANGA:'#ff7043',
+  AA:'#5c6bc0',FP:'#78909c',DEFAULT:'#546e7a',
+}
+const getRedeColor = r => REDE_COLORS[r] || REDE_COLORS.DEFAULT
 
-function CellInput({ value, onChange, type = 'text', placeholder, mono, min, step, style: s }) {
+const STATUSES = [
+  { key: 'pendente', label: 'Pendente', color: '#F59E0B', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)', icon: 'clock' },
+  { key: 'em_andamento', label: 'Em andamento', color: '#3B82F6', bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.25)', icon: 'play' },
+  { key: 'concluido', label: 'Concluido', color: '#22C55E', bg: 'rgba(34,197,94,0.14)', border: 'rgba(34,197,94,0.25)', icon: 'check' },
+  { key: 'problema', label: 'Problema', color: '#EF4444', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.25)', icon: 'alert' },
+]
+const getStatus = k => STATUSES.find(s => s.key === k) || STATUSES[0]
+
+const EMPTY_ROW = { rede: '', quantidade: 0, agente: '', apostas: '', link: '', operator_id: null, operator_name: '', status: 'pendente', concluido: false, observacao: '', prejuizo: 0, custos: 0, salario_bau: 0, lucro_final: 0 }
+
+function StatusIcon({ icon, size = 10, color }) {
+  const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 2.5, strokeLinecap: 'round' }
+  if (icon === 'check') return <svg {...s}><polyline points="20 6 9 17 4 12"/></svg>
+  if (icon === 'play') return <svg {...s}><polygon points="5 3 19 12 5 21 5 3" fill={color} stroke="none"/></svg>
+  if (icon === 'alert') return <svg {...s}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+  return <svg {...s}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+}
+
+function CellInput({ value, onChange, type = 'text', placeholder, mono, style: s, ...rest }) {
   return (
-    <input
-      type={type} value={value ?? ''} onChange={e => onChange(type === 'number' ? e.target.value : e.target.value)}
-      placeholder={placeholder} min={min} step={step}
-      style={{
-        width: '100%', background: 'transparent', border: 'none', outline: 'none',
-        color: 'var(--t1)', fontSize: 12, fontWeight: 500, padding: '8px 10px',
-        fontFamily: mono ? 'var(--mono)' : 'inherit', ...s,
-      }}
+    <input type={type} value={value ?? ''} onChange={e => onChange(type === 'number' ? e.target.value : e.target.value)}
+      placeholder={placeholder} {...rest}
+      style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: 'var(--t1)', fontSize: 12, fontWeight: 500, padding: '8px 10px', fontFamily: mono ? 'var(--mono)' : 'inherit', ...s }}
     />
   )
 }
+
+function OperatorAvatar({ name, color }) {
+  return (
+    <div style={{ width: 22, height: 22, borderRadius: 6, background: `${color}18`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <span style={{ fontSize: 10, fontWeight: 800, color }}>{(name || '?')[0].toUpperCase()}</span>
+    </div>
+  )
+}
+
+/* ══════════════════════════════════════════════════ */
 
 export default function PlanejamentoPage() {
   const router = useRouter()
@@ -35,12 +65,14 @@ export default function PlanejamentoPage() {
   const [tenant, setTenant] = useState(null)
   const [rows, setRows] = useState([])
   const [operators, setOperators] = useState([])
-  const [editingId, setEditingId] = useState(null)
-  const [saving, setSaving] = useState(null)
   const [filter, setFilter] = useState('todos')
   const [showAdd, setShowAdd] = useState(false)
   const [newRow, setNewRow] = useState({ ...EMPTY_ROW })
+  const [expandedId, setExpandedId] = useState(null)
+  const [saving, setSaving] = useState(null)
   const debounceRef = useRef({})
+
+  const getName = op => op?.nome || op?.email?.split('@')[0] || 'Operador'
 
   const fetchRows = useCallback(async (email) => {
     const res = await fetch(`/api/admin/planilha?email=${encodeURIComponent(email)}`)
@@ -106,6 +138,13 @@ export default function PlanejamentoPage() {
     }))
   }
 
+  function cycleStatus(row) {
+    const order = ['pendente', 'em_andamento', 'concluido', 'problema']
+    const idx = order.indexOf(row.status || 'pendente')
+    const next = order[(idx + 1) % order.length]
+    updateField(row.id, 'status', next)
+  }
+
   async function addRow() {
     if (!newRow.rede) return
     const j = await saveRow({ ...newRow, sort_order: rows.length })
@@ -119,15 +158,8 @@ export default function PlanejamentoPage() {
       body: JSON.stringify({ email: user.email, id }),
     })
     setRows(prev => prev.filter(r => r.id !== id))
+    if (expandedId === id) setExpandedId(null)
   }
-
-  async function toggleConcluido(row) {
-    const updated = { ...row, concluido: !row.concluido }
-    setRows(prev => prev.map(r => r.id === row.id ? updated : r))
-    await saveRow(updated)
-  }
-
-  const getName = op => op?.nome || op?.email?.split('@')[0] || 'Operador'
 
   if (loading) return (
     <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} userId={user?.id} tenantId={profile?.tenant_id}>
@@ -139,24 +171,31 @@ export default function PlanejamentoPage() {
 
   const isRowEmpty = r => !r.rede && !r.agente && Number(r.quantidade || 0) === 0
   const filtered = filter === 'todos' ? rows
-    : filter === 'concluido' ? rows.filter(r => r.concluido)
-    : filter === 'pendente' ? rows.filter(r => !r.concluido && !isRowEmpty(r))
-    : rows.filter(r => isRowEmpty(r) && !r.concluido)
+    : filter === 'vazia' ? rows.filter(r => isRowEmpty(r))
+    : rows.filter(r => (r.status || 'pendente') === filter)
 
-  // Totalizadores
+  // KPIs
+  const totalRows = rows.length
+  const totalContas = rows.reduce((s, r) => s + Number(r.quantidade || 0), 0)
+  const done = rows.filter(r => r.status === 'concluido').length
+  const pctDone = totalRows > 0 ? Math.round((done / totalRows) * 100) : 0
+  const withPrej = rows.filter(r => Number(r.prejuizo || 0) > 0).length
   const totalPrej = rows.reduce((s, r) => s + Number(r.prejuizo || 0), 0)
-  const totalCustos = rows.reduce((s, r) => s + Number(r.custos || 0), 0)
   const totalSalBau = rows.reduce((s, r) => s + Number(r.salario_bau || 0), 0)
   const totalLucro = rows.reduce((s, r) => s + Number(r.lucro_final || 0), 0)
-  const totalContas = rows.reduce((s, r) => s + Number(r.quantidade || 0), 0)
-  const concluidas = rows.filter(r => r.concluido).length
+  const problemas = rows.filter(r => r.status === 'problema').length
+
+  // Operator color map (stable per operator)
+  const opColors = ['#3B82F6','#a855f7','#ec4899','#06b6d4','#f97316','#84cc16','#f43f5e','#14b8a6']
+  const opColorMap = {}
+  operators.forEach((op, i) => { opColorMap[op.id] = opColors[i % opColors.length] })
 
   return (
     <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} userId={user?.id} tenantId={profile?.tenant_id}>
       <main style={{ minHeight: '100vh', padding: '32px 24px 80px', maxWidth: 1600, margin: '0 auto' }}>
 
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14, marginBottom: 24 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14, marginBottom: 22 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.6" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -166,54 +205,58 @@ export default function PlanejamentoPage() {
               <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Planejamento de metas e plataformas</p>
             </div>
           </div>
-          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => setShowAdd(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#e53935', color: '#fff', fontSize: 13, fontWeight: 700 }}>
+          <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={() => setShowAdd(true)}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#e53935', color: '#fff', fontSize: 13, fontWeight: 700, boxShadow: '0 4px 16px rgba(229,57,53,0.25)' }}>
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Nova linha
           </motion.button>
         </motion.div>
 
-        {/* KPI row */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05, ease }}>
-          <div className="g-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10, marginBottom: 20 }}>
+        {/* KPIs */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.04, ease }}>
+          <div className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 18 }}>
             {[
-              { l: 'Linhas', v: rows.length, c: 'var(--t1)' },
-              { l: 'Contas total', v: totalContas, c: '#60A5FA' },
-              { l: 'Concluidas', v: `${concluidas}/${rows.length}`, c: '#22C55E' },
-              { l: 'Prejuizo', v: `R$ ${fmt(totalPrej)}`, c: '#EF4444' },
+              { l: 'Linhas', v: totalRows, c: 'var(--t1)', sub: `${totalContas} contas` },
+              { l: 'Concluido', v: `${pctDone}%`, c: '#22C55E', sub: `${done}/${totalRows}` },
+              { l: 'Com prejuizo', v: withPrej, c: '#EF4444', sub: `R$ ${fmt(totalPrej)}` },
+              { l: 'Problemas', v: problemas, c: problemas > 0 ? '#EF4444' : '#64748B', sub: problemas > 0 ? 'Atencao!' : 'Nenhum' },
               { l: 'Sal. + Bau', v: `R$ ${fmt(totalSalBau)}`, c: '#a855f7' },
               { l: 'Lucro final', v: `${totalLucro >= 0 ? '+' : ''}R$ ${fmt(totalLucro)}`, c: totalLucro >= 0 ? '#22C55E' : '#EF4444' },
             ].map((k, i) => (
-              <div key={k.l} style={{ borderRadius: 12, padding: '14px 16px', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <motion.div key={k.l} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.04 + i * 0.03, ease }}
+                style={{ borderRadius: 12, padding: '14px 16px', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <p style={{ fontSize: 9, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, margin: '0 0 5px' }}>{k.l}</p>
                 <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>{k.v}</p>
-              </div>
+                {k.sub && <p style={{ fontSize: 10, color: 'var(--t4)', margin: '4px 0 0' }}>{k.sub}</p>}
+              </motion.div>
             ))}
           </div>
         </motion.div>
 
         {/* Filters */}
-        <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
-          {[['todos', 'Todos'], ['pendente', 'Pendentes'], ['concluido', 'Concluidos'], ['vazia', 'Vazias']].map(([k, l]) => (
+        <div style={{ display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' }}>
+          {[['todos', 'Todos', null], ...STATUSES.map(s => [s.key, s.label, s.color]), ['vazia', 'Vazias', '#64748B']].map(([k, l, c]) => (
             <button key={k} onClick={() => setFilter(k)} style={{
-              padding: '6px 16px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer',
-              background: filter === k ? 'rgba(229,57,53,0.12)' : 'rgba(255,255,255,0.03)',
-              color: filter === k ? '#e53935' : 'var(--t3)',
-              border: `1px solid ${filter === k ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.06)'}`,
-              transition: 'all 0.2s',
+              padding: '5px 14px', borderRadius: 7, fontSize: 10, fontWeight: 700, cursor: 'pointer',
+              background: filter === k ? `${c || '#e53935'}18` : 'rgba(255,255,255,0.02)',
+              color: filter === k ? (c || '#e53935') : 'var(--t3)',
+              border: `1px solid ${filter === k ? `${c || '#e53935'}40` : 'rgba(255,255,255,0.05)'}`,
+              transition: 'all 0.15s', letterSpacing: '0.03em',
             }}>{l}</button>
           ))}
         </div>
 
-        {/* Table */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1, ease }}
-          style={{ borderRadius: 16, overflow: 'hidden', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
+        {/* ═══ TABLE (Desktop) ═══ */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08, ease }}
+          className="plan-table-wrap"
+          style={{ borderRadius: 16, overflow: 'hidden', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 4px 24px rgba(0,0,0,0.35)' }}>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1200 }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  {['', 'REDE', 'QUANT.', 'AGENTE/BLOG', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS/FALTA', 'PREJUIZO', 'CUSTOS', 'SAL.+BAU', 'LUCRO', ''].map((h, i) => (
-                    <th key={i} style={{ padding: '12px 10px', textAlign: 'left', fontSize: 9, fontWeight: 700, color: '#64748B', letterSpacing: '0.06em', whiteSpace: 'nowrap', borderBottom: '2px solid rgba(229,57,53,0.15)' }}>{h}</th>
+                <tr style={{ background: 'rgba(229,57,53,0.04)' }}>
+                  <th style={{ width: 5, padding: 0 }}/>
+                  {['REDE', 'QTD', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS/FALTA', 'PREJUIZO', 'CUSTOS', 'SAL+BAU', 'LUCRO', ''].map((h, i) => (
+                    <th key={i} style={{ padding: '11px 8px', textAlign: 'left', fontSize: 9, fontWeight: 700, color: '#64748B', letterSpacing: '0.08em', whiteSpace: 'nowrap', borderBottom: '2px solid rgba(229,57,53,0.2)' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -222,138 +265,125 @@ export default function PlanejamentoPage() {
                   {filtered.map((r, i) => {
                     const lf = Number(r.lucro_final || 0)
                     const isPos = lf >= 0
-                    // Estado visual: vazia (sem rede preenchida), pendente (tem rede, nao concluido), concluida
-                    const isEmpty = !r.rede && !r.agente && Number(r.quantidade || 0) === 0
-                    const isPending = !isEmpty && !r.concluido
-                    const isDone = !!r.concluido
-                    const hasHighLoss = lf < -100 && !isDone
-
-                    const rowBg = isDone
-                      ? 'rgba(34,197,94,0.05)'
-                      : hasHighLoss
-                        ? 'rgba(239,68,68,0.04)'
-                        : isPending
-                          ? 'rgba(245,158,11,0.03)'
-                          : 'rgba(255,255,255,0.01)'
-                    const rowBorder = isDone
-                      ? 'rgba(34,197,94,0.1)'
-                      : isPending
-                        ? 'rgba(245,158,11,0.06)'
-                        : 'rgba(255,255,255,0.03)'
-                    const accentColor = isDone ? '#22C55E' : isPending ? '#F59E0B' : hasHighLoss ? '#EF4444' : 'rgba(255,255,255,0.06)'
+                    const empty = isRowEmpty(r)
+                    const st = getStatus(r.status)
+                    const redeC = getRedeColor(r.rede)
+                    const isExpanded = expandedId === r.id
+                    const stripe = i % 2 === 1 ? 'rgba(255,255,255,0.012)' : 'transparent'
 
                     return (
                       <motion.tr key={r.id} layout
-                        initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
+                        initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, height: 0, x: 12 }}
                         transition={{ duration: 0.25, ease }}
+                        className="plan-row"
                         style={{
-                          borderBottom: `1px solid ${rowBorder}`,
-                          background: rowBg,
-                          opacity: isDone ? 0.6 : isEmpty ? 0.45 : 1,
-                          transition: 'background 0.2s, opacity 0.2s',
+                          borderBottom: `1px solid ${st.key === 'problema' ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.04)'}`,
+                          background: st.key === 'concluido' ? 'rgba(34,197,94,0.04)' : st.key === 'problema' ? 'rgba(239,68,68,0.04)' : stripe,
+                          opacity: st.key === 'concluido' ? 0.55 : empty ? 0.4 : 1,
+                          cursor: 'pointer', transition: 'all 0.2s',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = isDone ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.03)' }}
-                        onMouseLeave={e => { e.currentTarget.style.opacity = isDone ? '0.6' : isEmpty ? '0.45' : '1'; e.currentTarget.style.background = rowBg }}
+                        onClick={() => setExpandedId(isExpanded ? null : r.id)}
                       >
-                        {/* Barra lateral de status */}
-                        <td style={{ width: 4, padding: 0 }}>
-                          <div style={{ width: 4, height: '100%', minHeight: 42, background: accentColor, borderRadius: '0 2px 2px 0' }} />
+                        {/* Accent bar */}
+                        <td style={{ width: 5, padding: 0 }}>
+                          <div style={{ width: 5, height: '100%', minHeight: 44, background: empty ? 'rgba(255,255,255,0.04)' : `linear-gradient(180deg, ${redeC}, ${redeC}88)`, borderRadius: '0 3px 3px 0' }} />
                         </td>
                         {/* Rede */}
-                        <td style={{ padding: '4px 6px', minWidth: 80 }}>
+                        <td style={{ padding: '4px 6px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
                           <select value={r.rede || ''} onChange={e => updateField(r.id, 'rede', e.target.value)}
-                            style={{ background: 'transparent', border: 'none', color: '#e53935', fontSize: 12, fontWeight: 800, cursor: 'pointer', outline: 'none', width: '100%', padding: '6px 4px' }}>
-                            <option value="" style={{ background: '#0c1424' }}>—</option>
+                            style={{ background: 'transparent', border: 'none', color: redeC, fontSize: 13, fontWeight: 900, cursor: 'pointer', outline: 'none', width: '100%', padding: '6px 4px', letterSpacing: '0.02em' }}>
+                            <option value="" style={{ background: '#0c1424' }}>--</option>
                             {REDES.map(rd => <option key={rd} value={rd} style={{ background: '#0c1424' }}>{rd}</option>)}
                           </select>
                         </td>
-                        {/* Quant */}
-                        <td style={{ padding: '4px 2px', minWidth: 60 }}>
+                        {/* Qtd */}
+                        <td style={{ padding: '4px 2px', minWidth: 55 }} onClick={e => e.stopPropagation()}>
                           <CellInput type="number" value={r.quantidade} onChange={v => updateField(r.id, 'quantidade', Number(v) || 0)} mono min="0" step="1" />
                         </td>
                         {/* Agente */}
-                        <td style={{ padding: '4px 2px', minWidth: 100 }}>
+                        <td style={{ padding: '4px 2px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
                           <CellInput value={r.agente} onChange={v => updateField(r.id, 'agente', v)} placeholder="Nome..." style={{ fontWeight: 700, color: '#F59E0B' }} />
                         </td>
                         {/* Apostas */}
-                        <td style={{ padding: '4px 2px', minWidth: 80 }}>
-                          <CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="Ex: 70 - 1,5X" style={{ color: '#22C55E', fontWeight: 600 }} />
+                        <td style={{ padding: '4px 2px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
+                          <CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="70 - 1,5X" style={{ color: '#22C55E', fontWeight: 600 }} />
                         </td>
                         {/* Link */}
-                        <td style={{ padding: '4px 6px', minWidth: 100, maxWidth: 180 }}>
+                        <td style={{ padding: '4px 6px', minWidth: 90, maxWidth: 160 }} onClick={e => e.stopPropagation()}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis' }} />
                             {r.link && (
-                              <a href={r.link} target="_blank" rel="noopener noreferrer" title="Abrir link" style={{ flexShrink: 0, display: 'flex', alignItems: 'center', padding: 4 }}>
+                              <a href={r.link} target="_blank" rel="noopener noreferrer" title="Abrir"
+                                className="plan-link-icon"
+                                style={{ flexShrink: 0, display: 'flex', alignItems: 'center', padding: 4, borderRadius: 4, transition: 'background 0.15s' }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(59,130,246,0.12)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                                 <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                               </a>
                             )}
                           </div>
                         </td>
                         {/* Operador */}
-                        <td style={{ padding: '4px 6px', minWidth: 120 }}>
-                          <select value={r.operator_id || ''} onChange={e => {
-                            const op = operators.find(o => o.id === e.target.value)
-                            updateField(r.id, 'operator_id', e.target.value || null)
-                            if (op) updateField(r.id, 'operator_name', getName(op))
-                            else updateField(r.id, 'operator_name', '')
-                          }} style={{ background: 'transparent', border: 'none', color: r.operator_id ? '#60A5FA' : '#64748B', fontSize: 11, fontWeight: 600, cursor: 'pointer', outline: 'none', width: '100%', padding: '6px 4px' }}>
-                            <option value="" style={{ background: '#0c1424' }}>Disponivel</option>
-                            {operators.map(op => <option key={op.id} value={op.id} style={{ background: '#0c1424' }}>{getName(op)}</option>)}
-                          </select>
+                        <td style={{ padding: '4px 6px', minWidth: 130 }} onClick={e => e.stopPropagation()}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {r.operator_id && <OperatorAvatar name={r.operator_name || '?'} color={opColorMap[r.operator_id] || '#3B82F6'} />}
+                            <select value={r.operator_id || ''} onChange={e => {
+                              const op = operators.find(o => o.id === e.target.value)
+                              updateField(r.id, 'operator_id', e.target.value || null)
+                              updateField(r.id, 'operator_name', op ? getName(op) : '')
+                            }} style={{ background: 'transparent', border: 'none', color: r.operator_id ? (opColorMap[r.operator_id] || '#60A5FA') : '#64748B', fontSize: 11, fontWeight: 600, cursor: 'pointer', outline: 'none', flex: 1, padding: '4px 2px' }}>
+                              <option value="" style={{ background: '#0c1424' }}>Disponivel</option>
+                              {operators.map(op => <option key={op.id} value={op.id} style={{ background: '#0c1424' }}>{getName(op)}</option>)}
+                            </select>
+                          </div>
                         </td>
                         {/* Status */}
-                        <td style={{ padding: '4px 8px', minWidth: 100 }}>
-                          <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={() => toggleConcluido(r)}
+                        <td style={{ padding: '4px 6px', minWidth: 110 }} onClick={e => e.stopPropagation()}>
+                          <motion.button whileTap={{ scale: 0.9 }} onClick={() => cycleStatus(r)}
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 5,
-                              padding: '5px 12px', borderRadius: 6, cursor: 'pointer',
-                              fontSize: 10, fontWeight: 700, letterSpacing: '0.04em',
-                              background: isDone ? 'rgba(34,197,94,0.14)' : isEmpty ? 'rgba(100,116,139,0.08)' : 'rgba(245,158,11,0.12)',
-                              color: isDone ? '#22C55E' : isEmpty ? '#64748B' : '#F59E0B',
-                              border: `1px solid ${isDone ? 'rgba(34,197,94,0.25)' : isEmpty ? 'rgba(100,116,139,0.15)' : 'rgba(245,158,11,0.22)'}`,
-                              transition: 'all 0.15s',
+                              padding: '4px 10px', borderRadius: 6, cursor: 'pointer',
+                              fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
+                              background: st.bg, color: st.color, border: `1px solid ${st.border}`,
+                              transition: 'all 0.15s', whiteSpace: 'nowrap',
+                              animation: st.key === 'em_andamento' ? 'plan-pulse 2.5s ease-in-out infinite' : 'none',
                             }}>
-                            {isDone ? (
-                              <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>CONCLUIDO</>
-                            ) : isEmpty ? (
-                              'VAZIA'
-                            ) : (
-                              <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>PENDENTE</>
-                            )}
+                            <StatusIcon icon={st.icon} size={10} color={st.color} />
+                            {st.label.toUpperCase()}
                           </motion.button>
                         </td>
                         {/* Obs */}
-                        <td style={{ padding: '4px 2px', minWidth: 120 }}>
+                        <td style={{ padding: '4px 2px', minWidth: 110 }} onClick={e => e.stopPropagation()}>
                           <CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="Obs..." style={{ fontSize: 11, color: 'var(--t3)' }} />
                         </td>
                         {/* Prejuizo */}
-                        <td style={{ padding: '4px 2px', minWidth: 80 }}>
-                          <CellInput type="number" value={r.prejuizo} onChange={v => updateField(r.id, 'prejuizo', Number(v) || 0)} mono step="0.01" style={{ color: '#EF4444' }} />
+                        <td style={{ padding: '4px 2px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
+                          <CellInput type="number" value={r.prejuizo} onChange={v => updateField(r.id, 'prejuizo', Number(v) || 0)} mono step="0.01"
+                            style={{ color: Number(r.prejuizo || 0) > 0 ? '#EF4444' : 'var(--t4)', fontWeight: Number(r.prejuizo || 0) > 0 ? 700 : 400 }} />
                         </td>
                         {/* Custos */}
-                        <td style={{ padding: '4px 2px', minWidth: 80 }}>
+                        <td style={{ padding: '4px 2px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
                           <CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ color: '#F59E0B' }} />
                         </td>
                         {/* Sal+Bau */}
-                        <td style={{ padding: '4px 2px', minWidth: 80 }}>
+                        <td style={{ padding: '4px 2px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
                           <CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ color: '#a855f7' }} />
                         </td>
                         {/* Lucro */}
-                        <td style={{ padding: '6px 10px', minWidth: 90 }}>
+                        <td style={{ padding: '6px 8px', minWidth: 90 }}>
                           <span style={{
                             fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800,
-                            color: isPos ? '#22C55E' : '#EF4444',
-                            textShadow: Math.abs(lf) > 100 ? `0 0 8px ${isPos ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}` : 'none',
+                            color: lf === 0 ? 'var(--t4)' : isPos ? '#22C55E' : '#EF4444',
+                            textShadow: Math.abs(lf) > 100 ? `0 0 10px ${isPos ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}` : 'none',
                           }}>
-                            {isPos ? '+' : ''}R$ {fmt(lf)}
+                            {lf === 0 ? '—' : `${isPos ? '+' : ''}R$ ${fmt(lf)}`}
                           </span>
                         </td>
-                        {/* Delete */}
-                        <td style={{ padding: '4px 8px', width: 36 }}>
+                        {/* Actions */}
+                        <td style={{ padding: '4px 6px', width: 32 }} onClick={e => e.stopPropagation()}>
                           <button onClick={() => deleteRow(r.id)} title="Excluir"
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, opacity: 0.3, transition: 'opacity 0.15s' }}
-                            onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.3'}>
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, opacity: 0.25, transition: 'opacity 0.15s' }}
+                            onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.25'}>
                             <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
                           </button>
                         </td>
@@ -368,26 +398,100 @@ export default function PlanejamentoPage() {
           {filtered.length === 0 && (
             <div style={{ padding: '48px 24px', textAlign: 'center' }}>
               <p style={{ fontSize: 13, color: 'var(--t4)', margin: 0 }}>
-                {filter !== 'todos' ? 'Nenhuma linha nesse filtro' : 'Nenhuma linha adicionada — clique "Nova linha" para comecar'}
+                {filter !== 'todos' ? 'Nenhuma linha nesse filtro' : 'Nenhuma linha — clique "Nova linha"'}
               </p>
             </div>
           )}
         </motion.div>
 
-        {/* ── Add Row Modal ── */}
+        {/* ═══ MOBILE CARDS ═══ */}
+        <div className="plan-mobile-cards">
+          {filtered.map((r, i) => {
+            const lf = Number(r.lucro_final || 0)
+            const st = getStatus(r.status)
+            const redeC = getRedeColor(r.rede)
+            const isExpanded = expandedId === r.id
+            return (
+              <motion.div key={r.id} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: i * 0.02, ease }}
+                onClick={() => setExpandedId(isExpanded ? null : r.id)}
+                style={{
+                  borderRadius: 14, overflow: 'hidden', marginBottom: 10,
+                  background: 'var(--surface)', border: `1px solid ${st.key === 'problema' ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.05)'}`,
+                  opacity: st.key === 'concluido' ? 0.6 : isRowEmpty(r) ? 0.4 : 1,
+                }}>
+                {/* Color top bar */}
+                <div style={{ height: 3, background: r.rede ? `linear-gradient(90deg, ${redeC}, ${redeC}66)` : 'rgba(255,255,255,0.04)' }} />
+                <div style={{ padding: '14px 16px' }}>
+                  {/* Top line */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 14, fontWeight: 900, color: redeC }}>{r.rede || '--'}</span>
+                      <span style={{ fontSize: 11, color: 'var(--t3)' }}>{r.quantidade || 0} contas</span>
+                    </div>
+                    <button onClick={e => { e.stopPropagation(); cycleStatus(r) }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, fontSize: 9, fontWeight: 700, background: st.bg, color: st.color, border: `1px solid ${st.border}`, cursor: 'pointer' }}>
+                      <StatusIcon icon={st.icon} size={9} color={st.color} />
+                      {st.label.toUpperCase()}
+                    </button>
+                  </div>
+                  {/* Info */}
+                  {(r.agente || r.operator_name) && (
+                    <div style={{ display: 'flex', gap: 12, marginBottom: 6, fontSize: 11 }}>
+                      {r.agente && <span style={{ color: '#F59E0B', fontWeight: 600 }}>{r.agente}</span>}
+                      {r.operator_name && <span style={{ color: '#60A5FA' }}>{r.operator_name}</span>}
+                    </div>
+                  )}
+                  {/* Lucro */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 800, color: lf === 0 ? 'var(--t4)' : lf >= 0 ? '#22C55E' : '#EF4444' }}>
+                      {lf === 0 ? 'R$ 0,00' : `${lf >= 0 ? '+' : ''}R$ ${fmt(lf)}`}
+                    </span>
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth="2" strokeLinecap="round" style={{ transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                  {/* Expanded */}
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
+                        style={{ overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
+                        <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                            <div><label style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 700 }}>APOSTAS</label><CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="70 - 1,5X" style={{ color: '#22C55E', fontWeight: 600 }} /></div>
+                            <div><label style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 700 }}>LINK</label>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 11 }} />
+                                {r.link && <a href={r.link} target="_blank" rel="noopener noreferrer" style={{ padding: 2 }}><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>}
+                              </div>
+                            </div>
+                          </div>
+                          <div><label style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 700 }}>OBS / FALTA</label><CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="Observacao..." /></div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                            <div><label style={{ fontSize: 9, color: '#EF4444', fontWeight: 700 }}>PREJUIZO</label><CellInput type="number" value={r.prejuizo} onChange={v => updateField(r.id, 'prejuizo', Number(v) || 0)} mono step="0.01" style={{ color: '#EF4444' }} /></div>
+                            <div><label style={{ fontSize: 9, color: '#F59E0B', fontWeight: 700 }}>CUSTOS</label><CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ color: '#F59E0B' }} /></div>
+                            <div><label style={{ fontSize: 9, color: '#a855f7', fontWeight: 700 }}>SAL+BAU</label><CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ color: '#a855f7' }} /></div>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 4 }}>
+                            <button onClick={() => deleteRow(r.id)} style={{ fontSize: 11, color: '#EF4444', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontWeight: 600 }}>Excluir</button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+
+        {/* ═══ ADD MODAL ═══ */}
         <AnimatePresence>
           {showAdd && (
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(4,8,16,0.92)', backdropFilter: 'blur(16px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
-              onClick={() => setShowAdd(false)}
-            >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 10 }}
-                transition={{ duration: 0.28, ease }}
-                onClick={e => e.stopPropagation()}
-                style={{ width: '100%', maxWidth: 560, background: 'var(--surface)', borderRadius: 20, border: '1px solid rgba(229,57,53,0.2)', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', overflow: 'hidden' }}
-              >
+              onClick={() => setShowAdd(false)}>
+              <motion.div initial={{ opacity: 0, scale: 0.96, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.28, ease }} onClick={e => e.stopPropagation()}
+                style={{ width: '100%', maxWidth: 560, background: 'var(--surface)', borderRadius: 20, border: '1px solid rgba(229,57,53,0.2)', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', overflow: 'hidden' }}>
                 <div style={{ padding: '22px 26px', borderBottom: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -420,7 +524,7 @@ export default function PlanejamentoPage() {
                   <div className="g-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     <div>
                       <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Apostas</label>
-                      <input className="input" value={newRow.apostas} onChange={e => setNewRow(p => ({ ...p, apostas: e.target.value }))} placeholder="Ex: 70 - 1,5X" />
+                      <input className="input" value={newRow.apostas} onChange={e => setNewRow(p => ({ ...p, apostas: e.target.value }))} placeholder="70 - 1,5X" />
                     </div>
                     <div>
                       <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Operador</label>
@@ -434,7 +538,7 @@ export default function PlanejamentoPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Link da plataforma</label>
+                    <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>Link</label>
                     <input className="input" value={newRow.link} onChange={e => setNewRow(p => ({ ...p, link: e.target.value }))} placeholder="https://..." />
                   </div>
                   <div>
@@ -454,6 +558,16 @@ export default function PlanejamentoPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <style>{`
+          .plan-mobile-cards { display: none; }
+          .plan-row:hover { opacity: 1 !important; transform: scale(1.004); box-shadow: 0 0 20px rgba(255,255,255,0.02); z-index: 2; position: relative; }
+          @keyframes plan-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); } 50% { box-shadow: 0 0 0 4px rgba(59,130,246,0.12); } }
+          @media (max-width: 768px) {
+            .plan-table-wrap { display: none !important; }
+            .plan-mobile-cards { display: block; }
+          }
+        `}</style>
       </main>
     </AppLayout>
   )

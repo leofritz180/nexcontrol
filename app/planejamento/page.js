@@ -370,15 +370,20 @@ export default function PlanejamentoPage() {
                           </div>
                         </td>
                         {/* Operador */}
-                        <td style={{ padding: '4px 6px', minWidth: 130 }} onClick={e => e.stopPropagation()}>
+                        <td style={{ padding: '4px 6px', minWidth: 140 }} onClick={e => e.stopPropagation()}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            {r.operator_id && <OperatorAvatar name={r.operator_name || '?'} color={opColorMap[r.operator_id] || '#3B82F6'} />}
+                            {r.operator_id
+                              ? <OperatorAvatar name={r.operator_name || '?'} color={opColorMap[r.operator_id] || '#3B82F6'} />
+                              : <div style={{ width: 22, height: 22, borderRadius: 6, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, animation: 'plan-pulse 2.5s ease-in-out infinite' }}>
+                                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                </div>
+                            }
                             <select value={r.operator_id || ''} onChange={e => {
                               const op = operators.find(o => o.id === e.target.value)
                               updateField(r.id, 'operator_id', e.target.value || null)
                               updateField(r.id, 'operator_name', op ? getName(op) : '')
-                            }} style={{ background: 'transparent', border: 'none', color: r.operator_id ? (opColorMap[r.operator_id] || '#60A5FA') : '#64748B', fontSize: 11, fontWeight: 600, cursor: 'pointer', outline: 'none', flex: 1, padding: '4px 2px' }}>
-                              <option value="" style={{ background: '#0c1424' }}>Disponivel</option>
+                            }} style={{ background: 'transparent', border: 'none', color: r.operator_id ? (opColorMap[r.operator_id] || '#60A5FA') : '#22C55E', fontSize: 11, fontWeight: r.operator_id ? 600 : 700, cursor: 'pointer', outline: 'none', flex: 1, padding: '4px 2px' }}>
+                              <option value="" style={{ background: '#0c1424', color: '#22C55E' }}>DISPONIVEL</option>
                               {operators.map(op => <option key={op.id} value={op.id} style={{ background: '#0c1424' }}>{getName(op)}</option>)}
                             </select>
                           </div>

@@ -39,8 +39,24 @@ function StatusIcon({ icon, size = 10, color }) {
 }
 
 function CellInput({ value, onChange, type = 'text', placeholder, mono, style: s, ...rest }) {
+  function handleKey(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      const td = e.target.closest('td')
+      if (!td) return
+      const tr = td.closest('tr')
+      if (!tr) return
+      const cellIdx = Array.from(tr.cells).indexOf(td)
+      const nextRow = tr.nextElementSibling
+      if (nextRow && nextRow.cells[cellIdx]) {
+        const inp = nextRow.cells[cellIdx].querySelector('input,select')
+        if (inp) inp.focus()
+      }
+    }
+  }
   return (
     <input type={type} value={value ?? ''} onChange={e => onChange(type === 'number' ? e.target.value : e.target.value)}
+      onKeyDown={handleKey}
       placeholder={placeholder} {...rest}
       style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', color: 'var(--t1)', fontSize: 12, fontWeight: 500, padding: '8px 10px', fontFamily: mono ? 'var(--mono)' : 'inherit', ...s }}
     />

@@ -22,7 +22,6 @@ export async function GET(req) {
   const { data, error } = await sb()
     .from('admin_planilha').select('*')
     .eq('tenant_id', prof.tenant_id)
-    .order('sort_order', { ascending: true })
     .order('created_at', { ascending: true })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ rows: data || [] })

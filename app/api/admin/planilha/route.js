@@ -67,14 +67,29 @@ export async function POST(req) {
 
   let result
   if (row.id) {
-    const { data, error } = await sb().from('admin_planilha')
+    let { data, error } = await sb().from('admin_planilha')
       .update(payload).eq('id', row.id).eq('tenant_id', prof.tenant_id).select().maybeSingle()
+    if (error && (error.message || '').includes('column')) {
+      delete payload.status
+      delete payload.lucro_parcial
+      delete payload.tipo_resultado
+      const r2 = await sb().from('admin_planilha').update(payload).eq('id', row.id).eq('tenant_id', prof.tenant_id).select().maybeSingle()
+      data = r2.data; error = r2.error
+    }
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     result = data
   } else {
     payload.tenant_id = prof.tenant_id
-    const { data, error } = await sb().from('admin_planilha')
+    let { data, error } = await sb().from('admin_planilha')
       .insert(payload).select().maybeSingle()
+    // Fallback: se falhar por colunas novas que nao existem no banco, tenta sem elas
+    if (error && (error.message || '').includes('column')) {
+      delete payload.status
+      delete payload.lucro_parcial
+      delete payload.tipo_resultado
+      const r2 = await sb().from('admin_planilha').insert(payload).select().maybeSingle()
+      data = r2.data; error = r2.error
+    }
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     result = data
   }

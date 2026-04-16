@@ -85,6 +85,7 @@ export default function PlanejamentoPage() {
   const [_showAdd, _setShowAdd] = useState(false) // unused — kept for compat
   const [expandedId, setExpandedId] = useState(null)
   const [saving, setSaving] = useState(null)
+  const [copiedLink, setCopiedLink] = useState(null)
   const [saveStatus, setSaveStatus] = useState(null) // 'saving' | 'saved' | 'error'
   const saveTimerRef = useRef(null)
   const debounceRef = useRef({})
@@ -383,7 +384,24 @@ export default function PlanejamentoPage() {
                         </td>
                         {/* Link */}
                         <td style={{ padding: '6px 8px', minWidth: 320 }} onClick={e => e.stopPropagation()}>
-                          <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 12, color: r.link ? '#60A5FA' : '#334155' }} />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                            <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 12, color: r.link ? '#60A5FA' : '#334155' }} />
+                            {r.link && (
+                              <button type="button" title="Copiar link" onClick={async () => {
+                                const text = String(r.link || '').trim()
+                                if (!text) return
+                                try { await navigator.clipboard.writeText(text); setCopiedLink(r.id); setTimeout(() => setCopiedLink(null), 1500) } catch {}
+                              }}
+                                style={{ flexShrink: 0, width: 24, height: 24, borderRadius: 5, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: copiedLink === r.id ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.04)', transition: 'all 0.15s' }}
+                                onMouseEnter={e => { if (copiedLink !== r.id) e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
+                                onMouseLeave={e => { if (copiedLink !== r.id) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}>
+                                {copiedLink === r.id
+                                  ? <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                  : <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                                }
+                              </button>
+                            )}
+                          </div>
                         </td>
                         {/* Operador */}
                         <td style={{ padding: '4px 6px', minWidth: 140 }} onClick={e => e.stopPropagation()}>

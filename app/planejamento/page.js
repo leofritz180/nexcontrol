@@ -195,9 +195,15 @@ export default function PlanejamentoPage() {
   )
 
   const isRowEmpty = r => !r.rede && !r.agente && Number(r.quantidade || 0) === 0
-  const filtered = filter === 'todos' ? rows
-    : filter === 'vazia' ? rows.filter(r => isRowEmpty(r))
-    : rows.filter(r => (r.status || 'pendente') === filter)
+
+  // Ordenacao automatica por estado: problema > em_andamento > pendente > vazia > concluido
+  const statusOrder = { problema: 0, em_andamento: 1, pendente: 2, concluido: 4 }
+  const getRowOrder = r => isRowEmpty(r) ? 3 : (statusOrder[r.status || 'pendente'] ?? 2)
+  const sorted = [...rows].sort((a, b) => getRowOrder(a) - getRowOrder(b))
+
+  const filtered = filter === 'todos' ? sorted
+    : filter === 'vazia' ? sorted.filter(r => isRowEmpty(r))
+    : sorted.filter(r => (r.status || 'pendente') === filter)
 
   // KPIs
   const totalRows = rows.length
@@ -257,21 +263,17 @@ export default function PlanejamentoPage() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.04, ease }}>
           <div className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 18 }}>
             {[
-              { l: 'Linhas', v: totalRows, c: 'var(--t1)' },
-              { l: 'Depositantes', v: totalContas, c: '#60A5FA', sub: 'Total de contas' },
-              { l: 'Concluido', v: `${pctDone}%`, c: '#22C55E', sub: `${done}/${totalRows}` },
-              { l: 'Com prejuizo', v: withPrej, c: '#EF4444', sub: `R$ ${fmt(totalPrej)}` },
-              { l: 'Problemas', v: problemas, c: problemas > 0 ? '#EF4444' : '#64748B', sub: problemas > 0 ? 'Atencao!' : 'Nenhum' },
-              { l: 'Sal. + Bau', v: `R$ ${fmt(totalSalBau)}`, c: '#a855f7' },
-              { l: 'Lucro parcial', v: `${totalLucroParcial >= 0 ? '+' : ''}R$ ${fmt(totalLucroParcial)}`, c: totalLucroParcial >= 0 ? '#22C55E' : '#EF4444', sub: 'Soma parcial' },
+              { l: 'Operacoes', v: totalRows, c: '#94A3B8' },
+              { l: 'Depositantes', v: totalContas, c: '#60A5FA' },
+              { l: 'Concluido', v: `${pctDone}%`, c: '#22C55E' },
+              { l: 'Prejuizo', v: withPrej, c: withPrej > 0 ? '#EF4444' : '#475569' },
+              { l: 'Lucro parcial', v: `${totalLucroParcial >= 0 ? '+' : ''}R$ ${fmt(totalLucroParcial)}`, c: totalLucroParcial >= 0 ? '#22C55E' : '#EF4444' },
               { l: 'Lucro total', v: `${totalLucro >= 0 ? '+' : ''}R$ ${fmt(totalLucro)}`, c: totalLucro >= 0 ? '#22C55E' : '#EF4444' },
             ].map((k, i) => (
-              <motion.div key={k.l} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.04 + i * 0.03, ease }}
-                style={{ borderRadius: 12, padding: '14px 16px', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <p style={{ fontSize: 9, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, margin: '0 0 5px' }}>{k.l}</p>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>{k.v}</p>
-                {k.sub && <p style={{ fontSize: 10, color: 'var(--t4)', margin: '4px 0 0' }}>{k.sub}</p>}
-              </motion.div>
+              <div key={k.l} style={{ borderRadius: 10, padding: '14px 16px', background: '#0a1018', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <p style={{ fontSize: 9, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, margin: '0 0 6px' }}>{k.l}</p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>{k.v}</p>
+              </div>
             ))}
           </div>
         </motion.div>
@@ -293,14 +295,15 @@ export default function PlanejamentoPage() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08, ease }}
           className="plan-table-wrap"
           style={{ borderRadius: 16, overflow: 'hidden', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 4px 24px rgba(0,0,0,0.35)' }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1200 }}>
+          <div style={{ overflowX: 'auto', maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1300 }}>
               <thead>
-                <tr style={{ background: 'rgba(229,57,53,0.04)' }}>
+                <tr style={{ background: '#080d16', position: 'sticky', top: 0, zIndex: 5 }}>
                   <th style={{ width: 5, padding: 0 }}/>
-                  {['REDE', 'DEP', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS/FALTA', 'PREJ./LUCRO', 'CUSTOS', 'SAL+BAU', 'LUCRO TOTAL', 'LUCRO PARCIAL', ''].map((h, i) => (
-                    <th key={i} style={{ padding: '11px 8px', textAlign: 'left', fontSize: 9, fontWeight: 700, color: '#64748B', letterSpacing: '0.08em', whiteSpace: 'nowrap', borderBottom: '2px solid rgba(229,57,53,0.2)' }}>{h}</th>
-                  ))}
+                  {['REDE', 'DEP', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS', 'PREJ./LUCRO', 'CUSTOS', 'SAL+BAU', 'LUCRO TOTAL', 'L. PARCIAL', ''].map((h, i) => {
+                    const isNum = i >= 8 && i <= 12
+                    return <th key={i} style={{ padding: '12px 10px', textAlign: isNum ? 'right' : 'left', fontSize: 9, fontWeight: 700, color: '#475569', letterSpacing: '0.08em', whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{h}</th>
+                  })}
                 </tr>
               </thead>
               <tbody>
@@ -320,10 +323,10 @@ export default function PlanejamentoPage() {
                         transition={{ duration: 0.25, ease }}
                         className="plan-row"
                         style={{
-                          borderBottom: `1px solid ${st.key === 'problema' ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.04)'}`,
-                          background: st.key === 'concluido' ? 'rgba(34,197,94,0.04)' : st.key === 'problema' ? 'rgba(239,68,68,0.04)' : stripe,
-                          opacity: st.key === 'concluido' ? 0.55 : empty ? 0.4 : 1,
-                          cursor: 'pointer', transition: 'all 0.2s',
+                          borderBottom: '1px solid rgba(255,255,255,0.035)',
+                          background: st.key === 'concluido' ? 'rgba(34,197,94,0.025)' : st.key === 'problema' ? 'rgba(239,68,68,0.025)' : stripe,
+                          opacity: st.key === 'concluido' ? 0.5 : empty ? 0.35 : 1,
+                          transition: 'all 0.15s',
                         }}
                         onClick={() => setExpandedId(isExpanded ? null : r.id)}
                       >
@@ -332,44 +335,37 @@ export default function PlanejamentoPage() {
                           <div style={{ width: 5, height: '100%', minHeight: 44, background: empty ? 'rgba(255,255,255,0.04)' : `linear-gradient(180deg, ${redeC}, ${redeC}88)`, borderRadius: '0 3px 3px 0' }} />
                         </td>
                         {/* Rede */}
-                        <td style={{ padding: '4px 6px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
+                        <td style={{ padding: '6px 8px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
                           <select value={r.rede || ''} onChange={e => updateField(r.id, 'rede', e.target.value)}
-                            style={{ background: 'transparent', border: 'none', color: redeC, fontSize: 13, fontWeight: 900, cursor: 'pointer', outline: 'none', width: '100%', padding: '6px 4px', letterSpacing: '0.02em' }}>
-                            <option value="" style={{ background: '#0c1424' }}>--</option>
-                            {REDES.map(rd => <option key={rd} value={rd} style={{ background: '#0c1424' }}>{rd}</option>)}
+                            style={{ background: 'transparent', border: 'none', color: redeC, fontSize: 14, fontWeight: 900, cursor: 'pointer', outline: 'none', width: '100%', padding: '4px 2px', letterSpacing: '0.03em' }}>
+                            <option value="" style={{ background: '#0a1018' }}>--</option>
+                            {REDES.map(rd => <option key={rd} value={rd} style={{ background: '#0a1018' }}>{rd}</option>)}
                           </select>
                         </td>
-                        {/* Qtd */}
-                        <td style={{ padding: '4px 2px', minWidth: 55 }} onClick={e => e.stopPropagation()}>
-                          <CellInput type="number" value={r.quantidade} onChange={v => updateField(r.id, 'quantidade', Number(v) || 0)} mono min="0" step="1" />
+                        {/* DEP */}
+                        <td style={{ padding: '6px 8px', minWidth: 55 }} onClick={e => e.stopPropagation()}>
+                          <CellInput type="number" value={r.quantidade} onChange={v => updateField(r.id, 'quantidade', Number(v) || 0)} mono min="0" step="1" style={{ textAlign: 'center', fontWeight: 700 }} />
                         </td>
                         {/* Agente */}
-                        <td style={{ padding: '4px 2px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
-                          <CellInput value={r.agente} onChange={v => updateField(r.id, 'agente', v)} placeholder="Nome..." style={{ fontWeight: 700, color: '#F59E0B' }} />
+                        <td style={{ padding: '6px 8px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
+                          <CellInput value={r.agente} onChange={v => updateField(r.id, 'agente', v)} placeholder="..." style={{ fontWeight: 600, color: '#e2b96f' }} />
                         </td>
                         {/* Apostas */}
-                        <td style={{ padding: '4px 2px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
-                          <CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="70 - 1,5X" style={{ color: '#22C55E', fontWeight: 600 }} />
+                        <td style={{ padding: '6px 8px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
+                          <CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="..." style={{ color: '#94A3B8' }} />
                         </td>
                         {/* Link */}
-                        <td style={{ padding: '4px 6px', minWidth: 220 }} onClick={e => e.stopPropagation()}>
+                        <td style={{ padding: '6px 8px', minWidth: 70 }} onClick={e => e.stopPropagation()}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 11 }} />
+                            <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="Cole aqui..." style={{ fontSize: 10, color: '#475569', maxWidth: 0, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }} />
                             {r.link && (
-                              <>
-                                <button type="button" title="Ver link completo" onClick={() => alert(r.link)}
-                                  style={{ flexShrink: 0, display: 'flex', alignItems: 'center', padding: 4, borderRadius: 4, background: 'none', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
-                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
-                                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                </button>
-                                <a href={r.link} target="_blank" rel="noopener noreferrer" title="Abrir link"
-                                  style={{ flexShrink: 0, display: 'flex', alignItems: 'center', padding: 4, borderRadius: 4, transition: 'background 0.15s' }}
-                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(59,130,246,0.12)'}
-                                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                                </a>
-                              </>
+                              <a href={r.link} target="_blank" rel="noopener noreferrer" title={r.link}
+                                style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, fontSize: 9, fontWeight: 600, color: '#60A5FA', background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.14)'; e.currentTarget.style.textDecoration = 'underline' }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(59,130,246,0.06)'; e.currentTarget.style.textDecoration = 'none' }}>
+                                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                Abrir
+                              </a>
                             )}
                           </div>
                         </td>
@@ -393,73 +389,67 @@ export default function PlanejamentoPage() {
                           </div>
                         </td>
                         {/* Status */}
-                        <td style={{ padding: '4px 6px', minWidth: 110 }} onClick={e => e.stopPropagation()}>
-                          <motion.button whileTap={{ scale: 0.9 }} onClick={() => cycleStatus(r)}
+                        <td style={{ padding: '6px 8px', minWidth: 105 }} onClick={e => e.stopPropagation()}>
+                          <button onClick={() => cycleStatus(r)}
                             style={{
-                              display: 'inline-flex', alignItems: 'center', gap: 5,
-                              padding: '4px 10px', borderRadius: 6, cursor: 'pointer',
+                              display: 'inline-flex', alignItems: 'center', gap: 5, width: 95,
+                              padding: '5px 0', borderRadius: 6, cursor: 'pointer', justifyContent: 'center',
                               fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
                               background: st.bg, color: st.color, border: `1px solid ${st.border}`,
                               transition: 'all 0.15s', whiteSpace: 'nowrap',
-                              animation: st.key === 'em_andamento' ? 'plan-pulse 2.5s ease-in-out infinite' : 'none',
                             }}>
-                            <StatusIcon icon={st.icon} size={10} color={st.color} />
+                            <StatusIcon icon={st.icon} size={9} color={st.color} />
                             {st.label.toUpperCase()}
-                          </motion.button>
+                          </button>
                         </td>
                         {/* Obs */}
-                        <td style={{ padding: '4px 2px', minWidth: 110 }} onClick={e => e.stopPropagation()}>
-                          <CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="Obs..." style={{ fontSize: 11, color: 'var(--t3)' }} />
+                        <td style={{ padding: '6px 8px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
+                          <CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="..." style={{ fontSize: 11, color: '#64748B' }} />
                         </td>
                         {/* Prej./Lucro */}
-                        <td style={{ padding: '4px 2px', minWidth: 95 }} onClick={e => e.stopPropagation()}>
+                        <td style={{ padding: '6px 6px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
                           {(() => {
                             const isLucro = (r.tipo_resultado || 'prejuizo') === 'lucro'
                             const val = Number(r.prejuizo || 0)
                             return (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <button type="button" onClick={() => updateField(r.id, 'tipo_resultado', isLucro ? 'prejuizo' : 'lucro')} title={isLucro ? 'Lucro (clique p/ prejuizo)' : 'Prejuizo (clique p/ lucro)'}
-                                  style={{ flexShrink: 0, width: 20, height: 20, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isLucro ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.12)', transition: 'all 0.15s' }}>
-                                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={isLucro ? '#22C55E' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                                <button type="button" onClick={() => updateField(r.id, 'tipo_resultado', isLucro ? 'prejuizo' : 'lucro')}
+                                  style={{ flexShrink: 0, width: 18, height: 18, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isLucro ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.08)', transition: 'all 0.15s' }}>
+                                  <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke={isLucro ? '#22C55E' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
                                 </button>
                                 <CellInput type="number" value={r.prejuizo} onChange={v => updateField(r.id, 'prejuizo', Number(v) || 0)} mono step="0.01"
-                                  style={{ color: val > 0 ? (isLucro ? '#22C55E' : '#EF4444') : 'var(--t4)', fontWeight: val > 0 ? 700 : 400 }} />
+                                  style={{ textAlign: 'right', color: val > 0 ? (isLucro ? '#22C55E' : '#EF4444') : '#334155', fontWeight: val > 0 ? 700 : 400 }} />
                               </div>
                             )
                           })()}
                         </td>
                         {/* Custos */}
-                        <td style={{ padding: '4px 2px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
-                          <CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ color: '#F59E0B' }} />
+                        <td style={{ padding: '6px 8px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
+                          <CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.custos||0) > 0 ? '#F59E0B' : '#334155' }} />
                         </td>
                         {/* Sal+Bau */}
-                        <td style={{ padding: '4px 2px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
-                          <CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ color: '#a855f7' }} />
+                        <td style={{ padding: '6px 8px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
+                          <CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.salario_bau||0) > 0 ? '#a855f7' : '#334155' }} />
                         </td>
-                        {/* Lucro Total (auto-calculado) */}
-                        <td style={{ padding: '6px 8px', minWidth: 90 }}>
-                          <span style={{
-                            fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800,
-                            color: lf === 0 ? 'var(--t4)' : isPos ? '#22C55E' : '#EF4444',
-                            textShadow: Math.abs(lf) > 100 ? `0 0 10px ${isPos ? 'rgba(34,197,94,0.25)' : 'rgba(239,68,68,0.25)'}` : 'none',
-                          }}>
+                        {/* Lucro Total */}
+                        <td style={{ padding: '6px 10px', minWidth: 95, textAlign: 'right' }}>
+                          <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: lf === 0 ? '#334155' : isPos ? '#22C55E' : '#EF4444' }}>
                             {lf === 0 ? '—' : `${isPos ? '+' : ''}R$ ${fmt(lf)}`}
                           </span>
                         </td>
-                        {/* Lucro Parcial (manual, toggle lucro/prejuizo) */}
-                        <td style={{ padding: '4px 2px', minWidth: 110 }} onClick={e => e.stopPropagation()}>
+                        {/* Lucro Parcial */}
+                        <td style={{ padding: '6px 6px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
                           {(() => {
                             const isParcialLucro = (r.tipo_parcial || 'lucro') === 'lucro'
                             const lp = Number(r.lucro_parcial || 0)
-                            const displayColor = lp === 0 ? 'var(--t4)' : isParcialLucro ? '#4ade80' : '#fca5a5'
                             return (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <button type="button" onClick={() => updateField(r.id, 'tipo_parcial', isParcialLucro ? 'prejuizo' : 'lucro')} title={isParcialLucro ? 'Lucro (clique p/ prejuizo)' : 'Prejuizo (clique p/ lucro)'}
-                                  style={{ flexShrink: 0, width: 20, height: 20, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isParcialLucro ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.12)', transition: 'all 0.15s' }}>
-                                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={isParcialLucro ? '#22C55E' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isParcialLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                                <button type="button" onClick={() => updateField(r.id, 'tipo_parcial', isParcialLucro ? 'prejuizo' : 'lucro')}
+                                  style={{ flexShrink: 0, width: 18, height: 18, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isParcialLucro ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.08)', transition: 'all 0.15s' }}>
+                                  <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke={isParcialLucro ? '#22C55E' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isParcialLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
                                 </button>
                                 <CellInput type="number" value={r.lucro_parcial} onChange={v => updateField(r.id, 'lucro_parcial', Number(v) || 0)} mono step="0.01"
-                                  style={{ color: displayColor, fontWeight: 700 }} />
+                                  style={{ textAlign: 'right', color: lp === 0 ? '#334155' : isParcialLucro ? '#4ade80' : '#fca5a5', fontWeight: 700 }} />
                               </div>
                             )
                           })()}
@@ -533,7 +523,7 @@ export default function PlanejamentoPage() {
                   {/* Info */}
                   {(r.agente || r.operator_name) && (
                     <div style={{ display: 'flex', gap: 12, marginBottom: 6, fontSize: 11 }}>
-                      {r.agente && <span style={{ color: '#F59E0B', fontWeight: 600 }}>{r.agente}</span>}
+                      {r.agente && <span style={{ color: '#e2b96f', fontWeight: 600 }}>{r.agente}</span>}
                       {r.operator_name && <span style={{ color: '#60A5FA' }}>{r.operator_name}</span>}
                     </div>
                   )}
@@ -582,7 +572,7 @@ export default function PlanejamentoPage() {
 
         <style>{`
           .plan-mobile-cards { display: none; }
-          .plan-row:hover { opacity: 1 !important; transform: scale(1.004); box-shadow: 0 0 20px rgba(255,255,255,0.02); z-index: 2; position: relative; }
+          .plan-row:hover { opacity: 1 !important; background: rgba(255,255,255,0.025) !important; }
           @keyframes plan-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); } 50% { box-shadow: 0 0 0 4px rgba(59,130,246,0.12); } }
           @media (max-width: 768px) {
             .plan-table-wrap { display: none !important; }

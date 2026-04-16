@@ -54,7 +54,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const items = isAdmin ? ADMIN_NAV : OP_NAV
   const allItems = [
     ...items,
-    ...(isAdmin && userEmail === OWNER_EMAIL ? [{ href:'/owner', label:'Owner', icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' }] : []),
+    ...(isAdmin && userEmail === OWNER_EMAIL ? [
+      { href:'/planejamento', label:'Controle Op.', icon:'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+      { href:'/owner', label:'Owner', icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
+    ] : []),
   ]
 
   // Use own fetch OR parent prop — whichever confirms PRO

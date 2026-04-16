@@ -323,7 +323,7 @@ export default function PlanejamentoPage() {
           className="plan-table-wrap"
           style={{ borderRadius: 16, overflow: 'hidden', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 4px 24px rgba(0,0,0,0.35)' }}>
           <div style={{ overflowX: 'auto', maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1300 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1500 }}>
               <thead>
                 <tr style={{ background: '#080d16', position: 'sticky', top: 0, zIndex: 5 }}>
                   <th style={{ width: 5, padding: 0 }}/>
@@ -382,8 +382,8 @@ export default function PlanejamentoPage() {
                           <CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="..." style={{ color: '#94A3B8' }} />
                         </td>
                         {/* Link */}
-                        <td style={{ padding: '6px 8px', minWidth: 220 }} onClick={e => e.stopPropagation()}>
-                          <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 11, color: r.link ? '#60A5FA' : '#334155' }} />
+                        <td style={{ padding: '6px 8px', minWidth: 320 }} onClick={e => e.stopPropagation()}>
+                          <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 12, color: r.link ? '#60A5FA' : '#334155' }} />
                         </td>
                         {/* Operador */}
                         <td style={{ padding: '4px 6px', minWidth: 140 }} onClick={e => e.stopPropagation()}>
@@ -423,7 +423,7 @@ export default function PlanejamentoPage() {
                           <CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="..." style={{ fontSize: 11, color: '#64748B' }} />
                         </td>
                         {/* Prej./Lucro */}
-                        <td style={{ padding: '6px 6px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
+                        <td style={{ padding: '4px 4px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
                           {(() => {
                             const isLucro = (r.tipo_resultado || 'prejuizo') === 'lucro'
                             const val = Number(r.prejuizo || 0)
@@ -440,21 +440,21 @@ export default function PlanejamentoPage() {
                           })()}
                         </td>
                         {/* Custos */}
-                        <td style={{ padding: '6px 8px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
-                          <CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.custos||0) > 0 ? '#F59E0B' : '#334155' }} />
+                        <td style={{ padding: '4px 4px', minWidth: 65 }} onClick={e => e.stopPropagation()}>
+                          <CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.custos||0) > 0 ? '#F59E0B' : '#334155', fontSize: 12 }} />
                         </td>
                         {/* Sal+Bau */}
-                        <td style={{ padding: '6px 8px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
-                          <CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.salario_bau||0) > 0 ? '#a855f7' : '#334155' }} />
+                        <td style={{ padding: '4px 4px', minWidth: 65 }} onClick={e => e.stopPropagation()}>
+                          <CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.salario_bau||0) > 0 ? '#a855f7' : '#334155', fontSize: 12 }} />
                         </td>
                         {/* Lucro Total */}
-                        <td style={{ padding: '6px 10px', minWidth: 95, textAlign: 'right' }}>
+                        <td style={{ padding: '4px 6px', minWidth: 80, textAlign: 'right' }}>
                           <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: lf === 0 ? '#334155' : isPos ? '#22C55E' : '#EF4444' }}>
                             {lf === 0 ? '—' : `${isPos ? '+' : ''}R$ ${fmt(lf)}`}
                           </span>
                         </td>
                         {/* Lucro Parcial */}
-                        <td style={{ padding: '6px 6px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
+                        <td style={{ padding: '4px 4px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
                           {(() => {
                             const isParcialLucro = (r.tipo_parcial || 'lucro') === 'lucro'
                             const lp = Number(r.lucro_parcial || 0)

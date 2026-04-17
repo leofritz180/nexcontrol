@@ -83,19 +83,27 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false)
   const [focused, setFocused] = useState('')
 
-  // Resolve role com timeout — se profile nao retornar em 2s, manda pra /admin
-  // (que tem propria checagem e redireciona pra /operator se necessario)
+  // Race uma promise com timeout. Se estourar, retorna { timeout: true }.
+  function withTimeout(promise, ms, label) {
+    return Promise.race([
+      promise.then(v => ({ value: v })),
+      new Promise(res => setTimeout(() => res({ timeout: true, label }), ms)),
+    ])
+  }
+
+  // Resolve role e navega. Se nao conseguir ler profile, manda pra /admin
+  // (que tem checagem propria e redireciona pra /operator se necessario).
   async function resolveRoleAndGo(userId) {
-    const PROFILE_TIMEOUT = 2500
     let role = null
     try {
-      const profilePromise = supabase.from('profiles').select('role').eq('id', userId).maybeSingle()
-      const timeoutPromise = new Promise(res => setTimeout(() => res({ data: null, timeout: true }), PROFILE_TIMEOUT))
-      const result = await Promise.race([profilePromise, timeoutPromise])
-      role = result?.data?.role || null
+      const r = await withTimeout(
+        supabase.from('profiles').select('role').eq('id', userId).maybeSingle(),
+        2500, 'profile'
+      )
+      if (!r.timeout) role = r.value?.data?.role || null
     } catch {}
-    // Navegacao dura — evita travamento do router transit em conexoes lentas
     const target = role === 'operator' ? '/operator' : '/admin'
+    // window.location.assign forca navegacao real — router.push pode travar em conexoes lentas
     if (typeof window !== 'undefined') window.location.assign(target)
     else router.push(target)
   }
@@ -111,7 +119,16 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true); setError('')
     try {
-      const { data, error: err } = await supabase.auth.signInWithPassword({ email, password: pass })
+      const r = await withTimeout(
+        supabase.auth.signInWithPassword({ email, password: pass }),
+        10000, 'signin'
+      )
+      if (r.timeout) {
+        setError('Conexao lenta. Tente novamente.')
+        setLoading(false)
+        return
+      }
+      const { data, error: err } = r.value || {}
       if (err) { setError(err.message); setLoading(false); return }
       if (!data?.user) { setError('Falha ao autenticar. Tente novamente.'); setLoading(false); return }
       await resolveRoleAndGo(data.user.id)

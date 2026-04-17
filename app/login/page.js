@@ -83,17 +83,27 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false)
   const [focused, setFocused] = useState('')
 
+  // Resolve role com timeout — se profile nao retornar em 2s, manda pra /admin
+  // (que tem propria checagem e redireciona pra /operator se necessario)
+  async function resolveRoleAndGo(userId) {
+    const PROFILE_TIMEOUT = 2500
+    let role = null
+    try {
+      const profilePromise = supabase.from('profiles').select('role').eq('id', userId).maybeSingle()
+      const timeoutPromise = new Promise(res => setTimeout(() => res({ data: null, timeout: true }), PROFILE_TIMEOUT))
+      const result = await Promise.race([profilePromise, timeoutPromise])
+      role = result?.data?.role || null
+    } catch {}
+    // Navegacao dura — evita travamento do router transit em conexoes lentas
+    const target = role === 'operator' ? '/operator' : '/admin'
+    if (typeof window !== 'undefined') window.location.assign(target)
+    else router.push(target)
+  }
+
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
+    supabase.auth.getSession().then(({ data }) => {
       const u = data?.session?.user
-      if (!u) return
-      try {
-        const { data: p } = await supabase.from('profiles').select('role').eq('id', u.id).maybeSingle()
-        const role = p?.role || 'operator'
-        router.push(role === 'admin' ? '/admin' : '/operator')
-      } catch {
-        router.push('/operator')
-      }
+      if (u) resolveRoleAndGo(u.id)
     })
   }, [])
 
@@ -104,12 +114,7 @@ export default function LoginPage() {
       const { data, error: err } = await supabase.auth.signInWithPassword({ email, password: pass })
       if (err) { setError(err.message); setLoading(false); return }
       if (!data?.user) { setError('Falha ao autenticar. Tente novamente.'); setLoading(false); return }
-      let role = 'operator'
-      try {
-        const { data: p } = await supabase.from('profiles').select('role').eq('id', data.user.id).maybeSingle()
-        if (p?.role) role = p.role
-      } catch {}
-      router.push(role === 'admin' ? '/admin' : '/operator')
+      await resolveRoleAndGo(data.user.id)
     } catch (e) {
       setError(e?.message || 'Erro de conexao. Verifique sua internet.')
       setLoading(false)

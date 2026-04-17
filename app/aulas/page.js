@@ -142,9 +142,25 @@ export default function AulasVipPage() {
               VIP
             </span>
           </div>
-          <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>
-            Biblioteca exclusiva de cursos e aulas premium
-          </p>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8 }}>
+            <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>
+              Biblioteca exclusiva de cursos e aulas premium
+            </p>
+            {user?.email === OWNER_EMAIL && (
+              <button onClick={() => router.push('/aulas/admin')} style={{
+                display:'flex', alignItems:'center', gap:6,
+                padding:'7px 16px', borderRadius:8, fontSize:12, fontWeight:600,
+                background:'rgba(245,158,11,0.1)', border:'1px solid rgba(245,158,11,0.25)',
+                color:'#F59E0B', cursor:'pointer', transition:'all 0.2s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.background='rgba(245,158,11,0.18)' }}
+                onMouseLeave={e => { e.currentTarget.style.background='rgba(245,158,11,0.1)' }}
+              >
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                Gerenciar cursos
+              </button>
+            )}
+          </div>
         </motion.div>
 
         {/* Search */}

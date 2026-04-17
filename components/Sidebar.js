@@ -10,6 +10,8 @@ const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 
+const AULAS_VIP_ITEM = { href:'/aulas', label:'Aulas VIP', icon:'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z', vip: true }
+
 const ADMIN_NAV = [
   { href:'/admin', label:'Admin', icon:'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z' },
   { href:'/operadores', label:'Operadores', icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0' },
@@ -37,6 +39,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [ownSub, setOwnSub] = useState(null)
+  const [showAulas, setShowAulas] = useState(false)
 
   // Sidebar fetches subscription independently — never depends on parent passing it
   useEffect(() => {
@@ -47,11 +50,31 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       .then(({ data }) => { if (data) setOwnSub(data) })
   }, [tenantId])
 
+  // Check if current user belongs to the owner's tenant (for Aulas VIP access)
+  useEffect(() => {
+    if (!tenantId) return
+    if (userEmail === OWNER_EMAIL) { setShowAulas(true); return }
+    // Check if owner's tenant_id matches current user's tenant_id
+    supabase.from('profiles').select('tenant_id').eq('email', OWNER_EMAIL).maybeSingle()
+      .then(({ data }) => { if (data && data.tenant_id === tenantId) setShowAulas(true) })
+  }, [tenantId, userEmail])
+
   async function logout() { await supabase.auth.signOut(); router.push('/login') }
 
   const name = userName || userEmail?.split('@')[0] || '?'
   const initial = name[0].toUpperCase()
-  const items = isAdmin ? ADMIN_NAV : OP_NAV
+  const baseItems = isAdmin ? ADMIN_NAV : OP_NAV
+  // Inject Aulas VIP after Tutorial (admin) or after Chaves PIX (operator)
+  const items = showAulas
+    ? (() => {
+        const arr = [...baseItems]
+        const anchor = isAdmin
+          ? arr.findIndex(i => i.href === '/tutorial')
+          : arr.findIndex(i => i.href === '/pix')
+        arr.splice(anchor !== -1 ? anchor + 1 : arr.length, 0, AULAS_VIP_ITEM)
+        return arr
+      })()
+    : baseItems
   const allItems = [
     ...items,
     ...(isAdmin && userEmail === OWNER_EMAIL ? [
@@ -87,9 +110,9 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                   color: active?'var(--t1)':'var(--t3)',
                   background: active?'rgba(255,255,255,0.05)':'transparent',
                   borderLeft: active?'3px solid #e53935':'3px solid transparent',
-                  boxShadow: item.pro ? '0 0 0 1px rgba(229,57,53,0.25), 0 0 10px rgba(229,57,53,0.06)' : active?'inset 0 0 20px rgba(229,57,53,0.04)':'none',
-                  border: item.pro ? '1px solid rgba(229,57,53,0.2)' : 'none',
-                  animation: item.pro ? 'ring-pulse 3s ease-in-out infinite' : 'none',
+                  boxShadow: item.vip ? '0 0 0 1px rgba(245,158,11,0.25), 0 0 10px rgba(245,158,11,0.06)' : item.pro ? '0 0 0 1px rgba(229,57,53,0.25), 0 0 10px rgba(229,57,53,0.06)' : active?'inset 0 0 20px rgba(229,57,53,0.04)':'none',
+                  border: item.vip ? '1px solid rgba(245,158,11,0.2)' : item.pro ? '1px solid rgba(229,57,53,0.2)' : 'none',
+                  animation: (item.pro || item.vip) ? 'ring-pulse 3s ease-in-out infinite' : 'none',
                   transition:'all 0.2s ease',
                 }}
                 onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='rgba(255,255,255,0.03)';e.currentTarget.style.color='var(--t2)'}}}
@@ -107,6 +130,15 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                     boxShadow:'0 0 8px rgba(229,57,53,0.1)',
                     animation:'breathe 3s ease-in-out infinite',
                   }}>PRO</span>
+                )}
+                {item.vip && (
+                  <span style={{
+                    marginLeft:'auto', fontSize:8, fontWeight:700, padding:'2px 6px', borderRadius:4,
+                    background:'rgba(245,158,11,0.15)', color:'#F59E0B',
+                    border:'1px solid rgba(245,158,11,0.3)', letterSpacing:'0.06em',
+                    boxShadow:'0 0 8px rgba(245,158,11,0.15)',
+                    animation:'breathe 3s ease-in-out infinite',
+                  }}>VIP</span>
                 )}
               </Link>
             </motion.div>

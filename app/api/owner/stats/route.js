@@ -56,7 +56,7 @@ export async function POST(req) {
     const cancelledSubs = allSubs.filter(s => s.status === 'cancelled')
 
     // Revenue calculations
-    const paidPayments = allPay.filter(p => p.status === 'RECEIVED' || p.status === 'CONFIRMED')
+    const paidPayments = allPay.filter(p => ['RECEIVED','CONFIRMED','RECEIVED_IN_CASH','BILLING_TYPE_CONFIRMED'].includes(p.status))
     const totalRevenue = paidPayments.reduce((a, p) => a + Number(p.amount || 0), 0)
 
     const today = brDateKey(now)

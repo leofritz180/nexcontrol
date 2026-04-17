@@ -87,6 +87,32 @@ export default function AulasVipPage() {
 
   if (!authorized) return null
 
+  // Operators see locked screen
+  if (profile?.role === 'operator') {
+    return (
+      <AppLayout userName={profile?.name} userEmail={user?.email} isAdmin={false} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
+        <div style={{ minHeight:'70vh', display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+          <motion.div initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, ease }}
+            style={{ textAlign:'center', maxWidth:400 }}>
+            <div style={{ width:72, height:72, borderRadius:20, background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.15)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 24px', boxShadow:'0 0 30px rgba(245,158,11,0.06)' }}>
+              <svg width={32} height={32} viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h2 style={{ fontSize:24, fontWeight:800, color:'var(--t1)', margin:'0 0 8px', letterSpacing:'-0.02em' }}>
+              AULAS VIP DARKZIN
+            </h2>
+            <span style={{ display:'inline-block', fontSize:10, fontWeight:800, padding:'4px 12px', borderRadius:6, background:'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(217,119,6,0.2))', color:'#F59E0B', border:'1px solid rgba(245,158,11,0.3)', letterSpacing:'0.1em', marginBottom:20 }}>
+              VIP
+            </span>
+            <p style={{ fontSize:18, fontWeight:700, color:'#F59E0B', margin:'0 0 8px' }}>Em breve</p>
+            <p style={{ fontSize:13, color:'var(--t3)', margin:0, lineHeight:1.6 }}>
+              A area de aulas exclusivas esta sendo preparada para voce. Aguarde — em breve voce tera acesso ao conteudo VIP.
+            </p>
+          </motion.div>
+        </div>
+      </AppLayout>
+    )
+  }
+
   // Filter courses by search
   const filtered = courses.filter(c =>
     !search || c.title?.toLowerCase().includes(search.toLowerCase())

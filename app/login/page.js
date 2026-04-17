@@ -84,19 +84,36 @@ export default function LoginPage() {
   const [focused, setFocused] = useState('')
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data?.session?.user) router.push('/operator')
+    supabase.auth.getSession().then(async ({ data }) => {
+      const u = data?.session?.user
+      if (!u) return
+      try {
+        const { data: p } = await supabase.from('profiles').select('role').eq('id', u.id).maybeSingle()
+        const role = p?.role || 'operator'
+        router.push(role === 'admin' ? '/admin' : '/operator')
+      } catch {
+        router.push('/operator')
+      }
     })
   }, [])
 
   async function handleLogin(e) {
     e.preventDefault()
     setLoading(true); setError('')
-    const { data, error: err } = await supabase.auth.signInWithPassword({ email, password: pass })
-    if (err) { setError(err.message); setLoading(false); return }
-    const { data: p } = await supabase.from('profiles').select('role,tenant_id').eq('id', data.user.id).maybeSingle()
-    const role = p?.role || 'operator'
-    router.push(role === 'admin' ? '/admin' : '/operator')
+    try {
+      const { data, error: err } = await supabase.auth.signInWithPassword({ email, password: pass })
+      if (err) { setError(err.message); setLoading(false); return }
+      if (!data?.user) { setError('Falha ao autenticar. Tente novamente.'); setLoading(false); return }
+      let role = 'operator'
+      try {
+        const { data: p } = await supabase.from('profiles').select('role').eq('id', data.user.id).maybeSingle()
+        if (p?.role) role = p.role
+      } catch {}
+      router.push(role === 'admin' ? '/admin' : '/operator')
+    } catch (e) {
+      setError(e?.message || 'Erro de conexao. Verifique sua internet.')
+      setLoading(false)
+    }
   }
 
   // Stagger children

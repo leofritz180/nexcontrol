@@ -64,26 +64,44 @@ export default function SignupPage() {
     }
   }
 
+  async function waitForProfile(userId) {
+    for (let i = 0; i < 8; i++) {
+      try {
+        const { data: p } = await supabase.from('profiles').select('id,tenant_id').eq('id', userId).maybeSingle()
+        if (p && p.tenant_id) return true
+      } catch {}
+      await new Promise(r => setTimeout(r, 600))
+    }
+    return false
+  }
+
   async function handleSignup(e) {
     e.preventDefault()
     if (!email || !pass || !nome.trim() || !tenantName.trim()) return
     setLoading(true); setError('')
-    const { error: err } = await supabase.auth.signUp({
-      email, password: pass,
-      options: { data: { nome: nome.trim(), tenant_name: tenantName.trim(), role: 'admin' } }
-    })
-    setLoading(false)
-    if (err) { setError(err.message); return }
-    const { data: session } = await supabase.auth.getSession()
-    if (session?.session?.user) {
-      markJustSignedUp()
-      await attachRef(email)
-      router.push('/admin')
-      return
+    try {
+      const { error: err } = await supabase.auth.signUp({
+        email, password: pass,
+        options: { data: { nome: nome.trim(), tenant_name: tenantName.trim(), role: 'admin' } }
+      })
+      if (err) { setLoading(false); setError(err.message); return }
+      const { data: session } = await supabase.auth.getSession()
+      if (session?.session?.user) {
+        markJustSignedUp()
+        await attachRef(email)
+        await waitForProfile(session.session.user.id)
+        setLoading(false)
+        router.push('/admin')
+        return
+      }
+      // Signup com confirmacao por email — tenta attach mesmo assim
+      attachRef(email)
+      setLoading(false)
+      setSuccess(true)
+    } catch (e) {
+      setLoading(false)
+      setError(e?.message || 'Erro de conexao. Verifique sua internet.')
     }
-    // Signup com confirmacao por email — tenta attach mesmo assim (cliente fez retry)
-    attachRef(email)
-    setSuccess(true)
   }
 
   if (success) return (

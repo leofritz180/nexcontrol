@@ -527,9 +527,16 @@ export default function HomePage() {
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data?.session?.user) router.push('/admin')
-      else setChecking(false)
+    supabase.auth.getSession().then(async ({ data }) => {
+      const u = data?.session?.user
+      if (!u) { setChecking(false); return }
+      try {
+        const { data: p } = await supabase.from('profiles').select('role').eq('id', u.id).maybeSingle()
+        const role = p?.role || 'operator'
+        router.push(role === 'admin' ? '/admin' : '/operator')
+      } catch {
+        router.push('/operator')
+      }
     })
   }, [])
 

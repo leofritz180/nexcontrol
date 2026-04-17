@@ -442,7 +442,7 @@ export default function CustosPage() {
                         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)' }}
                       >
                         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth={2.2} strokeLinecap="round">
-                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                         </svg>
                       </motion.button>}
                     </motion.div>
@@ -610,6 +610,10 @@ export default function CustosPage() {
             </motion.div>
           )}
         </AnimatePresence>
+        <style>{`
+          @media (max-width: 768px) { .del-btn { opacity: 1 !important; } }
+          @media (hover: none) { .del-btn { opacity: 0.6 !important; } }
+        `}</style>
       </AppLayout>
     </main>
   )

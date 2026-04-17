@@ -29,75 +29,87 @@ function HeroBanner({ course, onWatch, onDetails }) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 1 }}
       style={{
-        position: 'relative', width: '100%', minHeight: 420, overflow: 'hidden',
-        marginBottom: 40, borderRadius: 0,
+        position: 'relative', width: 'calc(100% + 56px)', marginLeft: -28, minHeight: 500, overflow: 'hidden',
+        marginBottom: 44,
       }}
+      className="hero-aulas"
     >
-      {/* Background image with slow zoom */}
+      <style>{`@media(max-width:768px){.hero-aulas{min-height:380px !important;width:calc(100% + 32px) !important;margin-left:-16px !important;}}`}</style>
+      {/* BG with cinematic zoom */}
       <motion.div
-        animate={{ scale: [1, 1.06, 1] }}
-        transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-        style={{
-          position: 'absolute', inset: -20,
-          background: hasBg ? `url(${course.thumb_url}) center/cover` : THUMB_GRADIENTS[0],
-          filter: hasBg ? 'blur(1px)' : 'none',
-        }}
+        animate={{ scale: [1, 1.08, 1] }}
+        transition={{ duration: 30, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ position: 'absolute', inset: -30, background: hasBg ? `url(${course.thumb_url}) center/cover` : THUMB_GRADIENTS[0] }}
       />
-      {/* Dark overlays */}
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, #04070e 0%, rgba(4,7,14,0.7) 50%, rgba(4,7,14,0.3) 100%)' }} />
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(4,7,14,0.85) 0%, rgba(4,7,14,0.3) 50%, transparent 100%)' }} />
-      {/* Red ambient glow */}
-      <div style={{ position: 'absolute', top: '-30%', left: '-10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.08), transparent 70%)', pointerEvents: 'none' }} />
+      {/* Overlays — dramatic */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(4,7,14,0.15) 0%, rgba(4,7,14,0.5) 40%, rgba(4,7,14,0.92) 75%, #04070e 100%)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(4,7,14,0.9) 0%, rgba(4,7,14,0.5) 40%, transparent 70%)' }} />
+      {/* Red glow orbs */}
+      <div style={{ position: 'absolute', top: '-20%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.12), transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-10%', right: '10%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.06), transparent 70%)', pointerEvents: 'none' }} />
 
       {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, padding: '80px 40px 48px', maxWidth: 600 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <span style={{ fontSize: 10, fontWeight: 800, padding: '4px 10px', borderRadius: 5, background: `${RED}25`, color: RED, border: `1px solid ${RED}40`, letterSpacing: '0.1em' }}>DARKZIN VIP</span>
-          {course.category && <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 5, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }}>{course.category}</span>}
-          {course.lesson_count > 0 && <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>{course.lesson_count} aulas</span>}
-        </div>
+      <div style={{ position: 'relative', zIndex: 2, padding: '100px 40px 52px', maxWidth: 620 }}>
+        {/* Tags row */}
+        <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.4 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <span style={{ fontSize: 10, fontWeight: 900, padding: '4px 12px', borderRadius: 4, background: RED, color: '#fff', letterSpacing: '0.1em', boxShadow: `0 2px 12px ${RED}40` }}>VIP</span>
+          {course.category && <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 10px', borderRadius: 4, background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}>{course.category}</span>}
+          {course.lesson_count > 0 && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'rgba(255,255,255,0.45)' }}>
+              <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /></svg>
+              {course.lesson_count} aulas
+            </span>
+          )}
+        </motion.div>
 
-        <h1 style={{ fontSize: 38, fontWeight: 900, color: '#fff', margin: '0 0 12px', letterSpacing: '-0.03em', lineHeight: 1.1, textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
+        <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.5 }}
+          style={{ fontSize: 44, fontWeight: 900, color: '#fff', margin: '0 0 14px', letterSpacing: '-0.03em', lineHeight: 1.08, textShadow: '0 4px 30px rgba(0,0,0,0.6)' }}>
           {course.title}
-        </h1>
+        </motion.h1>
 
         {course.description && (
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', margin: '0 0 24px', lineHeight: 1.6, maxWidth: 460 }}>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.4 }}
+            style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', margin: '0 0 28px', lineHeight: 1.6, maxWidth: 480 }}>
             {course.description}
-          </p>
+          </motion.p>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.4 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <motion.button
-            whileHover={{ scale: 1.03, boxShadow: `0 6px 24px ${RED}40` }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.04, boxShadow: `0 8px 32px ${RED}50` }}
+            whileTap={{ scale: 0.96 }}
             onClick={e => { e.stopPropagation(); onWatch() }}
             style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: '12px 28px', borderRadius: 8,
-              background: RED, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700, color: '#fff',
-              boxShadow: `0 4px 20px ${RED}30`,
+              display: 'flex', alignItems: 'center', gap: 8, padding: '14px 32px', borderRadius: 8,
+              background: `linear-gradient(135deg, ${RED}, #c62828)`, border: 'none', cursor: 'pointer',
+              fontSize: 15, fontWeight: 700, color: '#fff', boxShadow: `0 4px 24px ${RED}35`,
             }}
           >
-            <svg width={16} height={16} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5.14v14.72a1 1 0 001.5.86l11.24-7.36a1 1 0 000-1.72L9.5 4.28A1 1 0 008 5.14z" /></svg>
+            <svg width={18} height={18} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5.14v14.72a1 1 0 001.5.86l11.24-7.36a1 1 0 000-1.72L9.5 4.28A1 1 0 008 5.14z" /></svg>
             Assistir agora
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.03, background: 'rgba(255,255,255,0.12)' }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.04, background: 'rgba(255,255,255,0.14)' }}
+            whileTap={{ scale: 0.96 }}
             onClick={e => { e.stopPropagation(); onDetails() }}
             style={{
-              display: 'flex', alignItems: 'center', gap: 6, padding: '12px 22px', borderRadius: 8,
-              background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-              cursor: 'pointer', fontSize: 13, fontWeight: 600, color: '#fff',
+              display: 'flex', alignItems: 'center', gap: 6, padding: '14px 24px', borderRadius: 8,
+              background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+              cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.9)',
             }}
           >
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
             Mais detalhes
           </motion.button>
-        </div>
+        </motion.div>
       </div>
+
+      {/* Bottom fade to page */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(transparent, #04070e)', pointerEvents: 'none', zIndex: 3 }} />
     </motion.div>
   )
 }
@@ -165,39 +177,44 @@ function CourseCard({ course, progress: prog, index = 0 }) {
     >
       {/* Thumbnail */}
       <div style={{ width: '100%', height: 158, position: 'relative', background: course.thumb_url ? `url(${course.thumb_url}) center/cover` : THUMB_GRADIENTS[gradIdx] }}>
+        {/* Dark gradient overlay on thumbnail bottom (text readable) */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, rgba(12,18,32,0.85) 0%, transparent 50%)', zIndex: 1 }} />
         {/* Badges */}
         <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 4, zIndex: 3 }}>
-          {course.category && <span style={{ fontSize: 8, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(0,0,0,0.7)', color: RED, letterSpacing: '0.04em' }}>{course.category}</span>}
-          {course.tags?.includes('novo') && <span style={{ fontSize: 8, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: RED, color: '#fff' }}>NOVO</span>}
-          {course.tags?.includes('popular') && <span style={{ fontSize: 8, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: '#22C55E', color: '#fff' }}>POPULAR</span>}
+          {course.tags?.includes('novo') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: RED, color: '#fff', letterSpacing: '0.06em' }}>NOVO</span>}
+          {course.tags?.includes('popular') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: '#22C55E', color: '#fff', letterSpacing: '0.06em' }}>POPULAR</span>}
+          {course.tags?.includes('vip') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: AMBER, color: '#000', letterSpacing: '0.06em' }}>VIP</span>}
         </div>
-        {/* Duration */}
-        {course.total_duration > 0 && (
-          <span style={{ position: 'absolute', bottom: 8, right: 8, fontSize: 9, fontWeight: 600, padding: '2px 7px', borderRadius: 4, background: 'rgba(0,0,0,0.75)', color: '#fff', zIndex: 3 }}>{course.total_duration}min</span>
-        )}
+        {/* Title + info overlaid on thumbnail */}
+        <div style={{ position: 'absolute', bottom: 10, left: 12, right: 12, zIndex: 3 }}>
+          <p style={{ fontSize: 14, fontWeight: 800, color: '#fff', margin: '0 0 3px', textShadow: '0 1px 8px rgba(0,0,0,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.title || 'Sem titulo'}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {course.category && <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)' }}>{course.category}</span>}
+            {course.lesson_count > 0 && <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)' }}>{course.lesson_count} aulas</span>}
+            {course.total_duration > 0 && <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)' }}>{course.total_duration}min</span>}
+          </div>
+        </div>
         {/* Play overlay */}
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: hov ? 1 : 0, transition: 'opacity 0.2s', background: 'rgba(0,0,0,0.4)', zIndex: 2 }}>
-          <motion.div animate={hov ? { scale: [1, 1.1, 1] } : {}} transition={{ duration: 1.5, repeat: Infinity }}
-            style={{ width: 48, height: 48, borderRadius: '50%', background: RED, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 20px ${RED}50` }}>
-            <svg width={20} height={20} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5.14v14.72a1 1 0 001.5.86l11.24-7.36a1 1 0 000-1.72L9.5 4.28A1 1 0 008 5.14z" /></svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: hov ? 1 : 0, transition: 'opacity 0.25s', background: 'rgba(0,0,0,0.35)', zIndex: 4 }}>
+          <motion.div animate={hov ? { scale: [1, 1.12, 1] } : {}} transition={{ duration: 1.5, repeat: Infinity }}
+            style={{ width: 50, height: 50, borderRadius: '50%', background: `linear-gradient(135deg, ${RED}, #c62828)`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 6px 24px ${RED}60` }}>
+            <svg width={22} height={22} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5.14v14.72a1 1 0 001.5.86l11.24-7.36a1 1 0 000-1.72L9.5 4.28A1 1 0 008 5.14z" /></svg>
           </motion.div>
         </div>
         {/* Progress bar */}
         {hasProg && (
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'rgba(0,0,0,0.6)', zIndex: 3 }}>
-            <div style={{ height: '100%', width: `${Math.min(prog, 100)}%`, background: RED, borderRadius: '0 2px 0 0' }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, background: 'rgba(0,0,0,0.6)', zIndex: 5 }}>
+            <div style={{ height: '100%', width: `${Math.min(prog, 100)}%`, background: RED, boxShadow: `0 0 6px ${RED}50` }} />
           </div>
         )}
       </div>
-      {/* Info */}
-      <div style={{ padding: '12px 14px 14px' }}>
-        <p style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.title || 'Sem titulo'}</p>
-        {course.description && <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: '0 0 8px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.description}</p>}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {course.lesson_count > 0 && <span style={{ fontSize: 10, color: 'var(--t4)' }}>{course.lesson_count} aula{course.lesson_count !== 1 ? 's' : ''}</span>}
-          {hasProg && <span style={{ fontSize: 10, color: RED, fontWeight: 600 }}>{Math.round(prog)}%</span>}
+      {/* Minimal info below (description only, title is on thumb now) */}
+      {course.description && (
+        <div style={{ padding: '10px 12px 12px' }}>
+          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.description}</p>
+          {hasProg && <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ fontSize: 9, color: RED, fontWeight: 700 }}>{Math.round(prog)}% concluido</span></div>}
         </div>
-      </div>
+      )}
     </motion.div>
   )
 }
@@ -289,8 +306,9 @@ export default function AulasVipPage() {
 
   return (
     <AppLayout userName={profile?.name} userEmail={user?.email} isAdmin={isAdmin} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
-      {/* Red ambient glow */}
-      <div style={{ position: 'fixed', top: '-15%', left: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.06), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
+      {/* Red ambient glows */}
+      <div style={{ position: 'fixed', top: '-15%', left: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.08), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'fixed', bottom: '-10%', right: '-5%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.05), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Top bar */}

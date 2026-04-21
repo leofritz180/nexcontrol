@@ -57,7 +57,10 @@ export async function POST(req) {
 
     // Revenue calculations
     const paidPayments = allPay.filter(p => ['RECEIVED','CONFIRMED','RECEIVED_IN_CASH','BILLING_TYPE_CONFIRMED'].includes(p.status))
+    const refundStatuses = ['REFUNDED','REFUND_REQUESTED','REFUND_IN_PROGRESS','CHARGEBACK_REQUESTED','CHARGEBACK_DISPUTE','AWAITING_CHARGEBACK_REVERSAL','PAYMENT_DELETED']
+    const refundPayments = allPay.filter(p => refundStatuses.includes(p.status))
     const totalRevenue = paidPayments.reduce((a, p) => a + Number(p.amount || 0), 0)
+    const totalRefunded = refundPayments.reduce((a, p) => a + Number(p.amount || 0), 0)
 
     const today = brDateKey(now)
     const revenueToday = paidPayments.filter(p => brDateKey(p.created_at) === today).reduce((a, p) => a + Number(p.amount || 0), 0)
@@ -173,6 +176,16 @@ export async function POST(req) {
     if (noMeta.length > 0) alerts.push({ text: `${noMeta.length} cliente(s) nunca criaram uma meta`, type: 'warn' })
     const unpaid = allPay.filter(p => p.status === 'PENDING')
     if (unpaid.length > 0) alerts.push({ text: `${unpaid.length} cobranca(s) pendente(s)`, type: 'critical' })
+    // Reembolsos recentes (criticos)
+    const refund24h = refundPayments.filter(p => (now - new Date(p.updated_at || p.created_at)) < 86400000)
+    if (refund24h.length > 0) {
+      const val = refund24h.reduce((s, p) => s + Number(p.amount || 0), 0)
+      alerts.push({ text: `${refund24h.length} reembolso(s) nas ultimas 24h — R$ ${val.toFixed(2).replace('.',',')}`, type: 'critical' })
+    }
+    const refund7d = refundPayments.filter(p => new Date(p.updated_at || p.created_at) >= d7)
+    if (refund7d.length > refund24h.length) {
+      alerts.push({ text: `${refund7d.length} reembolso(s) nos ultimos 7 dias`, type: 'warn' })
+    }
     const expired = (tenants || []).filter(t => t.trial_end && new Date(t.trial_end) < now)
     const expiredNoSub = expired.filter(t => !allSubs.find(s => s.tenant_id === t.id && s.status === 'active'))
     if (expiredNoSub.length > 0) alerts.push({ text: `${expiredNoSub.length} trial(s) expirado(s) sem assinatura`, type: 'critical' })
@@ -216,6 +229,20 @@ export async function POST(req) {
       created_at: p.created_at,
     }))
 
+    // Recent refunds (last 10) — ordenar por updated_at (quando o estorno ocorreu)
+    const refundsSorted = [...refundPayments].sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at))
+    const recentRefunds = refundsSorted.slice(0, 10).map(p => ({
+      id: p.id,
+      tenant_id: p.tenant_id,
+      tenant_name: tenantNameMap[p.tenant_id] || 'Cliente',
+      amount: Number(p.amount || 0),
+      status: p.status,
+      created_at: p.created_at,
+      updated_at: p.updated_at,
+    }))
+    const refundsMonth = refundPayments.filter(p => brDateKey(p.updated_at || p.created_at).startsWith(monthPrefix)).reduce((a, p) => a + Number(p.amount || 0), 0)
+    const netRevenue = totalRevenue - totalRefunded
+
     return NextResponse.json({
       kpis: {
         totalAdmins: admins.length, totalOperators: operators.length,
@@ -224,6 +251,9 @@ export async function POST(req) {
         prevRevenue7d, revenueVariation,
         new7, new30, avgTicket, arpu, churnRate, ltv,
         totalMetas: allMetas.length, totalRemessas: allRem.length,
+        totalRefunded, refundsMonth, refundsCount: refundPayments.length,
+        refunds24h: refund24h.length, refunds7d: refund7d.length,
+        netRevenue,
       },
       funnel: {
         registered: totalSignups,
@@ -235,6 +265,7 @@ export async function POST(req) {
       insights,
       revenueByDay,
       recentSales,
+      recentRefunds,
     })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })

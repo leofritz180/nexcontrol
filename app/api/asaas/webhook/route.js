@@ -1,5 +1,29 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { sendPushToUser } from '../../../../lib/push'
+
+const OWNER_EMAIL = 'leofritz180@gmail.com'
+
+// Status que caracterizam estorno/chargeback/remocao
+const REFUND_STATUSES = new Set([
+  'REFUNDED',
+  'REFUND_REQUESTED',
+  'REFUND_IN_PROGRESS',
+  'CHARGEBACK_REQUESTED',
+  'CHARGEBACK_DISPUTE',
+  'AWAITING_CHARGEBACK_REVERSAL',
+  'PAYMENT_DELETED',
+])
+
+async function notifyOwner(supabase, { title, body, url }) {
+  try {
+    const { data: owner } = await supabase.from('profiles').select('id').eq('email', OWNER_EMAIL).maybeSingle()
+    if (!owner?.id) return
+    await sendPushToUser(supabase, owner.id, { title, body, url: url || '/owner', tag: 'owner-refund' })
+  } catch (e) {
+    console.error('notifyOwner error', e?.message)
+  }
+}
 
 export async function POST(req) {
   try {
@@ -23,7 +47,7 @@ export async function POST(req) {
     // Update payment status
     const { data: existing } = await supabase
       .from('asaas_payments')
-      .select('id,tenant_id,status')
+      .select('id,tenant_id,status,amount')
       .eq('asaas_payment_id', payment.id)
       .maybeSingle()
 
@@ -36,6 +60,45 @@ export async function POST(req) {
       status: payment.status,
       updated_at: new Date().toISOString(),
     }).eq('asaas_payment_id', payment.id)
+
+    // Estorno/chargeback — cancelar assinatura, reverter comissao, notificar owner
+    if (REFUND_STATUSES.has(payment.status)) {
+      const amount = Number(existing.amount || payment.value || 0)
+
+      // Cancelar assinatura ativa deste pagamento (se existir)
+      await supabase.from('subscriptions').update({
+        status: 'cancelled',
+        cancelled_at: new Date().toISOString(),
+      }).eq('external_id', payment.id).eq('status', 'active')
+
+      // Se o tenant nao tem nenhuma outra sub ativa, marcar tenant como expired
+      const { data: stillActive } = await supabase.from('subscriptions')
+        .select('id').eq('tenant_id', existing.tenant_id).eq('status', 'active').limit(1).maybeSingle()
+      if (!stillActive) {
+        await supabase.from('tenants').update({ subscription_status: 'expired' }).eq('id', existing.tenant_id)
+      }
+
+      // Reverter comissao de afiliado gerada por este pagamento
+      await supabase.from('affiliate_commissions').update({ status: 'refunded' })
+        .eq('asaas_payment_id', payment.id).neq('status', 'refunded')
+
+      // Pegar nome do tenant pra notificacao
+      const { data: tenant } = await supabase.from('tenants').select('name').eq('id', existing.tenant_id).maybeSingle()
+      const tenantName = tenant?.name || 'Cliente'
+      const label = payment.status === 'REFUNDED' ? 'Reembolso confirmado'
+        : payment.status === 'CHARGEBACK_REQUESTED' ? 'Chargeback solicitado'
+        : payment.status === 'CHARGEBACK_DISPUTE' ? 'Chargeback em disputa'
+        : payment.status === 'PAYMENT_DELETED' ? 'Pagamento removido'
+        : 'Estorno em andamento'
+
+      await notifyOwner(supabase, {
+        title: `${label} — R$ ${amount.toFixed(2).replace('.', ',')}`,
+        body: `${tenantName} · ${event || payment.status}`,
+        url: '/owner',
+      })
+
+      return NextResponse.json({ ok: true, status: payment.status, refund: true })
+    }
 
     // Activate subscription on confirmed payment
     if (payment.status === 'RECEIVED' || payment.status === 'CONFIRMED') {

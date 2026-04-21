@@ -111,7 +111,7 @@ export default function OwnerPage() {
   )
   if (!data) return null
 
-  const { kpis, funnel, activity, adminStats, alerts, revenueByDay, recentSales = [] } = data
+  const { kpis, funnel, activity, adminStats, alerts, revenueByDay, recentSales = [], recentRefunds = [] } = data
   const variation = kpis.revenueVariation || 0
   const variationUp = variation >= 0
 
@@ -590,6 +590,85 @@ export default function OwnerPage() {
             </div>
           )}
         </motion.div>
+
+        {/* ═══ REEMBOLSOS & CHARGEBACKS ═══ */}
+        {(recentRefunds.length > 0 || (kpis.totalRefunded || 0) > 0) && (
+          <motion.div {...fadeUp(0, 0.33)} style={{ ...card, padding: 24, marginBottom: 28, borderColor: 'rgba(239,68,68,0.2)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <motion.div
+                  animate={kpis.refunds24h > 0 ? { boxShadow: ['0 0 0 0 rgba(239,68,68,0)', '0 0 0 6px rgba(239,68,68,0.28)', '0 0 0 0 rgba(239,68,68,0)'] } : {}}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444', flexShrink: 0 }}
+                />
+                Reembolsos e chargebacks
+              </h3>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Mes: <strong style={{ color: '#EF4444', fontFamily: 'var(--mono)' }}>-R$ {fmt(kpis.refundsMonth || 0)}</strong></span>
+                <span style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Total: <strong style={{ color: '#EF4444', fontFamily: 'var(--mono)' }}>-R$ {fmt(kpis.totalRefunded || 0)}</strong></span>
+              </div>
+            </div>
+
+            {/* Linha de comparacao: receita bruta vs liquida */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
+              <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.1)' }}>
+                <p style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, margin: '0 0 3px' }}>Receita bruta</p>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#22C55E', margin: 0, fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.totalRevenue)}</p>
+              </div>
+              <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.12)' }}>
+                <p style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, margin: '0 0 3px' }}>Estornado</p>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#EF4444', margin: 0, fontFamily: 'var(--mono)' }}>-R$ {fmt(kpis.totalRefunded || 0)}</p>
+              </div>
+              <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(59,130,246,0.04)', border: '1px solid rgba(59,130,246,0.12)' }}>
+                <p style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, margin: '0 0 3px' }}>Receita liquida</p>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#3B82F6', margin: 0, fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.netRevenue || 0)}</p>
+              </div>
+            </div>
+
+            {recentRefunds.length === 0 ? (
+              <div style={{ padding: '14px 0', textAlign: 'center' }}>
+                <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>Nenhum reembolso recente</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <AnimatePresence initial={false}>
+                  {recentRefunds.map(r => {
+                    const label = r.status === 'REFUNDED' ? 'Reembolso'
+                      : r.status === 'CHARGEBACK_REQUESTED' ? 'Chargeback'
+                      : r.status === 'CHARGEBACK_DISPUTE' ? 'Em disputa'
+                      : r.status === 'PAYMENT_DELETED' ? 'Removido'
+                      : 'Estornando'
+                    return (
+                      <motion.div
+                        key={r.id}
+                        layout
+                        initial={{ opacity: 0, x: -18 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 18 }}
+                        transition={{ duration: 0.38, ease }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', borderRadius: 10, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.14)', gap: 12 }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                          </div>
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <p style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.tenant_name}</p>
+                            <p style={{ fontSize: 10, color: '#FCA5A5', margin: '2px 0 0', fontWeight: 600 }}>{label}</p>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
+                          <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{relativeTime(r.updated_at || r.created_at)}</span>
+                          <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#EF4444' }}>-R$ {fmt(r.amount)}</span>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </AnimatePresence>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         {/* ═══ LEVEL 2.5: MOVIMENTACAO + ACTIONS ═══ */}
         <div className="g-side" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 28 }}>

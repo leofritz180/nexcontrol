@@ -25,3 +25,11 @@ create policy "mp_payments: tenant owner cria"
 
 create index if not exists idx_mp_payments_tenant on mp_payments(tenant_id);
 create index if not exists idx_mp_payments_mp_id on mp_payments(mp_payment_id);
+
+-- ============================================================
+-- Flags de plano PRO no profile (paralelo ao subscription_status)
+-- Permite queries diretas "is_pro" sem join em subscriptions
+-- ============================================================
+alter table profiles add column if not exists is_pro boolean not null default false;
+alter table profiles add column if not exists pro_activated_at timestamptz;
+create index if not exists idx_profiles_is_pro on profiles(is_pro) where is_pro = true;

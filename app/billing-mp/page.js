@@ -60,7 +60,11 @@ export default function BillingMpPage() {
     if (pollRef.current) clearInterval(pollRef.current)
     pollRef.current = setInterval(async () => {
       try {
-        const r = await fetch(`/api/mercadopago/status/${paymentId}`)
+        const r = await fetch('/api/mercadopago/check-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ payment_id: paymentId }),
+        })
         const d = await r.json()
         if (d?.status === 'approved') {
           clearInterval(pollRef.current)

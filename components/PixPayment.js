@@ -27,7 +27,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
     if (cpf.replace(/\D/g,'').length < 11) { setError('CPF invalido'); return }
     setStep('loading'); setError('')
     try {
-      const res = await fetch('/api/asaas/create-payment', {
+      const res = await fetch('/api/mercadopago/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -38,6 +38,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
           name: userName,
           email: userEmail,
           cpfCnpj: cpf.replace(/\D/g,''),
+          description: planName ? `NexControl — ${planName}` : 'NexControl',
         }),
       })
       const data = await res.json()
@@ -47,18 +48,18 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
       setStep('pix')
 
       pollRef.current = setInterval(async () => {
-        const check = await fetch('/api/asaas/check-status', {
+        const check = await fetch('/api/mercadopago/check-payment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ payment_id: data.payment_id }),
         }).then(r => r.json())
 
-        if (check.status === 'RECEIVED' || check.status === 'CONFIRMED') {
+        if (check.status === 'RECEIVED' || check.status === 'CONFIRMED' || check.status === 'approved') {
           clearInterval(pollRef.current)
           setStep('paid')
           if (onSuccess) onSuccess()
         }
-      }, 5000)
+      }, 3000)
     } catch (e) {
       setError(e.message)
       setStep('error')

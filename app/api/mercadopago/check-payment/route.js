@@ -21,6 +21,13 @@ export async function GET(req) {
   }
 }
 
+function normalizeStatus(mpStatus) {
+  // Normaliza pra os tokens que o frontend espera (compat Asaas: RECEIVED/CONFIRMED)
+  if (mpStatus === 'approved') return 'RECEIVED'
+  if (mpStatus === 'authorized') return 'CONFIRMED'
+  return mpStatus || 'pending'
+}
+
 async function check(id) {
   if (!id) return NextResponse.json({ error: 'payment_id obrigatorio' }, { status: 400 })
 
@@ -52,7 +59,7 @@ async function check(id) {
           if (pay.status === 'approved') {
             await activatePro(sb, record, String(id))
           }
-          return NextResponse.json({ status: pay.status })
+          return NextResponse.json({ status: normalizeStatus(pay.status), mp_status: pay.status })
         }
       }
     } catch (e) {
@@ -60,7 +67,7 @@ async function check(id) {
     }
   }
 
-  return NextResponse.json({ status: record.status })
+  return NextResponse.json({ status: normalizeStatus(record.status), mp_status: record.status })
 }
 
 async function activatePro(sb, record, paymentId) {

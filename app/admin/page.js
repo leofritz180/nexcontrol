@@ -772,6 +772,43 @@ export default function AdminPage() {
     return { value: lucro, count: filtered.length, custos }
   },[metas,heroPeriod,costs])
 
+  // Resumo estrategico — detecta melhor rede, principal risco e oportunidade
+  const strategicSummary = useMemo(() => {
+    const fechadas = metas.filter(m => m.status_fechamento === 'fechada')
+    if (fechadas.length === 0) return null
+
+    // Por rede
+    const redeMap = {}
+    fechadas.forEach(m => {
+      const r = m.rede || 'Outros'
+      if (!redeMap[r]) redeMap[r] = { rede: r, lucro: 0, metas: 0, contas: 0 }
+      redeMap[r].lucro += Number(m.lucro_final || 0)
+      redeMap[r].metas++
+      redeMap[r].contas += Number(m.quantidade_contas || 0)
+    })
+    const redesArr = Object.values(redeMap).map(r => ({
+      ...r,
+      lucroPorMeta: r.metas > 0 ? r.lucro / r.metas : 0,
+    }))
+    const bestRede = redesArr.filter(r => r.lucro > 0).sort((a, b) => b.lucroPorMeta - a.lucroPorMeta)[0]
+    const worstRede = redesArr.filter(r => r.lucro < 0).sort((a, b) => a.lucro - b.lucro)[0]
+
+    // Operador acelerando (maior lucro + ativas em andamento)
+    const opMap = operators.map(op => {
+      const opFechadas = fechadas.filter(m => m.operator_id === op.id)
+      const lucroOp = opFechadas.reduce((a, m) => a + Number(m.lucro_final || 0), 0)
+      const ativas = metas.filter(m => m.operator_id === op.id && (m.status || 'ativa') === 'ativa').length
+      return { op, lucro: lucroOp, ativas, fechadas: opFechadas.length }
+    })
+    const topOp = opMap.filter(x => x.lucro > 0 && x.ativas > 0).sort((a, b) => b.lucro - a.lucro)[0]
+
+    return {
+      bestRede: bestRede ? { rede: bestRede.rede, lucroPorMeta: bestRede.lucroPorMeta, metas: bestRede.metas } : null,
+      worstRede: worstRede ? { rede: worstRede.rede, lucro: worstRede.lucro, metas: worstRede.metas } : null,
+      topOp: topOp ? { nome: topOp.op?.nome || topOp.op?.email?.split('@')[0] || 'Operador', lucro: topOp.lucro, ativas: topOp.ativas } : null,
+    }
+  }, [metas, operators])
+
   const ranking = useMemo(()=>
     operators.map(op=>{
       const opMetas = metas.filter(m=>m.operator_id===op.id&&m.status_fechamento==='fechada')
@@ -1602,11 +1639,14 @@ export default function AdminPage() {
               <div style={{ position:'relative', zIndex:1 }}>
                 <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:10, marginBottom:24 }}>
                   <div>
-                    <p style={{ fontSize:10, color:'var(--t4)', fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', margin:'0 0 4px' }}>
-                      Resultado total da operação
-                    </p>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+                      <div style={{ width:3, height:12, borderRadius:2, background: heroNet>=0?'#22C55E':'#EF4444', boxShadow:`0 0 10px ${heroNet>=0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)'}` }}/>
+                      <p style={{ fontSize:10, color:'var(--t4)', fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', margin:0 }}>
+                        Resultado consolidado da operação
+                      </p>
+                    </div>
                     <p style={{ fontSize:12, color:'var(--t3)', fontWeight:500, margin:0 }}>
-                      {heroPeriod==='all'?'Acumulado desde o inicio':heroPeriod==='today'?'Operacao de hoje':heroPeriod==='yesterday'?'Operacao de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
+                      {heroPeriod==='all'?'Lucro final acumulado · desde o inicio':heroPeriod==='today'?'Performance de hoje':heroPeriod==='yesterday'?'Performance de ontem':heroPeriod==='7d'?'Performance dos ultimos 7 dias':'Performance dos ultimos 30 dias'}
                     </p>
                   </div>
                   <div style={{ display:'flex', gap:2, background:'rgba(0,0,0,0.3)', borderRadius:9, padding:3, flexWrap:'wrap' }}>
@@ -1657,22 +1697,32 @@ export default function AdminPage() {
                     }
                   `}</style>
                 </div>
-                {/* Dynamic label */}
+                {/* Dynamic label + micro contexto executivo */}
                 {(() => {
                   const v = heroLucro.value
                   const c = heroLucro.custos || 0
-                  let label, lColor
-                  if (v > 0 && heroPeriod !== 'all') { label = 'Operacao acelerando'; lColor = '#4ade80' }
-                  else if (v > 0) { label = 'Resultado positivo'; lColor = '#4ade80' }
-                  else if (v < 0) { label = 'Oscilando — atencao'; lColor = '#fca5a5' }
-                  else { label = 'Estavel'; lColor = '#94A3B8' }
+                  let label, lColor, badgeBg
+                  if (v > 0 && heroPeriod !== 'all') { label = 'Operacao acelerando'; lColor = '#22C55E'; badgeBg = 'rgba(34,197,94,0.12)' }
+                  else if (v > 0) { label = 'Resultado positivo'; lColor = '#22C55E'; badgeBg = 'rgba(34,197,94,0.12)' }
+                  else if (v < 0) { label = 'Oscilando — atencao'; lColor = '#EF4444'; badgeBg = 'rgba(239,68,68,0.12)' }
+                  else { label = 'Estavel'; lColor = '#94A3B8'; badgeBg = 'rgba(148,163,184,0.1)' }
                   return (
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:10 }}>
-                      <span style={{ fontSize:11, fontWeight:600, color:lColor }}>{label}</span>
-                      {c > 0 && <span style={{ fontSize:10, color:'var(--t4)' }}>· Custos: -R$ {fmt(c)}</span>}
+                    <div style={{ display:'flex', alignItems:'center', gap:10, marginTop:12, flexWrap:'wrap' }}>
+                      <span style={{
+                        fontSize:10, fontWeight:800, color:lColor, padding:'4px 10px', borderRadius:6,
+                        background: badgeBg, border:`1px solid ${lColor}33`,
+                        letterSpacing:'0.06em', textTransform:'uppercase',
+                      }}>
+                        {label}
+                      </span>
+                      {c > 0 && <span style={{ fontSize:10, color:'var(--t4)', fontFamily:'var(--mono)' }}>Custos: −R$ {fmt(c)}</span>}
                     </div>
                   )
                 })()}
+                {/* Micro contexto */}
+                <p style={{ fontSize:11, color:'var(--t4)', margin:'10px 0 0', fontWeight:500, letterSpacing:'0.01em' }}>
+                  Baseado em metas fechadas, remessas e custos registrados
+                </p>
 
                 <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:20, marginTop:20, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
                   <div>
@@ -1753,48 +1803,190 @@ export default function AdminPage() {
             )
           })()}
 
+          {/* Resumo estrategico de hoje */}
+          {strategicSummary && (strategicSummary.bestRede || strategicSummary.worstRede || strategicSummary.topOp) && (
+            <motion.div
+              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
+              transition={{duration:0.4,delay:0.2,ease}}
+              style={{
+                position:'relative', overflow:'hidden',
+                padding:'22px 24px', borderRadius:16, marginBottom:20,
+                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
+                border:'1px solid rgba(255,255,255,0.07)',
+                boxShadow:'0 8px 28px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)',
+              }}>
+              {/* Top highlight line */}
+              <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(168,85,247,0.45), transparent)', pointerEvents:'none' }}/>
+
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16 }}>
+                <div style={{
+                  width:30, height:30, borderRadius:9,
+                  background:'rgba(168,85,247,0.12)', border:'1px solid rgba(168,85,247,0.25)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                }}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round">
+                    <path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/>
+                  </svg>
+                </div>
+                <div>
+                  <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Resumo estrategico de hoje</p>
+                  <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500, letterSpacing:'0.04em' }}>
+                    Leitura rapida do que priorizar agora
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:12 }}>
+                {/* Melhor rede */}
+                {strategicSummary.bestRede && (
+                  <motion.div
+                    whileHover={{ y:-2, transition:{duration:0.2} }}
+                    style={{
+                      position:'relative', padding:'14px 16px', borderRadius:12,
+                      background:'linear-gradient(145deg, rgba(34,197,94,0.05), rgba(34,197,94,0.01))',
+                      border:'1px solid rgba(34,197,94,0.18)',
+                      boxShadow:'0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(34,197,94,0.04)',
+                    }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+                      <div style={{ width:26, height:26, borderRadius:8, background:'rgba(34,197,94,0.14)', border:'1px solid rgba(34,197,94,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                      </div>
+                      <p style={{ fontSize:9, color:'#4ade80', fontWeight:700, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Melhor rede</p>
+                    </div>
+                    <p style={{ fontSize:16, fontWeight:800, color:'var(--t1)', margin:'0 0 3px', letterSpacing:'-0.01em', fontFamily:'var(--mono)' }}>
+                      {strategicSummary.bestRede.rede}
+                    </p>
+                    <p style={{ fontSize:11, color:'#22C55E', margin:0, fontWeight:600, fontFamily:'var(--mono)' }}>
+                      +R$ {fmt(strategicSummary.bestRede.lucroPorMeta)}/meta · {strategicSummary.bestRede.metas} meta{strategicSummary.bestRede.metas>1?'s':''}
+                    </p>
+                  </motion.div>
+                )}
+
+                {/* Principal risco */}
+                {strategicSummary.worstRede ? (
+                  <motion.div
+                    whileHover={{ y:-2, transition:{duration:0.2} }}
+                    style={{
+                      position:'relative', padding:'14px 16px', borderRadius:12,
+                      background:'linear-gradient(145deg, rgba(239,68,68,0.05), rgba(239,68,68,0.01))',
+                      border:'1px solid rgba(239,68,68,0.18)',
+                      boxShadow:'0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(239,68,68,0.04)',
+                    }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+                      <div style={{ width:26, height:26, borderRadius:8, background:'rgba(239,68,68,0.14)', border:'1px solid rgba(239,68,68,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                      </div>
+                      <p style={{ fontSize:9, color:'#fca5a5', fontWeight:700, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Principal risco</p>
+                    </div>
+                    <p style={{ fontSize:16, fontWeight:800, color:'var(--t1)', margin:'0 0 3px', letterSpacing:'-0.01em', fontFamily:'var(--mono)' }}>
+                      {strategicSummary.worstRede.rede}
+                    </p>
+                    <p style={{ fontSize:11, color:'#EF4444', margin:0, fontWeight:600, fontFamily:'var(--mono)' }}>
+                      −R$ {fmt(Math.abs(strategicSummary.worstRede.lucro))} em {strategicSummary.worstRede.metas} meta{strategicSummary.worstRede.metas>1?'s':''}
+                    </p>
+                  </motion.div>
+                ) : (
+                  <div style={{
+                    padding:'14px 16px', borderRadius:12,
+                    background:'linear-gradient(145deg, rgba(148,163,184,0.03), rgba(148,163,184,0.01))',
+                    border:'1px solid rgba(148,163,184,0.1)',
+                  }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+                      <div style={{ width:26, height:26, borderRadius:8, background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      </div>
+                      <p style={{ fontSize:9, color:'var(--t3)', fontWeight:700, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Risco operacional</p>
+                    </div>
+                    <p style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:'0 0 3px' }}>Nenhum risco ativo</p>
+                    <p style={{ fontSize:11, color:'var(--t4)', margin:0, fontWeight:500 }}>
+                      Todas as redes com resultado positivo
+                    </p>
+                  </div>
+                )}
+
+                {/* Oportunidade de escala */}
+                {strategicSummary.topOp && (
+                  <motion.div
+                    whileHover={{ y:-2, transition:{duration:0.2} }}
+                    style={{
+                      position:'relative', padding:'14px 16px', borderRadius:12,
+                      background:'linear-gradient(145deg, rgba(245,158,11,0.05), rgba(245,158,11,0.01))',
+                      border:'1px solid rgba(245,158,11,0.18)',
+                      boxShadow:'0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(245,158,11,0.04)',
+                    }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
+                      <div style={{ width:26, height:26, borderRadius:8, background:'rgba(245,158,11,0.14)', border:'1px solid rgba(245,158,11,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                      </div>
+                      <p style={{ fontSize:9, color:'#FCD34D', fontWeight:700, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Oportunidade de escala</p>
+                    </div>
+                    <p style={{ fontSize:15, fontWeight:800, color:'var(--t1)', margin:'0 0 3px', letterSpacing:'-0.01em', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                      {strategicSummary.topOp.nome}
+                    </p>
+                    <p style={{ fontSize:11, color:'#F59E0B', margin:0, fontWeight:600, fontFamily:'var(--mono)' }}>
+                      +R$ {fmt(strategicSummary.topOp.lucro)} · {strategicSummary.topOp.ativas} ativa{strategicSummary.topOp.ativas>1?'s':''}
+                    </p>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          )}
+
           {/* Previsao de lucro */}
           {global.fechadas > 0 && (
             <motion.div
               initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
               transition={{duration:0.35,delay:0.25,ease}}
               style={{
-                padding:'20px 24px', borderRadius:14, marginBottom:20,
-                background:'linear-gradient(145deg, #0c1424, #080e1a)',
-                border:`1px solid ${global.lucroPerConta>=0?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)'}`,
-                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+                position:'relative', overflow:'hidden',
+                padding:'22px 24px', borderRadius:16, marginBottom:20,
+                background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
+                border:`1px solid ${global.lucroPerConta>=0?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.15)'}`,
+                boxShadow:`0 8px 28px rgba(0,0,0,0.45), 0 0 40px ${global.lucroPerConta>=0?'rgba(34,197,94,0.05)':'rgba(239,68,68,0.05)'}, inset 0 1px 0 rgba(255,255,255,0.04)`,
                 display:'flex', alignItems:'center', gap:24, flexWrap:'wrap',
               }}>
-              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+              {/* Top highlight line */}
+              <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:`linear-gradient(90deg, transparent, ${global.lucroPerConta>=0?'rgba(34,197,94,0.4)':'rgba(239,68,68,0.4)'}, transparent)`, pointerEvents:'none' }}/>
+
+              <div style={{ display:'flex', alignItems:'center', gap:12, minWidth:180 }}>
                 <div style={{
-                  width:34, height:34, borderRadius:10,
-                  background:global.lucroPerConta>=0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)',
-                  border:`1px solid ${global.lucroPerConta>=0?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)'}`,
+                  width:38, height:38, borderRadius:11,
+                  background:global.lucroPerConta>=0?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)',
+                  border:`1px solid ${global.lucroPerConta>=0?'rgba(34,197,94,0.28)':'rgba(239,68,68,0.28)'}`,
                   display:'flex', alignItems:'center', justifyContent:'center',
+                  boxShadow: global.lucroPerConta>=0 ? '0 0 16px rgba(34,197,94,0.15)' : '0 0 16px rgba(239,68,68,0.15)',
                 }}>
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={global.lucroPerConta>=0?'var(--profit)':'var(--loss)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke={global.lucroPerConta>=0?'var(--profit)':'var(--loss)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points={global.lucroPerConta>=0?"23 6 13.5 15.5 8.5 10.5 1 18":"1 18 10.5 8.5 15.5 13.5 23 6"}/>
                     <polyline points={global.lucroPerConta>=0?"17 6 23 6 23 12":"17 6 23 6 23 12"}/>
                   </svg>
                 </div>
-                <p style={{ fontSize:12, fontWeight:700, color:'var(--t2)', margin:0, letterSpacing:'0.03em', textTransform:'uppercase' }}>Previsao</p>
-              </div>
-              <div style={{ display:'flex', gap:28, flexWrap:'wrap', flex:1 }}>
                 <div>
-                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Lucro medio / meta</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:global.lucroPerMeta>=0?'var(--profit)':'var(--loss)', margin:0 }}>
+                  <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Previsao inteligente</p>
+                  <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>
+                    {global.lucroPerConta>=0 ? 'Tendencia positiva — manter ritmo' : 'Tendencia negativa — revisar estrategia'}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display:'flex', gap:22, flexWrap:'wrap', flex:1 }}>
+                <div style={{ paddingLeft:18, borderLeft:'1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize:9, color:'var(--t4)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:700 }}>Media / meta</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:17, fontWeight:800, color:global.lucroPerMeta>=0?'var(--profit)':'var(--loss)', margin:0, letterSpacing:'-0.02em' }}>
                     {global.lucroPerMeta>=0?'+':''}R$ {fmt(global.lucroPerMeta)}
                   </p>
                 </div>
-                <div>
-                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Lucro medio / conta</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', margin:0 }}>
+                <div style={{ paddingLeft:18, borderLeft:'1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize:9, color:'var(--t4)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:700 }}>Media / conta</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:17, fontWeight:800, color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', margin:0, letterSpacing:'-0.02em' }}>
                     {global.lucroPerConta>=0?'+':''}R$ {fmt(global.lucroPerConta)}
                   </p>
                 </div>
-                <div>
-                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Estimativa proximas 50 contas</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:global.lucroPerConta*50>=0?'var(--profit)':'var(--loss)', margin:0 }}>
+                <div style={{ paddingLeft:18, borderLeft:'1px solid rgba(255,255,255,0.06)' }}>
+                  <p style={{ fontSize:9, color:'var(--t4)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:700 }}>Projecao · 50 contas</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:17, fontWeight:800, color:global.lucroPerConta*50>=0?'var(--profit)':'var(--loss)', margin:0, letterSpacing:'-0.02em' }}>
                     {global.lucroPerConta*50>=0?'+':''}R$ {fmt(global.lucroPerConta*50)}
                   </p>
                 </div>
@@ -1929,19 +2121,27 @@ export default function AdminPage() {
               </div>
             </motion.div>
 
-            {/* Operadores — clean list */}
+            {/* Operadores — leaderboard premium */}
             <motion.div
               initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
               transition={{duration:0.35,delay:0.35,ease}}
               style={{
-                padding:'28px 28px', borderRadius:16,
-                background:'linear-gradient(145deg, #0c1424, #080e1a)',
-                border:'1px solid rgba(255,255,255,0.05)',
-                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+                position:'relative', overflow:'hidden',
+                padding:'26px 28px', borderRadius:18,
+                background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
+                border:'1px solid rgba(255,215,0,0.1)',
+                boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.03), inset 0 1px 0 rgba(255,255,255,0.05)',
               }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
-                <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Top operadores</h3>
-                <span style={{ fontSize:10, color:'var(--t4)' }}>{operators.length} na equipe</span>
+              {/* Gold top highlight */}
+              <div style={{ position:'absolute', top:0, left:'10%', right:'10%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,215,0,0.35), transparent)', pointerEvents:'none' }}/>
+
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18, position:'relative' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><line x1="4" y1="22" x2="20" y2="22"/><line x1="10" y1="14.66" x2="10" y2="18"/><line x1="14" y1="14.66" x2="14" y2="18"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
+                  <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Leaderboard</h3>
+                </div>
+                <span style={{ fontSize:10, color:'var(--t4)', fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>{operators.length} na equipe</span>
               </div>
               {(() => {
                 const ranked = operators.map(op => {
@@ -1965,23 +2165,35 @@ export default function AdminPage() {
                         : 'stable'
                       return (
                         <motion.div key={op.id}
-                          initial={{opacity:0,x:-8}} animate={{opacity:1,x:0}}
-                          transition={{duration:0.3,delay:i*0.06}}
-                          whileHover={{ background:'rgba(255,255,255,0.03)', x:4, transition:{duration:0.15} }}
+                          initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}}
+                          transition={{duration:0.4,delay:i*0.08,ease}}
+                          whileHover={{ background: i===0 ? 'rgba(255,215,0,0.05)' : 'rgba(255,255,255,0.03)', x:4, transition:{duration:0.15} }}
                           style={{
-                            padding:'14px 12px', display:'flex', alignItems:'center', gap:12,
+                            padding: i===0 ? '16px 12px' : '13px 12px',
+                            display:'flex', alignItems:'center', gap:12,
                             borderBottom: i<ranked.length-1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                            borderRadius:10, margin:'0 -12px', cursor:'default',
+                            borderRadius:12, margin:'0 -12px', cursor:'default',
+                            background: i===0 ? 'linear-gradient(90deg, rgba(255,215,0,0.04), transparent)' : 'transparent',
+                            position:'relative',
                           }}>
+                          {/* Gold accent line pro #1 */}
+                          {i===0 && (
+                            <div style={{ position:'absolute', left:0, top:'18%', bottom:'18%', width:3, borderRadius:'0 2px 2px 0', background:'#FFD700', boxShadow:'0 0 12px rgba(255,215,0,0.7)' }}/>
+                          )}
                           {/* Position */}
                           <div style={{
-                            width:28, height:28, borderRadius:8, flexShrink:0,
-                            background: isTop3 ? `${medals[i]}15` : 'var(--raised)',
-                            border: isTop3 ? `1px solid ${medals[i]}33` : '1px solid var(--b1)',
+                            width: i===0 ? 34 : 28, height: i===0 ? 34 : 28, borderRadius: i===0 ? 10 : 8, flexShrink:0,
+                            background: isTop3 ? `${medals[i]}1f` : 'var(--raised)',
+                            border: isTop3 ? `1px solid ${medals[i]}55` : '1px solid var(--b1)',
                             display:'flex', alignItems:'center', justifyContent:'center',
-                            boxShadow: i===0 ? `0 0 12px ${medals[0]}20` : 'none',
+                            boxShadow: i===0 ? `0 0 20px ${medals[0]}35, inset 0 1px 0 ${medals[0]}30` : isTop3 ? `0 0 10px ${medals[i]}20` : 'none',
+                            position:'relative',
                           }}>
-                            <span style={{ fontSize:11, fontWeight:900, color: isTop3 ? medals[i] : 'var(--t4)' }}>{i+1}</span>
+                            {i===0 ? (
+                              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                            ) : (
+                              <span style={{ fontSize:12, fontWeight:900, color: isTop3 ? medals[i] : 'var(--t4)' }}>{i+1}</span>
+                            )}
                           </div>
                           {/* Info */}
                           <div style={{ flex:1, minWidth:0 }}>

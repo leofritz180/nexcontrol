@@ -1569,21 +1569,46 @@ export default function AdminPage() {
                 border:'1px solid rgba(255,255,255,0.06)',
                 boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)',
               }}>
-              {/* Ambient glow */}
+              {/* Ambient glow — mais intenso */}
               <div style={{
-                position:'absolute', top:'5%', left:'0%', width:450, height:350, borderRadius:'50%',
+                position:'absolute', top:'5%', left:'0%', width:520, height:420, borderRadius:'50%',
                 background: heroNet>=0
-                  ? 'radial-gradient(circle, rgba(34,197,94,0.08), transparent 60%)'
-                  : 'radial-gradient(circle, rgba(239,68,68,0.08), transparent 60%)',
-                filter:'blur(50px)', pointerEvents:'none',
+                  ? 'radial-gradient(circle, rgba(34,197,94,0.14), transparent 60%)'
+                  : 'radial-gradient(circle, rgba(239,68,68,0.14), transparent 60%)',
+                filter:'blur(60px)', pointerEvents:'none',
               }}/>
-              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent)', pointerEvents:'none' }}/>
+
+              {/* Mini sparkline de fundo (linha sutil simulando evolucao) */}
+              <svg
+                style={{ position:'absolute', bottom:0, left:0, right:0, pointerEvents:'none', opacity:0.28 }}
+                viewBox="0 0 400 90" preserveAspectRatio="none" width="100%" height="100"
+              >
+                <defs>
+                  <linearGradient id="heroLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="0"/>
+                    <stop offset="50%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="0.6"/>
+                    <stop offset="100%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="1"/>
+                  </linearGradient>
+                  <linearGradient id="heroAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="0.14"/>
+                    <stop offset="100%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0,70 L40,66 L80,58 L120,62 L160,48 L200,40 L240,45 L280,30 L320,22 L360,14 L400,8 L400,90 L0,90 Z" fill="url(#heroAreaGrad)"/>
+                <path d="M0,70 L40,66 L80,58 L120,62 L160,48 L200,40 L240,45 L280,30 L320,22 L360,14 L400,8" fill="none" stroke="url(#heroLineGrad)" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
 
               <div style={{ position:'relative', zIndex:1 }}>
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10, marginBottom:28 }}>
-                  <p style={{ fontSize:13, color:'var(--t3)', fontWeight:500, margin:0 }}>
-                    {heroPeriod==='all'?'Lucro final acumulado':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
-                  </p>
+                <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:10, marginBottom:24 }}>
+                  <div>
+                    <p style={{ fontSize:10, color:'var(--t4)', fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', margin:'0 0 4px' }}>
+                      Resultado total da operação
+                    </p>
+                    <p style={{ fontSize:12, color:'var(--t3)', fontWeight:500, margin:0 }}>
+                      {heroPeriod==='all'?'Acumulado desde o inicio':heroPeriod==='today'?'Operacao de hoje':heroPeriod==='yesterday'?'Operacao de ontem':heroPeriod==='7d'?'Ultimos 7 dias':'Ultimos 30 dias'}
+                    </p>
+                  </div>
                   <div style={{ display:'flex', gap:2, background:'rgba(0,0,0,0.3)', borderRadius:9, padding:3, flexWrap:'wrap' }}>
                     {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d']].map(([k,l])=>(
                       <button key={k} onClick={()=>setHeroPeriod(k)}
@@ -1603,8 +1628,8 @@ export default function AdminPage() {
                 <div style={{ position:'relative', overflow:'hidden', display:'inline-block' }}>
                   <motion.div
                     animate={{ textShadow: heroNet>=0
-                      ? ['0 0 40px rgba(34,197,94,0.15)','0 0 80px rgba(34,197,94,0.25)','0 0 40px rgba(34,197,94,0.15)']
-                      : ['0 0 40px rgba(239,68,68,0.15)','0 0 80px rgba(239,68,68,0.25)','0 0 40px rgba(239,68,68,0.15)']
+                      ? ['0 0 50px rgba(34,197,94,0.3)','0 0 100px rgba(34,197,94,0.45)','0 0 50px rgba(34,197,94,0.3)']
+                      : ['0 0 50px rgba(239,68,68,0.3)','0 0 100px rgba(239,68,68,0.45)','0 0 50px rgba(239,68,68,0.3)']
                     }}
                     transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
                   >
@@ -1612,16 +1637,25 @@ export default function AdminPage() {
                       value={Math.abs(heroNet)}
                       key={heroPeriod}
                       prefix={`${heroNet>=0?'+':'-'}R$ `}
+                      className="hero-value"
                       style={{
-                        fontFamily:'var(--mono)', fontSize:52, fontWeight:900,
+                        fontFamily:'var(--mono)', fontSize:68, fontWeight:900,
                         color: heroNet>=0 ? 'var(--profit)' : 'var(--loss)',
-                        lineHeight:1, letterSpacing:'-0.03em', display:'block',
+                        lineHeight:1, letterSpacing:'-0.035em', display:'block',
                       }}
                     />
                   </motion.div>
                   {/* Shimmer */}
-                  <div style={{ position:'absolute', top:0, bottom:0, width:'30%', background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)', animation:'heroShimmer 4s ease-in-out infinite', pointerEvents:'none' }}/>
-                  <style>{`@keyframes heroShimmer { 0% { left:-30%; } 100% { left:130%; } }`}</style>
+                  <div style={{ position:'absolute', top:0, bottom:0, width:'30%', background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)', animation:'heroShimmer 4s ease-in-out infinite', pointerEvents:'none' }}/>
+                  <style>{`
+                    @keyframes heroShimmer { 0% { left:-30%; } 100% { left:130%; } }
+                    @media (max-width: 768px) {
+                      .hero-value { font-size: 48px !important; }
+                    }
+                    @media (max-width: 480px) {
+                      .hero-value { font-size: 40px !important; }
+                    }
+                  `}</style>
                 </div>
                 {/* Dynamic label */}
                 {(() => {
@@ -1661,33 +1695,59 @@ export default function AdminPage() {
               </div>
             </motion.div>
 
-            {/* RIGHT — 4 stacked KPI cards */}
-            <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              {[
-                { label:'Total depositado', value:global.totalDep, prefix:'R$ ', accent:'rgba(59,130,246,0.4)' },
-                { label:'Total sacado', value:global.totalSaq, prefix:'R$ ', accent:'rgba(245,158,11,0.4)' },
-                { label:'Total metas', value:global.totalMetas, prefix:'', decimals:0, accent:'rgba(255,255,255,0.15)' },
-                { label:'Total de depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), prefix:'', decimals:0, accent:'rgba(229,57,53,0.4)' },
-              ].map((k,i)=>(
-                <motion.div key={i}
-                  initial={{opacity:0,x:14}} animate={{opacity:1,x:0}}
-                  transition={{duration:0.3,delay:0.1+i*0.07,ease}}
-                  whileHover={{ y:-3, boxShadow:'0 14px 40px rgba(0,0,0,0.55)', borderColor:'rgba(255,255,255,0.1)', transition:{duration:0.2} }}
-                  style={{
-                    position:'relative', flex:1, padding:'18px 22px 18px 26px', borderRadius:14,
-                    background:'linear-gradient(145deg, #0c1424, #080e1a)',
-                    border:'1px solid rgba(255,255,255,0.05)',
-                    boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
-                    transition:'all 0.25s ease',
-                    display:'flex', alignItems:'center', justifyContent:'space-between',
-                  }}>
-                  {/* Left accent line */}
-                  <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:'0 2px 2px 0', background:k.accent }}/>
-                  <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{k.label}</p>
-                  <AnimatedNumber value={k.value} prefix={k.prefix} decimals={k.decimals ?? 2}
-                    style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:800, color:'var(--t1)' }} />
-                </motion.div>
-              ))}
+            {/* RIGHT — KPIs com hierarquia (primeiro dominante) */}
+            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              {(() => {
+                const items = [
+                  { label:'Total depositado', value:global.totalDep, prefix:'R$ ', accent:'#3B82F6', hero:true },
+                  { label:'Total sacado', value:global.totalSaq, prefix:'R$ ', accent:'#F59E0B' },
+                  { label:'Total metas', value:global.totalMetas, prefix:'', decimals:0, accent:'rgba(255,255,255,0.25)' },
+                  { label:'Depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), prefix:'', decimals:0, accent:'#e53935' },
+                ]
+                return items.map((k,i)=>(
+                  <motion.div key={i}
+                    initial={{opacity:0,x:14}} animate={{opacity:1,x:0}}
+                    transition={{duration:0.3,delay:0.1+i*0.07,ease}}
+                    whileHover={{ y:-2, boxShadow:`0 14px 40px rgba(0,0,0,0.55), 0 0 24px ${k.accent}15`, borderColor:'rgba(255,255,255,0.1)', transition:{duration:0.2} }}
+                    style={{
+                      position:'relative', overflow:'hidden',
+                      flex: k.hero ? 1.4 : 1,
+                      padding: k.hero ? '22px 22px 22px 26px' : '14px 20px 14px 24px',
+                      borderRadius: k.hero ? 16 : 12,
+                      background: k.hero
+                        ? 'linear-gradient(145deg, rgba(59,130,246,0.06), rgba(12,20,36,0.85))'
+                        : 'linear-gradient(145deg, #0c1424, #080e1a)',
+                      backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)',
+                      border: `1px solid ${k.hero ? 'rgba(59,130,246,0.18)' : 'rgba(255,255,255,0.05)'}`,
+                      boxShadow: k.hero
+                        ? '0 8px 28px rgba(0,0,0,0.45), 0 0 30px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.05)'
+                        : '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+                      transition:'all 0.25s ease',
+                      display:'flex', alignItems:'center', justifyContent:'space-between', gap:12,
+                    }}>
+                    {/* Accent line esquerdo */}
+                    <div style={{ position:'absolute', left:0, top: k.hero ? '15%' : '20%', bottom: k.hero ? '15%' : '20%', width: k.hero ? 3 : 2, borderRadius:'0 2px 2px 0', background:k.accent, boxShadow: k.hero ? `0 0 12px ${k.accent}` : 'none' }}/>
+                    <div>
+                      <p style={{ fontSize: k.hero ? 10 : 10, color: k.hero ? 'var(--t3)' : 'var(--t4)', margin:0, fontWeight: k.hero ? 700 : 600, letterSpacing: k.hero ? '0.08em' : '0.04em', textTransform: k.hero ? 'uppercase' : 'none' }}>
+                        {k.label}
+                      </p>
+                      {k.hero && (
+                        <p style={{ fontSize:10, color:'var(--t4)', margin:'3px 0 0', fontWeight:500 }}>
+                          Volume total movimentado
+                        </p>
+                      )}
+                    </div>
+                    <AnimatedNumber value={k.value} prefix={k.prefix} decimals={k.decimals ?? 2}
+                      style={{
+                        fontFamily:'var(--mono)',
+                        fontSize: k.hero ? 24 : 18,
+                        fontWeight: k.hero ? 900 : 700,
+                        color: k.hero ? '#F1F5F9' : 'var(--t1)',
+                        letterSpacing:'-0.02em',
+                      }} />
+                  </motion.div>
+                ))
+              })()}
             </div>
           </div>
             )
@@ -1787,50 +1847,80 @@ export default function AdminPage() {
           {/* Activity — feed + operators */}
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:20 }}>
 
-            {/* Feed */}
+            {/* Feed — destaque com glass + glow */}
             <motion.div
               initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
               transition={{duration:0.35,delay:0.3,ease}}
               style={{
-                padding:'28px 28px', borderRadius:16,
-                background:'linear-gradient(145deg, #0c1424, #080e1a)',
-                border:'1px solid rgba(255,255,255,0.05)',
-                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+                position:'relative', overflow:'hidden',
+                padding:'26px 28px', borderRadius:18,
+                background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
+                border:'1px solid rgba(34,197,94,0.12)',
+                boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 48px rgba(34,197,94,0.06), inset 0 1px 0 rgba(255,255,255,0.05)',
               }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:22 }}>
-                <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Remessas recentes</h3>
-                <span style={{ fontSize:11, color:'var(--t4)' }}>{remessas.length} total</span>
+              {/* Top highlight line */}
+              <div style={{ position:'absolute', top:0, left:'10%', right:'10%', height:1, background:'linear-gradient(90deg, transparent, rgba(34,197,94,0.35), transparent)', pointerEvents:'none' }}/>
+
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, position:'relative' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                  <motion.div
+                    animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.55)','0 0 0 7px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
+                    transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                    style={{ width:8, height:8, borderRadius:'50%', background:'#22C55E' }}
+                  />
+                  <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Atividade ao vivo</h3>
+                </div>
+                <span style={{ fontSize:10, color:'var(--t4)', fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>{remessas.length} remessas</span>
               </div>
-              <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+              <div style={{ display:'flex', flexDirection:'column', gap:0, position:'relative' }}>
                 {remessas.slice(0,6).map((r,i)=>{
                   const m   = metas.find(x=>x.id===r.meta_id)
                   const op  = operators.find(o=>o.id===m?.operator_id)
                   const pos = Number(r.resultado||0)>=0
                   const val = Math.abs(Number(r.resultado||0))
                   const accentC = pos ? '#22C55E' : '#EF4444'
+                  // Timestamp relativo
+                  const diffMs = Date.now() - new Date(r.created_at).getTime()
+                  const diffMin = Math.floor(diffMs/60000)
+                  const diffH = Math.floor(diffMs/3600000)
+                  const diffD = Math.floor(diffMs/86400000)
+                  const timeLabel = diffMin < 1 ? 'agora' : diffMin < 60 ? `${diffMin}min` : diffH < 24 ? `${diffH}h` : `${diffD}d`
+                  const isFirst = i === 0
                   return (
                     <motion.div key={r.id}
-                      initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}}
-                      transition={{duration:0.3,delay:i*0.05}}
-                      whileHover={{ background:'rgba(255,255,255,0.03)', x:3, transition:{duration:0.15} }}
+                      initial={{opacity:0,x:-14}} animate={{opacity:1,x:0}}
+                      transition={{duration:0.4,delay:i*0.08,ease}}
+                      whileHover={{ background:'rgba(255,255,255,0.04)', x:3, transition:{duration:0.15} }}
                       style={{
-                      padding:'12px 10px', display:'flex', alignItems:'center', gap:10,
+                      padding:'13px 12px', display:'flex', alignItems:'center', gap:12,
                       borderBottom: i<5 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                      borderRadius:8, margin:'0 -10px', position:'relative',
+                      borderRadius:10, margin:'0 -12px', position:'relative',
                     }}>
                       {/* Accent line */}
-                      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:2, background:accentC, opacity:0.5 }}/>
-                      <div style={{ width:30, height:30, borderRadius:8, background:`${accentC}10`, border:`1px solid ${accentC}20`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                        <span style={{ fontSize:11, fontWeight:700, color:accentC }}>{getName(op)[0]?.toUpperCase()}</span>
+                      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:2, background:accentC, opacity: isFirst ? 0.9 : 0.5, boxShadow: isFirst ? `0 0 8px ${accentC}` : 'none' }}/>
+                      <div style={{ position:'relative', width:32, height:32, borderRadius:9, background:`${accentC}12`, border:`1px solid ${accentC}25`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <span style={{ fontSize:12, fontWeight:800, color:accentC }}>{getName(op)[0]?.toUpperCase()}</span>
+                        {isFirst && (
+                          <motion.div
+                            animate={{ boxShadow:[`0 0 0 0 ${accentC}80`, `0 0 0 6px ${accentC}00`, `0 0 0 0 ${accentC}00`] }}
+                            transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
+                            style={{ position:'absolute', top:-2, right:-2, width:8, height:8, borderRadius:'50%', background:accentC, border:'2px solid #0c1424' }}
+                          />
+                        )}
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                          <span style={{ fontSize:12, fontWeight:600, color:'var(--t1)' }}>{getName(op)}</span>
-                          <span style={{ fontSize:8, fontWeight:700, padding:'1px 5px', borderRadius:3, background:`${accentC}12`, color:accentC, border:`1px solid ${accentC}20` }}>{pos?'LUCRO':'PERDA'}</span>
+                        <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+                          <span style={{ fontSize:12, fontWeight:700, color:'var(--t1)' }}>{getName(op)}</span>
+                          <span style={{ fontSize:8, fontWeight:700, padding:'1px 6px', borderRadius:4, background:`${accentC}14`, color:accentC, border:`1px solid ${accentC}22`, letterSpacing:'0.04em' }}>{pos?'LUCRO':'PERDA'}</span>
                         </div>
-                        <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0' }}>{m?.rede||''} · {new Date(r.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</p>
+                        <p style={{ fontSize:10, color:'var(--t4)', margin:'3px 0 0', fontFamily:'var(--mono)' }}>
+                          <span style={{ color:'var(--t3)' }}>{m?.rede||'—'}</span>
+                          <span style={{ margin:'0 6px' }}>·</span>
+                          <span>{timeLabel}</span>
+                        </p>
                       </div>
-                      <span className="t-num" style={{ fontSize:14, fontWeight:800, color:accentC, flexShrink:0, textShadow:`0 0 8px ${accentC}15` }}>
+                      <span className="t-num" style={{ fontSize:14, fontWeight:800, color:accentC, flexShrink:0, textShadow:`0 0 12px ${accentC}30` }}>
                         {pos?'+':'-'}R$ {fmt(val)}
                       </span>
                     </motion.div>

@@ -71,107 +71,257 @@ export default function BillingPage() {
 
       <div style={{maxWidth:820,margin:'0 auto',padding:'40px 28px'}}>
 
-        {/* ── HERO ── */}
-        <div className="a1" style={{textAlign:'center',marginBottom:40}}>
-          <div style={{display:'inline-flex',alignItems:'center',gap:6,padding:'4px 14px',borderRadius:99,background:billing?.subActive?'var(--profit-dim)':billing?.trialActive?'rgba(59,130,246,0.08)':'var(--loss-dim)',border:`1px solid ${billing?.subActive?'var(--profit-border)':billing?.trialActive?'rgba(59,130,246,0.15)':'var(--loss-border)'}`,marginBottom:20}}>
-            <div style={{width:6,height:6,borderRadius:'50%',background:billing?.subActive?'var(--profit)':billing?.trialActive?'var(--brand-bright)':'var(--loss)'}}/>
-            <span style={{fontSize:11,fontWeight:700,color:billing?.subActive?'var(--profit)':billing?.trialActive?'var(--brand-bright)':'var(--loss)',letterSpacing:'0.06em'}}>
-              {billing?.subActive?'ASSINATURA ATIVA':billing?.trialActive?`TRIAL · ${billing.daysLeft} DIAS`:'ASSINE PARA CONTINUAR'}
-            </span>
-          </div>
-          <h1 style={{fontSize:34,fontWeight:900,color:'var(--t1)',letterSpacing:'-0.03em',marginBottom:10,lineHeight:1.2}}>
-            Escolha a estrutura ideal<br/>para sua operacao
-          </h1>
-          <p style={{fontSize:15,color:'var(--t2)',maxWidth:480,margin:'0 auto'}}>
-            Pague apenas pelo que precisa. Comece sozinho ou escale com operadores.
-          </p>
-        </div>
+        {/* ── HERO — vendedor premium ── */}
+        <motion.div
+          initial={{opacity:0, y:12}} animate={{opacity:1, y:0}}
+          transition={{duration:0.5, ease:[0.33,1,0.68,1]}}
+          style={{ position:'relative', textAlign:'center', marginBottom:36 }}>
+          {/* Ambient glow */}
+          <div style={{ position:'absolute', top:'-10%', left:'20%', right:'20%', height:260, borderRadius:'50%', background:'radial-gradient(ellipse, rgba(59,130,246,0.12), transparent 65%)', filter:'blur(50px)', pointerEvents:'none', zIndex:-1 }}/>
+          <div style={{ position:'absolute', top:'10%', right:'15%', width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.08), transparent 65%)', filter:'blur(40px)', pointerEvents:'none', zIndex:-1 }}/>
 
-        {/* ── TWO CARDS ── */}
-        <div className="a2 g-side" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20,marginBottom:32}}>
+          {/* Status badge */}
+          <motion.div
+            initial={{opacity:0, scale:0.9}} animate={{opacity:1, scale:1}}
+            transition={{duration:0.4, delay:0.1}}
+            style={{
+              display:'inline-flex', alignItems:'center', gap:7,
+              padding:'6px 16px', borderRadius:99, marginBottom:22,
+              background: billing?.subActive
+                ? 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.06))'
+                : billing?.trialActive
+                ? 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.06))'
+                : 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.06))',
+              border:`1px solid ${billing?.subActive?'rgba(34,197,94,0.3)':billing?.trialActive?'rgba(59,130,246,0.3)':'rgba(239,68,68,0.3)'}`,
+              boxShadow:`0 0 20px ${billing?.subActive?'rgba(34,197,94,0.15)':billing?.trialActive?'rgba(59,130,246,0.15)':'rgba(239,68,68,0.15)'}`,
+            }}>
+            <motion.div
+              animate={{ boxShadow:[`0 0 0 0 ${billing?.subActive?'rgba(34,197,94,0.6)':billing?.trialActive?'rgba(59,130,246,0.6)':'rgba(239,68,68,0.6)'}`,`0 0 0 5px ${billing?.subActive?'rgba(34,197,94,0)':billing?.trialActive?'rgba(59,130,246,0)':'rgba(239,68,68,0)'}`,`0 0 0 0 rgba(0,0,0,0)`] }}
+              transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+              style={{ width:7, height:7, borderRadius:'50%', background:billing?.subActive?'#22C55E':billing?.trialActive?'#3B82F6':'#EF4444' }}
+            />
+            <span style={{ fontSize:11, fontWeight:800, color:billing?.subActive?'#22C55E':billing?.trialActive?'#3B82F6':'#EF4444', letterSpacing:'0.08em' }}>
+              {billing?.subActive?'ASSINATURA ATIVA':billing?.trialActive?`TRIAL · ${billing.daysLeft} DIA${billing.daysLeft!==1?'S':''} RESTANTE${billing.daysLeft!==1?'S':''}`:'ASSINE PARA CONTINUAR'}
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+            transition={{duration:0.5, delay:0.15, ease:[0.33,1,0.68,1]}}
+            style={{ fontSize:38, fontWeight:900, color:'var(--t1)', letterSpacing:'-0.035em', marginBottom:12, lineHeight:1.1 }}>
+            Escale sua operacao<br/>
+            <span style={{ background:'linear-gradient(135deg, #3B82F6, #22C55E)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>com estrutura profissional</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{opacity:0}} animate={{opacity:1}}
+            transition={{duration:0.5, delay:0.25}}
+            style={{ fontSize:15, color:'var(--t2)', maxWidth:520, margin:'0 auto 18px', lineHeight:1.55 }}>
+            Pague apenas pelo que precisa. <strong style={{ color:'var(--t1)' }}>Comece sozinho</strong> ou <strong style={{ color:'#3B82F6' }}>escale com operadores</strong> e economize ate 25% com descontos progressivos.
+          </motion.p>
+
+          {/* Trust indicators */}
+          <motion.div
+            initial={{opacity:0, y:6}} animate={{opacity:1, y:0}}
+            transition={{duration:0.45, delay:0.35}}
+            style={{ display:'flex', gap:18, justifyContent:'center', flexWrap:'wrap' }}>
+            {[
+              { icon:<svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>, t:'Cancele quando quiser' },
+              { icon:<svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, t:'Pagamento 100% seguro' },
+              { icon:<svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, t:'Liberacao imediata' },
+            ].map((x,i)=>(
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:6 }}>
+                {x.icon}
+                <span style={{ fontSize:11, color:'var(--t3)', fontWeight:600 }}>{x.t}</span>
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        {/* ── TWO CARDS premium ── */}
+        <div className="a2 g-side" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:18,marginBottom:28}}>
 
           {/* ADMIN SOLO */}
-          <div style={{
-            borderRadius:22,overflow:'hidden',
-            background:'var(--surface)',border:opQty===0?'2px solid var(--brand-border)':'1px solid var(--b1)',
-            boxShadow:opQty===0?'0 0 40px rgba(59,130,246,0.08)':'none',
-            transition:'all 0.3s',cursor:'pointer',
-          }} onClick={()=>setOpQty(0)}>
-            <div style={{padding:'28px 26px'}}>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
-                <h3 style={{fontSize:17,fontWeight:800,color:'var(--t1)',margin:0}}>Admin Solo</h3>
-                {opQty===0&&<div style={{width:20,height:20,borderRadius:'50%',background:'var(--brand)',display:'flex',alignItems:'center',justifyContent:'center'}}><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>}
+          <motion.div
+            whileHover={{ y:-3, transition:{duration:0.2} }}
+            onClick={()=>setOpQty(0)}
+            style={{
+              position:'relative', overflow:'hidden', borderRadius:20, cursor:'pointer',
+              background: opQty===0
+                ? 'linear-gradient(145deg, rgba(14,22,38,0.85), rgba(8,14,26,0.85))'
+                : 'linear-gradient(145deg, rgba(14,22,38,0.6), rgba(8,14,26,0.6))',
+              backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
+              border: `${opQty===0?'1.5px':'1px'} solid ${opQty===0?'rgba(148,163,184,0.25)':'rgba(255,255,255,0.06)'}`,
+              boxShadow: opQty===0
+                ? '0 14px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)'
+                : '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+              transition:'all 0.3s',
+            }}>
+            {opQty===0 && <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(148,163,184,0.4), transparent)' }}/>}
+            <div style={{padding:'26px 24px'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
+                <div>
+                  <p style={{ fontSize:9, fontWeight:800, color:'var(--t4)', margin:'0 0 4px', letterSpacing:'0.12em', textTransform:'uppercase' }}>Para comecar</p>
+                  <h3 style={{fontSize:18,fontWeight:900,color:'var(--t1)',margin:0, letterSpacing:'-0.02em'}}>Admin Solo</h3>
+                </div>
+                {opQty===0 && (
+                  <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(145deg, #94A3B8, #64748B)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 12px rgba(148,163,184,0.4)'}}>
+                    <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                )}
               </div>
-              <div style={{display:'flex',alignItems:'baseline',gap:4,marginBottom:12}}>
-                <span className="t-num" style={{fontSize:36,fontWeight:900,color:opQty===0?'var(--brand-bright)':'var(--t1)'}}>R$ {fmt(BASE_PRICE)}</span>
-                <span style={{fontSize:13,color:'var(--t3)'}}>/mes</span>
+              <div style={{display:'flex',alignItems:'baseline',gap:5,marginBottom:4}}>
+                <span className="t-num" style={{fontSize:38,fontWeight:900,color:opQty===0?'#F1F5F9':'var(--t2)', letterSpacing:'-0.03em', lineHeight:1}}>R$ {fmt(BASE_PRICE)}</span>
+                <span style={{fontSize:13,color:'var(--t4)',fontWeight:600}}>/mes</span>
               </div>
-              <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              <p style={{ fontSize:11, color:'var(--t4)', margin:'0 0 16px', fontWeight:500 }}>Ideal pra quem opera sozinho</p>
+              <div style={{display:'flex',flexDirection:'column',gap:9}}>
                 {['Acesso completo ao painel','Gestao de metas e remessas','Faturamento e relatorios','Chaves PIX','Sem operadores'].map((t,i)=>(
-                  <div key={i} style={{display:'flex',alignItems:'center',gap:7}}>
-                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={i<4?'var(--profit)':'var(--t4)'} strokeWidth="2.5" strokeLinecap="round">
-                      {i<4?<polyline points="20 6 9 17 4 12"/>:<line x1="5" y1="12" x2="19" y2="12"/>}
-                    </svg>
-                    <span style={{fontSize:13,color:i<4?'var(--t2)':'var(--t4)'}}>{t}</span>
+                  <div key={i} style={{display:'flex',alignItems:'center',gap:8}}>
+                    <div style={{ width:16, height:16, borderRadius:4, background: i<4?'rgba(34,197,94,0.12)':'rgba(148,163,184,0.08)', border:`1px solid ${i<4?'rgba(34,197,94,0.25)':'rgba(148,163,184,0.18)'}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={i<4?'#22C55E':'#64748B'} strokeWidth="3" strokeLinecap="round">
+                        {i<4?<polyline points="20 6 9 17 4 12"/>:<line x1="5" y1="12" x2="19" y2="12"/>}
+                      </svg>
+                    </div>
+                    <span style={{fontSize:12, color:i<4?'var(--t2)':'var(--t4)', fontWeight:i<4?500:400}}>{t}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* ADMIN + OPERATORS */}
-          <div style={{
-            borderRadius:22,overflow:'hidden',position:'relative',
-            background:opQty>0?'linear-gradient(145deg,rgba(59,130,246,0.1),var(--surface) 60%)':'var(--surface)',
-            border:opQty>0?'2px solid var(--brand-border)':'1px solid var(--b1)',
-            boxShadow:opQty>0?'0 0 40px rgba(59,130,246,0.08)':'none',
-            transition:'all 0.3s',cursor:'pointer',
-          }} onClick={()=>{if(opQty===0)setOpQty(Math.max(1,operators.length))}}>
-            <div style={{position:'absolute',top:0,right:0,padding:'6px 16px',borderRadius:'0 20px 0 12px',background:'linear-gradient(135deg,#3B82F6,#3B82F6)',fontSize:10,fontWeight:800,color:'white',letterSpacing:'0.06em'}}>RECOMENDADO</div>
-            <div style={{padding:'28px 26px'}}>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
-                <h3 style={{fontSize:17,fontWeight:800,color:'var(--t1)',margin:0}}>Admin + Operadores</h3>
-                {opQty>0&&<div style={{width:20,height:20,borderRadius:'50%',background:'var(--brand)',display:'flex',alignItems:'center',justifyContent:'center'}}><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>}
+          {/* ADMIN + OPERATORS — RECOMENDADO */}
+          <motion.div
+            whileHover={{ y:-3, transition:{duration:0.2} }}
+            onClick={()=>{if(opQty===0)setOpQty(Math.max(1,operators.length))}}
+            style={{
+              position:'relative', overflow:'hidden', borderRadius:20, cursor:'pointer',
+              background: opQty>0
+                ? 'linear-gradient(145deg, rgba(59,130,246,0.12), rgba(14,22,38,0.85) 70%)'
+                : 'linear-gradient(145deg, rgba(59,130,246,0.06), rgba(14,22,38,0.6) 70%)',
+              backdropFilter:'blur(20px) saturate(160%)', WebkitBackdropFilter:'blur(20px) saturate(160%)',
+              border:`${opQty>0?'1.5px':'1px'} solid ${opQty>0?'rgba(59,130,246,0.45)':'rgba(59,130,246,0.2)'}`,
+              boxShadow: opQty>0
+                ? '0 14px 44px rgba(0,0,0,0.5), 0 0 48px rgba(59,130,246,0.18), inset 0 1px 0 rgba(255,255,255,0.06)'
+                : '0 6px 22px rgba(0,0,0,0.35), 0 0 24px rgba(59,130,246,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
+              transition:'all 0.3s',
+            }}>
+            {/* Recomendado ribbon */}
+            <div style={{
+              position:'absolute', top:-1, right:-1, padding:'6px 14px', borderRadius:'0 20px 0 12px',
+              background:'linear-gradient(135deg, #3B82F6, #1d4ed8)',
+              fontSize:9, fontWeight:900, color:'white', letterSpacing:'0.1em',
+              boxShadow:'0 4px 14px rgba(59,130,246,0.4)',
+              display:'flex', alignItems:'center', gap:5,
+            }}>
+              <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              RECOMENDADO
+            </div>
+
+            <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(59,130,246,0.5), transparent)' }}/>
+
+            <div style={{padding:'26px 24px'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
+                <div>
+                  <p style={{ fontSize:9, fontWeight:800, color:'#3B82F6', margin:'0 0 4px', letterSpacing:'0.12em', textTransform:'uppercase' }}>Para escalar</p>
+                  <h3 style={{fontSize:18,fontWeight:900,color:'var(--t1)',margin:0, letterSpacing:'-0.02em'}}>Admin + Operadores</h3>
+                </div>
+                {opQty>0 && (
+                  <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(145deg, #3B82F6, #1d4ed8)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 14px rgba(59,130,246,0.5)'}}>
+                    <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                )}
               </div>
-              <div style={{display:'flex',alignItems:'baseline',gap:4,marginBottom:4}}>
-                <span className="t-num" style={{fontSize:36,fontWeight:900,color:opQty>0?'var(--brand-bright)':'var(--t1)'}}>R$ {fmt(BASE_PRICE)}</span>
-                <span style={{fontSize:13,color:'var(--t3)'}}>+ R$ {fmt(OP_BASE_PRICE)}/op</span>
+              <div style={{display:'flex',alignItems:'baseline',gap:5,marginBottom:4}}>
+                <span className="t-num" style={{fontSize:38,fontWeight:900,color:opQty>0?'#3B82F6':'var(--t1)', letterSpacing:'-0.03em', lineHeight:1, textShadow: opQty>0?'0 0 20px rgba(59,130,246,0.3)':'none'}}>R$ {fmt(BASE_PRICE)}</span>
+                <span style={{fontSize:13,color:'var(--t4)',fontWeight:600}}>+ R$ {fmt(OP_BASE_PRICE)}/op</span>
               </div>
-              <p className="t-small" style={{marginBottom:14}}>Descontos progressivos de ate 25%</p>
-              <div style={{display:'flex',flexDirection:'column',gap:8}}>
-                {['Tudo do Admin Solo','Operadores ilimitados','Notificacoes em tempo real','Descontos progressivos'].map((t,i)=>(
-                  <div key={i} style={{display:'flex',alignItems:'center',gap:7}}>
-                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span style={{fontSize:13,color:'var(--t2)'}}>{t}</span>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'3px 10px', borderRadius:6, background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.22)', marginBottom:16 }}>
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                <span style={{ fontSize:10, color:'#22C55E', fontWeight:800, letterSpacing:'0.04em' }}>ATE 25% DE DESCONTO</span>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',gap:9}}>
+                {[
+                  { t:'Tudo do Admin Solo', strong:false },
+                  { t:'Operadores ilimitados', strong:true },
+                  { t:'Notificacoes em tempo real', strong:false },
+                  { t:'Descontos progressivos ate 25%', strong:true },
+                ].map((item,i)=>(
+                  <div key={i} style={{display:'flex',alignItems:'center',gap:8}}>
+                    <div style={{ width:16, height:16, borderRadius:4, background:'rgba(34,197,94,0.14)', border:'1px solid rgba(34,197,94,0.3)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, boxShadow: item.strong?'0 0 8px rgba(34,197,94,0.25)':'none' }}>
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <span style={{fontSize:12, color: item.strong?'var(--t1)':'var(--t2)', fontWeight: item.strong?700:500}}>{item.t}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        {/* ── DISCOUNT TIERS (only when operators selected) ── */}
+        {/* ── DISCOUNT TIERS premium ── */}
         {opQty > 0 && (
-          <div className="a3" style={{marginBottom:24}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-              <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>Descontos progressivos</span>
+          <motion.div
+            initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+            transition={{duration:0.4}}
+            style={{
+              position:'relative', overflow:'hidden',
+              padding:'20px 22px', borderRadius:16, marginBottom:22,
+              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
+              border:'1px solid rgba(34,197,94,0.14)',
+              boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 32px rgba(34,197,94,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
+            }}>
+            <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)' }}/>
+
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between', marginBottom:14, flexWrap:'wrap', gap:10}}>
+              <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <div style={{
+                  width:30, height:30, borderRadius:9,
+                  background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.3)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  boxShadow:'0 0 12px rgba(34,197,94,0.18)',
+                }}>
+                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                </div>
+                <div>
+                  <p style={{fontSize:13,fontWeight:800,color:'var(--t1)', margin:0, letterSpacing:'-0.01em'}}>Descontos progressivos</p>
+                  <p style={{fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500}}>Quanto mais operadores, menor o preco unitario</p>
+                </div>
+              </div>
             </div>
+
             <div style={{display:'grid',gridTemplateColumns:`repeat(${tiers.length},1fr)`,gap:8}}>
               {tiers.map((t,i)=>{
                 const isActive = price.discount === t.discount && opQty > 0
                 return (
-                  <div key={i} style={{padding:'12px 10px',borderRadius:12,textAlign:'center',background:isActive?'rgba(34,197,94,0.08)':'var(--surface)',border:`1px solid ${isActive?'rgba(34,197,94,0.2)':'var(--b1)'}`,transition:'all 0.2s'}}>
-                    <p style={{fontSize:9,fontWeight:700,color:isActive?'var(--profit)':'var(--t3)',letterSpacing:'0.06em',marginBottom:4}}>{t.label.toUpperCase()}</p>
-                    <p className="t-num" style={{fontSize:isActive?18:14,fontWeight:900,color:isActive?'var(--profit)':t.discount>0?'var(--t1)':'var(--t3)',marginBottom:2}}>
+                  <motion.div key={i}
+                    whileHover={{ y:-2, transition:{duration:0.15} }}
+                    style={{
+                      position:'relative', overflow:'hidden',
+                      padding:'14px 10px', borderRadius:12, textAlign:'center', cursor:'default',
+                      background: isActive
+                        ? 'linear-gradient(145deg, rgba(34,197,94,0.15), rgba(34,197,94,0.03))'
+                        : t.discount > 0 ? 'rgba(255,255,255,0.03)' : 'rgba(148,163,184,0.04)',
+                      border:`${isActive?'1.5px':'1px'} solid ${isActive?'rgba(34,197,94,0.4)':'rgba(255,255,255,0.06)'}`,
+                      boxShadow: isActive ? '0 6px 20px rgba(34,197,94,0.2), 0 0 24px rgba(34,197,94,0.1)' : 'none',
+                      transition:'all 0.25s',
+                    }}>
+                    {isActive && (
+                      <div style={{ position:'absolute', top:-4, left:'50%', transform:'translateX(-50%)', padding:'2px 8px', borderRadius:'0 0 6px 6px', background:'#22C55E', fontSize:7, fontWeight:900, color:'white', letterSpacing:'0.08em' }}>
+                        ATIVO
+                      </div>
+                    )}
+                    <p style={{fontSize:9, fontWeight:800, color:isActive?'#22C55E':'var(--t4)', letterSpacing:'0.08em', marginBottom:5, marginTop: isActive?4:0, textTransform:'uppercase'}}>{t.label}</p>
+                    <p className="t-num" style={{fontSize:isActive?20:16, fontWeight:900, color:isActive?'#22C55E':t.discount>0?'var(--t1)':'var(--t4)', marginBottom:3, letterSpacing:'-0.02em', textShadow: isActive?'0 0 14px rgba(34,197,94,0.3)':'none'}}>
                       {t.discount>0?`-${t.discount}%`:'—'}
                     </p>
-                    <p style={{fontSize:9,color:'var(--t4)',margin:0}}>R$ {fmt(t.unitPrice)}/op</p>
-                  </div>
+                    <p style={{fontSize:9, color:'var(--t4)', margin:0, fontFamily:'var(--mono)', fontWeight:500}}>R$ {fmt(t.unitPrice)}/op</p>
+                  </motion.div>
                 )
               })}
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* ── OPERATOR SELECTOR + SUMMARY (only when operators selected) ── */}

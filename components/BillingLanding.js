@@ -17,6 +17,15 @@ const NOTIF_DATA = [
   { name:'Rafael', value:89 },
 ]
 
+const FEED_DATA = [
+  { rede:'WE',   name:'Pedro',  value:87,  pos:true,  t:'2s atras' },
+  { rede:'FP',   name:'Lucas',  value:42,  pos:true,  t:'5s atras' },
+  { rede:'91',   name:'Joao',   value:12,  pos:false, t:'9s atras' },
+  { rede:'OKOK', name:'Ana',    value:127, pos:true,  t:'14s atras' },
+  { rede:'VOY',  name:'Rafa',   value:68,  pos:true,  t:'21s atras' },
+  { rede:'DY',   name:'Carlos', value:29,  pos:false, t:'34s atras' },
+]
+
 export default function BillingLanding() {
   const [idx, setIdx] = useState(0)
   const [total, setTotal] = useState(3058)
@@ -82,122 +91,230 @@ export default function BillingLanding() {
         ))}
       </div>
 
-      {/* ═══ CELULAR 3D + NOTIFICACOES ═══ */}
+      {/* ═══ MINI NEXCONTROL MOBILE (realista) ═══ */}
       <section style={{ padding:'40px 0 60px', position:'relative' }}>
-        <div style={{ position:'absolute', top:'25%', right:'20%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.04), transparent 55%)', filter:'blur(60px)', pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', top:'20%', right:'15%', width:440, height:440, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.08), transparent 55%)', filter:'blur(70px)', pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', bottom:'10%', left:'10%', width:320, height:320, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.06), transparent 55%)', filter:'blur(56px)', pointerEvents:'none' }}/>
 
-        <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1.1fr', gap:48, alignItems:'center' }}>
+        <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1.1fr', gap:56, alignItems:'center', position:'relative' }}>
 
-          {/* Copy */}
+          {/* Copy — vendedor */}
           <motion.div {...fadeUp()}>
-            <h2 style={{ fontSize:30, fontWeight:900, color:'var(--t1)', margin:'0 0 12px', letterSpacing:'-0.03em', lineHeight:1.15 }}>
-              Seu lucro chega assim
+            <div style={{ display:'inline-flex', alignItems:'center', gap:7, padding:'5px 12px', borderRadius:99, background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.2)', marginBottom:18 }}>
+              <motion.div
+                animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.55)','0 0 0 5px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
+                transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
+                style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}
+              />
+              <span style={{ fontSize:10, color:'#22C55E', fontWeight:800, letterSpacing:'0.1em' }}>AO VIVO NO SEU BOLSO</span>
+            </div>
+
+            <h2 style={{ fontSize:34, fontWeight:900, color:'var(--t1)', margin:'0 0 14px', letterSpacing:'-0.035em', lineHeight:1.1 }}>
+              Veja o dinheiro entrando<br/>
+              <span style={{ background:'linear-gradient(135deg, #22C55E, #4ADE80)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>em tempo real</span>
             </h2>
-            <p style={{ fontSize:15, color:'var(--t3)', lineHeight:1.6, margin:'0 0 32px' }}>
-              Cada remessa vira uma notificacao no seu celular. Em tempo real.
+            <p style={{ fontSize:15, color:'var(--t2)', lineHeight:1.6, margin:'0 0 28px' }}>
+              Cada remessa registrada vira uma <strong style={{ color:'#fff' }}>notificação instantânea</strong> no seu celular. Você acompanha tudo ao vivo — <strong style={{ color:'#22C55E' }}>operador, rede e lucro</strong>.
             </p>
+
             {[
-              {t:'Notificacao instantanea', d:'Saiba na hora quando dinheiro entra ou sai'},
-              {t:'Lucro atualizado ao vivo', d:'O valor muda a cada remessa registrada'},
-              {t:'Instale em 2 toques', d:'App nativo no iPhone e Android'},
-            ].map(({t,d}) => (
-              <div key={t} style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:14 }}>
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth={2.5} strokeLinecap="round" style={{ marginTop:3, flexShrink:0 }}><polyline points="20 6 9 17 4 12"/></svg>
-                <div>
-                  <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 3px' }}>{t}</p>
-                  <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{d}</p>
+              {t:'Notificação imediata por remessa', d:'Som e vibração no instante que alguém registra'},
+              {t:'Lucro atualizado em segundos', d:'Você vê cada centavo somando ao total'},
+              {t:'Controle total mesmo longe do painel', d:'Sem precisar abrir o computador'},
+            ].map(({t,d},i) => (
+              <motion.div key={t}
+                initial={{opacity:0, x:-8}} whileInView={{opacity:1, x:0}} viewport={{once:true}}
+                transition={{duration:0.4, delay:0.1+i*0.08, ease}}
+                style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:14 }}>
+                <div style={{ width:22, height:22, borderRadius:6, background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.28)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2, boxShadow:'0 0 10px rgba(34,197,94,0.12)' }}>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth={3} strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
-              </div>
+                <div>
+                  <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 3px', letterSpacing:'-0.01em' }}>{t}</p>
+                  <p style={{ fontSize:11, color:'var(--t3)', margin:0, lineHeight:1.45 }}>{d}</p>
+                </div>
+              </motion.div>
             ))}
           </motion.div>
 
-          {/* iPhone 3D */}
-          <motion.div {...fadeUp(0.2)} style={{ display:'flex', justifyContent:'center', perspective:1000 }}>
+          {/* Device Premium Realista — sem cara de iPhone mock */}
+          <motion.div {...fadeUp(0.2)} style={{ display:'flex', justifyContent:'center', perspective:1400 }}>
             <motion.div
-              animate={{ y:[0,-6,0,4,0] }}
-              transition={{ duration:6, repeat:Infinity, ease:'easeInOut' }}
+              animate={{ y:[0,-8,0,5,0], rotateY:[-2,-4,-2,-1,-2] }}
+              transition={{ duration:8, repeat:Infinity, ease:'easeInOut' }}
               style={{
-                width:260, borderRadius:36, padding:'10px 8px 14px',
-                background:'linear-gradient(165deg, #333 0%, #1c1c1c 25%, #111 60%, #0a0a0a 100%)',
-                border:'1.5px solid rgba(255,255,255,0.12)',
-                boxShadow:`0 35px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 ${flash?'50':'25'}px rgba(34,197,94,${flash?'0.1':'0.03'})`,
-                position:'relative', transform:'rotateY(-3deg) rotateX(2deg)',
-                transition:'box-shadow 0.5s ease',
+                width:300,
+                borderRadius:36,
+                padding:'14px 12px 18px',
+                background:'linear-gradient(160deg, rgba(14,22,38,0.95) 0%, rgba(8,12,20,0.95) 50%, rgba(4,7,14,0.95) 100%)',
+                backdropFilter:'blur(30px) saturate(160%)', WebkitBackdropFilter:'blur(30px) saturate(160%)',
+                border:'1px solid rgba(255,255,255,0.08)',
+                boxShadow:`0 50px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(229,57,53,0.04), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 ${flash?'80':'40'}px rgba(34,197,94,${flash?'0.18':'0.05'})`,
+                position:'relative', transform:'rotateX(3deg)',
+                transition:'box-shadow 0.6s ease',
               }}>
-              {/* Dynamic Island */}
-              <div style={{ width:90, height:24, borderRadius:12, background:'#000', margin:'0 auto 8px', border:'1px solid rgba(255,255,255,0.06)' }}/>
+              {/* Subtle top speaker */}
+              <div style={{ width:60, height:5, borderRadius:3, background:'rgba(255,255,255,0.06)', margin:'0 auto 10px' }}/>
 
               {/* Screen */}
-              <div style={{ borderRadius:24, overflow:'hidden', background:'#060a12', position:'relative', minHeight:340 }}>
-                {/* Flash */}
+              <div style={{
+                borderRadius:26, overflow:'hidden', position:'relative', minHeight:440,
+                background:'linear-gradient(180deg, #0a0f1c 0%, #060a14 100%)',
+                border:'1px solid rgba(255,255,255,0.04)',
+              }}>
+                {/* Top flash overlay quando chega notificacao */}
                 <AnimatePresence>
                   {flash && (
-                    <motion.div initial={{opacity:0.2}} animate={{opacity:0}} exit={{opacity:0}} transition={{duration:0.8}}
-                      style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 15%, rgba(34,197,94,0.25), transparent 55%)', zIndex:10, pointerEvents:'none' }}/>
+                    <motion.div initial={{opacity:0.3}} animate={{opacity:0}} exit={{opacity:0}} transition={{duration:0.9}}
+                      style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 15%, rgba(34,197,94,0.22), transparent 58%)', zIndex:10, pointerEvents:'none' }}/>
                   )}
                 </AnimatePresence>
 
-                {/* Notification */}
-                <div style={{ padding:'8px 10px 0', position:'relative', zIndex:8 }}>
+                {/* Header NexControl */}
+                <div style={{ padding:'12px 14px 8px', borderBottom:'1px solid rgba(255,255,255,0.04)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+                    <div style={{ width:18, height:18, borderRadius:5, background:'linear-gradient(145deg, #e53935, #c62828)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 0 10px rgba(229,57,53,0.35)' }}>
+                      <NexIcon size={9}/>
+                    </div>
+                    <div>
+                      <p style={{ fontSize:10, fontWeight:800, color:'#F1F5F9', margin:0, letterSpacing:'-0.01em' }}>NexControl</p>
+                      <div style={{ display:'flex', alignItems:'center', gap:4, marginTop:1 }}>
+                        <motion.div
+                          animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.6)','0 0 0 3px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
+                          transition={{ duration:1.6, repeat:Infinity, ease:'easeInOut' }}
+                          style={{ width:4, height:4, borderRadius:'50%', background:'#22C55E' }}
+                        />
+                        <span style={{ fontSize:7, color:'rgba(34,197,94,0.8)', fontWeight:700, letterSpacing:'0.08em' }}>TEMPO REAL</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span style={{ fontSize:7, color:'rgba(255,255,255,0.3)', fontFamily:'var(--mono)' }}>{new Date().getHours().toString().padStart(2,'0')}:{new Date().getMinutes().toString().padStart(2,'0')}</span>
+                </div>
+
+                {/* Notification slide from top */}
+                <div style={{ padding:'8px 10px 0', position:'relative', zIndex:9 }}>
                   <AnimatePresence mode="wait">
                     <motion.div key={idx}
-                      initial={{ opacity:0, y:-45, scale:0.92 }}
+                      initial={{ opacity:0, y:-60, scale:0.88 }}
                       animate={{ opacity:1, y:0, scale:1 }}
-                      exit={{ opacity:0, y:-20, scale:0.96 }}
-                      transition={{ duration:0.45, ease:[0.16,1,0.3,1] }}
+                      exit={{ opacity:0, y:-30, scale:0.94 }}
+                      transition={{ duration:0.5, ease:[0.16,1.2,0.3,1] }}
                       style={{
                         padding:'10px 12px', borderRadius:14,
-                        background:'rgba(255,255,255,0.08)',
-                        backdropFilter:'blur(20px)', WebkitBackdropFilter:'blur(20px)',
-                        border:'1px solid rgba(255,255,255,0.06)',
-                        marginBottom:6, boxShadow:'0 4px 16px rgba(0,0,0,0.3)',
+                        background:'rgba(20,30,48,0.85)',
+                        backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
+                        border:'1px solid rgba(34,197,94,0.22)',
+                        boxShadow:'0 8px 24px rgba(0,0,0,0.4), 0 0 20px rgba(34,197,94,0.1)',
                       }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
-                        <div style={{ width:18, height:18, borderRadius:5, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:4 }}>
+                        <div style={{ width:16, height:16, borderRadius:4, background:'linear-gradient(145deg, #e53935, #c62828)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                           <NexIcon size={8}/>
                         </div>
-                        <div style={{ flex:1, display:'flex', justifyContent:'space-between' }}>
-                          <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.7)' }}>NexControl</span>
-                          <span style={{ fontSize:6, color:'rgba(255,255,255,0.25)' }}>agora</span>
-                        </div>
+                        <span style={{ fontSize:8, fontWeight:800, color:'#F1F5F9', letterSpacing:'-0.01em' }}>NexControl</span>
+                        <span style={{ fontSize:7, color:'rgba(34,197,94,0.9)', fontWeight:700, marginLeft:'auto' }}>agora</span>
                       </div>
-                      <p style={{ fontSize:8, color:'rgba(255,255,255,0.5)', margin:0, paddingLeft:26 }}>
-                        Nova remessa: <span style={{ color:'#22C55E', fontWeight:700, fontSize:9 }}>+R$ {n.value},00</span>
+                      <p style={{ fontSize:10, fontWeight:700, color:'#F1F5F9', margin:'0 0 2px', paddingLeft:23 }}>
+                        {FEED_DATA[idx % FEED_DATA.length].rede} · {FEED_DATA[idx % FEED_DATA.length].name}
+                      </p>
+                      <p style={{ fontSize:8, color:'rgba(255,255,255,0.55)', margin:0, paddingLeft:23 }}>
+                        <span style={{ color: FEED_DATA[idx % FEED_DATA.length].pos ? '#22C55E' : '#EF4444', fontWeight:800, fontSize:10 }}>
+                          {FEED_DATA[idx % FEED_DATA.length].pos?'+':'-'}R$ {FEED_DATA[idx % FEED_DATA.length].value},00
+                        </span> {FEED_DATA[idx % FEED_DATA.length].pos ? 'lucro' : 'prejuizo'}
                       </p>
                     </motion.div>
                   </AnimatePresence>
                 </div>
 
-                {/* App */}
-                <div style={{ padding:'4px 12px 16px' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:10 }}>
-                    <div style={{ width:16, height:16, borderRadius:5, background:'#e53935' }}/>
-                    <span style={{ fontSize:8, fontWeight:700, color:'rgba(255,255,255,0.45)' }}>NexControl</span>
-                  </div>
-                  <motion.div animate={flash?{scale:[1,1.025,1]}:{}} transition={{duration:0.35}}
-                    style={{ padding:'12px 14px', borderRadius:12, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.04)', marginBottom:10, position:'relative', overflow:'hidden' }}>
-                    <p style={{ fontSize:7, color:'rgba(255,255,255,0.3)', margin:'0 0 5px' }}>Lucro total</p>
-                    <p style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:900, color:'#22C55E', margin:0,
-                      textShadow:flash?'0 0 20px rgba(34,197,94,0.3)':'none', transition:'text-shadow 0.3s' }}>
+                {/* Main app — mini dashboard */}
+                <div style={{ padding:'14px 14px 18px' }}>
+                  {/* Lucro total card */}
+                  <motion.div
+                    animate={flash?{scale:[1,1.02,1]}:{}}
+                    transition={{duration:0.4, ease}}
+                    style={{
+                      position:'relative', overflow:'hidden',
+                      padding:'14px 16px', borderRadius:14, marginBottom:12,
+                      background:'linear-gradient(145deg, rgba(34,197,94,0.12), rgba(14,22,38,0.8))',
+                      border:'1px solid rgba(34,197,94,0.24)',
+                      boxShadow:`0 6px 20px rgba(0,0,0,0.35), 0 0 ${flash?'30':'14'}px rgba(34,197,94,${flash?'0.25':'0.08'})`,
+                      transition:'box-shadow 0.4s',
+                    }}>
+                    <div style={{ position:'absolute', top:0, left:'20%', right:'20%', height:1, background:'linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)' }}/>
+                    <p style={{ fontSize:8, color:'rgba(255,255,255,0.45)', margin:'0 0 5px', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }}>Lucro de hoje</p>
+                    <motion.p
+                      animate={flash?{ textShadow:['0 0 10px rgba(34,197,94,0.25)','0 0 28px rgba(34,197,94,0.55)','0 0 10px rgba(34,197,94,0.25)'] }:{}}
+                      transition={{duration:0.8}}
+                      style={{
+                        fontFamily:'var(--mono)', fontSize:26, fontWeight:900, color:'#22C55E', margin:0,
+                        letterSpacing:'-0.03em', lineHeight:1,
+                        textShadow:'0 0 18px rgba(34,197,94,0.3)',
+                      }}>
                       +R$ {total.toLocaleString('pt-BR')}
+                    </motion.p>
+                    <p style={{ fontSize:8, color:'rgba(34,197,94,0.75)', margin:'5px 0 0', fontWeight:600 }}>
+                      ↑ atualizado ha 2s
                     </p>
-                    {flash && <div style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 30% 50%, rgba(34,197,94,0.1), transparent 60%)', pointerEvents:'none' }}/>}
                   </motion.div>
-                  {NOTIF_DATA.slice(0,3).map((item,i) => (
-                    <div key={item.name} style={{ padding:'5px 2px', borderBottom:i<2?'1px solid rgba(255,255,255,0.03)':'none', display:'flex', justifyContent:'space-between' }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <div style={{ width:14, height:14, borderRadius:4, background:'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                          <span style={{ fontSize:6, fontWeight:700, color:'rgba(255,255,255,0.3)' }}>{item.name[0]}</span>
-                        </div>
-                        <span style={{ fontSize:7, color:'rgba(255,255,255,0.35)' }}>{item.name}</span>
-                      </div>
-                      <span style={{ fontFamily:'var(--mono)', fontSize:8, fontWeight:700, color:'#22C55E' }}>+R$ {item.value}</span>
-                    </div>
-                  ))}
+
+                  {/* Feed header */}
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
+                    <span style={{ fontSize:8, fontWeight:800, color:'rgba(255,255,255,0.55)', letterSpacing:'0.1em', textTransform:'uppercase' }}>Atividade ao vivo</span>
+                    <motion.div
+                      animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.5)','0 0 0 4px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
+                      transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
+                      style={{ width:5, height:5, borderRadius:'50%', background:'#22C55E' }}
+                    />
+                  </div>
+
+                  {/* Feed items */}
+                  <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+                    {FEED_DATA.slice(0,4).map((item,i) => {
+                      const ac = item.pos ? '#22C55E' : '#EF4444'
+                      return (
+                        <motion.div key={`${item.rede}-${item.name}-${i}`}
+                          initial={{opacity:0, y:6}}
+                          animate={{opacity:1, y:0}}
+                          transition={{duration:0.35, delay:0.1+i*0.08, ease}}
+                          style={{
+                            padding:'7px 2px', display:'flex', alignItems:'center', justifyContent:'space-between',
+                            borderBottom: i<3?'1px solid rgba(255,255,255,0.04)':'none',
+                          }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:7, minWidth:0 }}>
+                            <div style={{
+                              width:22, height:22, borderRadius:6, flexShrink:0,
+                              background: `${ac}14`, border:`1px solid ${ac}30`,
+                              display:'flex', alignItems:'center', justifyContent:'center',
+                              fontFamily:'var(--mono)', fontSize:7, fontWeight:800, color:ac,
+                            }}>
+                              {item.rede}
+                            </div>
+                            <div style={{ minWidth:0 }}>
+                              <p style={{ fontSize:9, fontWeight:700, color:'#F1F5F9', margin:0, letterSpacing:'-0.01em' }}>{item.rede} · {item.name}</p>
+                              <p style={{ fontSize:7, color:'rgba(255,255,255,0.35)', margin:0, fontFamily:'var(--mono)' }}>{item.t}</p>
+                            </div>
+                          </div>
+                          <span style={{
+                            fontFamily:'var(--mono)', fontSize:10, fontWeight:800, color:ac, flexShrink:0,
+                            textShadow: item.pos ? `0 0 10px ${ac}35` : 'none',
+                          }}>
+                            {item.pos?'+':'-'}R$ {item.value},00
+                          </span>
+                        </motion.div>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
-              <div style={{ width:70, height:4, borderRadius:2, background:'rgba(255,255,255,0.15)', margin:'10px auto 0' }}/>
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:'45%', borderRadius:'36px 36px 0 0', background:'linear-gradient(180deg, rgba(255,255,255,0.04), transparent)', pointerEvents:'none' }}/>
+
+              {/* Bottom home indicator */}
+              <div style={{ width:90, height:4, borderRadius:2, background:'rgba(255,255,255,0.1)', margin:'12px auto 0' }}/>
+
+              {/* Top glossy */}
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:'40%', borderRadius:'36px 36px 0 0', background:'linear-gradient(180deg, rgba(255,255,255,0.035), transparent)', pointerEvents:'none' }}/>
+
+              {/* External red glow glow bleed */}
+              <div style={{ position:'absolute', top:'40%', left:-30, width:60, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.18), transparent 65%)', filter:'blur(24px)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', bottom:'30%', right:-30, width:60, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.14), transparent 65%)', filter:'blur(24px)', pointerEvents:'none' }}/>
             </motion.div>
           </motion.div>
         </div>

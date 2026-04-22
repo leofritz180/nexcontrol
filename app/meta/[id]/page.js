@@ -243,16 +243,27 @@ function EditMetaModal({ meta, userId, onClose, onSaved, contasMinimo }) {
   )
 }
 
-function KPI({ label, value, color, small=false }) {
+function KPI({ label, value, color, small=false, accent }) {
+  const accentC = accent || color
   return (
     <motion.div
       initial={{ opacity:0, y:10 }}
       animate={{ opacity:1, y:0 }}
       transition={{ duration:0.35, ease:[0.33,1,0.68,1] }}
-      whileHover={{ y:-3, boxShadow:'0 8px 24px rgba(0,0,0,0.3)', transition:{ duration:0.15 } }}
-      style={{ background:'var(--raised)', border:'1px solid var(--b1)', borderRadius:14, padding:small?'12px 14px':'18px 20px', cursor:'default' }}>
+      whileHover={{ y:-3, boxShadow:`0 10px 28px rgba(0,0,0,0.4), 0 0 20px ${accentC}15`, borderColor:`${accentC}30`, transition:{ duration:0.15 } }}
+      style={{
+        position:'relative', overflow:'hidden',
+        background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+        backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
+        border:'1px solid rgba(255,255,255,0.06)',
+        borderRadius:14, padding:small?'12px 14px':'18px 20px',
+        boxShadow:'0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+        cursor:'default', transition:'all 0.25s ease',
+      }}>
+      {/* Accent line */}
+      <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:accentC, boxShadow:`0 0 8px ${accentC}` }}/>
       <p className="t-label" style={{ marginBottom:8 }}>{label}</p>
-      <p className="t-num" style={{ fontSize:small?16:20, fontWeight:700, color }}>{value}</p>
+      <p className="t-num" style={{ fontSize:small?16:22, fontWeight:800, color, letterSpacing:'-0.02em', margin:0 }}>{value}</p>
     </motion.div>
   )
 }
@@ -642,35 +653,117 @@ export default function MetaPage() {
       </AnimatePresence>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
-        {/* Header */}
-        <div className="a1" style={{ marginBottom:28 }}>
-          <button onClick={()=>router.push(profile?.role==='admin'?'/admin':'/operator')} className="btn btn-ghost btn-sm" style={{ display:'inline-flex', alignItems:'center', gap:6, marginBottom:16 }}>
+        {/* Header — cabine de controle */}
+        <div className="a1" style={{ marginBottom:24 }}>
+          <button onClick={()=>router.push(profile?.role==='admin'?'/admin':'/operator')} className="btn btn-ghost btn-sm" style={{ display:'inline-flex', alignItems:'center', gap:6, marginBottom:14 }}>
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
             Voltar ao painel
           </button>
-          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
-            <div>
-              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-                <h1 className="t-h1">{loading?'Carregando...':meta?.titulo||'Meta'}</h1>
-                <span className={`badge ${meta?.status_fechamento==='fechada'?'badge-profit':meta?.status==='finalizada'?'badge-loss':'badge-brand'}`}>
-                  {meta?.status_fechamento==='fechada'?'Fechada':meta?.status||'Ativa'}
-                </span>
-              </div>
-              {meta?.observacoes && <p className="t-body" style={{ marginBottom:4 }}>{meta.observacoes}</p>}
-              <p className="t-small">{meta?.quantidade_contas||0} contas · {remessas.length} remessas · {pctAcerto}% de acerto</p>
-            </div>
-            <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-              {meta && meta.status_fechamento !== 'fechada' && (
-                <button onClick={()=>setShowEdit(true)} className="btn btn-ghost" title="Editar meta">
-                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  Editar meta
-                </button>
-              )}
-              <button onClick={toggleStatus} className={`btn ${meta?.status==='finalizada'?'btn-profit':'btn-danger'}`}>
-                {meta?.status==='finalizada'?<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Reativar meta</>:<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Finalizar meta</>}
-              </button>
-            </div>
-          </div>
+          {(() => {
+            const isFechada = meta?.status_fechamento==='fechada'
+            const isFinalizada = meta?.status==='finalizada' && !isFechada
+            const statusC = isFechada ? '#22C55E' : isFinalizada ? '#F59E0B' : '#e53935'
+            const statusL = isFechada ? 'FECHADA' : isFinalizada ? 'FINALIZADA' : 'AO VIVO'
+            return (
+              <motion.div
+                initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+                transition={{duration:0.45, ease:[0.33,1,0.68,1]}}
+                style={{
+                  position:'relative', overflow:'hidden',
+                  padding:'22px 24px', borderRadius:18,
+                  background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                  backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
+                  border:`1px solid ${statusC}22`,
+                  boxShadow:`0 10px 40px rgba(0,0,0,0.5), 0 0 48px ${statusC}0f, inset 0 1px 0 rgba(255,255,255,0.05)`,
+                }}>
+                {/* Top glow line */}
+                <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:`linear-gradient(90deg, transparent, ${statusC}80, transparent)`, pointerEvents:'none' }}/>
+                {/* Ambient orb */}
+                <div style={{ position:'absolute', top:-40, right:-40, width:180, height:180, borderRadius:'50%', background:`radial-gradient(circle, ${statusC}18, transparent 60%)`, filter:'blur(30px)', pointerEvents:'none' }}/>
+
+                <div style={{ position:'relative', display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
+                  <div style={{ flex:1, minWidth:220 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8, flexWrap:'wrap' }}>
+                      <h1 style={{ fontSize:28, fontWeight:900, color:'var(--t1)', margin:0, letterSpacing:'-0.025em', lineHeight:1.1 }}>
+                        {loading?'Carregando...':meta?.titulo||'Meta'}
+                      </h1>
+                      <div style={{
+                        display:'inline-flex', alignItems:'center', gap:6,
+                        padding:'4px 10px', borderRadius:7,
+                        background:`${statusC}14`, border:`1px solid ${statusC}40`,
+                        boxShadow:!isFechada && !isFinalizada ? `0 0 12px ${statusC}30` : 'none',
+                      }}>
+                        {!isFechada && !isFinalizada && (
+                          <motion.div
+                            animate={{ boxShadow:[`0 0 0 0 ${statusC}90`, `0 0 0 5px ${statusC}00`, `0 0 0 0 ${statusC}00`] }}
+                            transition={{ duration:1.6, repeat:Infinity, ease:'easeInOut' }}
+                            style={{ width:6, height:6, borderRadius:'50%', background:statusC }}
+                          />
+                        )}
+                        <span style={{ fontSize:9, fontWeight:800, color:statusC, letterSpacing:'0.1em' }}>{statusL}</span>
+                      </div>
+                    </div>
+                    {meta?.observacoes && <p style={{ fontSize:13, color:'var(--t2)', margin:'0 0 10px', fontWeight:500 }}>{meta.observacoes}</p>}
+
+                    {/* Indicadores principais em linha */}
+                    <div style={{ display:'flex', gap:16, flexWrap:'wrap', alignItems:'center' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        <span style={{ fontSize:11, color:'var(--t3)', fontFamily:'var(--mono)', fontWeight:600 }}>{meta?.quantidade_contas||0} contas</span>
+                      </div>
+                      <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
+                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        <span style={{ fontSize:11, color:'var(--t3)', fontFamily:'var(--mono)', fontWeight:600 }}>{remessas.length} remessas</span>
+                      </div>
+                      <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
+                      <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={pctAcerto>=70?'#22C55E':pctAcerto>=50?'#F59E0B':'#EF4444'} strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span style={{ fontSize:11, color: pctAcerto>=70?'#22C55E':pctAcerto>=50?'#F59E0B':'#EF4444', fontFamily:'var(--mono)', fontWeight:700 }}>{pctAcerto}% acerto</span>
+                      </div>
+                      {meta?.rede && (<>
+                        <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
+                        <span style={{ fontSize:10, padding:'2px 8px', borderRadius:5, background:'rgba(59,130,246,0.1)', color:'#3B82F6', border:'1px solid rgba(59,130,246,0.22)', fontWeight:700, letterSpacing:'0.05em', fontFamily:'var(--mono)' }}>{meta.rede}</span>
+                      </>)}
+                    </div>
+                  </div>
+                  <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                    {meta && meta.status_fechamento !== 'fechada' && (
+                      <motion.button
+                        onClick={()=>setShowEdit(true)}
+                        whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }}
+                        style={{
+                          padding:'10px 16px', borderRadius:11, border:'1px solid rgba(255,255,255,0.08)', cursor:'pointer',
+                          fontSize:12, fontWeight:700, fontFamily:'inherit',
+                          background:'rgba(255,255,255,0.03)', color:'var(--t2)',
+                          display:'flex', alignItems:'center', gap:7,
+                        }} title="Editar meta">
+                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Editar
+                      </motion.button>
+                    )}
+                    <motion.button
+                      onClick={toggleStatus}
+                      whileHover={{ scale:1.03, boxShadow: isFinalizada ? '0 8px 24px rgba(34,197,94,0.45)' : '0 8px 24px rgba(229,57,53,0.45)' }}
+                      whileTap={{ scale:0.97 }}
+                      style={{
+                        padding:'10px 18px', borderRadius:11, border:'none', cursor:'pointer',
+                        fontSize:12, fontWeight:800, fontFamily:'inherit', color:'#fff',
+                        background: isFinalizada
+                          ? 'linear-gradient(145deg, #22C55E, #16a34a)'
+                          : 'linear-gradient(145deg, #e53935, #c62828)',
+                        boxShadow: isFinalizada
+                          ? '0 6px 20px rgba(34,197,94,0.35), inset 0 1px 0 rgba(255,255,255,0.18)'
+                          : '0 6px 20px rgba(229,57,53,0.35), inset 0 1px 0 rgba(255,255,255,0.18)',
+                        display:'flex', alignItems:'center', gap:7,
+                      }}>
+                      {isFinalizada?<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Reativar</>:<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Finalizar meta</>}
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })()}
         </div>
 
         {/* ── Edit meta modal ── */}
@@ -745,31 +838,41 @@ export default function MetaPage() {
 
         {/* KPIs */}
         <div className="g-5" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:14, marginBottom:28 }}>
-          <KPI label="Deposito total"    value={`R$ ${fmt(totais.d)}`}   color="var(--t2)"/>
-          <KPI label="Saque total"       value={`R$ ${fmt(totais.s)}`}   color="var(--t2)"/>
-          <KPI label="Lucro acumulado"   value={`R$ ${fmt(totais.lucro)}`} color="var(--profit)"/>
-          <KPI label="Prejuizo acum."    value={`R$ ${fmt(totais.prej)}`}  color="var(--loss)"/>
+          <KPI label="Deposito total"    value={`R$ ${fmt(totais.d)}`}   color="var(--t1)" accent="#3B82F6"/>
+          <KPI label="Saque total"       value={`R$ ${fmt(totais.s)}`}   color="var(--t1)" accent="#F59E0B"/>
+          <KPI label="Lucro acumulado"   value={`R$ ${fmt(totais.lucro)}`} color="var(--profit)" accent="#22C55E"/>
+          <KPI label="Prejuizo acum."    value={`R$ ${fmt(totais.prej)}`}  color="var(--loss)" accent="#EF4444"/>
           <motion.div
             initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
             transition={{ duration:0.4 }}
-            whileHover={{ y:-3, transition:{ duration:0.15 } }}
+            whileHover={{ y:-3, boxShadow:`0 14px 40px rgba(0,0,0,0.5), 0 0 40px ${totais.liq>=0?'rgba(34,197,94,0.18)':'rgba(239,68,68,0.18)'}`, transition:{ duration:0.2 } }}
             style={{
+              position:'relative', overflow:'hidden',
               background: totais.liq>=0
-                ? 'linear-gradient(145deg, rgba(34,197,94,0.08), rgba(34,197,94,0.03))'
-                : 'linear-gradient(145deg, rgba(239,68,68,0.08), rgba(239,68,68,0.03))',
-              border:`1px solid ${totais.liq>=0?'var(--profit-border)':'var(--loss-border)'}`,
-              borderRadius:14, padding:'18px 20px', display:'flex', flexDirection:'column', justifyContent:'space-between',
-              boxShadow: `0 0 24px ${totais.liq>=0?'rgba(34,197,94,0.06)':'rgba(239,68,68,0.06)'}`,
-              cursor:'default', position:'relative', overflow:'hidden',
+                ? 'linear-gradient(145deg, rgba(34,197,94,0.14), rgba(34,197,94,0.02))'
+                : 'linear-gradient(145deg, rgba(239,68,68,0.14), rgba(239,68,68,0.02))',
+              backdropFilter:'blur(20px) saturate(160%)', WebkitBackdropFilter:'blur(20px) saturate(160%)',
+              border:`1px solid ${totais.liq>=0?'rgba(34,197,94,0.3)':'rgba(239,68,68,0.3)'}`,
+              borderRadius:14, padding:'16px 20px', display:'flex', flexDirection:'column', justifyContent:'space-between',
+              boxShadow: `0 8px 28px rgba(0,0,0,0.4), 0 0 32px ${totais.liq>=0?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)'}, inset 0 1px 0 rgba(255,255,255,0.05)`,
+              cursor:'default',
             }}>
-            <div style={{ position:'absolute', top:'-30%', right:'-10%', width:80, height:80, borderRadius:'50%', background:`radial-gradient(circle, ${totais.liq>=0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}, transparent 70%)`, pointerEvents:'none' }} />
-            <p className="t-label" style={{ marginBottom:8, position:'relative', zIndex:1 }}>Resultado liquido</p>
+            <div style={{ position:'absolute', top:'-30%', right:'-10%', width:120, height:120, borderRadius:'50%', background:`radial-gradient(circle, ${totais.liq>=0?'rgba(34,197,94,0.18)':'rgba(239,68,68,0.18)'}, transparent 70%)`, pointerEvents:'none', filter:'blur(10px)' }} />
+            <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:`linear-gradient(90deg, transparent, ${totais.liq>=0?'rgba(34,197,94,0.5)':'rgba(239,68,68,0.5)'}, transparent)`, pointerEvents:'none' }}/>
+
+            <div style={{ position:'relative', zIndex:1, display:'flex', alignItems:'center', gap:6, marginBottom:6 }}>
+              <div style={{ width:3, height:11, borderRadius:2, background: totais.liq>=0?'#22C55E':'#EF4444', boxShadow:`0 0 8px ${totais.liq>=0?'#22C55E':'#EF4444'}` }}/>
+              <p style={{ fontSize:10, color: totais.liq>=0?'#4ade80':'#fca5a5', fontWeight:800, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Resultado liquido</p>
+            </div>
             <motion.p
-              animate={{ textShadow:[`0 0 8px ${totais.liq>=0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}`, `0 0 20px ${totais.liq>=0?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)'}`, `0 0 8px ${totais.liq>=0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}`] }}
+              animate={{ textShadow:[`0 0 12px ${totais.liq>=0?'rgba(34,197,94,0.25)':'rgba(239,68,68,0.25)'}`, `0 0 28px ${totais.liq>=0?'rgba(34,197,94,0.45)':'rgba(239,68,68,0.45)'}`, `0 0 12px ${totais.liq>=0?'rgba(34,197,94,0.25)':'rgba(239,68,68,0.25)'}`] }}
               transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
-              className="t-num" style={{ fontSize:24, fontWeight:900, color:totais.liq>=0?'var(--profit)':'var(--loss)', position:'relative', zIndex:1 }}>
+              className="t-num" style={{ fontSize:26, fontWeight:900, color:totais.liq>=0?'var(--profit)':'var(--loss)', position:'relative', zIndex:1, margin:0, letterSpacing:'-0.025em', lineHeight:1 }}>
               {totais.liq>=0?'+':'-'}R$ {fmt(Math.abs(totais.liq))}
             </motion.p>
+            <p style={{ fontSize:10, color:'var(--t4)', margin:'4px 0 0', fontWeight:500, position:'relative', zIndex:1 }}>
+              {totais.liq>=0 ? 'Operacao em lucro' : 'Operacao em prejuizo'}
+            </p>
           </motion.div>
         </div>
 
@@ -1004,21 +1107,113 @@ export default function MetaPage() {
           )
         })()}
 
-        {/* Progress bar - contas processadas */}
+        {/* Progress bar — premium */}
         {meta && (() => {
           const target = Number(meta.quantidade_contas || 0)
           const done = remessas.reduce((sum, r) => sum + Number(r.contas_remessa || 0), 0)
           const pct = target > 0 ? Math.min(Math.round((done / target) * 100), 100) : 0
+          const pctExact = target > 0 ? (done / target) * 100 : 0
+          const remaining = Math.max(0, target - done)
+          const isDone = pct >= 100
+          const barC = isDone ? '#22C55E' : pct >= 70 ? '#22C55E' : pct >= 40 ? '#3B82F6' : '#e53935'
           return target > 0 ? (
-            <div style={{ marginBottom: 22, background: 'var(--raised)', border: '1px solid var(--b1)', borderRadius: 14, padding: '16px 20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Progresso: {done}/{target} contas</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: pct >= 100 ? 'var(--profit)' : 'var(--brand-bright)' }}>{pct}%</span>
+            <motion.div
+              initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+              transition={{duration:0.4, ease:[0.33,1,0.68,1]}}
+              style={{
+                position:'relative', overflow:'hidden',
+                marginBottom: 22,
+                padding: '18px 22px', borderRadius: 14,
+                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
+                border:`1px solid ${isDone ? 'rgba(34,197,94,0.22)' : 'rgba(255,255,255,0.06)'}`,
+                boxShadow: isDone
+                  ? '0 6px 24px rgba(0,0,0,0.4), 0 0 32px rgba(34,197,94,0.12), inset 0 1px 0 rgba(255,255,255,0.04)'
+                  : '0 4px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04)',
+              }}>
+              {/* Top highlight */}
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:`linear-gradient(90deg, transparent, ${barC}50, transparent)`, pointerEvents:'none' }}/>
+
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12, flexWrap:'wrap', gap:8 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                  <div style={{
+                    width:30, height:30, borderRadius:9,
+                    background:`${barC}14`, border:`1px solid ${barC}30`,
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    boxShadow:`0 0 12px ${barC}25`,
+                  }}>
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={barC} strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                  </div>
+                  <div>
+                    <p style={{ fontSize:13, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>
+                      Progresso da meta
+                    </p>
+                    <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500, fontFamily:'var(--mono)' }}>
+                      {done} de {target} contas · {remaining > 0 ? `faltam ${remaining}` : 'concluido'}
+                    </p>
+                  </div>
+                </div>
+                <div style={{ display:'flex', alignItems:'baseline', gap:3 }}>
+                  <motion.span
+                    key={pct}
+                    initial={{ scale: 0.9 }} animate={{ scale: 1 }}
+                    transition={{ duration: 0.3, ease: [0.33,1.4,0.68,1] }}
+                    style={{ fontSize:26, fontWeight:900, color:barC, fontFamily:'var(--mono)', letterSpacing:'-0.03em', lineHeight:1, textShadow:`0 0 16px ${barC}40` }}
+                  >
+                    {pct}
+                  </motion.span>
+                  <span style={{ fontSize:14, fontWeight:700, color:barC, fontFamily:'var(--mono)' }}>%</span>
+                </div>
               </div>
-              <div style={{ width: '100%', height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)' }}>
-                <div style={{ width: `${pct}%`, height: '100%', borderRadius: 3, background: pct >= 100 ? 'var(--profit)' : 'linear-gradient(90deg, #22c55e, #16a34a)', transition: 'width 0.4s ease' }} />
+
+              {/* Progress bar — mais espessa com gradient + shimmer */}
+              <div style={{ position:'relative', width:'100%', height:10, borderRadius:5, background:'rgba(255,255,255,0.05)', overflow:'hidden', border:'1px solid rgba(255,255,255,0.04)' }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${pctExact}%` }}
+                  transition={{ duration: 0.9, ease: [0.33,1,0.68,1] }}
+                  style={{
+                    position:'relative',
+                    height: '100%', borderRadius: 5,
+                    background: isDone
+                      ? 'linear-gradient(90deg, #22C55E, #16a34a, #22C55E)'
+                      : pct >= 70
+                      ? 'linear-gradient(90deg, #22C55E, #16a34a)'
+                      : pct >= 40
+                      ? 'linear-gradient(90deg, #3B82F6, #1d4ed8)'
+                      : 'linear-gradient(90deg, #e53935, #c62828)',
+                    boxShadow: `0 0 12px ${barC}70, inset 0 1px 0 rgba(255,255,255,0.25)`,
+                    overflow:'hidden',
+                  }}
+                >
+                  {/* Shimmer overlay */}
+                  <div style={{
+                    position:'absolute', inset:0,
+                    background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
+                    animation:'metaProgShimmer 2.2s ease-in-out infinite',
+                    backgroundSize:'200% 100%',
+                  }}/>
+                </motion.div>
+                <style>{`@keyframes metaProgShimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }`}</style>
               </div>
-            </div>
+
+              {/* Marker dots a cada 25% */}
+              <div style={{ display:'flex', justifyContent:'space-between', marginTop:8, padding:'0 1px' }}>
+                {[0,25,50,75,100].map(mark => (
+                  <div key={mark} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:3 }}>
+                    <div style={{
+                      width:4, height:4, borderRadius:'50%',
+                      background: pct >= mark ? barC : 'rgba(255,255,255,0.12)',
+                      boxShadow: pct >= mark ? `0 0 6px ${barC}` : 'none',
+                      transition:'all 0.3s',
+                    }}/>
+                    <span style={{ fontSize:8, color: pct >= mark ? 'var(--t3)' : 'var(--t4)', fontFamily:'var(--mono)', fontWeight:600 }}>
+                      {mark}%
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           ) : null
         })()}
 

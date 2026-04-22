@@ -384,86 +384,146 @@ export default function FaturamentoPage() {
           {/* ── HERO + KPIs side by side ── */}
           <div className="g-side" style={{display:'grid',gridTemplateColumns:'1.6fr 1fr',gap:16,marginBottom:24}}>
 
-            {/* Hero card */}
+            {/* Hero financeiro — cinematografico */}
             <div style={{
-              position:'relative', overflow:'hidden', borderRadius:18, padding:'40px 40px 36px',
-              background:'linear-gradient(145deg, #0c1424, #080e1a)',
-              border:'1px solid rgba(255,255,255,0.06)',
-              boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)',
+              position:'relative', overflow:'hidden', borderRadius:18, padding:'36px 36px 32px',
+              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
+              border:`1px solid ${stats.lucroFinal>=0?'rgba(34,197,94,0.18)':'rgba(239,68,68,0.18)'}`,
+              boxShadow:`0 10px 40px rgba(0,0,0,0.5), 0 0 60px ${stats.lucroFinal>=0?'rgba(34,197,94,0.08)':'rgba(239,68,68,0.08)'}, inset 0 1px 0 rgba(255,255,255,0.05)`,
             }}>
-              <div style={{position:'absolute',top:'5%',left:'0%',width:400,height:300,borderRadius:'50%',background:'radial-gradient(circle, rgba(34,197,94,0.07), transparent 60%)',filter:'blur(50px)',pointerEvents:'none'}}/>
-              <div style={{position:'absolute',top:0,left:'15%',right:'15%',height:1,background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)',pointerEvents:'none'}}/>
+              <div style={{position:'absolute',top:'5%',left:'0%',width:500,height:380,borderRadius:'50%',background:`radial-gradient(circle, ${stats.lucroFinal>=0?'rgba(34,197,94,0.13)':'rgba(239,68,68,0.13)'}, transparent 60%)`,filter:'blur(60px)',pointerEvents:'none'}}/>
+              <div style={{position:'absolute',top:0,left:'12%',right:'12%',height:1,background:`linear-gradient(90deg, transparent, ${stats.lucroFinal>=0?'rgba(34,197,94,0.5)':'rgba(239,68,68,0.5)'}, transparent)`,pointerEvents:'none'}}/>
+
+              {/* Mini sparkline de fundo (sutil) */}
+              <svg style={{ position:'absolute', bottom:0, left:0, right:0, pointerEvents:'none', opacity:0.22 }} viewBox="0 0 400 80" preserveAspectRatio="none" width="100%" height="80">
+                <defs>
+                  <linearGradient id="fatHeroArea" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor={stats.lucroFinal>=0?'#22C55E':'#EF4444'} stopOpacity="0.2"/>
+                    <stop offset="100%" stopColor={stats.lucroFinal>=0?'#22C55E':'#EF4444'} stopOpacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0,60 L40,55 L80,48 L120,50 L160,40 L200,34 L240,38 L280,26 L320,20 L360,12 L400,6 L400,80 L0,80 Z" fill="url(#fatHeroArea)"/>
+                <path d="M0,60 L40,55 L80,48 L120,50 L160,40 L200,34 L240,38 L280,26 L320,20 L360,12 L400,6" fill="none" stroke={stats.lucroFinal>=0?'#22C55E':'#EF4444'} strokeWidth="1.8" strokeLinecap="round" strokeOpacity="0.6"/>
+              </svg>
 
               <div style={{position:'relative',zIndex:1}}>
-                <p style={{fontSize:12,color:'var(--t3)',marginBottom:8,fontWeight:500}}>Lucro final da operacao</p>
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
+                  <div style={{ width:3, height:12, borderRadius:2, background: stats.lucroFinal>=0?'#22C55E':'#EF4444', boxShadow:`0 0 10px ${stats.lucroFinal>=0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)'}` }}/>
+                  <p style={{fontSize:10, color:'var(--t4)', fontWeight:800, letterSpacing:'0.14em', textTransform:'uppercase', margin:0}}>
+                    Receita consolidada
+                  </p>
+                </div>
+                <p style={{fontSize:12,color:'var(--t3)',marginBottom:14,fontWeight:500}}>Lucro final da operacao — apos custos</p>
 
-                <p style={{fontFamily:'var(--mono)',fontSize:48,fontWeight:900,lineHeight:1,letterSpacing:'-0.03em',margin:'0 0 6px',
-                  color:'var(--profit)',
-                  textShadow:'0 0 60px rgba(34,197,94,0.15)',
+                <p style={{fontFamily:'var(--mono)',fontSize:56,fontWeight:900,lineHeight:1,letterSpacing:'-0.035em',margin:'0 0 10px',
+                  color: stats.lucroFinal>=0 ? 'var(--profit)' : 'var(--loss)',
+                  textShadow:`0 0 70px ${stats.lucroFinal>=0?'rgba(34,197,94,0.25)':'rgba(239,68,68,0.25)'}`,
                 }}>
                   <CountUp value={stats.lucroFinal} prefix="R$ "/>
                 </p>
 
-                {predictions.pctChange!==0 && (
-                  <p style={{fontSize:12,color:predictions.pctChange>0?'var(--profit)':'var(--loss)',margin:'0 0 0',fontWeight:600}}>
-                    {predictions.pctChange>0?'+':''}{predictions.pctChange}% vs semana anterior
-                    {predictions.trend==='up'?' ↑':predictions.trend==='down'?' ↓':''}
+                {predictions.pctChange!==0 ? (
+                  <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'5px 11px', borderRadius:7,
+                    background: predictions.pctChange>0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)',
+                    border:`1px solid ${predictions.pctChange>0?'rgba(34,197,94,0.22)':'rgba(239,68,68,0.22)'}`,
+                  }}>
+                    <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={predictions.pctChange>0?'#22C55E':'#EF4444'} strokeWidth="2.5" strokeLinecap="round">
+                      <polyline points={predictions.pctChange>0?"23 6 13.5 15.5 8.5 10.5 1 18":"1 18 10.5 8.5 15.5 13.5 23 6"}/>
+                    </svg>
+                    <span style={{fontSize:11, color:predictions.pctChange>0?'#22C55E':'#EF4444', fontWeight:800, letterSpacing:'0.02em'}}>
+                      {predictions.pctChange>0?'+':''}{predictions.pctChange}% vs semana anterior
+                    </span>
+                  </div>
+                ) : (
+                  <p style={{ fontSize:11, color:'var(--t4)', margin:0, fontWeight:500, letterSpacing:'0.02em' }}>
+                    Sem variacao significativa vs semana anterior
                   </p>
                 )}
 
-                <div style={{display:'flex',alignItems:'center',flexWrap:'wrap',gap:20,marginTop:24,paddingTop:20,borderTop:'1px solid rgba(255,255,255,0.05)'}}>
+                <div style={{display:'flex',alignItems:'center',flexWrap:'wrap',gap:20,marginTop:22,paddingTop:18,borderTop:'1px solid rgba(255,255,255,0.05)'}}>
                   <div>
-                    <p style={{fontSize:10,color:'var(--t4)',marginBottom:2,textTransform:'uppercase',letterSpacing:'0.05em'}}>Fechadas</p>
-                    <p style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:700,color:'var(--t1)',margin:0}}>{stats.fechadas}</p>
+                    <p style={{fontSize:9,color:'var(--t4)',marginBottom:3,textTransform:'uppercase',letterSpacing:'0.08em',fontWeight:700}}>Fechadas</p>
+                    <p style={{fontFamily:'var(--mono)',fontSize:17,fontWeight:800,color:'var(--t1)',margin:0,letterSpacing:'-0.02em'}}>{stats.fechadas}</p>
                   </div>
-                  <div style={{width:1,height:28,background:'rgba(255,255,255,0.05)'}}/>
+                  <div style={{width:1,height:28,background:'rgba(255,255,255,0.06)'}}/>
                   <div>
-                    <p style={{fontSize:10,color:'var(--t4)',marginBottom:2,textTransform:'uppercase',letterSpacing:'0.05em'}}>Remessas</p>
-                    <p style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:700,color:'var(--t1)',margin:0}}>{stats.total}</p>
+                    <p style={{fontSize:9,color:'var(--t4)',marginBottom:3,textTransform:'uppercase',letterSpacing:'0.08em',fontWeight:700}}>Remessas</p>
+                    <p style={{fontFamily:'var(--mono)',fontSize:17,fontWeight:800,color:'var(--t1)',margin:0,letterSpacing:'-0.02em'}}>{stats.total}</p>
                   </div>
-                  <div style={{width:1,height:28,background:'rgba(255,255,255,0.05)'}}/>
+                  <div style={{width:1,height:28,background:'rgba(255,255,255,0.06)'}}/>
                   <div>
-                    <p style={{fontSize:10,color:'var(--t4)',marginBottom:2,textTransform:'uppercase',letterSpacing:'0.05em'}}>Operadores</p>
-                    <p style={{fontFamily:'var(--mono)',fontSize:16,fontWeight:700,color:'var(--t1)',margin:0}}>{operators.length}</p>
+                    <p style={{fontSize:9,color:'var(--t4)',marginBottom:3,textTransform:'uppercase',letterSpacing:'0.08em',fontWeight:700}}>Operadores</p>
+                    <p style={{fontFamily:'var(--mono)',fontSize:17,fontWeight:800,color:'var(--t1)',margin:0,letterSpacing:'-0.02em'}}>{operators.length}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Right — 4 KPI cards stacked */}
-            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            {/* Right — 4 KPI cards premium */}
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
               {[
-                {l:'Lucro bruto',v:`R$ ${fmt(stats.lucro)}`,accent:'rgba(34,197,94,0.4)'},
-                {l:'Total depositado',v:`R$ ${fmt(stats.dep)}`,accent:'rgba(59,130,246,0.4)'},
-                {l:'Total sacado',v:`R$ ${fmt(stats.saq)}`,accent:'rgba(245,158,11,0.4)'},
-                {l:'Taxa de acerto',v:`${stats.taxa}%`,accent:'rgba(255,255,255,0.15)'},
-              ].map(({l,v,accent},i)=>(
-                <div key={l} style={{
-                  position:'relative',flex:1,padding:'16px 22px 16px 26px',borderRadius:14,
-                  background:'linear-gradient(145deg, #0c1424, #080e1a)',
-                  border:'1px solid rgba(255,255,255,0.05)',
-                  boxShadow:'0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
-                  display:'flex',alignItems:'center',justifyContent:'space-between',
-                }}>
-                  <div style={{position:'absolute',left:0,top:'20%',bottom:'20%',width:2,borderRadius:'0 2px 2px 0',background:accent}}/>
-                  <span style={{fontSize:11,color:'var(--t3)'}}>{l}</span>
-                  <span style={{fontFamily:'var(--mono)',fontSize:18,fontWeight:800,color:'var(--t1)'}}>{v}</span>
-                </div>
+                {l:'Lucro bruto', sub:'Soma de lucros', v:`R$ ${fmt(stats.lucro)}`, accent:'#22C55E'},
+                {l:'Total depositado', sub:'Volume em entradas', v:`R$ ${fmt(stats.dep)}`, accent:'#3B82F6'},
+                {l:'Total sacado', sub:'Volume em saidas', v:`R$ ${fmt(stats.saq)}`, accent:'#F59E0B'},
+                {l:'Taxa de acerto', sub:'Remessas positivas', v:`${stats.taxa}%`, accent:'#a855f7'},
+              ].map(({l,sub,v,accent},i)=>(
+                <motion.div key={l}
+                  initial={{opacity:0, x:14}} animate={{opacity:1, x:0}}
+                  transition={{duration:0.3, delay:0.1+i*0.07}}
+                  whileHover={{ y:-2, boxShadow:`0 14px 32px rgba(0,0,0,0.5), 0 0 24px ${accent}20`, transition:{duration:0.2} }}
+                  style={{
+                    position:'relative', overflow:'hidden',
+                    flex:1, padding:'14px 20px 14px 24px', borderRadius:12,
+                    background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                    backdropFilter:'blur(14px) saturate(150%)', WebkitBackdropFilter:'blur(14px) saturate(150%)',
+                    border:`1px solid rgba(255,255,255,0.06)`,
+                    boxShadow:'0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+                    display:'flex', alignItems:'center', justifyContent:'space-between', gap:12,
+                    transition:'all 0.25s ease',
+                  }}>
+                  <div style={{position:'absolute',left:0,top:'18%',bottom:'18%',width:2,borderRadius:'0 2px 2px 0', background:accent, boxShadow:`0 0 8px ${accent}`}}/>
+                  <div>
+                    <p style={{fontSize:10, color:'var(--t3)', margin:0, fontWeight:700, letterSpacing:'0.04em'}}>{l}</p>
+                    <p style={{fontSize:9, color:'var(--t4)', margin:'2px 0 0', fontWeight:500}}>{sub}</p>
+                  </div>
+                  <span style={{fontFamily:'var(--mono)', fontSize:17, fontWeight:800, color:'#F1F5F9', letterSpacing:'-0.02em'}}>{v}</span>
+                </motion.div>
               ))}
             </div>
           </div>
 
           {/* Predictions + Goal */}
           <div className="g-side" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:24}}>
-            {/* Predictions */}
-            <div className="card a3" style={{padding:24}}>
-              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:20}}>
-                <div style={{width:34,height:34,borderRadius:9,background:'var(--brand-dim)',border:'1px solid var(--brand-border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            {/* Predictions — executivo */}
+            <div className="card a3" style={{
+              position:'relative', overflow:'hidden', padding:22,
+              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
+              border:'1px solid rgba(168,85,247,0.14)',
+              boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 36px rgba(168,85,247,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
+            }}>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(168,85,247,0.45), transparent)', pointerEvents:'none' }}/>
+              <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:18}}>
+                <div style={{
+                  width:36, height:36, borderRadius:10,
+                  background:'rgba(168,85,247,0.12)', border:'1px solid rgba(168,85,247,0.3)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  boxShadow:'0 0 16px rgba(168,85,247,0.18)',
+                }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2.2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                 </div>
-                <div>
-                  <h3 className="t-h3" style={{fontSize:14}}>Inteligencia da operacao</h3>
-                  <p className="t-small">Baseado nas metas fechadas</p>
+                <div style={{ flex:1 }}>
+                  <h3 style={{fontSize:14, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em'}}>Inteligencia da operacao</h3>
+                  <p style={{fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500}}>Analise sobre metas fechadas</p>
+                </div>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 9px', borderRadius:6, background:'rgba(168,85,247,0.08)', border:'1px solid rgba(168,85,247,0.2)' }}>
+                  <motion.div
+                    animate={{ boxShadow:['0 0 0 0 rgba(168,85,247,0.5)','0 0 0 4px rgba(168,85,247,0)','0 0 0 0 rgba(168,85,247,0)'] }}
+                    transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                    style={{ width:5, height:5, borderRadius:'50%', background:'#a855f7' }}
+                  />
+                  <span style={{fontSize:9, color:'#a855f7', fontWeight:800, letterSpacing:'0.08em'}}>AO VIVO</span>
                 </div>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12}}>
@@ -507,22 +567,44 @@ export default function FaturamentoPage() {
               </div>
             </div>
 
-            {/* Goal */}
-            <div className="card a4" style={{padding:24}}>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
-                <div style={{display:'flex',alignItems:'center',gap:10}}>
-                  <div style={{width:34,height:34,borderRadius:9,background:'var(--profit-dim)',border:'1px solid var(--profit-border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            {/* Goal — meta global premium */}
+            <div className="card a4" style={{
+              position:'relative', overflow:'hidden', padding:22,
+              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
+              border:`1px solid ${goalData.pct>=100?'rgba(34,197,94,0.25)':'rgba(34,197,94,0.14)'}`,
+              boxShadow:`0 8px 28px rgba(0,0,0,0.4), 0 0 36px rgba(34,197,94,${goalData.pct>=100?'0.1':'0.04'}), inset 0 1px 0 rgba(255,255,255,0.04)`,
+            }}>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(34,197,94,0.45), transparent)', pointerEvents:'none' }}/>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18, flexWrap:'wrap', gap:10}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{
+                    width:36, height:36, borderRadius:10,
+                    background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.3)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    boxShadow:'0 0 16px rgba(34,197,94,0.18)',
+                  }}>
+                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                   </div>
                   <div>
-                    <h3 className="t-h3" style={{fontSize:14}}>Meta global</h3>
-                    <p className="t-small">Objetivo: R$ {fmt(goalData.target)}</p>
+                    <h3 style={{fontSize:14, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em'}}>Meta global</h3>
+                    <p style={{fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500, fontFamily:'var(--mono)'}}>Objetivo: R$ {fmt(goalData.target)}</p>
                   </div>
                 </div>
-                <button onClick={()=>{setEditGoal(!editGoal);setGoalInput(String(goalData.target))}} className="btn btn-ghost btn-sm" style={{display:'flex',alignItems:'center',gap:5}}>
+                <motion.button
+                  onClick={()=>{setEditGoal(!editGoal);setGoalInput(String(goalData.target))}}
+                  whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }}
+                  style={{
+                    padding:'7px 14px', borderRadius:9, border:'1px solid rgba(255,255,255,0.08)', cursor:'pointer',
+                    fontSize:11, fontWeight:700, fontFamily:'inherit',
+                    background:'rgba(255,255,255,0.03)', color:'var(--t2)',
+                    display:'flex', alignItems:'center', gap:5, transition:'all 0.2s',
+                  }}
+                  onMouseEnter={e=>{ e.currentTarget.style.background='rgba(34,197,94,0.08)'; e.currentTarget.style.color='#22C55E'; e.currentTarget.style.borderColor='rgba(34,197,94,0.22)' }}
+                  onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.03)'; e.currentTarget.style.color='var(--t2)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)' }}>
                   <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   Editar
-                </button>
+                </motion.button>
               </div>
 
               {editGoal && (

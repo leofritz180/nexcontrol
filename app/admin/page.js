@@ -946,6 +946,8 @@ export default function AdminPage() {
               const fechada=m.status_fechamento==='fechada', finalizada=m.status==='finalizada'
               const lucroR=focusRem.reduce((a,r)=>a+Number(r.lucro||0),0)
               const prejR=focusRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
+              const depR =focusRem.reduce((a,r)=>a+Number(r.deposito||0),0)
+              const saqR =focusRem.reduce((a,r)=>a+Number(r.saque||0),0)
               const liqR=lucroR-prejR
               const pct=focusRem.length>0?Math.round((focusRem.filter(r=>Number(r.resultado||0)>=0).length/focusRem.length)*100):0
               const displayVal=fechada&&m.lucro_final!=null?Number(m.lucro_final):liqR
@@ -1003,9 +1005,11 @@ export default function AdminPage() {
                 </div>
 
                 {/* KPIs */}
-                <div className="g-5" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:16,marginBottom:20}}>
+                <div className="g-5" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:12,marginBottom:20}}>
                   {[
                     {l:'Remessas',v:focusRem.length,c:'var(--info)',isNum:true},
+                    {l:'Deposito total',v:`R$ ${fmt(depR)}`,c:'#3B82F6',raw:depR},
+                    {l:'Saque total',v:`R$ ${fmt(saqR)}`,c:'#F59E0B',raw:saqR},
                     {l:'Lucro',v:`R$ ${fmt(lucroR)}`,c:'var(--profit)',raw:lucroR},
                     {l:'Prejuizo',v:`R$ ${fmt(prejR)}`,c:'var(--loss)',raw:prejR},
                     {l:'Acerto',v:`${pct}%`,c:pct>=50?'var(--profit)':'var(--warn)',raw:pct},

@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 
@@ -181,39 +182,86 @@ export default function PixPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
-        {/* Header */}
-        <div className="a1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,rgba(34,197,94,0.2),rgba(59,130,246,0.15))', border: '1px solid var(--profit-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 10h20" /><path d="M6 16h.01" /><path d="M10 16h4" /></svg>
-              </div>
-              <h1 className="t-h1">Chaves PIX</h1>
-            </div>
-            <p className="t-body">Gerencie suas chaves PIX com importacao em lote</p>
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={load} className="btn btn-ghost btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>
-              Sync
-            </button>
-          </div>
-        </div>
+        {/* Hero — ferramenta operacional */}
+        <motion.div
+          initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+          transition={{duration:0.4}}
+          style={{
+            position:'relative', overflow:'hidden',
+            padding:'20px 24px', borderRadius:18, marginBottom:18,
+            background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+            backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
+            border:'1px solid rgba(34,197,94,0.15)',
+            boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(34,197,94,0.05), inset 0 1px 0 rgba(255,255,255,0.04)',
+          }}>
+          <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)', pointerEvents:'none' }}/>
+          <div style={{ position:'absolute', top:-40, right:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.1), transparent 60%)', filter:'blur(26px)', pointerEvents:'none' }}/>
 
-        {/* Stats */}
-        <div className="a2 g-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 12, marginBottom: 24 }}>
-          {[
-            { l: 'Total', v: stats.total, c: 'var(--t1)' },
-            { l: 'Validas', v: stats.validas, c: 'var(--profit)' },
-            { l: 'Telefone', v: stats.telefone, c: 'var(--profit)' },
-            { l: 'CPF', v: stats.cpf, c: 'var(--warn)' },
-            { l: 'Email', v: stats.email, c: 'var(--info)' },
-            { l: 'EVP', v: stats.evp, c: 'var(--brand-bright)' },
-          ].map(({ l, v, c }) => (
-            <div key={l} className="stat-pill">
-              <p className="t-num" style={{ fontSize: 22, color: c, marginBottom: 2 }}>{v}</p>
-              <p style={{ fontSize: 10, color: 'var(--t4)', letterSpacing: '0.04em' }}>{l}</p>
+          <div style={{ position:'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+              <div style={{
+                width:44, height:44, borderRadius:12,
+                background:'linear-gradient(135deg, rgba(34,197,94,0.18), rgba(59,130,246,0.12))',
+                border:'1px solid rgba(34,197,94,0.3)',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                boxShadow:'0 0 20px rgba(34,197,94,0.18)',
+              }}>
+                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 10h20" /><path d="M6 16h.01" /><path d="M10 16h4" /></svg>
+              </div>
+              <div>
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <h1 style={{ fontSize:22, fontWeight:900, color:'var(--t1)', margin:0, letterSpacing:'-0.025em' }}>Chaves PIX</h1>
+                  <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(34,197,94,0.1)', color:'#22C55E', border:'1px solid rgba(34,197,94,0.25)', letterSpacing:'0.08em' }}>FERRAMENTA OP</span>
+                </div>
+                <p style={{ fontSize:12, color:'var(--t3)', margin:'2px 0 0', fontWeight:500 }}>Gerencie e importe chaves em lote · deteccao automatica de tipo</p>
+              </div>
             </div>
+            <motion.button
+              onClick={load}
+              whileHover={{ scale:1.04 }} whileTap={{ scale:0.96 }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6, fontFamily:'inherit',
+                padding:'9px 14px', borderRadius:10, cursor:'pointer',
+                background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)',
+                color:'var(--t2)', fontSize:12, fontWeight:700,
+                transition:'all 0.2s',
+              }}
+              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(34,197,94,0.08)'; e.currentTarget.style.color='#22C55E'; e.currentTarget.style.borderColor='rgba(34,197,94,0.22)' }}
+              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.03)'; e.currentTarget.style.color='var(--t2)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)' }}
+            >
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>
+              Sync
+            </motion.button>
+          </div>
+        </motion.div>
+
+        {/* Stats premium */}
+        <div className="a2 g-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 22 }}>
+          {[
+            { l: 'Total', v: stats.total, c: '#F1F5F9', rgb:'148,163,184' },
+            { l: 'Validas', v: stats.validas, c: '#22C55E', rgb:'34,197,94' },
+            { l: 'Telefone', v: stats.telefone, c: '#22C55E', rgb:'34,197,94' },
+            { l: 'CPF', v: stats.cpf, c: '#F59E0B', rgb:'245,158,11' },
+            { l: 'Email', v: stats.email, c: '#3B82F6', rgb:'59,130,246' },
+            { l: 'EVP', v: stats.evp, c: '#e53935', rgb:'229,57,53' },
+          ].map(({ l, v, c, rgb }, i) => (
+            <motion.div key={l}
+              initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+              transition={{duration:0.3, delay:i*0.05}}
+              whileHover={{ y:-2, boxShadow:`0 10px 26px rgba(0,0,0,0.45), 0 0 20px rgba(${rgb},0.15)`, transition:{duration:0.2} }}
+              style={{
+                position:'relative', overflow:'hidden',
+                padding:'14px 16px', borderRadius:12,
+                background:`linear-gradient(145deg, rgba(${rgb},0.08), rgba(14,22,38,0.65))`,
+                backdropFilter:'blur(14px) saturate(150%)', WebkitBackdropFilter:'blur(14px) saturate(150%)',
+                border:`1px solid rgba(${rgb},0.15)`,
+                boxShadow:'0 4px 14px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.03)',
+                transition:'all 0.25s',
+              }}>
+              <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:'0 2px 2px 0', background:c, boxShadow:`0 0 8px ${c}` }}/>
+              <p style={{ fontSize:22, fontWeight:900, color:c, fontFamily:'var(--mono)', letterSpacing:'-0.025em', margin:0, textShadow:`0 0 12px ${c}35` }}>{v}</p>
+              <p style={{ fontSize:9, color:'var(--t4)', letterSpacing:'0.1em', margin:'3px 0 0', fontWeight:700, textTransform:'uppercase' }}>{l}</p>
+            </motion.div>
           ))}
         </div>
 

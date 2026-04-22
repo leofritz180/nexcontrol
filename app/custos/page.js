@@ -154,29 +154,59 @@ export default function CustosPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
 
-          {/* Header */}
-          <div className="a1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 28 }}>
-            <div>
-              <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>Custos</h1>
-              <p style={{ fontSize: 13, color: 'var(--t3)', margin: '4px 0 0' }}>Controle fino da operacao</p>
+          {/* Hero — controle fino */}
+          <motion.div
+            initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+            transition={{duration:0.4}}
+            style={{
+              position:'relative', overflow:'hidden',
+              padding:'20px 24px', borderRadius:18, marginBottom:22,
+              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
+              border:'1px solid rgba(239,68,68,0.14)',
+              boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 36px rgba(239,68,68,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
+            }}>
+            <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(239,68,68,0.4), transparent)', pointerEvents:'none' }}/>
+            <div style={{ position:'absolute', top:-40, right:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(239,68,68,0.1), transparent 60%)', filter:'blur(26px)', pointerEvents:'none' }}/>
+
+            <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'space-between', gap:14, flexWrap:'wrap' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+                <div style={{
+                  width:44, height:44, borderRadius:12,
+                  background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.28)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  boxShadow:'0 0 20px rgba(239,68,68,0.15)',
+                }}>
+                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                </div>
+                <div>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <h1 style={{ fontSize:22, fontWeight:900, color:'var(--t1)', margin:0, letterSpacing:'-0.025em' }}>Custos</h1>
+                    <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(239,68,68,0.1)', color:'#EF4444', border:'1px solid rgba(239,68,68,0.25)', letterSpacing:'0.08em' }}>CONTROLE FINO</span>
+                  </div>
+                  <p style={{ fontSize:12, color:'var(--t3)', margin:'2px 0 0', fontWeight:500 }}>Proxy, SMS, bot, VPS e outros gastos operacionais</p>
+                </div>
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.03, boxShadow:'0 10px 32px rgba(229,57,53,0.5), 0 0 44px rgba(229,57,53,0.18)' }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setShowModal(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '11px 22px', borderRadius: 12, border: 'none', fontFamily:'inherit',
+                  background: 'linear-gradient(145deg, #e53935, #c62828)', color: '#fff', fontSize: 13, fontWeight: 800,
+                  cursor: 'pointer',
+                  boxShadow: '0 6px 20px rgba(229,57,53,0.4), 0 0 30px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
+                  transition:'all 0.25s ease',
+                }}
+              >
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.8} strokeLinecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Adicionar custo
+              </motion.button>
             </div>
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setShowModal(true)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '10px 20px', borderRadius: 10, border: 'none',
-                background: '#e53935', color: '#fff', fontSize: 13, fontWeight: 700,
-                cursor: 'pointer', boxShadow: '0 4px 20px rgba(229,57,53,0.25)',
-              }}
-            >
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
-                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              Adicionar custo
-            </motion.button>
-          </div>
+          </motion.div>
 
           {/* Demo Banner */}
           {isDemo && (
@@ -194,21 +224,29 @@ export default function CustosPage() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y:-3, boxShadow:'0 14px 36px rgba(0,0,0,0.5), 0 0 28px rgba(239,68,68,0.12)', transition:{duration:0.2} }}
               transition={{ delay: 0 }}
-              className="card a1"
-              style={{ padding: '22px 24px', background: 'var(--surface)', border: '1px solid var(--b2)', borderRadius: 14 }}
+              style={{
+                position:'relative', overflow:'hidden',
+                padding: '20px 22px', borderRadius: 14,
+                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                boxShadow: '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+              }}
             >
-              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Custo do dia</p>
-              <p style={{ fontSize: 28, fontWeight: 800, color: 'var(--t1)', fontFamily: 'var(--mono)', letterSpacing: '-0.02em', margin: 0 }}>
+              <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:'#EF4444', boxShadow:'0 0 8px #EF4444' }}/>
+              <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Custo do dia</p>
+              <p style={{ fontSize: 28, fontWeight: 900, color: '#EF4444', fontFamily: 'var(--mono)', letterSpacing: '-0.025em', margin: 0, textShadow:'0 0 18px rgba(239,68,68,0.22)' }}>
                 R$ {fmt(kpis.custoHoje)}
               </p>
               <p style={{
-                fontSize: 12, marginTop: 8, margin: '8px 0 0', fontWeight: 600,
+                fontSize: 11, marginTop: 8, margin: '8px 0 0', fontWeight: 600,
                 color: kpis.pctLucro !== null && kpis.pctLucro > 30 ? '#F59E0B' : 'var(--t4)',
               }}>
                 {kpis.pctLucro !== null
-                  ? `${kpis.pctLucro.toFixed(1)}% do lucro`
-                  : 'sem lucro hoje'}
+                  ? `${kpis.pctLucro.toFixed(1)}% do lucro de hoje`
+                  : 'sem lucro registrado hoje'}
               </p>
             </motion.div>
 
@@ -216,11 +254,16 @@ export default function CustosPage() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y:-3, transition:{duration:0.2} }}
               transition={{ delay: 0.08 }}
-              className="card a1"
               style={{
-                padding: '22px 24px', background: 'var(--surface)',
-                border: '1px solid var(--b2)', borderRadius: 14,
+                padding: '20px 22px', borderRadius: 14,
+                background: kpis.lucroLiquido>=0
+                  ? 'linear-gradient(145deg, rgba(34,197,94,0.08), rgba(14,22,38,0.7))'
+                  : 'linear-gradient(145deg, rgba(239,68,68,0.08), rgba(14,22,38,0.7))',
+                backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
+                border: `1px solid ${kpis.lucroLiquido>=0?'rgba(34,197,94,0.18)':'rgba(239,68,68,0.18)'}`,
+                boxShadow: `0 8px 28px rgba(0,0,0,0.4), 0 0 32px ${kpis.lucroLiquido>=0?'rgba(34,197,94,0.08)':'rgba(239,68,68,0.08)'}, inset 0 1px 0 rgba(255,255,255,0.04)`,
                 position: 'relative', overflow: 'hidden',
               }}
             >
@@ -258,16 +301,24 @@ export default function CustosPage() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y:-3, boxShadow:'0 14px 36px rgba(0,0,0,0.5), 0 0 28px rgba(245,158,11,0.12)', transition:{duration:0.2} }}
               transition={{ delay: 0.16 }}
-              className="card a1"
-              style={{ padding: '22px 24px', background: 'var(--surface)', border: '1px solid var(--b2)', borderRadius: 14 }}
+              style={{
+                position:'relative', overflow:'hidden',
+                padding: '20px 22px', borderRadius: 14,
+                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                boxShadow: '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+              }}
             >
-              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Custo do mes</p>
-              <p style={{ fontSize: 28, fontWeight: 800, color: 'var(--t1)', fontFamily: 'var(--mono)', letterSpacing: '-0.02em', margin: 0 }}>
+              <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:'#F59E0B', boxShadow:'0 0 8px #F59E0B' }}/>
+              <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Custo do mes</p>
+              <p style={{ fontSize: 28, fontWeight: 900, color: '#F59E0B', fontFamily: 'var(--mono)', letterSpacing: '-0.025em', margin: 0, textShadow:'0 0 18px rgba(245,158,11,0.22)' }}>
                 R$ {fmt(kpis.custoMes)}
               </p>
-              <p style={{ fontSize: 12, marginTop: 8, margin: '8px 0 0', color: 'var(--t4)', fontWeight: 500 }}>
-                media R$ {fmt(kpis.mediaDia)}/dia
+              <p style={{ fontSize: 11, marginTop: 8, margin: '8px 0 0', color: 'var(--t4)', fontWeight: 500 }}>
+                Media de R$ {fmt(kpis.mediaDia)}/dia
               </p>
             </motion.div>
           </div>
@@ -504,11 +555,27 @@ export default function CustosPage() {
                   )}
                 </AnimatePresence>
 
-                {/* Modal header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>Novo custo</h2>
+                {/* Modal header premium */}
+                <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(239,68,68,0.45), transparent)', pointerEvents:'none' }}/>
+                <div style={{ position:'absolute', top:-50, right:-50, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(239,68,68,0.08), transparent 65%)', filter:'blur(30px)', pointerEvents:'none' }}/>
+
+                <div style={{ position:'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                    <div style={{
+                      width:38, height:38, borderRadius:11,
+                      background:'rgba(239,68,68,0.12)', border:'1px solid rgba(239,68,68,0.28)',
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      boxShadow:'0 0 16px rgba(239,68,68,0.18)',
+                    }}>
+                      <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                    </div>
+                    <div>
+                      <h2 style={{ fontSize: 19, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing:'-0.02em' }}>Novo custo</h2>
+                      <p style={{ fontSize:11, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Registre um gasto operacional</p>
+                    </div>
+                  </div>
                   <button onClick={() => setShowModal(false)} style={{ width: 34, height: 34, borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--t3)', transition: 'all 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = 'var(--t1)' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.color = '#EF4444' }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--t3)' }}
                   >
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
@@ -589,22 +656,35 @@ export default function CustosPage() {
                   style={{ width: '100%', padding: '12px 14px', fontSize: 13, borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--b2)', color: 'var(--t1)', resize: 'vertical', marginBottom: 24 }}
                 />
 
-                {/* Submit */}
+                {/* Submit premium */}
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={saving || !formAmount || Number(formAmount) <= 0 ? {} : { scale: 1.015, boxShadow:'0 12px 36px rgba(229,57,53,0.5), 0 0 50px rgba(229,57,53,0.18)' }}
+                  whileTap={saving || !formAmount || Number(formAmount) <= 0 ? {} : { scale: 0.97 }}
                   onClick={handleSave}
                   disabled={saving || !formAmount || Number(formAmount) <= 0}
                   style={{
-                    width: '100%', padding: '13px 20px', borderRadius: 10, border: 'none',
-                    background: '#e53935', color: '#fff', fontSize: 14, fontWeight: 700,
-                    cursor: saving ? 'not-allowed' : 'pointer',
-                    opacity: saving || !formAmount || Number(formAmount) <= 0 ? 0.5 : 1,
-                    boxShadow: '0 4px 20px rgba(229,57,53,0.25)',
-                    transition: 'opacity 0.15s',
+                    width: '100%', padding: '14px 22px', borderRadius: 12, border: 'none', fontFamily:'inherit',
+                    background: saving || !formAmount || Number(formAmount) <= 0 ? 'rgba(229,57,53,0.35)' : 'linear-gradient(145deg, #e53935, #c62828)',
+                    color: '#fff', fontSize: 14, fontWeight: 800,
+                    cursor: saving || !formAmount || Number(formAmount) <= 0 ? 'not-allowed' : 'pointer',
+                    opacity: saving || !formAmount || Number(formAmount) <= 0 ? 0.6 : 1,
+                    boxShadow: saving || !formAmount || Number(formAmount) <= 0 ? 'none' : '0 6px 22px rgba(229,57,53,0.4), 0 0 30px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
+                    transition: 'all 0.2s ease',
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:8, letterSpacing:'-0.01em',
                   }}
                 >
-                  {saving ? 'Salvando...' : 'Adicionar custo'}
+                  {saving ? (
+                    <>
+                      <motion.div animate={{ rotate:360 }} transition={{ duration:0.7, repeat:Infinity, ease:'linear' }}
+                        style={{ width:14, height:14, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', borderTopColor:'#fff' }}/>
+                      Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Adicionar custo
+                    </>
+                  )}
                 </motion.button>
               </motion.div>
             </motion.div>

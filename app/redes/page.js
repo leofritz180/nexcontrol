@@ -115,30 +115,37 @@ function KpiCard({ label, value, prefix, rgb, i, isProfit, rawValue, suffix }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        padding: '24px 22px', position: 'relative', overflow: 'hidden',
-        background: `linear-gradient(145deg, rgba(${activeRgb},0.12), rgba(${activeRgb},0.03) 50%, transparent 80%)`,
-        border: `1px solid rgba(${activeRgb},0.18)`,
-        borderRadius: 16,
+        padding: '20px 22px', position: 'relative', overflow: 'hidden',
+        background: `linear-gradient(145deg, rgba(${activeRgb},0.1), rgba(14,22,38,0.6) 55%, rgba(8,14,26,0.6))`,
+        backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
+        border: `1px solid rgba(${activeRgb},${hovered ? 0.32 : 0.14})`,
+        borderRadius: 14,
         boxShadow: hovered
-          ? `0 0 40px rgba(${activeRgb},0.15), 0 12px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)`
-          : `0 0 12px rgba(${activeRgb},0.04), inset 0 1px 0 rgba(255,255,255,0.03)`,
+          ? `0 14px 40px rgba(0,0,0,0.5), 0 0 44px rgba(${activeRgb},0.18), inset 0 1px 0 rgba(255,255,255,0.06)`
+          : `0 4px 18px rgba(0,0,0,0.3), 0 0 12px rgba(${activeRgb},0.04), inset 0 1px 0 rgba(255,255,255,0.03)`,
         transform: hovered ? 'translateY(-3px)' : 'none',
-        transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+        transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
         cursor: 'default',
       }}>
+      {/* Accent line vertical com glow */}
+      <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:`rgb(${activeRgb})`, boxShadow:`0 0 10px rgb(${activeRgb})` }}/>
       <div style={{
-        position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%',
-        background: `radial-gradient(circle, rgba(${activeRgb},${hovered ? 0.12 : 0.05}), transparent 70%)`,
-        transition: 'all 0.4s', pointerEvents: 'none',
+        position: 'absolute', top: -30, right: -30, width: 110, height: 110, borderRadius: '50%',
+        background: `radial-gradient(circle, rgba(${activeRgb},${hovered ? 0.14 : 0.06}), transparent 70%)`,
+        transition: 'all 0.4s', pointerEvents: 'none', filter:'blur(6px)',
       }} />
-      <p style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
+      <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
         {label}
       </p>
       <p style={{
-        fontSize: 28, fontWeight: 800, lineHeight: 1, letterSpacing: '-0.03em',
-        fontFamily: 'var(--mono, monospace)',
+        fontSize: 26, fontWeight: 900, lineHeight: 1, letterSpacing: '-0.03em',
+        fontFamily: 'var(--mono, monospace)', margin:0,
         color: isProfit ? (rawValue >= 0 ? '#22C55E' : '#EF4444') : `rgb(${rgb})`,
-        textShadow: isProfit && rawValue >= 0 ? '0 0 16px rgba(34,197,94,0.25)' : 'none',
+        textShadow: isProfit && rawValue >= 0
+          ? '0 0 18px rgba(34,197,94,0.3)'
+          : isProfit && rawValue < 0
+          ? '0 0 18px rgba(239,68,68,0.3)'
+          : `0 0 14px rgba(${activeRgb},0.2)`,
       }}>
         {prefix && <span style={{ fontSize: 15, fontWeight: 600, marginRight: 2 }}>{prefix}</span>}
         {isProfit && rawValue < 0 && '-'}
@@ -151,42 +158,67 @@ function KpiCard({ label, value, prefix, rgb, i, isProfit, rawValue, suffix }) {
   )
 }
 
-/* ── Alert Card ── */
+/* ── Alert Card — premium impactante ── */
 function AlertCard({ alert, i }) {
   const colors = {
-    success: { bg: 'rgba(34,197,94,0.06)', border: 'rgba(34,197,94,0.15)', text: '#22C55E', glow: 'rgba(34,197,94,0.08)' },
-    warning: { bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.15)', text: '#F59E0B', glow: 'rgba(245,158,11,0.08)' },
-    danger: { bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.15)', text: '#EF4444', glow: 'rgba(239,68,68,0.08)' },
-    info: { bg: 'rgba(99,102,241,0.06)', border: 'rgba(99,102,241,0.15)', text: '#818CF8', glow: 'rgba(99,102,241,0.08)' },
+    success: { bg: 'rgba(34,197,94,0.06)', border: 'rgba(34,197,94,0.22)', text: '#22C55E', glow: 'rgba(34,197,94,0.1)', action:'escalar' },
+    warning: { bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.22)', text: '#F59E0B', glow: 'rgba(245,158,11,0.1)', action:'observar' },
+    danger: { bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.3)', text: '#EF4444', glow: 'rgba(239,68,68,0.14)', action:'reduzir' },
+    info: { bg: 'rgba(99,102,241,0.06)', border: 'rgba(99,102,241,0.22)', text: '#818CF8', glow: 'rgba(99,102,241,0.1)', action:'analisar' },
   }
   const c = colors[alert.type] || colors.info
+  const isDanger = alert.type === 'danger'
 
   return (
-    <motion.div {...fadeUp(i)} style={{
-      display: 'flex', alignItems: 'center', gap: 14,
-      padding: '14px 18px', borderRadius: 14,
-      background: c.bg, border: `1px solid ${c.border}`,
-      boxShadow: `0 0 20px ${c.glow}`,
-    }}>
+    <motion.div {...fadeUp(i)}
+      whileHover={{ x:3, transition:{duration:0.15} }}
+      style={{
+        position:'relative', overflow:'hidden',
+        display: 'flex', alignItems: 'center', gap: 14,
+        padding: '14px 18px', borderRadius: 14,
+        background: `linear-gradient(145deg, ${c.bg}, rgba(14,22,38,0.5))`,
+        backdropFilter:'blur(14px) saturate(150%)', WebkitBackdropFilter:'blur(14px) saturate(150%)',
+        border: `1px solid ${c.border}`,
+        boxShadow: `0 6px 22px rgba(0,0,0,0.3), 0 0 24px ${c.glow}`,
+        animation: isDanger ? 'alertBreath 3s ease-in-out infinite' : 'none',
+      }}>
+      {/* Accent line esquerda */}
+      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:3, borderRadius:'0 3px 3px 0', background:c.text, boxShadow:`0 0 10px ${c.text}` }}/>
+
       <div style={{
-        width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+        position:'relative',
+        width: 34, height: 34, borderRadius: 10, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: c.bg, border: `1px solid ${c.border}`,
+        boxShadow: isDanger ? `0 0 14px ${c.glow}` : 'none',
       }}>
+        {isDanger && (
+          <motion.div
+            animate={{ boxShadow:[`0 0 0 0 ${c.text}80`, `0 0 0 6px ${c.text}00`, `0 0 0 0 ${c.text}00`] }}
+            transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
+            style={{ position:'absolute', inset:0, borderRadius:10, pointerEvents:'none' }}
+          />
+        )}
         {alert.type === 'success' ? (
-          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><polyline points="22 4 12 14.01 9 11.01" /></svg>
         ) : alert.type === 'danger' ? (
-          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
         ) : alert.type === 'warning' ? (
-          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
         ) : (
-          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg>
+          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg>
         )}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: c.text, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{alert.label}</p>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', fontWeight: 500, lineHeight: 1.5, margin: 0 }}>{alert.text}</p>
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3, flexWrap:'wrap' }}>
+          <p style={{ fontSize: 11, fontWeight: 800, color: c.text, margin:0, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{alert.label}</p>
+          <span style={{ fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4, background:`${c.text}14`, color:c.text, border:`1px solid ${c.text}26`, letterSpacing:'0.06em', textTransform:'uppercase' }}>
+            Acao: {c.action}
+          </span>
+        </div>
+        <p style={{ fontSize: 13, color: '#E2E8F0', fontWeight: 500, lineHeight: 1.5, margin: 0 }}>{alert.text}</p>
       </div>
+      <style>{`@keyframes alertBreath { 0%,100% { box-shadow: 0 6px 22px rgba(0,0,0,0.3), 0 0 24px rgba(239,68,68,0.14) } 50% { box-shadow: 0 6px 22px rgba(0,0,0,0.3), 0 0 36px rgba(239,68,68,0.26) } }`}</style>
     </motion.div>
   )
 }
@@ -831,28 +863,52 @@ export default function RedesPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
         <div style={{ padding: '32px 24px 64px', maxWidth: 1140, margin: '0 auto' }}>
 
-          {/* ── Header ── */}
-          <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 8 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 14,
-                background: 'linear-gradient(135deg, rgba(229,57,53,0.15), rgba(168,85,247,0.1))',
-                border: '1px solid rgba(229,57,53,0.2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 0 20px rgba(229,57,53,0.08)',
-              }}>
-                <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="2" />
-                  <path d="M16.24 7.76a6 6 0 010 8.49m-8.48-.01a6 6 0 010-8.49m11.31-2.82a10 10 0 010 14.14m-14.14 0a10 10 0 010-14.14" />
-                </svg>
+          {/* ── Hero do modulo — central de inteligencia ── */}
+          <motion.div {...fadeUp(0)} style={{
+            position:'relative', overflow:'hidden',
+            padding:'22px 24px', borderRadius:18, marginBottom:20,
+            background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+            backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
+            border:'1px solid rgba(168,85,247,0.18)',
+            boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 50px rgba(168,85,247,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
+          }}>
+            <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(168,85,247,0.5), transparent)', pointerEvents:'none' }}/>
+            <div style={{ position:'absolute', top:-50, right:-50, width:220, height:220, borderRadius:'50%', background:'radial-gradient(circle, rgba(168,85,247,0.14), transparent 60%)', filter:'blur(30px)', pointerEvents:'none' }}/>
+            <div style={{ position:'absolute', bottom:-40, left:-30, width:160, height:160, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.1), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
+
+            <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, flexWrap:'wrap' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:14, flex:1, minWidth:220 }}>
+                <div style={{
+                  width:46, height:46, borderRadius:13,
+                  background:'linear-gradient(145deg, rgba(168,85,247,0.18), rgba(229,57,53,0.12))',
+                  border:'1px solid rgba(168,85,247,0.32)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  boxShadow:'0 0 22px rgba(168,85,247,0.22)',
+                }}>
+                  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="2" />
+                    <path d="M16.24 7.76a6 6 0 010 8.49m-8.48-.01a6 6 0 010-8.49m11.31-2.82a10 10 0 010 14.14m-14.14 0a10 10 0 010-14.14" />
+                  </svg>
+                </div>
+                <div>
+                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3, flexWrap:'wrap' }}>
+                    <h1 style={{ fontSize: 24, fontWeight: 900, color: '#F1F5F9', letterSpacing: '-0.025em', margin:0 }}>
+                      Central estrategica de redes
+                    </h1>
+                    <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(168,85,247,0.1)', color:'#a855f7', border:'1px solid rgba(168,85,247,0.25)', letterSpacing:'0.08em' }}>SISTEMA DE DECISAO</span>
+                  </div>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin:0, fontWeight:500 }}>
+                    Scoring inteligente, eficiencia e recomendacoes automaticas por rede
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.03em', marginBottom: 2 }}>
-                  Sistema Estrategico de Decisao
-                </h1>
-                <p style={{ fontSize: 13, color: '#64748B' }}>
-                  Heatmap de performance, scoring, eficiencia e recomendacoes inteligentes por rede
-                </p>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:8, background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.2)' }}>
+                <motion.div
+                  animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.5)','0 0 0 5px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
+                  transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                  style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}
+                />
+                <span style={{ fontSize:10, color:'#22C55E', fontWeight:800, letterSpacing:'0.08em' }}>ANALISE ATIVA</span>
               </div>
             </div>
           </motion.div>

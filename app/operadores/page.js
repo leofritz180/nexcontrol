@@ -62,18 +62,23 @@ function KpiCard({ label, value, suffix, rgb, i, isCurrency, dynamicColor }) {
     <motion.div {...fadeUp(i)}
       onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
       style={{
-        padding: '24px 22px', position: 'relative', overflow: 'hidden',
-        background: `linear-gradient(145deg, rgba(${c},0.1), rgba(${c},0.02) 60%, transparent)`,
-        border: `1px solid rgba(${c},${h ? 0.25 : 0.12})`,
-        borderRadius: 16,
-        boxShadow: h ? `0 0 40px rgba(${c},0.1), inset 0 1px 0 rgba(255,255,255,0.06)` : 'inset 0 1px 0 rgba(255,255,255,0.03)',
-        transform: h ? 'translateY(-2px)' : 'none',
-        transition: 'all 0.35s ease',
+        padding: '20px 22px', position: 'relative', overflow: 'hidden',
+        background: `linear-gradient(145deg, rgba(${c},0.1), rgba(14,22,38,0.6) 60%, rgba(8,14,26,0.6))`,
+        backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
+        border: `1px solid rgba(${c},${h ? 0.3 : 0.12})`,
+        borderRadius: 14,
+        boxShadow: h
+          ? `0 10px 32px rgba(0,0,0,0.45), 0 0 40px rgba(${c},0.15), inset 0 1px 0 rgba(255,255,255,0.06)`
+          : '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
+        transform: h ? 'translateY(-3px)' : 'none',
+        transition: 'all 0.25s ease',
       }}>
-      <p style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>{label}</p>
-      <p style={{ fontSize: 28, fontWeight: 800, color: `rgb(${c})`, lineHeight: 1, letterSpacing: '-0.03em', fontFamily: 'var(--mono, monospace)' }}>
+      {/* Accent line vertical */}
+      <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:`rgb(${c})`, boxShadow:`0 0 8px rgb(${c})` }}/>
+      <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>{label}</p>
+      <p style={{ fontSize: 26, fontWeight: 900, color: `rgb(${c})`, lineHeight: 1, letterSpacing: '-0.03em', fontFamily: 'var(--mono, monospace)', textShadow:`0 0 16px rgba(${c},0.25)` }}>
         {isCurrency ? `R$ ${Number(animated).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}` : animated}
-        {suffix && <span style={{ fontSize: 13, fontWeight: 600, marginLeft: 3 }}>{suffix}</span>}
+        {suffix && <span style={{ fontSize: 13, fontWeight: 700, marginLeft: 3 }}>{suffix}</span>}
       </p>
     </motion.div>
   )
@@ -880,26 +885,55 @@ export default function OperadoresPage() {
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
 
-        {/* Header */}
-        <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', margin: '0 0 4px' }}>Operadores</h1>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', margin: 0 }}>Ranking por lucro e performance individual da equipe.</p>
+        {/* Hero do modulo — premium */}
+        <motion.div {...fadeUp(0)} style={{
+          position:'relative', overflow:'hidden',
+          padding:'22px 24px', borderRadius:18, marginBottom:20,
+          background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+          backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
+          border:'1px solid rgba(255,215,0,0.12)',
+          boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
+        }}>
+          <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,215,0,0.35), transparent)', pointerEvents:'none' }}/>
+          <div style={{ position:'absolute', top:-40, right:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(255,215,0,0.1), transparent 60%)', filter:'blur(26px)', pointerEvents:'none' }}/>
+
+          <div style={{ position:'relative', display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
+            <div style={{
+              width:44, height:44, borderRadius:12,
+              background:'rgba(255,215,0,0.1)', border:'1px solid rgba(255,215,0,0.28)',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              boxShadow:'0 0 20px rgba(255,215,0,0.15)',
+            }}>
+              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><line x1="4" y1="22" x2="20" y2="22"/><line x1="10" y1="14.66" x2="10" y2="18"/><line x1="14" y1="14.66" x2="14" y2="18"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
+            </div>
+            <div style={{ flex:1, minWidth:200 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
+                <h1 style={{ fontSize:24, fontWeight:900, color:'#fff', letterSpacing:'-0.025em', margin:0 }}>Operadores</h1>
+                <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(255,215,0,0.1)', color:'#FFD700', border:'1px solid rgba(255,215,0,0.25)', letterSpacing:'0.08em' }}>GESTAO DE EQUIPE</span>
+              </div>
+              <p style={{ fontSize:12, color:'rgba(255,255,255,0.55)', margin:0, fontWeight:500 }}>
+                Ranking, performance, folha de pagamento e configuracoes estrategicas
+              </p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Tabs */}
         <motion.div {...fadeUp(1)} style={{
-          display: 'flex', gap: 4, marginBottom: 32,
+          display: 'flex', gap: 4, marginBottom: 28,
           background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: 4,
           border: '1px solid rgba(255,255,255,0.05)',
+          backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)',
         }}>
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
               style={{
-                flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 600,
-                borderRadius: 9, border: 'none', cursor: 'pointer',
-                background: tab === t.key ? 'rgba(255,255,255,0.07)' : 'transparent',
-                color: tab === t.key ? '#fff' : 'rgba(255,255,255,0.35)',
-                transition: 'all 0.2s ease',
+                flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 700,
+                borderRadius: 9, border: 'none', cursor: 'pointer', fontFamily:'inherit',
+                background: tab === t.key ? 'linear-gradient(145deg, rgba(255,215,0,0.12), rgba(255,215,0,0.04))' : 'transparent',
+                color: tab === t.key ? '#FFD700' : 'rgba(255,255,255,0.4)',
+                boxShadow: tab === t.key ? '0 2px 12px rgba(255,215,0,0.1), inset 0 1px 0 rgba(255,255,255,0.06)' : 'none',
+                transition: 'all 0.25s ease',
               }}>
               {t.label}
             </button>
@@ -1035,28 +1069,72 @@ export default function OperadoresPage() {
               </div>
             )}
 
-            {/* Insights — Radar da equipe */}
+            {/* Insights — Radar da equipe (inteligencia de gestao) */}
             <motion.div {...fadeUp(3)} style={{
-              background: 'rgba(168,85,247,0.04)',
-              border: '1px solid rgba(168,85,247,0.1)',
-              borderRadius: 14, padding: '22px 20px',
+              position:'relative', overflow:'hidden',
+              padding:'22px 24px', borderRadius:18,
+              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
+              border:'1px solid rgba(168,85,247,0.18)',
+              boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(168,85,247,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>Radar da equipe</span>
+              <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(168,85,247,0.5), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', background:'radial-gradient(circle, rgba(168,85,247,0.14), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
+
+              <div style={{ position:'relative', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <div style={{
+                  width:36, height:36, borderRadius:10,
+                  background:'rgba(168,85,247,0.14)', border:'1px solid rgba(168,85,247,0.32)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  boxShadow:'0 0 16px rgba(168,85,247,0.2)',
+                }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+                </div>
+                <div style={{ flex:1 }}>
+                  <p style={{ fontSize:14, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Radar da equipe</p>
+                  <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Inteligencia de gestao em tempo real</p>
+                </div>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:6, background:'rgba(168,85,247,0.08)', border:'1px solid rgba(168,85,247,0.2)' }}>
+                  <motion.div
+                    animate={{ boxShadow:['0 0 0 0 rgba(168,85,247,0.5)','0 0 0 5px rgba(168,85,247,0)','0 0 0 0 rgba(168,85,247,0)'] }}
+                    transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                    style={{ width:5, height:5, borderRadius:'50%', background:'#a855f7' }}
+                  />
+                  <span style={{ fontSize:9, color:'#a855f7', fontWeight:800, letterSpacing:'0.08em' }}>{insights.length} SINAIS</span>
+                </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {insights.map((ins, i) => (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-                    background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)',
-                  }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, flexShrink: 0, color: ins.type === 'up' ? '#22c55e' : ins.type === 'down' ? '#ef4444' : ins.type === 'warn' ? '#f59e0b' : 'rgba(255,255,255,0.3)' }}>
-                      {ins.type === 'up' ? '\u2191' : ins.type === 'down' ? '\u2193' : ins.type === 'warn' ? '!' : '\u2022'}
-                    </span>
-                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', margin: 0 }}>{ins.text}</p>
-                  </div>
-                ))}
+
+              <div style={{ position:'relative', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {insights.map((ins, i) => {
+                  const c = ins.type === 'up' ? '#22C55E' : ins.type === 'down' ? '#EF4444' : ins.type === 'warn' ? '#F59E0B' : '#a855f7'
+                  return (
+                    <motion.div key={i}
+                      initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }}
+                      transition={{ duration:0.35, delay:0.1+i*0.07, ease:[0.33,1,0.68,1] }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px',
+                        background: `${c}08`, borderRadius: 10, border: `1px solid ${c}18`,
+                      }}>
+                      <div style={{
+                        width:24, height:24, borderRadius:7, flexShrink:0,
+                        background:`${c}14`, border:`1px solid ${c}30`,
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        boxShadow:`0 0 8px ${c}30`,
+                      }}>
+                        {ins.type === 'up' ? (
+                          <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="3" strokeLinecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+                        ) : ins.type === 'down' ? (
+                          <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="3" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        ) : ins.type === 'warn' ? (
+                          <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.5" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        ) : (
+                          <div style={{ width:5, height:5, borderRadius:'50%', background:c }}/>
+                        )}
+                      </div>
+                      <p style={{ fontSize: 12, color: '#E2E8F0', margin: 0, fontWeight:600, lineHeight:1.45 }}>{ins.text}</p>
+                    </motion.div>
+                  )
+                })}
               </div>
             </motion.div>
           </motion.div>
@@ -1066,29 +1144,85 @@ export default function OperadoresPage() {
         {tab === 'equipe' && (
           <motion.div key="equipe" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
 
-            {/* Invite section */}
-            <div style={{
-              padding: '22px 20px', marginBottom: 24,
-              background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Convites</span>
+            {/* Invite section — premium */}
+            <motion.div
+              initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+              transition={{duration:0.4}}
+              style={{
+                position:'relative', overflow:'hidden',
+                padding: '20px 22px', marginBottom: 24,
+                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
+                border: '1px solid rgba(59,130,246,0.15)',
+                borderRadius: 16,
+                boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 32px rgba(59,130,246,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
+              }}>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(59,130,246,0.4), transparent)', pointerEvents:'none' }}/>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent:'space-between', gap:12, marginBottom: 16, flexWrap:'wrap' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                  <div style={{
+                    width:34, height:34, borderRadius:10,
+                    background:'rgba(59,130,246,0.12)', border:'1px solid rgba(59,130,246,0.3)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    boxShadow:'0 0 14px rgba(59,130,246,0.18)',
+                  }}>
+                    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 800, color: '#fff', margin:0, letterSpacing:'-0.01em' }}>Convites para operadores</p>
+                    <p style={{ fontSize:11, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Gere links unicos para cada novo membro da equipe</p>
+                  </div>
+                </div>
+                {invites.length > 0 && (
+                  <div style={{ display:'flex', alignItems:'baseline', gap:4 }}>
+                    <span style={{ fontSize:18, fontWeight:900, color:'#3B82F6', fontFamily:'var(--mono)', letterSpacing:'-0.02em' }}>{invites.length}</span>
+                    <span style={{ fontSize:10, color:'var(--t4)', fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase' }}>pendente{invites.length>1?'s':''}</span>
+                  </div>
+                )}
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <button onClick={sendInvite} disabled={invSaving} style={{
-                  padding: '10px 20px', fontSize: 13, fontWeight: 600,
-                  background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)',
-                  borderRadius: 10, color: '#22c55e', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 7, transition: 'all 0.2s ease',
-                  opacity: invSaving ? 0.6 : 1,
-                }}>
-                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  {invSaving ? 'Gerando...' : 'Gerar link de convite'}
-                </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: invites.length>0 ? 16 : 0, flexWrap:'wrap' }}>
+                <motion.button
+                  onClick={sendInvite} disabled={invSaving}
+                  whileHover={invSaving?{}:{ scale:1.02, boxShadow:'0 10px 28px rgba(34,197,94,0.45)' }}
+                  whileTap={invSaving?{}:{ scale:0.97 }}
+                  style={{
+                    padding: '11px 22px', fontSize: 13, fontWeight: 800, fontFamily:'inherit',
+                    background: invSaving ? 'rgba(34,197,94,0.2)' : 'linear-gradient(145deg, #22C55E, #16a34a)',
+                    border: 'none',
+                    borderRadius: 11, color: '#fff', cursor: invSaving?'not-allowed':'pointer',
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    boxShadow: invSaving ? 'none' : '0 6px 20px rgba(34,197,94,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+                    opacity: invSaving ? 0.7 : 1,
+                    transition: 'all 0.2s ease',
+                  }}>
+                  {invSaving ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+                        style={{ width:13, height:13, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', borderTopColor:'#fff' }}
+                      />
+                      Gerando link...
+                    </>
+                  ) : (
+                    <>
+                      <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Gerar link de convite
+                    </>
+                  )}
+                </motion.button>
                 {invMsg && (
-                  <span style={{ fontSize: 12, fontWeight: 600, color: invMsg.startsWith('Erro') ? '#ef4444' : '#22c55e' }}>{invMsg}</span>
+                  <motion.span
+                    initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }}
+                    style={{
+                      fontSize: 12, fontWeight: 700,
+                      padding:'6px 12px', borderRadius:8,
+                      color: invMsg.startsWith('Erro') ? '#EF4444' : '#22C55E',
+                      background: invMsg.startsWith('Erro') ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)',
+                      border: `1px solid ${invMsg.startsWith('Erro') ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)'}`,
+                    }}>{invMsg}</motion.span>
                 )}
               </div>
 
@@ -1105,7 +1239,7 @@ export default function OperadoresPage() {
                   ))}
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Operators list */}
             <div style={{ marginBottom: 8 }}>

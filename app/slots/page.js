@@ -333,7 +333,7 @@ export default function SlotsPage() {
                 <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'rgba(229,57,53,0.1)', color:'#e53935', border:'1px solid rgba(229,57,53,0.2)', letterSpacing:'0.06em' }}>2025</span>
               </div>
               <p style={{ fontSize:12, color:'rgba(255,255,255,0.55)', margin:0, fontWeight:500 }}>
-                <strong style={{ color:'#fff' }}>{SLOTS.length} jogos curados</strong> com dados de performance real · atualizado semanalmente
+                <strong style={{ color:'#fff' }}>48 jogos testados</strong> para rollover · atualizado semanalmente
               </p>
             </div>
             <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:8, background:'rgba(255,215,0,0.08)', border:'1px solid rgba(255,215,0,0.22)' }}>

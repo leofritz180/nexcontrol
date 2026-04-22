@@ -2566,21 +2566,56 @@ export default function AdminPage() {
               if (aiInsights.length === 0) return null
               const colors = { profit:'#22C55E', warn:'#F59E0B', critical:'#EF4444' }
               return (
-                <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35 }}
-                  style={{ padding:'16px 20px', borderRadius:14, marginBottom:20, background:'linear-gradient(135deg, rgba(168,85,247,0.06), rgba(59,130,246,0.03))', border:'1px solid rgba(168,85,247,0.12)' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
-                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
-                    <span style={{ fontSize:13, fontWeight:700, color:'#a855f7' }}>Leitura da operacao</span>
-                    <span style={{ fontSize:9, color:'var(--t4)', marginLeft:'auto' }}>Atualizado agora</span>
+                <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }}
+                  style={{
+                    position:'relative', overflow:'hidden',
+                    padding:'18px 22px', borderRadius:16, marginBottom:18,
+                    background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                    backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
+                    border:'1px solid rgba(168,85,247,0.18)',
+                    boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(168,85,247,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
+                  }}>
+                  <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(168,85,247,0.5), transparent)', pointerEvents:'none' }}/>
+                  <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', background:'radial-gradient(circle, rgba(168,85,247,0.12), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
+
+                  <div style={{ position:'relative', display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
+                    <div style={{
+                      width:34, height:34, borderRadius:10,
+                      background:'rgba(168,85,247,0.14)', border:'1px solid rgba(168,85,247,0.32)',
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      boxShadow:'0 0 16px rgba(168,85,247,0.2)',
+                    }}>
+                      <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2.2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <p style={{ fontSize:13, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Leitura da operacao</p>
+                      <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Analise automatica em tempo real</p>
+                    </div>
+                    <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:6, background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.18)' }}>
+                      <motion.div
+                        animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.6)','0 0 0 5px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
+                        transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                        style={{ width:5, height:5, borderRadius:'50%', background:'#22C55E' }}
+                      />
+                      <span style={{ fontSize:9, color:'#22C55E', fontWeight:800, letterSpacing:'0.08em' }}>AO VIVO</span>
+                    </div>
                   </div>
-                  <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
-                    {aiInsights.slice(0,4).map((ins,j) => (
-                      <motion.div key={j} initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.25, delay:0.1+j*0.08 }}
-                        style={{ display:'flex', alignItems:'center', gap:8 }}>
-                        <div style={{ width:5, height:5, borderRadius:'50%', background:colors[ins.type]||'#a855f7', flexShrink:0 }}/>
-                        <span style={{ fontSize:11, color:colors[ins.type]||'#a855f7', lineHeight:1.4, fontWeight:500 }}>{ins.text}</span>
-                      </motion.div>
-                    ))}
+
+                  <div style={{ position:'relative', display:'flex', flexDirection:'column', gap:8 }}>
+                    {aiInsights.slice(0,4).map((ins,j) => {
+                      const c = colors[ins.type]||'#a855f7'
+                      return (
+                        <motion.div key={j} initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.35, delay:0.1+j*0.08, ease:[0.33,1,0.68,1] }}
+                          style={{
+                            display:'flex', alignItems:'center', gap:10,
+                            padding:'9px 12px', borderRadius:10,
+                            background:`${c}08`, border:`1px solid ${c}14`,
+                          }}>
+                          <div style={{ width:6, height:6, borderRadius:'50%', background:c, flexShrink:0, boxShadow:`0 0 8px ${c}` }}/>
+                          <span style={{ fontSize:12, color:'#E2E8F0', lineHeight:1.45, fontWeight:600 }}>{ins.text}</span>
+                        </motion.div>
+                      )
+                    })}
                   </div>
                 </motion.div>
               )
@@ -2598,14 +2633,48 @@ export default function AdminPage() {
               const emLucro = metaStats.filter(v => v > 0).length
               const neutras = metaStats.filter(v => v === 0).length
               const fechadas = filteredMetas.filter(m => m.status_fechamento === 'fechada').length
+              const items = [
+                emLucro > 0 && { label:'em lucro', count:emLucro, c:'#22C55E', bg:'rgba(34,197,94,0.08)', border:'rgba(34,197,94,0.22)' },
+                emPrej > 0 && { label:'em prejuizo', count:emPrej, c:'#EF4444', bg:'rgba(239,68,68,0.08)', border:'rgba(239,68,68,0.24)', pulse:true },
+                neutras > 0 && { label:'neutras', count:neutras, c:'#F59E0B', bg:'rgba(245,158,11,0.08)', border:'rgba(245,158,11,0.22)' },
+                fechadas > 0 && { label:'concluidas', count:fechadas, c:'#94A3B8', bg:'rgba(148,163,184,0.06)', border:'rgba(148,163,184,0.16)' },
+              ].filter(Boolean)
               return (
-                <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3 }}
-                  style={{ display:'flex', alignItems:'center', gap:16, marginBottom:20, padding:'12px 18px', borderRadius:12, background:'var(--surface)', border:'1px solid var(--b1)', flexWrap:'wrap' }}>
-                  <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>Resumo:</span>
-                  {emLucro > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#22C55E', fontWeight:600 }}><span style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}/>{emLucro} em lucro</span>}
-                  {emPrej > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#EF4444', fontWeight:600 }}><span style={{ width:6, height:6, borderRadius:'50%', background:'#EF4444' }}/>{emPrej} em prejuizo</span>}
-                  {neutras > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'#F59E0B', fontWeight:600 }}><span style={{ width:6, height:6, borderRadius:'50%', background:'#F59E0B' }}/>{neutras} neutras</span>}
-                  {fechadas > 0 && <span style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:'var(--t4)', fontWeight:600 }}><span style={{ width:6, height:6, borderRadius:'50%', background:'var(--t4)' }}/>{fechadas} concluidas</span>}
+                <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35 }}
+                  style={{ display:'grid', gridTemplateColumns:`repeat(auto-fit, minmax(160px, 1fr))`, gap:10, marginBottom:20 }}>
+                  {items.map((it, idx) => (
+                    <motion.div key={it.label}
+                      initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }}
+                      transition={{ duration:0.3, delay:idx*0.06 }}
+                      whileHover={{ y:-2, transition:{ duration:0.15 } }}
+                      style={{
+                        position:'relative', overflow:'hidden',
+                        padding:'12px 16px', borderRadius:12,
+                        background: it.bg,
+                        border: `1px solid ${it.border}`,
+                        boxShadow: `0 4px 16px rgba(0,0,0,0.25), 0 0 16px ${it.c}08`,
+                        display:'flex', alignItems:'center', gap:12,
+                        animation: it.pulse ? 'metaResumoBreath 3s ease-in-out infinite' : 'none',
+                      }}>
+                      {/* Accent line */}
+                      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:'0 2px 2px 0', background:it.c, boxShadow:`0 0 8px ${it.c}` }}/>
+                      <div style={{ flex:1 }}>
+                        <div style={{ display:'flex', alignItems:'baseline', gap:4 }}>
+                          <span style={{ fontSize:22, fontWeight:900, color:it.c, fontFamily:'var(--mono)', letterSpacing:'-0.02em', lineHeight:1 }}>{it.count}</span>
+                          <span style={{ fontSize:10, color:it.c, fontWeight:700, letterSpacing:'0.04em' }}>meta{it.count>1?'s':''}</span>
+                        </div>
+                        <p style={{ fontSize:10, color:'var(--t3)', margin:'4px 0 0', fontWeight:600, letterSpacing:'0.06em', textTransform:'uppercase' }}>{it.label}</p>
+                      </div>
+                      {it.pulse && (
+                        <motion.div
+                          animate={{ boxShadow:[`0 0 0 0 ${it.c}80`,`0 0 0 6px ${it.c}00`,`0 0 0 0 ${it.c}00`] }}
+                          transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
+                          style={{ width:7, height:7, borderRadius:'50%', background:it.c, flexShrink:0 }}
+                        />
+                      )}
+                    </motion.div>
+                  ))}
+                  <style>{`@keyframes metaResumoBreath { 0%,100% { box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 16px rgba(239,68,68,0.08) } 50% { box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 28px rgba(239,68,68,0.18) } }`}</style>
                 </motion.div>
               )
             })()}
@@ -2676,62 +2745,96 @@ export default function AdminPage() {
                     whileTap={{ scale:0.98 }}
                     style={{
                     borderRadius:18,overflow:'hidden',position:'relative',
-                    background:`linear-gradient(160deg, ${statusColor}12 0%, ${statusColor}06 40%, #0a1220 100%)`,
-                    border:`1px solid ${statusColor}${!isPos&&!fechada?'50':'30'}`,
-                    boxShadow:`0 0 ${!isPos&&!fechada?'25':'20'}px ${statusColor}${!isPos&&!fechada?'12':'08'}, 0 4px 20px rgba(0,0,0,0.35)`,
+                    background:`linear-gradient(160deg, ${statusColor}${!isPos&&!fechada?'18':'0e'} 0%, ${statusColor}05 40%, rgba(10,18,32,0.92) 100%)`,
+                    backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
+                    border:`1px solid ${statusColor}${!isPos&&!fechada?'55':'30'}`,
+                    boxShadow:`0 0 ${!isPos&&!fechada?'32':'20'}px ${statusColor}${!isPos&&!fechada?'18':'08'}, 0 8px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)`,
                     cursor:'pointer',
                     animation: !isPos && !fechada ? 'metaBreath 3s ease-in-out infinite' : 'none',
                   }}>
-                    {/* Top accent */}
-                    <div style={{height:3,background:`linear-gradient(90deg, ${nc.hex}, ${nc.hex}66)`}}/>
+                    {/* Top accent — mais grosso e com glow */}
+                    <div style={{height:4,background:`linear-gradient(90deg, ${nc.hex}, ${nc.hex}88, ${nc.hex})`, boxShadow:`0 0 12px ${nc.hex}80`}}/>
+                    {/* Ambient orb no canto pra metas em prejuizo */}
+                    {!isPos && !fechada && (
+                      <div style={{ position:'absolute', top:-20, right:-20, width:90, height:90, borderRadius:'50%', background:'radial-gradient(circle, rgba(239,68,68,0.14), transparent 65%)', filter:'blur(14px)', pointerEvents:'none' }}/>
+                    )}
                     <div style={{padding:'16px 18px 14px',position:'relative',zIndex:1}}>
                       {/* Status badge */}
-                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
-                        <span style={{fontSize:8,fontWeight:800,letterSpacing:'0.08em',padding:'2px 8px',borderRadius:4,background:`${statusColor}15`,color:statusColor,border:`1px solid ${statusColor}25`}}>
-                          {statusLabel}
-                        </span>
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                        <div style={{display:'flex',alignItems:'center',gap:6}}>
+                          <span style={{
+                            fontSize:9, fontWeight:900, letterSpacing:'0.1em',
+                            padding:'3px 9px', borderRadius:5,
+                            background:`${statusColor}18`, color:statusColor,
+                            border:`1px solid ${statusColor}38`,
+                            boxShadow: !isPos && !fechada ? `0 0 10px ${statusColor}40` : 'none',
+                          }}>
+                            {statusLabel}
+                          </span>
+                          {!isPos && !fechada && (
+                            <motion.div
+                              animate={{ opacity:[0.5, 1, 0.5] }}
+                              transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
+                              style={{ fontSize:11, lineHeight:1 }}
+                            >
+                              <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </motion.div>
+                          )}
+                        </div>
                         {isAtiva && (
-                          <motion.div
-                            animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0)','0 0 0 4px rgba(34,197,94,0.15)','0 0 0 0 rgba(34,197,94,0)'] }}
-                            transition={{ duration:2, repeat:Infinity }}
-                            style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}
-                          />
+                          <div style={{ display:'inline-flex', alignItems:'center', gap:4 }}>
+                            <motion.div
+                              animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0)','0 0 0 5px rgba(34,197,94,0.2)','0 0 0 0 rgba(34,197,94,0)'] }}
+                              transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
+                              style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}
+                            />
+                            <span style={{ fontSize:8, color:'#22C55E', fontWeight:700, letterSpacing:'0.06em' }}>LIVE</span>
+                          </div>
                         )}
                       </div>
-                      {/* Title */}
-                      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
-                        <div style={{width:7,height:7,borderRadius:'50%',background:nc.hex,boxShadow:`0 0 6px ${nc.hex}66`,flexShrink:0}}/>
-                        <span style={{fontSize:14,fontWeight:900,color:'var(--t1)',letterSpacing:'0.01em'}}>{totalContas} DEP {m.rede||'—'}</span>
+                      {/* Title + rede chip */}
+                      <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:3}}>
+                        <div style={{width:8,height:8,borderRadius:'50%',background:nc.hex,boxShadow:`0 0 8px ${nc.hex}90, 0 0 2px ${nc.hex}`,flexShrink:0}}/>
+                        <span style={{fontSize:15,fontWeight:900,color:'var(--t1)',letterSpacing:'-0.01em'}}>{totalContas} DEP {m.rede||'—'}</span>
                       </div>
                       {/* Insight */}
                       {insightText && (
-                        <p style={{fontSize:9,fontWeight:600,color:insightColor,margin:'2px 0 0',paddingLeft:13,opacity:0.85}}>{insightText}</p>
+                        <p style={{
+                          fontSize:10, fontWeight:700, color:insightColor, margin:'3px 0 0', paddingLeft:15,
+                          textShadow:`0 0 8px ${insightColor}30`,
+                        }}>{insightText}</p>
                       )}
-                      <p style={{fontSize:10,color:'var(--t4)',margin:'4px 0 12px',paddingLeft:13}}>{metaDate} · {remDone} remessas</p>
+                      <p style={{fontSize:10, color:'var(--t4)', margin:'5px 0 14px', paddingLeft:15, fontFamily:'var(--mono)'}}>{metaDate} · {remDone} remessa{remDone!==1?'s':''}</p>
                       {/* Progress */}
                       <div style={{marginBottom:12}}>
-                        <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
-                          <span style={{fontSize:9,color:'var(--t4)'}}>Progresso</span>
-                          <span style={{fontSize:10,fontWeight:600,color:'var(--t3)',fontFamily:'var(--mono)'}}>{depDone}/{totalContas}</span>
+                        <div style={{display:'flex',justifyContent:'space-between',marginBottom:5}}>
+                          <span style={{fontSize:9, color:'var(--t4)', fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase'}}>Progresso</span>
+                          <span style={{fontSize:10, fontWeight:700, color:'var(--t2)', fontFamily:'var(--mono)'}}>{depDone}/{totalContas}</span>
                         </div>
-                        <div style={{height:5,background:'rgba(255,255,255,0.05)',borderRadius:99,overflow:'hidden'}}>
+                        <div style={{height:6, background:'rgba(255,255,255,0.05)', borderRadius:99, overflow:'hidden', border:'1px solid rgba(255,255,255,0.04)'}}>
                           <motion.div
                             initial={{ width:0 }}
                             animate={{ width:`${progPct}%` }}
                             transition={{ duration:1, delay:Math.min(i*0.04,0.5)+0.2, ease:[0.4,0,0.2,1] }}
-                            style={{ height:'100%',borderRadius:99,background:progColor,boxShadow:`0 0 8px ${statusColor}20`,position:'relative',overflow:'hidden' }}
+                            style={{ height:'100%', borderRadius:99, background:progColor, boxShadow:`0 0 10px ${statusColor}40, inset 0 1px 0 rgba(255,255,255,0.2)`, position:'relative', overflow:'hidden' }}
                           >
-                            {!fechada && <div style={{ position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)',animation:'progShimmer 2s ease-in-out infinite' }}/>}
+                            {!fechada && <div style={{ position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent)',animation:'progShimmer 2s ease-in-out infinite' }}/>}
                           </motion.div>
                         </div>
                       </div>
-                      {/* Value */}
-                      <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end'}}>
+                      {/* Value — mais dominante pra prejuizo */}
+                      <div style={{display:'flex',alignItems:'baseline', justifyContent:'space-between', gap:8}}>
+                        <span style={{ fontSize:9, color:'var(--t4)', fontWeight:700, letterSpacing:'0.08em', textTransform:'uppercase' }}>
+                          {fechada ? 'Lucro final' : 'Resultado'}
+                        </span>
                         <motion.span
+                          animate={!isPos && !fechada ? { textShadow:[`0 0 12px rgba(239,68,68,0.25)`, `0 0 24px rgba(239,68,68,0.45)`, `0 0 12px rgba(239,68,68,0.25)`] } : {}}
+                          transition={{ duration:2.5, repeat:Infinity, ease:'easeInOut' }}
                           style={{
-                            fontFamily:'var(--mono)',fontSize:22,fontWeight:900,
+                            fontFamily:'var(--mono)', fontSize:22, fontWeight:900,
                             color:isPos?'#22C55E':'#EF4444',
-                            textShadow:`0 0 12px ${isPos?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.15)'}`,
+                            textShadow: isPos ? `0 0 12px rgba(34,197,94,0.2)` : `0 0 16px rgba(239,68,68,0.3)`,
+                            letterSpacing:'-0.02em', lineHeight:1,
                           }}>
                           {isPos?'+':'-'}R$ {fmt(Math.abs(displayVal))}
                         </motion.span>
@@ -3136,24 +3239,62 @@ export default function AdminPage() {
           <motion.div key="trash"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease }}>
-            <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
-              <div style={{ width:48, height:48, borderRadius:14, background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="1.5" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+
+            {/* Header da lixeira — area secundaria organizada */}
+            <motion.div
+              initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+              transition={{duration:0.4}}
+              style={{
+                position:'relative', overflow:'hidden',
+                padding:'20px 24px', borderRadius:16, marginBottom:22,
+                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
+                border:'1px solid rgba(148,163,184,0.14)',
+                boxShadow:'0 6px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
+              }}>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(148,163,184,0.3), transparent)', pointerEvents:'none' }}/>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, flexWrap:'wrap' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+                  <div style={{
+                    width:42, height:42, borderRadius:12,
+                    background:'rgba(148,163,184,0.08)', border:'1px solid rgba(148,163,184,0.2)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                  }}>
+                    <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </div>
+                  <div>
+                    <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                      <h2 style={{ fontSize:20, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>Lixeira</h2>
+                      <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(148,163,184,0.1)', color:'#94A3B8', border:'1px solid rgba(148,163,184,0.2)', letterSpacing:'0.08em' }}>AREA SECUNDARIA</span>
+                    </div>
+                    <p style={{ fontSize:12, color:'var(--t3)', margin:'3px 0 0', fontWeight:500 }}>Metas excluidas · restaurar ou remover permanentemente</p>
+                  </div>
+                </div>
+                {trashMetas.length > 0 && (
+                  <div style={{ display:'flex', alignItems:'baseline', gap:5 }}>
+                    <span style={{ fontSize:24, fontWeight:900, color:'var(--t1)', fontFamily:'var(--mono)', letterSpacing:'-0.02em' }}>{trashMetas.length}</span>
+                    <span style={{ fontSize:11, color:'var(--t4)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.06em' }}>item{trashMetas.length>1?'s':''}</span>
+                  </div>
+                )}
               </div>
-              <div>
-                <h2 className="t-h2" style={{ margin:'0 0 3px' }}>Lixeira</h2>
-                <p className="t-small">Metas excluidas podem ser restauradas ou removidas permanentemente</p>
-              </div>
-            </div>
+            </motion.div>
 
             {trashMetas.length === 0 ? (
-              <div style={{ border:'1px dashed var(--b2)', borderRadius:16, padding:64, textAlign:'center' }}>
-                <div style={{ width:48, height:48, borderRadius:14, background:'rgba(255,255,255,0.03)', border:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
-                  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth="1.5" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <motion.div
+                initial={{opacity:0, scale:0.98}} animate={{opacity:1, scale:1}}
+                transition={{duration:0.4}}
+                style={{
+                  borderRadius:18, padding:'56px 32px', textAlign:'center',
+                  background:'linear-gradient(145deg, rgba(14,22,38,0.4), rgba(8,14,26,0.4))',
+                  backdropFilter:'blur(14px)', WebkitBackdropFilter:'blur(14px)',
+                  border:'1px dashed rgba(148,163,184,0.18)',
+                }}>
+                <div style={{ width:52, height:52, borderRadius:14, background:'rgba(148,163,184,0.06)', border:'1px solid rgba(148,163,184,0.15)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
+                  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.6" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
-                <p style={{ color:'var(--t2)', fontSize:14, fontWeight:600, marginBottom:4 }}>Lixeira vazia</p>
-                <p className="t-small">Metas excluidas aparecerao aqui para restauracao.</p>
-              </div>
+                <p style={{ color:'var(--t1)', fontSize:15, fontWeight:700, marginBottom:5 }}>Lixeira vazia</p>
+                <p style={{ color:'var(--t3)', fontSize:12 }}>Nenhuma meta excluida no momento.</p>
+              </motion.div>
             ) : (
               <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 {trashMetas.map((m, i) => {
@@ -3163,60 +3304,91 @@ export default function AdminPage() {
                   const deletedDate = m.deleted_at ? new Date(m.deleted_at).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' }) : ''
                   return (
                     <motion.div key={m.id}
-                      initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: i * 0.05, ease }}
+                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, delay: i * 0.05, ease }}
+                      whileHover={{ x:4, borderColor:'rgba(148,163,184,0.25)', transition:{duration:0.2} }}
                       style={{
-                        padding:'18px 22px', borderRadius:16,
-                        background:'var(--surface)', border:'1px solid var(--b1)',
-                        display:'flex', alignItems:'center', gap:16,
-                        transition:'all 0.2s',
+                        position:'relative', overflow:'hidden',
+                        padding:'16px 20px', borderRadius:14,
+                        background:'linear-gradient(145deg, rgba(14,22,38,0.55), rgba(8,14,26,0.55))',
+                        backdropFilter:'blur(14px) saturate(140%)', WebkitBackdropFilter:'blur(14px) saturate(140%)',
+                        border:'1px solid rgba(148,163,184,0.12)',
+                        display:'flex', alignItems:'center', gap:14, flexWrap:'wrap',
+                        boxShadow:'0 3px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.02)',
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.2)'; e.currentTarget.style.background = 'var(--raised)' }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--b1)'; e.currentTarget.style.background = 'var(--surface)' }}
                     >
-                      {/* Icon */}
-                      <div style={{ width:42, height:42, borderRadius:12, background:'rgba(239,68,68,0.06)', border:'1px solid rgba(239,68,68,0.12)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                        <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="1.5" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      {/* Accent bar esquerdo cinza */}
+                      <div style={{ position:'absolute', left:0, top:0, bottom:0, width:2, background:'rgba(148,163,184,0.3)' }}/>
+
+                      {/* Icon com iniciais da rede */}
+                      <div style={{
+                        width:40, height:40, borderRadius:11, flexShrink:0,
+                        background:'rgba(148,163,184,0.08)', border:'1px solid rgba(148,163,184,0.18)',
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontFamily:'var(--mono)', fontSize:10, fontWeight:800, color:'#94A3B8',
+                      }}>
+                        {(m.rede || '—').toString().slice(0,4)}
                       </div>
 
                       {/* Info */}
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
-                          <span style={{ fontSize:15, fontWeight:700, color:'var(--t1)' }}>{m.titulo}</span>
-                          {m.rede && <span style={{ fontSize:9, fontWeight:700, padding:'2px 7px', borderRadius:6, background:'rgba(59,130,246,0.1)', color:'var(--brand-bright)', border:'1px solid rgba(59,130,246,0.2)' }}>{m.rede}</span>}
-                          <span style={{ fontSize:9, fontWeight:600, padding:'2px 7px', borderRadius:6, background:'rgba(239,68,68,0.08)', color:'var(--loss)', border:'1px solid rgba(239,68,68,0.15)' }}>Excluida</span>
+                      <div style={{ flex:1, minWidth:180 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:5, flexWrap:'wrap' }}>
+                          <span style={{ fontSize:14, fontWeight:800, color:'var(--t2)', letterSpacing:'-0.01em' }}>{m.titulo}</span>
+                          <span style={{ fontSize:9, fontWeight:800, padding:'2px 7px', borderRadius:5, background:'rgba(239,68,68,0.08)', color:'#EF4444', border:'1px solid rgba(239,68,68,0.18)', letterSpacing:'0.06em', textTransform:'uppercase' }}>Excluida</span>
                         </div>
-                        <p className="t-small">
-                          {getName(op)} · {mRem.length} remessas · Resultado: <span style={{ color: liq >= 0 ? 'var(--profit)' : 'var(--loss)', fontFamily:'var(--mono)', fontWeight:600 }}>{liq >= 0 ? '+' : ''}R$ {fmt(liq)}</span>
+                        <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+                          <span style={{ fontSize:11, color:'var(--t3)', fontWeight:600 }}>{getName(op)}</span>
+                          <span style={{ fontSize:10, color:'var(--t4)' }}>·</span>
+                          <span style={{ fontSize:11, color:'var(--t4)', fontFamily:'var(--mono)' }}>{mRem.length} remessa{mRem.length!==1?'s':''}</span>
+                          <span style={{ fontSize:10, color:'var(--t4)' }}>·</span>
+                          <span style={{ fontSize:11, color: liq >= 0 ? '#22C55E' : '#EF4444', fontFamily:'var(--mono)', fontWeight:700 }}>
+                            {liq >= 0 ? '+' : ''}R$ {fmt(liq)}
+                          </span>
+                        </div>
+                        <p style={{ fontSize:10, color:'var(--t4)', margin:'4px 0 0', fontFamily:'var(--mono)' }}>
+                          <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ display:'inline', verticalAlign:'middle', marginRight:4, marginTop:-2 }}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                          Excluida em {deletedDate}
                         </p>
-                        <p style={{ fontSize:10, color:'var(--t4)', marginTop:2 }}>Excluida em {deletedDate}</p>
                       </div>
 
-                      {/* Actions */}
+                      {/* Actions — contraste claro entre Restaurar (primario verde) e Excluir (secundario perigo) */}
                       <div style={{ display:'flex', gap:8, flexShrink:0 }}>
                         <motion.button
-                          whileHover={{ scale:1.05 }} whileTap={{ scale:0.95 }}
+                          whileHover={{ scale:1.04, boxShadow:'0 6px 18px rgba(34,197,94,0.35)' }}
+                          whileTap={{ scale:0.95 }}
                           onClick={async () => {
                             await fetch('/api/meta/restore', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ meta_id:m.id }) })
                             loadAll()
                           }}
-                          className="btn btn-sm"
-                          style={{ background:'rgba(34,197,94,0.08)', color:'var(--profit)', border:'1px solid rgba(34,197,94,0.2)', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:600 }}
+                          style={{
+                            padding:'9px 16px', borderRadius:10, border:'none', cursor:'pointer',
+                            fontSize:12, fontWeight:800, fontFamily:'inherit', color:'#fff',
+                            background:'linear-gradient(145deg, #22C55E, #16a34a)',
+                            boxShadow:'0 4px 14px rgba(34,197,94,0.3), inset 0 1px 0 rgba(255,255,255,0.18)',
+                            display:'flex', alignItems:'center', gap:6,
+                          }}
                         >
-                          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
                           Restaurar
                         </motion.button>
                         <motion.button
-                          whileHover={{ scale:1.05 }} whileTap={{ scale:0.95 }}
+                          whileHover={{ scale:1.04, background:'rgba(239,68,68,0.14)', borderColor:'rgba(239,68,68,0.4)' }}
+                          whileTap={{ scale:0.95 }}
                           onClick={async () => {
                             if (!confirm('Excluir PERMANENTEMENTE esta meta e todas as remessas? Esta acao nao pode ser desfeita.')) return
                             await fetch('/api/meta/purge', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ meta_id:m.id }) })
                             loadAll()
                           }}
-                          className="btn btn-sm"
-                          style={{ background:'rgba(239,68,68,0.08)', color:'var(--loss)', border:'1px solid rgba(239,68,68,0.2)', display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:600 }}
+                          style={{
+                            padding:'9px 14px', borderRadius:10, cursor:'pointer',
+                            fontSize:12, fontWeight:700, fontFamily:'inherit', color:'#EF4444',
+                            background:'rgba(239,68,68,0.06)', border:'1px solid rgba(239,68,68,0.22)',
+                            display:'flex', alignItems:'center', gap:6,
+                            transition:'all 0.2s',
+                          }}
+                          title="Excluir permanentemente"
                         >
-                          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                           Excluir
                         </motion.button>
                       </div>

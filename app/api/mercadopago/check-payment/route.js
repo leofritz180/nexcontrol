@@ -83,6 +83,12 @@ async function activatePro(sb, record, paymentId) {
   expires.setDate(expires.getDate() + 30)
   const now = new Date().toISOString()
 
+  // Contar operadores reais do tenant para gravar operator_count correto
+  const { count: opCount } = await sb.from('profiles')
+    .select('id', { count: 'exact', head: true })
+    .eq('tenant_id', record.tenant_id)
+    .eq('role', 'operator')
+
   await sb.from('tenants').update({
     subscription_status: 'active',
   }).eq('id', record.tenant_id)
@@ -93,6 +99,7 @@ async function activatePro(sb, record, paymentId) {
     payment_method: 'pix_mp',
     external_id: paymentId,
     total_amount: record.amount,
+    operator_count: opCount || 0,
     starts_at: now,
     expires_at: expires.toISOString(),
   })

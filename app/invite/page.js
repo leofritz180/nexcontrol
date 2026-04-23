@@ -43,8 +43,29 @@ function InvitePage() {
     setSaving(true); setError('')
 
     // Re-validate invite still exists and is pending
-    const { data: valid } = await supabase.from('invites').select('id').eq('token', token).eq('status', 'pending').maybeSingle()
+    const { data: valid } = await supabase.from('invites').select('id,tenant_id').eq('token', token).eq('status', 'pending').maybeSingle()
     if (!valid) { setError('Este convite expirou ou foi cancelado.'); setSaving(false); return }
+
+    // Validar limite do plano: contar operadores atuais do tenant vs operator_count da sub
+    try {
+      const tid = valid.tenant_id || invite?.tenant_id
+      if (tid) {
+        const [{ count: opCount }, { data: subActive }] = await Promise.all([
+          supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('tenant_id', tid).eq('role', 'operator'),
+          supabase.from('subscriptions').select('operator_count, expires_at').eq('tenant_id', tid).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+        ])
+        if (subActive && (!subActive.expires_at || new Date(subActive.expires_at) > new Date())) {
+          const limit = Number(subActive.operator_count || 0)
+          if ((opCount || 0) >= limit) {
+            setSaving(false)
+            setError('Este convite expirou por limite de plano. Peca ao admin para liberar uma vaga.')
+            return
+          }
+        }
+      }
+    } catch (e) {
+      console.error('[invite] check limit failed', e?.message)
+    }
 
     const { error: err } = await supabase.auth.signUp({
       email, password: pass,

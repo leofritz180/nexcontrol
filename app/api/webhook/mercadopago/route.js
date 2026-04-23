@@ -74,6 +74,13 @@ export async function POST(req) {
         expires.setDate(expires.getDate() + 30)
         const now = new Date().toISOString()
 
+        // Contar operadores reais do tenant no momento do pagamento
+        // para gravar operator_count correto na subscription
+        const { count: opCount } = await sb.from('profiles')
+          .select('id', { count: 'exact', head: true })
+          .eq('tenant_id', record.tenant_id)
+          .eq('role', 'operator')
+
         await sb.from('tenants').update({
           subscription_status: 'active',
         }).eq('id', record.tenant_id)
@@ -84,6 +91,7 @@ export async function POST(req) {
           payment_method: 'pix_mp',
           external_id: String(payment.id),
           total_amount: record.amount,
+          operator_count: opCount || 0,
           starts_at: now,
           expires_at: expires.toISOString(),
         })

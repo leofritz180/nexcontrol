@@ -718,6 +718,35 @@ export default function OperadoresPage() {
   async function sendInvite() {
     if (!profile?.tenant_id) return
     setInvSaving(true); setInvMsg('')
+
+    // Validar limite do plano: contar operators + invites pendentes
+    // contra operator_count da subscription ativa mais recente
+    try {
+      const { data: subActive } = await supabase.from('subscriptions')
+        .select('operator_count, status, expires_at')
+        .eq('tenant_id', profile.tenant_id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1).maybeSingle()
+
+      // Se tem sub ativa, validar limite. Se nao tem (trial), nao bloqueia.
+      if (subActive && (!subActive.expires_at || new Date(subActive.expires_at) > new Date())) {
+        const limit = Number(subActive.operator_count || 0)
+        const currentOps = operators.length
+        const pendingInvs = invites.filter(i => i.status === 'pending' || !i.status).length
+        const used = currentOps + pendingInvs
+        if (used >= limit) {
+          setInvSaving(false)
+          setInvMsg(`Limite atingido: seu plano inclui ${limit} operador${limit !== 1 ? 'es' : ''}. Atualize em Assinatura para adicionar mais.`)
+          setTimeout(() => setInvMsg(''), 8000)
+          return
+        }
+      }
+    } catch (e) {
+      console.error('[sendInvite] check limit failed', e?.message)
+      // Em caso de erro na checagem, deixa passar (nao bloqueia operacao)
+    }
+
     const { data, error: err } = await supabase.from('invites').insert({
       tenant_id: profile.tenant_id,
       role: 'operator',

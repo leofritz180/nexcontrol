@@ -101,93 +101,67 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         {allItems.map(item => {
           const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
           return (
-            <motion.div key={item.href} whileHover={{ scale:1.01 }} whileTap={{ scale:0.98 }}>
-              <Link href={item.href} onClick={()=>setMobileOpen(false)}
-                style={{
-                  display:'flex', alignItems:'center', gap:11,
-                  padding:'10px 14px', borderRadius:10, textDecoration:'none',
-                  fontSize:13, fontWeight: active?600:500,
-                  color: active?'var(--t1)':'var(--t3)',
-                  background: active?'rgba(255,255,255,0.05)':'transparent',
-                  borderLeft: active?'3px solid #e53935':'3px solid transparent',
-                  boxShadow: item.vip ? '0 0 0 1px rgba(245,158,11,0.25), 0 0 10px rgba(245,158,11,0.06)' : item.pro ? '0 0 0 1px rgba(229,57,53,0.25), 0 0 10px rgba(229,57,53,0.06)' : active?'inset 0 0 20px rgba(229,57,53,0.04)':'none',
-                  border: item.vip ? '1px solid rgba(245,158,11,0.2)' : item.pro ? '1px solid rgba(229,57,53,0.2)' : 'none',
-                  animation: (item.pro || item.vip) ? 'ring-pulse 3s ease-in-out infinite' : 'none',
-                  transition:'all 0.2s ease',
-                }}
-                onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='rgba(255,255,255,0.03)';e.currentTarget.style.color='var(--t2)'}}}
-                onMouseLeave={e=>{ if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'}}}
-              >
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity:active?0.9:0.4 }}>
-                  <path d={item.icon}/>
-                </svg>
-                {item.label}
-                {item.pro && !subActive && (
-                  <span style={{
-                    marginLeft:'auto', fontSize:8, fontWeight:700, padding:'2px 6px', borderRadius:4,
-                    background:'rgba(229,57,53,0.12)', color:'#ff4444',
-                    border:'1px solid rgba(229,57,53,0.2)', letterSpacing:'0.06em',
-                    boxShadow:'0 0 8px rgba(229,57,53,0.1)',
-                    animation:'breathe 3s ease-in-out infinite',
-                  }}>PRO</span>
-                )}
-                {item.vip && (
-                  <span style={{
-                    marginLeft:'auto', fontSize:8, fontWeight:700, padding:'2px 6px', borderRadius:4,
-                    background:'rgba(245,158,11,0.15)', color:'#F59E0B',
-                    border:'1px solid rgba(245,158,11,0.3)', letterSpacing:'0.06em',
-                    boxShadow:'0 0 8px rgba(245,158,11,0.15)',
-                    animation:'breathe 3s ease-in-out infinite',
-                  }}>VIP</span>
-                )}
-              </Link>
-            </motion.div>
+            <Link key={item.href} href={item.href} onClick={()=>setMobileOpen(false)}
+              style={{
+                display:'flex', alignItems:'center', gap:11,
+                padding:'9px 12px', borderRadius:8, textDecoration:'none',
+                fontSize:13, fontWeight: active?500:400,
+                color: active?'var(--t1)':'var(--t3)',
+                background: active?'rgba(255,255,255,0.04)':'transparent',
+                transition:'all 0.15s ease',
+              }}
+              onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.color='var(--t2)'}}}
+              onMouseLeave={e=>{ if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'}}}
+            >
+              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity:active?0.9:0.45 }}>
+                <path d={item.icon}/>
+              </svg>
+              {item.label}
+              {item.pro && !subActive && (
+                <span style={{
+                  marginLeft:'auto', fontSize:8, fontWeight:600, padding:'2px 6px', borderRadius:4,
+                  background:'rgba(255,255,255,0.04)', color:'var(--t3)',
+                  letterSpacing:'0.06em',
+                }}>PRO</span>
+              )}
+              {item.vip && (
+                <span style={{
+                  marginLeft:'auto', fontSize:8, fontWeight:600, padding:'2px 6px', borderRadius:4,
+                  background:'rgba(255,255,255,0.04)', color:'var(--t3)',
+                  letterSpacing:'0.06em',
+                }}>VIP</span>
+              )}
+            </Link>
           )
         })}
       </nav>
 
-      {/* ── PRO CTA ── */}
+      {/* ── PRO CTA — clean ── */}
       {isAdmin && !subActive && (
-        <div style={{ padding:'0 14px 14px' }}>
-          <motion.div
-            animate={{ boxShadow:['0 0 15px rgba(229,57,53,0.08)','0 0 25px rgba(229,57,53,0.15)','0 0 15px rgba(229,57,53,0.08)'] }}
-            transition={{ duration:3, repeat:Infinity }}
-            style={{ borderRadius:10 }}
-          >
+        <div style={{ padding:'0 12px 12px' }}>
           <Link href="/billing" onClick={()=>setMobileOpen(false)}
             style={{
               display:'flex', alignItems:'center', justifyContent:'center', gap:8,
-              padding:'11px 16px', borderRadius:10, textDecoration:'none',
-              fontSize:12, fontWeight:700, color:'#ff4444',
-              background:'rgba(229,57,53,0.08)', border:'1px solid rgba(229,57,53,0.18)',
-              transition:'all 0.2s',
+              padding:'10px 14px', borderRadius:8, textDecoration:'none',
+              fontSize:12, fontWeight:500, color:'#fff',
+              background:'#3b82f6', border:'none',
+              transition:'background 0.15s',
             }}
-            onMouseEnter={e=>{e.currentTarget.style.background='rgba(229,57,53,0.14)';e.currentTarget.style.boxShadow='0 0 20px rgba(229,57,53,0.08)'}}
-            onMouseLeave={e=>{e.currentTarget.style.background='rgba(229,57,53,0.08)';e.currentTarget.style.boxShadow='none'}}
+            onMouseEnter={e=>{e.currentTarget.style.background='#2563eb'}}
+            onMouseLeave={e=>{e.currentTarget.style.background='#3b82f6'}}
           >
-            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth={2} strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             Desbloquear PRO
           </Link>
-          </motion.div>
         </div>
       )}
 
-      {/* ── Plan status card ── */}
-      <div style={{ padding:'0 14px 14px' }}>
-        <div style={{
-          padding:'12px 14px', borderRadius:10,
-          background: subActive?'rgba(34,197,94,0.05)':'rgba(255,255,255,0.02)',
-          border:`1px solid ${subActive?'rgba(34,197,94,0.12)':'rgba(255,255,255,0.04)'}`,
-        }}>
-          <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
-            <div style={{ width:6, height:6, borderRadius:'50%', background:subActive?'#22C55E':'var(--warn)' }}/>
-            <span style={{ fontSize:10, fontWeight:600, color:subActive?'var(--profit)':'var(--warn)' }}>
-              {subActive?'PRO ativo':'Trial ativo'}
-            </span>
-          </div>
-          <p style={{ fontSize:10, color:'var(--t4)', margin:0 }}>
-            {subActive?'Plano PRO':'3 dias de teste'}
-          </p>
+      {/* ── Plan status — minimal ── */}
+      <div style={{ padding:'0 12px 12px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 12px' }}>
+          <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'#22c55e':'#9ca3af' }}/>
+          <span style={{ fontSize:11, color:'var(--t3)', fontWeight:400 }}>
+            {subActive?'PRO ativo':'Trial · 3 dias'}
+          </span>
         </div>
       </div>
 
@@ -226,10 +200,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* Desktop */}
       <aside className="sidebar-desktop" style={{
         position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:200,
-        background:'rgba(6,10,18,0.97)',
-        backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)',
+        background:'#0B0F14',
         borderRight:'1px solid rgba(255,255,255,0.05)',
-        boxShadow:'4px 0 24px rgba(0,0,0,0.15)',
         overflowY:'auto', overflowX:'hidden',
       }}>
         {content}

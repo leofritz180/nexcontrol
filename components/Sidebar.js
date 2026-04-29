@@ -200,8 +200,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* Desktop */}
       <aside className="sidebar-desktop" style={{
         position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:200,
-        background:'#0B0F14',
-        borderRight:'1px solid rgba(255,255,255,0.05)',
+        background:'var(--surface)',
+        borderRight:'1px solid rgba(255,255,255,0.06)',
         overflowY:'auto', overflowX:'hidden',
       }}>
         {content}
@@ -238,8 +238,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             transition={{ duration:0.25, ease:[0.33,1,0.68,1] }}
             style={{
               position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:245,
-              background:'rgba(6,10,18,0.98)',
-              borderRight:'1px solid rgba(255,255,255,0.05)',
+              background:'var(--surface)',
+              borderRight:'1px solid rgba(255,255,255,0.06)',
               overflowY:'auto',
             }}>
             {content}

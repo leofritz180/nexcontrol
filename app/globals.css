@@ -10,13 +10,13 @@
 ═══════════════════════════════════════════ */
 
 :root {
-  /* Backgrounds — clean, Stripe-like dark */
-  --void:    #06090d;
-  --base:    #0B0F14;
-  --surface: #11161D;
-  --raised:  #161C24;
-  --overlay: #1B222B;
-  --float:   #222A35;
+  /* Backgrounds — Apple-like pure black */
+  --void:    #000000;
+  --base:    #000000;
+  --surface: #161618;
+  --raised:  #1c1c1f;
+  --overlay: #232327;
+  --float:   #2a2a2e;
 
   /* Brand — red identity */
   --brand:        #e53935;

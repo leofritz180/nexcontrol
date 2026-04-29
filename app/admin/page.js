@@ -1844,556 +1844,277 @@ export default function AdminPage() {
             // Compute NET hero value ONCE (bruto - custos do periodo)
             const heroNet = Number((heroLucro.value - heroLucro.custos).toFixed(2))
             return (
-          <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:24, marginBottom:28 }}>
+          <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.5fr 1fr', gap:32, marginBottom:40 }}>
 
-            {/* LEFT — Hero card */}
+            {/* LEFT — Hero ultra clean */}
             <motion.div
-              initial={{opacity:0,y:16}} animate={{opacity:1,y:0}}
-              transition={{duration:0.5,ease}}
-              whileHover={{ y:-4, boxShadow:'0 24px 64px rgba(0,0,0,0.6)', transition:{duration:0.25} }}
+              initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+              transition={{duration:0.4,ease}}
               style={{
-                position:'relative', overflow:'hidden',
-                padding:'40px 40px 36px', borderRadius:18,
-                background:'linear-gradient(145deg, #0c1424, #080e1a)',
-                border:'1px solid rgba(255,255,255,0.06)',
-                boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)',
+                padding:'40px 36px',
+                background:'var(--surface)',
+                border:'1px solid var(--b1)',
+                borderRadius:14,
               }}>
-              {/* Ambient glow — mais intenso */}
-              <div style={{
-                position:'absolute', top:'5%', left:'0%', width:520, height:420, borderRadius:'50%',
-                background: heroNet>=0
-                  ? 'radial-gradient(circle, rgba(34,197,94,0.14), transparent 60%)'
-                  : 'radial-gradient(circle, rgba(239,68,68,0.14), transparent 60%)',
-                filter:'blur(60px)', pointerEvents:'none',
-              }}/>
-              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent)', pointerEvents:'none' }}/>
-
-              {/* Mini sparkline de fundo (linha sutil simulando evolucao) */}
-              <svg
-                style={{ position:'absolute', bottom:0, left:0, right:0, pointerEvents:'none', opacity:0.28 }}
-                viewBox="0 0 400 90" preserveAspectRatio="none" width="100%" height="100"
-              >
-                <defs>
-                  <linearGradient id="heroLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="0"/>
-                    <stop offset="50%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="0.6"/>
-                    <stop offset="100%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="1"/>
-                  </linearGradient>
-                  <linearGradient id="heroAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="0.14"/>
-                    <stop offset="100%" stopColor={heroNet>=0?'#22C55E':'#EF4444'} stopOpacity="0"/>
-                  </linearGradient>
-                </defs>
-                <path d="M0,70 L40,66 L80,58 L120,62 L160,48 L200,40 L240,45 L280,30 L320,22 L360,14 L400,8 L400,90 L0,90 Z" fill="url(#heroAreaGrad)"/>
-                <path d="M0,70 L40,66 L80,58 L120,62 L160,48 L200,40 L240,45 L280,30 L320,22 L360,14 L400,8" fill="none" stroke="url(#heroLineGrad)" strokeWidth="1.8" strokeLinecap="round"/>
-              </svg>
-
-              <div style={{ position:'relative', zIndex:1 }}>
-                <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:10, marginBottom:24 }}>
-                  <div>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
-                      <div style={{ width:3, height:12, borderRadius:2, background: heroNet>=0?'#22C55E':'#EF4444', boxShadow:`0 0 10px ${heroNet>=0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)'}` }}/>
-                      <p style={{ fontSize:10, color:'var(--t4)', fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', margin:0 }}>
-                        Resultado consolidado da operação
-                      </p>
-                    </div>
-                    <p style={{ fontSize:12, color:'var(--t3)', fontWeight:500, margin:0 }}>
-                      {heroPeriod==='all'?'Lucro final acumulado · desde o inicio':heroPeriod==='today'?'Performance de hoje':heroPeriod==='yesterday'?'Performance de ontem':heroPeriod==='7d'?'Performance dos ultimos 7 dias':'Performance dos ultimos 30 dias'}
-                    </p>
-                  </div>
-                  <div style={{ display:'flex', gap:2, background:'rgba(0,0,0,0.3)', borderRadius:9, padding:3, flexWrap:'wrap' }}>
-                    {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d']].map(([k,l])=>(
-                      <button key={k} onClick={()=>setHeroPeriod(k)}
-                        style={{
-                          fontSize:11, fontWeight:600, padding:'5px 12px', borderRadius:7,
-                          cursor:'pointer', border:'none',
-                          background: heroPeriod===k ? 'rgba(255,255,255,0.08)' : 'transparent',
-                          color: heroPeriod===k ? 'var(--t1)' : 'var(--t4)',
-                          transition:'all 0.15s',
-                        }}>
-                        {l}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ position:'relative', overflow:'hidden', display:'inline-block' }}>
-                  <motion.div
-                    animate={{ textShadow: heroNet>=0
-                      ? ['0 0 50px rgba(34,197,94,0.3)','0 0 100px rgba(34,197,94,0.45)','0 0 50px rgba(34,197,94,0.3)']
-                      : ['0 0 50px rgba(239,68,68,0.3)','0 0 100px rgba(239,68,68,0.45)','0 0 50px rgba(239,68,68,0.3)']
-                    }}
-                    transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
-                  >
-                    <AnimatedNumber
-                      value={Math.abs(heroNet)}
-                      key={heroPeriod}
-                      prefix={`${heroNet>=0?'+':'-'}R$ `}
-                      className="hero-value"
-                      style={{
-                        fontFamily:'var(--mono)', fontSize:68, fontWeight:900,
-                        color: heroNet>=0 ? 'var(--profit)' : 'var(--loss)',
-                        lineHeight:1, letterSpacing:'-0.035em', display:'block',
-                      }}
-                    />
-                  </motion.div>
-                  {/* Shimmer */}
-                  <div style={{ position:'absolute', top:0, bottom:0, width:'30%', background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)', animation:'heroShimmer 4s ease-in-out infinite', pointerEvents:'none' }}/>
-                  <style>{`
-                    @keyframes heroShimmer { 0% { left:-30%; } 100% { left:130%; } }
-                    @media (max-width: 768px) {
-                      .hero-value { font-size: 48px !important; }
-                    }
-                    @media (max-width: 480px) {
-                      .hero-value { font-size: 40px !important; }
-                    }
-                  `}</style>
-                </div>
-                {/* Dynamic label + micro contexto executivo */}
-                {(() => {
-                  const v = heroLucro.value
-                  const c = heroLucro.custos || 0
-                  let label, lColor, badgeBg
-                  if (v > 0 && heroPeriod !== 'all') { label = 'Operacao acelerando'; lColor = '#22C55E'; badgeBg = 'rgba(34,197,94,0.12)' }
-                  else if (v > 0) { label = 'Resultado positivo'; lColor = '#22C55E'; badgeBg = 'rgba(34,197,94,0.12)' }
-                  else if (v < 0) { label = 'Oscilando — atencao'; lColor = '#EF4444'; badgeBg = 'rgba(239,68,68,0.12)' }
-                  else { label = 'Estavel'; lColor = '#94A3B8'; badgeBg = 'rgba(148,163,184,0.1)' }
-                  return (
-                    <div style={{ display:'flex', alignItems:'center', gap:10, marginTop:12, flexWrap:'wrap' }}>
-                      <span style={{
-                        fontSize:10, fontWeight:800, color:lColor, padding:'4px 10px', borderRadius:6,
-                        background: badgeBg, border:`1px solid ${lColor}33`,
-                        letterSpacing:'0.06em', textTransform:'uppercase',
-                      }}>
-                        {label}
-                      </span>
-                      {c > 0 && <span style={{ fontSize:10, color:'var(--t4)', fontFamily:'var(--mono)' }}>Custos: −R$ {fmt(c)}</span>}
-                    </div>
-                  )
-                })()}
-                {/* Micro contexto */}
-                <p style={{ fontSize:11, color:'var(--t4)', margin:'10px 0 0', fontWeight:500, letterSpacing:'0.01em' }}>
-                  Baseado em metas fechadas, remessas e custos registrados
+              <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:32 }}>
+                <p style={{ fontSize:12, color:'var(--t3)', fontWeight:500, margin:0, letterSpacing:'0' }}>
+                  {heroPeriod==='all'?'Lucro consolidado · desde o inicio':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Lucro · ultimos 7 dias':'Lucro · ultimos 30 dias'}
                 </p>
+                <div style={{ display:'flex', gap:0 }}>
+                  {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d']].map(([k,l])=>(
+                    <button key={k} onClick={()=>setHeroPeriod(k)}
+                      style={{
+                        fontSize:11, fontWeight:500, padding:'6px 12px',
+                        cursor:'pointer', border:'none', background:'transparent',
+                        color: heroPeriod===k ? 'var(--t1)' : 'var(--t3)',
+                        borderBottom: heroPeriod===k ? '1px solid var(--t1)' : '1px solid transparent',
+                        transition:'all 0.15s', fontFamily:'inherit',
+                      }}>
+                      {l}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:20, marginTop:20, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
-                  <div>
-                    <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2, letterSpacing:'0.05em', textTransform:'uppercase' }}>Fechadas</p>
-                    <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)', margin:0 }}>{heroLucro.count}</p>
-                  </div>
-                  <div style={{ width:1, height:28, background:'rgba(255,255,255,0.05)' }}/>
-                  <div>
-                    <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2, letterSpacing:'0.05em', textTransform:'uppercase' }}>Status</p>
-                    <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:heroNet>=0?'var(--profit)':'var(--loss)', margin:0 }}>
-                      {heroNet>=0?'Positivo':'Negativo'}
-                    </p>
-                  </div>
-                  <div style={{ width:1, height:28, background:'rgba(255,255,255,0.05)' }}/>
-                  <div>
-                    <p style={{ fontSize:10, color:'var(--t4)', marginBottom:2, letterSpacing:'0.05em', textTransform:'uppercase' }}>Operadores</p>
-                    <p style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)', margin:0 }}>{global.ops}</p>
-                  </div>
+              <AnimatedNumber
+                value={Math.abs(heroNet)}
+                key={heroPeriod}
+                prefix={`${heroNet>=0?'+':'-'}R$ `}
+                className="hero-value"
+                style={{
+                  fontFamily:'var(--mono)', fontSize:60, fontWeight:700,
+                  color: heroNet>=0 ? 'var(--profit)' : 'var(--loss)',
+                  lineHeight:1, letterSpacing:'-0.04em', display:'block',
+                }}
+              />
+              <style>{`
+                @media (max-width: 768px) { .hero-value { font-size: 44px !important; } }
+                @media (max-width: 480px) { .hero-value { font-size: 36px !important; } }
+              `}</style>
+
+              {heroLucro.custos > 0 && (
+                <p style={{ fontSize:12, color:'var(--t3)', margin:'10px 0 0', fontFamily:'var(--mono)', fontWeight:400 }}>
+                  apos R$ {fmt(heroLucro.custos)} em custos
+                </p>
+              )}
+
+              <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:32, marginTop:36, paddingTop:24, borderTop:'1px solid var(--b1)' }}>
+                <div>
+                  <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4, fontWeight:400 }}>Metas fechadas</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:600, color:'var(--t1)', margin:0 }}>{heroLucro.count}</p>
+                </div>
+                <div>
+                  <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4, fontWeight:400 }}>Operadores</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:600, color:'var(--t1)', margin:0 }}>{global.ops}</p>
                 </div>
               </div>
             </motion.div>
 
-            {/* RIGHT — KPIs com hierarquia (primeiro dominante) */}
-            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              {(() => {
-                const items = [
-                  { label:'Total depositado', value:global.totalDep, prefix:'R$ ', accent:'#3B82F6', hero:true },
-                  { label:'Total sacado', value:global.totalSaq, prefix:'R$ ', accent:'#F59E0B' },
-                  { label:'Total metas', value:global.totalMetas, prefix:'', decimals:0, accent:'rgba(255,255,255,0.25)' },
-                  { label:'Depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), prefix:'', decimals:0, accent:'#e53935' },
-                ]
-                return items.map((k,i)=>(
-                  <motion.div key={i}
-                    initial={{opacity:0,x:14}} animate={{opacity:1,x:0}}
-                    transition={{duration:0.3,delay:0.1+i*0.07,ease}}
-                    whileHover={{ y:-2, boxShadow:`0 14px 40px rgba(0,0,0,0.55), 0 0 24px ${k.accent}15`, borderColor:'rgba(255,255,255,0.1)', transition:{duration:0.2} }}
+            {/* RIGHT — KPIs em lista clean */}
+            <motion.div
+              initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+              transition={{duration:0.4,delay:0.1,ease}}
+              style={{
+                padding:'24px 28px',
+                background:'var(--surface)',
+                border:'1px solid var(--b1)',
+                borderRadius:14,
+                display:'flex', flexDirection:'column', justifyContent:'center',
+              }}>
+              {[
+                { label:'Total depositado', value:global.totalDep, prefix:'R$ ' },
+                { label:'Total sacado', value:global.totalSaq, prefix:'R$ ' },
+                { label:'Metas', value:global.totalMetas, decimals:0 },
+                { label:'Depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), decimals:0 },
+              ].map((k,i,arr)=>(
+                <div key={i} style={{
+                  display:'flex', alignItems:'center', justifyContent:'space-between', gap:12,
+                  padding:'14px 0',
+                  borderBottom: i<arr.length-1 ? '1px solid var(--b1)' : 'none',
+                }}>
+                  <span style={{ fontSize:13, color:'var(--t2)', fontWeight:400 }}>{k.label}</span>
+                  <AnimatedNumber value={k.value} prefix={k.prefix||''} decimals={k.decimals ?? 2}
                     style={{
-                      position:'relative', overflow:'hidden',
-                      flex: k.hero ? 1.4 : 1,
-                      padding: k.hero ? '22px 22px 22px 26px' : '14px 20px 14px 24px',
-                      borderRadius: k.hero ? 16 : 12,
-                      background: k.hero
-                        ? 'linear-gradient(145deg, rgba(59,130,246,0.06), rgba(12,20,36,0.85))'
-                        : 'linear-gradient(145deg, #0c1424, #080e1a)',
-                      backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)',
-                      border: `1px solid ${k.hero ? 'rgba(59,130,246,0.18)' : 'rgba(255,255,255,0.05)'}`,
-                      boxShadow: k.hero
-                        ? '0 8px 28px rgba(0,0,0,0.45), 0 0 30px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.05)'
-                        : '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
-                      transition:'all 0.25s ease',
-                      display:'flex', alignItems:'center', justifyContent:'space-between', gap:12,
-                    }}>
-                    {/* Accent line esquerdo */}
-                    <div style={{ position:'absolute', left:0, top: k.hero ? '15%' : '20%', bottom: k.hero ? '15%' : '20%', width: k.hero ? 3 : 2, borderRadius:'0 2px 2px 0', background:k.accent, boxShadow: k.hero ? `0 0 12px ${k.accent}` : 'none' }}/>
-                    <div>
-                      <p style={{ fontSize: k.hero ? 10 : 10, color: k.hero ? 'var(--t3)' : 'var(--t4)', margin:0, fontWeight: k.hero ? 700 : 600, letterSpacing: k.hero ? '0.08em' : '0.04em', textTransform: k.hero ? 'uppercase' : 'none' }}>
-                        {k.label}
-                      </p>
-                      {k.hero && (
-                        <p style={{ fontSize:10, color:'var(--t4)', margin:'3px 0 0', fontWeight:500 }}>
-                          Volume total movimentado
-                        </p>
-                      )}
-                    </div>
-                    <AnimatedNumber value={k.value} prefix={k.prefix} decimals={k.decimals ?? 2}
-                      style={{
-                        fontFamily:'var(--mono)',
-                        fontSize: k.hero ? 24 : 18,
-                        fontWeight: k.hero ? 900 : 700,
-                        color: k.hero ? '#F1F5F9' : 'var(--t1)',
-                        letterSpacing:'-0.02em',
-                      }} />
-                  </motion.div>
-                ))
-              })()}
-            </div>
+                      fontFamily:'var(--mono)',
+                      fontSize:15, fontWeight:600,
+                      color:'var(--t1)',
+                      letterSpacing:'-0.01em',
+                    }} />
+                </div>
+              ))}
+            </motion.div>
           </div>
             )
           })()}
 
-          {/* Resumo estrategico de hoje */}
+          {/* Resumo estrategico — clean, sem orb e sem badges pesados */}
           {strategicSummary && (strategicSummary.bestRede || strategicSummary.worstRede || strategicSummary.topOp) && (
             <motion.div
-              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
-              transition={{duration:0.4,delay:0.2,ease}}
+              initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+              transition={{duration:0.4,delay:0.15,ease}}
               style={{
-                position:'relative', overflow:'hidden',
-                padding:'22px 24px', borderRadius:16, marginBottom:20,
-                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
-                backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
-                border:'1px solid rgba(255,255,255,0.07)',
-                boxShadow:'0 8px 28px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)',
+                padding:'24px 28px', borderRadius:14, marginBottom:32,
+                background:'var(--surface)',
+                border:'1px solid var(--b1)',
               }}>
-              {/* Top highlight line */}
-              <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(168,85,247,0.45), transparent)', pointerEvents:'none' }}/>
+              <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 18px', fontWeight:500, letterSpacing:'0.04em', textTransform:'uppercase' }}>
+                Leitura da operacao
+              </p>
 
-              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16 }}>
-                <div style={{
-                  width:30, height:30, borderRadius:9,
-                  background:'rgba(168,85,247,0.12)', border:'1px solid rgba(168,85,247,0.25)',
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round">
-                    <path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/>
-                  </svg>
-                </div>
-                <div>
-                  <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Resumo estrategico de hoje</p>
-                  <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500, letterSpacing:'0.04em' }}>
-                    Leitura rapida do que priorizar agora
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(240px, 1fr))', gap:12 }}>
-                {/* Melhor rede */}
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:32 }}>
                 {strategicSummary.bestRede && (
-                  <motion.div
-                    whileHover={{ y:-2, transition:{duration:0.2} }}
-                    style={{
-                      position:'relative', padding:'14px 16px', borderRadius:12,
-                      background:'linear-gradient(145deg, rgba(34,197,94,0.05), rgba(34,197,94,0.01))',
-                      border:'1px solid rgba(34,197,94,0.18)',
-                      boxShadow:'0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(34,197,94,0.04)',
-                    }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-                      <div style={{ width:26, height:26, borderRadius:8, background:'rgba(34,197,94,0.14)', border:'1px solid rgba(34,197,94,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                      </div>
-                      <p style={{ fontSize:9, color:'#4ade80', fontWeight:700, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Melhor rede</p>
-                    </div>
-                    <p style={{ fontSize:16, fontWeight:800, color:'var(--t1)', margin:'0 0 3px', letterSpacing:'-0.01em', fontFamily:'var(--mono)' }}>
+                  <div>
+                    <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 6px', fontWeight:400 }}>Melhor rede</p>
+                    <p style={{ fontSize:18, fontWeight:600, color:'var(--t1)', margin:'0 0 4px', fontFamily:'var(--mono)' }}>
                       {strategicSummary.bestRede.rede}
                     </p>
-                    <p style={{ fontSize:11, color:'#22C55E', margin:0, fontWeight:600, fontFamily:'var(--mono)' }}>
-                      +R$ {fmt(strategicSummary.bestRede.lucroPorMeta)}/meta · {strategicSummary.bestRede.metas} meta{strategicSummary.bestRede.metas>1?'s':''}
-                    </p>
-                  </motion.div>
-                )}
-
-                {/* Principal risco */}
-                {strategicSummary.worstRede ? (
-                  <motion.div
-                    whileHover={{ y:-2, transition:{duration:0.2} }}
-                    style={{
-                      position:'relative', padding:'14px 16px', borderRadius:12,
-                      background:'linear-gradient(145deg, rgba(239,68,68,0.05), rgba(239,68,68,0.01))',
-                      border:'1px solid rgba(239,68,68,0.18)',
-                      boxShadow:'0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(239,68,68,0.04)',
-                    }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-                      <div style={{ width:26, height:26, borderRadius:8, background:'rgba(239,68,68,0.14)', border:'1px solid rgba(239,68,68,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                      </div>
-                      <p style={{ fontSize:9, color:'#fca5a5', fontWeight:700, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Principal risco</p>
-                    </div>
-                    <p style={{ fontSize:16, fontWeight:800, color:'var(--t1)', margin:'0 0 3px', letterSpacing:'-0.01em', fontFamily:'var(--mono)' }}>
-                      {strategicSummary.worstRede.rede}
-                    </p>
-                    <p style={{ fontSize:11, color:'#EF4444', margin:0, fontWeight:600, fontFamily:'var(--mono)' }}>
-                      −R$ {fmt(Math.abs(strategicSummary.worstRede.lucro))} em {strategicSummary.worstRede.metas} meta{strategicSummary.worstRede.metas>1?'s':''}
-                    </p>
-                  </motion.div>
-                ) : (
-                  <div style={{
-                    padding:'14px 16px', borderRadius:12,
-                    background:'linear-gradient(145deg, rgba(148,163,184,0.03), rgba(148,163,184,0.01))',
-                    border:'1px solid rgba(148,163,184,0.1)',
-                  }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-                      <div style={{ width:26, height:26, borderRadius:8, background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                      </div>
-                      <p style={{ fontSize:9, color:'var(--t3)', fontWeight:700, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Risco operacional</p>
-                    </div>
-                    <p style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:'0 0 3px' }}>Nenhum risco ativo</p>
-                    <p style={{ fontSize:11, color:'var(--t4)', margin:0, fontWeight:500 }}>
-                      Todas as redes com resultado positivo
+                    <p style={{ fontSize:12, color:'var(--profit)', margin:0, fontWeight:500, fontFamily:'var(--mono)' }}>
+                      +R$ {fmt(strategicSummary.bestRede.lucroPorMeta)}/meta
                     </p>
                   </div>
                 )}
 
-                {/* Oportunidade de escala */}
+                {strategicSummary.worstRede ? (
+                  <div>
+                    <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 6px', fontWeight:400 }}>Principal risco</p>
+                    <p style={{ fontSize:18, fontWeight:600, color:'var(--t1)', margin:'0 0 4px', fontFamily:'var(--mono)' }}>
+                      {strategicSummary.worstRede.rede}
+                    </p>
+                    <p style={{ fontSize:12, color:'var(--loss)', margin:0, fontWeight:500, fontFamily:'var(--mono)' }}>
+                      −R$ {fmt(Math.abs(strategicSummary.worstRede.lucro))} em {strategicSummary.worstRede.metas} meta{strategicSummary.worstRede.metas>1?'s':''}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 6px', fontWeight:400 }}>Risco operacional</p>
+                    <p style={{ fontSize:18, fontWeight:600, color:'var(--t1)', margin:'0 0 4px' }}>Nenhum</p>
+                    <p style={{ fontSize:12, color:'var(--t3)', margin:0, fontWeight:400 }}>Todas as redes positivas</p>
+                  </div>
+                )}
+
                 {strategicSummary.topOp && (
-                  <motion.div
-                    whileHover={{ y:-2, transition:{duration:0.2} }}
-                    style={{
-                      position:'relative', padding:'14px 16px', borderRadius:12,
-                      background:'linear-gradient(145deg, rgba(245,158,11,0.05), rgba(245,158,11,0.01))',
-                      border:'1px solid rgba(245,158,11,0.18)',
-                      boxShadow:'0 4px 16px rgba(0,0,0,0.25), 0 0 20px rgba(245,158,11,0.04)',
-                    }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:8 }}>
-                      <div style={{ width:26, height:26, borderRadius:8, background:'rgba(245,158,11,0.14)', border:'1px solid rgba(245,158,11,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                      </div>
-                      <p style={{ fontSize:9, color:'#FCD34D', fontWeight:700, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Oportunidade de escala</p>
-                    </div>
-                    <p style={{ fontSize:15, fontWeight:800, color:'var(--t1)', margin:'0 0 3px', letterSpacing:'-0.01em', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                  <div>
+                    <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 6px', fontWeight:400 }}>Operador em alta</p>
+                    <p style={{ fontSize:18, fontWeight:600, color:'var(--t1)', margin:'0 0 4px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                       {strategicSummary.topOp.nome}
                     </p>
-                    <p style={{ fontSize:11, color:'#F59E0B', margin:0, fontWeight:600, fontFamily:'var(--mono)' }}>
+                    <p style={{ fontSize:12, color:'var(--profit)', margin:0, fontWeight:500, fontFamily:'var(--mono)' }}>
                       +R$ {fmt(strategicSummary.topOp.lucro)} · {strategicSummary.topOp.ativas} ativa{strategicSummary.topOp.ativas>1?'s':''}
                     </p>
-                  </motion.div>
+                  </div>
                 )}
               </div>
             </motion.div>
           )}
 
-          {/* Previsao de lucro */}
+          {/* Previsao + Break-even — bloco unico clean */}
           {global.fechadas > 0 && (
             <motion.div
-              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
-              transition={{duration:0.35,delay:0.25,ease}}
+              initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+              transition={{duration:0.4,delay:0.2,ease}}
               style={{
-                position:'relative', overflow:'hidden',
-                padding:'22px 24px', borderRadius:16, marginBottom:20,
-                background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
-                backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
-                border:`1px solid ${global.lucroPerConta>=0?'rgba(34,197,94,0.15)':'rgba(239,68,68,0.15)'}`,
-                boxShadow:`0 8px 28px rgba(0,0,0,0.45), 0 0 40px ${global.lucroPerConta>=0?'rgba(34,197,94,0.05)':'rgba(239,68,68,0.05)'}, inset 0 1px 0 rgba(255,255,255,0.04)`,
-                display:'flex', alignItems:'center', gap:24, flexWrap:'wrap',
+                padding:'24px 28px', borderRadius:14, marginBottom:32,
+                background:'var(--surface)',
+                border:'1px solid var(--b1)',
               }}>
-              {/* Top highlight line */}
-              <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:`linear-gradient(90deg, transparent, ${global.lucroPerConta>=0?'rgba(34,197,94,0.4)':'rgba(239,68,68,0.4)'}, transparent)`, pointerEvents:'none' }}/>
-
-              <div style={{ display:'flex', alignItems:'center', gap:12, minWidth:180 }}>
-                <div style={{
-                  width:38, height:38, borderRadius:11,
-                  background:global.lucroPerConta>=0?'rgba(34,197,94,0.12)':'rgba(239,68,68,0.12)',
-                  border:`1px solid ${global.lucroPerConta>=0?'rgba(34,197,94,0.28)':'rgba(239,68,68,0.28)'}`,
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                  boxShadow: global.lucroPerConta>=0 ? '0 0 16px rgba(34,197,94,0.15)' : '0 0 16px rgba(239,68,68,0.15)',
-                }}>
-                  <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke={global.lucroPerConta>=0?'var(--profit)':'var(--loss)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points={global.lucroPerConta>=0?"23 6 13.5 15.5 8.5 10.5 1 18":"1 18 10.5 8.5 15.5 13.5 23 6"}/>
-                    <polyline points={global.lucroPerConta>=0?"17 6 23 6 23 12":"17 6 23 6 23 12"}/>
-                  </svg>
-                </div>
+              <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 18px', fontWeight:500, letterSpacing:'0.04em', textTransform:'uppercase' }}>
+                Previsao
+              </p>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(180px, 1fr))', gap:32 }}>
                 <div>
-                  <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Previsao inteligente</p>
-                  <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>
-                    {global.lucroPerConta>=0 ? 'Tendencia positiva — manter ritmo' : 'Tendencia negativa — revisar estrategia'}
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ display:'flex', gap:22, flexWrap:'wrap', flex:1 }}>
-                <div style={{ paddingLeft:18, borderLeft:'1px solid rgba(255,255,255,0.06)' }}>
-                  <p style={{ fontSize:9, color:'var(--t4)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:700 }}>Media / meta</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:17, fontWeight:800, color:global.lucroPerMeta>=0?'var(--profit)':'var(--loss)', margin:0, letterSpacing:'-0.02em' }}>
+                  <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 6px', fontWeight:400 }}>Media por meta</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:600, color:global.lucroPerMeta>=0?'var(--profit)':'var(--loss)', margin:0, letterSpacing:'-0.02em' }}>
                     {global.lucroPerMeta>=0?'+':''}R$ {fmt(global.lucroPerMeta)}
                   </p>
                 </div>
-                <div style={{ paddingLeft:18, borderLeft:'1px solid rgba(255,255,255,0.06)' }}>
-                  <p style={{ fontSize:9, color:'var(--t4)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:700 }}>Media / conta</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:17, fontWeight:800, color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', margin:0, letterSpacing:'-0.02em' }}>
+                <div>
+                  <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 6px', fontWeight:400 }}>Media por conta</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:600, color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', margin:0, letterSpacing:'-0.02em' }}>
                     {global.lucroPerConta>=0?'+':''}R$ {fmt(global.lucroPerConta)}
                   </p>
                 </div>
-                <div style={{ paddingLeft:18, borderLeft:'1px solid rgba(255,255,255,0.06)' }}>
-                  <p style={{ fontSize:9, color:'var(--t4)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em', fontWeight:700 }}>Projecao · 50 contas</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:17, fontWeight:800, color:global.lucroPerConta*50>=0?'var(--profit)':'var(--loss)', margin:0, letterSpacing:'-0.02em' }}>
+                <div>
+                  <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 6px', fontWeight:400 }}>Projecao · 50 contas</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:600, color:global.lucroPerConta*50>=0?'var(--profit)':'var(--loss)', margin:0, letterSpacing:'-0.02em' }}>
                     {global.lucroPerConta*50>=0?'+':''}R$ {fmt(global.lucroPerConta*50)}
                   </p>
                 </div>
+                {global.breakEvenContas > 0 && (
+                  <div>
+                    <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 6px', fontWeight:400 }}>Break-even</p>
+                    <p style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:600, color:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>
+                      {global.breakEvenContas} contas
+                    </p>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
 
-          {/* Break-even insight */}
-          {global.fechadas > 0 && global.breakEvenContas > 0 && (
-            <motion.div
-              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
-              transition={{duration:0.35,delay:0.28,ease}}
-              style={{
-                padding:'20px 24px', borderRadius:14, marginBottom:20,
-                background:'linear-gradient(145deg, #0c1424, #080e1a)',
-                border:'1px solid rgba(245,158,11,0.12)',
-                boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
-                display:'flex', alignItems:'center', gap:24, flexWrap:'wrap',
-              }}>
-              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                <div style={{
-                  width:34, height:34, borderRadius:10,
-                  background:'rgba(245,158,11,0.1)',
-                  border:'1px solid rgba(245,158,11,0.2)',
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                }}>
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgb(245,158,11)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-                  </svg>
-                </div>
-                <p style={{ fontSize:12, fontWeight:700, color:'var(--t2)', margin:0, letterSpacing:'0.03em', textTransform:'uppercase' }}>Break-even</p>
-              </div>
-              <div style={{ display:'flex', gap:28, flexWrap:'wrap', flex:1 }}>
-                <div>
-                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Para cobrir custos, precisa de</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:'rgb(245,158,11)', margin:0 }}>
-                    {global.breakEvenContas} contas com bau / meta
-                  </p>
-                </div>
-                <div>
-                  <p style={{ fontSize:10, color:'var(--t4)', margin:'0 0 2px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Bau medio por conta</p>
-                  <p style={{ fontFamily:'var(--mono)', fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>
-                    R$ {fmt(global.avgBauPerConta)}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Activity — feed + operators */}
+          {/* Activity — feed + operators (clean) */}
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:20 }}>
 
-            {/* Feed — destaque com glass + glow */}
+            {/* Feed — lista clean */}
             <motion.div
-              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
-              transition={{duration:0.35,delay:0.3,ease}}
+              initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+              transition={{duration:0.4,delay:0.25,ease}}
               style={{
-                position:'relative', overflow:'hidden',
-                padding:'26px 28px', borderRadius:18,
-                background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
-                backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
-                border:'1px solid rgba(34,197,94,0.12)',
-                boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 48px rgba(34,197,94,0.06), inset 0 1px 0 rgba(255,255,255,0.05)',
+                padding:'24px 28px', borderRadius:14,
+                background:'var(--surface)',
+                border:'1px solid var(--b1)',
               }}>
-              {/* Top highlight line */}
-              <div style={{ position:'absolute', top:0, left:'10%', right:'10%', height:1, background:'linear-gradient(90deg, transparent, rgba(34,197,94,0.35), transparent)', pointerEvents:'none' }}/>
-
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, position:'relative' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                  <motion.div
-                    animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.55)','0 0 0 7px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
-                    transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                    style={{ width:8, height:8, borderRadius:'50%', background:'#22C55E' }}
-                  />
-                  <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Atividade ao vivo</h3>
-                </div>
-                <span style={{ fontSize:10, color:'var(--t4)', fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>{remessas.length} remessas</span>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
+                <h3 style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Atividade recente</h3>
+                <span style={{ fontSize:11, color:'var(--t3)', fontWeight:400 }}>{remessas.length} remessas</span>
               </div>
-              <div style={{ display:'flex', flexDirection:'column', gap:0, position:'relative' }}>
+              <div style={{ display:'flex', flexDirection:'column' }}>
                 {remessas.slice(0,6).map((r,i)=>{
                   const m   = metas.find(x=>x.id===r.meta_id)
                   const op  = operators.find(o=>o.id===m?.operator_id)
                   const pos = Number(r.resultado||0)>=0
                   const val = Math.abs(Number(r.resultado||0))
-                  const accentC = pos ? '#22C55E' : '#EF4444'
-                  // Timestamp relativo
+                  const valColor = pos ? 'var(--profit)' : 'var(--loss)'
                   const diffMs = Date.now() - new Date(r.created_at).getTime()
                   const diffMin = Math.floor(diffMs/60000)
                   const diffH = Math.floor(diffMs/3600000)
                   const diffD = Math.floor(diffMs/86400000)
                   const timeLabel = diffMin < 1 ? 'agora' : diffMin < 60 ? `${diffMin}min` : diffH < 24 ? `${diffH}h` : `${diffD}d`
-                  const isFirst = i === 0
                   return (
-                    <motion.div key={r.id}
-                      initial={{opacity:0,x:-14}} animate={{opacity:1,x:0}}
-                      transition={{duration:0.4,delay:i*0.08,ease}}
-                      whileHover={{ background:'rgba(255,255,255,0.04)', x:3, transition:{duration:0.15} }}
+                    <div key={r.id}
                       style={{
-                      padding:'13px 12px', display:'flex', alignItems:'center', gap:12,
-                      borderBottom: i<5 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                      borderRadius:10, margin:'0 -12px', position:'relative',
-                    }}>
-                      {/* Accent line */}
-                      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:2, background:accentC, opacity: isFirst ? 0.9 : 0.5, boxShadow: isFirst ? `0 0 8px ${accentC}` : 'none' }}/>
-                      <div style={{ position:'relative', width:32, height:32, borderRadius:9, background:`${accentC}12`, border:`1px solid ${accentC}25`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                        <span style={{ fontSize:12, fontWeight:800, color:accentC }}>{getName(op)[0]?.toUpperCase()}</span>
-                        {isFirst && (
-                          <motion.div
-                            animate={{ boxShadow:[`0 0 0 0 ${accentC}80`, `0 0 0 6px ${accentC}00`, `0 0 0 0 ${accentC}00`] }}
-                            transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
-                            style={{ position:'absolute', top:-2, right:-2, width:8, height:8, borderRadius:'50%', background:accentC, border:'2px solid #0c1424' }}
-                          />
-                        )}
+                        padding:'14px 0', display:'flex', alignItems:'center', gap:14,
+                        borderBottom: i<5 ? '1px solid var(--b1)' : 'none',
+                      }}>
+                      <div style={{ width:32, height:32, borderRadius:'50%', background:'var(--raised)', border:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <span style={{ fontSize:12, fontWeight:600, color:'var(--t2)' }}>{getName(op)[0]?.toUpperCase()}</span>
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
-                          <span style={{ fontSize:12, fontWeight:700, color:'var(--t1)' }}>{getName(op)}</span>
-                          <span style={{ fontSize:8, fontWeight:700, padding:'1px 6px', borderRadius:4, background:`${accentC}14`, color:accentC, border:`1px solid ${accentC}22`, letterSpacing:'0.04em' }}>{pos?'LUCRO':'PERDA'}</span>
-                        </div>
-                        <p style={{ fontSize:10, color:'var(--t4)', margin:'3px 0 0', fontFamily:'var(--mono)' }}>
-                          <span style={{ color:'var(--t3)' }}>{m?.rede||'—'}</span>
-                          <span style={{ margin:'0 6px' }}>·</span>
-                          <span>{timeLabel}</span>
+                        <p style={{ fontSize:13, fontWeight:500, color:'var(--t1)', margin:0 }}>{getName(op)}</p>
+                        <p style={{ fontSize:11, color:'var(--t3)', margin:'2px 0 0' }}>
+                          {m?.rede||'—'} · {timeLabel}
                         </p>
                       </div>
-                      <span className="t-num" style={{ fontSize:14, fontWeight:800, color:accentC, flexShrink:0, textShadow:`0 0 12px ${accentC}30` }}>
+                      <span style={{ fontFamily:'var(--mono)', fontSize:14, fontWeight:600, color:valColor, flexShrink:0 }}>
                         {pos?'+':'-'}R$ {fmt(val)}
                       </span>
-                    </motion.div>
+                    </div>
                   )
                 })}
               </div>
             </motion.div>
 
-            {/* Operadores — leaderboard premium */}
+            {/* Operadores — lista clean */}
             <motion.div
-              initial={{opacity:0,y:12}} animate={{opacity:1,y:0}}
-              transition={{duration:0.35,delay:0.35,ease}}
+              initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
+              transition={{duration:0.4,delay:0.3,ease}}
               style={{
-                position:'relative', overflow:'hidden',
-                padding:'26px 28px', borderRadius:18,
-                background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
-                backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
-                border:'1px solid rgba(255,215,0,0.1)',
-                boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.03), inset 0 1px 0 rgba(255,255,255,0.05)',
+                padding:'24px 28px', borderRadius:14,
+                background:'var(--surface)',
+                border:'1px solid var(--b1)',
               }}>
-              {/* Gold top highlight */}
-              <div style={{ position:'absolute', top:0, left:'10%', right:'10%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,215,0,0.35), transparent)', pointerEvents:'none' }}/>
-
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18, position:'relative' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><line x1="4" y1="22" x2="20" y2="22"/><line x1="10" y1="14.66" x2="10" y2="18"/><line x1="14" y1="14.66" x2="14" y2="18"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
-                  <h3 style={{ fontSize:15, fontWeight:700, color:'var(--t1)', margin:0 }}>Leaderboard</h3>
-                </div>
-                <span style={{ fontSize:10, color:'var(--t4)', fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>{operators.length} na equipe</span>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
+                <h3 style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Top operadores</h3>
+                <span style={{ fontSize:11, color:'var(--t3)', fontWeight:400 }}>{operators.length} na equipe</span>
               </div>
               {(() => {
                 const ranked = operators.map(op => {
@@ -2403,71 +2124,25 @@ export default function AdminPage() {
                   const totalRem = remessas.filter(r=>metas.some(m=>m.id===r.meta_id&&m.operator_id===op.id)).length
                   return { ...op, lucroFinal, ativas, fechadas: opMetasFechadas.length, totalRem }
                 }).sort((a,b)=>b.lucroFinal-a.lucroFinal).slice(0,5)
-                const maxLucro = Math.max(...ranked.map(o=>Math.abs(o.lucroFinal)),1)
-                const medals = ['#FFD700','#C0C0C0','#CD7F32']
                 return (
-                  <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+                  <div style={{ display:'flex', flexDirection:'column' }}>
                     {ranked.map((op,i) => {
-                      const isTop3 = i < 3
-                      const barPct = Math.round((Math.abs(op.lucroFinal)/maxLucro)*100)
                       const isPos = op.lucroFinal >= 0
-                      const recentMetas = metas.filter(m=>m.operator_id===op.id&&m.status_fechamento==='fechada').slice(0,3)
-                      const recentTrend = recentMetas.length >= 2
-                        ? recentMetas.slice(0,1).reduce((a,m)=>a+Number(m.lucro_final||0),0) >= recentMetas.slice(1,2).reduce((a,m)=>a+Number(m.lucro_final||0),0) ? 'up' : 'down'
-                        : 'stable'
                       return (
-                        <motion.div key={op.id}
-                          initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}}
-                          transition={{duration:0.4,delay:i*0.08,ease}}
-                          whileHover={{ background: i===0 ? 'rgba(255,215,0,0.05)' : 'rgba(255,255,255,0.03)', x:4, transition:{duration:0.15} }}
+                        <div key={op.id}
                           style={{
-                            padding: i===0 ? '16px 12px' : '13px 12px',
-                            display:'flex', alignItems:'center', gap:12,
-                            borderBottom: i<ranked.length-1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                            borderRadius:12, margin:'0 -12px', cursor:'default',
-                            background: i===0 ? 'linear-gradient(90deg, rgba(255,215,0,0.04), transparent)' : 'transparent',
-                            position:'relative',
+                            padding:'14px 0', display:'flex', alignItems:'center', gap:14,
+                            borderBottom: i<ranked.length-1 ? '1px solid var(--b1)' : 'none',
                           }}>
-                          {/* Gold accent line pro #1 */}
-                          {i===0 && (
-                            <div style={{ position:'absolute', left:0, top:'18%', bottom:'18%', width:3, borderRadius:'0 2px 2px 0', background:'#FFD700', boxShadow:'0 0 12px rgba(255,215,0,0.7)' }}/>
-                          )}
-                          {/* Position */}
-                          <div style={{
-                            width: i===0 ? 34 : 28, height: i===0 ? 34 : 28, borderRadius: i===0 ? 10 : 8, flexShrink:0,
-                            background: isTop3 ? `${medals[i]}1f` : 'var(--raised)',
-                            border: isTop3 ? `1px solid ${medals[i]}55` : '1px solid var(--b1)',
-                            display:'flex', alignItems:'center', justifyContent:'center',
-                            boxShadow: i===0 ? `0 0 20px ${medals[0]}35, inset 0 1px 0 ${medals[0]}30` : isTop3 ? `0 0 10px ${medals[i]}20` : 'none',
-                            position:'relative',
-                          }}>
-                            {i===0 ? (
-                              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-                            ) : (
-                              <span style={{ fontSize:12, fontWeight:900, color: isTop3 ? medals[i] : 'var(--t4)' }}>{i+1}</span>
-                            )}
-                          </div>
-                          {/* Info */}
+                          <span style={{ fontSize:12, fontWeight:500, color:'var(--t3)', minWidth:18, fontFamily:'var(--mono)' }}>{i+1}</span>
                           <div style={{ flex:1, minWidth:0 }}>
-                            <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:3 }}>
-                              <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{getName(op)}</p>
-                              {recentTrend === 'up' && <span style={{ fontSize:8, fontWeight:700, padding:'1px 5px', borderRadius:4, background:'rgba(34,197,94,0.1)', color:'#22C55E', border:'1px solid rgba(34,197,94,0.2)' }}>EM ALTA</span>}
-                              {recentTrend === 'down' && <span style={{ fontSize:8, fontWeight:700, padding:'1px 5px', borderRadius:4, background:'rgba(239,68,68,0.1)', color:'#EF4444', border:'1px solid rgba(239,68,68,0.2)' }}>EM QUEDA</span>}
-                            </div>
-                            {/* Performance bar */}
-                            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                              <div style={{ flex:1, height:3, borderRadius:2, background:'rgba(255,255,255,0.04)', overflow:'hidden' }}>
-                                <motion.div initial={{width:0}} animate={{width:`${barPct}%`}} transition={{duration:0.8,delay:0.2+i*0.08,ease:[0.4,0,0.2,1]}}
-                                  style={{ height:'100%', borderRadius:2, background:isPos?'#22C55E':'#EF4444', opacity:0.7 }}/>
-                              </div>
-                              <span style={{ fontSize:9, color:'var(--t4)', flexShrink:0 }}>{op.fechadas}m · {op.totalRem}r</span>
-                            </div>
+                            <p style={{ fontSize:13, fontWeight:500, color:'var(--t1)', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{getName(op)}</p>
+                            <p style={{ fontSize:11, color:'var(--t3)', margin:'2px 0 0' }}>{op.fechadas} fechadas · {op.totalRem} remessas</p>
                           </div>
-                          {/* Value */}
-                          <span className="t-num" style={{ fontSize:15, fontWeight:800, color:isPos?'var(--profit)':'var(--loss)', flexShrink:0 }}>
+                          <span style={{ fontFamily:'var(--mono)', fontSize:14, fontWeight:600, color:isPos?'var(--profit)':'var(--loss)', flexShrink:0 }}>
                             {isPos?'+':'-'}R$ {fmt(Math.abs(op.lucroFinal))}
                           </span>
-                        </motion.div>
+                        </div>
                       )
                     })}
                   </div>

@@ -52,9 +52,6 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <Suspense fallback={null}><GlobalLoadingScreen/></Suspense>
-        <div className="bg-flow"/>
-        <div className="depth-bg"/>
-        <Suspense fallback={null}><DynamicBackground/></Suspense>
         <Suspense fallback={null}><SubscriptionGate>{children}</SubscriptionGate></Suspense>
         <Suspense fallback={null}><InstallPrompt/></Suspense>
         <Suspense fallback={null}><PresencePing/></Suspense>

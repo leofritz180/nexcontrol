@@ -85,34 +85,8 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Global ambient background — depth + technology feel */
-body::before {
-  content: '';
-  position: fixed; top: -20%; left: -10%; width: 60%; height: 50%;
-  background: radial-gradient(ellipse at 30% 40%, rgba(229,57,53,0.04) 0%, transparent 50%);
-  pointer-events: none; z-index: 0;
-  animation: ambient-drift 35s ease-in-out infinite alternate;
-}
-body::after {
-  content: '';
-  position: fixed; bottom: -15%; right: -10%; width: 50%; height: 45%;
-  background: radial-gradient(ellipse at 70% 60%, rgba(34,197,94,0.025) 0%, transparent 50%);
-  pointer-events: none; z-index: 0;
-  animation: ambient-drift 28s ease-in-out infinite alternate-reverse;
-}
-@keyframes ambient-drift {
-  0% { transform: translate(0,0) scale(1); }
-  50% { transform: translate(20px, 15px) scale(1.02); }
-  100% { transform: translate(30px, 20px) scale(1); }
-}
-
-/* Depth layer — radial gradient center */
-.depth-bg {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(12,18,32,0.5) 0%, transparent 70%);
-}
-
-/* bg-flow hidden */
+/* Background — preto puro, sem gradientes ambient */
+.depth-bg { display: none; }
 .bg-flow { display: none; }
 
 /* ══════════════════════════════

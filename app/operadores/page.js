@@ -914,55 +914,28 @@ export default function OperadoresPage() {
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
 
-        {/* Hero do modulo — premium */}
-        <motion.div {...fadeUp(0)} style={{
-          position:'relative', overflow:'hidden',
-          padding:'22px 24px', borderRadius:18, marginBottom:20,
-          background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
-          backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-          border:'1px solid rgba(255,215,0,0.12)',
-          boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
-        }}>
-          <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,215,0,0.35), transparent)', pointerEvents:'none' }}/>
-          <div style={{ position:'absolute', top:-40, right:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(255,215,0,0.1), transparent 60%)', filter:'blur(26px)', pointerEvents:'none' }}/>
-
-          <div style={{ position:'relative', display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
-            <div style={{
-              width:44, height:44, borderRadius:12,
-              background:'rgba(255,215,0,0.1)', border:'1px solid rgba(255,215,0,0.28)',
-              display:'flex', alignItems:'center', justifyContent:'center',
-              boxShadow:'0 0 20px rgba(255,215,0,0.15)',
-            }}>
-              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><line x1="4" y1="22" x2="20" y2="22"/><line x1="10" y1="14.66" x2="10" y2="18"/><line x1="14" y1="14.66" x2="14" y2="18"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
-            </div>
-            <div style={{ flex:1, minWidth:200 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3 }}>
-                <h1 style={{ fontSize:24, fontWeight:900, color:'#fff', letterSpacing:'-0.025em', margin:0 }}>Operadores</h1>
-                <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(255,215,0,0.1)', color:'#FFD700', border:'1px solid rgba(255,215,0,0.25)', letterSpacing:'0.08em' }}>GESTAO DE EQUIPE</span>
-              </div>
-              <p style={{ fontSize:12, color:'rgba(255,255,255,0.55)', margin:0, fontWeight:500 }}>
-                Ranking, performance, folha de pagamento e configuracoes estrategicas
-              </p>
-            </div>
-          </div>
+        {/* Hero — clean */}
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
+          <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Operadores</h1>
+          <p style={{ fontSize:13, color:'var(--t3)', margin:0, fontWeight:400 }}>
+            Ranking, performance, folha de pagamento e configuracoes
+          </p>
         </motion.div>
 
-        {/* Tabs */}
+        {/* Tabs — underline minimalista */}
         <motion.div {...fadeUp(1)} style={{
-          display: 'flex', gap: 4, marginBottom: 28,
-          background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: 4,
-          border: '1px solid rgba(255,255,255,0.05)',
-          backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)',
+          display: 'flex', gap: 0, marginBottom: 28,
+          borderBottom: '1px solid var(--b1)',
         }}>
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
               style={{
-                flex: 1, padding: '10px 16px', fontSize: 13, fontWeight: 700,
-                borderRadius: 9, border: 'none', cursor: 'pointer', fontFamily:'inherit',
-                background: tab === t.key ? 'linear-gradient(145deg, rgba(255,215,0,0.12), rgba(255,215,0,0.04))' : 'transparent',
-                color: tab === t.key ? '#FFD700' : 'rgba(255,255,255,0.4)',
-                boxShadow: tab === t.key ? '0 2px 12px rgba(255,215,0,0.1), inset 0 1px 0 rgba(255,255,255,0.06)' : 'none',
-                transition: 'all 0.25s ease',
+                padding: '12px 18px', fontSize: 13, fontWeight: 500,
+                border: 'none', background: 'transparent', cursor: 'pointer', fontFamily:'inherit',
+                color: tab === t.key ? 'var(--t1)' : 'var(--t3)',
+                borderBottom: tab === t.key ? '2px solid var(--t1)' : '2px solid transparent',
+                marginBottom: -1,
+                transition: 'all 0.15s ease',
               }}>
               {t.label}
             </button>

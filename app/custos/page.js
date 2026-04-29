@@ -154,59 +154,31 @@ export default function CustosPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
 
-          {/* Hero — controle fino */}
-          <motion.div
-            initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
-            transition={{duration:0.4}}
-            style={{
-              position:'relative', overflow:'hidden',
-              padding:'20px 24px', borderRadius:18, marginBottom:22,
-              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
-              backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-              border:'1px solid rgba(239,68,68,0.14)',
-              boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 36px rgba(239,68,68,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
-            }}>
-            <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(239,68,68,0.4), transparent)', pointerEvents:'none' }}/>
-            <div style={{ position:'absolute', top:-40, right:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(239,68,68,0.1), transparent 60%)', filter:'blur(26px)', pointerEvents:'none' }}/>
-
-            <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'space-between', gap:14, flexWrap:'wrap' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:14 }}>
-                <div style={{
-                  width:44, height:44, borderRadius:12,
-                  background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.28)',
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                  boxShadow:'0 0 20px rgba(239,68,68,0.15)',
-                }}>
-                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-                </div>
-                <div>
-                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <h1 style={{ fontSize:22, fontWeight:900, color:'var(--t1)', margin:0, letterSpacing:'-0.025em' }}>Custos</h1>
-                    <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(239,68,68,0.1)', color:'#EF4444', border:'1px solid rgba(239,68,68,0.25)', letterSpacing:'0.08em' }}>CONTROLE FINO</span>
-                  </div>
-                  <p style={{ fontSize:12, color:'var(--t3)', margin:'2px 0 0', fontWeight:500 }}>Proxy, SMS, bot, VPS e outros gastos operacionais</p>
-                </div>
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.03, boxShadow:'0 10px 32px rgba(229,57,53,0.5), 0 0 44px rgba(229,57,53,0.18)' }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setShowModal(true)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '11px 22px', borderRadius: 12, border: 'none', fontFamily:'inherit',
-                  background: 'linear-gradient(145deg, #e53935, #c62828)', color: '#fff', fontSize: 13, fontWeight: 800,
-                  cursor: 'pointer',
-                  boxShadow: '0 6px 20px rgba(229,57,53,0.4), 0 0 30px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
-                  transition:'all 0.25s ease',
-                }}
-              >
-                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.8} strokeLinecap="round">
-                  <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Adicionar custo
-              </motion.button>
+          {/* Hero — clean */}
+          <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:28 }}>
+            <div>
+              <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Custos</h1>
+              <p style={{ fontSize:13, color:'var(--t3)', margin:0, fontWeight:400 }}>
+                Proxy, SMS, bot, VPS e outros gastos operacionais
+              </p>
             </div>
-          </motion.div>
+            <button
+              onClick={() => setShowModal(true)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '10px 18px', borderRadius: 8, border: 'none', fontFamily:'inherit',
+                background: '#3b82f6', color: '#fff', fontSize: 13, fontWeight: 500,
+                cursor: 'pointer', transition:'background 0.15s ease',
+              }}
+              onMouseEnter={e=>{ e.currentTarget.style.background = '#2563eb' }}
+              onMouseLeave={e=>{ e.currentTarget.style.background = '#3b82f6' }}
+            >
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Adicionar custo
+            </button>
+          </div>
 
           {/* Demo Banner */}
           {isDemo && (

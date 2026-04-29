@@ -863,54 +863,12 @@ export default function RedesPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
         <div style={{ padding: '32px 24px 64px', maxWidth: 1140, margin: '0 auto' }}>
 
-          {/* ── Hero do modulo — central de inteligencia ── */}
-          <motion.div {...fadeUp(0)} style={{
-            position:'relative', overflow:'hidden',
-            padding:'22px 24px', borderRadius:18, marginBottom:20,
-            background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
-            backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-            border:'1px solid rgba(168,85,247,0.18)',
-            boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 50px rgba(168,85,247,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
-          }}>
-            <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(168,85,247,0.5), transparent)', pointerEvents:'none' }}/>
-            <div style={{ position:'absolute', top:-50, right:-50, width:220, height:220, borderRadius:'50%', background:'radial-gradient(circle, rgba(168,85,247,0.14), transparent 60%)', filter:'blur(30px)', pointerEvents:'none' }}/>
-            <div style={{ position:'absolute', bottom:-40, left:-30, width:160, height:160, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.1), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
-
-            <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, flexWrap:'wrap' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:14, flex:1, minWidth:220 }}>
-                <div style={{
-                  width:46, height:46, borderRadius:13,
-                  background:'linear-gradient(145deg, rgba(168,85,247,0.18), rgba(229,57,53,0.12))',
-                  border:'1px solid rgba(168,85,247,0.32)',
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                  boxShadow:'0 0 22px rgba(168,85,247,0.22)',
-                }}>
-                  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="2" />
-                    <path d="M16.24 7.76a6 6 0 010 8.49m-8.48-.01a6 6 0 010-8.49m11.31-2.82a10 10 0 010 14.14m-14.14 0a10 10 0 010-14.14" />
-                  </svg>
-                </div>
-                <div>
-                  <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3, flexWrap:'wrap' }}>
-                    <h1 style={{ fontSize: 24, fontWeight: 900, color: '#F1F5F9', letterSpacing: '-0.025em', margin:0 }}>
-                      Central estrategica de redes
-                    </h1>
-                    <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(168,85,247,0.1)', color:'#a855f7', border:'1px solid rgba(168,85,247,0.25)', letterSpacing:'0.08em' }}>SISTEMA DE DECISAO</span>
-                  </div>
-                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin:0, fontWeight:500 }}>
-                    Scoring inteligente, eficiencia e recomendacoes automaticas por rede
-                  </p>
-                </div>
-              </div>
-              <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:8, background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.2)' }}>
-                <motion.div
-                  animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.5)','0 0 0 5px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
-                  transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                  style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}
-                />
-                <span style={{ fontSize:10, color:'#22C55E', fontWeight:800, letterSpacing:'0.08em' }}>ANALISE ATIVA</span>
-              </div>
-            </div>
+          {/* Hero — clean */}
+          <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
+            <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Redes</h1>
+            <p style={{ fontSize:13, color:'var(--t3)', margin:0, fontWeight:400 }}>
+              Scoring, eficiencia e recomendacoes por rede
+            </p>
           </motion.div>
 
           {/* ── Demo Mode ── */}

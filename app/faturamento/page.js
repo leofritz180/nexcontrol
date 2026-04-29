@@ -329,26 +329,27 @@ export default function FaturamentoPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{maxWidth:1380,margin:'0 auto',padding:'32px 28px'}}>
-        {/* Header */}
-        <div className="a1" style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:16,marginBottom:28}}>
+        {/* Header — clean */}
+        <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:16,marginBottom:28}}>
           <div>
-            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
-              <div style={{width:40,height:40,borderRadius:12,background:'linear-gradient(135deg,rgba(34,197,94,0.2),rgba(59,130,246,0.15))',border:'1px solid var(--profit-border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="1.8" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              </div>
-              <div>
-                <h1 className="t-h1">Faturamento</h1>
-                <p className="t-small">Painel estrategico de gestao financeira</p>
-              </div>
-            </div>
+            <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Faturamento</h1>
+            <p style={{ fontSize:13, color:'var(--t3)', margin:0, fontWeight:400 }}>Painel financeiro</p>
           </div>
           <div style={{display:'flex',gap:8}}>
-            <button onClick={()=>setShowShowcase(true)} className="btn btn-brand btn-sm" style={{display:'flex',alignItems:'center',gap:6}}>
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <button onClick={()=>setShowShowcase(true)}
+              style={{ padding:'8px 14px', fontSize:12, fontWeight:500, fontFamily:'inherit', cursor:'pointer',
+                background:'transparent', border:'1px solid var(--b1)', borderRadius:8,
+                color:'var(--t2)', display:'flex', alignItems:'center', gap:6, transition:'all 0.15s' }}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--b2)';e.currentTarget.style.color='var(--t1)'}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--b1)';e.currentTarget.style.color='var(--t2)'}}>
               Apresentacao
             </button>
-            <button onClick={loadAll} className="btn btn-ghost btn-sm" style={{display:'flex',alignItems:'center',gap:6}}>
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            <button onClick={loadAll}
+              style={{ padding:'8px 14px', fontSize:12, fontWeight:500, fontFamily:'inherit', cursor:'pointer',
+                background:'transparent', border:'1px solid var(--b1)', borderRadius:8,
+                color:'var(--t3)', transition:'all 0.15s' }}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--b2)';e.currentTarget.style.color='var(--t1)'}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--b1)';e.currentTarget.style.color='var(--t3)'}}>
               Atualizar
             </button>
           </div>

@@ -182,58 +182,25 @@ export default function PixPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
-        {/* Hero — ferramenta operacional */}
-        <motion.div
-          initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
-          transition={{duration:0.4}}
-          style={{
-            position:'relative', overflow:'hidden',
-            padding:'20px 24px', borderRadius:18, marginBottom:18,
-            background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
-            backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-            border:'1px solid rgba(34,197,94,0.15)',
-            boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(34,197,94,0.05), inset 0 1px 0 rgba(255,255,255,0.04)',
-          }}>
-          <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent)', pointerEvents:'none' }}/>
-          <div style={{ position:'absolute', top:-40, right:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(34,197,94,0.1), transparent 60%)', filter:'blur(26px)', pointerEvents:'none' }}/>
-
-          <div style={{ position:'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:14 }}>
-              <div style={{
-                width:44, height:44, borderRadius:12,
-                background:'linear-gradient(135deg, rgba(34,197,94,0.18), rgba(59,130,246,0.12))',
-                border:'1px solid rgba(34,197,94,0.3)',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                boxShadow:'0 0 20px rgba(34,197,94,0.18)',
-              }}>
-                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M2 10h20" /><path d="M6 16h.01" /><path d="M10 16h4" /></svg>
-              </div>
-              <div>
-                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <h1 style={{ fontSize:22, fontWeight:900, color:'var(--t1)', margin:0, letterSpacing:'-0.025em' }}>Chaves PIX</h1>
-                  <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(34,197,94,0.1)', color:'#22C55E', border:'1px solid rgba(34,197,94,0.25)', letterSpacing:'0.08em' }}>FERRAMENTA OP</span>
-                </div>
-                <p style={{ fontSize:12, color:'var(--t3)', margin:'2px 0 0', fontWeight:500 }}>Gerencie e importe chaves em lote · deteccao automatica de tipo</p>
-              </div>
-            </div>
-            <motion.button
-              onClick={load}
-              whileHover={{ scale:1.04 }} whileTap={{ scale:0.96 }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6, fontFamily:'inherit',
-                padding:'9px 14px', borderRadius:10, cursor:'pointer',
-                background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)',
-                color:'var(--t2)', fontSize:12, fontWeight:700,
-                transition:'all 0.2s',
-              }}
-              onMouseEnter={e=>{ e.currentTarget.style.background='rgba(34,197,94,0.08)'; e.currentTarget.style.color='#22C55E'; e.currentTarget.style.borderColor='rgba(34,197,94,0.22)' }}
-              onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.03)'; e.currentTarget.style.color='var(--t2)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)' }}
-            >
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>
-              Sync
-            </motion.button>
+        {/* Hero — clean */}
+        <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:28 }}>
+          <div>
+            <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Chaves PIX</h1>
+            <p style={{ fontSize:13, color:'var(--t3)', margin:0, fontWeight:400 }}>
+              Gerencie e importe chaves em lote · deteccao automatica
+            </p>
           </div>
-        </motion.div>
+          <button onClick={load}
+            style={{ padding:'8px 14px', fontSize:12, fontWeight:500, fontFamily:'inherit', cursor:'pointer',
+              background:'transparent', border:'1px solid var(--b1)', borderRadius:8,
+              color:'var(--t3)', display:'flex', alignItems:'center', gap:6, transition:'all 0.15s' }}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--b2)';e.currentTarget.style.color='var(--t1)'}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--b1)';e.currentTarget.style.color='var(--t3)'}}
+          >
+            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>
+            Sync
+          </button>
+        </div>
 
         {/* Stats premium */}
         <div className="a2 g-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 22 }}>

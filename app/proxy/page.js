@@ -50,51 +50,17 @@ export default function ProxyPage() {
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 20px' }}>
 
-        {/* Hero — parceria premium */}
+        {/* Hero — clean */}
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease }}
-          style={{
-            position:'relative', overflow:'hidden',
-            padding:'20px 22px', borderRadius:18, marginBottom: 24,
-            background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
-            backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-            border:'1px solid rgba(59,130,246,0.18)',
-            boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 44px rgba(59,130,246,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
-          }}
+          transition={{ duration: 0.3 }}
+          style={{ marginBottom: 28 }}
         >
-          <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(59,130,246,0.45), transparent)', pointerEvents:'none' }}/>
-          <div style={{ position:'absolute', top:-40, right:-40, width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(59,130,246,0.12), transparent 60%)', filter:'blur(28px)', pointerEvents:'none' }}/>
-
-          <div style={{ position:'relative', display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
-            <div style={{
-              width:44, height:44, borderRadius:12,
-              background:'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.12))',
-              border:'1px solid rgba(59,130,246,0.3)',
-              display:'flex', alignItems:'center', justifyContent:'center',
-              boxShadow:'0 0 20px rgba(59,130,246,0.2)',
-            }}>
-              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <div style={{ flex:1, minWidth:200 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3, flexWrap:'wrap' }}>
-                <h1 style={{ fontSize:22, fontWeight:900, color:'#fff', letterSpacing:'-0.025em', margin:0 }}>Loja Proxy</h1>
-                <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.1))', color:'#60a5fa', border:'1px solid rgba(59,130,246,0.3)', letterSpacing:'0.1em' }}>PARCEIRO OFICIAL</span>
-              </div>
-              <p style={{ fontSize:12, color:'rgba(255,255,255,0.55)', margin:0, fontWeight:500 }}>
-                Infraestrutura de <strong style={{ color:'#fff' }}>proxies residenciais</strong> para operacoes em escala
-              </p>
-            </div>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:8, background:'rgba(34,197,94,0.08)', border:'1px solid rgba(34,197,94,0.22)' }}>
-              <motion.div
-                animate={{ boxShadow:['0 0 0 0 rgba(34,197,94,0.5)','0 0 0 5px rgba(34,197,94,0)','0 0 0 0 rgba(34,197,94,0)'] }}
-                transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}
-              />
-              <span style={{ fontSize:10, color:'#22C55E', fontWeight:800, letterSpacing:'0.08em' }}>ONLINE</span>
-            </div>
-          </div>
+          <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Loja Proxy</h1>
+          <p style={{ fontSize:13, color:'var(--t3)', margin:0, fontWeight:400 }}>
+            Infraestrutura de proxies residenciais para operacoes em escala · parceiro oficial
+          </p>
         </motion.div>
 
         {/* Main card */}

@@ -303,69 +303,30 @@ export default function SlotsPage() {
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px' }}>
 
-        {/* Hero — catalogo exclusivo */}
-        <motion.div {...fadeUp(0)} style={{
-          position:'relative', overflow:'hidden',
-          padding:'22px 24px', borderRadius:18, marginBottom:20,
-          background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
-          backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-          border:'1px solid rgba(229,57,53,0.18)',
-          boxShadow:'0 10px 40px rgba(0,0,0,0.5), 0 0 48px rgba(229,57,53,0.06), inset 0 1px 0 rgba(255,255,255,0.05)',
-        }}>
-          <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(229,57,53,0.5), transparent)', pointerEvents:'none' }}/>
-          <div style={{ position:'absolute', top:-50, right:-50, width:240, height:240, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.14), transparent 60%)', filter:'blur(34px)', pointerEvents:'none' }}/>
-          <div style={{ position:'absolute', bottom:-40, left:-30, width:160, height:160, borderRadius:'50%', background:'radial-gradient(circle, rgba(255,215,0,0.08), transparent 65%)', filter:'blur(26px)', pointerEvents:'none' }}/>
-
-          <div style={{ position:'relative', display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
-            <div style={{
-              width:46, height:46, borderRadius:13,
-              background:'linear-gradient(145deg, rgba(229,57,53,0.18), rgba(255,215,0,0.1))',
-              border:'1px solid rgba(229,57,53,0.3)',
-              display:'flex', alignItems:'center', justifyContent:'center',
-              boxShadow:'0 0 22px rgba(229,57,53,0.22)',
-            }}>
-              <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            </div>
-            <div style={{ flex:1, minWidth:200 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3, flexWrap:'wrap' }}>
-                <h1 style={{ fontSize:24, fontWeight:900, color:'#fff', letterSpacing:'-0.025em', margin:0 }}>Slots Premium</h1>
-                <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'linear-gradient(135deg, rgba(255,215,0,0.15), rgba(229,57,53,0.1))', color:'#FFD700', border:'1px solid rgba(255,215,0,0.3)', letterSpacing:'0.1em' }}>CATALOGO EXCLUSIVO</span>
-                <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'rgba(229,57,53,0.1)', color:'#e53935', border:'1px solid rgba(229,57,53,0.2)', letterSpacing:'0.06em' }}>2025</span>
-              </div>
-              <p style={{ fontSize:12, color:'rgba(255,255,255,0.55)', margin:0, fontWeight:500 }}>
-                <strong style={{ color:'#fff' }}>48 jogos testados</strong> para rollover · atualizado semanalmente
-              </p>
-            </div>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:8, background:'rgba(255,215,0,0.08)', border:'1px solid rgba(255,215,0,0.22)' }}>
-              <motion.div
-                animate={{ boxShadow:['0 0 0 0 rgba(255,215,0,0.5)','0 0 0 5px rgba(255,215,0,0)','0 0 0 0 rgba(255,215,0,0)'] }}
-                transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                style={{ width:6, height:6, borderRadius:'50%', background:'#FFD700' }}
-              />
-              <span style={{ fontSize:10, color:'#FCD34D', fontWeight:800, letterSpacing:'0.08em' }}>CONTEUDO PRO</span>
-            </div>
-          </div>
+        {/* Hero — clean */}
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
+          <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Slots Premium</h1>
+          <p style={{ fontSize:13, color:'var(--t3)', margin:0, fontWeight:400 }}>
+            48 jogos testados para rollover · atualizado semanalmente
+          </p>
         </motion.div>
 
-        {/* Tabs premium */}
+        {/* Tabs underline */}
         <motion.div {...fadeUp(1)} style={{
-          display: 'flex', gap: 4, marginBottom: 22,
-          background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
-          backdropFilter:'blur(14px) saturate(150%)', WebkitBackdropFilter:'blur(14px) saturate(150%)',
-          borderRadius: 12, padding: 4,
-          border: '1px solid rgba(255,255,255,0.05)', maxWidth: 340,
+          display: 'flex', gap: 0, marginBottom: 24,
+          borderBottom: '1px solid var(--b1)',
         }}>
           {[
             { key: 'catalogo', label: 'Catalogo Oficial' },
             { key: 'meus', label: 'Meus Jogos' },
           ].map(t => (
             <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
-              flex: 1, padding: '10px 16px', fontSize: 12, fontWeight: 700, fontFamily:'inherit',
-              borderRadius: 9, border: 'none', cursor: 'pointer',
-              background: activeTab === t.key ? 'linear-gradient(145deg, rgba(229,57,53,0.15), rgba(229,57,53,0.06))' : 'transparent',
-              color: activeTab === t.key ? '#e53935' : 'rgba(255,255,255,0.4)',
-              boxShadow: activeTab === t.key ? '0 2px 12px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.06)' : 'none',
-              transition: 'all 0.25s',
+              padding: '12px 18px', fontSize: 13, fontWeight: 500, fontFamily:'inherit',
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              color: activeTab === t.key ? 'var(--t1)' : 'var(--t3)',
+              borderBottom: activeTab === t.key ? '2px solid var(--t1)' : '2px solid transparent',
+              marginBottom: -1,
+              transition: 'all 0.15s',
             }}>
               {t.label}
             </button>

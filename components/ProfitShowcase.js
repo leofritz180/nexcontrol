@@ -72,8 +72,8 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
 
   const val = values[mode]
   const isPos = val >= 0
-  const c = isPos ? '#ECFDF5' : '#EF4444'
-  const cDim = isPos ? 'rgba(236,253,245,' : 'rgba(239,68,68,'
+  const c = isPos ? '#D1FAE5' : '#EF4444'
+  const cDim = isPos ? 'rgba(209,250,229,' : 'rgba(239,68,68,'
   const goalPct = (goalData?.target||0)>0 ? Math.min(1,(goalData?.lucroFinalTotal||0)/goalData.target) : 0
 
   // Cinematic timeline — advance phases automatically

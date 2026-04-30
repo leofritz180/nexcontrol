@@ -17,12 +17,12 @@ const DEMO_OPS = [
 ]
 
 const FEED_EVENTS = [
-  { text:'Carlos registrou +R$ 120', color:'#ECFDF5' },
-  { text:'Meta concluida com sucesso', color:'#ECFDF5' },
+  { text:'Carlos registrou +R$ 120', color:'#D1FAE5' },
+  { text:'Meta concluida com sucesso', color:'#D1FAE5' },
   { text:'Novo operador ativo', color:'#e53935' },
-  { text:'+R$ 68 registrado agora', color:'#ECFDF5' },
-  { text:'Pedro finalizou meta', color:'#ECFDF5' },
-  { text:'Ana registrou +R$ 95', color:'#ECFDF5' },
+  { text:'+R$ 68 registrado agora', color:'#D1FAE5' },
+  { text:'Pedro finalizou meta', color:'#D1FAE5' },
+  { text:'Ana registrou +R$ 95', color:'#D1FAE5' },
   { text:'Nova remessa processada', color:'#e53935' },
 ]
 
@@ -85,8 +85,8 @@ function SocialProofNumber({ target, suffix, active, mode }) {
     ? `${(val / 1000000).toFixed(val < target ? 1 : 0)}`
     : target >= 1000 ? val.toLocaleString('pt-BR') : String(val)
 
-  const numColor = delta > 0 ? '#ECFDF5' : '#fff'
-  const glowColor = delta > 0 ? 'rgba(236,253,245,0.2)' : 'rgba(255,255,255,0.06)'
+  const numColor = delta > 0 ? '#D1FAE5' : '#fff'
+  const glowColor = delta > 0 ? 'rgba(209,250,229,0.2)' : 'rgba(255,255,255,0.06)'
 
   return (
     <motion.p
@@ -168,14 +168,14 @@ function MiniChart({ active }) {
       <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow:'visible' }}>
         <defs>
           <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#ECFDF5" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="#ECFDF5" stopOpacity="0" />
+            <stop offset="0%" stopColor="#D1FAE5" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#D1FAE5" stopOpacity="0" />
           </linearGradient>
         </defs>
         <path d={areaD} fill="url(#chartGrad)" />
-        <path d={d} fill="none" stroke="#ECFDF5" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" style={{ filter:'drop-shadow(0 0 4px rgba(236,253,245,0.3))' }} />
+        <path d={d} fill="none" stroke="#D1FAE5" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" style={{ filter:'drop-shadow(0 0 4px rgba(209,250,229,0.3))' }} />
         {/* Live dot at end */}
-        <circle cx={w} cy={h - (points[points.length - 1] / 100) * h} r="2.5" fill="#ECFDF5" style={{ filter:'drop-shadow(0 0 6px rgba(236,253,245,0.5))' }}>
+        <circle cx={w} cy={h - (points[points.length - 1] / 100) * h} r="2.5" fill="#D1FAE5" style={{ filter:'drop-shadow(0 0 6px rgba(209,250,229,0.5))' }}>
           <animate attributeName="r" values="2.5;3.5;2.5" dur="2s" repeatCount="indefinite" />
         </circle>
       </svg>
@@ -415,7 +415,7 @@ function LiveDashboardDemo() {
         <AnimatePresence>
           {flash && (
             <motion.div initial={{opacity:0.12}} animate={{opacity:0}} exit={{opacity:0}} transition={{duration:0.7}}
-              style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 30%, rgba(236,253,245,0.12), transparent 60%)', zIndex:5, pointerEvents:'none' }}/>
+              style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 30%, rgba(209,250,229,0.12), transparent 60%)', zIndex:5, pointerEvents:'none' }}/>
           )}
         </AnimatePresence>
 
@@ -443,7 +443,7 @@ function LiveDashboardDemo() {
                   <span style={{ fontSize:7, color:'rgba(255,255,255,0.2)' }}>agora</span>
                 </div>
                 <p style={{ fontSize:9, color:'rgba(255,255,255,0.45)', margin:'3px 0 0' }}>
-                  {op.name} registrou: <span style={{ color:'#ECFDF5', fontWeight:700 }}>+R$ {op.value},00</span>
+                  {op.name} registrou: <span style={{ color:'#D1FAE5', fontWeight:700 }}>+R$ {op.value},00</span>
                 </p>
               </div>
             </motion.div>
@@ -457,9 +457,9 @@ function LiveDashboardDemo() {
             <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.4)' }}>Painel executivo</span>
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-            <motion.div animate={{ boxShadow:['0 0 0 0 rgba(236,253,245,0.5)','0 0 0 4px rgba(236,253,245,0)','0 0 0 0 rgba(236,253,245,0)'] }}
+            <motion.div animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.5)','0 0 0 4px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}
               transition={{ duration:2, repeat:Infinity }}
-              style={{ width:6, height:6, borderRadius:'50%', background:'#ECFDF5' }}/>
+              style={{ width:6, height:6, borderRadius:'50%', background:'#D1FAE5' }}/>
             <span style={{ fontSize:8, color:'rgba(255,255,255,0.2)' }}>ao vivo</span>
           </div>
         </div>
@@ -473,14 +473,14 @@ function LiveDashboardDemo() {
           >
             <p style={{ fontSize:9, color:'rgba(255,255,255,0.3)', margin:'0 0 8px' }}>Lucro final acumulado</p>
             <p style={{
-              fontFamily:'var(--mono)', fontSize:28, fontWeight:900, color:'#ECFDF5', margin:0,
-              textShadow: flash ? '0 0 20px rgba(236,253,245,0.25)' : 'none',
+              fontFamily:'var(--mono)', fontSize:28, fontWeight:900, color:'#D1FAE5', margin:0,
+              textShadow: flash ? '0 0 20px rgba(209,250,229,0.25)' : 'none',
               transition:'text-shadow 0.3s',
             }}>
               +R$ {total.toLocaleString('pt-BR')},47
             </p>
             <p style={{ fontSize:8, color:'rgba(255,255,255,0.2)', marginTop:6 }}>metas fechadas</p>
-            {flash && <div style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 30% 50%, rgba(236,253,245,0.06), transparent 60%)', pointerEvents:'none' }}/>}
+            {flash && <div style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 30% 50%, rgba(209,250,229,0.06), transparent 60%)', pointerEvents:'none' }}/>}
           </motion.div>
           <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
             {[{l:'Depositado',v:'R$ 57.581'},{l:'Sacado',v:'R$ 51.330'},{l:'Metas',v:'20'}].map(({l,v}) => (
@@ -509,7 +509,7 @@ function LiveDashboardDemo() {
                   </div>
                   <span style={{ fontSize:9, color:'rgba(255,255,255,0.4)' }}>{item.n}</span>
                 </div>
-                <span style={{ fontFamily:'var(--mono)', fontSize:10, fontWeight:700, color:item.g?'#ECFDF5':'#EF4444' }}>{item.g?'+':'-'}R$ {item.v},00</span>
+                <span style={{ fontFamily:'var(--mono)', fontSize:10, fontWeight:700, color:item.g?'#D1FAE5':'#EF4444' }}>{item.g?'+':'-'}R$ {item.v},00</span>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -517,7 +517,7 @@ function LiveDashboardDemo() {
       </motion.div>
 
       {/* Shadow glow */}
-      <div style={{ position:'absolute', bottom:-20, left:'25%', right:'25%', height:40, background:'radial-gradient(ellipse, rgba(236,253,245,0.05), transparent 70%)', filter:'blur(15px)', pointerEvents:'none' }}/>
+      <div style={{ position:'absolute', bottom:-20, left:'25%', right:'25%', height:40, background:'radial-gradient(ellipse, rgba(209,250,229,0.05), transparent 70%)', filter:'blur(15px)', pointerEvents:'none' }}/>
     </section>
   )
 }
@@ -551,7 +551,7 @@ export default function HomePage() {
 
       {/* Ambient glow orbs — strong red/green like login page */}
       <div className="lp-ambient" style={{ position:'fixed', top:'-18%', left:'-12%', width:750, height:750, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.18) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb1 20s ease-in-out infinite' }}/>
-      <div className="lp-ambient" style={{ position:'fixed', bottom:'-18%', right:'-10%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(236,253,245,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
+      <div className="lp-ambient" style={{ position:'fixed', bottom:'-18%', right:'-10%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(209,250,229,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
       <div className="lp-ambient" style={{ position:'fixed', top:'40%', right:'10%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.08) 0%, transparent 65%)', filter:'blur(70px)', pointerEvents:'none', animation:'lpOrb3 30s ease-in-out infinite' }}/>
       <style>{`
         @keyframes lpOrb1 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(30px,-20px) scale(1.05); } 66% { transform:translate(-20px,15px) scale(0.97); } }
@@ -570,7 +570,7 @@ export default function HomePage() {
               <span style={{ color:'#F1F5F9' }}>Nex</span><span style={{ color:'#e53935' }}>Control</span>
             </h2>
             <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:8 }}>
-              <span style={{ width:6, height:6, borderRadius:'50%', background:'#ECFDF5', boxShadow:'0 0 8px rgba(236,253,245,0.5)' }}/>
+              <span style={{ width:6, height:6, borderRadius:'50%', background:'#D1FAE5', boxShadow:'0 0 8px rgba(209,250,229,0.5)' }}/>
               <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.4)', letterSpacing:'0.12em', textTransform:'uppercase' }}>Sistema operacional ativo</span>
             </div>
           </div>
@@ -679,7 +679,7 @@ export default function HomePage() {
             <span style={{ color:'rgba(255,255,255,0.4)' }}>Nex</span><span style={{ color:'rgba(229,57,53,0.5)' }}>Control</span>
           </p>
           <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-            <span style={{ width:4, height:4, borderRadius:'50%', background:'rgba(236,253,245,0.4)' }}/>
+            <span style={{ width:4, height:4, borderRadius:'50%', background:'rgba(209,250,229,0.4)' }}/>
             <span style={{ fontSize:9, color:'var(--t4)', letterSpacing:'0.1em', textTransform:'uppercase' }}>Sistema operacional ativo</span>
           </div>
         </div>

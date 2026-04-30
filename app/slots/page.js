@@ -54,7 +54,7 @@ function SlotCard({ slot, index, isPro }) {
   }
 
   const isAlta = slot.performance === 'alta'
-  const lvColor = isAlta ? '#ecfdf5' : slot.performance === 'baixa' ? '#60a5fa' : 'rgba(255,255,255,0.78)'
+  const lvColor = isAlta ? '#d1fae5' : slot.performance === 'baixa' ? '#60a5fa' : 'rgba(255,255,255,0.78)'
 
   return (
     <motion.div
@@ -218,9 +218,9 @@ function SlotCard({ slot, index, isPro }) {
             style={{
               width: '100%', padding: '10px 14px', borderRadius: 10,
               fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
-              background: copied ? 'rgba(236,253,245,0.12)' : 'rgba(229,57,53,0.08)',
-              color: copied ? '#ecfdf5' : '#e53935',
-              border: `1px solid ${copied ? 'rgba(236,253,245,0.2)' : 'rgba(229,57,53,0.15)'}`,
+              background: copied ? 'rgba(209,250,229,0.12)' : 'rgba(229,57,53,0.08)',
+              color: copied ? '#d1fae5' : '#e53935',
+              border: `1px solid ${copied ? 'rgba(209,250,229,0.2)' : 'rgba(229,57,53,0.15)'}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               transition: 'all 0.2s',
             }}
@@ -374,7 +374,7 @@ export default function SlotsPage() {
             }}>
               {[
                 { label: 'Total', value: filtered.length, color: 'rgba(255,255,255,0.6)' },
-                { label: 'Alta performance', value: filtered.filter(s => s.performance === 'alta').length, color: '#ecfdf5' },
+                { label: 'Alta performance', value: filtered.filter(s => s.performance === 'alta').length, color: '#d1fae5' },
                 { label: 'Media', value: filtered.filter(s => s.performance === 'media').length, color: 'rgba(255,255,255,0.78)' },
               ].map((s, i) => (
                 <div key={i} style={{

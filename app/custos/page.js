@@ -11,7 +11,7 @@ const getName = p => p?.nome || p?.email?.split('@')[0] || '?'
 
 const COST_TYPES = [
   { id: 'proxy', label: 'Proxy', icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', color: 'rgba(255,255,255,0.78)' },
-  { id: 'sms', label: 'SMS', icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: '#ECFDF5' },
+  { id: 'sms', label: 'SMS', icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: '#D1FAE5' },
   { id: 'instagram', label: 'Postagem Instagram', icon: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5z', color: '#E53935' },
   { id: 'bot', label: 'Bot / Automacao', icon: 'M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a2 2 0 010 4h-1a7 7 0 01-7 7h-2a7 7 0 01-7-7H4a2 2 0 010-4h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z', color: 'rgba(255,255,255,0.78)' },
   { id: 'vps', label: 'VPS / Servidor', icon: 'M22 12H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11zM6 16h.01M10 16h.01', color: 'rgba(255,255,255,0.78)' },
@@ -231,11 +231,11 @@ export default function CustosPage() {
               style={{
                 padding: '20px 22px', borderRadius: 14,
                 background: kpis.lucroLiquido>=0
-                  ? 'linear-gradient(145deg, rgba(236,253,245,0.08), rgba(14,22,38,0.7))'
+                  ? 'linear-gradient(145deg, rgba(209,250,229,0.08), rgba(14,22,38,0.7))'
                   : 'linear-gradient(145deg, rgba(239,68,68,0.08), rgba(14,22,38,0.7))',
                 backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
-                border: `1px solid ${kpis.lucroLiquido>=0?'rgba(236,253,245,0.18)':'rgba(239,68,68,0.18)'}`,
-                boxShadow: `0 8px 28px rgba(0,0,0,0.4), 0 0 32px ${kpis.lucroLiquido>=0?'rgba(236,253,245,0.08)':'rgba(239,68,68,0.08)'}, inset 0 1px 0 rgba(255,255,255,0.04)`,
+                border: `1px solid ${kpis.lucroLiquido>=0?'rgba(209,250,229,0.18)':'rgba(239,68,68,0.18)'}`,
+                boxShadow: `0 8px 28px rgba(0,0,0,0.4), 0 0 32px ${kpis.lucroLiquido>=0?'rgba(209,250,229,0.08)':'rgba(239,68,68,0.08)'}, inset 0 1px 0 rgba(255,255,255,0.04)`,
                 position: 'relative', overflow: 'hidden',
               }}
             >
@@ -244,14 +244,14 @@ export default function CustosPage() {
                 position: 'absolute', top: -40, right: -40, width: 120, height: 120,
                 borderRadius: '50%', pointerEvents: 'none',
                 background: kpis.lucroLiquido >= 0
-                  ? 'radial-gradient(circle, rgba(236,253,245,0.08) 0%, transparent 70%)'
+                  ? 'radial-gradient(circle, rgba(209,250,229,0.08) 0%, transparent 70%)'
                   : 'radial-gradient(circle, rgba(239,68,68,0.08) 0%, transparent 70%)',
               }} />
               <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>Lucro vs Custo (hoje)</p>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: 12, color: 'var(--t3)', fontWeight: 500 }}>Lucro bruto</span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#ECFDF5', fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.lucroHoje)}</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#D1FAE5', fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.lucroHoje)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: 12, color: 'var(--t3)', fontWeight: 500 }}>Custos</span>
@@ -262,7 +262,7 @@ export default function CustosPage() {
                 <span style={{ fontSize: 13, color: 'var(--t1)', fontWeight: 700 }}>Lucro liquido</span>
                 <span style={{
                   fontSize: 22, fontWeight: 800, fontFamily: 'var(--mono)', letterSpacing: '-0.02em',
-                  color: kpis.lucroLiquido >= 0 ? '#ECFDF5' : '#EF4444',
+                  color: kpis.lucroLiquido >= 0 ? '#D1FAE5' : '#EF4444',
                 }}>
                   R$ {fmt(kpis.lucroLiquido)}
                 </span>
@@ -509,7 +509,7 @@ export default function CustosPage() {
                       exit={{ opacity: 0 }}
                       style={{
                         position: 'absolute', inset: 0, zIndex: 20,
-                        background: 'rgba(236,253,245,0.08)',
+                        background: 'rgba(209,250,229,0.08)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         borderRadius: 18,
                       }}
@@ -519,7 +519,7 @@ export default function CustosPage() {
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', damping: 15, stiffness: 300 }}
                       >
-                        <svg width={48} height={48} viewBox="0 0 24 24" fill="none" stroke="#ECFDF5" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                        <svg width={48} height={48} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
                       </motion.div>

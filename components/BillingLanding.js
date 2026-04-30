@@ -54,8 +54,8 @@ export default function BillingLanding() {
         <motion.p
           animate={{ scale:[1,1.015,1] }}
           transition={{ duration:4, repeat:Infinity, ease:'easeInOut' }}
-          style={{ fontFamily:'var(--mono)', fontSize:56, fontWeight:900, color:'#ECFDF5', lineHeight:1, margin:'0 0 10px',
-            textShadow:'0 0 50px rgba(236,253,245,0.2), 0 0 100px rgba(236,253,245,0.1)',
+          style={{ fontFamily:'var(--mono)', fontSize:56, fontWeight:900, color:'#D1FAE5', lineHeight:1, margin:'0 0 10px',
+            textShadow:'0 0 50px rgba(209,250,229,0.2), 0 0 100px rgba(209,250,229,0.1)',
           }}>
           +R$ 3.058,47
         </motion.p>
@@ -93,28 +93,28 @@ export default function BillingLanding() {
 
       {/* ═══ MINI NEXCONTROL MOBILE (realista) ═══ */}
       <section style={{ padding:'40px 0 60px', position:'relative' }}>
-        <div style={{ position:'absolute', top:'20%', right:'15%', width:440, height:440, borderRadius:'50%', background:'radial-gradient(circle, rgba(236,253,245,0.08), transparent 55%)', filter:'blur(70px)', pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', top:'20%', right:'15%', width:440, height:440, borderRadius:'50%', background:'radial-gradient(circle, rgba(209,250,229,0.08), transparent 55%)', filter:'blur(70px)', pointerEvents:'none' }}/>
         <div style={{ position:'absolute', bottom:'10%', left:'10%', width:320, height:320, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.06), transparent 55%)', filter:'blur(56px)', pointerEvents:'none' }}/>
 
         <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1.1fr', gap:56, alignItems:'center', position:'relative' }}>
 
           {/* Copy — vendedor */}
           <motion.div {...fadeUp()}>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:7, padding:'5px 12px', borderRadius:99, background:'rgba(236,253,245,0.08)', border:'1px solid rgba(236,253,245,0.2)', marginBottom:18 }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:7, padding:'5px 12px', borderRadius:99, background:'rgba(209,250,229,0.08)', border:'1px solid rgba(209,250,229,0.2)', marginBottom:18 }}>
               <motion.div
-                animate={{ boxShadow:['0 0 0 0 rgba(236,253,245,0.55)','0 0 0 5px rgba(236,253,245,0)','0 0 0 0 rgba(236,253,245,0)'] }}
+                animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.55)','0 0 0 5px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}
                 transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
-                style={{ width:6, height:6, borderRadius:'50%', background:'#ECFDF5' }}
+                style={{ width:6, height:6, borderRadius:'50%', background:'#D1FAE5' }}
               />
-              <span style={{ fontSize:10, color:'#ECFDF5', fontWeight:800, letterSpacing:'0.1em' }}>AO VIVO NO SEU BOLSO</span>
+              <span style={{ fontSize:10, color:'#D1FAE5', fontWeight:800, letterSpacing:'0.1em' }}>AO VIVO NO SEU BOLSO</span>
             </div>
 
             <h2 style={{ fontSize:34, fontWeight:900, color:'var(--t1)', margin:'0 0 14px', letterSpacing:'-0.035em', lineHeight:1.1 }}>
               Veja o dinheiro entrando<br/>
-              <span style={{ background:'linear-gradient(135deg, #ECFDF5, #4ADE80)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>em tempo real</span>
+              <span style={{ background:'linear-gradient(135deg, #D1FAE5, #4ADE80)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>em tempo real</span>
             </h2>
             <p style={{ fontSize:15, color:'var(--t2)', lineHeight:1.6, margin:'0 0 28px' }}>
-              Cada remessa registrada vira uma <strong style={{ color:'#fff' }}>notificação instantânea</strong> no seu celular. Você acompanha tudo ao vivo — <strong style={{ color:'#ECFDF5' }}>operador, rede e lucro</strong>.
+              Cada remessa registrada vira uma <strong style={{ color:'#fff' }}>notificação instantânea</strong> no seu celular. Você acompanha tudo ao vivo — <strong style={{ color:'#D1FAE5' }}>operador, rede e lucro</strong>.
             </p>
 
             {[
@@ -126,8 +126,8 @@ export default function BillingLanding() {
                 initial={{opacity:0, x:-8}} whileInView={{opacity:1, x:0}} viewport={{once:true}}
                 transition={{duration:0.4, delay:0.1+i*0.08, ease}}
                 style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:14 }}>
-                <div style={{ width:22, height:22, borderRadius:6, background:'rgba(236,253,245,0.12)', border:'1px solid rgba(236,253,245,0.28)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2, boxShadow:'0 0 10px rgba(236,253,245,0.12)' }}>
-                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#ECFDF5" strokeWidth={3} strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <div style={{ width:22, height:22, borderRadius:6, background:'rgba(209,250,229,0.12)', border:'1px solid rgba(209,250,229,0.28)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:2, boxShadow:'0 0 10px rgba(209,250,229,0.12)' }}>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth={3} strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <div>
                   <p style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 3px', letterSpacing:'-0.01em' }}>{t}</p>
@@ -149,7 +149,7 @@ export default function BillingLanding() {
                 background:'linear-gradient(160deg, rgba(14,22,38,0.95) 0%, rgba(8,12,20,0.95) 50%, rgba(4,7,14,0.95) 100%)',
                 backdropFilter:'blur(30px) saturate(160%)', WebkitBackdropFilter:'blur(30px) saturate(160%)',
                 border:'1px solid rgba(255,255,255,0.08)',
-                boxShadow:`0 50px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(229,57,53,0.04), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 ${flash?'80':'40'}px rgba(236,253,245,${flash?'0.18':'0.05'})`,
+                boxShadow:`0 50px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(229,57,53,0.04), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 ${flash?'80':'40'}px rgba(209,250,229,${flash?'0.18':'0.05'})`,
                 position:'relative', transform:'rotateX(3deg)',
                 transition:'box-shadow 0.6s ease',
               }}>
@@ -166,7 +166,7 @@ export default function BillingLanding() {
                 <AnimatePresence>
                   {flash && (
                     <motion.div initial={{opacity:0.3}} animate={{opacity:0}} exit={{opacity:0}} transition={{duration:0.9}}
-                      style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 15%, rgba(236,253,245,0.22), transparent 58%)', zIndex:10, pointerEvents:'none' }}/>
+                      style={{ position:'absolute', inset:0, background:'radial-gradient(circle at 50% 15%, rgba(209,250,229,0.22), transparent 58%)', zIndex:10, pointerEvents:'none' }}/>
                   )}
                 </AnimatePresence>
 
@@ -180,11 +180,11 @@ export default function BillingLanding() {
                       <p style={{ fontSize:10, fontWeight:800, color:'#F1F5F9', margin:0, letterSpacing:'-0.01em' }}>NexControl</p>
                       <div style={{ display:'flex', alignItems:'center', gap:4, marginTop:1 }}>
                         <motion.div
-                          animate={{ boxShadow:['0 0 0 0 rgba(236,253,245,0.6)','0 0 0 3px rgba(236,253,245,0)','0 0 0 0 rgba(236,253,245,0)'] }}
+                          animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.6)','0 0 0 3px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}
                           transition={{ duration:1.6, repeat:Infinity, ease:'easeInOut' }}
-                          style={{ width:4, height:4, borderRadius:'50%', background:'#ECFDF5' }}
+                          style={{ width:4, height:4, borderRadius:'50%', background:'#D1FAE5' }}
                         />
-                        <span style={{ fontSize:7, color:'rgba(236,253,245,0.8)', fontWeight:700, letterSpacing:'0.08em' }}>TEMPO REAL</span>
+                        <span style={{ fontSize:7, color:'rgba(209,250,229,0.8)', fontWeight:700, letterSpacing:'0.08em' }}>TEMPO REAL</span>
                       </div>
                     </div>
                   </div>
@@ -203,21 +203,21 @@ export default function BillingLanding() {
                         padding:'10px 12px', borderRadius:14,
                         background:'rgba(20,30,48,0.85)',
                         backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
-                        border:'1px solid rgba(236,253,245,0.22)',
-                        boxShadow:'0 8px 24px rgba(0,0,0,0.4), 0 0 20px rgba(236,253,245,0.1)',
+                        border:'1px solid rgba(209,250,229,0.22)',
+                        boxShadow:'0 8px 24px rgba(0,0,0,0.4), 0 0 20px rgba(209,250,229,0.1)',
                       }}>
                       <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:4 }}>
                         <div style={{ width:16, height:16, borderRadius:4, background:'linear-gradient(145deg, #e53935, #c62828)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                           <NexIcon size={8}/>
                         </div>
                         <span style={{ fontSize:8, fontWeight:800, color:'#F1F5F9', letterSpacing:'-0.01em' }}>NexControl</span>
-                        <span style={{ fontSize:7, color:'rgba(236,253,245,0.9)', fontWeight:700, marginLeft:'auto' }}>agora</span>
+                        <span style={{ fontSize:7, color:'rgba(209,250,229,0.9)', fontWeight:700, marginLeft:'auto' }}>agora</span>
                       </div>
                       <p style={{ fontSize:10, fontWeight:700, color:'#F1F5F9', margin:'0 0 2px', paddingLeft:23 }}>
                         {FEED_DATA[idx % FEED_DATA.length].rede} · {FEED_DATA[idx % FEED_DATA.length].name}
                       </p>
                       <p style={{ fontSize:8, color:'rgba(255,255,255,0.55)', margin:0, paddingLeft:23 }}>
-                        <span style={{ color: FEED_DATA[idx % FEED_DATA.length].pos ? '#ECFDF5' : '#EF4444', fontWeight:800, fontSize:10 }}>
+                        <span style={{ color: FEED_DATA[idx % FEED_DATA.length].pos ? '#D1FAE5' : '#EF4444', fontWeight:800, fontSize:10 }}>
                           {FEED_DATA[idx % FEED_DATA.length].pos?'+':'-'}R$ {FEED_DATA[idx % FEED_DATA.length].value},00
                         </span> {FEED_DATA[idx % FEED_DATA.length].pos ? 'lucro' : 'prejuizo'}
                       </p>
@@ -234,24 +234,24 @@ export default function BillingLanding() {
                     style={{
                       position:'relative', overflow:'hidden',
                       padding:'14px 16px', borderRadius:14, marginBottom:12,
-                      background:'linear-gradient(145deg, rgba(236,253,245,0.12), rgba(14,22,38,0.8))',
-                      border:'1px solid rgba(236,253,245,0.24)',
-                      boxShadow:`0 6px 20px rgba(0,0,0,0.35), 0 0 ${flash?'30':'14'}px rgba(236,253,245,${flash?'0.25':'0.08'})`,
+                      background:'linear-gradient(145deg, rgba(209,250,229,0.12), rgba(14,22,38,0.8))',
+                      border:'1px solid rgba(209,250,229,0.24)',
+                      boxShadow:`0 6px 20px rgba(0,0,0,0.35), 0 0 ${flash?'30':'14'}px rgba(209,250,229,${flash?'0.25':'0.08'})`,
                       transition:'box-shadow 0.4s',
                     }}>
-                    <div style={{ position:'absolute', top:0, left:'20%', right:'20%', height:1, background:'linear-gradient(90deg, transparent, rgba(236,253,245,0.4), transparent)' }}/>
+                    <div style={{ position:'absolute', top:0, left:'20%', right:'20%', height:1, background:'linear-gradient(90deg, transparent, rgba(209,250,229,0.4), transparent)' }}/>
                     <p style={{ fontSize:8, color:'rgba(255,255,255,0.45)', margin:'0 0 5px', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }}>Lucro de hoje</p>
                     <motion.p
-                      animate={flash?{ textShadow:['0 0 10px rgba(236,253,245,0.25)','0 0 28px rgba(236,253,245,0.55)','0 0 10px rgba(236,253,245,0.25)'] }:{}}
+                      animate={flash?{ textShadow:['0 0 10px rgba(209,250,229,0.25)','0 0 28px rgba(209,250,229,0.55)','0 0 10px rgba(209,250,229,0.25)'] }:{}}
                       transition={{duration:0.8}}
                       style={{
-                        fontFamily:'var(--mono)', fontSize:26, fontWeight:900, color:'#ECFDF5', margin:0,
+                        fontFamily:'var(--mono)', fontSize:26, fontWeight:900, color:'#D1FAE5', margin:0,
                         letterSpacing:'-0.03em', lineHeight:1,
-                        textShadow:'0 0 18px rgba(236,253,245,0.3)',
+                        textShadow:'0 0 18px rgba(209,250,229,0.3)',
                       }}>
                       +R$ {total.toLocaleString('pt-BR')}
                     </motion.p>
-                    <p style={{ fontSize:8, color:'rgba(236,253,245,0.75)', margin:'5px 0 0', fontWeight:600 }}>
+                    <p style={{ fontSize:8, color:'rgba(209,250,229,0.75)', margin:'5px 0 0', fontWeight:600 }}>
                       ↑ atualizado ha 2s
                     </p>
                   </motion.div>
@@ -260,16 +260,16 @@ export default function BillingLanding() {
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
                     <span style={{ fontSize:8, fontWeight:800, color:'rgba(255,255,255,0.55)', letterSpacing:'0.1em', textTransform:'uppercase' }}>Atividade ao vivo</span>
                     <motion.div
-                      animate={{ boxShadow:['0 0 0 0 rgba(236,253,245,0.5)','0 0 0 4px rgba(236,253,245,0)','0 0 0 0 rgba(236,253,245,0)'] }}
+                      animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.5)','0 0 0 4px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}
                       transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
-                      style={{ width:5, height:5, borderRadius:'50%', background:'#ECFDF5' }}
+                      style={{ width:5, height:5, borderRadius:'50%', background:'#D1FAE5' }}
                     />
                   </div>
 
                   {/* Feed items */}
                   <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
                     {FEED_DATA.slice(0,4).map((item,i) => {
-                      const ac = item.pos ? '#ECFDF5' : '#EF4444'
+                      const ac = item.pos ? '#D1FAE5' : '#EF4444'
                       return (
                         <motion.div key={`${item.rede}-${item.name}-${i}`}
                           initial={{opacity:0, y:6}}
@@ -314,7 +314,7 @@ export default function BillingLanding() {
 
               {/* External red glow glow bleed */}
               <div style={{ position:'absolute', top:'40%', left:-30, width:60, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.18), transparent 65%)', filter:'blur(24px)', pointerEvents:'none' }}/>
-              <div style={{ position:'absolute', bottom:'30%', right:-30, width:60, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(236,253,245,0.14), transparent 65%)', filter:'blur(24px)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', bottom:'30%', right:-30, width:60, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(209,250,229,0.14), transparent 65%)', filter:'blur(24px)', pointerEvents:'none' }}/>
             </motion.div>
           </motion.div>
         </div>
@@ -385,7 +385,7 @@ export default function BillingLanding() {
           gap: 12, marginBottom: 24,
         }}>
           {SLOTS.filter(s => s.performance === 'alta').slice(0, 6).map((slot, i) => {
-            const lvColor = '#ecfdf5'
+            const lvColor = '#d1fae5'
             const blurVar = 7 + (slot.id % 4)
             return (
               <motion.div key={slot.id} {...fadeUp(0.1 + i * 0.06)} style={{

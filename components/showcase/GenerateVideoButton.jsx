@@ -113,7 +113,7 @@ export function GenerateVideoButton({ amount, completedGoals, goalPct, mode, sta
       ) : (
         <div style={{ display: 'flex', gap: 8 }}>
           <motion.button onClick={downloadDirect} whileTap={{ scale: 0.96 }}
-            style={{ fontSize: 11, fontWeight: 600, padding: '7px 16px', borderRadius: 7, cursor: 'pointer', border: 'none', background: '#ECFDF5', color: '#052e16' }}>
+            style={{ fontSize: 11, fontWeight: 600, padding: '7px 16px', borderRadius: 7, cursor: 'pointer', border: 'none', background: '#D1FAE5', color: '#052e16' }}>
             Baixar video
           </motion.button>
           <motion.button onClick={shareVideo} whileTap={{ scale: 0.96 }}

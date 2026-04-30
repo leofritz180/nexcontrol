@@ -88,7 +88,7 @@ export default function BillingMpPage() {
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative', zIndex: 1 }}>
       {/* Ambient orbs */}
       <div style={{ position: 'fixed', top: '-18%', left: '-12%', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.14) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
-      <div style={{ position: 'fixed', bottom: '-18%', right: '-8%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(236,253,245,0.1) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
+      <div style={{ position: 'fixed', bottom: '-18%', right: '-8%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(209,250,229,0.1) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
 
       <div style={{ width: '100%', maxWidth: 460, position: 'relative', zIndex: 2 }}>
         <AnimatePresence mode="wait">
@@ -148,8 +148,8 @@ function IntroCard({ onStart }) {
           'Previsoes inteligentes',
           'Suporte prioritario',
         ].map((b, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(236,253,245,0.04)', border: '1px solid rgba(236,253,245,0.08)' }}>
-            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ECFDF5" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(209,250,229,0.04)', border: '1px solid rgba(209,250,229,0.08)' }}>
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
             <span style={{ fontSize: 13, color: '#E2E8F0' }}>{b}</span>
           </div>
         ))}
@@ -245,8 +245,8 @@ function PixCard({ payment, copied, onCopy }) {
             style={{
               position: 'absolute', right: 8, top: 8,
               width: 32, height: 32, borderRadius: 8, border: 'none', cursor: 'pointer',
-              background: copied ? 'rgba(236,253,245,0.15)' : 'rgba(229,57,53,0.15)',
-              color: copied ? '#ECFDF5' : '#e53935',
+              background: copied ? 'rgba(209,250,229,0.15)' : 'rgba(229,57,53,0.15)',
+              color: copied ? '#D1FAE5' : '#e53935',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -281,16 +281,16 @@ function ApprovedCard() {
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.45, ease: [0.33, 1.4, 0.68, 1] }}
-        style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(236,253,245,0.15)', border: '2px solid rgba(236,253,245,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}
+        style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(209,250,229,0.15)', border: '2px solid rgba(209,250,229,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}
       >
-        <svg width={36} height={36} viewBox="0 0 24 24" fill="none" stroke="#ECFDF5" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg width={36} height={36} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
       </motion.div>
       <h2 style={{ fontSize: 22, fontWeight: 800, color: '#F1F5F9', margin: '0 0 8px' }}>Pagamento aprovado!</h2>
       <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 16px' }}>Seu plano PRO foi ativado. Redirecionando...</p>
       <div style={{ width: '100%', height: 2, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
         <motion.div
           initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ duration: 2.4, ease: 'linear' }}
-          style={{ height: '100%', background: '#ECFDF5' }}
+          style={{ height: '100%', background: '#D1FAE5' }}
         />
       </div>
     </div>

@@ -67,9 +67,9 @@ function PhoneMockup() {
         </div>
         {/* KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5, marginBottom: 10 }}>
-          <div style={{ padding: '7px 6px', borderRadius: 8, background: 'rgba(236,253,245,0.06)', border: '1px solid rgba(236,253,245,0.1)' }}>
+          <div style={{ padding: '7px 6px', borderRadius: 8, background: 'rgba(209,250,229,0.06)', border: '1px solid rgba(209,250,229,0.1)' }}>
             <div style={{ fontSize: 6, color: 'rgba(255,255,255,0.3)', marginBottom: 2 }}>LUCRO</div>
-            <div style={{ fontSize: 11, fontWeight: 800, color: '#ecfdf5', fontFamily: 'var(--mono, monospace)' }}>+R$ 1.840</div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: '#d1fae5', fontFamily: 'var(--mono, monospace)' }}>+R$ 1.840</div>
           </div>
           <div style={{ padding: '7px 6px', borderRadius: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
             <div style={{ fontSize: 6, color: 'rgba(255,255,255,0.3)', marginBottom: 2 }}>METAS</div>
@@ -79,7 +79,7 @@ function PhoneMockup() {
         {/* Chart */}
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2.5, height: 30, marginBottom: 8 }}>
           {[30, 50, 40, 65, 55, 80, 70, 90].map((h, i) => (
-            <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: 2, background: `rgba(236,253,245,${0.1 + i * 0.04})` }} />
+            <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: 2, background: `rgba(209,250,229,${0.1 + i * 0.04})` }} />
           ))}
         </div>
         {/* List */}
@@ -87,7 +87,7 @@ function PhoneMockup() {
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
             <div style={{ width: 14, height: 14, borderRadius: 4, background: 'rgba(255,255,255,0.04)' }} />
             <div style={{ flex: 1 }}><div style={{ height: 4, width: `${50 + i * 15}%`, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)' }} /></div>
-            <span style={{ fontSize: 7, fontWeight: 700, color: '#ecfdf5' }}>+R${i * 120 + 90}</span>
+            <span style={{ fontSize: 7, fontWeight: 700, color: '#d1fae5' }}>+R${i * 120 + 90}</span>
           </div>
         ))}
         {/* Notification */}
@@ -270,7 +270,7 @@ export default function InstallPrompt() {
                       { icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', label: 'Performance real' },
                     ].map((b, i) => (
                       <div key={i} style={{ padding: '11px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', gap: 9 }}>
-                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ecfdf5" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.6 }}><path d={b.icon} /></svg>
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#d1fae5" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.6 }}><path d={b.icon} /></svg>
                         <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)', lineHeight: 1.3 }}>{b.label}</span>
                       </div>
                     ))}
@@ -339,14 +339,14 @@ export default function InstallPrompt() {
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                     padding: '6px 14px', borderRadius: 99, marginBottom: 20,
-                    background: isIos ? 'rgba(255,255,255,0.04)' : 'rgba(236,253,245,0.06)',
-                    border: `1px solid ${isIos ? 'rgba(255,255,255,0.08)' : 'rgba(236,253,245,0.12)'}`,
+                    background: isIos ? 'rgba(255,255,255,0.04)' : 'rgba(209,250,229,0.06)',
+                    border: `1px solid ${isIos ? 'rgba(255,255,255,0.08)' : 'rgba(209,250,229,0.12)'}`,
                   }}>
-                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={isIos ? 'rgba(255,255,255,0.5)' : '#ecfdf5'} strokeWidth="1.8" strokeLinecap="round">
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={isIos ? 'rgba(255,255,255,0.5)' : '#d1fae5'} strokeWidth="1.8" strokeLinecap="round">
                       <rect x="5" y="2" width="14" height="20" rx="2" />
                       <line x1="12" y1="18" x2="12" y2="18.01" />
                     </svg>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: isIos ? 'rgba(255,255,255,0.5)' : '#ecfdf5' }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: isIos ? 'rgba(255,255,255,0.5)' : '#d1fae5' }}>
                       {isIos ? 'Safari — iPhone' : isAndroid ? 'Chrome — Android' : 'Navegador'}
                     </span>
                   </div>
@@ -423,14 +423,14 @@ export default function InstallPrompt() {
                   {/* Tip */}
                   <div style={{
                     padding: '14px 16px', borderRadius: 14, marginBottom: 24,
-                    background: 'rgba(236,253,245,0.04)', border: '1px solid rgba(236,253,245,0.1)',
+                    background: 'rgba(209,250,229,0.04)', border: '1px solid rgba(209,250,229,0.1)',
                     display: 'flex', alignItems: 'flex-start', gap: 10,
                   }}>
-                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#ecfdf5" strokeWidth="1.8" strokeLinecap="round" style={{ flexShrink: 0, marginTop: 1 }}>
+                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#d1fae5" strokeWidth="1.8" strokeLinecap="round" style={{ flexShrink: 0, marginTop: 1 }}>
                       <path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z" /><line x1="9" y1="21" x2="15" y2="21" />
                     </svg>
                     <div>
-                      <p style={{ fontSize: 12, fontWeight: 600, color: '#ecfdf5', margin: '0 0 3px' }}>Dica</p>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: '#d1fae5', margin: '0 0 3px' }}>Dica</p>
                       <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', margin: 0, lineHeight: 1.5 }}>
                         Apos instalar, ative as notificacoes para receber alertas de metas, remessas e lucro em tempo real.
                       </p>
@@ -442,8 +442,8 @@ export default function InstallPrompt() {
                     style={{
                       width: '100%', padding: '15px 20px', borderRadius: 14,
                       fontSize: 15, fontWeight: 700, border: 'none', cursor: 'pointer',
-                      background: 'linear-gradient(135deg, #ecfdf5, #00a06d)', color: '#fff',
-                      boxShadow: '0 6px 24px rgba(236,253,245,0.2)',
+                      background: 'linear-gradient(135deg, #d1fae5, #00a06d)', color: '#fff',
+                      boxShadow: '0 6px 24px rgba(209,250,229,0.2)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                     }}>
                     <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>

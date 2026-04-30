@@ -34,7 +34,7 @@ const FILTERS = [
 ]
 
 const planColors = {
-  PRO: { bg: 'rgba(236,253,245,0.08)', c: '#ECFDF5', b: 'rgba(236,253,245,0.2)' },
+  PRO: { bg: 'rgba(209,250,229,0.08)', c: '#D1FAE5', b: 'rgba(209,250,229,0.2)' },
   TRIAL: { bg: 'rgba(255,255,255,0.08)', c: 'rgba(255,255,255,0.78)', b: 'rgba(255,255,255,0.2)' },
   FREE: { bg: 'rgba(100,116,139,0.08)', c: '#64748B', b: 'rgba(100,116,139,0.2)' },
 }
@@ -162,8 +162,8 @@ export default function AdminsPage() {
                     </div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name || a.email.split('@')[0]}</p>
                     <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: plan.bg, color: plan.c, border: `1px solid ${plan.b}` }}>{a.planStatus}</span>
-                    <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: '#ECFDF5', margin: '8px 0 6px' }}>{a.metas} metas</p>
-                    <p style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? '#ECFDF5' : '#EF4444', margin: '0 0 8px' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</p>
+                    <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: '#D1FAE5', margin: '8px 0 6px' }}>{a.metas} metas</p>
+                    <p style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? '#D1FAE5' : '#EF4444', margin: '0 0 8px' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</p>
                     <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${(a.metas / maxM) * 100}%`, borderRadius: 2, background: medals[i], opacity: 0.6 }} />
                     </div>
@@ -194,7 +194,7 @@ export default function AdminsPage() {
                 {filtered.map((a, i) => {
                   const plan = planColors[a.planStatus] || planColors.FREE
                   const days = a.daysSinceActivity
-                  const dot = days <= 0 ? '#ECFDF5' : days <= 7 ? 'rgba(255,255,255,0.78)' : '#EF4444'
+                  const dot = days <= 0 ? '#D1FAE5' : days <= 7 ? 'rgba(255,255,255,0.78)' : '#EF4444'
                   return (
                     <tr key={a.id}
                       style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'background 0.15s' }}
@@ -202,11 +202,11 @@ export default function AdminsPage() {
                       onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
-                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontWeight: 700, color: i < 3 ? '#ECFDF5' : '#64748B', fontSize: 12 }}>{i + 1}</td>
+                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontWeight: 700, color: i < 3 ? '#D1FAE5' : '#64748B', fontSize: 12 }}>{i + 1}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 28, height: 28, borderRadius: 7, background: i < 3 ? 'rgba(236,253,245,0.1)' : '#000000', border: `1px solid ${i < 3 ? 'rgba(236,253,245,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: i < 3 ? '#ECFDF5' : '#94A3B8' }}>{(a.name || a.email)[0].toUpperCase()}</span>
+                          <div style={{ width: 28, height: 28, borderRadius: 7, background: i < 3 ? 'rgba(209,250,229,0.1)' : '#000000', border: `1px solid ${i < 3 ? 'rgba(209,250,229,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: i < 3 ? '#D1FAE5' : '#94A3B8' }}>{(a.name || a.email)[0].toUpperCase()}</span>
                             <div style={{ position: 'absolute', bottom: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: dot, border: '2px solid #000000' }} />
                           </div>
                           <div style={{ minWidth: 0 }}>
@@ -217,11 +217,11 @@ export default function AdminsPage() {
                       </td>
                       <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#F1F5F9' }}>{a.metas}</td>
                       <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 600, color: '#94A3B8' }}>{a.operators}</td>
-                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? '#ECFDF5' : '#EF4444' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</td>
+                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? '#D1FAE5' : '#EF4444' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: plan.bg, color: plan.c, border: `1px solid ${plan.b}` }}>{a.planStatus}</span>
                       </td>
-                      <td style={{ padding: '10px 12px', fontSize: 10, color: days <= 0 ? '#ECFDF5' : days <= 7 ? '#94A3B8' : '#EF4444' }}>{relativeTime(a.lastActivity)}</td>
+                      <td style={{ padding: '10px 12px', fontSize: 10, color: days <= 0 ? '#D1FAE5' : days <= 7 ? '#94A3B8' : '#EF4444' }}>{relativeTime(a.lastActivity)}</td>
                     </tr>
                   )
                 })}
@@ -257,15 +257,15 @@ export default function AdminsPage() {
                 </div>
                 {(() => { const p = planColors[selectedAdmin.planStatus] || planColors.FREE; return <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 12px', borderRadius: 6, background: p.bg, color: p.c, border: `1px solid ${p.b}` }}>{selectedAdmin.planStatus}</span> })()}
               </div>
-              <div style={{ padding: '16px 18px', borderRadius: 14, marginBottom: 14, background: (selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(236,253,245,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${(selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(236,253,245,0.12)' : 'rgba(239,68,68,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ padding: '16px 18px', borderRadius: 14, marginBottom: 14, background: (selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(209,250,229,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${(selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(209,250,229,0.12)' : 'rgba(239,68,68,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Lucro final</p>
                   <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>{selectedAdmin.totalContas || 0} contas · R$ {fmt(selectedAdmin.lucroPerConta || 0)}/conta</p>
                 </div>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: (selectedAdmin.lucroFinal || 0) >= 0 ? '#ECFDF5' : '#EF4444', margin: 0 }}>{(selectedAdmin.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(selectedAdmin.lucroFinal || 0)}</p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: (selectedAdmin.lucroFinal || 0) >= 0 ? '#D1FAE5' : '#EF4444', margin: 0 }}>{(selectedAdmin.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(selectedAdmin.lucroFinal || 0)}</p>
               </div>
               <div className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
-                {[{ l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' }, { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#ECFDF5' }, { l: 'Ops', v: selectedAdmin.operators, c: '#F1F5F9' }, { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' }].map((s, i) => (
+                {[{ l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' }, { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#D1FAE5' }, { l: 'Ops', v: selectedAdmin.operators, c: '#F1F5F9' }, { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' }].map((s, i) => (
                   <div key={i} style={{ textAlign: 'center', padding: '12px 6px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: s.c, margin: '0 0 3px' }}>{s.v}</p>
                     <p style={{ fontSize: 8, color: '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>{s.l}</p>
@@ -292,15 +292,15 @@ export default function AdminsPage() {
                         <span style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9' }}>{r.rede}</span>
                         <span style={{ fontSize: 10, color: '#64748B' }}>{r.metas}m</span>
                       </div>
-                      <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: r.lucro >= 0 ? '#ECFDF5' : '#EF4444' }}>{r.lucro >= 0 ? '+' : ''}R$ {fmt(r.lucro)}</span>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: r.lucro >= 0 ? '#D1FAE5' : '#EF4444' }}>{r.lucro >= 0 ? '+' : ''}R$ {fmt(r.lucro)}</span>
                     </div>
                   ))}
                 </div>
               )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                 {[
-                  { l: 'Pago', v: `R$ ${fmt(selectedAdmin.totalPaid)}`, c: selectedAdmin.totalPaid > 0 ? '#ECFDF5' : '#64748B', mono: true },
-                  { l: 'Atividade', v: relativeTime(selectedAdmin.lastActivity), c: selectedAdmin.daysSinceActivity <= 0 ? '#ECFDF5' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444' },
+                  { l: 'Pago', v: `R$ ${fmt(selectedAdmin.totalPaid)}`, c: selectedAdmin.totalPaid > 0 ? '#D1FAE5' : '#64748B', mono: true },
+                  { l: 'Atividade', v: relativeTime(selectedAdmin.lastActivity), c: selectedAdmin.daysSinceActivity <= 0 ? '#D1FAE5' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444' },
                   { l: 'Criado', v: selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '--', c: '#94A3B8' },
                 ].map((s, i) => (
                   <div key={i} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>

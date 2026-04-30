@@ -597,7 +597,7 @@ export default function MetaPage() {
   const pctAcerto = remessas.length>0?Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100):0
 
   const fbCfg = {
-    good: { bg: 'linear-gradient(145deg, #0a1a12, #000000)', border: 'rgba(0,140,94,0.3)', color: '#008C5E', iconPath: 'M20 6L9 17l-5-5' },
+    good: { bg: 'linear-gradient(145deg, #0a1a12, #000000)', border: 'rgba(236,253,245,0.3)', color: '#ECFDF5', iconPath: 'M20 6L9 17l-5-5' },
     warn: { bg: 'linear-gradient(145deg, #1a1608, #14120a)', border: 'rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.78)', iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' },
     critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: '#EF4444', iconPath: 'M18 6L6 18M6 6l12 12' },
   }
@@ -662,7 +662,7 @@ export default function MetaPage() {
           {(() => {
             const isFechada = meta?.status_fechamento==='fechada'
             const isFinalizada = meta?.status==='finalizada' && !isFechada
-            const statusC = isFechada ? '#008C5E' : isFinalizada ? 'rgba(255,255,255,0.78)' : '#e53935'
+            const statusC = isFechada ? '#ECFDF5' : isFinalizada ? 'rgba(255,255,255,0.78)' : '#e53935'
             const statusL = isFechada ? 'FECHADA' : isFinalizada ? 'FINALIZADA' : 'AO VIVO'
             return (
               <motion.div
@@ -718,8 +718,8 @@ export default function MetaPage() {
                       </div>
                       <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
                       <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={pctAcerto>=70?'#008C5E':pctAcerto>=50?'rgba(255,255,255,0.78)':'#EF4444'} strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        <span style={{ fontSize:11, color: pctAcerto>=70?'#008C5E':pctAcerto>=50?'rgba(255,255,255,0.78)':'#EF4444', fontFamily:'var(--mono)', fontWeight:700 }}>{pctAcerto}% acerto</span>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={pctAcerto>=70?'#ECFDF5':pctAcerto>=50?'rgba(255,255,255,0.78)':'#EF4444'} strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span style={{ fontSize:11, color: pctAcerto>=70?'#ECFDF5':pctAcerto>=50?'rgba(255,255,255,0.78)':'#EF4444', fontFamily:'var(--mono)', fontWeight:700 }}>{pctAcerto}% acerto</span>
                       </div>
                       {meta?.rede && (<>
                         <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
@@ -744,16 +744,16 @@ export default function MetaPage() {
                     )}
                     <motion.button
                       onClick={toggleStatus}
-                      whileHover={{ scale:1.03, boxShadow: isFinalizada ? '0 8px 24px rgba(0,140,94,0.45)' : '0 8px 24px rgba(229,57,53,0.45)' }}
+                      whileHover={{ scale:1.03, boxShadow: isFinalizada ? '0 8px 24px rgba(236,253,245,0.45)' : '0 8px 24px rgba(229,57,53,0.45)' }}
                       whileTap={{ scale:0.97 }}
                       style={{
                         padding:'10px 18px', borderRadius:11, border:'none', cursor:'pointer',
                         fontSize:12, fontWeight:800, fontFamily:'inherit', color:'#fff',
                         background: isFinalizada
-                          ? 'linear-gradient(145deg, #008C5E, #00a06d)'
+                          ? 'linear-gradient(145deg, #ECFDF5, #00a06d)'
                           : 'linear-gradient(145deg, #e53935, #c62828)',
                         boxShadow: isFinalizada
-                          ? '0 6px 20px rgba(0,140,94,0.35), inset 0 1px 0 rgba(255,255,255,0.18)'
+                          ? '0 6px 20px rgba(236,253,245,0.35), inset 0 1px 0 rgba(255,255,255,0.18)'
                           : '0 6px 20px rgba(229,57,53,0.35), inset 0 1px 0 rgba(255,255,255,0.18)',
                         display:'flex', alignItems:'center', gap:7,
                       }}>
@@ -803,7 +803,7 @@ export default function MetaPage() {
             insightText = 'Oscilacao detectada, atencao'
             insightSub = `${negSeq} remessas negativas recentes apesar de lucro geral`
           } else if (posSeq >= 2 && liq > 0) {
-            insightStatus = 'Saudavel'; insightColor = '#008C5E'
+            insightStatus = 'Saudavel'; insightColor = '#ECFDF5'
             insightText = 'Meta saudavel com boa consistencia'
             insightSub = `${posSeq} remessas positivas consecutivas`
           } else {
@@ -840,32 +840,32 @@ export default function MetaPage() {
         <div className="g-5" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:14, marginBottom:28 }}>
           <KPI label="Deposito total"    value={`R$ ${fmt(totais.d)}`}   color="var(--t1)" accent="rgba(255,255,255,0.78)"/>
           <KPI label="Saque total"       value={`R$ ${fmt(totais.s)}`}   color="var(--t1)" accent="rgba(255,255,255,0.78)"/>
-          <KPI label="Lucro acumulado"   value={`R$ ${fmt(totais.lucro)}`} color="var(--profit)" accent="#008C5E"/>
+          <KPI label="Lucro acumulado"   value={`R$ ${fmt(totais.lucro)}`} color="var(--profit)" accent="#ECFDF5"/>
           <KPI label="Prejuizo acum."    value={`R$ ${fmt(totais.prej)}`}  color="var(--loss)" accent="#EF4444"/>
           <motion.div
             initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
             transition={{ duration:0.4 }}
-            whileHover={{ y:-3, boxShadow:`0 14px 40px rgba(0,0,0,0.5), 0 0 40px ${totais.liq>=0?'rgba(0,140,94,0.18)':'rgba(239,68,68,0.18)'}`, transition:{ duration:0.2 } }}
+            whileHover={{ y:-3, boxShadow:`0 14px 40px rgba(0,0,0,0.5), 0 0 40px ${totais.liq>=0?'rgba(236,253,245,0.18)':'rgba(239,68,68,0.18)'}`, transition:{ duration:0.2 } }}
             style={{
               position:'relative', overflow:'hidden',
               background: totais.liq>=0
-                ? 'linear-gradient(145deg, rgba(0,140,94,0.14), rgba(0,140,94,0.02))'
+                ? 'linear-gradient(145deg, rgba(236,253,245,0.14), rgba(236,253,245,0.02))'
                 : 'linear-gradient(145deg, rgba(239,68,68,0.14), rgba(239,68,68,0.02))',
               backdropFilter:'blur(20px) saturate(160%)', WebkitBackdropFilter:'blur(20px) saturate(160%)',
-              border:`1px solid ${totais.liq>=0?'rgba(0,140,94,0.3)':'rgba(239,68,68,0.3)'}`,
+              border:`1px solid ${totais.liq>=0?'rgba(236,253,245,0.3)':'rgba(239,68,68,0.3)'}`,
               borderRadius:14, padding:'16px 20px', display:'flex', flexDirection:'column', justifyContent:'space-between',
-              boxShadow: `0 8px 28px rgba(0,0,0,0.4), 0 0 32px ${totais.liq>=0?'rgba(0,140,94,0.12)':'rgba(239,68,68,0.12)'}, inset 0 1px 0 rgba(255,255,255,0.05)`,
+              boxShadow: `0 8px 28px rgba(0,0,0,0.4), 0 0 32px ${totais.liq>=0?'rgba(236,253,245,0.12)':'rgba(239,68,68,0.12)'}, inset 0 1px 0 rgba(255,255,255,0.05)`,
               cursor:'default',
             }}>
-            <div style={{ position:'absolute', top:'-30%', right:'-10%', width:120, height:120, borderRadius:'50%', background:`radial-gradient(circle, ${totais.liq>=0?'rgba(0,140,94,0.18)':'rgba(239,68,68,0.18)'}, transparent 70%)`, pointerEvents:'none', filter:'blur(10px)' }} />
-            <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:`linear-gradient(90deg, transparent, ${totais.liq>=0?'rgba(0,140,94,0.5)':'rgba(239,68,68,0.5)'}, transparent)`, pointerEvents:'none' }}/>
+            <div style={{ position:'absolute', top:'-30%', right:'-10%', width:120, height:120, borderRadius:'50%', background:`radial-gradient(circle, ${totais.liq>=0?'rgba(236,253,245,0.18)':'rgba(239,68,68,0.18)'}, transparent 70%)`, pointerEvents:'none', filter:'blur(10px)' }} />
+            <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:`linear-gradient(90deg, transparent, ${totais.liq>=0?'rgba(236,253,245,0.5)':'rgba(239,68,68,0.5)'}, transparent)`, pointerEvents:'none' }}/>
 
             <div style={{ position:'relative', zIndex:1, display:'flex', alignItems:'center', gap:6, marginBottom:6 }}>
-              <div style={{ width:3, height:11, borderRadius:2, background: totais.liq>=0?'#008C5E':'#EF4444', boxShadow:`0 0 8px ${totais.liq>=0?'#008C5E':'#EF4444'}` }}/>
+              <div style={{ width:3, height:11, borderRadius:2, background: totais.liq>=0?'#ECFDF5':'#EF4444', boxShadow:`0 0 8px ${totais.liq>=0?'#ECFDF5':'#EF4444'}` }}/>
               <p style={{ fontSize:10, color: totais.liq>=0?'#4ade80':'#fca5a5', fontWeight:800, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Resultado liquido</p>
             </div>
             <motion.p
-              animate={{ textShadow:[`0 0 12px ${totais.liq>=0?'rgba(0,140,94,0.25)':'rgba(239,68,68,0.25)'}`, `0 0 28px ${totais.liq>=0?'rgba(0,140,94,0.45)':'rgba(239,68,68,0.45)'}`, `0 0 12px ${totais.liq>=0?'rgba(0,140,94,0.25)':'rgba(239,68,68,0.25)'}`] }}
+              animate={{ textShadow:[`0 0 12px ${totais.liq>=0?'rgba(236,253,245,0.25)':'rgba(239,68,68,0.25)'}`, `0 0 28px ${totais.liq>=0?'rgba(236,253,245,0.45)':'rgba(239,68,68,0.45)'}`, `0 0 12px ${totais.liq>=0?'rgba(236,253,245,0.25)':'rgba(239,68,68,0.25)'}`] }}
               transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
               className="t-num" style={{ fontSize:26, fontWeight:900, color:totais.liq>=0?'var(--profit)':'var(--loss)', position:'relative', zIndex:1, margin:0, letterSpacing:'-0.025em', lineHeight:1 }}>
               {totais.liq>=0?'+':'-'}R$ {fmt(Math.abs(totais.liq))}
@@ -1115,7 +1115,7 @@ export default function MetaPage() {
           const pctExact = target > 0 ? (done / target) * 100 : 0
           const remaining = Math.max(0, target - done)
           const isDone = pct >= 100
-          const barC = isDone ? '#008C5E' : pct >= 70 ? '#008C5E' : pct >= 40 ? 'rgba(255,255,255,0.78)' : '#e53935'
+          const barC = isDone ? '#ECFDF5' : pct >= 70 ? '#ECFDF5' : pct >= 40 ? 'rgba(255,255,255,0.78)' : '#e53935'
           return target > 0 ? (
             <motion.div
               initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
@@ -1126,9 +1126,9 @@ export default function MetaPage() {
                 padding: '18px 22px', borderRadius: 14,
                 background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
                 backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
-                border:`1px solid ${isDone ? 'rgba(0,140,94,0.22)' : 'rgba(255,255,255,0.06)'}`,
+                border:`1px solid ${isDone ? 'rgba(236,253,245,0.22)' : 'rgba(255,255,255,0.06)'}`,
                 boxShadow: isDone
-                  ? '0 6px 24px rgba(0,0,0,0.4), 0 0 32px rgba(0,140,94,0.12), inset 0 1px 0 rgba(255,255,255,0.04)'
+                  ? '0 6px 24px rgba(0,0,0,0.4), 0 0 32px rgba(236,253,245,0.12), inset 0 1px 0 rgba(255,255,255,0.04)'
                   : '0 4px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04)',
               }}>
               {/* Top highlight */}
@@ -1176,9 +1176,9 @@ export default function MetaPage() {
                     position:'relative',
                     height: '100%', borderRadius: 5,
                     background: isDone
-                      ? 'linear-gradient(90deg, #008C5E, #00a06d, #008C5E)'
+                      ? 'linear-gradient(90deg, #ECFDF5, #00a06d, #ECFDF5)'
                       : pct >= 70
-                      ? 'linear-gradient(90deg, #008C5E, #00a06d)'
+                      ? 'linear-gradient(90deg, #ECFDF5, #00a06d)'
                       : pct >= 40
                       ? 'linear-gradient(90deg, rgba(255,255,255,0.78), #1d4ed8)'
                       : 'linear-gradient(90deg, #e53935, #c62828)',
@@ -1281,15 +1281,15 @@ export default function MetaPage() {
                   {(dep||saq) ? (
                     <div style={{
                       padding:'8px 14px', borderRadius:8,
-                      background:prev.pos?'rgba(0,140,94,0.06)':'rgba(239,68,68,0.06)',
-                      border:`1px solid ${prev.pos?'rgba(0,140,94,0.12)':'rgba(239,68,68,0.12)'}`,
+                      background:prev.pos?'rgba(236,253,245,0.06)':'rgba(239,68,68,0.06)',
+                      border:`1px solid ${prev.pos?'rgba(236,253,245,0.12)':'rgba(239,68,68,0.12)'}`,
                       display:'flex', alignItems:'center', justifyContent:'space-between',
                     }}>
                       <div>
-                        <p style={{ fontSize:8, fontWeight:700, color:prev.pos?'#008C5E':'#EF4444', margin:0, textTransform:'uppercase' }}>{prev.pos?'Lucro':'Prejuizo'}</p>
+                        <p style={{ fontSize:8, fontWeight:700, color:prev.pos?'#ECFDF5':'#EF4444', margin:0, textTransform:'uppercase' }}>{prev.pos?'Lucro':'Prejuizo'}</p>
                         {Number(contasRemessa||0) > 0 && <p style={{ fontSize:8, color:'var(--t4)', margin:'1px 0 0' }}>R$ {fmt(Math.abs(prev.diff)/Number(contasRemessa))}/conta</p>}
                       </div>
-                      <span style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:900, color:prev.pos?'#008C5E':'#EF4444' }}>
+                      <span style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:900, color:prev.pos?'#ECFDF5':'#EF4444' }}>
                         {prev.pos?'+':'\u2212'}R$ {fmt(Math.abs(prev.diff))}
                       </span>
                     </div>
@@ -1309,7 +1309,7 @@ export default function MetaPage() {
                       <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>STATUS</label>
                       <div style={{ display:'flex', gap:2, background:'rgba(255,255,255,0.02)', borderRadius:7, padding:2, border:'1px solid var(--b1)' }}>
                         {[
-                          { k:'normal', l:'Normal', c:'#008C5E' },
+                          { k:'normal', l:'Normal', c:'#ECFDF5' },
                           { k:'saque_pendente', l:'Pendente', c:'rgba(255,255,255,0.78)' },
                           { k:'conta_bloqueada', l:'Bloqueada', c:'#EF4444' },
                           { k:'banco_analise', l:'Analise', c:'rgba(255,255,255,0.78)' },
@@ -1432,9 +1432,9 @@ export default function MetaPage() {
                     initial={{ opacity:0, x:-12 }}
                     animate={{ opacity:1, x:0 }}
                     transition={{ duration:0.3, delay:i*0.04, ease:[0.33,1,0.68,1] }}
-                    whileHover={{ x:4, boxShadow:`0 4px 20px ${pos?'rgba(0,140,94,0.08)':'rgba(239,68,68,0.08)'}`, borderColor:pos?'rgba(0,140,94,0.2)':'rgba(239,68,68,0.2)', transition:{duration:0.15} }}
+                    whileHover={{ x:4, boxShadow:`0 4px 20px ${pos?'rgba(236,253,245,0.08)':'rgba(239,68,68,0.08)'}`, borderColor:pos?'rgba(236,253,245,0.2)':'rgba(239,68,68,0.2)', transition:{duration:0.15} }}
                     className="row-card" style={{ padding:'16px 20px', cursor:'default' }}>
-                    <div className="accent" style={{ background:pos?'linear-gradient(180deg,var(--profit),#04b876)':'linear-gradient(180deg,var(--loss),#c0294e)', boxShadow:pos?'0 0 8px rgba(0,140,94,0.15)':'0 0 8px rgba(239,68,68,0.15)' }}/>
+                    <div className="accent" style={{ background:pos?'linear-gradient(180deg,var(--profit),#04b876)':'linear-gradient(180deg,var(--loss),#c0294e)', boxShadow:pos?'0 0 8px rgba(236,253,245,0.15)':'0 0 8px rgba(239,68,68,0.15)' }}/>
                     <div style={{ paddingLeft:14 }}>
                       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:12 }}>
                         <div>
@@ -1509,7 +1509,7 @@ export default function MetaPage() {
             {(editDep||editSaq) && (()=>{
               const d=Number(editDep||0),s=Number(editSaq||0),diff=s-d
               return (
-                <div style={{padding:'12px 14px',borderRadius:12,background:diff>=0?'rgba(0,140,94,0.06)':'rgba(239,68,68,0.06)',border:`1px solid ${diff>=0?'rgba(0,140,94,0.12)':'rgba(239,68,68,0.12)'}`,marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <div style={{padding:'12px 14px',borderRadius:12,background:diff>=0?'rgba(236,253,245,0.06)':'rgba(239,68,68,0.06)',border:`1px solid ${diff>=0?'rgba(236,253,245,0.12)':'rgba(239,68,68,0.12)'}`,marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                   <span style={{fontSize:12,color:'var(--t2)'}}>Novo resultado</span>
                   <span className="t-num" style={{fontSize:18,fontWeight:800,color:diff>=0?'var(--profit)':'var(--loss)'}}>{diff>=0?'+':''}R$ {fmt(diff)}</span>
                 </div>
@@ -1743,7 +1743,7 @@ export default function MetaPage() {
                     style={{
                       width:'100%', padding:'16px 28px', borderRadius:14, border:'none', cursor:'pointer',
                       fontSize:15, fontWeight:700, color:'#fff',
-                      background: liq>=0 ? 'linear-gradient(135deg, #008c5e, #00a06d)' : 'linear-gradient(135deg, #e53935, #c62828)',
+                      background: liq>=0 ? 'linear-gradient(135deg, #ecfdf5, #00a06d)' : 'linear-gradient(135deg, #e53935, #c62828)',
                       boxShadow: `0 6px 24px rgba(${glowColor},0.3)`,
                       display:'flex', alignItems:'center', justifyContent:'center', gap:8,
                     }}

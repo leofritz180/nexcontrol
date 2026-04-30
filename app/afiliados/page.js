@@ -111,20 +111,20 @@ export default function AfiliadosPage() {
           <>
             {/* LINK CARD */}
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.05 }}
-              style={{ borderRadius: 18, padding: 24, marginBottom: 22, background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(0,140,94,0.04))', border: '1px solid rgba(255,255,255,0.18)', position: 'relative', overflow: 'hidden' }}>
+              style={{ borderRadius: 18, padding: 24, marginBottom: 22, background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(236,253,245,0.04))', border: '1px solid rgba(255,255,255,0.18)', position: 'relative', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
                 <div>
                   <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.78)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 4px' }}>Seu link de convite</p>
-                  <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Compartilhe e ganhe <strong style={{ color: '#008C5E' }}>{Math.round((data?.rate || 0.30) * 100)}%</strong> de comissão recorrente</p>
+                  <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Compartilhe e ganhe <strong style={{ color: '#ECFDF5' }}>{Math.round((data?.rate || 0.30) * 100)}%</strong> de comissão recorrente</p>
                 </div>
-                <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 6, background: 'rgba(0,140,94,0.1)', color: '#008C5E', border: '1px solid rgba(0,140,94,0.2)' }}>ATIVO</span>
+                <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 10px', borderRadius: 6, background: 'rgba(236,253,245,0.1)', color: '#ECFDF5', border: '1px solid rgba(236,253,245,0.2)' }}>ATIVO</span>
               </div>
               <div style={{ display: 'flex', gap: 10, alignItems: 'stretch', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 240, display: 'flex', alignItems: 'center', padding: '12px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {data.link}
                 </div>
                 <motion.button onClick={copyLink} whileTap={{ scale: 0.97 }}
-                  style={{ padding: '12px 22px', borderRadius: 10, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, background: copied ? 'rgba(0,140,94,0.18)' : 'rgba(255,255,255,0.78)', color: copied ? '#008C5E' : '#fff', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'background 0.2s' }}>
+                  style={{ padding: '12px 22px', borderRadius: 10, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, background: copied ? 'rgba(236,253,245,0.18)' : 'rgba(255,255,255,0.78)', color: copied ? '#ECFDF5' : '#fff', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'background 0.2s' }}>
                   {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Copiado!</>)
                     : (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar link</>)}
                 </motion.button>
@@ -137,7 +137,7 @@ export default function AfiliadosPage() {
               {[
                 { l: 'Indicados', v: totals.totalIndicados || 0, c: 'rgba(255,255,255,0.78)', prefix: '' },
                 { l: 'Faturamento gerado', v: totals.totalFaturado || 0, c: '#60A5FA', prefix: 'R$ ' },
-                { l: 'Comissão acumulada', v: totals.totalComissao || 0, c: '#008C5E', prefix: 'R$ ' },
+                { l: 'Comissão acumulada', v: totals.totalComissao || 0, c: '#ECFDF5', prefix: 'R$ ' },
                 { l: 'A receber', v: totals.pendente || 0, c: 'rgba(255,255,255,0.78)', prefix: 'R$ ' },
               ].map((k, i) => (
                 <motion.div key={k.l} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.08 + i * 0.06, ease }}
@@ -176,14 +176,14 @@ export default function AfiliadosPage() {
                           <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--t1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.tenant_name}</p>
                           <p style={{ fontSize: 10, color: 'var(--t4)', margin: '2px 0 0' }}>
                             {r.email && <span>{r.email} · </span>}
-                            <span style={{ color: r.subscription_status === 'active' ? '#008C5E' : r.subscription_status === 'trial' ? 'rgba(255,255,255,0.78)' : 'var(--t4)', fontWeight: 600 }}>
+                            <span style={{ color: r.subscription_status === 'active' ? '#ECFDF5' : r.subscription_status === 'trial' ? 'rgba(255,255,255,0.78)' : 'var(--t4)', fontWeight: 600 }}>
                               {r.subscription_status === 'active' ? 'PRO' : r.subscription_status === 'trial' ? 'TRIAL' : r.subscription_status}
                             </span>
                             {r.payments_count > 0 && <span> · {r.payments_count} pagto(s)</span>}
                           </p>
                         </div>
                         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                          <p style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#008C5E', margin: 0 }}>+R$ {fmt(r.commission)}</p>
+                          <p style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#ECFDF5', margin: 0 }}>+R$ {fmt(r.commission)}</p>
                           <p style={{ fontSize: 9, color: 'var(--t4)', margin: '2px 0 0' }}>de R$ {fmt(r.generated)}</p>
                         </div>
                       </motion.div>

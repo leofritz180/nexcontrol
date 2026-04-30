@@ -27,10 +27,10 @@
   --brand-border: rgba(229,57,53,0.22);
 
   /* Semantic — clear purpose */
-  --profit:        #008C5E;
-  --profit-dim:    rgba(0,140,94,0.08);
-  --profit-border: rgba(0,140,94,0.2);
-  --profit-glow:   rgba(0,140,94,0.12);
+  --profit:        #ECFDF5;
+  --profit-dim:    rgba(236,253,245,0.08);
+  --profit-border: rgba(236,253,245,0.2);
+  --profit-glow:   rgba(236,253,245,0.12);
 
   --loss:        #EF4444;
   --loss-dim:    rgba(239,68,68,0.08);
@@ -65,7 +65,7 @@
 
   /* Glow system — brand signature */
   --glow-brand:  0 0 24px rgba(229,57,53,0.2), 0 0 60px rgba(229,57,53,0.06);
-  --glow-profit: 0 0 24px rgba(0,140,94,0.18), 0 0 60px rgba(0,140,94,0.05);
+  --glow-profit: 0 0 24px rgba(236,253,245,0.18), 0 0 60px rgba(236,253,245,0.05);
   --glow-loss:   0 0 24px rgba(239,68,68,0.18), 0 0 60px rgba(239,68,68,0.05);
   --glow-ai:     0 0 24px rgba(255,255,255,0.10), 0 0 60px rgba(255,255,255,0.03);
 
@@ -178,9 +178,9 @@ h1, h2, h3, .t-hero, .t-h1, .t-h2, .t-h3 {
 .card-primary:hover { border-color: rgba(229,57,53,0.35); }
 
 .card-profit {
-  border-color: rgba(0,140,94,0.2);
+  border-color: rgba(236,253,245,0.2);
 }
-.card-profit:hover { border-color: rgba(0,140,94,0.3); }
+.card-profit:hover { border-color: rgba(236,253,245,0.3); }
 
 .card-loss {
   border-color: rgba(239,68,68,0.2);
@@ -267,13 +267,13 @@ h1, h2, h3, .t-hero, .t-h1, .t-h2, .t-h3 {
 
 /* Profit — verde sutil */
 .btn-profit {
-  background: rgba(0,140,94,0.12);
+  background: rgba(236,253,245,0.12);
   color: #4ade80;
   font-weight: 500;
-  border: 1px solid rgba(0,140,94,0.25);
+  border: 1px solid rgba(236,253,245,0.25);
   box-shadow: none;
 }
-.btn-profit:hover { background: rgba(0,140,94,0.2); border-color: rgba(0,140,94,0.4); transform: none; box-shadow: none; }
+.btn-profit:hover { background: rgba(236,253,245,0.2); border-color: rgba(236,253,245,0.4); transform: none; box-shadow: none; }
 .btn-profit:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* Danger — vermelho sutil */
@@ -506,7 +506,7 @@ a, button, [role="button"] { transition: all 0.2s ease; }
    GLOW EFFECTS
 ══════════════════════════════ */
 .glow-brand   { box-shadow: 0 0 24px rgba(229,57,53,0.2); }
-.glow-profit  { box-shadow: 0 0 24px rgba(0,140,94,0.15); }
+.glow-profit  { box-shadow: 0 0 24px rgba(236,253,245,0.15); }
 .glow-loss    { box-shadow: 0 0 24px rgba(239,68,68,0.15); }
 
 /* Table */
@@ -962,7 +962,7 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     width: 60%;
     height: 50%;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(0,140,94,0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(236,253,245,0.08) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
@@ -1091,7 +1091,7 @@ html, body { max-width: 100vw; overflow-x: hidden; }
    ENHANCED GLOW SYSTEM — Brand signature
 ══════════════════════════════ */
 .glow-brand-hover:hover   { box-shadow: 0 0 35px rgba(229,57,53,0.3), 0 0 80px rgba(229,57,53,0.08); }
-.glow-profit-hover:hover  { box-shadow: 0 0 35px rgba(0,140,94,0.25), 0 0 80px rgba(0,140,94,0.06); }
+.glow-profit-hover:hover  { box-shadow: 0 0 35px rgba(236,253,245,0.25), 0 0 80px rgba(236,253,245,0.06); }
 .glow-loss-hover:hover    { box-shadow: 0 0 35px rgba(239,68,68,0.25), 0 0 80px rgba(239,68,68,0.06); }
 .glow-ai-hover:hover      { box-shadow: 0 0 35px rgba(255,255,255,0.12), 0 0 80px rgba(255,255,255,0.04); }
 

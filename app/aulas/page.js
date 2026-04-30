@@ -182,7 +182,7 @@ function CourseCard({ course, progress: prog, index = 0 }) {
         {/* Badges */}
         <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 4, zIndex: 3 }}>
           {course.tags?.includes('novo') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: RED, color: '#fff', letterSpacing: '0.06em' }}>NOVO</span>}
-          {course.tags?.includes('popular') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: '#008C5E', color: '#fff', letterSpacing: '0.06em' }}>POPULAR</span>}
+          {course.tags?.includes('popular') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: '#ECFDF5', color: '#fff', letterSpacing: '0.06em' }}>POPULAR</span>}
           {course.tags?.includes('vip') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: AMBER, color: '#000', letterSpacing: '0.06em' }}>VIP</span>}
         </div>
         {/* Title + info overlaid on thumbnail */}

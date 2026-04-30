@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v10 (loading screens preto absoluto + sweep azul-escuro)
+// NexControl Service Worker — Push Notifications v11 (verde Emerald 50 #ECFDF5 — palido)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

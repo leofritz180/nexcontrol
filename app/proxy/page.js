@@ -155,7 +155,7 @@ export default function ProxyPage() {
                   padding: '10px 14px', borderRadius: 10,
                   background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
                 }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#008c5e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ecfdf5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d={f.icon} />
                   </svg>
                   <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>{f.label}</span>

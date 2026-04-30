@@ -38,7 +38,7 @@ function ProgressBar({ percent, height = 8 }) {
 function CheckIcon({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="8" fill="#008c5e" />
+      <circle cx="8" cy="8" r="8" fill="#ecfdf5" />
       <path d="M4.5 8.5L7 11L11.5 5.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -194,8 +194,8 @@ export default function CourseDetailPage() {
                   <span style={{
                     width: 28, height: 28, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 11, fontWeight: 800, flexShrink: 0,
-                    background: modCompleted === modLessons.length && modLessons.length > 0 ? 'rgba(0,140,94,0.15)' : 'rgba(255,255,255,0.1)',
-                    color: modCompleted === modLessons.length && modLessons.length > 0 ? '#008c5e' : AMBER,
+                    background: modCompleted === modLessons.length && modLessons.length > 0 ? 'rgba(236,253,245,0.15)' : 'rgba(255,255,255,0.1)',
+                    color: modCompleted === modLessons.length && modLessons.length > 0 ? '#ecfdf5' : AMBER,
                   }}>{mi + 1}</span>
                   <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mod.title}</p>

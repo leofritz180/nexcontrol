@@ -11,9 +11,9 @@ function Particles() {
   const dots = useMemo(() => [
     { size:3, x:'10%', y:'18%', color:'rgba(229,57,53,0.4)', dur:7, del:0 },
     { size:2, x:'85%', y:'25%', color:'rgba(229,57,53,0.25)', dur:8, del:0.5 },
-    { size:2, x:'8%', y:'72%', color:'rgba(0,140,94,0.3)', dur:6, del:1 },
+    { size:2, x:'8%', y:'72%', color:'rgba(236,253,245,0.3)', dur:6, del:1 },
     { size:3, x:'90%', y:'70%', color:'rgba(229,57,53,0.2)', dur:9, del:2 },
-    { size:2, x:'50%', y:'88%', color:'rgba(0,140,94,0.2)', dur:10, del:1.5 },
+    { size:2, x:'50%', y:'88%', color:'rgba(236,253,245,0.2)', dur:10, del:1.5 },
   ], [])
   return dots.map((d, i) => (
     <motion.div key={i}
@@ -124,7 +124,7 @@ export default function SignupPage() {
     <main style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:24, position:'relative', zIndex:1, overflow:'hidden' }}>
       {/* Ambient orbs */}
       <div style={{ position:'fixed', top:'-18%', left:'-12%', width:750, height:750, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.18) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb1 20s ease-in-out infinite' }}/>
-      <div style={{ position:'fixed', bottom:'-18%', right:'-8%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(0,140,94,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
+      <div style={{ position:'fixed', bottom:'-18%', right:'-8%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(236,253,245,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
       <div style={{ position:'fixed', top:'40%', right:'20%', width:450, height:450, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.07) 0%, transparent 65%)', filter:'blur(80px)', pointerEvents:'none' }}/>
       <style>{`
         @keyframes lpOrb1 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(30px,-20px) scale(1.05); } 66% { transform:translate(-20px,15px) scale(0.97); } }
@@ -148,7 +148,7 @@ export default function SignupPage() {
             <span style={{ color:'#F1F5F9' }}>Nex</span><span style={{ color:'#e53935' }}>Control</span>
           </h2>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:6, marginTop:6 }}>
-            <span style={{ width:5, height:5, borderRadius:'50%', background:'#008C5E', boxShadow:'0 0 6px rgba(0,140,94,0.5)' }}/>
+            <span style={{ width:5, height:5, borderRadius:'50%', background:'#ECFDF5', boxShadow:'0 0 6px rgba(236,253,245,0.5)' }}/>
             <span style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.35)', letterSpacing:'0.12em', textTransform:'uppercase' }}>Criar sua operação</span>
           </div>
         </div>
@@ -225,9 +225,9 @@ export default function SignupPage() {
           transition={{ delay:0.5, duration:0.4 }}
           style={{ textAlign:'center', marginTop:20 }}
         >
-          <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:8, background:'rgba(0,140,94,0.04)', border:'1px solid rgba(0,140,94,0.1)' }}>
-            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#008C5E" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span style={{ fontSize:9, fontWeight:700, color:'rgba(0,140,94,0.6)', letterSpacing:'0.06em', textTransform:'uppercase' }}>Conexão segura · Dados criptografados</span>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:8, background:'rgba(236,253,245,0.04)', border:'1px solid rgba(236,253,245,0.1)' }}>
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#ECFDF5" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span style={{ fontSize:9, fontWeight:700, color:'rgba(236,253,245,0.6)', letterSpacing:'0.06em', textTransform:'uppercase' }}>Conexão segura · Dados criptografados</span>
           </div>
         </motion.div>
 

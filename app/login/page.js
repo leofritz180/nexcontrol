@@ -10,10 +10,10 @@ import Logo from '../../components/Logo'
 function Particles() {
   const dots = useMemo(() => [
     { size: 3, x: '12%', y: '15%', color: 'rgba(229,57,53,0.45)', dur: 6, del: 0 },
-    { size: 2, x: '8%',  y: '70%', color: 'rgba(0,140,94,0.35)',  dur: 8, del: 1 },
+    { size: 2, x: '8%',  y: '70%', color: 'rgba(236,253,245,0.35)',  dur: 8, del: 1 },
     { size: 4, x: '88%', y: '28%', color: 'rgba(229,57,53,0.25)', dur: 7, del: 0.5 },
     { size: 2, x: '85%', y: '78%', color: 'rgba(239,68,68,0.3)',  dur: 5, del: 2 },
-    { size: 3, x: '5%',  y: '50%', color: 'rgba(0,140,94,0.25)',  dur: 9, del: 0.3 },
+    { size: 3, x: '5%',  y: '50%', color: 'rgba(236,253,245,0.25)',  dur: 9, del: 0.3 },
     { size: 2, x: '75%', y: '18%', color: 'rgba(255,255,255,0.3)',  dur: 7, del: 1.5 },
     { size: 2, x: '50%', y: '90%', color: 'rgba(229,57,53,0.2)',  dur: 10, del: 3 },
     { size: 3, x: '92%', y: '55%', color: 'rgba(229,57,53,0.25)', dur: 8, del: 2.5 },
@@ -51,7 +51,7 @@ function BackgroundOrbs() {
         style={{
           position: 'fixed', bottom: '-18%', right: '-8%', width: 600, height: 600,
           borderRadius: '50%', pointerEvents: 'none',
-          background: 'radial-gradient(circle, rgba(0,140,94,0.1) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(236,253,245,0.1) 0%, transparent 65%)',
           filter: 'blur(60px)',
         }}
         animate={{ x: [0, -25, 15, 0], y: [0, 20, -10, 0], scale: [1, 0.96, 1.04, 1] }}
@@ -205,9 +205,9 @@ export default function LoginPage() {
               }}
               animate={{
                 boxShadow: [
-                  '0 0 0 0 rgba(0,140,94,0.6)',
-                  '0 0 0 7px rgba(0,140,94,0)',
-                  '0 0 0 0 rgba(0,140,94,0)',
+                  '0 0 0 0 rgba(236,253,245,0.6)',
+                  '0 0 0 7px rgba(236,253,245,0)',
+                  '0 0 0 0 rgba(236,253,245,0)',
                 ],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -428,15 +428,15 @@ export default function LoginPage() {
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 marginTop: 24, padding: '10px 16px',
-                background: 'rgba(0,140,94,0.04)',
-                border: '1px solid rgba(0,140,94,0.1)',
+                background: 'rgba(236,253,245,0.04)',
+                border: '1px solid rgba(236,253,245,0.1)',
                 borderRadius: 10,
               }}
             >
               <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              <span style={{ fontSize: 11, color: 'rgba(0,140,94,0.6)', fontWeight: 600, letterSpacing: '0.06em' }}>
+              <span style={{ fontSize: 11, color: 'rgba(236,253,245,0.6)', fontWeight: 600, letterSpacing: '0.06em' }}>
                 CONEXAO SEGURA · DADOS CRIPTOGRAFADOS
               </span>
             </motion.div>

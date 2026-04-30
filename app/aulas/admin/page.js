@@ -102,7 +102,7 @@ function LessonRow({ lesson, idx, total, onSave, onDelete, onMove }) {
           <ArrowBtns onUp={() => onMove('up')} onDown={() => onMove('down')} disableUp={idx === 0} disableDown={idx === total - 1} />
           <span style={{ fontSize: 12, color: 'var(--t2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lesson.title || 'Sem titulo'}</span>
           <span style={{ fontSize: 10, color: 'var(--t4)', flexShrink: 0 }}>{lesson.duration_min || 0}min</span>
-          <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: lesson.status === 'published' ? 'rgba(0,140,94,0.15)' : 'rgba(255,255,255,0.15)', color: lesson.status === 'published' ? '#008c5e' : AMBER, fontWeight: 600, flexShrink: 0 }}>{lesson.status}</span>
+          <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: lesson.status === 'published' ? 'rgba(236,253,245,0.15)' : 'rgba(255,255,255,0.15)', color: lesson.status === 'published' ? '#ecfdf5' : AMBER, fontWeight: 600, flexShrink: 0 }}>{lesson.status}</span>
         </div>
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
           <Btn small outline onClick={() => setEditing(!editing)}>{editing ? 'Fechar' : 'Editar'}</Btn>
@@ -416,8 +416,8 @@ export default function AulasAdminPage() {
                     <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)' }}>{course.title || 'Sem titulo'}</span>
                     <span style={{
                       fontSize: 9, padding: '2px 8px', borderRadius: 4, fontWeight: 700, textTransform: 'uppercase',
-                      background: course.status === 'published' ? 'rgba(0,140,94,0.15)' : 'rgba(255,255,255,0.15)',
-                      color: course.status === 'published' ? '#008c5e' : AMBER,
+                      background: course.status === 'published' ? 'rgba(236,253,245,0.15)' : 'rgba(255,255,255,0.15)',
+                      color: course.status === 'published' ? '#ecfdf5' : AMBER,
                     }}>{course.status}</span>
                     {course.category && <span style={{ fontSize: 10, color: 'var(--t3)', background: 'var(--base)', padding: '2px 8px', borderRadius: 4 }}>{course.category}</span>}
                   </div>

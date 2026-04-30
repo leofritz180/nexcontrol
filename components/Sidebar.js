@@ -107,10 +107,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                 padding:'9px 12px', borderRadius:8, textDecoration:'none',
                 fontSize:13, fontWeight: active?500:400,
                 color: active?'var(--t1)':'var(--t3)',
-                background: active?'rgba(255,255,255,0.04)':'transparent',
-                transition:'all 0.15s ease',
+                background: active?'#121821':'transparent',
+                transition:'background 0.15s ease, color 0.15s ease',
               }}
-              onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='rgba(255,255,255,0.025)';e.currentTarget.style.color='var(--t2)'}}}
+              onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='#121821';e.currentTarget.style.color='var(--t2)'}}}
               onMouseLeave={e=>{ if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'}}}
             >
               <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity:active?0.9:0.45 }}>
@@ -200,8 +200,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* Desktop */}
       <aside className="sidebar-desktop" style={{
         position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:200,
-        background:'var(--surface)',
-        borderRight:'1px solid rgba(255,255,255,0.06)',
+        background:'#0D1218',
+        borderRight:'1px solid rgba(255,255,255,0.03)',
         overflowY:'auto', overflowX:'hidden',
       }}>
         {content}
@@ -238,8 +238,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             transition={{ duration:0.25, ease:[0.33,1,0.68,1] }}
             style={{
               position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:245,
-              background:'var(--surface)',
-              borderRight:'1px solid rgba(255,255,255,0.06)',
+              background:'#0D1218',
+              borderRight:'1px solid rgba(255,255,255,0.03)',
               overflowY:'auto',
             }}>
             {content}

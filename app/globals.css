@@ -10,11 +10,11 @@
 ═══════════════════════════════════════════ */
 
 :root {
-  /* Backgrounds — Resend-inspired pure black, escala de cinza pura */
+  /* Backgrounds — tudo preto absoluto, separacao apenas por borda+glow sutil */
   --void:    #000000;
   --base:    #000000;
-  --sidebar: #030303;
-  --surface: #050505;
+  --sidebar: #000000;
+  --surface: #000000;
   --raised:  #0A0A0A;
   --overlay: #101010;
   --float:   #181818;
@@ -90,24 +90,23 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Sidebar — Resend-style #030303, separacao apenas pela borda */
+/* Sidebar — preto absoluto igual ao fundo, separacao apenas pela borda direita */
 aside.sidebar-desktop,
 aside[class*="sidebar"] {
-  background: #030303 !important;
+  background: #000000 !important;
   background-image: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
 }
 
-/* Cards inline styles — force Resend-like contour + elevation
-   Pega qualquer div com background usando --surface (a maioria dos cards do sistema) */
+/* Cards inline styles — force glow lateral sofisticado em qualquer card preto */
 [style*="background:var(--surface)"],
-[style*="background: var(--surface)"],
-[style*="background:rgba(255,255,255"][style*="border-radius"]:not(.btn):not(button) {
+[style*="background: var(--surface)"] {
   box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.05) inset,
-    0 8px 32px rgba(0,0,0,0.45) !important;
+    inset 1px 0 0 rgba(255,255,255,0.05),
+    inset -1px 0 0 rgba(255,255,255,0.05),
+    0 0 28px rgba(255,255,255,0.03) !important;
 }
 
 /* Background — preto puro, sem gradientes ambient */
@@ -153,22 +152,24 @@ h1, h2, h3, .t-hero, .t-h1, .t-h2, .t-h3 {
 ══════════════════════════════ */
 
 /* Cards — living components */
-/* Cards estilo Resend — fundo quase identico ao body, contorno sutil + sombra elevacao */
+/* Cards 100% preto, borda lateral sofisticada + glow lateral sutil */
 .card {
   position: relative;
-  background: var(--surface);
+  background: #000000;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
   box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.04) inset,
-    0 8px 32px rgba(0,0,0,0.4);
+    inset 1px 0 0 rgba(255,255,255,0.04),     /* glow filete esquerdo */
+    inset -1px 0 0 rgba(255,255,255,0.04),    /* glow filete direito */
+    0 0 24px rgba(255,255,255,0.025);          /* glow externo sofisticado */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .card:hover {
-  border-color: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.14);
   box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.06) inset,
-    0 12px 40px rgba(0,0,0,0.5);
+    inset 1px 0 0 rgba(255,255,255,0.07),
+    inset -1px 0 0 rgba(255,255,255,0.07),
+    0 0 36px rgba(255,255,255,0.04);
 }
 
 .card-primary {
@@ -197,25 +198,26 @@ h1, h2, h3, .t-hero, .t-h1, .t-h2, .t-h3 {
 .card-info:hover { border-color: rgba(59,130,246,0.3); }
 
 .card-glass {
-  background: var(--surface);
+  background: #000000;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
   box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.04) inset,
-    0 8px 32px rgba(0,0,0,0.4);
+    inset 1px 0 0 rgba(255,255,255,0.04),
+    inset -1px 0 0 rgba(255,255,255,0.04),
+    0 0 24px rgba(255,255,255,0.025);
 }
 
 /* Row card — Resend-style: hover sutil, contorno visivel */
 .row-card {
   position: relative;
-  background: var(--surface);
+  background: #000000;
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 12px;
   transition: border-color 0.15s ease, background 0.15s ease;
   cursor: pointer;
 }
 .row-card:hover {
-  background: var(--raised);
+  background: rgba(255,255,255,0.02);
   border-color: rgba(255,255,255,0.12);
 }
 .row-card .accent { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }

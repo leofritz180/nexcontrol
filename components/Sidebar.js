@@ -238,8 +238,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             transition={{ duration:0.25, ease:[0.33,1,0.68,1] }}
             style={{
               position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:245,
-              background:'#030303',
-              borderRight:'1px solid rgba(255,255,255,0.06)',
+              background:'#000000',
+              borderRight:'1px solid rgba(255,255,255,0.08)',
               overflowY:'auto',
             }}>
             {content}

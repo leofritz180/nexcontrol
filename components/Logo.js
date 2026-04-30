@@ -38,24 +38,26 @@ export default function Logo({
       height: iconPx,
       flexShrink: 0,
     }}>
-      {/* Aura — breathing radial glow */}
-      <div
-        className="logo-aura"
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          width: auraPx,
-          height: auraPx,
-          marginTop: -(auraPx / 2),
-          marginLeft: -(auraPx / 2),
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(229,57,53,0.18) 0%, rgba(229,57,53,0.04) 50%, transparent 70%)',
-          pointerEvents: 'none',
-          animation: 'breathe 4s ease-in-out infinite',
-          willChange: 'transform, opacity',
-        }}
-      />
+      {/* Aura — breathing radial glow (somente quando glow=true) */}
+      {glow && (
+        <div
+          className="logo-aura"
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            width: auraPx,
+            height: auraPx,
+            marginTop: -(auraPx / 2),
+            marginLeft: -(auraPx / 2),
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(229,57,53,0.18) 0%, rgba(229,57,53,0.04) 50%, transparent 70%)',
+            pointerEvents: 'none',
+            animation: 'breathe 4s ease-in-out infinite',
+            willChange: 'transform, opacity',
+          }}
+        />
+      )}
 
       {/* Icon square */}
       <div style={{
@@ -67,9 +69,7 @@ export default function Logo({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: glow
-          ? '0 0 16px rgba(229,57,53,0.3)'
-          : '0 0 16px rgba(229,57,53,0.2)',
+        boxShadow: glow ? '0 0 16px rgba(229,57,53,0.3)' : 'none',
         overflow: 'hidden',
         zIndex: 1,
       }}>

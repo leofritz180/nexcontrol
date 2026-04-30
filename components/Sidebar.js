@@ -93,7 +93,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* ── Logo ── */}
       <Link href={isAdmin?'/admin':'/operator'} onClick={()=>setMobileOpen(false)}
         style={{ display:'flex', alignItems:'center', padding:'22px 22px 28px', textDecoration:'none' }}>
-        <Logo size={1} glow style={{ gap:11 }}/>
+        <Logo size={1} style={{ gap:11 }}/>
       </Link>
 
       {/* ── Nav ── */}

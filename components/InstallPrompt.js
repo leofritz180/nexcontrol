@@ -60,9 +60,7 @@ function PhoneMockup() {
       <div style={{ flex: 1, padding: '8px 12px', position: 'relative' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-          <div style={{ width: 18, height: 18, borderRadius: 5, background: '#e53935', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width={8} height={8} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
-          </div>
+          <img src="/nexcontrol-icon.png" alt="NexControl" width={18} height={18} style={{ width: 18, height: 18, objectFit: 'contain', display: 'block', borderRadius: 5 }}/>
           <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>NexControl</span>
         </div>
         {/* KPIs */}
@@ -105,9 +103,7 @@ function PhoneMockup() {
                 boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}>
-              <div style={{ width: 26, height: 26, borderRadius: 7, background: '#e53935', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 10px rgba(229,57,53,0.2)' }}>
-                <svg width={10} height={10} viewBox="0 0 28 28" fill="none"><path d="M4 22L10 22L10 12L4 12Z" fill="white" opacity={0.5}/><path d="M12 22L18 22L18 6L12 6Z" fill="white"/><path d="M20 22L26 22L26 16L20 16Z" fill="white" opacity={0.7}/></svg>
-              </div>
+              <img src="/nexcontrol-icon.png" alt="NexControl" width={26} height={26} style={{ width: 26, height: 26, objectFit: 'contain', display: 'block', borderRadius: 7, flexShrink: 0 }}/>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 8, fontWeight: 700, color: '#fff', marginBottom: 1 }}>+R$ 320 registrados</div>
                 <div style={{ fontSize: 7, color: 'rgba(255,255,255,0.35)' }}>Meta quase concluida</div>

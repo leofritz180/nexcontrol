@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v12 (verde Emerald 100 #D1FAE5)
+// NexControl Service Worker — Push Notifications v13 (Redes/Operadores clean — KpiCards neutros, badges enxutos)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

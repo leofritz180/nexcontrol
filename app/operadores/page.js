@@ -53,32 +53,28 @@ function useCountUp(target, duration = 1200, decimals = 0) {
 }
 
 /* ── KPI Card ── */
-function KpiCard({ label, value, suffix, rgb, i, isCurrency, dynamicColor }) {
-  const [h, setH] = useState(false)
+function KpiCard({ label, value, suffix, i, isCurrency, dynamicColor }) {
   const numVal = typeof value === 'number' ? value : parseFloat(value) || 0
   const animated = useCountUp(numVal, 1400, isCurrency ? 2 : (suffix === '%' ? 1 : 0))
-  const c = dynamicColor ? (numVal >= 0 ? '34,197,94' : '239,68,68') : rgb
+  const valueColor = dynamicColor ? (numVal >= 0 ? '#D1FAE5' : '#EF4444') : 'var(--t1)'
+
   return (
     <motion.div {...fadeUp(i)}
-      onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
       style={{
-        padding: '20px 22px', position: 'relative', overflow: 'hidden',
-        background: `linear-gradient(145deg, rgba(${c},0.1), rgba(14,22,38,0.6) 60%, rgba(8,14,26,0.6))`,
-        backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
-        border: `1px solid rgba(${c},${h ? 0.3 : 0.12})`,
-        borderRadius: 14,
-        boxShadow: h
-          ? `0 10px 32px rgba(0,0,0,0.45), 0 0 40px rgba(${c},0.15), inset 0 1px 0 rgba(255,255,255,0.06)`
-          : '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
-        transform: h ? 'translateY(-3px)' : 'none',
-        transition: 'all 0.25s ease',
-      }}>
-      {/* Accent line vertical */}
-      <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:`rgb(${c})`, boxShadow:`0 0 8px rgb(${c})` }}/>
-      <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>{label}</p>
-      <p style={{ fontSize: 26, fontWeight: 900, color: `rgb(${c})`, lineHeight: 1, letterSpacing: '-0.03em', fontFamily: 'var(--mono, monospace)', textShadow:`0 0 16px rgba(${c},0.25)` }}>
+        padding: '18px 20px', position: 'relative',
+        background: '#000000',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: 12,
+        boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
+        transition: 'border-color 0.2s ease',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)' }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+    >
+      <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>{label}</p>
+      <p style={{ fontSize: 24, fontWeight: 700, color: valueColor, lineHeight: 1, letterSpacing: '-0.02em', fontFamily: 'var(--mono, monospace)', margin: 0 }}>
         {isCurrency ? `R$ ${Number(animated).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}` : animated}
-        {suffix && <span style={{ fontSize: 13, fontWeight: 700, marginLeft: 3 }}>{suffix}</span>}
+        {suffix && <span style={{ fontSize: 13, fontWeight: 600, marginLeft: 3, color: 'var(--t3)' }}>{suffix}</span>}
       </p>
     </motion.div>
   )
@@ -399,8 +395,9 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
               <span style={{
                 fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
                 padding: '2px 8px', borderRadius: 5,
-                background: 'var(--brand-dim)', color: 'var(--brand-bright)',
-                border: '1px solid var(--brand-border)',
+                background: 'rgba(255,255,255,0.04)',
+                color: lucroPerConta >= 0 ? 'var(--profit)' : 'var(--loss)',
+                border: '1px solid rgba(255,255,255,0.08)',
               }}>
                 R$ {fmt(lucroPerConta)}/conta
               </span>
@@ -948,11 +945,11 @@ export default function OperadoresPage() {
 
             {/* KPIs */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
-              <KpiCard label="Operadores" value={isDemo && !operators.length ? 3 : operators.length} rgb="148,163,184" i={0} />
-              <KpiCard label="Ativos" value={isDemo && !totalActive ? 2 : totalActive} rgb="148,163,184" i={1} />
-              <KpiCard label="Depositantes totais" value={isDemo && !totalDeps ? 160 : totalDeps} rgb="148,163,184" i={2} />
-              <KpiCard label="Acerto medio" value={isDemo && !avgWinRate ? 80 : avgWinRate} suffix="%" rgb="148,163,184" i={3} />
-              <KpiCard label="Lucro equipe" value={isDemo && !totalLucro ? 829.70 : totalLucro} rgb="34,197,94" i={4} isCurrency dynamicColor />
+              <KpiCard label="Operadores" value={isDemo && !operators.length ? 3 : operators.length} i={0} />
+              <KpiCard label="Ativos" value={isDemo && !totalActive ? 2 : totalActive} i={1} />
+              <KpiCard label="Depositantes totais" value={isDemo && !totalDeps ? 160 : totalDeps} i={2} />
+              <KpiCard label="Acerto medio" value={isDemo && !avgWinRate ? 80 : avgWinRate} suffix="%" i={3} />
+              <KpiCard label="Lucro equipe" value={isDemo && !totalLucro ? 829.70 : totalLucro} i={4} isCurrency dynamicColor />
             </div>
 
             {/* Ranking list */}
@@ -1029,8 +1026,9 @@ export default function OperadoresPage() {
                                 <span style={{
                                   fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
                                   padding: '2px 8px', borderRadius: 5,
-                                  background: 'var(--brand-dim)', color: 'var(--brand-bright)',
-                                  border: '1px solid var(--brand-border)',
+                                  background: 'rgba(255,255,255,0.04)',
+                                  color: op.lucroPerConta >= 0 ? 'var(--profit)' : 'var(--loss)',
+                                  border: '1px solid rgba(255,255,255,0.08)',
                                 }}>R$ {fmt(op.lucroPerConta)}/conta</span>
                               )}
                             </div>

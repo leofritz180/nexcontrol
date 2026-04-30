@@ -102,123 +102,92 @@ function ScoreRing({ score, size = 52, strokeWidth = 4 }) {
   )
 }
 
-/* ── KPI Card ── */
-function KpiCard({ label, value, prefix, rgb, i, isProfit, rawValue, suffix }) {
+/* ── KPI Card — clean neutral ── */
+function KpiCard({ label, value, prefix, i, isProfit, rawValue, suffix }) {
   const displayCount = useCountUp(typeof rawValue === 'number' ? Math.abs(rawValue) : value, 1400, typeof rawValue === 'number' ? 2 : 0)
-  const [hovered, setHovered] = useState(false)
 
-  const profitColor = isProfit ? (rawValue >= 0 ? '34,197,94' : '239,68,68') : null
-  const activeRgb = profitColor || rgb
+  const valueColor = isProfit
+    ? (rawValue >= 0 ? '#D1FAE5' : '#EF4444')
+    : 'var(--t1)'
 
   return (
     <motion.div {...fadeUp(i)}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
-        padding: '20px 22px', position: 'relative', overflow: 'hidden',
-        background: `linear-gradient(145deg, rgba(${activeRgb},0.1), rgba(14,22,38,0.6) 55%, rgba(8,14,26,0.6))`,
-        backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
-        border: `1px solid rgba(${activeRgb},${hovered ? 0.32 : 0.14})`,
-        borderRadius: 14,
-        boxShadow: hovered
-          ? `0 14px 40px rgba(0,0,0,0.5), 0 0 44px rgba(${activeRgb},0.18), inset 0 1px 0 rgba(255,255,255,0.06)`
-          : `0 4px 18px rgba(0,0,0,0.3), 0 0 12px rgba(${activeRgb},0.04), inset 0 1px 0 rgba(255,255,255,0.03)`,
-        transform: hovered ? 'translateY(-3px)' : 'none',
-        transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
-        cursor: 'default',
-      }}>
-      {/* Accent line vertical com glow */}
-      <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:`rgb(${activeRgb})`, boxShadow:`0 0 10px rgb(${activeRgb})` }}/>
-      <div style={{
-        position: 'absolute', top: -30, right: -30, width: 110, height: 110, borderRadius: '50%',
-        background: `radial-gradient(circle, rgba(${activeRgb},${hovered ? 0.14 : 0.06}), transparent 70%)`,
-        transition: 'all 0.4s', pointerEvents: 'none', filter:'blur(6px)',
-      }} />
-      <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
+        padding: '18px 20px', position: 'relative',
+        background: '#000000',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: 12,
+        boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
+        transition: 'border-color 0.2s ease',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)' }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
+    >
+      <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
         {label}
       </p>
       <p style={{
-        fontSize: 26, fontWeight: 900, lineHeight: 1, letterSpacing: '-0.03em',
-        fontFamily: 'var(--mono, monospace)', margin:0,
-        color: isProfit ? (rawValue >= 0 ? '#D1FAE5' : '#EF4444') : `rgb(${rgb})`,
-        textShadow: isProfit && rawValue >= 0
-          ? '0 0 18px rgba(209,250,229,0.3)'
-          : isProfit && rawValue < 0
-          ? '0 0 18px rgba(239,68,68,0.3)'
-          : `0 0 14px rgba(${activeRgb},0.2)`,
+        fontSize: 24, fontWeight: 700, lineHeight: 1, letterSpacing: '-0.02em',
+        fontFamily: 'var(--mono, monospace)', margin: 0,
+        color: valueColor,
       }}>
-        {prefix && <span style={{ fontSize: 15, fontWeight: 600, marginRight: 2 }}>{prefix}</span>}
+        {prefix && <span style={{ fontSize: 14, fontWeight: 600, marginRight: 2 }}>{prefix}</span>}
         {isProfit && rawValue < 0 && '-'}
         {isProfit
           ? displayCount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : displayCount}
-        {suffix && <span style={{ fontSize: 13, fontWeight: 600, marginLeft: 2, color: 'rgba(255,255,255,0.4)' }}>{suffix}</span>}
+        {suffix && <span style={{ fontSize: 13, fontWeight: 600, marginLeft: 2, color: 'var(--t3)' }}>{suffix}</span>}
       </p>
     </motion.div>
   )
 }
 
-/* ── Alert Card — premium impactante ── */
+/* ── Alert Card — clean, semantica enxuta ── */
 function AlertCard({ alert, i }) {
-  const colors = {
-    success: { bg: 'rgba(209,250,229,0.06)', border: 'rgba(209,250,229,0.22)', text: '#D1FAE5', glow: 'rgba(209,250,229,0.1)', action:'escalar' },
-    warning: { bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.22)', text: 'rgba(255,255,255,0.78)', glow: 'rgba(255,255,255,0.1)', action:'observar' },
-    danger: { bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.3)', text: '#EF4444', glow: 'rgba(239,68,68,0.14)', action:'reduzir' },
-    info: { bg: 'rgba(99,102,241,0.06)', border: 'rgba(99,102,241,0.22)', text: '#818CF8', glow: 'rgba(99,102,241,0.1)', action:'analisar' },
-  }
-  const c = colors[alert.type] || colors.info
   const isDanger = alert.type === 'danger'
+  const isSuccess = alert.type === 'success'
+
+  const accent = isDanger ? '#EF4444' : isSuccess ? '#D1FAE5' : 'var(--t1)'
+  const action = isDanger ? 'reduzir' : isSuccess ? 'escalar' : alert.type === 'warning' ? 'observar' : 'analisar'
 
   return (
     <motion.div {...fadeUp(i)}
-      whileHover={{ x:3, transition:{duration:0.15} }}
       style={{
-        position:'relative', overflow:'hidden',
-        display: 'flex', alignItems: 'center', gap: 14,
-        padding: '14px 18px', borderRadius: 14,
-        background: `linear-gradient(145deg, ${c.bg}, rgba(14,22,38,0.5))`,
-        backdropFilter:'blur(14px) saturate(150%)', WebkitBackdropFilter:'blur(14px) saturate(150%)',
-        border: `1px solid ${c.border}`,
-        boxShadow: `0 6px 22px rgba(0,0,0,0.3), 0 0 24px ${c.glow}`,
-        animation: isDanger ? 'alertBreath 3s ease-in-out infinite' : 'none',
-      }}>
-      {/* Accent line esquerda */}
-      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:3, borderRadius:'0 3px 3px 0', background:c.text, boxShadow:`0 0 10px ${c.text}` }}/>
-
+        position: 'relative',
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '14px 16px', borderRadius: 12,
+        background: '#000000',
+        border: `1px solid ${isDanger ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)'}`,
+        transition: 'border-color 0.2s ease',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = isDanger ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.14)' }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = isDanger ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)' }}
+    >
       <div style={{
-        position:'relative',
-        width: 34, height: 34, borderRadius: 10, flexShrink: 0,
+        width: 28, height: 28, borderRadius: 8, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: c.bg, border: `1px solid ${c.border}`,
-        boxShadow: isDanger ? `0 0 14px ${c.glow}` : 'none',
+        background: 'rgba(255,255,255,0.04)',
+        border: `1px solid ${isDanger ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.1)'}`,
       }}>
-        {isDanger && (
-          <motion.div
-            animate={{ boxShadow:[`0 0 0 0 ${c.text}80`, `0 0 0 6px ${c.text}00`, `0 0 0 0 ${c.text}00`] }}
-            transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
-            style={{ position:'absolute', inset:0, borderRadius:10, pointerEvents:'none' }}
-          />
-        )}
-        {alert.type === 'success' ? (
-          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><polyline points="22 4 12 14.01 9 11.01" /></svg>
-        ) : alert.type === 'danger' ? (
-          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+        {isSuccess ? (
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth={2.5} strokeLinecap="round"><polyline points="22 4 12 14.01 9 11.01" /></svg>
+        ) : isDanger ? (
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth={2.5} strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
         ) : alert.type === 'warning' ? (
-          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
         ) : (
-          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.text} strokeWidth={2.5} strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg>
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth={2.5} strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg>
         )}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:3, flexWrap:'wrap' }}>
-          <p style={{ fontSize: 11, fontWeight: 800, color: c.text, margin:0, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{alert.label}</p>
-          <span style={{ fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4, background:`${c.text}14`, color:c.text, border:`1px solid ${c.text}26`, letterSpacing:'0.06em', textTransform:'uppercase' }}>
-            Acao: {c.action}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: accent, margin: 0, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{alert.label}</p>
+          <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 3, background: 'rgba(255,255,255,0.04)', color: 'var(--t3)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            {action}
           </span>
         </div>
-        <p style={{ fontSize: 13, color: '#E2E8F0', fontWeight: 500, lineHeight: 1.5, margin: 0 }}>{alert.text}</p>
+        <p style={{ fontSize: 12, color: 'var(--t2)', fontWeight: 400, lineHeight: 1.5, margin: 0 }}>{alert.text}</p>
       </div>
-      <style>{`@keyframes alertBreath { 0%,100% { box-shadow: 0 6px 22px rgba(0,0,0,0.3), 0 0 24px rgba(239,68,68,0.14) } 50% { box-shadow: 0 6px 22px rgba(0,0,0,0.3), 0 0 36px rgba(239,68,68,0.26) } }`}</style>
     </motion.div>
   )
 }
@@ -811,34 +780,21 @@ export default function RedesPage() {
 
   /* ── Heatmap color per network ── */
   const getHeatmapStyle = useCallback((rede, isTop) => {
-    let tintR, tintG, tintB, intensity
+    // Paleta enxuta: lucro positivo = mint; lucro negativo = vermelho; resto = neutro
+    const isProfit = rede.lucroFinal > 0
+    const isLoss = rede.lucroFinal <= 0
 
-    if (rede.lucroFinal > 0 && rede.trend === 'up') {
-      // High performance: green
-      tintR = 34; tintG = 197; tintB = 94
-      intensity = clamp(rede.score / 100 * 0.14, 0.04, 0.14)
-    } else if (rede.lucroFinal > 0 && rede.trend === 'stable') {
-      // Medium: yellow-green
-      tintR = 180; tintG = 180; tintB = 50
-      intensity = 0.05
-    } else if (rede.lucroFinal > 0 && rede.trend === 'down') {
-      // Positive but declining: yellow
-      tintR = 245; tintG = 158; tintB = 11
-      intensity = 0.07
-    } else if (rede.lucroFinal <= 0) {
-      // Risk: red
-      tintR = 239; tintG = 68; tintB = 68
-      intensity = clamp(Math.abs(rede.lucroFinal) / 1000, 0.04, 0.12)
-    } else {
-      tintR = 255; tintG = 255; tintB = 255
-      intensity = 0.02
-    }
+    const rgb = isProfit ? '209,250,229' : isLoss ? '239,68,68' : '255,255,255'
+    const intensity = isProfit
+      ? clamp(rede.score / 100 * 0.08, 0.02, 0.08)
+      : isLoss
+        ? clamp(Math.abs(rede.lucroFinal) / 2000, 0.02, 0.06)
+        : 0.02
 
-    const rgb = `${tintR},${tintG},${tintB}`
     return {
-      background: `linear-gradient(145deg, rgba(${rgb},${intensity}), rgba(${rgb},${intensity * 0.2}) 50%, rgba(12,18,32,0.95))`,
-      borderColor: `rgba(${rgb},${intensity + 0.08})`,
-      glowColor: `rgba(${rgb},${intensity * 0.6})`,
+      background: '#000000',
+      borderColor: `rgba(${rgb},${intensity + 0.1})`,
+      glowColor: `rgba(${rgb},${intensity * 0.5})`,
       rgb,
     }
   }, [])
@@ -891,10 +847,10 @@ export default function RedesPage() {
 
                 {/* Demo KPI Cards */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 28 }}>
-                  <KpiCard label="Total de redes" value={4} rgb="99,102,241" i={2} />
-                  <KpiCard label="Redes lucrativas" value={3} rgb="34,197,94" i={3} />
-                  <KpiCard label="Lucro total" value={0} prefix="R$ " rgb="34,197,94" i={4} isProfit={true} rawValue={829.70} />
-                  <KpiCard label="Score medio" value={demoAvgScore} rgb="168,85,247" i={5} suffix="/100" />
+                  <KpiCard label="Total de redes" value={4} i={2} />
+                  <KpiCard label="Redes lucrativas" value={3} i={3} />
+                  <KpiCard label="Lucro total" value={0} prefix="R$ " i={4} isProfit={true} rawValue={829.70} />
+                  <KpiCard label="Score medio" value={demoAvgScore} i={5} suffix="/100" />
                 </div>
 
                 {/* Demo Ranking */}
@@ -1037,14 +993,14 @@ export default function RedesPage() {
 
           {/* ── KPI Cards ── */}
           {!isDemo && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 28 }}>
-            <KpiCard label="Total de redes" value={kpis.totalRedes} rgb="99,102,241" i={1} />
-            <KpiCard label="Redes lucrativas" value={kpis.redesLucrativas} rgb="34,197,94" i={2} />
-            <KpiCard label="Lucro total" value={0} prefix="R$ " rgb="34,197,94" i={3} isProfit={true} rawValue={kpis.lucroTotal} />
-            <KpiCard label="Score medio" value={kpis.avgScore} rgb="168,85,247" i={4} suffix="/100" />
+            <KpiCard label="Total de redes" value={kpis.totalRedes} i={1} />
+            <KpiCard label="Redes lucrativas" value={kpis.redesLucrativas} i={2} />
+            <KpiCard label="Lucro total" value={0} prefix="R$ " i={3} isProfit={true} rawValue={kpis.lucroTotal} />
+            <KpiCard label="Score medio" value={kpis.avgScore} i={4} suffix="/100" />
           </div>}
 
-          {/* ── AI Recommendations Box ── */}
-          {!isDemo && aiRecommendations.length > 0 && (
+          {/* ── AI Recommendations Box (DESATIVADO — redundante com Alertas) ── */}
+          {false && !isDemo && aiRecommendations.length > 0 && (
             <motion.div {...fadeUp(5)} style={{ marginBottom: 28 }}>
               <div style={{
                 padding: '22px 24px', borderRadius: 16,

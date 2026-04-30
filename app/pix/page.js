@@ -206,10 +206,10 @@ export default function PixPage() {
         <div className="a2 g-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 22 }}>
           {[
             { l: 'Total', v: stats.total, c: '#F1F5F9', rgb:'148,163,184' },
-            { l: 'Validas', v: stats.validas, c: '#22C55E', rgb:'34,197,94' },
-            { l: 'Telefone', v: stats.telefone, c: '#22C55E', rgb:'34,197,94' },
-            { l: 'CPF', v: stats.cpf, c: '#F59E0B', rgb:'245,158,11' },
-            { l: 'Email', v: stats.email, c: '#3B82F6', rgb:'59,130,246' },
+            { l: 'Validas', v: stats.validas, c: '#10B981', rgb:'34,197,94' },
+            { l: 'Telefone', v: stats.telefone, c: '#10B981', rgb:'34,197,94' },
+            { l: 'CPF', v: stats.cpf, c: 'rgba(255,255,255,0.78)', rgb:'245,158,11' },
+            { l: 'Email', v: stats.email, c: 'rgba(255,255,255,0.78)', rgb:'59,130,246' },
             { l: 'EVP', v: stats.evp, c: '#e53935', rgb:'229,57,53' },
           ].map(({ l, v, c, rgb }, i) => (
             <motion.div key={l}

@@ -15,9 +15,9 @@ function getLevel(days) {
 }
 
 const CFG = {
-  green:  { bg:'rgba(34,197,94,0.06)', border:'rgba(34,197,94,0.15)', color:'var(--profit)', rgb:'34,197,94' },
-  yellow: { bg:'rgba(245,158,11,0.08)', border:'rgba(245,158,11,0.2)', color:'var(--warn)', rgb:'245,158,11' },
-  orange: { bg:'rgba(245,158,11,0.12)', border:'rgba(245,158,11,0.25)', color:'#f59e0b', rgb:'245,158,11' },
+  green:  { bg:'rgba(16,185,129,0.06)', border:'rgba(16,185,129,0.15)', color:'var(--profit)', rgb:'34,197,94' },
+  yellow: { bg:'rgba(255,255,255,0.08)', border:'rgba(255,255,255,0.2)', color:'var(--warn)', rgb:'245,158,11' },
+  orange: { bg:'rgba(255,255,255,0.12)', border:'rgba(255,255,255,0.25)', color:'rgba(255,255,255,0.78)', rgb:'245,158,11' },
   red:    { bg:'rgba(239,68,68,0.1)', border:'rgba(239,68,68,0.25)', color:'var(--loss)', rgb:'239,68,68' },
 }
 
@@ -171,9 +171,9 @@ export function ConversionModal({ tenant, subscription, stats }) {
             <div style={{ padding: '0 32px 12px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                 {[
-                  { l: 'Movimentado', v: `R$ ${Number(moved).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, c: '#22C55E' },
+                  { l: 'Movimentado', v: `R$ ${Number(moved).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, c: '#10B981' },
                   { l: 'Metas', v: metas, c: '#60A5FA' },
-                  { l: 'Remessas', v: remessas, c: '#a855f7' },
+                  { l: 'Remessas', v: remessas, c: 'rgba(255,255,255,0.78)' },
                 ].map(({ l, v, c }) => (
                   <div key={l} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
                     <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: c, margin: '0 0 2px' }}>{v}</p>
@@ -192,7 +192,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
                 <p style={{ fontSize: 10, color: '#94A3B8', margin: 0 }}>Menos que 1 operação perdida por dia</p>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: '#22C55E', letterSpacing: '-0.02em' }}>R$ 39,90</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: '#10B981', letterSpacing: '-0.02em' }}>R$ 39,90</span>
                 <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4, fontWeight: 600 }}>/mês</span>
               </div>
             </div>
@@ -202,18 +202,18 @@ export function ConversionModal({ tenant, subscription, stats }) {
           <div style={{ padding: '18px 32px 28px' }}>
             <motion.button
               onClick={() => router.push('/billing')}
-              whileHover={{ scale: 1.015, boxShadow: '0 0 0 1px rgba(34,197,94,0.35), 0 12px 28px rgba(34,197,94,0.28), 0 0 42px rgba(34,197,94,0.22)' }}
+              whileHover={{ scale: 1.015, boxShadow: '0 0 0 1px rgba(16,185,129,0.35), 0 12px 28px rgba(16,185,129,0.28), 0 0 42px rgba(16,185,129,0.22)' }}
               whileTap={{ scale: 0.98 }}
               className="nc-unlock-cta"
               style={{
                 position: 'relative', overflow: 'hidden',
                 width: '100%', padding: '15px 22px', borderRadius: 12,
                 border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(180deg, #22c55e, #16a34a)',
+                background: 'linear-gradient(180deg, #10b981, #16a34a)',
                 color: '#04120a',
                 fontSize: 15, fontWeight: 800,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                boxShadow: '0 0 0 1px rgba(34,197,94,0.2), 0 8px 22px rgba(34,197,94,0.22), 0 0 30px rgba(34,197,94,0.18)',
+                boxShadow: '0 0 0 1px rgba(16,185,129,0.2), 0 8px 22px rgba(16,185,129,0.22), 0 0 30px rgba(16,185,129,0.18)',
                 letterSpacing: '-0.01em',
               }}
             >

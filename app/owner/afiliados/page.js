@@ -53,8 +53,8 @@ export default function OwnerAfiliadosPage() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="1.7" strokeLinecap="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="1.7" strokeLinecap="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
             </div>
             <div>
               <h1 style={{ fontSize: 22, fontWeight: 900, color: '#F1F5F9', margin: '0 0 3px', letterSpacing: '-0.02em' }}>Afiliados</h1>
@@ -70,11 +70,11 @@ export default function OwnerAfiliadosPage() {
         {/* Totais */}
         <div className="g-5" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 28 }}>
           {[
-            { l: 'Afiliados ativos', v: `${totals.enabled || 0} / ${totals.affiliates || 0}`, c: '#a855f7' },
+            { l: 'Afiliados ativos', v: `${totals.enabled || 0} / ${totals.affiliates || 0}`, c: 'rgba(255,255,255,0.78)' },
             { l: 'Indicados', v: totals.indicados || 0, c: '#60A5FA' },
             { l: 'Faturamento gerado', v: `R$ ${fmt(totals.totalFaturado)}`, c: '#F1F5F9' },
-            { l: 'Comissão total', v: `R$ ${fmt(totals.totalComissao)}`, c: '#22C55E' },
-            { l: 'A pagar', v: `R$ ${fmt(totals.pendente)}`, c: '#F59E0B' },
+            { l: 'Comissão total', v: `R$ ${fmt(totals.totalComissao)}`, c: '#10B981' },
+            { l: 'A pagar', v: `R$ ${fmt(totals.pendente)}`, c: 'rgba(255,255,255,0.78)' },
           ].map((k, i) => (
             <motion.div key={k.l} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06 + i * 0.05, ease }}
               style={{ borderRadius: 14, padding: '18px 20px', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -111,7 +111,7 @@ export default function OwnerAfiliadosPage() {
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 800, color: medal || '#64748B', fontSize: 13 }}>{i + 1}</td>
                         <td style={{ padding: '12px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <div style={{ width: 26, height: 26, borderRadius: 7, background: 'rgba(168,85,247,0.1)', border: '1px solid rgba(168,85,247,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <div style={{ width: 26, height: 26, borderRadius: 7, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                               <span style={{ fontSize: 11, fontWeight: 800, color: '#c4b5fd' }}>{(r.tenant_name || '?')[0].toUpperCase()}</span>
                             </div>
                             <div style={{ minWidth: 0 }}>
@@ -121,15 +121,15 @@ export default function OwnerAfiliadosPage() {
                           </div>
                         </td>
                         <td style={{ padding: '12px' }}>
-                          <span style={{ fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 5, background: r.enabled ? 'rgba(34,197,94,0.08)' : 'rgba(100,116,139,0.08)', color: r.enabled ? '#22C55E' : '#64748B', border: `1px solid ${r.enabled ? 'rgba(34,197,94,0.2)' : 'rgba(100,116,139,0.2)'}` }}>
+                          <span style={{ fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 5, background: r.enabled ? 'rgba(16,185,129,0.08)' : 'rgba(100,116,139,0.08)', color: r.enabled ? '#10B981' : '#64748B', border: `1px solid ${r.enabled ? 'rgba(16,185,129,0.2)' : 'rgba(100,116,139,0.2)'}` }}>
                             {r.enabled ? 'ATIVO' : 'INATIVO'}
                           </span>
                         </td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', color: '#94A3B8' }}>{Math.round(r.rate * 100)}%</td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: '#F1F5F9' }}>{r.indicados}</td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', color: '#60A5FA' }}>R$ {fmt(r.totalFaturado)}</td>
-                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: '#22C55E' }}>R$ {fmt(r.totalComissao)}</td>
-                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: '#F59E0B' }}>R$ {fmt(r.pendente)}</td>
+                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: '#10B981' }}>R$ {fmt(r.totalComissao)}</td>
+                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>R$ {fmt(r.pendente)}</td>
                       </tr>
                     )
                   })}

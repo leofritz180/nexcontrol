@@ -95,8 +95,8 @@ export default function TutorialPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 13,
-              background: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.1))',
-              border: '1px solid rgba(59,130,246,0.25)',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.1))',
+              border: '1px solid rgba(255,255,255,0.25)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="1.5" strokeLinecap="round">
@@ -130,11 +130,11 @@ export default function TutorialPage() {
                 style={{
                   height: '100%', borderRadius: 99,
                   background: allDone
-                    ? 'linear-gradient(90deg, #22C55E, #4ADE80)'
-                    : 'linear-gradient(90deg, #3B82F6, #3B82F6)',
+                    ? 'linear-gradient(90deg, #10B981, #4ADE80)'
+                    : 'linear-gradient(90deg, rgba(255,255,255,0.78), rgba(255,255,255,0.78))',
                   boxShadow: allDone
-                    ? '0 0 12px rgba(34,197,94,0.3)'
-                    : '0 0 12px rgba(59,130,246,0.3)',
+                    ? '0 0 12px rgba(16,185,129,0.3)'
+                    : '0 0 12px rgba(255,255,255,0.3)',
                 }}
               />
             </div>
@@ -151,8 +151,8 @@ export default function TutorialPage() {
             background: 'rgba(15, 24, 41, 0.6)',
             backdropFilter: 'blur(40px) saturate(160%)',
             WebkitBackdropFilter: 'blur(40px) saturate(160%)',
-            border: '1px solid rgba(59,130,246,0.15)',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(59,130,246,0.06), inset 0 1px 0 rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.06)',
             marginBottom: 24,
           }}
         >
@@ -182,7 +182,7 @@ export default function TutorialPage() {
             </div>
             <div style={{
               padding: '4px 12px', borderRadius: 99,
-              background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)',
+              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
               fontSize: 10, fontWeight: 700, color: 'var(--brand-bright)', letterSpacing: '0.06em',
             }}>
               EXCLUSIVO ADMIN
@@ -209,8 +209,8 @@ export default function TutorialPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 width: 36, height: 36, borderRadius: 10,
-                background: allDone ? 'rgba(34,197,94,0.12)' : 'rgba(59,130,246,0.1)',
-                border: `1px solid ${allDone ? 'rgba(34,197,94,0.25)' : 'rgba(59,130,246,0.2)'}`,
+                background: allDone ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.1)',
+                border: `1px solid ${allDone ? 'rgba(16,185,129,0.25)' : 'rgba(255,255,255,0.2)'}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 {allDone ? (
@@ -258,7 +258,7 @@ export default function TutorialPage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.3 + i * 0.06, ease }}
                   whileHover={{
-                    background: done ? 'rgba(34,197,94,0.06)' : 'rgba(59,130,246,0.06)',
+                    background: done ? 'rgba(16,185,129,0.06)' : 'rgba(255,255,255,0.06)',
                     x: 4,
                     transition: { duration: 0.15 },
                   }}
@@ -266,16 +266,16 @@ export default function TutorialPage() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 14,
                     padding: '14px 16px', borderRadius: 14, cursor: 'pointer',
-                    background: done ? 'rgba(34,197,94,0.04)' : 'transparent',
-                    border: `1px solid ${done ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.04)'}`,
+                    background: done ? 'rgba(16,185,129,0.04)' : 'transparent',
+                    border: `1px solid ${done ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.04)'}`,
                     transition: 'border-color 0.2s',
                   }}
                 >
                   {/* Checkbox */}
                   <motion.div
                     animate={{
-                      background: done ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.04)',
-                      borderColor: done ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.12)',
+                      background: done ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.04)',
+                      borderColor: done ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.12)',
                     }}
                     transition={{ duration: 0.2 }}
                     style={{
@@ -290,7 +290,7 @@ export default function TutorialPage() {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.5 }}
                           transition={{ duration: 0.2, ease }}
-                          width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"
+                          width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round"
                         >
                           <polyline points="20 6 9 17 4 12" />
                         </motion.svg>
@@ -337,28 +337,28 @@ export default function TutorialPage() {
                 transition={{ duration: 0.4, ease }}
                 style={{
                   marginTop: 20, padding: '18px 22px', borderRadius: 14,
-                  background: 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.04))',
-                  border: '1px solid rgba(34,197,94,0.2)',
-                  boxShadow: '0 0 30px rgba(34,197,94,0.06)',
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.04))',
+                  border: '1px solid rgba(16,185,129,0.2)',
+                  boxShadow: '0 0 30px rgba(16,185,129,0.06)',
                   display: 'flex', alignItems: 'center', gap: 14,
                 }}
               >
                 <motion.div
                   animate={{
                     boxShadow: [
-                      '0 0 0 0 rgba(34,197,94,0.3)',
-                      '0 0 0 8px rgba(34,197,94,0)',
-                      '0 0 0 0 rgba(34,197,94,0)',
+                      '0 0 0 0 rgba(16,185,129,0.3)',
+                      '0 0 0 8px rgba(16,185,129,0)',
+                      '0 0 0 0 rgba(16,185,129,0)',
                     ],
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                   style={{
                     width: 40, height: 40, borderRadius: 12,
-                    background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)',
+                    background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                   }}
                 >
-                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round">
+                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                     <polyline points="22 4 12 14.01 9 11.01" />
                   </svg>
@@ -367,7 +367,7 @@ export default function TutorialPage() {
                   <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--profit)', margin: '0 0 2px' }}>
                     Voce esta pronto para usar o NexControl!
                   </p>
-                  <p style={{ fontSize: 12, color: 'rgba(34,197,94,0.6)', margin: 0 }}>
+                  <p style={{ fontSize: 12, color: 'rgba(16,185,129,0.6)', margin: 0 }}>
                     Todas as etapas foram concluidas. Bom trabalho!
                   </p>
                 </div>
@@ -386,7 +386,7 @@ export default function TutorialPage() {
             background: 'rgba(15, 24, 41, 0.5)',
             backdropFilter: 'blur(30px) saturate(150%)',
             WebkitBackdropFilter: 'blur(30px) saturate(150%)',
-            border: '1px solid rgba(245,158,11,0.12)',
+            border: '1px solid rgba(255,255,255,0.12)',
             boxShadow: '0 12px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
             padding: '24px 28px',
           }}
@@ -395,15 +395,15 @@ export default function TutorialPage() {
             <motion.div
               animate={{
                 boxShadow: [
-                  '0 0 0 0 rgba(245,158,11,0.2)',
-                  '0 0 0 6px rgba(245,158,11,0)',
-                  '0 0 0 0 rgba(245,158,11,0)',
+                  '0 0 0 0 rgba(255,255,255,0.2)',
+                  '0 0 0 6px rgba(255,255,255,0)',
+                  '0 0 0 0 rgba(255,255,255,0)',
                 ],
               }}
               transition={{ duration: 2.5, repeat: Infinity }}
               style={{
                 width: 38, height: 38, borderRadius: 11,
-                background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)',
+                background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}
             >
@@ -441,7 +441,7 @@ export default function TutorialPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.4 + i * 0.05, ease }}
                 whileHover={{
-                  background: 'rgba(245,158,11,0.05)',
+                  background: 'rgba(255,255,255,0.05)',
                   x: 4,
                   transition: { duration: 0.15 },
                 }}
@@ -454,7 +454,7 @@ export default function TutorialPage() {
               >
                 <span style={{
                   width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-                  background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)',
+                  background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 11, fontWeight: 700, fontFamily: 'var(--mono)', color: 'var(--warn)',
                 }}>
@@ -470,7 +470,7 @@ export default function TutorialPage() {
           {/* Note */}
           <div style={{
             marginTop: 16, padding: '12px 16px', borderRadius: 10,
-            background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.1)',
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
             display: 'flex', alignItems: 'center', gap: 10,
           }}>
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="1.5" strokeLinecap="round" style={{ flexShrink: 0 }}>
@@ -478,7 +478,7 @@ export default function TutorialPage() {
               <line x1="12" y1="16" x2="12" y2="12" />
               <line x1="12" y1="8" x2="12.01" y2="8" />
             </svg>
-            <span style={{ fontSize: 12, color: 'rgba(245,158,11,0.7)', lineHeight: 1.5 }}>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
               As notificacoes ajudam voce a acompanhar atualizacoes importantes da operacao em tempo real.
             </span>
           </div>

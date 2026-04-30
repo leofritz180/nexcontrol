@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v6 (cards 100% black + lateral glow)
+// NexControl Service Worker — Push Notifications v8 (verde Emerald + remover azul/amarelo/roxo)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

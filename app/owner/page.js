@@ -46,7 +46,7 @@ function CountUpInt({ value, prefix = '', suffix = '', duration = 1000 }) {
 }
 
 /* ── Mini Sparkline ── */
-function MiniSparkline({ data, color = '#22C55E', w = 140, h = 36 }) {
+function MiniSparkline({ data, color = '#10B981', w = 140, h = 36 }) {
   if (!data || data.length < 2) return null
   const max = Math.max(...data, 1), min = Math.min(...data, 0), range = max - min || 1
   const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * (h - 4) + 2}`).join(' ')
@@ -119,7 +119,7 @@ export default function OwnerPage() {
   // (adminStats.lucroFinal ja vem calculado no backend sobre metas com status_fechamento='fechada')
   const globalLucroPlataforma = adminStats.reduce((s, a) => s + Number(a.lucroFinal || 0), 0)
   const lucroPos = globalLucroPlataforma >= 0
-  const lucroColor = lucroPos ? '#22C55E' : '#EF4444'
+  const lucroColor = lucroPos ? '#10B981' : '#EF4444'
   const lucroRgb   = lucroPos ? '34,197,94' : '239,68,68'
   const chartData = chartRange === 7 ? (revenueByDay || []).slice(-7) : (revenueByDay || [])
   const maxChart = Math.max(...chartData.map(d => d.value), 1)
@@ -159,8 +159,8 @@ export default function OwnerPage() {
     if (activeRate >= 70) score += 10; else if (activeRate < 40) score -= 15
     if (kpis.revenueToday > 0) score += 5
     score = Math.max(0, Math.min(100, score))
-    if (score >= 65) return { status: 'Saudavel', color: '#22C55E', bg: 'rgba(34,197,94,0.06)', border: 'rgba(34,197,94,0.15)', text: 'Sua operacao esta saudavel, com crescimento consistente.' }
-    if (score >= 40) return { status: 'Atencao', color: '#F59E0B', bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.15)', text: 'Atencao: alguns indicadores precisam de melhoria.' }
+    if (score >= 65) return { status: 'Saudavel', color: '#10B981', bg: 'rgba(16,185,129,0.06)', border: 'rgba(16,185,129,0.15)', text: 'Sua operacao esta saudavel, com crescimento consistente.' }
+    if (score >= 40) return { status: 'Atencao', color: 'rgba(255,255,255,0.78)', bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.15)', text: 'Atencao: alguns indicadores precisam de melhoria.' }
     return { status: 'Critica', color: '#EF4444', bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.15)', text: 'Situacao critica: queda na conversao e atividade abaixo do ideal.' }
   })()
 
@@ -214,7 +214,7 @@ export default function OwnerPage() {
   return (
     <main style={{ minHeight: '100vh', background: '#04070e', position: 'relative', zIndex: 1 }}>
       {/* Ambient */}
-      <div style={{ position: 'fixed', top: '-10%', left: '15%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.03), transparent 60%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', top: '-10%', left: '15%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(16,185,129,0.03), transparent 60%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 28px 80px' }}>
 
@@ -263,8 +263,8 @@ export default function OwnerPage() {
         {/* ═══ LEVEL 1: HERO ═══ */}
         <motion.div {...fadeUp(1)} style={{ marginBottom: 16 }}>
           <div style={{ ...card, position: 'relative', overflow: 'hidden', padding: '36px 36px 28px' }}>
-            <div style={{ position: 'absolute', top: '-20%', left: '5%', width: 500, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(34,197,94,0.08), transparent 60%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(34,197,94,0.08), transparent)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', top: '-20%', left: '5%', width: 500, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(16,185,129,0.08), transparent 60%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(16,185,129,0.08), transparent)', pointerEvents: 'none' }} />
 
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
@@ -272,19 +272,19 @@ export default function OwnerPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                     <p style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, margin: 0 }}>Receita total acumulada</p>
                     {variation !== 0 && (
-                      <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 6, background: variationUp ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', color: variationUp ? '#22C55E' : '#EF4444', border: `1px solid ${variationUp ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`, fontFamily: 'var(--mono)' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 6, background: variationUp ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', color: variationUp ? '#10B981' : '#EF4444', border: `1px solid ${variationUp ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`, fontFamily: 'var(--mono)' }}>
                         {variationUp ? '+' : ''}{variation}%
                       </span>
                     )}
                   </div>
                   <motion.p
-                    animate={{ textShadow: ['0 0 30px rgba(34,197,94,0.1)', '0 0 60px rgba(34,197,94,0.2)', '0 0 30px rgba(34,197,94,0.1)'] }}
+                    animate={{ textShadow: ['0 0 30px rgba(16,185,129,0.1)', '0 0 60px rgba(16,185,129,0.2)', '0 0 30px rgba(16,185,129,0.1)'] }}
                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{ fontFamily: 'var(--mono)', fontSize: 48, fontWeight: 900, color: '#22C55E', lineHeight: 1, letterSpacing: '-0.03em', margin: '0 0 12px' }}
+                    style={{ fontFamily: 'var(--mono)', fontSize: 48, fontWeight: 900, color: '#10B981', lineHeight: 1, letterSpacing: '-0.03em', margin: '0 0 12px' }}
                   >
                     <CountUp value={kpis.totalRevenue} prefix="R$ " />
                   </motion.p>
-                  <span style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 6, background: variationUp ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)', color: variationUp ? '#4ade80' : '#fca5a5' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 6, background: variationUp ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)', color: variationUp ? '#4ade80' : '#fca5a5' }}>
                     {variationUp ? 'Operacao em crescimento' : 'Atencao na queda'}
                   </span>
                 </div>
@@ -350,9 +350,9 @@ export default function OwnerPage() {
         {/* Sub-KPIs */}
         <div className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 28 }}>
           {[
-            { l: 'Receita hoje', v: kpis.revenueToday, c: kpis.revenueToday > 0 ? '#22C55E' : '#64748B' },
+            { l: 'Receita hoje', v: kpis.revenueToday, c: kpis.revenueToday > 0 ? '#10B981' : '#64748B' },
             { l: 'Receita do mes', v: kpis.revenueMonth, c: '#F1F5F9' },
-            { l: 'MRR estimado', v: kpis.mrr, c: '#22C55E', sub: `${kpis.activeSubs} assinatura${kpis.activeSubs !== 1 ? 's' : ''}` },
+            { l: 'MRR estimado', v: kpis.mrr, c: '#10B981', sub: `${kpis.activeSubs} assinatura${kpis.activeSubs !== 1 ? 's' : ''}` },
             { l: 'Ticket medio', v: kpis.avgTicket || 0, c: '#F1F5F9' },
           ].map((item, i) => (
             <motion.div key={i} {...fadeUp(i, 0.12)} style={{ ...card, padding: '20px 22px' }}
@@ -372,13 +372,13 @@ export default function OwnerPage() {
           {happeningNow.length > 0 && (
             <motion.div {...fadeUp(0, 0.15)} style={{ ...card, padding: 24 }}>
               <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
                 O que esta acontecendo agora
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {happeningNow.map((h, i) => {
-                  const colors = { profit: '#22C55E', warn: '#F59E0B', critical: '#EF4444' }
-                  const c = colors[h.type] || '#3b82f6'
+                  const colors = { profit: '#10B981', warn: 'rgba(255,255,255,0.78)', critical: '#EF4444' }
+                  const c = colors[h.type] || 'rgba(255,255,255,0.78)'
                   return (
                     <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.35, delay: 0.2 + i * 0.1 }}
                       style={{ padding: '12px 14px', borderRadius: 12, background: `${c}08`, border: `1px solid ${c}18`, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
@@ -397,18 +397,18 @@ export default function OwnerPage() {
           {/* Previsao 7 dias */}
           <motion.div {...fadeUp(1, 0.2)} style={{ ...card, padding: 24 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
               Previsao (7 dias)
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.1)' }}>
+              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.1)' }}>
                 <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.06em' }}>Cenario atual</p>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: '#22C55E', margin: 0 }}>+R$ <CountUp value={predicted7d} /></p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: '#10B981', margin: 0 }}>+R$ <CountUp value={predicted7d} /></p>
                 <p style={{ fontSize: 10, color: '#64748B', margin: '4px 0 0' }}>Mantendo o padrao atual</p>
               </div>
-              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(168,85,247,0.04)', border: '1px solid rgba(168,85,247,0.1)' }}>
+              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.06em' }}>Cenario otimista</p>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: '#a855f7', margin: 0 }}>+R$ <CountUp value={optimistic7d} /></p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: 'rgba(255,255,255,0.78)', margin: 0 }}>+R$ <CountUp value={optimistic7d} /></p>
                 <p style={{ fontSize: 10, color: '#64748B', margin: '4px 0 0' }}>Se melhorar conversao</p>
               </div>
               <div style={{ padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', display: 'flex', justifyContent: 'space-between' }}>
@@ -428,7 +428,7 @@ export default function OwnerPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {funnelSteps.map((step, i) => {
                 const isBigDrop = i === biggestDropIdx
-                const barColor = isBigDrop ? '#EF4444' : step.pct >= 60 ? '#22C55E' : step.pct >= 30 ? '#F59E0B' : '#EF4444'
+                const barColor = isBigDrop ? '#EF4444' : step.pct >= 60 ? '#10B981' : step.pct >= 30 ? 'rgba(255,255,255,0.78)' : '#EF4444'
                 return (
                   <div key={i}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0' }}>
@@ -469,7 +469,7 @@ export default function OwnerPage() {
               <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 14px' }}>Alertas</h3>
               {alerts.length === 0 ? (
                 <div style={{ padding: '16px 0', textAlign: 'center' }}>
-                  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" style={{ margin: '0 auto 8px', display: 'block' }}><polyline points="20 6 9 17 4 12" /></svg>
+                  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" style={{ margin: '0 auto 8px', display: 'block' }}><polyline points="20 6 9 17 4 12" /></svg>
                   <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Nenhum alerta</p>
                 </div>
               ) : (
@@ -478,8 +478,8 @@ export default function OwnerPage() {
                     const isCrit = al.type === 'critical'
                     return (
                       <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.3 + i * 0.08 }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, background: isCrit ? 'rgba(239,68,68,0.05)' : 'rgba(245,158,11,0.05)', border: `1px solid ${isCrit ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)'}` }}>
-                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: isCrit ? '#EF4444' : '#F59E0B', flexShrink: 0 }} />
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, background: isCrit ? 'rgba(239,68,68,0.05)' : 'rgba(255,255,255,0.05)', border: `1px solid ${isCrit ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.12)'}` }}>
+                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: isCrit ? '#EF4444' : 'rgba(255,255,255,0.78)', flexShrink: 0 }} />
                         <p style={{ fontSize: 11, color: isCrit ? '#FCA5A5' : '#FCD34D', margin: 0, flex: 1, lineHeight: 1.4 }}>{al.text}</p>
                       </motion.div>
                     )
@@ -492,13 +492,13 @@ export default function OwnerPage() {
             {insights.length > 0 && (
               <motion.div {...fadeUp(2, 0.25)} style={{ ...card, padding: 24 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z" /><line x1="9" y1="21" x2="15" y2="21" /></svg>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z" /><line x1="9" y1="21" x2="15" y2="21" /></svg>
                   Inteligencia executiva
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {insights.map((ins, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: ins.type === 'profit' ? '#22C55E' : ins.type === 'critical' ? '#EF4444' : '#F59E0B', flexShrink: 0 }} />
+                      <div style={{ width: 5, height: 5, borderRadius: '50%', background: ins.type === 'profit' ? '#10B981' : ins.type === 'critical' ? '#EF4444' : 'rgba(255,255,255,0.78)', flexShrink: 0 }} />
                       <span style={{ fontSize: 11, color: ins.type === 'profit' ? '#4ade80' : ins.type === 'critical' ? '#fca5a5' : '#fcd34d', lineHeight: 1.4 }}>{ins.text}</span>
                     </div>
                   ))}
@@ -514,7 +514,7 @@ export default function OwnerPage() {
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>Receita diaria</h3>
             <div style={{ display: 'flex', gap: 4 }}>
               {[7, 30].map(r => (
-                <button key={r} onClick={() => setChartRange(r)} style={{ fontSize: 10, fontWeight: 600, padding: '4px 12px', borderRadius: 6, cursor: 'pointer', border: chartRange === r ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(255,255,255,0.06)', background: chartRange === r ? 'rgba(34,197,94,0.1)' : 'transparent', color: chartRange === r ? '#22C55E' : '#64748B', transition: 'all 0.2s' }}>{r}d</button>
+                <button key={r} onClick={() => setChartRange(r)} style={{ fontSize: 10, fontWeight: 600, padding: '4px 12px', borderRadius: 6, cursor: 'pointer', border: chartRange === r ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.06)', background: chartRange === r ? 'rgba(16,185,129,0.1)' : 'transparent', color: chartRange === r ? '#10B981' : '#64748B', transition: 'all 0.2s' }}>{r}d</button>
               ))}
             </div>
           </div>
@@ -528,10 +528,10 @@ export default function OwnerPage() {
                   {isHov && (
                     <div style={{ position: 'absolute', bottom: h + 8, left: '50%', transform: 'translateX(-50%)', background: '#0c1424', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '3px 7px', whiteSpace: 'nowrap', zIndex: 10 }}>
                       <p style={{ fontSize: 9, color: '#94A3B8', margin: '0 0 1px' }}>{day.date.slice(5)}</p>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: '#22C55E', margin: 0, fontFamily: 'var(--mono)' }}>R$ {fmt(day.value)}</p>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: '#10B981', margin: 0, fontFamily: 'var(--mono)' }}>R$ {fmt(day.value)}</p>
                     </div>
                   )}
-                  <div style={{ width: '100%', maxWidth: chartRange === 7 ? 44 : 18, height: h, borderRadius: 3, background: isHov ? '#22C55E' : day.value > 0 ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.03)', transition: 'all 0.15s' }} />
+                  <div style={{ width: '100%', maxWidth: chartRange === 7 ? 44 : 18, height: h, borderRadius: 3, background: isHov ? '#10B981' : day.value > 0 ? 'rgba(16,185,129,0.5)' : 'rgba(255,255,255,0.03)', transition: 'all 0.15s' }} />
                 </div>
               )
             })}
@@ -549,9 +549,9 @@ export default function OwnerPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
               <motion.div
-                animate={{ boxShadow: ['0 0 0 0 rgba(34,197,94,0)', '0 0 0 6px rgba(34,197,94,0.18)', '0 0 0 0 rgba(34,197,94,0)'] }}
+                animate={{ boxShadow: ['0 0 0 0 rgba(16,185,129,0)', '0 0 0 6px rgba(16,185,129,0.18)', '0 0 0 0 rgba(16,185,129,0)'] }}
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ width: 8, height: 8, borderRadius: '50%', background: '#22C55E', flexShrink: 0 }}
+                style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', flexShrink: 0 }}
               />
               Vendas recentes
             </h3>
@@ -572,17 +572,17 @@ export default function OwnerPage() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 18 }}
                     transition={{ duration: 0.38, ease }}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', borderRadius: 10, background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.12)', gap: 12 }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', borderRadius: 10, background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.12)', gap: 12 }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
                       </div>
                       <p style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.tenant_name}</p>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
                       <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{relativeTime(s.created_at)}</span>
-                      <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#22C55E' }}>+R$ {fmt(s.amount)}</span>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#10B981' }}>+R$ {fmt(s.amount)}</span>
                     </div>
                   </motion.div>
                 ))}
@@ -611,17 +611,17 @@ export default function OwnerPage() {
 
             {/* Linha de comparacao: receita bruta vs liquida */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
-              <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.1)' }}>
+              <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.1)' }}>
                 <p style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, margin: '0 0 3px' }}>Receita bruta</p>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#22C55E', margin: 0, fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.totalRevenue)}</p>
+                <p style={{ fontSize: 13, fontWeight: 800, color: '#10B981', margin: 0, fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.totalRevenue)}</p>
               </div>
               <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.12)' }}>
                 <p style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, margin: '0 0 3px' }}>Estornado</p>
                 <p style={{ fontSize: 13, fontWeight: 800, color: '#EF4444', margin: 0, fontFamily: 'var(--mono)' }}>-R$ {fmt(kpis.totalRefunded || 0)}</p>
               </div>
-              <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(59,130,246,0.04)', border: '1px solid rgba(59,130,246,0.12)' }}>
+              <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)' }}>
                 <p style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600, margin: '0 0 3px' }}>Receita liquida</p>
-                <p style={{ fontSize: 13, fontWeight: 800, color: '#3B82F6', margin: 0, fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.netRevenue || 0)}</p>
+                <p style={{ fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.78)', margin: 0, fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.netRevenue || 0)}</p>
               </div>
             </div>
 
@@ -676,18 +676,18 @@ export default function OwnerPage() {
           <motion.div {...fadeUp(0, 0.35)} style={{ ...card, padding: 24 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 16px' }}>Movimentacao da plataforma</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.1)' }}>
+              <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.1)' }}>
                 <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Depositado</p>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: '#22C55E', margin: 0, lineHeight: 1 }}><CountUp value={globalDep} prefix="R$ " /></p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: '#10B981', margin: 0, lineHeight: 1 }}><CountUp value={globalDep} prefix="R$ " /></p>
               </div>
               <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.1)' }}>
                 <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Sacado</p>
                 <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: '#EF4444', margin: 0, lineHeight: 1 }}><CountUp value={globalSaq} prefix="R$ " /></p>
               </div>
             </div>
-            <div style={{ padding: '12px 16px', borderRadius: 10, background: globalLiq >= 0 ? 'rgba(34,197,94,0.03)' : 'rgba(239,68,68,0.03)', border: `1px solid ${globalLiq >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '12px 16px', borderRadius: 10, background: globalLiq >= 0 ? 'rgba(16,185,129,0.03)' : 'rgba(239,68,68,0.03)', border: `1px solid ${globalLiq >= 0 ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: 10, color: '#64748B', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Liquido (dep - saq)</span>
-              <span style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: globalLiq >= 0 ? '#22C55E' : '#EF4444' }}>{globalLiq >= 0 ? '+' : ''}R$ {fmt(globalLiq)}</span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: globalLiq >= 0 ? '#10B981' : '#EF4444' }}>{globalLiq >= 0 ? '+' : ''}R$ {fmt(globalLiq)}</span>
             </div>
           </motion.div>
 
@@ -700,7 +700,7 @@ export default function OwnerPage() {
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {actions.map((a, i) => {
-                  const impactC = a.impact === 'Alto' ? '#EF4444' : '#F59E0B'
+                  const impactC = a.impact === 'Alto' ? '#EF4444' : 'rgba(255,255,255,0.78)'
                   return (
                     <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, delay: 0.3 + i * 0.08 }}
                       style={{ padding: '12px 14px', borderRadius: 12, background: 'rgba(229,57,53,0.03)', border: '1px solid rgba(229,57,53,0.08)' }}>
@@ -745,7 +745,7 @@ export default function OwnerPage() {
                       <span style={{ fontSize: 14, fontWeight: 900, color: medals[i] }}>{i + 1}</span>
                     </div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name || a.email.split('@')[0]}</p>
-                    <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: '#22C55E', margin: '6px 0 8px' }}>{a.metas} metas</p>
+                    <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: '#10B981', margin: '6px 0 8px' }}>{a.metas} metas</p>
                     <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${(a.metas / maxM) * 100}%`, borderRadius: 2, background: medals[i], opacity: 0.6 }} />
                     </div>
@@ -775,20 +775,20 @@ export default function OwnerPage() {
               </thead>
               <tbody>
                 {adminStats.filter(a => { if (!adminSearch.trim()) return true; const q = adminSearch.toLowerCase(); return (a.name || '').toLowerCase().includes(q) || (a.email || '').toLowerCase().includes(q) }).slice(0, 10).map((a, i) => {
-                  const planC = { PRO: { bg: 'rgba(34,197,94,0.08)', c: '#22C55E', b: 'rgba(34,197,94,0.2)' }, TRIAL: { bg: 'rgba(245,158,11,0.08)', c: '#F59E0B', b: 'rgba(245,158,11,0.2)' }, FREE: { bg: 'rgba(100,116,139,0.08)', c: '#64748B', b: 'rgba(100,116,139,0.2)' } }
+                  const planC = { PRO: { bg: 'rgba(16,185,129,0.08)', c: '#10B981', b: 'rgba(16,185,129,0.2)' }, TRIAL: { bg: 'rgba(255,255,255,0.08)', c: 'rgba(255,255,255,0.78)', b: 'rgba(255,255,255,0.2)' }, FREE: { bg: 'rgba(100,116,139,0.08)', c: '#64748B', b: 'rgba(100,116,139,0.2)' } }
                   const plan = planC[a.planStatus] || planC.FREE
                   const days = a.daysSinceActivity
-                  const dot = days <= 0 ? '#22C55E' : days <= 7 ? '#F59E0B' : '#EF4444'
+                  const dot = days <= 0 ? '#10B981' : days <= 7 ? 'rgba(255,255,255,0.78)' : '#EF4444'
                   return (
                     <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer' }}
                       onClick={() => setSelectedAdmin(a)}
                       onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontWeight: 700, color: i < 3 ? '#22C55E' : '#64748B', fontSize: 12 }}>{i + 1}</td>
+                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontWeight: 700, color: i < 3 ? '#10B981' : '#64748B', fontSize: 12 }}>{i + 1}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 28, height: 28, borderRadius: 7, background: i < 3 ? 'rgba(34,197,94,0.1)' : '#0c1424', border: `1px solid ${i < 3 ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: i < 3 ? '#22C55E' : '#94A3B8' }}>{(a.name || a.email)[0].toUpperCase()}</span>
+                          <div style={{ width: 28, height: 28, borderRadius: 7, background: i < 3 ? 'rgba(16,185,129,0.1)' : '#0c1424', border: `1px solid ${i < 3 ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: i < 3 ? '#10B981' : '#94A3B8' }}>{(a.name || a.email)[0].toUpperCase()}</span>
                             <div style={{ position: 'absolute', bottom: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: dot, border: '2px solid #0c1424' }} />
                           </div>
                           <div style={{ minWidth: 0 }}>
@@ -798,11 +798,11 @@ export default function OwnerPage() {
                       </td>
                       <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#F1F5F9' }}>{a.metas}</td>
                       <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 600, color: '#94A3B8' }}>{a.operators}</td>
-                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? '#22C55E' : '#EF4444' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</td>
+                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? '#10B981' : '#EF4444' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: plan.bg, color: plan.c, border: `1px solid ${plan.b}` }}>{a.planStatus}</span>
                       </td>
-                      <td style={{ padding: '10px 12px', fontSize: 10, color: days <= 0 ? '#22C55E' : days <= 7 ? '#94A3B8' : '#EF4444' }}>{relativeTime(a.lastActivity)}</td>
+                      <td style={{ padding: '10px 12px', fontSize: 10, color: days <= 0 ? '#10B981' : days <= 7 ? '#94A3B8' : '#EF4444' }}>{relativeTime(a.lastActivity)}</td>
                     </tr>
                   )
                 })}
@@ -819,7 +819,7 @@ export default function OwnerPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <span style={{ fontSize: 11, color: '#94A3B8' }}>Receita total</span>
-                <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: '#22C55E' }}>R$ <CountUp value={kpis.totalRevenue} /></span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 700, color: '#10B981' }}>R$ <CountUp value={kpis.totalRevenue} /></span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                 <span style={{ fontSize: 11, color: '#94A3B8' }}>Custos estimados</span>
@@ -828,9 +828,9 @@ export default function OwnerPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0' }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9' }}>Lucro liquido</span>
                 <motion.span
-                  animate={{ textShadow: ['0 0 10px rgba(34,197,94,0.1)', '0 0 25px rgba(34,197,94,0.2)', '0 0 10px rgba(34,197,94,0.1)'] }}
+                  animate={{ textShadow: ['0 0 10px rgba(16,185,129,0.1)', '0 0 25px rgba(16,185,129,0.2)', '0 0 10px rgba(16,185,129,0.1)'] }}
                   transition={{ duration: 3, repeat: Infinity }}
-                  style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 900, color: '#22C55E' }}>R$ <CountUp value={kpis.totalRevenue} /></motion.span>
+                  style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 900, color: '#10B981' }}>R$ <CountUp value={kpis.totalRevenue} /></motion.span>
               </div>
             </div>
           </motion.div>
@@ -841,7 +841,7 @@ export default function OwnerPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {adminStats.slice(0, 8).map((a, i) => {
                 const perf = a.metas > 5 && a.daysSinceActivity <= 3 ? 'high' : a.metas > 0 && a.daysSinceActivity <= 7 ? 'mid' : 'low'
-                const perfC = perf === 'high' ? '#22C55E' : perf === 'mid' ? '#F59E0B' : '#EF4444'
+                const perfC = perf === 'high' ? '#10B981' : perf === 'mid' ? 'rgba(255,255,255,0.78)' : '#EF4444'
                 const maxM = Math.max(...adminStats.slice(0, 8).map(x => x.metas), 1)
                 return (
                   <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', cursor: 'pointer' }} onClick={() => setSelectedAdmin(a)}>
@@ -865,8 +865,8 @@ export default function OwnerPage() {
             {[
               { l: 'Total admins', v: kpis.totalAdmins, c: '#F1F5F9' },
               { l: 'Total operadores', v: kpis.totalOperators, c: '#F1F5F9' },
-              { l: 'Total metas', v: kpis.totalMetas, c: '#22C55E' },
-              { l: 'Total remessas', v: kpis.totalRemessas, c: '#22C55E' },
+              { l: 'Total metas', v: kpis.totalMetas, c: '#10B981' },
+              { l: 'Total remessas', v: kpis.totalRemessas, c: '#10B981' },
             ].map((item, i) => (
               <motion.div key={i} {...fadeUp(i, 0.5)} style={{ ...card, padding: '18px 20px' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
@@ -905,18 +905,18 @@ export default function OwnerPage() {
                   <h3 style={{ fontSize: 18, fontWeight: 800, color: '#F1F5F9', margin: '0 0 2px' }}>{selectedAdmin.name || selectedAdmin.email.split('@')[0]}</h3>
                   <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>{selectedAdmin.email}</p>
                 </div>
-                {(() => { const planC = { PRO: { bg: 'rgba(34,197,94,0.08)', c: '#22C55E', b: 'rgba(34,197,94,0.2)' }, TRIAL: { bg: 'rgba(245,158,11,0.08)', c: '#F59E0B', b: 'rgba(245,158,11,0.2)' }, FREE: { bg: 'rgba(100,116,139,0.08)', c: '#64748B', b: 'rgba(100,116,139,0.2)' } }; const p = planC[selectedAdmin.planStatus] || planC.FREE; return <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 12px', borderRadius: 6, background: p.bg, color: p.c, border: `1px solid ${p.b}` }}>{selectedAdmin.planStatus}</span> })()}
+                {(() => { const planC = { PRO: { bg: 'rgba(16,185,129,0.08)', c: '#10B981', b: 'rgba(16,185,129,0.2)' }, TRIAL: { bg: 'rgba(255,255,255,0.08)', c: 'rgba(255,255,255,0.78)', b: 'rgba(255,255,255,0.2)' }, FREE: { bg: 'rgba(100,116,139,0.08)', c: '#64748B', b: 'rgba(100,116,139,0.2)' } }; const p = planC[selectedAdmin.planStatus] || planC.FREE; return <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 12px', borderRadius: 6, background: p.bg, color: p.c, border: `1px solid ${p.b}` }}>{selectedAdmin.planStatus}</span> })()}
               </div>
               {/* Lucro */}
-              <div style={{ padding: '16px 18px', borderRadius: 14, marginBottom: 14, background: (selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${(selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ padding: '16px 18px', borderRadius: 14, marginBottom: 14, background: (selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${(selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Lucro final</p>
                   <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>{selectedAdmin.totalContas || 0} contas · R$ {fmt(selectedAdmin.lucroPerConta || 0)}/conta</p>
                 </div>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: (selectedAdmin.lucroFinal || 0) >= 0 ? '#22C55E' : '#EF4444', margin: 0 }}>{(selectedAdmin.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(selectedAdmin.lucroFinal || 0)}</p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: (selectedAdmin.lucroFinal || 0) >= 0 ? '#10B981' : '#EF4444', margin: 0 }}>{(selectedAdmin.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(selectedAdmin.lucroFinal || 0)}</p>
               </div>
               <div className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
-                {[{ l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' }, { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#22C55E' }, { l: 'Ops', v: selectedAdmin.operators, c: '#F1F5F9' }, { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' }].map((s, i) => (
+                {[{ l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' }, { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#10B981' }, { l: 'Ops', v: selectedAdmin.operators, c: '#F1F5F9' }, { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' }].map((s, i) => (
                   <div key={i} style={{ textAlign: 'center', padding: '12px 6px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: s.c, margin: '0 0 3px' }}>{s.v}</p>
                     <p style={{ fontSize: 8, color: '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>{s.l}</p>
@@ -943,15 +943,15 @@ export default function OwnerPage() {
                         <span style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9' }}>{r.rede}</span>
                         <span style={{ fontSize: 10, color: '#64748B' }}>{r.metas}m</span>
                       </div>
-                      <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: r.lucro >= 0 ? '#22C55E' : '#EF4444' }}>{r.lucro >= 0 ? '+' : ''}R$ {fmt(r.lucro)}</span>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: r.lucro >= 0 ? '#10B981' : '#EF4444' }}>{r.lucro >= 0 ? '+' : ''}R$ {fmt(r.lucro)}</span>
                     </div>
                   ))}
                 </div>
               )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                 {[
-                  { l: 'Pago', v: `R$ ${fmt(selectedAdmin.totalPaid)}`, c: selectedAdmin.totalPaid > 0 ? '#22C55E' : '#64748B' },
-                  { l: 'Atividade', v: relativeTime(selectedAdmin.lastActivity), c: selectedAdmin.daysSinceActivity <= 0 ? '#22C55E' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444' },
+                  { l: 'Pago', v: `R$ ${fmt(selectedAdmin.totalPaid)}`, c: selectedAdmin.totalPaid > 0 ? '#10B981' : '#64748B' },
+                  { l: 'Atividade', v: relativeTime(selectedAdmin.lastActivity), c: selectedAdmin.daysSinceActivity <= 0 ? '#10B981' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444' },
                   { l: 'Criado', v: selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '--', c: '#94A3B8' },
                 ].map((s, i) => (
                   <div key={i} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>

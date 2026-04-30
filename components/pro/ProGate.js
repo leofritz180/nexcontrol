@@ -28,12 +28,12 @@ export function ProLockedCard({ title, description, icon, children }) {
             {icon && (
               <div style={{
                 width:34, height:34, borderRadius:10,
-                background: hovered?'rgba(229,57,53,0.1)':'rgba(34,197,94,0.08)',
-                border:`1px solid ${hovered?'rgba(229,57,53,0.2)':'rgba(34,197,94,0.15)'}`,
+                background: hovered?'rgba(229,57,53,0.1)':'rgba(16,185,129,0.08)',
+                border:`1px solid ${hovered?'rgba(229,57,53,0.2)':'rgba(16,185,129,0.15)'}`,
                 display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0,
                 transition:'all 0.3s',
               }}>
-                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={hovered?'#ff4444':'#22C55E'} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ transition:'stroke 0.3s' }}>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={hovered?'#ff4444':'#10B981'} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ transition:'stroke 0.3s' }}>
                   <path d={icon}/>
                 </svg>
               </div>
@@ -65,8 +65,8 @@ export function ProLockedCard({ title, description, icon, children }) {
           }}>
             {children || (
               <div>
-                <div style={{ height:14, width:'75%', background:'rgba(34,197,94,0.08)', borderRadius:4, marginBottom:6 }}/>
-                <div style={{ height:20, width:'55%', background:'rgba(34,197,94,0.06)', borderRadius:4, marginBottom:6 }}/>
+                <div style={{ height:14, width:'75%', background:'rgba(16,185,129,0.08)', borderRadius:4, marginBottom:6 }}/>
+                <div style={{ height:20, width:'55%', background:'rgba(16,185,129,0.06)', borderRadius:4, marginBottom:6 }}/>
                 <div style={{ height:10, width:'45%', background:'rgba(255,255,255,0.04)', borderRadius:3 }}/>
               </div>
             )}

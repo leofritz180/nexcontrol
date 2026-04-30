@@ -19,7 +19,7 @@ function Stars({ count }) {
   return (
     <div style={{ display: 'flex', gap: 2 }}>
       {[1, 2, 3].map(i => (
-        <svg key={i} width={12} height={12} viewBox="0 0 24 24" fill={i <= count ? '#F59E0B' : 'none'} stroke={i <= count ? '#F59E0B' : 'rgba(255,255,255,0.15)'} strokeWidth="1.5">
+        <svg key={i} width={12} height={12} viewBox="0 0 24 24" fill={i <= count ? 'rgba(255,255,255,0.78)' : 'none'} stroke={i <= count ? 'rgba(255,255,255,0.78)' : 'rgba(255,255,255,0.15)'} strokeWidth="1.5">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
         </svg>
       ))}
@@ -54,7 +54,7 @@ function SlotCard({ slot, index, isPro }) {
   }
 
   const isAlta = slot.performance === 'alta'
-  const lvColor = isAlta ? '#22c55e' : slot.performance === 'baixa' ? '#60a5fa' : '#f59e0b'
+  const lvColor = isAlta ? '#10b981' : slot.performance === 'baixa' ? '#60a5fa' : 'rgba(255,255,255,0.78)'
 
   return (
     <motion.div
@@ -94,7 +94,7 @@ function SlotCard({ slot, index, isPro }) {
       {/* Image area */}
       <div style={{
         position: 'relative', aspectRatio: '16/10',
-        background: `linear-gradient(135deg, ${isAlta ? 'rgba(229,57,53,0.08)' : 'rgba(245,158,11,0.08)'}, rgba(255,255,255,0.02))`,
+        background: `linear-gradient(135deg, ${isAlta ? 'rgba(229,57,53,0.08)' : 'rgba(255,255,255,0.08)'}, rgba(255,255,255,0.02))`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
       }}>
@@ -114,7 +114,7 @@ function SlotCard({ slot, index, isPro }) {
         ) : (
           <div style={{
             position: 'absolute', inset: 0,
-            background: `linear-gradient(145deg, #151c2c, ${isAlta ? 'rgba(229,57,53,0.12)' : 'rgba(245,158,11,0.12)'})`,
+            background: `linear-gradient(145deg, #151c2c, ${isAlta ? 'rgba(229,57,53,0.12)' : 'rgba(255,255,255,0.12)'})`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             {!locked && <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.15)', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center', padding: '0 12px' }}>{slot.name}</p>}
@@ -218,9 +218,9 @@ function SlotCard({ slot, index, isPro }) {
             style={{
               width: '100%', padding: '10px 14px', borderRadius: 10,
               fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
-              background: copied ? 'rgba(34,197,94,0.12)' : 'rgba(229,57,53,0.08)',
-              color: copied ? '#22c55e' : '#e53935',
-              border: `1px solid ${copied ? 'rgba(34,197,94,0.2)' : 'rgba(229,57,53,0.15)'}`,
+              background: copied ? 'rgba(16,185,129,0.12)' : 'rgba(229,57,53,0.08)',
+              color: copied ? '#10b981' : '#e53935',
+              border: `1px solid ${copied ? 'rgba(16,185,129,0.2)' : 'rgba(229,57,53,0.15)'}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               transition: 'all 0.2s',
             }}
@@ -374,8 +374,8 @@ export default function SlotsPage() {
             }}>
               {[
                 { label: 'Total', value: filtered.length, color: 'rgba(255,255,255,0.6)' },
-                { label: 'Alta performance', value: filtered.filter(s => s.performance === 'alta').length, color: '#22c55e' },
-                { label: 'Media', value: filtered.filter(s => s.performance === 'media').length, color: '#f59e0b' },
+                { label: 'Alta performance', value: filtered.filter(s => s.performance === 'alta').length, color: '#10b981' },
+                { label: 'Media', value: filtered.filter(s => s.performance === 'media').length, color: 'rgba(255,255,255,0.78)' },
               ].map((s, i) => (
                 <div key={i} style={{
                   padding: '10px 18px', borderRadius: 10,

@@ -6,7 +6,7 @@ import { supabase } from '../../../lib/supabase/client'
 import AppLayout from '../../../components/AppLayout'
 
 const ADMIN_EMAIL = 'leofritz180@gmail.com'
-const AMBER = '#F59E0B'
+const AMBER = 'rgba(255,255,255,0.78)'
 const AMBER_DK = '#D97706'
 const ease = [0.33, 1, 0.68, 1]
 const fadeUp = (i) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.4, delay: i * 0.05, ease } })
@@ -15,7 +15,7 @@ const fadeUp = (i) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, 
 function Spinner() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
-      <div style={{ width: 36, height: 36, border: `3px solid rgba(245,158,11,0.2)`, borderTopColor: AMBER, borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: 36, height: 36, border: `3px solid rgba(255,255,255,0.2)`, borderTopColor: AMBER, borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
@@ -102,7 +102,7 @@ function LessonRow({ lesson, idx, total, onSave, onDelete, onMove }) {
           <ArrowBtns onUp={() => onMove('up')} onDown={() => onMove('down')} disableUp={idx === 0} disableDown={idx === total - 1} />
           <span style={{ fontSize: 12, color: 'var(--t2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lesson.title || 'Sem titulo'}</span>
           <span style={{ fontSize: 10, color: 'var(--t4)', flexShrink: 0 }}>{lesson.duration_min || 0}min</span>
-          <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: lesson.status === 'published' ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.15)', color: lesson.status === 'published' ? '#22c55e' : AMBER, fontWeight: 600, flexShrink: 0 }}>{lesson.status}</span>
+          <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: lesson.status === 'published' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.15)', color: lesson.status === 'published' ? '#10b981' : AMBER, fontWeight: 600, flexShrink: 0 }}>{lesson.status}</span>
         </div>
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
           <Btn small outline onClick={() => setEditing(!editing)}>{editing ? 'Fechar' : 'Editar'}</Btn>
@@ -185,7 +185,7 @@ function CourseForm({ initial, onSave, onCancel, saving }) {
 
   return (
     <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.25 }}
-      style={{ padding: 20, background: 'var(--raised)', borderRadius: 14, border: `1px solid rgba(245,158,11,0.2)`, marginBottom: 16 }}>
+      style={{ padding: 20, background: 'var(--raised)', borderRadius: 14, border: `1px solid rgba(255,255,255,0.2)`, marginBottom: 16 }}>
       <p style={{ fontSize: 14, fontWeight: 700, color: AMBER, marginBottom: 14 }}>{initial ? 'Editar Curso' : 'Criar Curso'}</p>
       <Field label="Titulo" value={f.title} onChange={v => set('title', v)} />
       <Field label="Descricao" value={f.description} onChange={v => set('description', v)} multiline />
@@ -405,7 +405,7 @@ export default function AulasAdminPage() {
               style={{
                 marginBottom: 14, borderRadius: 14, overflow: 'hidden',
                 background: 'linear-gradient(145deg, var(--surface), var(--raised))',
-                border: `1px solid ${isExpanded ? 'rgba(245,158,11,0.25)' : 'var(--b1)'}`,
+                border: `1px solid ${isExpanded ? 'rgba(255,255,255,0.25)' : 'var(--b1)'}`,
                 transition: 'border 0.3s',
               }}>
               {/* Course Header */}
@@ -416,8 +416,8 @@ export default function AulasAdminPage() {
                     <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)' }}>{course.title || 'Sem titulo'}</span>
                     <span style={{
                       fontSize: 9, padding: '2px 8px', borderRadius: 4, fontWeight: 700, textTransform: 'uppercase',
-                      background: course.status === 'published' ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.15)',
-                      color: course.status === 'published' ? '#22c55e' : AMBER,
+                      background: course.status === 'published' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.15)',
+                      color: course.status === 'published' ? '#10b981' : AMBER,
                     }}>{course.status}</span>
                     {course.category && <span style={{ fontSize: 10, color: 'var(--t3)', background: 'var(--base)', padding: '2px 8px', borderRadius: 4 }}>{course.category}</span>}
                   </div>

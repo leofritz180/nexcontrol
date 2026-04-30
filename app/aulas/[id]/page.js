@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../../lib/supabase/client'
 import AppLayout from '../../../components/AppLayout'
 
-const AMBER = '#F59E0B'
+const AMBER = 'rgba(255,255,255,0.78)'
 const AMBER_DK = '#D97706'
 const ease = [0.33, 1, 0.68, 1]
 const fadeUp = (i) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.4, delay: i * 0.05, ease } })
@@ -14,7 +14,7 @@ const fadeUp = (i) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, 
 function Spinner() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
-      <div style={{ width: 36, height: 36, border: `3px solid rgba(245,158,11,0.2)`, borderTopColor: AMBER, borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: 36, height: 36, border: `3px solid rgba(255,255,255,0.2)`, borderTopColor: AMBER, borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
@@ -38,7 +38,7 @@ function ProgressBar({ percent, height = 8 }) {
 function CheckIcon({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="8" fill="#22c55e" />
+      <circle cx="8" cy="8" r="8" fill="#10b981" />
       <path d="M4.5 8.5L7 11L11.5 5.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -129,8 +129,8 @@ export default function CourseDetailPage() {
         {/* ── Course Banner ── */}
         <motion.div {...fadeUp(0)} style={{
           padding: '32px 28px', borderRadius: 18, marginBottom: 24, position: 'relative', overflow: 'hidden',
-          background: `linear-gradient(145deg, rgba(245,158,11,0.12), var(--surface) 60%)`,
-          border: '1px solid rgba(245,158,11,0.18)',
+          background: `linear-gradient(145deg, rgba(255,255,255,0.12), var(--surface) 60%)`,
+          border: '1px solid rgba(255,255,255,0.18)',
         }}>
           {course?.thumb_url && (
             <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: `url(${course.thumb_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
@@ -138,7 +138,7 @@ export default function CourseDetailPage() {
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
               {course?.category && (
-                <span style={{ fontSize: 10, fontWeight: 700, color: AMBER, background: 'rgba(245,158,11,0.15)', padding: '3px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{course.category}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: AMBER, background: 'rgba(255,255,255,0.15)', padding: '3px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{course.category}</span>
               )}
               <span style={{ fontSize: 10, color: 'var(--t3)' }}>{totalLessons} aulas</span>
             </div>
@@ -162,10 +162,10 @@ export default function CourseDetailPage() {
             }} style={{
               padding: '12px 28px', fontSize: 14, fontWeight: 700, borderRadius: 10, border: 'none', cursor: 'pointer',
               background: `linear-gradient(135deg, ${AMBER}, ${AMBER_DK})`, color: '#000',
-              boxShadow: '0 4px 20px rgba(245,158,11,0.3)', transition: 'transform 0.2s, box-shadow 0.2s',
+              boxShadow: '0 4px 20px rgba(255,255,255,0.3)', transition: 'transform 0.2s, box-shadow 0.2s',
             }}
-              onMouseEnter={e => { e.target.style.transform = 'translateY(-1px)'; e.target.style.boxShadow = '0 6px 28px rgba(245,158,11,0.4)' }}
-              onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(245,158,11,0.3)' }}>
+              onMouseEnter={e => { e.target.style.transform = 'translateY(-1px)'; e.target.style.boxShadow = '0 6px 28px rgba(255,255,255,0.4)' }}
+              onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 20px rgba(255,255,255,0.3)' }}>
               {percent > 0 && percent < 100 ? 'Continuar curso' : percent === 100 ? 'Rever curso' : 'Comecar agora'}
             </button>
           </div>
@@ -184,7 +184,7 @@ export default function CourseDetailPage() {
           return (
             <motion.div key={mod.id} {...fadeUp(mi + 2)} style={{
               marginBottom: 8, borderRadius: 12, overflow: 'hidden',
-              background: 'var(--surface)', border: `1px solid ${isExpanded ? 'rgba(245,158,11,0.18)' : 'var(--b1)'}`,
+              background: 'var(--surface)', border: `1px solid ${isExpanded ? 'rgba(255,255,255,0.18)' : 'var(--b1)'}`,
               transition: 'border 0.3s',
             }}>
               {/* Module Header */}
@@ -194,8 +194,8 @@ export default function CourseDetailPage() {
                   <span style={{
                     width: 28, height: 28, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 11, fontWeight: 800, flexShrink: 0,
-                    background: modCompleted === modLessons.length && modLessons.length > 0 ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.1)',
-                    color: modCompleted === modLessons.length && modLessons.length > 0 ? '#22c55e' : AMBER,
+                    background: modCompleted === modLessons.length && modLessons.length > 0 ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.1)',
+                    color: modCompleted === modLessons.length && modLessons.length > 0 ? '#10b981' : AMBER,
                   }}>{mi + 1}</span>
                   <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mod.title}</p>
@@ -222,7 +222,7 @@ export default function CourseDetailPage() {
                               borderRadius: 8, cursor: 'pointer', transition: 'background 0.2s',
                               background: 'transparent',
                             }}
-                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(245,158,11,0.06)'}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                             <div style={{ width: 20, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
                               {isCompleted ? <CheckIcon size={18} /> : (

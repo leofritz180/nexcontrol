@@ -129,9 +129,9 @@ function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
 /* ── Status badge ── */
 function StatusBadge({ status }) {
   const cfg = {
-    ativa: { bg: 'rgba(34,197,94,0.12)', color: '#22C55E', border: 'rgba(34,197,94,0.25)', label: 'ATIVA' },
-    finalizada: { bg: 'rgba(245,158,11,0.12)', color: '#F59E0B', border: 'rgba(245,158,11,0.25)', label: 'Finalizada' },
-    fechada: { bg: 'rgba(59,130,246,0.12)', color: '#3B82F6', border: 'rgba(59,130,246,0.25)', label: 'Fechada' },
+    ativa: { bg: 'rgba(16,185,129,0.12)', color: '#10B981', border: 'rgba(16,185,129,0.25)', label: 'ATIVA' },
+    finalizada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Finalizada' },
+    fechada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Fechada' },
   }
   const c = cfg[status] || cfg.ativa
   return (
@@ -165,15 +165,15 @@ function MilestoneBadge({ label, achieved }) {
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
       padding: '8px 12px', borderRadius: 8,
-      background: achieved ? 'rgba(34,197,94,0.08)' : 'var(--raised)',
-      border: `1px solid ${achieved ? 'rgba(34,197,94,0.2)' : 'var(--b1)'}`,
+      background: achieved ? 'rgba(16,185,129,0.08)' : 'var(--raised)',
+      border: `1px solid ${achieved ? 'rgba(16,185,129,0.2)' : 'var(--b1)'}`,
       opacity: achieved ? 1 : 0.4,
     }}>
       <div style={{
         width: 20, height: 20, borderRadius: 6,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: achieved ? 'rgba(34,197,94,0.15)' : 'transparent',
-        color: achieved ? '#22C55E' : 'var(--t4)',
+        background: achieved ? 'rgba(16,185,129,0.15)' : 'transparent',
+        color: achieved ? '#10B981' : 'var(--t4)',
       }}>
         {achieved ? <IconCheck /> : <IconLock />}
       </div>
@@ -212,7 +212,7 @@ function DemoOperatorDashboard({ onCreateMeta }) {
   const totalSaq = demoRem.reduce((a, r) => a + Number(r.saque || 0), 0)
 
   const insight = DEMO_INSIGHTS[insightIdx]
-  const insightColors = { profit: '#22C55E', loss: '#EF4444', warn: '#F59E0B', info: '#e53935' }
+  const insightColors = { profit: '#10B981', loss: '#EF4444', warn: 'rgba(255,255,255,0.78)', info: '#e53935' }
 
   return (
     <div>
@@ -288,12 +288,12 @@ function DemoOperatorDashboard({ onCreateMeta }) {
             style={{
               padding: 28, borderRadius: 16,
               background: 'var(--surface)',
-              border: '2px solid rgba(34,197,94,0.3)',
-              boxShadow: '0 0 30px rgba(34,197,94,0.06)',
+              border: '2px solid rgba(16,185,129,0.3)',
+              boxShadow: '0 0 30px rgba(16,185,129,0.06)',
               position: 'relative', overflow: 'hidden', marginBottom: 16,
             }}
           >
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #22C55E, rgba(34,197,94,0.3))' }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #10B981, rgba(16,185,129,0.3))' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
               <h3 style={{ fontSize: 24, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>
                 {demoMeta.quantidade_contas} DEP {demoMeta.rede}
@@ -313,7 +313,7 @@ function DemoOperatorDashboard({ onCreateMeta }) {
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 1.2, ease: [0.33, 1, 0.68, 1] }}
-                  style={{ height: '100%', borderRadius: 4, background: 'linear-gradient(90deg, #22C55E, #16A34A)' }}
+                  style={{ height: '100%', borderRadius: 4, background: 'linear-gradient(90deg, #10B981, #16A34A)' }}
                 />
               </div>
             </div>
@@ -450,7 +450,7 @@ function DemoOperatorDashboard({ onCreateMeta }) {
             style={{ padding: 22, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22C55E', animation: 'demoPulse 2s infinite' }} />
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'demoPulse 2s infinite' }} />
               <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Atividade recente</h3>
             </div>
             <div style={{ minHeight: 32 }}>
@@ -941,14 +941,14 @@ export default function OperatorPage() {
                     {/* Boas praticas */}
                     <div style={{ padding: '16px 18px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--b1)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                         <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>Boas praticas</span>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {[
-                          { text: 'Lucro ou ate R$ 5/conta', sub: 'Bom resultado', color: 'var(--profit)', dot: 'rgba(34,197,94,0.5)' },
+                          { text: 'Lucro ou ate R$ 5/conta', sub: 'Bom resultado', color: 'var(--profit)', dot: 'rgba(16,185,129,0.5)' },
                           { text: 'De R$ 5 a R$ 10/conta', sub: 'Normal de acontecer', color: 'var(--t2)', dot: 'rgba(148,163,184,0.5)' },
-                          { text: 'De R$ 10 a R$ 14/conta', sub: 'Comeca a comprometer', color: 'var(--warn)', dot: 'rgba(245,158,11,0.5)' },
+                          { text: 'De R$ 10 a R$ 14/conta', sub: 'Comeca a comprometer', color: 'var(--warn)', dot: 'rgba(255,255,255,0.5)' },
                           { text: 'Acima de R$ 14/conta', sub: 'Resultado ruim, atencao', color: 'var(--loss)', dot: 'rgba(239,68,68,0.5)' },
                         ].map((tip, i) => (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1177,14 +1177,14 @@ export default function OperatorPage() {
                           padding: 28,
                           borderRadius: 16,
                           background: 'var(--surface)',
-                          border: '2px solid rgba(34,197,94,0.3)',
-                          boxShadow: '0 0 30px rgba(34,197,94,0.06)',
+                          border: '2px solid rgba(16,185,129,0.3)',
+                          boxShadow: '0 0 30px rgba(16,185,129,0.06)',
                           position: 'relative',
                           overflow: 'hidden',
                         }}
                       >
                         {/* Green accent line at top */}
-                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #22C55E, rgba(34,197,94,0.3))' }} />
+                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #10B981, rgba(16,185,129,0.3))' }} />
 
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -1211,7 +1211,7 @@ export default function OperatorPage() {
                               transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
                               style={{
                                 height: '100%', borderRadius: 4,
-                                background: 'linear-gradient(90deg, #22C55E, #16A34A)',
+                                background: 'linear-gradient(90deg, #10B981, #16A34A)',
                               }}
                             />
                           </div>
@@ -1243,12 +1243,12 @@ export default function OperatorPage() {
                             width: '100%', padding: '14px 28px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                             fontSize: 14, fontWeight: 700, color: '#fff',
-                            background: '#22C55E', border: 'none', borderRadius: 11,
-                            cursor: 'pointer', boxShadow: '0 4px 16px rgba(34,197,94,0.3)',
+                            background: '#10B981', border: 'none', borderRadius: 11,
+                            cursor: 'pointer', boxShadow: '0 4px 16px rgba(16,185,129,0.3)',
                             transition: 'all 0.2s ease',
                           }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#16A34A' }}
-                          onMouseLeave={e => { e.currentTarget.style.background = '#22C55E' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#10B981' }}
                         >
                           <IconPlay /> Continuar operando
                         </button>
@@ -1381,14 +1381,14 @@ export default function OperatorPage() {
                 style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                  <div style={{ color: '#F59E0B' }}><IconAward /></div>
+                  <div style={{ color: 'rgba(255,255,255,0.78)' }}><IconAward /></div>
                   <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Ranking pessoal</h3>
                 </div>
                 <div style={{
                   padding: '14px 16px', borderRadius: 10, background: 'var(--raised)',
                   textAlign: 'center',
                 }}>
-                  <p style={{ fontFamily: 'var(--mono)', fontSize: 28, fontWeight: 800, color: '#F59E0B', margin: '0 0 4px', lineHeight: 1 }}>
+                  <p style={{ fontFamily: 'var(--mono)', fontSize: 28, fontWeight: 800, color: 'rgba(255,255,255,0.78)', margin: '0 0 4px', lineHeight: 1 }}>
                     {perfStats.totalDeps}
                   </p>
                   <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>depositantes totais</p>
@@ -1416,13 +1416,13 @@ export default function OperatorPage() {
                 style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <div style={{ color: alertas.total > 0 ? '#F59E0B' : 'var(--t3)' }}><IconAlert /></div>
+                  <div style={{ color: alertas.total > 0 ? 'rgba(255,255,255,0.78)' : 'var(--t3)' }}><IconAlert /></div>
                   <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Alertas</h3>
                   {alertas.total > 0 && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10,
-                      background: 'rgba(245,158,11,0.15)', color: '#F59E0B',
-                      border: '1px solid rgba(245,158,11,0.25)',
+                      background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.78)',
+                      border: '1px solid rgba(255,255,255,0.25)',
                     }}>
                       {alertas.total}
                     </span>
@@ -1436,10 +1436,10 @@ export default function OperatorPage() {
                       <div style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                         padding: '8px 12px', borderRadius: 8,
-                        background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)',
+                        background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
                       }}>
-                        <span style={{ fontSize: 12, color: '#F59E0B', fontWeight: 600 }}>Saque pendente</span>
-                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: '#F59E0B' }}>{alertas.sp}</span>
+                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.78)', fontWeight: 600 }}>Saque pendente</span>
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>{alertas.sp}</span>
                       </div>
                     )}
                     {alertas.cb > 0 && (
@@ -1456,10 +1456,10 @@ export default function OperatorPage() {
                       <div style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                         padding: '8px 12px', borderRadius: 8,
-                        background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)',
+                        background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
                       }}>
-                        <span style={{ fontSize: 12, color: '#3B82F6', fontWeight: 600 }}>Banco em analise</span>
-                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: '#3B82F6' }}>{alertas.ba}</span>
+                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.78)', fontWeight: 600 }}>Banco em analise</span>
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>{alertas.ba}</span>
                       </div>
                     )}
                   </div>

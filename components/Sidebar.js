@@ -144,11 +144,11 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               display:'flex', alignItems:'center', justifyContent:'center', gap:8,
               padding:'10px 14px', borderRadius:8, textDecoration:'none',
               fontSize:12, fontWeight:500, color:'#fff',
-              background:'#3b82f6', border:'none',
+              background:'rgba(255,255,255,0.78)', border:'none',
               transition:'background 0.15s',
             }}
             onMouseEnter={e=>{e.currentTarget.style.background='#2563eb'}}
-            onMouseLeave={e=>{e.currentTarget.style.background='#3b82f6'}}
+            onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.78)'}}
           >
             Desbloquear PRO
           </Link>
@@ -158,7 +158,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* ── Plan status — minimal ── */}
       <div style={{ padding:'0 12px 12px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 12px' }}>
-          <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'#22c55e':'#9ca3af' }}/>
+          <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'#10b981':'#9ca3af' }}/>
           <span style={{ fontSize:11, color:'var(--t3)', fontWeight:400 }}>
             {subActive?'PRO ativo':'Trial · 3 dias'}
           </span>

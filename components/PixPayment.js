@@ -153,9 +153,9 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                   <span style={{ fontSize: 16 }}>⚡</span> Gerar QR Code Pix
                 </button>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, marginTop: 16, padding: '8px 14px', borderRadius: 10, background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.1)' }}>
-                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  <span style={{ fontSize: 11, color: 'rgba(34,197,94,0.75)', fontWeight: 600, letterSpacing: '0.02em' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, marginTop: 16, padding: '8px 14px', borderRadius: 10, background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.1)' }}>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <span style={{ fontSize: 11, color: 'rgba(16,185,129,0.75)', fontWeight: 600, letterSpacing: '0.02em' }}>
                     Pagamento 100% seguro via Mercado Pago
                   </span>
                 </div>
@@ -233,10 +233,10 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                       fontSize: 14, fontWeight: 700, fontFamily: 'inherit',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                       transition: 'all 0.2s',
-                      background: copied ? 'rgba(34,197,94,0.15)' : 'linear-gradient(145deg, #e53935, #c62828)',
-                      color: copied ? '#22C55E' : 'white',
+                      background: copied ? 'rgba(16,185,129,0.15)' : 'linear-gradient(145deg, #e53935, #c62828)',
+                      color: copied ? '#10B981' : 'white',
                       boxShadow: copied
-                        ? '0 0 0 1px rgba(34,197,94,0.3) inset'
+                        ? '0 0 0 1px rgba(16,185,129,0.3) inset'
                         : '0 4px 20px rgba(229,57,53,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
                     }}
                   >
@@ -257,11 +257,11 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 {/* Status aguardando */}
                 <div style={{
                   padding: '10px 14px', borderRadius: 10,
-                  background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.15)',
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}>
                   <div style={{
-                    width: 8, height: 8, borderRadius: '50%', background: '#F59E0B',
+                    width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.78)',
                     animation: 'pix-ping 1.6s ease-in-out infinite',
                   }}/>
                   <span style={{ fontSize: 12, color: '#FCD34D', fontWeight: 600, letterSpacing: '0.02em' }}>
@@ -276,22 +276,22 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
               <div style={{ textAlign: 'center', padding: '8px 0', animation: 'pix-fade-in 0.35s ease-out both' }}>
                 <div style={{
                   width: 68, height: 68, borderRadius: '50%',
-                  background: 'rgba(34,197,94,0.15)', border: '2px solid rgba(34,197,94,0.4)',
+                  background: 'rgba(16,185,129,0.15)', border: '2px solid rgba(16,185,129,0.4)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 18px',
                   animation: 'pix-pop 0.5s cubic-bezier(0.33,1.4,0.68,1) both',
-                  boxShadow: '0 0 40px rgba(34,197,94,0.25)',
+                  boxShadow: '0 0 40px rgba(16,185,129,0.25)',
                 }}>
-                  <svg width={34} height={34} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg width={34} height={34} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
-                <h3 style={{ fontSize: 19, fontWeight: 800, color: '#22C55E', margin: '0 0 6px' }}>
+                <h3 style={{ fontSize: 19, fontWeight: 800, color: '#10B981', margin: '0 0 6px' }}>
                   ✅ Pagamento confirmado!
                 </h3>
                 <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 18px' }}>
                   Liberando acesso...
                 </p>
-                <div style={{ width: '100%', height: 3, borderRadius: 2, overflow: 'hidden', background: 'rgba(34,197,94,0.08)' }}>
-                  <div style={{ height: '100%', background: '#22C55E', animation: 'pix-bar 1.8s linear both', transformOrigin: 'left' }}/>
+                <div style={{ width: '100%', height: 3, borderRadius: 2, overflow: 'hidden', background: 'rgba(16,185,129,0.08)' }}>
+                  <div style={{ height: '100%', background: '#10B981', animation: 'pix-bar 1.8s linear both', transformOrigin: 'left' }}/>
                 </div>
               </div>
             )}
@@ -351,8 +351,8 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
           50%     { box-shadow: 0 0 48px rgba(229,57,53,0.32) }
         }
         @keyframes pix-ping {
-          0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.5) }
-          70%     { box-shadow: 0 0 0 7px rgba(245,158,11,0) }
+          0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.5) }
+          70%     { box-shadow: 0 0 0 7px rgba(255,255,255,0) }
         }
         @keyframes pix-pop {
           0%   { opacity: 0; transform: scale(0.5) }

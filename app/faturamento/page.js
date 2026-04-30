@@ -391,27 +391,27 @@ export default function FaturamentoPage() {
               position:'relative', overflow:'hidden', borderRadius:18, padding:'36px 36px 32px',
               background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
               backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
-              border:`1px solid ${stats.lucroFinal>=0?'rgba(34,197,94,0.18)':'rgba(239,68,68,0.18)'}`,
-              boxShadow:`0 10px 40px rgba(0,0,0,0.5), 0 0 60px ${stats.lucroFinal>=0?'rgba(34,197,94,0.08)':'rgba(239,68,68,0.08)'}, inset 0 1px 0 rgba(255,255,255,0.05)`,
+              border:`1px solid ${stats.lucroFinal>=0?'rgba(16,185,129,0.18)':'rgba(239,68,68,0.18)'}`,
+              boxShadow:`0 10px 40px rgba(0,0,0,0.5), 0 0 60px ${stats.lucroFinal>=0?'rgba(16,185,129,0.08)':'rgba(239,68,68,0.08)'}, inset 0 1px 0 rgba(255,255,255,0.05)`,
             }}>
-              <div style={{position:'absolute',top:'5%',left:'0%',width:500,height:380,borderRadius:'50%',background:`radial-gradient(circle, ${stats.lucroFinal>=0?'rgba(34,197,94,0.13)':'rgba(239,68,68,0.13)'}, transparent 60%)`,filter:'blur(60px)',pointerEvents:'none'}}/>
-              <div style={{position:'absolute',top:0,left:'12%',right:'12%',height:1,background:`linear-gradient(90deg, transparent, ${stats.lucroFinal>=0?'rgba(34,197,94,0.5)':'rgba(239,68,68,0.5)'}, transparent)`,pointerEvents:'none'}}/>
+              <div style={{position:'absolute',top:'5%',left:'0%',width:500,height:380,borderRadius:'50%',background:`radial-gradient(circle, ${stats.lucroFinal>=0?'rgba(16,185,129,0.13)':'rgba(239,68,68,0.13)'}, transparent 60%)`,filter:'blur(60px)',pointerEvents:'none'}}/>
+              <div style={{position:'absolute',top:0,left:'12%',right:'12%',height:1,background:`linear-gradient(90deg, transparent, ${stats.lucroFinal>=0?'rgba(16,185,129,0.5)':'rgba(239,68,68,0.5)'}, transparent)`,pointerEvents:'none'}}/>
 
               {/* Mini sparkline de fundo (sutil) */}
               <svg style={{ position:'absolute', bottom:0, left:0, right:0, pointerEvents:'none', opacity:0.22 }} viewBox="0 0 400 80" preserveAspectRatio="none" width="100%" height="80">
                 <defs>
                   <linearGradient id="fatHeroArea" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor={stats.lucroFinal>=0?'#22C55E':'#EF4444'} stopOpacity="0.2"/>
-                    <stop offset="100%" stopColor={stats.lucroFinal>=0?'#22C55E':'#EF4444'} stopOpacity="0"/>
+                    <stop offset="0%" stopColor={stats.lucroFinal>=0?'#10B981':'#EF4444'} stopOpacity="0.2"/>
+                    <stop offset="100%" stopColor={stats.lucroFinal>=0?'#10B981':'#EF4444'} stopOpacity="0"/>
                   </linearGradient>
                 </defs>
                 <path d="M0,60 L40,55 L80,48 L120,50 L160,40 L200,34 L240,38 L280,26 L320,20 L360,12 L400,6 L400,80 L0,80 Z" fill="url(#fatHeroArea)"/>
-                <path d="M0,60 L40,55 L80,48 L120,50 L160,40 L200,34 L240,38 L280,26 L320,20 L360,12 L400,6" fill="none" stroke={stats.lucroFinal>=0?'#22C55E':'#EF4444'} strokeWidth="1.8" strokeLinecap="round" strokeOpacity="0.6"/>
+                <path d="M0,60 L40,55 L80,48 L120,50 L160,40 L200,34 L240,38 L280,26 L320,20 L360,12 L400,6" fill="none" stroke={stats.lucroFinal>=0?'#10B981':'#EF4444'} strokeWidth="1.8" strokeLinecap="round" strokeOpacity="0.6"/>
               </svg>
 
               <div style={{position:'relative',zIndex:1}}>
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
-                  <div style={{ width:3, height:12, borderRadius:2, background: stats.lucroFinal>=0?'#22C55E':'#EF4444', boxShadow:`0 0 10px ${stats.lucroFinal>=0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)'}` }}/>
+                  <div style={{ width:3, height:12, borderRadius:2, background: stats.lucroFinal>=0?'#10B981':'#EF4444', boxShadow:`0 0 10px ${stats.lucroFinal>=0?'rgba(16,185,129,0.7)':'rgba(239,68,68,0.7)'}` }}/>
                   <p style={{fontSize:10, color:'var(--t4)', fontWeight:800, letterSpacing:'0.14em', textTransform:'uppercase', margin:0}}>
                     Receita consolidada
                   </p>
@@ -420,20 +420,20 @@ export default function FaturamentoPage() {
 
                 <p style={{fontFamily:'var(--mono)',fontSize:56,fontWeight:900,lineHeight:1,letterSpacing:'-0.035em',margin:'0 0 10px',
                   color: stats.lucroFinal>=0 ? 'var(--profit)' : 'var(--loss)',
-                  textShadow:`0 0 70px ${stats.lucroFinal>=0?'rgba(34,197,94,0.25)':'rgba(239,68,68,0.25)'}`,
+                  textShadow:`0 0 70px ${stats.lucroFinal>=0?'rgba(16,185,129,0.25)':'rgba(239,68,68,0.25)'}`,
                 }}>
                   <CountUp value={stats.lucroFinal} prefix="R$ "/>
                 </p>
 
                 {predictions.pctChange!==0 ? (
                   <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'5px 11px', borderRadius:7,
-                    background: predictions.pctChange>0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)',
-                    border:`1px solid ${predictions.pctChange>0?'rgba(34,197,94,0.22)':'rgba(239,68,68,0.22)'}`,
+                    background: predictions.pctChange>0?'rgba(16,185,129,0.1)':'rgba(239,68,68,0.1)',
+                    border:`1px solid ${predictions.pctChange>0?'rgba(16,185,129,0.22)':'rgba(239,68,68,0.22)'}`,
                   }}>
-                    <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={predictions.pctChange>0?'#22C55E':'#EF4444'} strokeWidth="2.5" strokeLinecap="round">
+                    <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={predictions.pctChange>0?'#10B981':'#EF4444'} strokeWidth="2.5" strokeLinecap="round">
                       <polyline points={predictions.pctChange>0?"23 6 13.5 15.5 8.5 10.5 1 18":"1 18 10.5 8.5 15.5 13.5 23 6"}/>
                     </svg>
-                    <span style={{fontSize:11, color:predictions.pctChange>0?'#22C55E':'#EF4444', fontWeight:800, letterSpacing:'0.02em'}}>
+                    <span style={{fontSize:11, color:predictions.pctChange>0?'#10B981':'#EF4444', fontWeight:800, letterSpacing:'0.02em'}}>
                       {predictions.pctChange>0?'+':''}{predictions.pctChange}% vs semana anterior
                     </span>
                   </div>
@@ -465,10 +465,10 @@ export default function FaturamentoPage() {
             {/* Right — 4 KPI cards premium */}
             <div style={{display:'flex',flexDirection:'column',gap:10}}>
               {[
-                {l:'Lucro bruto', sub:'Soma de lucros', v:`R$ ${fmt(stats.lucro)}`, accent:'#22C55E'},
-                {l:'Total depositado', sub:'Volume em entradas', v:`R$ ${fmt(stats.dep)}`, accent:'#3B82F6'},
-                {l:'Total sacado', sub:'Volume em saidas', v:`R$ ${fmt(stats.saq)}`, accent:'#F59E0B'},
-                {l:'Taxa de acerto', sub:'Remessas positivas', v:`${stats.taxa}%`, accent:'#a855f7'},
+                {l:'Lucro bruto', sub:'Soma de lucros', v:`R$ ${fmt(stats.lucro)}`, accent:'#10B981'},
+                {l:'Total depositado', sub:'Volume em entradas', v:`R$ ${fmt(stats.dep)}`, accent:'rgba(255,255,255,0.78)'},
+                {l:'Total sacado', sub:'Volume em saidas', v:`R$ ${fmt(stats.saq)}`, accent:'rgba(255,255,255,0.78)'},
+                {l:'Taxa de acerto', sub:'Remessas positivas', v:`${stats.taxa}%`, accent:'rgba(255,255,255,0.78)'},
               ].map(({l,sub,v,accent},i)=>(
                 <motion.div key={l}
                   initial={{opacity:0, x:14}} animate={{opacity:1, x:0}}
@@ -502,30 +502,30 @@ export default function FaturamentoPage() {
               position:'relative', overflow:'hidden', padding:22,
               background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
               backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
-              border:'1px solid rgba(168,85,247,0.14)',
-              boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 36px rgba(168,85,247,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
+              border:'1px solid rgba(255,255,255,0.14)',
+              boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 36px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
             }}>
-              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(168,85,247,0.45), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)', pointerEvents:'none' }}/>
               <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:18}}>
                 <div style={{
                   width:36, height:36, borderRadius:10,
-                  background:'rgba(168,85,247,0.12)', border:'1px solid rgba(168,85,247,0.3)',
+                  background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.3)',
                   display:'flex', alignItems:'center', justifyContent:'center',
-                  boxShadow:'0 0 16px rgba(168,85,247,0.18)',
+                  boxShadow:'0 0 16px rgba(255,255,255,0.18)',
                 }}>
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2.2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                 </div>
                 <div style={{ flex:1 }}>
                   <h3 style={{fontSize:14, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em'}}>Inteligencia da operacao</h3>
                   <p style={{fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500}}>Analise sobre metas fechadas</p>
                 </div>
-                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 9px', borderRadius:6, background:'rgba(168,85,247,0.08)', border:'1px solid rgba(168,85,247,0.2)' }}>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 9px', borderRadius:6, background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.2)' }}>
                   <motion.div
-                    animate={{ boxShadow:['0 0 0 0 rgba(168,85,247,0.5)','0 0 0 4px rgba(168,85,247,0)','0 0 0 0 rgba(168,85,247,0)'] }}
+                    animate={{ boxShadow:['0 0 0 0 rgba(255,255,255,0.5)','0 0 0 4px rgba(255,255,255,0)','0 0 0 0 rgba(255,255,255,0)'] }}
                     transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                    style={{ width:5, height:5, borderRadius:'50%', background:'#a855f7' }}
+                    style={{ width:5, height:5, borderRadius:'50%', background:'rgba(255,255,255,0.78)' }}
                   />
-                  <span style={{fontSize:9, color:'#a855f7', fontWeight:800, letterSpacing:'0.08em'}}>AO VIVO</span>
+                  <span style={{fontSize:9, color:'rgba(255,255,255,0.78)', fontWeight:800, letterSpacing:'0.08em'}}>AO VIVO</span>
                 </div>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12}}>
@@ -574,17 +574,17 @@ export default function FaturamentoPage() {
               position:'relative', overflow:'hidden', padding:22,
               background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
               backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
-              border:`1px solid ${goalData.pct>=100?'rgba(34,197,94,0.25)':'rgba(34,197,94,0.14)'}`,
-              boxShadow:`0 8px 28px rgba(0,0,0,0.4), 0 0 36px rgba(34,197,94,${goalData.pct>=100?'0.1':'0.04'}), inset 0 1px 0 rgba(255,255,255,0.04)`,
+              border:`1px solid ${goalData.pct>=100?'rgba(16,185,129,0.25)':'rgba(16,185,129,0.14)'}`,
+              boxShadow:`0 8px 28px rgba(0,0,0,0.4), 0 0 36px rgba(16,185,129,${goalData.pct>=100?'0.1':'0.04'}), inset 0 1px 0 rgba(255,255,255,0.04)`,
             }}>
-              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(34,197,94,0.45), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(16,185,129,0.45), transparent)', pointerEvents:'none' }}/>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18, flexWrap:'wrap', gap:10}}>
                 <div style={{display:'flex',alignItems:'center',gap:12}}>
                   <div style={{
                     width:36, height:36, borderRadius:10,
-                    background:'rgba(34,197,94,0.12)', border:'1px solid rgba(34,197,94,0.3)',
+                    background:'rgba(16,185,129,0.12)', border:'1px solid rgba(16,185,129,0.3)',
                     display:'flex', alignItems:'center', justifyContent:'center',
-                    boxShadow:'0 0 16px rgba(34,197,94,0.18)',
+                    boxShadow:'0 0 16px rgba(16,185,129,0.18)',
                   }}>
                     <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                   </div>
@@ -602,7 +602,7 @@ export default function FaturamentoPage() {
                     background:'rgba(255,255,255,0.03)', color:'var(--t2)',
                     display:'flex', alignItems:'center', gap:5, transition:'all 0.2s',
                   }}
-                  onMouseEnter={e=>{ e.currentTarget.style.background='rgba(34,197,94,0.08)'; e.currentTarget.style.color='#22C55E'; e.currentTarget.style.borderColor='rgba(34,197,94,0.22)' }}
+                  onMouseEnter={e=>{ e.currentTarget.style.background='rgba(16,185,129,0.08)'; e.currentTarget.style.color='#10B981'; e.currentTarget.style.borderColor='rgba(16,185,129,0.22)' }}
                   onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.03)'; e.currentTarget.style.color='var(--t2)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)' }}>
                   <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   Editar
@@ -634,7 +634,7 @@ export default function FaturamentoPage() {
                 <p className="t-small">concluido</p>
               </div>
               <div className="progress" style={{height:8,marginBottom:14}}>
-                <div className="progress-bar" style={{width:`${goalData.pct}%`,background:'linear-gradient(90deg,var(--profit),#4ADE80)',boxShadow:'0 0 12px rgba(34,197,94,0.3)'}}/>
+                <div className="progress-bar" style={{width:`${goalData.pct}%`,background:'linear-gradient(90deg,var(--profit),#4ADE80)',boxShadow:'0 0 12px rgba(16,185,129,0.3)'}}/>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:10}}>
                 <div style={{background:'var(--raised)',borderRadius:10,padding:'10px 12px',border:'1px solid var(--b1)'}}>
@@ -711,8 +711,8 @@ export default function FaturamentoPage() {
                     {alerts.map((al,i)=>(
                       <div key={i} style={{
                         display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:10,
-                        background: al.type==='loss'?'rgba(239,68,68,0.05)':'rgba(245,158,11,0.05)',
-                        border:`1px solid ${al.type==='loss'?'rgba(239,68,68,0.1)':'rgba(245,158,11,0.1)'}`,
+                        background: al.type==='loss'?'rgba(239,68,68,0.05)':'rgba(255,255,255,0.05)',
+                        border:`1px solid ${al.type==='loss'?'rgba(239,68,68,0.1)':'rgba(255,255,255,0.1)'}`,
                       }}>
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={al.type==='loss'?'var(--loss)':'var(--warn)'} strokeWidth="2" strokeLinecap="round" style={{flexShrink:0}}>
                           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -746,7 +746,7 @@ export default function FaturamentoPage() {
           {/* PRO locked — only show if NOT PRO */}
           {!isPro && <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:14,marginBottom:24}}>
             <ProLockedCard title="Projecao de lucro" description="Veja quanto voce pode faturar nos proximos 30 dias mantendo o ritmo atual. Projecao automatica baseada nas suas metas fechadas." icon="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z">
-              <div><div style={{height:14,width:'55%',background:'rgba(34,197,94,0.08)',borderRadius:3,marginBottom:5}}/><div style={{height:18,width:'40%',background:'rgba(34,197,94,0.06)',borderRadius:3}}/></div>
+              <div><div style={{height:14,width:'55%',background:'rgba(16,185,129,0.08)',borderRadius:3,marginBottom:5}}/><div style={{height:18,width:'40%',background:'rgba(16,185,129,0.06)',borderRadius:3}}/></div>
             </ProLockedCard>
             <ProLockedCard title="Comparativo de operadores" description="Compare a performance de cada operador lado a lado. Taxa de acerto, volume, lucro e velocidade em um so lugar." icon="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0">
               <div>{[1,2,3].map(i=>(<div key={i} style={{height:10,width:`${75-i*12}%`,background:'rgba(255,255,255,0.04)',borderRadius:3,marginBottom:4}}/>))}</div>
@@ -764,13 +764,13 @@ export default function FaturamentoPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData.slice(-14)}>
                     <defs>
-                      <linearGradient id="gProfit" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#22C55E" stopOpacity={0.3}/><stop offset="100%" stopColor="#22C55E" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gProfit" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#10B981" stopOpacity={0.3}/><stop offset="100%" stopColor="#10B981" stopOpacity={0}/></linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/>
                     <XAxis dataKey="name" tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`}/>
                     <Tooltip content={<ChartTooltip/>}/>
-                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="#22C55E" fill="url(#gProfit)" strokeWidth={2}/>
+                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="#10B981" fill="url(#gProfit)" strokeWidth={2}/>
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -811,17 +811,17 @@ export default function FaturamentoPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>
-                      <linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#22C55E" stopOpacity={0.25}/><stop offset="100%" stopColor="#22C55E" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#10B981" stopOpacity={0.25}/><stop offset="100%" stopColor="#10B981" stopOpacity={0}/></linearGradient>
                       <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#EF4444" stopOpacity={0.2}/><stop offset="100%" stopColor="#EF4444" stopOpacity={0}/></linearGradient>
-                      <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3B82F6" stopOpacity={0.25}/><stop offset="100%" stopColor="#3B82F6" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="rgba(255,255,255,0.78)" stopOpacity={0.25}/><stop offset="100%" stopColor="rgba(255,255,255,0.78)" stopOpacity={0}/></linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/>
                     <XAxis dataKey="name" tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false} tickFormatter={v=>`R$${(v/1000).toFixed(1)}k`}/>
                     <Tooltip content={<ChartTooltip/>}/>
-                    <Area type="monotone" dataKey="lucro" name="Lucro" stroke="#22C55E" fill="url(#gL)" strokeWidth={2}/>
+                    <Area type="monotone" dataKey="lucro" name="Lucro" stroke="#10B981" fill="url(#gL)" strokeWidth={2}/>
                     <Area type="monotone" dataKey="prejuizo" name="Prejuizo" stroke="#EF4444" fill="url(#gP)" strokeWidth={2}/>
-                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="#3B82F6" fill="url(#gN)" strokeWidth={2.5}/>
+                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="rgba(255,255,255,0.78)" fill="url(#gN)" strokeWidth={2.5}/>
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -836,7 +836,7 @@ export default function FaturamentoPage() {
                     <XAxis dataKey="name" tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <Tooltip content={<ChartTooltip/>}/>
-                    <Bar dataKey="lucro" name="Lucro" fill="#22C55E" radius={[4,4,0,0]} maxBarSize={32}/>
+                    <Bar dataKey="lucro" name="Lucro" fill="#10B981" radius={[4,4,0,0]} maxBarSize={32}/>
                     <Bar dataKey="prejuizo" name="Prejuizo" fill="#EF4444" radius={[4,4,0,0]} maxBarSize={32}/>
                   </BarChart>
                 </ResponsiveContainer>
@@ -866,7 +866,7 @@ export default function FaturamentoPage() {
                 return (
                   <div key={r.id} className="data-row a1" style={{animationDelay:`${i*15}ms`,display:'grid',gridTemplateColumns:'1.2fr 0.8fr 0.8fr 1fr 1fr 1fr 0.8fr',gap:8,padding:'12px 20px'}}>
                     <div style={{display:'flex',alignItems:'center',gap:8,minWidth:0}}>
-                      <div style={{width:24,height:24,borderRadius:6,background:'linear-gradient(135deg,rgba(59,130,246,0.3),rgba(59,130,246,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                      <div style={{width:24,height:24,borderRadius:6,background:'linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
                         <span style={{fontSize:9,fontWeight:800,color:'white'}}>{getName(op)[0]?.toUpperCase()}</span>
                       </div>
                       <span style={{fontSize:12,fontWeight:600,color:'var(--t1)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{getName(op)}</span>

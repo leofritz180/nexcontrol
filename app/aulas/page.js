@@ -8,7 +8,7 @@ import { supabase } from '../../lib/supabase/client'
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 const ease = [0.33, 1, 0.68, 1]
 const RED = '#e53935'
-const AMBER = '#F59E0B'
+const AMBER = 'rgba(255,255,255,0.78)'
 
 const THUMB_GRADIENTS = [
   'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
@@ -182,7 +182,7 @@ function CourseCard({ course, progress: prog, index = 0 }) {
         {/* Badges */}
         <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 4, zIndex: 3 }}>
           {course.tags?.includes('novo') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: RED, color: '#fff', letterSpacing: '0.06em' }}>NOVO</span>}
-          {course.tags?.includes('popular') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: '#22C55E', color: '#fff', letterSpacing: '0.06em' }}>POPULAR</span>}
+          {course.tags?.includes('popular') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: '#10B981', color: '#fff', letterSpacing: '0.06em' }}>POPULAR</span>}
           {course.tags?.includes('vip') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: AMBER, color: '#000', letterSpacing: '0.06em' }}>VIP</span>}
         </div>
         {/* Title + info overlaid on thumbnail */}

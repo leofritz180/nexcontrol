@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../../../lib/supabase/client'
 import AppLayout from '../../../../components/AppLayout'
 
-const AMBER = '#F59E0B'
+const AMBER = 'rgba(255,255,255,0.78)'
 const AMBER_DK = '#D97706'
 const ease = [0.33, 1, 0.68, 1]
 const fadeUp = (i) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.4, delay: i * 0.05, ease } })
@@ -14,7 +14,7 @@ const fadeUp = (i) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, 
 function Spinner() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: 60 }}>
-      <div style={{ width: 36, height: 36, border: `3px solid rgba(245,158,11,0.2)`, borderTopColor: AMBER, borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: 36, height: 36, border: `3px solid rgba(255,255,255,0.2)`, borderTopColor: AMBER, borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
@@ -34,7 +34,7 @@ function ProgressBar({ percent, height = 6 }) {
 function CheckIcon({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="8" fill="#22c55e" />
+      <circle cx="8" cy="8" r="8" fill="#10b981" />
       <path d="M4.5 8.5L7 11L11.5 5.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -205,7 +205,7 @@ export default function LessonPlayerPage() {
                 {currentLesson?.title || 'Aula'}
               </h1>
               {currentLesson?.duration_min > 0 && (
-                <span style={{ fontSize: 11, color: AMBER, background: 'rgba(245,158,11,0.12)', padding: '3px 10px', borderRadius: 6, fontWeight: 600, fontFamily: 'var(--mono, monospace)', flexShrink: 0 }}>
+                <span style={{ fontSize: 11, color: AMBER, background: 'rgba(255,255,255,0.12)', padding: '3px 10px', borderRadius: 6, fontWeight: 600, fontFamily: 'var(--mono, monospace)', flexShrink: 0 }}>
                   {currentLesson.duration_min}min
                 </span>
               )}
@@ -233,10 +233,10 @@ export default function LessonPlayerPage() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 8, padding: '10px 22px', fontSize: 13, fontWeight: 700,
                 borderRadius: 10, border: 'none', cursor: completing ? 'not-allowed' : 'pointer',
-                background: isCompleted ? 'rgba(34,197,94,0.15)' : `linear-gradient(135deg, ${AMBER}, ${AMBER_DK})`,
-                color: isCompleted ? '#22c55e' : '#000',
+                background: isCompleted ? 'rgba(16,185,129,0.15)' : `linear-gradient(135deg, ${AMBER}, ${AMBER_DK})`,
+                color: isCompleted ? '#10b981' : '#000',
                 transition: 'all 0.2s',
-                boxShadow: isCompleted ? 'none' : '0 4px 16px rgba(245,158,11,0.25)',
+                boxShadow: isCompleted ? 'none' : '0 4px 16px rgba(255,255,255,0.25)',
               }}>
               {isCompleted && <CheckIcon size={16} />}
               {completing ? 'Salvando...' : isCompleted ? 'Concluida' : 'Marcar como concluida'}
@@ -293,7 +293,7 @@ export default function LessonPlayerPage() {
                     <div key={lesson.id} onClick={() => router.push(`/aulas/${courseId}/${lesson.id}`)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', cursor: 'pointer',
-                        background: isCurrent ? 'rgba(245,158,11,0.1)' : 'transparent',
+                        background: isCurrent ? 'rgba(255,255,255,0.1)' : 'transparent',
                         borderLeft: isCurrent ? `3px solid ${AMBER}` : '3px solid transparent',
                         transition: 'all 0.2s',
                       }}

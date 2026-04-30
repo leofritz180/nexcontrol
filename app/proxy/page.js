@@ -72,13 +72,13 @@ export default function ProxyPage() {
             borderRadius: 24, overflow: 'hidden', position: 'relative',
             background: 'linear-gradient(160deg, #0e1322, #0a0e18)',
             border: '1px solid rgba(255,255,255,0.06)',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02), 0 0 80px rgba(59,130,246,0.04)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02), 0 0 80px rgba(255,255,255,0.04)',
           }}
         >
           {/* Top visual area */}
           <div style={{
             padding: '48px 40px 40px', textAlign: 'center',
-            background: 'linear-gradient(135deg, rgba(59,130,246,0.06), rgba(139,92,246,0.04) 50%, transparent)',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04) 50%, transparent)',
             borderBottom: '1px solid rgba(255,255,255,0.04)',
             position: 'relative', overflow: 'hidden',
           }}>
@@ -86,16 +86,16 @@ export default function ProxyPage() {
             <div style={{
               position: 'absolute', top: -60, left: '50%', marginLeft: -150,
               width: 300, height: 200, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(59,130,246,0.08), transparent 70%)',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%)',
               pointerEvents: 'none',
             }} />
 
             {/* Icon */}
             <div style={{
               width: 64, height: 64, borderRadius: 18, margin: '0 auto 24px',
-              background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)',
+              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 40px rgba(59,130,246,0.12)',
+              boxShadow: '0 0 40px rgba(255,255,255,0.12)',
               position: 'relative',
             }}>
               <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -128,7 +128,7 @@ export default function ProxyPage() {
                 { icon: 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z', label: 'Cobertura global' },
               ].map((s, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(59,130,246,0.5)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <path d={s.icon} />
                   </svg>
                   <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>{s.label}</span>
@@ -155,7 +155,7 @@ export default function ProxyPage() {
                   padding: '10px 14px', borderRadius: 10,
                   background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
                 }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d={f.icon} />
                   </svg>
                   <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>{f.label}</span>
@@ -172,12 +172,12 @@ export default function ProxyPage() {
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                 padding: '15px 40px', borderRadius: 14,
                 fontSize: 15, fontWeight: 700, textDecoration: 'none',
-                background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: '#fff',
-                boxShadow: '0 6px 24px rgba(59,130,246,0.25)',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.78), #2563eb)', color: '#fff',
+                boxShadow: '0 6px 24px rgba(255,255,255,0.25)',
                 transition: 'transform 0.2s, box-shadow 0.2s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(59,130,246,0.35)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(59,130,246,0.25)' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(255,255,255,0.35)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(255,255,255,0.25)' }}
             >
               <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />

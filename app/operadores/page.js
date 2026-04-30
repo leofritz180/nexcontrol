@@ -28,9 +28,9 @@ function calcScore(op) {
 
 /* ── Badges (max 1 shown) ── */
 function getBadge(op) {
-  if (op.winRate >= 70 && op.closedCount >= 3) return { text: 'Top performer', color: '#22c55e' }
-  if (op.trend === 'up' && op.closedCount >= 3) return { text: 'Em alta', color: '#22c55e' }
-  if (op.trend === 'down' && op.closedCount >= 3) return { text: 'Oscilando', color: '#f59e0b' }
+  if (op.winRate >= 70 && op.closedCount >= 3) return { text: 'Top performer', color: '#10b981' }
+  if (op.trend === 'up' && op.closedCount >= 3) return { text: 'Em alta', color: '#10b981' }
+  if (op.trend === 'down' && op.closedCount >= 3) return { text: 'Oscilando', color: 'rgba(255,255,255,0.78)' }
   return null
 }
 
@@ -87,7 +87,7 @@ function KpiCard({ label, value, suffix, rgb, i, isCurrency, dynamicColor }) {
 /* ── Performance Bar ── */
 function PerfBar({ value, max, delay = 0 }) {
   const pct = max > 0 ? Math.min((Math.abs(value) / max) * 100, 100) : 0
-  const color = value >= 0 ? '#22c55e' : '#ef4444'
+  const color = value >= 0 ? '#10b981' : '#ef4444'
   return (
     <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.05)', overflow: 'hidden', flex: 1 }}>
       <motion.div
@@ -142,8 +142,8 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
   }, [winRate, lucroPerRemessa, op.trend, opClosed.length])
 
   let recommendation = null
-  if (winRate >= 60 && lucroFinal > 0) recommendation = { text: 'Aumentar volume', desc: 'Boa consistencia. Escalar pode aumentar retorno.', color: '#22c55e' }
-  else if (winRate < 45 && opClosed.length > 3) recommendation = { text: 'Reduzir exposicao', desc: 'Revisar redes e estrategia.', color: '#f59e0b' }
+  if (winRate >= 60 && lucroFinal > 0) recommendation = { text: 'Aumentar volume', desc: 'Boa consistencia. Escalar pode aumentar retorno.', color: '#10b981' }
+  else if (winRate < 45 && opClosed.length > 3) recommendation = { text: 'Reduzir exposicao', desc: 'Revisar redes e estrategia.', color: 'rgba(255,255,255,0.78)' }
   else if (lucroFinal < 0) recommendation = { text: 'Pausar e revisar', desc: 'Resultado negativo.', color: '#ef4444' }
 
   return (
@@ -167,8 +167,8 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{
               width: 50, height: 50, borderRadius: 14,
-              background: lucroFinal >= 0 ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)',
-              border: `1px solid ${lucroFinal >= 0 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+              background: lucroFinal >= 0 ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)',
+              border: `1px solid ${lucroFinal >= 0 ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 22, fontWeight: 800, color: '#fff',
             }}>{getInitial(op)}</div>
@@ -187,9 +187,9 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         </div>
 
         {/* Lucro destaque */}
-        <div style={{ marginBottom: 24, padding: '20px', borderRadius: 14, background: lucroFinal >= 0 ? 'rgba(34,197,94,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${lucroFinal >= 0 ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'}` }}>
+        <div style={{ marginBottom: 24, padding: '20px', borderRadius: 14, background: lucroFinal >= 0 ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${lucroFinal >= 0 ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)'}` }}>
           <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Lucro final</p>
-          <p style={{ fontSize: 32, fontWeight: 800, color: lucroFinal >= 0 ? '#22c55e' : '#ef4444', margin: 0, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.03em' }}>
+          <p style={{ fontSize: 32, fontWeight: 800, color: lucroFinal >= 0 ? '#10b981' : '#ef4444', margin: 0, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.03em' }}>
             {lucroFinal >= 0 ? '+' : ''}R$ {fmt(lucroFinal)}
           </p>
         </div>
@@ -197,12 +197,12 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         {/* Stats Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 24 }}>
           {[
-            { label: 'Acerto', value: `${winRate.toFixed(0)}%`, color: winRate >= 50 ? '#22c55e' : '#ef4444' },
+            { label: 'Acerto', value: `${winRate.toFixed(0)}%`, color: winRate >= 50 ? '#10b981' : '#ef4444' },
             { label: 'Depositantes', value: totalDeposit, color: 'rgba(255,255,255,0.6)' },
             { label: 'Remessas', value: opRemessas.length, color: 'rgba(255,255,255,0.6)' },
             { label: 'Metas', value: opClosed.length, color: 'rgba(255,255,255,0.6)' },
-            { label: 'Lucro/remessa', value: `R$${fmt(lucroPerRemessa)}`, color: lucroPerRemessa >= 0 ? '#22c55e' : '#ef4444' },
-            { label: 'Tendencia', value: op.trend === 'up' ? 'Alta' : op.trend === 'down' ? 'Queda' : 'Estavel', color: op.trend === 'up' ? '#22c55e' : op.trend === 'down' ? '#ef4444' : 'rgba(255,255,255,0.4)' },
+            { label: 'Lucro/remessa', value: `R$${fmt(lucroPerRemessa)}`, color: lucroPerRemessa >= 0 ? '#10b981' : '#ef4444' },
+            { label: 'Tendencia', value: op.trend === 'up' ? 'Alta' : op.trend === 'down' ? 'Queda' : 'Estavel', color: op.trend === 'up' ? '#10b981' : op.trend === 'down' ? '#ef4444' : 'rgba(255,255,255,0.4)' },
           ].map((s, i) => (
             <div key={i} style={{ padding: '12px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
               <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 5px' }}>{s.label}</p>
@@ -222,7 +222,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
                 <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
                   <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }}
                     transition={{ duration: 0.6, delay: i * 0.08, ease }}
-                    style={{ width: '100%', maxWidth: 20, borderRadius: 3, minHeight: 2, background: v >= 0 ? '#22c55e' : '#ef4444' }} />
+                    style={{ width: '100%', maxWidth: 20, borderRadius: 3, minHeight: 2, background: v >= 0 ? '#10b981' : '#ef4444' }} />
                   <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)' }}>S{i + 1}</span>
                 </div>
               )
@@ -233,7 +233,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         {/* Insights */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
             <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)' }}>Insights</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -272,7 +272,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
                       <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', margin: 0 }}>{m.rede || 'Rede'}</p>
                       <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', margin: 0 }}>{m.created_at ? new Date(m.created_at).toLocaleDateString('pt-BR') : ''}</p>
                     </div>
-                    <p style={{ fontSize: 13, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: lf >= 0 ? '#22c55e' : '#ef4444' }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: lf >= 0 ? '#10b981' : '#ef4444' }}>
                       {lf >= 0 ? '+' : ''}R$ {fmt(lf)}
                     </p>
                   </div>
@@ -298,8 +298,8 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
 
   // Position colors
   const posColor = isTop1 ? 'var(--profit)' : isTop2 ? 'var(--t1)' : isTop3 ? 'var(--t2)' : 'var(--t4)'
-  const posBg = isTop1 ? 'rgba(34,197,94,0.14)' : isTop2 ? 'rgba(255,255,255,0.08)' : isTop3 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.025)'
-  const posBorder = isTop1 ? 'rgba(34,197,94,0.25)' : isTop2 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'
+  const posBg = isTop1 ? 'rgba(16,185,129,0.14)' : isTop2 ? 'rgba(255,255,255,0.08)' : isTop3 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.025)'
+  const posBorder = isTop1 ? 'rgba(16,185,129,0.25)' : isTop2 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'
 
   return (
     <motion.div
@@ -310,17 +310,17 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
       style={{
         padding: '20px 22px', borderRadius: 16, cursor: 'pointer', position: 'relative', overflow: 'hidden',
         background: isTop1
-          ? 'linear-gradient(145deg, rgba(34,197,94,0.05), rgba(34,197,94,0.015))'
+          ? 'linear-gradient(145deg, rgba(16,185,129,0.05), rgba(16,185,129,0.015))'
           : isTop2
             ? 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))'
             : 'linear-gradient(145deg, var(--surface), rgba(8,12,22,0.8))',
         border: `1px solid ${h
           ? isTop1 ? 'var(--profit-border)' : 'var(--b3)'
-          : isTop1 ? 'rgba(34,197,94,0.1)' : 'var(--b1)'}`,
+          : isTop1 ? 'rgba(16,185,129,0.1)' : 'var(--b1)'}`,
         transform: h ? 'translateY(-3px) scale(1.005)' : 'none',
         boxShadow: h
           ? isTop1
-            ? '0 12px 40px rgba(0,0,0,0.35), 0 0 30px rgba(34,197,94,0.06)'
+            ? '0 12px 40px rgba(0,0,0,0.35), 0 0 30px rgba(16,185,129,0.06)'
             : '0 12px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04)'
           : '0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.02)',
         transition: 'all 0.35s cubic-bezier(0.4,0,0.2,1)',
@@ -329,7 +329,7 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
       {/* Top edge shine on hover */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: 1,
-        background: h ? `linear-gradient(90deg, transparent 10%, ${isTop1 ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)'} 50%, transparent 90%)` : 'transparent',
+        background: h ? `linear-gradient(90deg, transparent 10%, ${isTop1 ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.06)'} 50%, transparent 90%)` : 'transparent',
         transition: 'background 0.35s',
       }} />
 
@@ -341,7 +341,7 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 15, fontWeight: 900, color: posColor,
           fontFamily: 'var(--mono, monospace)',
-          boxShadow: isTop1 ? '0 0 16px rgba(34,197,94,0.1)' : isTop2 ? '0 0 10px rgba(255,255,255,0.03)' : 'none',
+          boxShadow: isTop1 ? '0 0 16px rgba(16,185,129,0.1)' : isTop2 ? '0 0 10px rgba(255,255,255,0.03)' : 'none',
           transition: 'box-shadow 0.3s',
         }}>
           {idx + 1}
@@ -351,14 +351,14 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
         <div style={{
           width: 46, height: 46, borderRadius: 14, flexShrink: 0,
           background: isProfit
-            ? 'linear-gradient(135deg, rgba(34,197,94,0.18), rgba(34,197,94,0.06))'
+            ? 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.06))'
             : 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.06))',
           border: `1.5px solid ${isProfit ? 'var(--profit-border)' : 'var(--loss-border)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 19, fontWeight: 800, color: 'var(--t1)',
           boxShadow: h
-            ? `0 0 20px ${isProfit ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'}`
-            : `inset 0 1px 0 ${isProfit ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'}`,
+            ? `0 0 20px ${isProfit ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}`
+            : `inset 0 1px 0 ${isProfit ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}`,
           transition: 'box-shadow 0.3s',
         }}>
           {getInitial(op)}
@@ -414,7 +414,7 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
             fontSize: 22, fontWeight: 800, margin: 0, fontFamily: 'var(--mono, monospace)',
             color: isProfit ? 'var(--profit)' : 'var(--loss)',
             letterSpacing: '-0.03em', lineHeight: 1,
-            textShadow: h ? `0 0 24px ${isProfit ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}` : 'none',
+            textShadow: h ? `0 0 24px ${isProfit ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}` : 'none',
             transition: 'text-shadow 0.35s',
           }}>
             {isProfit ? '+' : ''}R$ {fmt(op.lucroFinal)}
@@ -437,7 +437,7 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
               ? 'linear-gradient(90deg, var(--profit), rgba(74,222,128,0.5))'
               : 'linear-gradient(90deg, var(--loss), rgba(248,113,113,0.5))',
             boxShadow: isProfit
-              ? '0 0 10px rgba(34,197,94,0.2), 0 0 3px rgba(34,197,94,0.3)'
+              ? '0 0 10px rgba(16,185,129,0.2), 0 0 3px rgba(16,185,129,0.3)'
               : '0 0 10px rgba(239,68,68,0.2), 0 0 3px rgba(239,68,68,0.3)',
           }}
         />
@@ -469,15 +469,15 @@ function InviteCard({ inv, onCopy, onDelete }) {
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{createdAt}</span>
-          {used && <span style={{ fontSize: 9, fontWeight: 600, color: '#22c55e', padding: '1px 6px', borderRadius: 4, background: 'rgba(34,197,94,0.1)' }}>Usado</span>}
-          {!used && <span style={{ fontSize: 9, fontWeight: 600, color: '#f59e0b', padding: '1px 6px', borderRadius: 4, background: 'rgba(245,158,11,0.1)' }}>Pendente</span>}
+          {used && <span style={{ fontSize: 9, fontWeight: 600, color: '#10b981', padding: '1px 6px', borderRadius: 4, background: 'rgba(16,185,129,0.1)' }}>Usado</span>}
+          {!used && <span style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.78)', padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.1)' }}>Pendente</span>}
         </div>
       </div>
       {!used && (
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           <button onClick={() => { navigator.clipboard.writeText(link); onCopy() }} style={{
-            padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 8, border: '1px solid rgba(59,130,246,0.2)',
-            background: 'rgba(59,130,246,0.08)', color: '#3B82F6', cursor: 'pointer', transition: 'all 0.2s',
+            padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 8, border: '1px solid rgba(255,255,255,0.2)',
+            background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.78)', cursor: 'pointer', transition: 'all 0.2s',
           }}>Copiar</button>
           <button onClick={() => onDelete(inv.id)} style={{
             padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 8, border: '1px solid rgba(239,68,68,0.2)',
@@ -536,16 +536,16 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
   return (
     <div style={{ padding:'22px 20px', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:14 }}>
       <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
-        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <span style={{ fontSize:14, fontWeight:700, color:'#fff' }}>Pagamento de operadores</span>
-        {isDivisao && <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'rgba(168,85,247,0.1)', color:'#a855f7', border:'1px solid rgba(168,85,247,0.2)' }}>SPLIT {tenant?.operator_payment_value || 50}%</span>}
+        {isDivisao && <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.78)', border:'1px solid rgba(255,255,255,0.2)' }}>SPLIT {tenant?.operator_payment_value || 50}%</span>}
       </div>
 
       {/* Model selector */}
       <div style={{ display:'flex', gap:8, marginBottom:14, flexWrap:'wrap' }}>
         {MODELS.map(opt => {
           const active = currentModel === opt.key
-          const accentColor = opt.key === 'divisao_resultado' ? '#a855f7' : '#22c55e'
+          const accentColor = opt.key === 'divisao_resultado' ? 'rgba(255,255,255,0.78)' : '#10b981'
           return (
             <button key={opt.key} type="button" onClick={() => active ? null : selectModel(opt.key)} style={{
               flex:1, minWidth:120, padding:'12px 14px', borderRadius:10, cursor: active ? 'default' : 'pointer',
@@ -574,7 +574,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
 
       {/* Divisao info */}
       {isDivisao && (
-        <div style={{ marginTop:12, padding:'10px 14px', borderRadius:10, background:'rgba(168,85,247,0.04)', border:'1px solid rgba(168,85,247,0.1)', fontSize:11, color:'rgba(168,85,247,0.7)', lineHeight:1.5 }}>
+        <div style={{ marginTop:12, padding:'10px 14px', borderRadius:10, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)', fontSize:11, color:'rgba(255,255,255,0.7)', lineHeight:1.5 }}>
           Lucro e prejuizo serao divididos: operador recebe {tenant?.operator_payment_value || 50}%, admin fica com {100 - (tenant?.operator_payment_value || 50)}%. Valido para novas metas.
         </div>
       )}
@@ -590,8 +590,8 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
             boxShadow:'0 40px 100px rgba(0,0,0,0.7)',
           }}>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
-              <div style={{ width:40, height:40, borderRadius:12, background:'rgba(245,158,11,0.1)', border:'1px solid rgba(245,158,11,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div style={{ width:40, height:40, borderRadius:12, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               </div>
               <div>
                 <h3 style={{ fontSize:16, fontWeight:800, color:'#F1F5F9', margin:'0 0 2px' }}>Confirmar alteracao de modelo</h3>
@@ -608,7 +608,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
               <div style={{ width:'100%', height:1, background:'rgba(255,255,255,0.04)', margin:'0 0 10px' }} />
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
                 <span style={{ fontSize:11, color:'#64748B' }}>Novo modelo</span>
-                <span style={{ fontSize:12, fontWeight:700, color: pendingModel === 'divisao_resultado' ? '#a855f7' : '#22c55e' }}>{MODELS.find(m=>m.key===pendingModel)?.label}</span>
+                <span style={{ fontSize:12, fontWeight:700, color: pendingModel === 'divisao_resultado' ? 'rgba(255,255,255,0.78)' : '#10b981' }}>{MODELS.find(m=>m.key===pendingModel)?.label}</span>
               </div>
               {/* Value input for new model */}
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
@@ -629,7 +629,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
                 pendingModel === 'divisao_resultado' ? `Operador recebera ${pendingValue}% do lucro E assumira ${pendingValue}% do prejuizo` : null,
               ].filter(Boolean).map((text, i) => (
                 <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:8 }}>
-                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" style={{ marginTop:2, flexShrink:0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round" style={{ marginTop:2, flexShrink:0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                   <span style={{ fontSize:11, color:'#94A3B8', lineHeight:1.4 }}>{text}</span>
                 </div>
               ))}
@@ -643,7 +643,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
               <button type="button" onClick={confirmChange} disabled={saving || !pendingValue || Number(pendingValue) <= 0}
                 style={{
                   flex:2, padding:'12px', borderRadius:10, border:'none', cursor:'pointer',
-                  background: pendingModel === 'divisao_resultado' ? 'linear-gradient(135deg, #7c3aed, #a855f7)' : '#22c55e',
+                  background: pendingModel === 'divisao_resultado' ? 'linear-gradient(135deg, #7c3aed, rgba(255,255,255,0.78))' : '#10b981',
                   color:'#fff', fontSize:13, fontWeight:700,
                   opacity: saving || !pendingValue || Number(pendingValue) <= 0 ? 0.5 : 1,
                 }}>
@@ -971,17 +971,17 @@ export default function OperadoresPage() {
                     const isTop2 = idx === 1
                     const isTop3 = idx < 3
                     const posColor = isTop1 ? 'var(--profit)' : isTop2 ? 'var(--t1)' : isTop3 ? 'var(--t2)' : 'var(--t4)'
-                    const posBg = isTop1 ? 'rgba(34,197,94,0.14)' : isTop2 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)'
-                    const posBorder = isTop1 ? 'rgba(34,197,94,0.25)' : isTop2 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'
+                    const posBg = isTop1 ? 'rgba(16,185,129,0.14)' : isTop2 ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)'
+                    const posBorder = isTop1 ? 'rgba(16,185,129,0.25)' : isTop2 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'
                     return (
                       <motion.div key={op.id} {...fadeUp(idx, 0.06)} style={{
                         padding: '20px 22px', borderRadius: 16, position: 'relative', overflow: 'hidden',
                         background: isTop1
-                          ? 'linear-gradient(145deg, rgba(34,197,94,0.05), rgba(34,197,94,0.015))'
+                          ? 'linear-gradient(145deg, rgba(16,185,129,0.05), rgba(16,185,129,0.015))'
                           : isTop2
                             ? 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))'
                             : 'linear-gradient(145deg, var(--surface), rgba(8,12,22,0.8))',
-                        border: `1px solid ${isTop1 ? 'rgba(34,197,94,0.1)' : 'var(--b1)'}`,
+                        border: `1px solid ${isTop1 ? 'rgba(16,185,129,0.1)' : 'var(--b1)'}`,
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
                           <div style={{
@@ -993,7 +993,7 @@ export default function OperadoresPage() {
                           <div style={{
                             width: 46, height: 46, borderRadius: 14, flexShrink: 0,
                             background: isProfit
-                              ? 'linear-gradient(135deg, rgba(34,197,94,0.18), rgba(34,197,94,0.06))'
+                              ? 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.06))'
                               : 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.06))',
                             border: `1.5px solid ${isProfit ? 'var(--profit-border)' : 'var(--loss-border)'}`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -1013,9 +1013,9 @@ export default function OperadoresPage() {
                               {op.badge && (
                                 <span style={{
                                   fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 5,
-                                  color: op.badge === 'Top performer' ? '#22c55e' : op.badge === 'Em alta' ? '#22c55e' : '#f59e0b',
-                                  background: op.badge === 'Oscilando' ? 'rgba(245,158,11,0.08)' : 'rgba(34,197,94,0.08)',
-                                  border: `1px solid ${op.badge === 'Oscilando' ? 'rgba(245,158,11,0.18)' : 'rgba(34,197,94,0.18)'}`,
+                                  color: op.badge === 'Top performer' ? '#10b981' : op.badge === 'Em alta' ? '#10b981' : 'rgba(255,255,255,0.78)',
+                                  background: op.badge === 'Oscilando' ? 'rgba(255,255,255,0.08)' : 'rgba(16,185,129,0.08)',
+                                  border: `1px solid ${op.badge === 'Oscilando' ? 'rgba(255,255,255,0.18)' : 'rgba(16,185,129,0.18)'}`,
                                 }}>{op.badge}</span>
                               )}
                             </div>
@@ -1077,38 +1077,38 @@ export default function OperadoresPage() {
               padding:'22px 24px', borderRadius:18,
               background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
               backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-              border:'1px solid rgba(168,85,247,0.18)',
-              boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(168,85,247,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
+              border:'1px solid rgba(255,255,255,0.18)',
+              boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
             }}>
-              <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(168,85,247,0.5), transparent)', pointerEvents:'none' }}/>
-              <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', background:'radial-gradient(circle, rgba(168,85,247,0.14), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', background:'radial-gradient(circle, rgba(255,255,255,0.14), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
 
               <div style={{ position:'relative', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <div style={{
                   width:36, height:36, borderRadius:10,
-                  background:'rgba(168,85,247,0.14)', border:'1px solid rgba(168,85,247,0.32)',
+                  background:'rgba(255,255,255,0.14)', border:'1px solid rgba(255,255,255,0.32)',
                   display:'flex', alignItems:'center', justifyContent:'center',
-                  boxShadow:'0 0 16px rgba(168,85,247,0.2)',
+                  boxShadow:'0 0 16px rgba(255,255,255,0.2)',
                 }}>
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
                 </div>
                 <div style={{ flex:1 }}>
                   <p style={{ fontSize:14, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Radar da equipe</p>
                   <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Inteligencia de gestao em tempo real</p>
                 </div>
-                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:6, background:'rgba(168,85,247,0.08)', border:'1px solid rgba(168,85,247,0.2)' }}>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:6, background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.2)' }}>
                   <motion.div
-                    animate={{ boxShadow:['0 0 0 0 rgba(168,85,247,0.5)','0 0 0 5px rgba(168,85,247,0)','0 0 0 0 rgba(168,85,247,0)'] }}
+                    animate={{ boxShadow:['0 0 0 0 rgba(255,255,255,0.5)','0 0 0 5px rgba(255,255,255,0)','0 0 0 0 rgba(255,255,255,0)'] }}
                     transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                    style={{ width:5, height:5, borderRadius:'50%', background:'#a855f7' }}
+                    style={{ width:5, height:5, borderRadius:'50%', background:'rgba(255,255,255,0.78)' }}
                   />
-                  <span style={{ fontSize:9, color:'#a855f7', fontWeight:800, letterSpacing:'0.08em' }}>{insights.length} SINAIS</span>
+                  <span style={{ fontSize:9, color:'rgba(255,255,255,0.78)', fontWeight:800, letterSpacing:'0.08em' }}>{insights.length} SINAIS</span>
                 </div>
               </div>
 
               <div style={{ position:'relative', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {insights.map((ins, i) => {
-                  const c = ins.type === 'up' ? '#22C55E' : ins.type === 'down' ? '#EF4444' : ins.type === 'warn' ? '#F59E0B' : '#a855f7'
+                  const c = ins.type === 'up' ? '#10B981' : ins.type === 'down' ? '#EF4444' : ins.type === 'warn' ? 'rgba(255,255,255,0.78)' : 'rgba(255,255,255,0.78)'
                   return (
                     <motion.div key={i}
                       initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }}
@@ -1155,21 +1155,21 @@ export default function OperadoresPage() {
                 padding: '20px 22px', marginBottom: 24,
                 background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
                 backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
-                border: '1px solid rgba(59,130,246,0.15)',
+                border: '1px solid rgba(255,255,255,0.15)',
                 borderRadius: 16,
-                boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 32px rgba(59,130,246,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
+                boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 32px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
               }}>
-              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(59,130,246,0.4), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)', pointerEvents:'none' }}/>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent:'space-between', gap:12, marginBottom: 16, flexWrap:'wrap' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                   <div style={{
                     width:34, height:34, borderRadius:10,
-                    background:'rgba(59,130,246,0.12)', border:'1px solid rgba(59,130,246,0.3)',
+                    background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.3)',
                     display:'flex', alignItems:'center', justifyContent:'center',
-                    boxShadow:'0 0 14px rgba(59,130,246,0.18)',
+                    boxShadow:'0 0 14px rgba(255,255,255,0.18)',
                   }}>
-                    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.2" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
                   </div>
                   <div>
                     <p style={{ fontSize: 14, fontWeight: 800, color: '#fff', margin:0, letterSpacing:'-0.01em' }}>Convites para operadores</p>
@@ -1178,7 +1178,7 @@ export default function OperadoresPage() {
                 </div>
                 {invites.length > 0 && (
                   <div style={{ display:'flex', alignItems:'baseline', gap:4 }}>
-                    <span style={{ fontSize:18, fontWeight:900, color:'#3B82F6', fontFamily:'var(--mono)', letterSpacing:'-0.02em' }}>{invites.length}</span>
+                    <span style={{ fontSize:18, fontWeight:900, color:'rgba(255,255,255,0.78)', fontFamily:'var(--mono)', letterSpacing:'-0.02em' }}>{invites.length}</span>
                     <span style={{ fontSize:10, color:'var(--t4)', fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase' }}>pendente{invites.length>1?'s':''}</span>
                   </div>
                 )}
@@ -1187,15 +1187,15 @@ export default function OperadoresPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: invites.length>0 ? 16 : 0, flexWrap:'wrap' }}>
                 <motion.button
                   onClick={sendInvite} disabled={invSaving}
-                  whileHover={invSaving?{}:{ scale:1.02, boxShadow:'0 10px 28px rgba(34,197,94,0.45)' }}
+                  whileHover={invSaving?{}:{ scale:1.02, boxShadow:'0 10px 28px rgba(16,185,129,0.45)' }}
                   whileTap={invSaving?{}:{ scale:0.97 }}
                   style={{
                     padding: '11px 22px', fontSize: 13, fontWeight: 800, fontFamily:'inherit',
-                    background: invSaving ? 'rgba(34,197,94,0.2)' : 'linear-gradient(145deg, #22C55E, #16a34a)',
+                    background: invSaving ? 'rgba(16,185,129,0.2)' : 'linear-gradient(145deg, #10B981, #16a34a)',
                     border: 'none',
                     borderRadius: 11, color: '#fff', cursor: invSaving?'not-allowed':'pointer',
                     display: 'flex', alignItems: 'center', gap: 8,
-                    boxShadow: invSaving ? 'none' : '0 6px 20px rgba(34,197,94,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+                    boxShadow: invSaving ? 'none' : '0 6px 20px rgba(16,185,129,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
                     opacity: invSaving ? 0.7 : 1,
                     transition: 'all 0.2s ease',
                   }}>
@@ -1221,9 +1221,9 @@ export default function OperadoresPage() {
                     style={{
                       fontSize: 12, fontWeight: 700,
                       padding:'6px 12px', borderRadius:8,
-                      color: invMsg.startsWith('Erro') ? '#EF4444' : '#22C55E',
-                      background: invMsg.startsWith('Erro') ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)',
-                      border: `1px solid ${invMsg.startsWith('Erro') ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)'}`,
+                      color: invMsg.startsWith('Erro') ? '#EF4444' : '#10B981',
+                      background: invMsg.startsWith('Erro') ? 'rgba(239,68,68,0.08)' : 'rgba(16,185,129,0.08)',
+                      border: `1px solid ${invMsg.startsWith('Erro') ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'}`,
                     }}>{invMsg}</motion.span>
                 )}
               </div>
@@ -1269,8 +1269,8 @@ export default function OperadoresPage() {
                       }}>
                         <div style={{
                           width: 40, height: 40, borderRadius: 12,
-                          background: op.lucroFinal >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
-                          border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}`,
+                          background: op.lucroFinal >= 0 ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
+                          border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}`,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: 16, fontWeight: 700, color: '#fff', flexShrink: 0,
                         }}>{getInitial(op)}</div>
@@ -1285,13 +1285,13 @@ export default function OperadoresPage() {
                           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.email}</p>
                         </div>
                         <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: isActiveOp ? '#22c55e' : 'rgba(255,255,255,0.15)' }} />
-                          <span style={{ fontSize: 10, color: isActiveOp ? '#22c55e' : 'rgba(255,255,255,0.25)' }}>
+                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: isActiveOp ? '#10b981' : 'rgba(255,255,255,0.15)' }} />
+                          <span style={{ fontSize: 10, color: isActiveOp ? '#10b981' : 'rgba(255,255,255,0.25)' }}>
                             {isActiveOp ? 'Ativo' : 'Inativo'}
                           </span>
                         </div>
                         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                          <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? '#22c55e' : '#ef4444' }}>
+                          <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? '#10b981' : '#ef4444' }}>
                             {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
                           </p>
                           <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasFechadas + op.metasAtivas} metas</p>
@@ -1319,8 +1319,8 @@ export default function OperadoresPage() {
                       {/* Avatar */}
                       <div style={{
                         width: 40, height: 40, borderRadius: 12,
-                        background: op.lucroFinal >= 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
-                        border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}`,
+                        background: op.lucroFinal >= 0 ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
+                        border: `1px solid ${op.lucroFinal >= 0 ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: 16, fontWeight: 700, color: '#fff', flexShrink: 0,
                       }}>{getInitial(op)}</div>
@@ -1341,16 +1341,16 @@ export default function OperadoresPage() {
                       <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
                         <div style={{
                           width: 6, height: 6, borderRadius: '50%',
-                          background: isActiveOp ? '#22c55e' : 'rgba(255,255,255,0.15)',
+                          background: isActiveOp ? '#10b981' : 'rgba(255,255,255,0.15)',
                         }} />
-                        <span style={{ fontSize: 10, color: isActiveOp ? '#22c55e' : 'rgba(255,255,255,0.25)' }}>
+                        <span style={{ fontSize: 10, color: isActiveOp ? '#10b981' : 'rgba(255,255,255,0.25)' }}>
                           {isActiveOp ? 'Ativo' : 'Inativo'}
                         </span>
                       </div>
 
                       {/* Lucro */}
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? '#22c55e' : '#ef4444' }}>
+                        <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? '#10b981' : '#ef4444' }}>
                           {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
                         </p>
                         <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasCount} metas</p>
@@ -1622,20 +1622,20 @@ export default function OperadoresPage() {
                       if (saveErr) { console.error('Erro ao salvar slots:', saveErr); alert('Erro ao salvar: ' + saveErr.message); return }
                       setTenant(prev => ({ ...prev, favorite_slots: newArray }))
                     }} style={{
-                      background: selected ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.02)',
-                      border: `1.5px solid ${selected ? 'rgba(34,197,94,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                      background: selected ? 'rgba(16,185,129,0.08)' : 'rgba(255,255,255,0.02)',
+                      border: `1.5px solid ${selected ? 'rgba(16,185,129,0.5)' : 'rgba(255,255,255,0.06)'}`,
                       borderRadius: 10, padding: 6, cursor: 'pointer', textAlign: 'center',
                       transition: 'all 0.15s', position: 'relative',
                     }}>
                       {selected && (
-                        <div style={{ position: 'absolute', top: 4, right: 4, width: 16, height: 16, borderRadius: '50%', background: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ position: 'absolute', top: 4, right: 4, width: 16, height: 16, borderRadius: '50%', background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
                       )}
                       <div style={{ width: '100%', height: 60, borderRadius: 6, overflow: 'hidden', marginBottom: 4, background: 'rgba(0,0,0,0.2)' }}>
                         <img src={slot.image} alt={slot.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: selected ? 1 : 0.5, transition: 'opacity 0.15s' }} />
                       </div>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: selected ? '#22c55e' : 'rgba(255,255,255,0.4)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.name}</p>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: selected ? '#10b981' : 'rgba(255,255,255,0.4)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.name}</p>
                     </button>
                   )
                 })}

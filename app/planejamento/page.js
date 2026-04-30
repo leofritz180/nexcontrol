@@ -21,9 +21,9 @@ const REDE_COLORS = {
 const getRedeColor = r => REDE_COLORS[r] || REDE_COLORS.DEFAULT
 
 const STATUSES = [
-  { key: 'pendente', label: 'Pendente', color: '#F59E0B', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)', icon: 'clock' },
-  { key: 'em_andamento', label: 'Em andamento', color: '#3B82F6', bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.25)', icon: 'play' },
-  { key: 'concluido', label: 'Concluido', color: '#22C55E', bg: 'rgba(34,197,94,0.14)', border: 'rgba(34,197,94,0.25)', icon: 'check' },
+  { key: 'pendente', label: 'Pendente', color: 'rgba(255,255,255,0.78)', bg: 'rgba(255,255,255,0.12)', border: 'rgba(255,255,255,0.25)', icon: 'clock' },
+  { key: 'em_andamento', label: 'Em andamento', color: 'rgba(255,255,255,0.78)', bg: 'rgba(255,255,255,0.12)', border: 'rgba(255,255,255,0.25)', icon: 'play' },
+  { key: 'concluido', label: 'Concluido', color: '#10B981', bg: 'rgba(16,185,129,0.14)', border: 'rgba(16,185,129,0.25)', icon: 'check' },
   { key: 'problema', label: 'Problema', color: '#EF4444', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.25)', icon: 'alert' },
 ]
 const getStatus = k => STATUSES.find(s => s.key === k) || STATUSES[0]
@@ -240,7 +240,7 @@ export default function PlanejamentoPage() {
   const problemas = rows.filter(r => r.status === 'problema').length
 
   // Operator color map (stable per operator)
-  const opColors = ['#3B82F6','#a855f7','#ec4899','#06b6d4','#f97316','#84cc16','#f43f5e','#14b8a6']
+  const opColors = ['rgba(255,255,255,0.78)','rgba(255,255,255,0.78)','#ec4899','#06b6d4','#f97316','#84cc16','#f43f5e','#14b8a6']
   const opColorMap = {}
   operators.forEach((op, i) => { opColorMap[op.id] = opColors[i % opColors.length] })
 
@@ -263,7 +263,7 @@ export default function PlanejamentoPage() {
           {/* Botao salvar + atualizar */}
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={refreshAndSave}
             disabled={saveStatus === 'saving'}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(34,197,94,0.08)', color: '#22C55E', fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(16,185,129,0.25)', background: 'rgba(16,185,129,0.08)', color: '#10B981', fontSize: 11, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}>
             <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
             Salvar e atualizar
           </motion.button>
@@ -272,13 +272,13 @@ export default function PlanejamentoPage() {
             {saveStatus && (
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 8,
-                  background: saveStatus === 'saving' ? 'rgba(59,130,246,0.1)' : saveStatus === 'saved' ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
-                  border: `1px solid ${saveStatus === 'saving' ? 'rgba(59,130,246,0.2)' : saveStatus === 'saved' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                  background: saveStatus === 'saving' ? 'rgba(255,255,255,0.1)' : saveStatus === 'saved' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                  border: `1px solid ${saveStatus === 'saving' ? 'rgba(255,255,255,0.2)' : saveStatus === 'saved' ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`,
                 }}>
-                {saveStatus === 'saving' && <div className="spinner" style={{ width: 10, height: 10, borderTopColor: '#3B82F6', borderWidth: 2 }} />}
-                {saveStatus === 'saved' && <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                {saveStatus === 'saving' && <div className="spinner" style={{ width: 10, height: 10, borderTopColor: 'rgba(255,255,255,0.78)', borderWidth: 2 }} />}
+                {saveStatus === 'saved' && <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
                 {saveStatus === 'error' && <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}
-                <span style={{ fontSize: 10, fontWeight: 600, color: saveStatus === 'saving' ? '#60A5FA' : saveStatus === 'saved' ? '#22C55E' : '#EF4444' }}>
+                <span style={{ fontSize: 10, fontWeight: 600, color: saveStatus === 'saving' ? '#60A5FA' : saveStatus === 'saved' ? '#10B981' : '#EF4444' }}>
                   {saveStatus === 'saving' ? 'Salvando...' : saveStatus === 'saved' ? 'Salvo' : 'Erro ao salvar'}
                 </span>
               </motion.div>
@@ -293,10 +293,10 @@ export default function PlanejamentoPage() {
             {[
               { l: 'Operacoes', v: totalRows, c: '#94A3B8' },
               { l: 'Depositantes', v: totalContas, c: '#60A5FA' },
-              { l: 'Concluido', v: `${pctDone}%`, c: '#22C55E' },
+              { l: 'Concluido', v: `${pctDone}%`, c: '#10B981' },
               { l: 'Prejuizo', v: withPrej, c: withPrej > 0 ? '#EF4444' : '#475569' },
-              { l: 'Lucro parcial', v: `${totalLucroParcial >= 0 ? '+' : ''}R$ ${fmt(totalLucroParcial)}`, c: totalLucroParcial >= 0 ? '#22C55E' : '#EF4444' },
-              { l: 'Lucro total', v: `${totalLucro >= 0 ? '+' : ''}R$ ${fmt(totalLucro)}`, c: totalLucro >= 0 ? '#22C55E' : '#EF4444' },
+              { l: 'Lucro parcial', v: `${totalLucroParcial >= 0 ? '+' : ''}R$ ${fmt(totalLucroParcial)}`, c: totalLucroParcial >= 0 ? '#10B981' : '#EF4444' },
+              { l: 'Lucro total', v: `${totalLucro >= 0 ? '+' : ''}R$ ${fmt(totalLucro)}`, c: totalLucro >= 0 ? '#10B981' : '#EF4444' },
             ].map((k, i) => (
               <div key={k.l} style={{ borderRadius: 10, padding: '16px 18px', background: '#0a1018', border: '1px solid rgba(255,255,255,0.04)' }}>
                 <p style={{ fontSize: 10, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, margin: '0 0 6px' }}>{k.l}</p>
@@ -352,7 +352,7 @@ export default function PlanejamentoPage() {
                         className="plan-row"
                         style={{
                           borderBottom: '1px solid rgba(255,255,255,0.035)',
-                          background: st.key === 'concluido' ? 'rgba(34,197,94,0.025)' : st.key === 'problema' ? 'rgba(239,68,68,0.025)' : stripe,
+                          background: st.key === 'concluido' ? 'rgba(16,185,129,0.025)' : st.key === 'problema' ? 'rgba(239,68,68,0.025)' : stripe,
                           opacity: st.key === 'concluido' ? 0.5 : empty ? 0.35 : 1,
                           transition: 'all 0.15s',
                         }}
@@ -392,11 +392,11 @@ export default function PlanejamentoPage() {
                                 if (!text) return
                                 try { await navigator.clipboard.writeText(text); setCopiedLink(r.id); setTimeout(() => setCopiedLink(null), 1500) } catch {}
                               }}
-                                style={{ flexShrink: 0, width: 24, height: 24, borderRadius: 5, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: copiedLink === r.id ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.04)', transition: 'all 0.15s' }}
+                                style={{ flexShrink: 0, width: 24, height: 24, borderRadius: 5, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: copiedLink === r.id ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.04)', transition: 'all 0.15s' }}
                                 onMouseEnter={e => { if (copiedLink !== r.id) e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
                                 onMouseLeave={e => { if (copiedLink !== r.id) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}>
                                 {copiedLink === r.id
-                                  ? <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                  ? <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                                   : <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
                                 }
                               </button>
@@ -407,17 +407,17 @@ export default function PlanejamentoPage() {
                         <td style={{ padding: '4px 6px', minWidth: 140 }} onClick={e => e.stopPropagation()}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             {r.operator_id
-                              ? <OperatorAvatar name={r.operator_name || '?'} color={opColorMap[r.operator_id] || '#3B82F6'} />
-                              : <div style={{ width: 22, height: 22, borderRadius: 6, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, animation: 'plan-pulse 2.5s ease-in-out infinite' }}>
-                                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                              ? <OperatorAvatar name={r.operator_name || '?'} color={opColorMap[r.operator_id] || 'rgba(255,255,255,0.78)'} />
+                              : <div style={{ width: 22, height: 22, borderRadius: 6, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, animation: 'plan-pulse 2.5s ease-in-out infinite' }}>
+                                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                                 </div>
                             }
                             <select value={r.operator_id || ''} onChange={e => {
                               const op = operators.find(o => o.id === e.target.value)
                               updateField(r.id, 'operator_id', e.target.value || null)
                               updateField(r.id, 'operator_name', op ? getName(op) : '')
-                            }} style={{ background: 'transparent', border: 'none', color: r.operator_id ? (opColorMap[r.operator_id] || '#60A5FA') : '#22C55E', fontSize: 11, fontWeight: r.operator_id ? 600 : 700, cursor: 'pointer', outline: 'none', flex: 1, padding: '4px 2px' }}>
-                              <option value="" style={{ background: '#0c1424', color: '#22C55E' }}>DISPONIVEL</option>
+                            }} style={{ background: 'transparent', border: 'none', color: r.operator_id ? (opColorMap[r.operator_id] || '#60A5FA') : '#10B981', fontSize: 11, fontWeight: r.operator_id ? 600 : 700, cursor: 'pointer', outline: 'none', flex: 1, padding: '4px 2px' }}>
+                              <option value="" style={{ background: '#0c1424', color: '#10B981' }}>DISPONIVEL</option>
                               {operators.map(op => <option key={op.id} value={op.id} style={{ background: '#0c1424' }}>{getName(op)}</option>)}
                             </select>
                           </div>
@@ -448,26 +448,26 @@ export default function PlanejamentoPage() {
                             return (
                               <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                                 <button type="button" onClick={() => updateField(r.id, 'tipo_resultado', isLucro ? 'prejuizo' : 'lucro')}
-                                  style={{ flexShrink: 0, width: 18, height: 18, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isLucro ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.08)', transition: 'all 0.15s' }}>
-                                  <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke={isLucro ? '#22C55E' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
+                                  style={{ flexShrink: 0, width: 18, height: 18, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isLucro ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.08)', transition: 'all 0.15s' }}>
+                                  <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke={isLucro ? '#10B981' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
                                 </button>
                                 <CellInput type="number" value={r.prejuizo} onChange={v => updateField(r.id, 'prejuizo', Number(v) || 0)} mono step="0.01"
-                                  style={{ textAlign: 'right', color: val > 0 ? (isLucro ? '#22C55E' : '#EF4444') : '#334155', fontWeight: val > 0 ? 700 : 400 }} />
+                                  style={{ textAlign: 'right', color: val > 0 ? (isLucro ? '#10B981' : '#EF4444') : '#334155', fontWeight: val > 0 ? 700 : 400 }} />
                               </div>
                             )
                           })()}
                         </td>
                         {/* Custos */}
                         <td style={{ padding: '4px 4px', minWidth: 65 }} onClick={e => e.stopPropagation()}>
-                          <CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.custos||0) > 0 ? '#F59E0B' : '#334155', fontSize: 12 }} />
+                          <CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.custos||0) > 0 ? 'rgba(255,255,255,0.78)' : '#334155', fontSize: 12 }} />
                         </td>
                         {/* Sal+Bau */}
                         <td style={{ padding: '4px 4px', minWidth: 65 }} onClick={e => e.stopPropagation()}>
-                          <CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.salario_bau||0) > 0 ? '#a855f7' : '#334155', fontSize: 12 }} />
+                          <CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ textAlign: 'right', color: Number(r.salario_bau||0) > 0 ? 'rgba(255,255,255,0.78)' : '#334155', fontSize: 12 }} />
                         </td>
                         {/* Lucro Total */}
                         <td style={{ padding: '4px 6px', minWidth: 80, textAlign: 'right' }}>
-                          <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: lf === 0 ? '#334155' : isPos ? '#22C55E' : '#EF4444' }}>
+                          <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: lf === 0 ? '#334155' : isPos ? '#10B981' : '#EF4444' }}>
                             {lf === 0 ? '—' : `${isPos ? '+' : ''}R$ ${fmt(lf)}`}
                           </span>
                         </td>
@@ -479,8 +479,8 @@ export default function PlanejamentoPage() {
                             return (
                               <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                                 <button type="button" onClick={() => updateField(r.id, 'tipo_parcial', isParcialLucro ? 'prejuizo' : 'lucro')}
-                                  style={{ flexShrink: 0, width: 18, height: 18, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isParcialLucro ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.08)', transition: 'all 0.15s' }}>
-                                  <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke={isParcialLucro ? '#22C55E' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isParcialLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
+                                  style={{ flexShrink: 0, width: 18, height: 18, borderRadius: 4, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isParcialLucro ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.08)', transition: 'all 0.15s' }}>
+                                  <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke={isParcialLucro ? '#10B981' : '#EF4444'} strokeWidth="3" strokeLinecap="round"><polyline points={isParcialLucro ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}/></svg>
                                 </button>
                                 <CellInput type="number" value={r.lucro_parcial} onChange={v => updateField(r.id, 'lucro_parcial', Number(v) || 0)} mono step="0.01"
                                   style={{ textAlign: 'right', color: lp === 0 ? '#334155' : isParcialLucro ? '#4ade80' : '#fca5a5', fontWeight: 700 }} />
@@ -563,7 +563,7 @@ export default function PlanejamentoPage() {
                   )}
                   {/* Lucro */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 800, color: lf === 0 ? 'var(--t4)' : lf >= 0 ? '#22C55E' : '#EF4444' }}>
+                    <span style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 800, color: lf === 0 ? 'var(--t4)' : lf >= 0 ? '#10B981' : '#EF4444' }}>
                       {lf === 0 ? 'R$ 0,00' : `${lf >= 0 ? '+' : ''}R$ ${fmt(lf)}`}
                     </span>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth="2" strokeLinecap="round" style={{ transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"/></svg>
@@ -575,7 +575,7 @@ export default function PlanejamentoPage() {
                         style={{ overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
                         <div style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                            <div><label style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 700 }}>APOSTAS</label><CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="70 - 1,5X" style={{ color: '#22C55E', fontWeight: 600 }} /></div>
+                            <div><label style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 700 }}>APOSTAS</label><CellInput value={r.apostas} onChange={v => updateField(r.id, 'apostas', v)} placeholder="70 - 1,5X" style={{ color: '#10B981', fontWeight: 600 }} /></div>
                             <div><label style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 700 }}>LINK</label>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                 <CellInput value={r.link} onChange={v => updateField(r.id, 'link', v)} placeholder="https://..." style={{ fontSize: 11 }} />
@@ -584,9 +584,9 @@ export default function PlanejamentoPage() {
                                     const text = String(r.link || '').trim()
                                     if (!text) return
                                     try { await navigator.clipboard.writeText(text); setCopiedLink(r.id); setTimeout(() => setCopiedLink(null), 1500) } catch {}
-                                  }} style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: copiedLink === r.id ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)' }}>
+                                  }} style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: copiedLink === r.id ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.06)' }}>
                                     {copiedLink === r.id
-                                      ? <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                      ? <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                                       : <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
                                     }
                                   </button>
@@ -597,8 +597,8 @@ export default function PlanejamentoPage() {
                           <div><label style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 700 }}>OBS / FALTA</label><CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="Observacao..." /></div>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                             <div><label style={{ fontSize: 9, color: '#EF4444', fontWeight: 700 }}>PREJUIZO</label><CellInput type="number" value={r.prejuizo} onChange={v => updateField(r.id, 'prejuizo', Number(v) || 0)} mono step="0.01" style={{ color: '#EF4444' }} /></div>
-                            <div><label style={{ fontSize: 9, color: '#F59E0B', fontWeight: 700 }}>CUSTOS</label><CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ color: '#F59E0B' }} /></div>
-                            <div><label style={{ fontSize: 9, color: '#a855f7', fontWeight: 700 }}>SAL+BAU</label><CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ color: '#a855f7' }} /></div>
+                            <div><label style={{ fontSize: 9, color: 'rgba(255,255,255,0.78)', fontWeight: 700 }}>CUSTOS</label><CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ color: 'rgba(255,255,255,0.78)' }} /></div>
+                            <div><label style={{ fontSize: 9, color: 'rgba(255,255,255,0.78)', fontWeight: 700 }}>SAL+BAU</label><CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ color: 'rgba(255,255,255,0.78)' }} /></div>
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 4 }}>
                             <button onClick={() => deleteRow(r.id)} style={{ fontSize: 11, color: '#EF4444', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontWeight: 600 }}>Excluir</button>
@@ -618,7 +618,7 @@ export default function PlanejamentoPage() {
         <style>{`
           .plan-mobile-cards { display: none; }
           .plan-row:hover { opacity: 1 !important; background: rgba(255,255,255,0.025) !important; }
-          @keyframes plan-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); } 50% { box-shadow: 0 0 0 4px rgba(59,130,246,0.12); } }
+          @keyframes plan-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); } 50% { box-shadow: 0 0 0 4px rgba(255,255,255,0.12); } }
           @media (max-width: 768px) {
             .plan-table-wrap { display: none !important; }
             .plan-mobile-cards { display: block; }

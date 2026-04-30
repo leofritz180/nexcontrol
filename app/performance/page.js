@@ -129,9 +129,9 @@ function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
 /* ── Status badge ── */
 function StatusBadge({ status }) {
   const cfg = {
-    ativa: { bg: 'rgba(34,197,94,0.12)', color: '#22C55E', border: 'rgba(34,197,94,0.25)', label: 'ATIVA' },
-    finalizada: { bg: 'rgba(245,158,11,0.12)', color: '#F59E0B', border: 'rgba(245,158,11,0.25)', label: 'Finalizada' },
-    fechada: { bg: 'rgba(59,130,246,0.12)', color: '#3B82F6', border: 'rgba(59,130,246,0.25)', label: 'Fechada' },
+    ativa: { bg: 'rgba(16,185,129,0.12)', color: '#10B981', border: 'rgba(16,185,129,0.25)', label: 'ATIVA' },
+    finalizada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Finalizada' },
+    fechada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Fechada' },
   }
   const c = cfg[status] || cfg.ativa
   return (
@@ -170,9 +170,9 @@ function AchievementBadge({ label, achieved, current, target, index }) {
       style={{
         padding: '16px 18px',
         borderRadius: 12,
-        background: achieved ? 'rgba(34,197,94,0.06)' : 'var(--surface)',
-        border: `1px solid ${achieved ? 'rgba(34,197,94,0.2)' : 'var(--b1)'}`,
-        boxShadow: achieved ? '0 0 20px rgba(34,197,94,0.06)' : 'none',
+        background: achieved ? 'rgba(16,185,129,0.06)' : 'var(--surface)',
+        border: `1px solid ${achieved ? 'rgba(16,185,129,0.2)' : 'var(--b1)'}`,
+        boxShadow: achieved ? '0 0 20px rgba(16,185,129,0.06)' : 'none',
         opacity: achieved ? 1 : 0.6,
         transition: 'all 0.3s ease',
       }}
@@ -181,15 +181,15 @@ function AchievementBadge({ label, achieved, current, target, index }) {
         <div style={{
           width: 28, height: 28, borderRadius: 8,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: achieved ? 'rgba(34,197,94,0.15)' : 'var(--raised)',
-          border: `1px solid ${achieved ? 'rgba(34,197,94,0.3)' : 'var(--b1)'}`,
-          color: achieved ? '#22C55E' : 'var(--t4)',
+          background: achieved ? 'rgba(16,185,129,0.15)' : 'var(--raised)',
+          border: `1px solid ${achieved ? 'rgba(16,185,129,0.3)' : 'var(--b1)'}`,
+          color: achieved ? '#10B981' : 'var(--t4)',
         }}>
           {achieved ? <IconCheck /> : <IconLock />}
         </div>
         <span style={{
           fontSize: 13, fontWeight: achieved ? 700 : 500,
-          color: achieved ? '#22C55E' : 'var(--t4)',
+          color: achieved ? '#10B981' : 'var(--t4)',
           flex: 1,
         }}>
           {label}
@@ -666,18 +666,18 @@ export default function PerformancePage() {
                     {/* Best slot */}
                     <div style={{
                       padding: '16px 20px', borderRadius: 12,
-                      background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)',
+                      background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)',
                       display: 'flex', alignItems: 'center', gap: 10,
                     }}>
                       <div style={{
                         width: 28, height: 28, borderRadius: 8,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)',
-                        color: '#22C55E',
+                        background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)',
+                        color: '#10B981',
                       }}>
                         <IconStar />
                       </div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#22C55E' }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#10B981' }}>
                         {slotStats[0].name}
                       </span>
                       <span style={{ fontSize: 12, color: 'var(--t3)' }}>
@@ -689,18 +689,18 @@ export default function PerformancePage() {
                     {slotStats.length > 1 && slotStats[slotStats.length - 1].perConta < -8 && (
                       <div style={{
                         padding: '16px 20px', borderRadius: 12,
-                        background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)',
+                        background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.2)',
                         display: 'flex', alignItems: 'center', gap: 10,
                       }}>
                         <div style={{
                           width: 28, height: 28, borderRadius: 8,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)',
-                          color: '#F59E0B',
+                          background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
+                          color: 'rgba(255,255,255,0.78)',
                         }}>
                           <IconAlert />
                         </div>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: '#F59E0B' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>
                           {slotStats[slotStats.length - 1].name}
                         </span>
                         <span style={{ fontSize: 12, color: 'var(--t3)' }}>
@@ -738,7 +738,7 @@ export default function PerformancePage() {
                           </span>
                           <span style={{
                             fontSize: 12, fontFamily: 'var(--mono)', fontWeight: 700, minWidth: 90, textAlign: 'right',
-                            color: s.perConta >= 0 ? '#22C55E' : '#EF4444',
+                            color: s.perConta >= 0 ? '#10B981' : '#EF4444',
                           }}>
                             R$ {s.perConta.toFixed(0)}/conta
                           </span>
@@ -767,15 +767,15 @@ export default function PerformancePage() {
                     {alertas.sp.length > 0 && (
                       <div style={{
                         padding: '20px', borderRadius: 14,
-                        background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.15)',
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.15)',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#F59E0B' }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: '#F59E0B' }}>Saques pendentes</span>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.78)' }} />
+                          <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>Saques pendentes</span>
                           <span style={{
                             fontSize: 11, fontWeight: 700, fontFamily: 'var(--mono)',
                             padding: '1px 6px', borderRadius: 4,
-                            background: 'rgba(245,158,11,0.15)', color: '#F59E0B',
+                            background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.78)',
                           }}>
                             {alertas.sp.length}
                           </span>
@@ -813,15 +813,15 @@ export default function PerformancePage() {
                     {alertas.ba.length > 0 && (
                       <div style={{
                         padding: '20px', borderRadius: 14,
-                        background: 'rgba(59,130,246,0.04)', border: '1px solid rgba(59,130,246,0.15)',
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.15)',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3B82F6' }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: '#3B82F6' }}>Bancos em analise</span>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.78)' }} />
+                          <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>Bancos em analise</span>
                           <span style={{
                             fontSize: 11, fontWeight: 700, fontFamily: 'var(--mono)',
                             padding: '1px 6px', borderRadius: 4,
-                            background: 'rgba(59,130,246,0.15)', color: '#3B82F6',
+                            background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.78)',
                           }}>
                             {alertas.ba.length}
                           </span>
@@ -877,7 +877,7 @@ export default function PerformancePage() {
                               <div style={{
                                 width: `${prog.pct}%`,
                                 height: '100%', borderRadius: 3,
-                                background: prog.pct >= 80 ? '#22C55E' : prog.pct >= 50 ? '#F59E0B' : '#e53935',
+                                background: prog.pct >= 80 ? '#10B981' : prog.pct >= 50 ? 'rgba(255,255,255,0.78)' : '#e53935',
                                 transition: 'width 0.6s ease',
                               }} />
                             </div>

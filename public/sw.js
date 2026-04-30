@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v2
+// NexControl Service Worker — Push Notifications v3 (forced cache invalidation)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

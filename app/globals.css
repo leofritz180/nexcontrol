@@ -45,11 +45,11 @@
   --info-dim:    rgba(59,130,246,0.08);
   --info-border: rgba(59,130,246,0.2);
 
-  /* Text — alpha hierarchy sobre preto */
-  --t1: #FFFFFF;
-  --t2: rgba(255,255,255,0.6);
-  --t3: rgba(255,255,255,0.4);
-  --t4: rgba(255,255,255,0.25);
+  /* Text — Resend-inspired neutral hierarchy */
+  --t1: #F5F5F5;
+  --t2: #A1A1AA;
+  --t3: #71717A;
+  --t4: #52525B;
 
   /* Fonts */
   --font-display: 'Instrument Serif', Georgia, serif;
@@ -90,34 +90,23 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Sidebar — #020202, separacao apenas pela borda direita sutil */
+/* Sidebar — preto absoluto igual ao fundo, separacao apenas pela borda direita */
 aside.sidebar-desktop,
 aside[class*="sidebar"] {
-  background: #020202 !important;
+  background: #000000 !important;
   background-image: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
-  border-right: 1px solid rgba(255,255,255,0.04) !important;
 }
 
-/* Cards inline styles — forca padrao premium glass+gradient em todos */
+/* Cards inline styles — force glow lateral sofisticado em qualquer card preto */
 [style*="background:var(--surface)"],
 [style*="background: var(--surface)"] {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255,255,255,0.06) !important;
-  border-radius: 20px !important;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6) !important;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease !important;
-}
-[style*="background:var(--surface)"]:hover,
-[style*="background: var(--surface)"]:hover {
-  border-color: rgba(255,255,255,0.1) !important;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8) !important;
-  transform: scale(1.01) !important;
+  box-shadow:
+    inset 1px 0 0 rgba(255,255,255,0.05),
+    inset -1px 0 0 rgba(255,255,255,0.05),
+    0 0 28px rgba(255,255,255,0.03) !important;
 }
 
 /* Background — preto puro, sem gradientes ambient */
@@ -163,26 +152,24 @@ h1, h2, h3, .t-hero, .t-h1, .t-h2, .t-h3 {
 ══════════════════════════════ */
 
 /* Cards — living components */
-/* Cards premium — glass + gradient sutil + textura radial interna */
+/* Cards 100% preto, borda lateral sofisticada + glow lateral sutil */
 .card {
   position: relative;
-  background:
-    radial-gradient(circle at 50% 30%, rgba(255,255,255,0.06), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  background: #000000;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  box-shadow:
+    inset 1px 0 0 rgba(255,255,255,0.04),     /* glow filete esquerdo */
+    inset -1px 0 0 rgba(255,255,255,0.04),    /* glow filete direito */
+    0 0 24px rgba(255,255,255,0.025);          /* glow externo sofisticado */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .card:hover {
-  background:
-    radial-gradient(circle at 50% 30%, rgba(255,255,255,0.08), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%);
-  border-color: rgba(255,255,255,0.1);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-  transform: scale(1.01);
+  border-color: rgba(255,255,255,0.14);
+  box-shadow:
+    inset 1px 0 0 rgba(255,255,255,0.07),
+    inset -1px 0 0 rgba(255,255,255,0.07),
+    0 0 36px rgba(255,255,255,0.04);
 }
 
 .card-primary {
@@ -211,34 +198,27 @@ h1, h2, h3, .t-hero, .t-h1, .t-h2, .t-h3 {
 .card-info:hover { border-color: rgba(59,130,246,0.3); }
 
 .card-glass {
-  background:
-    radial-gradient(circle at 50% 30%, rgba(255,255,255,0.06), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  background: #000000;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  box-shadow:
+    inset 1px 0 0 rgba(255,255,255,0.04),
+    inset -1px 0 0 rgba(255,255,255,0.04),
+    0 0 24px rgba(255,255,255,0.025);
 }
 
-/* Row card — mesma estetica premium */
+/* Row card — Resend-style: hover sutil, contorno visivel */
 .row-card {
   position: relative;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: #000000;
   border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  border-radius: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease;
   cursor: pointer;
 }
 .row-card:hover {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.03) 100%);
-  border-color: rgba(255,255,255,0.1);
-  transform: scale(1.005);
+  background: rgba(255,255,255,0.02);
+  border-color: rgba(255,255,255,0.12);
 }
 .row-card .accent { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
 

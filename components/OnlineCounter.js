@@ -39,8 +39,8 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
           padding: '22px 26px',
           borderRadius: 18,
           background: 'linear-gradient(145deg, #0c1424, #080e1a)',
-          border: '1px solid rgba(16,185,129,0.12)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.35), 0 0 30px rgba(16,185,129,0.04), inset 0 1px 0 rgba(255,255,255,0.03)',
+          border: '1px solid rgba(0,140,94,0.12)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.35), 0 0 30px rgba(0,140,94,0.04), inset 0 1px 0 rgba(255,255,255,0.03)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -50,9 +50,9 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <motion.div
-            animate={{ boxShadow: ['0 0 0 0 rgba(16,185,129,0)', '0 0 0 8px rgba(16,185,129,0.2)', '0 0 0 0 rgba(16,185,129,0)'] }}
+            animate={{ boxShadow: ['0 0 0 0 rgba(0,140,94,0)', '0 0 0 8px rgba(0,140,94,0.2)', '0 0 0 0 rgba(0,140,94,0)'] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ width: 12, height: 12, borderRadius: '50%', background: '#10B981', flexShrink: 0 }}
+            style={{ width: 12, height: 12, borderRadius: '50%', background: '#008C5E', flexShrink: 0 }}
           />
           <div>
             <p style={{ fontSize: 11, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Usuarios online agora</p>
@@ -62,8 +62,8 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
         <div style={{ textAlign: 'right' }}>
           <p style={{
             fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
-            fontSize: 36, fontWeight: 900, color: '#10B981', margin: 0, lineHeight: 1,
-            textShadow: '0 0 20px rgba(16,185,129,0.15)',
+            fontSize: 36, fontWeight: 900, color: '#008C5E', margin: 0, lineHeight: 1,
+            textShadow: '0 0 20px rgba(0,140,94,0.15)',
           }}>
             {count}
           </p>
@@ -78,19 +78,19 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
       display: 'flex', alignItems: 'center', gap: 6,
       fontSize: 11, fontWeight: 600, color: 'var(--t3)',
       padding: '4px 10px', borderRadius: 8,
-      background: 'rgba(16,185,129,0.04)',
-      border: '1px solid rgba(16,185,129,0.1)',
+      background: 'rgba(0,140,94,0.04)',
+      border: '1px solid rgba(0,140,94,0.1)',
       cursor: 'default',
     }}
       title="Usuarios ativos na plataforma neste momento"
     >
       <span style={{
         width: 6, height: 6, borderRadius: '50%',
-        background: '#10B981',
-        boxShadow: '0 0 6px rgba(16,185,129,0.5)',
+        background: '#008C5E',
+        boxShadow: '0 0 6px rgba(0,140,94,0.5)',
         animation: 'onlinePulse 2s ease-in-out infinite',
       }} />
-      <span style={{ fontFamily: 'var(--mono, monospace)', fontWeight: 700, color: '#10B981' }}>{count}</span>
+      <span style={{ fontFamily: 'var(--mono, monospace)', fontWeight: 700, color: '#008C5E' }}>{count}</span>
       <span className="online-label" style={{ color: 'var(--t4)' }}>online</span>
       <style>{`
         @keyframes onlinePulse {

@@ -73,7 +73,7 @@ export default function OwnerAfiliadosPage() {
             { l: 'Afiliados ativos', v: `${totals.enabled || 0} / ${totals.affiliates || 0}`, c: 'rgba(255,255,255,0.78)' },
             { l: 'Indicados', v: totals.indicados || 0, c: '#60A5FA' },
             { l: 'Faturamento gerado', v: `R$ ${fmt(totals.totalFaturado)}`, c: '#F1F5F9' },
-            { l: 'Comissão total', v: `R$ ${fmt(totals.totalComissao)}`, c: '#10B981' },
+            { l: 'Comissão total', v: `R$ ${fmt(totals.totalComissao)}`, c: '#008C5E' },
             { l: 'A pagar', v: `R$ ${fmt(totals.pendente)}`, c: 'rgba(255,255,255,0.78)' },
           ].map((k, i) => (
             <motion.div key={k.l} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06 + i * 0.05, ease }}
@@ -121,14 +121,14 @@ export default function OwnerAfiliadosPage() {
                           </div>
                         </td>
                         <td style={{ padding: '12px' }}>
-                          <span style={{ fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 5, background: r.enabled ? 'rgba(16,185,129,0.08)' : 'rgba(100,116,139,0.08)', color: r.enabled ? '#10B981' : '#64748B', border: `1px solid ${r.enabled ? 'rgba(16,185,129,0.2)' : 'rgba(100,116,139,0.2)'}` }}>
+                          <span style={{ fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 5, background: r.enabled ? 'rgba(0,140,94,0.08)' : 'rgba(100,116,139,0.08)', color: r.enabled ? '#008C5E' : '#64748B', border: `1px solid ${r.enabled ? 'rgba(0,140,94,0.2)' : 'rgba(100,116,139,0.2)'}` }}>
                             {r.enabled ? 'ATIVO' : 'INATIVO'}
                           </span>
                         </td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', color: '#94A3B8' }}>{Math.round(r.rate * 100)}%</td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: '#F1F5F9' }}>{r.indicados}</td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', color: '#60A5FA' }}>R$ {fmt(r.totalFaturado)}</td>
-                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: '#10B981' }}>R$ {fmt(r.totalComissao)}</td>
+                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: '#008C5E' }}>R$ {fmt(r.totalComissao)}</td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>R$ {fmt(r.pendente)}</td>
                       </tr>
                     )

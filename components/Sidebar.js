@@ -158,7 +158,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* ── Plan status — minimal ── */}
       <div style={{ padding:'0 12px 12px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 12px' }}>
-          <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'#10b981':'#9ca3af' }}/>
+          <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'#008c5e':'#9ca3af' }}/>
           <span style={{ fontSize:11, color:'var(--t3)', fontWeight:400 }}>
             {subActive?'PRO ativo':'Trial · 3 dias'}
           </span>

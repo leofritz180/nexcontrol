@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v8 (verde Emerald + remover azul/amarelo/roxo)
+// NexControl Service Worker — Push Notifications v9 (verde Mint AK11143 #008C5E)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

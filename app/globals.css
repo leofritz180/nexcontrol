@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Instrument+Serif:ital,wght@0,400;1,400&display=swap');
 
 /* ═══════════════════════════════════════════
    NEXCONTROL — DESIGN SYSTEM
@@ -10,9 +10,10 @@
 ═══════════════════════════════════════════ */
 
 :root {
-  /* Backgrounds — preto absoluto, sem tint, escala de cinza pura */
+  /* Backgrounds — Resend-inspired pure black, escala de cinza pura */
   --void:    #000000;
   --base:    #000000;
+  --sidebar: #030303;
   --surface: #050505;
   --raised:  #0A0A0A;
   --overlay: #101010;
@@ -45,19 +46,19 @@
   --info-border: rgba(59,130,246,0.2);
 
   /* Text — Resend-inspired neutral hierarchy */
-  --t1: #EAEAEA;
-  --t2: #9CA3AF;
-  --t3: #6B7280;
-  --t4: #4B5563;
+  --t1: #F5F5F5;
+  --t2: #A1A1AA;
+  --t3: #71717A;
+  --t4: #52525B;
 
   /* Fonts */
-  --font-display: 'Playfair Display', Georgia, serif;
+  --font-display: 'Instrument Serif', Georgia, serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Borders — preto neutro, separacao apenas por borda branca a 5% */
-  --b1: rgba(255,255,255,0.05);
-  --b2: rgba(255,255,255,0.08);
-  --b3: rgba(255,255,255,0.12);
+  /* Borders — preto neutro, separacao apenas por borda branca a 6% */
+  --b1: rgba(255,255,255,0.06);
+  --b2: rgba(255,255,255,0.10);
+  --b3: rgba(255,255,255,0.14);
 
   /* Font */
   --mono: 'JetBrains Mono', monospace;
@@ -89,10 +90,10 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Sidebar — forcar preto absoluto, separacao apenas pela borda */
+/* Sidebar — Resend-style #030303, separacao apenas pela borda */
 aside.sidebar-desktop,
 aside[class*="sidebar"] {
-  background: #000000 !important;
+  background: #030303 !important;
   background-image: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;

@@ -1186,9 +1186,12 @@ export default function AdminPage() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.05, ease }}
-              style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:'0 0 6px' }}>
-              Central de operacoes
+              style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:'0 0 4px' }}>
+              Ola, {getName(profile)}
             </motion.h1>
+            <p style={{ fontSize:14, color:'var(--t2)', margin:'0 0 8px', fontWeight:500 }}>
+              Central de operacoes
+            </p>
             <div style={{ display:'flex', alignItems:'center', gap:10 }}>
               <motion.span
                 style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)' }}

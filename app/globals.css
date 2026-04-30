@@ -10,13 +10,13 @@
 ═══════════════════════════════════════════ */
 
 :root {
-  /* Backgrounds — preto profundo, baixissimo contraste entre camadas */
-  --void:    #03050A;
-  --base:    #05070A;
-  --surface: #090D13;
-  --raised:  #10151D;
-  --overlay: #141A24;
-  --float:   #181F2A;
+  /* Backgrounds — preto absoluto, sem tint */
+  --void:    #000000;
+  --base:    #000000;
+  --surface: #080808;
+  --raised:  #0F0F0F;
+  --overlay: #161616;
+  --float:   #1F1F1F;
 
   /* Brand — red identity */
   --brand:        #e53935;

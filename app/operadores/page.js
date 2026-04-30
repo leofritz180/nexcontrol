@@ -157,7 +157,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         transition={{ duration: 0.3, ease }}
         style={{
           width: '100%', maxWidth: 420, height: '100%', overflowY: 'auto',
-          background: 'linear-gradient(180deg, #0c1424, #080e1a)',
+          background: 'linear-gradient(180deg, #000000, #000000)',
           borderLeft: '1px solid rgba(255,255,255,0.06)',
           padding: '32px 26px',
         }}>
@@ -585,7 +585,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
           onClick={() => { setShowConfirm(false); setPendingModel(null) }}>
           <div onClick={e => e.stopPropagation()} style={{
             width:'100%', maxWidth:480, padding:28, borderRadius:20,
-            background:'linear-gradient(160deg, #10141e, #080b14)',
+            background:'linear-gradient(160deg, #000000, #000000)',
             border:'1px solid rgba(255,255,255,0.08)',
             boxShadow:'0 40px 100px rgba(0,0,0,0.7)',
           }}>
@@ -643,7 +643,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
               <button type="button" onClick={confirmChange} disabled={saving || !pendingValue || Number(pendingValue) <= 0}
                 style={{
                   flex:2, padding:'12px', borderRadius:10, border:'none', cursor:'pointer',
-                  background: pendingModel === 'divisao_resultado' ? 'linear-gradient(135deg, #7c3aed, rgba(255,255,255,0.78))' : '#008c5e',
+                  background: pendingModel === 'divisao_resultado' ? 'linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,255,255,0.78))' : '#008c5e',
                   color:'#fff', fontSize:13, fontWeight:700,
                   opacity: saving || !pendingValue || Number(pendingValue) <= 0 ? 0.5 : 1,
                 }}>
@@ -894,7 +894,7 @@ export default function OperadoresPage() {
 
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #0c1424, #080e1a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #000000, #000000)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Carregando...</p>
@@ -1191,7 +1191,7 @@ export default function OperadoresPage() {
                   whileTap={invSaving?{}:{ scale:0.97 }}
                   style={{
                     padding: '11px 22px', fontSize: 13, fontWeight: 800, fontFamily:'inherit',
-                    background: invSaving ? 'rgba(0,140,94,0.2)' : 'linear-gradient(145deg, #008C5E, #16a34a)',
+                    background: invSaving ? 'rgba(0,140,94,0.2)' : 'linear-gradient(145deg, #008C5E, #00a06d)',
                     border: 'none',
                     borderRadius: 11, color: '#fff', cursor: invSaving?'not-allowed':'pointer',
                     display: 'flex', alignItems: 'center', gap: 8,

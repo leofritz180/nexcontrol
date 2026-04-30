@@ -105,7 +105,7 @@ export default function OwnerPage() {
   }, [])
 
   if (loading) return (
-    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#04070e' }}>
+    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000000' }}>
       <div className="spinner" style={{ width: 24, height: 24, borderTopColor: '#e53935' }} />
     </main>
   )
@@ -204,7 +204,7 @@ export default function OwnerPage() {
 
   const card = {
     borderRadius: 18,
-    background: 'linear-gradient(145deg, #0c1424, #080e1a)',
+    background: 'linear-gradient(145deg, #000000, #000000)',
     border: '1px solid rgba(255,255,255,0.05)',
     boxShadow: '0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
   }
@@ -212,7 +212,7 @@ export default function OwnerPage() {
   const dateStr = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 
   return (
-    <main style={{ minHeight: '100vh', background: '#04070e', position: 'relative', zIndex: 1 }}>
+    <main style={{ minHeight: '100vh', background: '#000000', position: 'relative', zIndex: 1 }}>
       {/* Ambient */}
       <div style={{ position: 'fixed', top: '-10%', left: '15%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,140,94,0.03), transparent 60%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
 
@@ -526,7 +526,7 @@ export default function OwnerPage() {
                 <div key={day.date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', height: '100%', position: 'relative', cursor: 'pointer' }}
                   onMouseEnter={() => setHoveredBar(i)} onMouseLeave={() => setHoveredBar(null)}>
                   {isHov && (
-                    <div style={{ position: 'absolute', bottom: h + 8, left: '50%', transform: 'translateX(-50%)', background: '#0c1424', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '3px 7px', whiteSpace: 'nowrap', zIndex: 10 }}>
+                    <div style={{ position: 'absolute', bottom: h + 8, left: '50%', transform: 'translateX(-50%)', background: '#000000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '3px 7px', whiteSpace: 'nowrap', zIndex: 10 }}>
                       <p style={{ fontSize: 9, color: '#94A3B8', margin: '0 0 1px' }}>{day.date.slice(5)}</p>
                       <p style={{ fontSize: 11, fontWeight: 700, color: '#008C5E', margin: 0, fontFamily: 'var(--mono)' }}>R$ {fmt(day.value)}</p>
                     </div>
@@ -787,9 +787,9 @@ export default function OwnerPage() {
                       <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontWeight: 700, color: i < 3 ? '#008C5E' : '#64748B', fontSize: 12 }}>{i + 1}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 28, height: 28, borderRadius: 7, background: i < 3 ? 'rgba(0,140,94,0.1)' : '#0c1424', border: `1px solid ${i < 3 ? 'rgba(0,140,94,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 7, background: i < 3 ? 'rgba(0,140,94,0.1)' : '#000000', border: `1px solid ${i < 3 ? 'rgba(0,140,94,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
                             <span style={{ fontSize: 11, fontWeight: 700, color: i < 3 ? '#008C5E' : '#94A3B8' }}>{(a.name || a.email)[0].toUpperCase()}</span>
-                            <div style={{ position: 'absolute', bottom: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: dot, border: '2px solid #0c1424' }} />
+                            <div style={{ position: 'absolute', bottom: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: dot, border: '2px solid #000000' }} />
                           </div>
                           <div style={{ minWidth: 0 }}>
                             <p style={{ fontSize: 11, fontWeight: 600, color: '#F1F5F9', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>{a.name || a.email.split('@')[0]}</p>
@@ -893,7 +893,7 @@ export default function OwnerPage() {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.3, ease }}
               onClick={e => e.stopPropagation()}
-              style={{ width: '100%', maxWidth: 520, padding: 28, borderRadius: 20, background: 'linear-gradient(160deg, #10141e, #080b14)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 100px rgba(0,0,0,0.7)', position: 'relative', maxHeight: 'calc(100dvh - 48px)', overflowY: 'auto' }}>
+              style={{ width: '100%', maxWidth: 520, padding: 28, borderRadius: 20, background: 'linear-gradient(160deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 100px rgba(0,0,0,0.7)', position: 'relative', maxHeight: 'calc(100dvh - 48px)', overflowY: 'auto' }}>
               <button onClick={() => setSelectedAdmin(null)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 4 }}>
                 <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>

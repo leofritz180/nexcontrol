@@ -597,7 +597,7 @@ export default function MetaPage() {
   const pctAcerto = remessas.length>0?Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100):0
 
   const fbCfg = {
-    good: { bg: 'linear-gradient(145deg, #0a1a12, #0c1424)', border: 'rgba(0,140,94,0.3)', color: '#008C5E', iconPath: 'M20 6L9 17l-5-5' },
+    good: { bg: 'linear-gradient(145deg, #0a1a12, #000000)', border: 'rgba(0,140,94,0.3)', color: '#008C5E', iconPath: 'M20 6L9 17l-5-5' },
     warn: { bg: 'linear-gradient(145deg, #1a1608, #14120a)', border: 'rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.78)', iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' },
     critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: '#EF4444', iconPath: 'M18 6L6 18M6 6l12 12' },
   }
@@ -750,7 +750,7 @@ export default function MetaPage() {
                         padding:'10px 18px', borderRadius:11, border:'none', cursor:'pointer',
                         fontSize:12, fontWeight:800, fontFamily:'inherit', color:'#fff',
                         background: isFinalizada
-                          ? 'linear-gradient(145deg, #008C5E, #16a34a)'
+                          ? 'linear-gradient(145deg, #008C5E, #00a06d)'
                           : 'linear-gradient(145deg, #e53935, #c62828)',
                         boxShadow: isFinalizada
                           ? '0 6px 20px rgba(0,140,94,0.35), inset 0 1px 0 rgba(255,255,255,0.18)'
@@ -1176,9 +1176,9 @@ export default function MetaPage() {
                     position:'relative',
                     height: '100%', borderRadius: 5,
                     background: isDone
-                      ? 'linear-gradient(90deg, #008C5E, #16a34a, #008C5E)'
+                      ? 'linear-gradient(90deg, #008C5E, #00a06d, #008C5E)'
                       : pct >= 70
-                      ? 'linear-gradient(90deg, #008C5E, #16a34a)'
+                      ? 'linear-gradient(90deg, #008C5E, #00a06d)'
                       : pct >= 40
                       ? 'linear-gradient(90deg, rgba(255,255,255,0.78), #1d4ed8)'
                       : 'linear-gradient(90deg, #e53935, #c62828)',
@@ -1616,7 +1616,7 @@ export default function MetaPage() {
                 initial={{ opacity:0, scale:0.96, y:20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.97 }}
                 transition={{ duration:0.5, delay:T.card, ease:[0.33,1,0.68,1] }}
                 onClick={e => e.stopPropagation()}
-                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:28, background:'linear-gradient(160deg, #10141e, #080b14)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:`0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(${glowColor},0.04), inset 0 1px 0 rgba(255,255,255,0.03)` }}
+                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:28, background:'linear-gradient(160deg, #000000, #000000)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:`0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(${glowColor},0.04), inset 0 1px 0 rgba(255,255,255,0.03)` }}
               >
                 {/* Header */}
                 <div style={{ padding:'40px 32px 28px', textAlign:'center', borderBottom:'1px solid rgba(255,255,255,0.04)', background:`linear-gradient(180deg, rgba(${glowColor},0.05), transparent)`, position:'relative', overflow:'hidden' }}>
@@ -1743,7 +1743,7 @@ export default function MetaPage() {
                     style={{
                       width:'100%', padding:'16px 28px', borderRadius:14, border:'none', cursor:'pointer',
                       fontSize:15, fontWeight:700, color:'#fff',
-                      background: liq>=0 ? 'linear-gradient(135deg, #008c5e, #16a34a)' : 'linear-gradient(135deg, #e53935, #c62828)',
+                      background: liq>=0 ? 'linear-gradient(135deg, #008c5e, #00a06d)' : 'linear-gradient(135deg, #e53935, #c62828)',
                       boxShadow: `0 6px 24px rgba(${glowColor},0.3)`,
                       display:'flex', alignItems:'center', justifyContent:'center', gap:8,
                     }}

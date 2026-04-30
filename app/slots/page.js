@@ -290,7 +290,7 @@ export default function SlotsPage() {
 
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #0c1424, #080e1a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #000000, #000000)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Carregando...</p>

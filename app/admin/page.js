@@ -401,7 +401,7 @@ function DemoAdminDashboard({ onCreateMeta, userName }) {
       {/* Hero + KPIs */}
       <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:24, marginBottom:28 }}>
         <motion.div initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, ease }}
-          style={{ position:'relative', overflow:'hidden', padding:'40px 40px 36px', borderRadius:18, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3)' }}>
+          style={{ position:'relative', overflow:'hidden', padding:'40px 40px 36px', borderRadius:18, background:'linear-gradient(145deg, #000000, #000000)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3)' }}>
           <div style={{ position:'absolute', top:'5%', left:'0%', width:450, height:350, borderRadius:'50%', background:'radial-gradient(circle, rgba(0,140,94,0.08), transparent 60%)', filter:'blur(50px)', pointerEvents:'none' }} />
           <div style={{ position:'relative', zIndex:1 }}>
             <p style={{ fontSize:13, color:'var(--t3)', fontWeight:500, margin:'0 0 28px' }}>Lucro final acumulado</p>
@@ -2176,7 +2176,7 @@ export default function AdminPage() {
             '91':{h:'180,60%,45%',hex:'#14b8a6',name:'Teal'},'777':{h:'50,80%,55%',hex:'#eab308',name:'Amarelo'},
             '888':{h:'280,55%,55%',hex:'rgba(255,255,255,0.78)',name:'Violeta'},XW:{h:'340,65%,55%',hex:'#f43f5e',name:'Rose'},
             EK:{h:'210,70%,50%',hex:'#2563eb',name:'Royal'},DY:{h:'150,60%,50%',hex:'#008c5e',name:'Lime'},
-            GAME:{h:'260,60%,55%',hex:'#7c3aed',name:'Indigo'},ALFA:{h:'10,80%,55%',hex:'#f97316',name:'Amber'},
+            GAME:{h:'260,60%,55%',hex:'rgba(255,255,255,0.78)',name:'Indigo'},ALFA:{h:'10,80%,55%',hex:'#f97316',name:'Amber'},
             BRA:{h:'140,50%,45%',hex:'#059669',name:'Emerald'},WP:{h:'190,60%,50%',hex:'#0891b2',name:'Oceano'},
             KK:{h:'300,50%,50%',hex:'#c026d3',name:'Magenta'},MK:{h:'170,55%,45%',hex:'#0d9488',name:'Agua'},
             DEFAULT:{h:'220,60%,55%',hex:'#6366f1',name:'Indigo'},
@@ -3042,7 +3042,7 @@ export default function AdminPage() {
                           style={{
                             padding:'9px 16px', borderRadius:10, border:'none', cursor:'pointer',
                             fontSize:12, fontWeight:800, fontFamily:'inherit', color:'#fff',
-                            background:'linear-gradient(145deg, #008C5E, #16a34a)',
+                            background:'linear-gradient(145deg, #008C5E, #00a06d)',
                             boxShadow:'0 4px 14px rgba(0,140,94,0.3), inset 0 1px 0 rgba(255,255,255,0.18)',
                             display:'flex', alignItems:'center', gap:6,
                           }}

@@ -87,7 +87,7 @@ export default function AfiliadosPage() {
         {!enabled ? (
           /* BLOQUEIO */
           <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-            style={{ borderRadius: 20, background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.15)', padding: '48px 36px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+            style={{ borderRadius: 20, background: 'linear-gradient(145deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.15)', padding: '48px 36px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: '-30%', left: '20%', right: '20%', height: 200, background: 'radial-gradient(ellipse, rgba(255,255,255,0.12), transparent 70%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
               <motion.div animate={{ scale: [1, 1.04, 1] }} transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -141,7 +141,7 @@ export default function AfiliadosPage() {
                 { l: 'A receber', v: totals.pendente || 0, c: 'rgba(255,255,255,0.78)', prefix: 'R$ ' },
               ].map((k, i) => (
                 <motion.div key={k.l} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.08 + i * 0.06, ease }}
-                  style={{ borderRadius: 14, padding: '18px 20px', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  style={{ borderRadius: 14, padding: '18px 20px', background: 'linear-gradient(145deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.05)' }}>
                   <p style={{ fontSize: 10, color: 'var(--t4)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>{k.l}</p>
                   <p style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>
                     {k.prefix}{typeof k.v === 'number' && k.prefix ? fmt(k.v) : k.v}
@@ -152,7 +152,7 @@ export default function AfiliadosPage() {
 
             {/* Lista de indicados */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.15, ease }}
-              style={{ borderRadius: 16, padding: 24, background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              style={{ borderRadius: 16, padding: 24, background: 'linear-gradient(145deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.05)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Clientes indicados ({referrals.length})</h3>
                 <span style={{ fontSize: 10, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Atualiza a cada 20s</span>

@@ -38,7 +38,7 @@ export default function OwnerAfiliadosPage() {
   }, [])
 
   if (loading) return (
-    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#04070e' }}>
+    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000000' }}>
       <div className="spinner" style={{ width: 22, height: 22, borderTopColor: '#e53935' }} />
     </main>
   )
@@ -47,7 +47,7 @@ export default function OwnerAfiliadosPage() {
   const { rows = [], totals = {} } = data
 
   return (
-    <main style={{ minHeight: '100vh', background: '#04070e' }}>
+    <main style={{ minHeight: '100vh', background: '#000000' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 28px 80px' }}>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}
@@ -77,7 +77,7 @@ export default function OwnerAfiliadosPage() {
             { l: 'A pagar', v: `R$ ${fmt(totals.pendente)}`, c: 'rgba(255,255,255,0.78)' },
           ].map((k, i) => (
             <motion.div key={k.l} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06 + i * 0.05, ease }}
-              style={{ borderRadius: 14, padding: '18px 20px', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              style={{ borderRadius: 14, padding: '18px 20px', background: 'linear-gradient(145deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.05)' }}>
               <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>{k.l}</p>
               <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>{k.v}</p>
             </motion.div>
@@ -86,7 +86,7 @@ export default function OwnerAfiliadosPage() {
 
         {/* Ranking */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2, ease }}
-          style={{ borderRadius: 16, padding: 24, background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)' }}>
+          style={{ borderRadius: 16, padding: 24, background: 'linear-gradient(145deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.05)' }}>
           <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 14px' }}>Ranking de afiliados</h3>
           {rows.length === 0 ? (
             <div style={{ padding: '40px 0', textAlign: 'center' }}>

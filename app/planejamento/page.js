@@ -298,7 +298,7 @@ export default function PlanejamentoPage() {
               { l: 'Lucro parcial', v: `${totalLucroParcial >= 0 ? '+' : ''}R$ ${fmt(totalLucroParcial)}`, c: totalLucroParcial >= 0 ? '#008C5E' : '#EF4444' },
               { l: 'Lucro total', v: `${totalLucro >= 0 ? '+' : ''}R$ ${fmt(totalLucro)}`, c: totalLucro >= 0 ? '#008C5E' : '#EF4444' },
             ].map((k, i) => (
-              <div key={k.l} style={{ borderRadius: 10, padding: '16px 18px', background: '#0a1018', border: '1px solid rgba(255,255,255,0.04)' }}>
+              <div key={k.l} style={{ borderRadius: 10, padding: '16px 18px', background: '#000000', border: '1px solid rgba(255,255,255,0.04)' }}>
                 <p style={{ fontSize: 10, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, margin: '0 0 6px' }}>{k.l}</p>
                 <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>{k.v}</p>
               </div>
@@ -322,11 +322,11 @@ export default function PlanejamentoPage() {
         {/* ═══ TABLE (Desktop) ═══ */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08, ease }}
           className="plan-table-wrap"
-          style={{ borderRadius: 16, overflow: 'hidden', background: 'linear-gradient(145deg, #0c1424, #080e1a)', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 4px 24px rgba(0,0,0,0.35)' }}>
+          style={{ borderRadius: 16, overflow: 'hidden', background: 'linear-gradient(145deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 4px 24px rgba(0,0,0,0.35)' }}>
           <div style={{ overflowX: 'auto', maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1500 }}>
               <thead>
-                <tr style={{ background: '#080d16', position: 'sticky', top: 0, zIndex: 5 }}>
+                <tr style={{ background: '#000000', position: 'sticky', top: 0, zIndex: 5 }}>
                   <th style={{ width: 5, padding: 0 }}/>
                   {['REDE', 'DEP', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS', 'PREJ./LUCRO', 'CUSTOS', 'SAL+BAU', 'LUCRO TOTAL', 'L. PARCIAL', ''].map((h, i) => {
                     const isNum = i >= 8 && i <= 12
@@ -366,8 +366,8 @@ export default function PlanejamentoPage() {
                         <td style={{ padding: '6px 8px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
                           <select value={r.rede || ''} onChange={e => updateField(r.id, 'rede', e.target.value)}
                             style={{ background: 'transparent', border: 'none', color: redeC, fontSize: 15, fontWeight: 900, cursor: 'pointer', outline: 'none', width: '100%', padding: '6px 4px', letterSpacing: '0.03em' }}>
-                            <option value="" style={{ background: '#0a1018' }}>--</option>
-                            {REDES.map(rd => <option key={rd} value={rd} style={{ background: '#0a1018' }}>{rd}</option>)}
+                            <option value="" style={{ background: '#000000' }}>--</option>
+                            {REDES.map(rd => <option key={rd} value={rd} style={{ background: '#000000' }}>{rd}</option>)}
                           </select>
                         </td>
                         {/* DEP */}
@@ -417,8 +417,8 @@ export default function PlanejamentoPage() {
                               updateField(r.id, 'operator_id', e.target.value || null)
                               updateField(r.id, 'operator_name', op ? getName(op) : '')
                             }} style={{ background: 'transparent', border: 'none', color: r.operator_id ? (opColorMap[r.operator_id] || '#60A5FA') : '#008C5E', fontSize: 11, fontWeight: r.operator_id ? 600 : 700, cursor: 'pointer', outline: 'none', flex: 1, padding: '4px 2px' }}>
-                              <option value="" style={{ background: '#0c1424', color: '#008C5E' }}>DISPONIVEL</option>
-                              {operators.map(op => <option key={op.id} value={op.id} style={{ background: '#0c1424' }}>{getName(op)}</option>)}
+                              <option value="" style={{ background: '#000000', color: '#008C5E' }}>DISPONIVEL</option>
+                              {operators.map(op => <option key={op.id} value={op.id} style={{ background: '#000000' }}>{getName(op)}</option>)}
                             </select>
                           </div>
                         </td>

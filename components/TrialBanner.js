@@ -209,7 +209,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
                 position: 'relative', overflow: 'hidden',
                 width: '100%', padding: '15px 22px', borderRadius: 12,
                 border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(180deg, #008c5e, #16a34a)',
+                background: 'linear-gradient(180deg, #008c5e, #00a06d)',
                 color: '#04120a',
                 fontSize: 15, fontWeight: 800,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,

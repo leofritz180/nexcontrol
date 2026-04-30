@@ -16,7 +16,7 @@ export function ProLockedCard({ title, description, icon, children }) {
         whileHover={{ y:-3, transition:{duration:0.2} }}
         style={{
           cursor:'pointer', borderRadius:16, overflow:'hidden',
-          background:'linear-gradient(145deg, #0c1424, #080e1a)',
+          background:'linear-gradient(145deg, #000000, #000000)',
           border:`1px solid ${hovered?'rgba(229,57,53,0.25)':'rgba(255,255,255,0.05)'}`,
           boxShadow: hovered?'0 12px 36px rgba(229,57,53,0.08), 0 0 0 1px rgba(229,57,53,0.05)':'0 4px 20px rgba(0,0,0,0.3)',
           transition:'border-color 0.3s, box-shadow 0.3s',
@@ -128,7 +128,7 @@ export function ProUpgradeModal({ onClose, feature }) {
         transition={{ duration:0.3, ease:[0.33,1,0.68,1] }}
         style={{
           width:'100%', maxWidth:420, padding:'40px 36px', borderRadius:20,
-          background:'linear-gradient(145deg, #0c1424, #080e1a)',
+          background:'linear-gradient(145deg, #000000, #000000)',
           border:'1px solid rgba(229,57,53,0.15)',
           boxShadow:'0 30px 80px rgba(0,0,0,0.6), 0 0 40px rgba(229,57,53,0.06)',
           textAlign:'center',

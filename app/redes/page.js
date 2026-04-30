@@ -308,7 +308,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 9999,
           width: '100%', maxWidth: 480,
-          background: 'linear-gradient(180deg, #0c1424 0%, #080e1a 100%)',
+          background: 'linear-gradient(180deg, #000000 0%, #000000 100%)',
           borderLeft: '1px solid rgba(255,255,255,0.06)',
           overflowY: 'auto', padding: '28px 24px 40px',
           boxShadow: '-24px 0 80px rgba(0,0,0,0.6)',
@@ -846,7 +846,7 @@ export default function RedesPage() {
   /* ── Loading state ── */
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #0c1424, #080e1a)' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #000000, #000000)' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             style={{ width: 32, height: 32, border: '3px solid rgba(229,57,53,0.2)', borderTopColor: '#e53935', borderRadius: '50%' }} />

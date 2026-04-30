@@ -37,7 +37,7 @@ export default function ProBanner({ blockedCount = 3 }) {
           style={{
             position:'fixed', bottom:24, right:24, zIndex:9000,
             maxWidth:340, padding:'16px 20px', borderRadius:14,
-            background:'linear-gradient(145deg, #0c1424, #080e1a)',
+            background:'linear-gradient(145deg, #000000, #000000)',
             border:'1px solid rgba(229,57,53,0.15)',
             boxShadow:'0 12px 40px rgba(0,0,0,0.5), 0 0 20px rgba(229,57,53,0.05)',
           }}

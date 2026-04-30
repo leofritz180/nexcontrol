@@ -44,7 +44,7 @@ function HeroBanner({ course, onWatch, onDetails }) {
         style={{ position: 'absolute', inset: -30, background: hasBg ? `url(${course.thumb_url}) center/cover` : THUMB_GRADIENTS[0] }}
       />
       {/* Overlays — dramatic */}
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(4,7,14,0.15) 0%, rgba(4,7,14,0.5) 40%, rgba(4,7,14,0.92) 75%, #04070e 100%)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(4,7,14,0.15) 0%, rgba(4,7,14,0.5) 40%, rgba(4,7,14,0.92) 75%, #000000 100%)' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(4,7,14,0.9) 0%, rgba(4,7,14,0.5) 40%, transparent 70%)' }} />
       {/* Red glow orbs */}
       <div style={{ position: 'absolute', top: '-20%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.12), transparent 70%)', pointerEvents: 'none' }} />
@@ -109,7 +109,7 @@ function HeroBanner({ course, onWatch, onDetails }) {
       </div>
 
       {/* Bottom fade to page */}
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(transparent, #04070e)', pointerEvents: 'none', zIndex: 3 }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(transparent, #000000)', pointerEvents: 'none', zIndex: 3 }} />
     </motion.div>
   )
 }
@@ -269,7 +269,7 @@ export default function AulasVipPage() {
   }, [router])
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: '#04070e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center' }}>
         <motion.div animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }}>
           <svg width={32} height={32} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth="2" strokeLinecap="round"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>

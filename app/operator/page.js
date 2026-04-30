@@ -313,7 +313,7 @@ function DemoOperatorDashboard({ onCreateMeta }) {
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 1.2, ease: [0.33, 1, 0.68, 1] }}
-                  style={{ height: '100%', borderRadius: 4, background: 'linear-gradient(90deg, #008C5E, #16A34A)' }}
+                  style={{ height: '100%', borderRadius: 4, background: 'linear-gradient(90deg, #008C5E, #00A06D)' }}
                 />
               </div>
             </div>
@@ -775,7 +775,7 @@ export default function OperatorPage() {
                 style={{
                   width: '100%', maxWidth: 540, maxHeight: 'calc(100dvh - 40px)', overflowY: 'auto',
                   padding: 32, borderRadius: 20,
-                  background: 'linear-gradient(160deg, #10141e, #080b14)',
+                  background: 'linear-gradient(160deg, #000000, #000000)',
                   border: '1px solid rgba(255,255,255,0.06)',
                   boxShadow: '0 40px 100px rgba(0,0,0,0.7)',
                 }}>
@@ -1211,7 +1211,7 @@ export default function OperatorPage() {
                               transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
                               style={{
                                 height: '100%', borderRadius: 4,
-                                background: 'linear-gradient(90deg, #008C5E, #16A34A)',
+                                background: 'linear-gradient(90deg, #008C5E, #00A06D)',
                               }}
                             />
                           </div>
@@ -1247,7 +1247,7 @@ export default function OperatorPage() {
                             cursor: 'pointer', boxShadow: '0 4px 16px rgba(0,140,94,0.3)',
                             transition: 'all 0.2s ease',
                           }}
-                          onMouseEnter={e => { e.currentTarget.style.background = '#16A34A' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#00A06D' }}
                           onMouseLeave={e => { e.currentTarget.style.background = '#008C5E' }}
                         >
                           <IconPlay /> Continuar operando

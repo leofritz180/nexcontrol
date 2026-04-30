@@ -56,7 +56,7 @@ export default function DemoPage() {
   const G = DEMO_GLOBAL
 
   return (
-    <main style={{ minHeight: '100vh', position: 'relative', background: '#04070e', paddingBottom: 80 }}>
+    <main style={{ minHeight: '100vh', position: 'relative', background: '#000000', paddingBottom: 80 }}>
       {/* ═══ Banner fixo de demo ═══ */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 40,

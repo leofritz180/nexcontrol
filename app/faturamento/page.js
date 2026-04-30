@@ -662,7 +662,7 @@ export default function FaturamentoPage() {
               {/* Health + Insights */}
               <div style={{
                 padding:'28px 28px', borderRadius:16,
-                background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                background:'linear-gradient(145deg, #000000, #000000)',
                 border:'1px solid rgba(255,255,255,0.05)',
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
@@ -696,7 +696,7 @@ export default function FaturamentoPage() {
               {/* Alerts */}
               <div style={{
                 padding:'28px 28px', borderRadius:16,
-                background:'linear-gradient(145deg, #0c1424, #080e1a)',
+                background:'linear-gradient(145deg, #000000, #000000)',
                 border:'1px solid rgba(255,255,255,0.05)',
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>

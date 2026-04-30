@@ -38,7 +38,7 @@ export default function ProxyPage() {
 
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #0c1424, #080e1a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #000000, #000000)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
         </motion.div>
@@ -70,7 +70,7 @@ export default function ProxyPage() {
           transition={{ duration: 0.5, delay: 0.1, ease }}
           style={{
             borderRadius: 24, overflow: 'hidden', position: 'relative',
-            background: 'linear-gradient(160deg, #0e1322, #0a0e18)',
+            background: 'linear-gradient(160deg, #000000, #000000)',
             border: '1px solid rgba(255,255,255,0.06)',
             boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02), 0 0 80px rgba(255,255,255,0.04)',
           }}

@@ -9,7 +9,7 @@ export default function AdminError({ error, reset }) {
   return (
     <main style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: 24, background: '#04070e',
+      padding: 24, background: '#000000',
     }}>
       <div style={{
         maxWidth: 520, width: '100%', padding: 32, borderRadius: 20,

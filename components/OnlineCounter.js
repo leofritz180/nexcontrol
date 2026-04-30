@@ -38,7 +38,7 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
         style={{
           padding: '22px 26px',
           borderRadius: 18,
-          background: 'linear-gradient(145deg, #0c1424, #080e1a)',
+          background: 'linear-gradient(145deg, #000000, #000000)',
           border: '1px solid rgba(0,140,94,0.12)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.35), 0 0 30px rgba(0,140,94,0.04), inset 0 1px 0 rgba(255,255,255,0.03)',
           display: 'flex',

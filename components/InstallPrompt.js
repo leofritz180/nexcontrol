@@ -237,7 +237,7 @@ export default function InstallPrompt() {
                 style={{
                   width: '100%', maxWidth: 420,
                   maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto',
-                  background: 'linear-gradient(170deg, #10141e, #080b14)',
+                  background: 'linear-gradient(170deg, #000000, #000000)',
                   border: '1px solid rgba(255,255,255,0.06)',
                   borderRadius: 28,
                   boxShadow: '0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(229,57,53,0.03)',
@@ -311,7 +311,7 @@ export default function InstallPrompt() {
                 style={{
                   width: '100%', maxWidth: 440,
                   maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto',
-                  background: 'linear-gradient(170deg, #10141e, #080b14)',
+                  background: 'linear-gradient(170deg, #000000, #000000)',
                   border: '1px solid rgba(255,255,255,0.06)',
                   borderRadius: 28,
                   boxShadow: '0 50px 120px rgba(0,0,0,0.8)',
@@ -442,7 +442,7 @@ export default function InstallPrompt() {
                     style={{
                       width: '100%', padding: '15px 20px', borderRadius: 14,
                       fontSize: 15, fontWeight: 700, border: 'none', cursor: 'pointer',
-                      background: 'linear-gradient(135deg, #008c5e, #16a34a)', color: '#fff',
+                      background: 'linear-gradient(135deg, #008c5e, #00a06d)', color: '#fff',
                       boxShadow: '0 6px 24px rgba(0,140,94,0.2)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                     }}>

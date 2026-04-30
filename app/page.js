@@ -406,7 +406,7 @@ function LiveDashboardDemo() {
           borderRadius:16, overflow:'hidden', position:'relative',
           border:'1px solid rgba(255,255,255,0.06)',
           boxShadow:'0 20px 60px rgba(0,0,0,0.5)',
-          background:'linear-gradient(145deg, #0c1424, #080e1a)',
+          background:'linear-gradient(145deg, #000000, #000000)',
           padding:'20px 24px 24px',
           transition:'box-shadow 0.5s ease',
         }}
@@ -634,7 +634,7 @@ export default function HomePage() {
             { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe com performance', d:'Saiba exatamente quem está performando e quem está te fazendo perder dinheiro.' },
             { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real, não estimativa', d:'Pare de operar no achismo. Veja o resultado real da sua operação.' },
           ].map(({icon,t,d},i) => (
-            <div key={i} style={{ padding:'28px 24px', borderRadius:14, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.05)' }}>
+            <div key={i} style={{ padding:'28px 24px', borderRadius:14, background:'linear-gradient(145deg, #000000, #000000)', border:'1px solid rgba(255,255,255,0.05)' }}>
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:16 }}>
                 <path d={icon}/>
               </svg>

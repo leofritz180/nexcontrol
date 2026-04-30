@@ -495,7 +495,7 @@ export default function CustosPage() {
                 onClick={e => e.stopPropagation()}
                 style={{
                   width: '100%', maxWidth: 480, maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto',
-                  background: 'linear-gradient(160deg, #10141e, #080b14)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 22,
+                  background: 'linear-gradient(160deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 22,
                   padding: '32px', boxShadow: '0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.03)',
                   position: 'relative',
                 }}

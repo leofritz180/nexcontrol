@@ -81,7 +81,7 @@ export default function BillingLanding() {
         ].map(({icon,t,d},i) => (
           <motion.div key={i} {...fadeUp(i*0.04)}
             whileHover={{ y:-3, transition:{duration:0.2} }}
-            style={{ padding:'20px 18px', borderRadius:12, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.04)', boxShadow:'0 4px 16px rgba(0,0,0,0.25)' }}>
+            style={{ padding:'20px 18px', borderRadius:12, background:'linear-gradient(145deg, #000000, #000000)', border:'1px solid rgba(255,255,255,0.04)', boxShadow:'0 4px 16px rgba(0,0,0,0.25)' }}>
             <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:10, opacity:0.7 }}>
               <path d={icon}/>
             </svg>
@@ -331,7 +331,7 @@ export default function BillingLanding() {
           {q:'Visual premium e controle real. Minha equipe toda usa.', n:'L. Santos'},
         ].map(({q,n},i) => (
           <motion.div key={i} {...fadeUp(i*0.08)}
-            style={{ padding:'22px 20px', borderRadius:12, background:'linear-gradient(145deg, #0c1424, #080e1a)', border:'1px solid rgba(255,255,255,0.04)' }}>
+            style={{ padding:'22px 20px', borderRadius:12, background:'linear-gradient(145deg, #000000, #000000)', border:'1px solid rgba(255,255,255,0.04)' }}>
             <p style={{ fontSize:12, color:'var(--t2)', lineHeight:1.6, margin:'0 0 14px', fontStyle:'italic' }}>"{q}"</p>
             <div style={{ display:'flex', alignItems:'center', gap:8 }}>
               <div style={{ width:24, height:24, borderRadius:6, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center' }}>

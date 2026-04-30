@@ -10,13 +10,13 @@
 ═══════════════════════════════════════════ */
 
 :root {
-  /* Backgrounds — preto absoluto, sem tint */
+  /* Backgrounds — preto absoluto, sem tint, escala de cinza pura */
   --void:    #000000;
   --base:    #000000;
-  --surface: #080808;
-  --raised:  #0F0F0F;
-  --overlay: #161616;
-  --float:   #1F1F1F;
+  --surface: #050505;
+  --raised:  #0A0A0A;
+  --overlay: #101010;
+  --float:   #181818;
 
   /* Brand — red identity */
   --brand:        #e53935;
@@ -50,10 +50,10 @@
   --t3: #64748B;
   --t4: #334155;
 
-  /* Borders — extremamente sutis, separacao por borda fina */
-  --b1: rgba(255,255,255,0.035);
-  --b2: rgba(255,255,255,0.07);
-  --b3: rgba(255,255,255,0.11);
+  /* Borders — preto neutro, separacao apenas por borda branca a 5% */
+  --b1: rgba(255,255,255,0.05);
+  --b2: rgba(255,255,255,0.08);
+  --b3: rgba(255,255,255,0.12);
 
   /* Font */
   --mono: 'JetBrains Mono', monospace;

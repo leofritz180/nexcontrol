@@ -168,8 +168,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* ── User + logout ── */}
       <div style={{ padding:'14px 14px 18px', borderTop:'1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-          <div style={{ width:30, height:30, borderRadius:8, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.06)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-            <span style={{ fontSize:12, fontWeight:700, color:'var(--t2)' }}>{initial}</span>
+          <div style={{ width:28, height:28, borderRadius:'50%', background:'transparent', border:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <span style={{ fontSize:11, fontWeight:500, color:'var(--t2)' }}>{initial}</span>
           </div>
           <div style={{ flex:1, minWidth:0 }}>
             <p style={{ fontSize:12, fontWeight:600, color:'var(--t1)', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{name}</p>

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v6 (cards 100% black + lateral glow)
+// NexControl Service Worker — Push Notifications v7 (premium glass cards)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

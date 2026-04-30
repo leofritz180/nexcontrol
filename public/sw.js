@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v4 (Resend-style theme)
+// NexControl Service Worker — Push Notifications v5 (Resend cards contour + shadow)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

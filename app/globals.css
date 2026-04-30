@@ -55,10 +55,10 @@
   --font-display: 'Instrument Serif', Georgia, serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Borders — preto neutro, separacao apenas por borda branca a 6% */
-  --b1: rgba(255,255,255,0.06);
-  --b2: rgba(255,255,255,0.10);
-  --b3: rgba(255,255,255,0.14);
+  /* Borders — Resend-style, mais visiveis */
+  --b1: rgba(255,255,255,0.08);
+  --b2: rgba(255,255,255,0.12);
+  --b3: rgba(255,255,255,0.18);
 
   /* Font */
   --mono: 'JetBrains Mono', monospace;
@@ -98,6 +98,16 @@ aside[class*="sidebar"] {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
+}
+
+/* Cards inline styles — force Resend-like contour + elevation
+   Pega qualquer div com background usando --surface (a maioria dos cards do sistema) */
+[style*="background:var(--surface)"],
+[style*="background: var(--surface)"],
+[style*="background:rgba(255,255,255"][style*="border-radius"]:not(.btn):not(button) {
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.05) inset,
+    0 8px 32px rgba(0,0,0,0.45) !important;
 }
 
 /* Background — preto puro, sem gradientes ambient */

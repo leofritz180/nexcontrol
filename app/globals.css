@@ -143,15 +143,22 @@ h1, h2, h3, .t-hero, .t-h1, .t-h2, .t-h3 {
 ══════════════════════════════ */
 
 /* Cards — living components */
+/* Cards estilo Resend — fundo quase identico ao body, contorno sutil + sombra elevacao */
 .card {
   position: relative;
   background: var(--surface);
-  border: 1px solid var(--b1);
-  border-radius: 12px;
-  transition: border-color 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.04) inset,
+    0 8px 32px rgba(0,0,0,0.4);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .card:hover {
-  border-color: var(--b2);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.06) inset,
+    0 12px 40px rgba(0,0,0,0.5);
 }
 
 .card-primary {
@@ -181,22 +188,25 @@ h1, h2, h3, .t-hero, .t-h1, .t-h2, .t-h3 {
 
 .card-glass {
   background: var(--surface);
-  border: 1px solid var(--b1);
-  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 0 0 rgba(255,255,255,0.04) inset,
+    0 8px 32px rgba(0,0,0,0.4);
 }
 
-/* Row card — clean */
+/* Row card — Resend-style: hover sutil, contorno visivel */
 .row-card {
   position: relative;
   background: var(--surface);
-  border: 1px solid var(--b1);
-  border-radius: 10px;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease;
   cursor: pointer;
 }
 .row-card:hover {
   background: var(--raised);
-  border-color: var(--b2);
+  border-color: rgba(255,255,255,0.12);
 }
 .row-card .accent { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
 

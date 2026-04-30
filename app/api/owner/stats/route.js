@@ -34,31 +34,51 @@ export async function POST(req) {
       { data: subscriptions },
       { data: metas },
       { data: remessas },
-      { data: payments },
+      { data: asaasPayments },
+      { data: mpPayments },
     ] = await Promise.all([
       sb.from('profiles').select('*'),
       sb.from('tenants').select('id,name,created_at,trial_end,subscription_status'),
       sb.from('subscriptions').select('*'),
       sb.from('metas').select('id,operator_id,tenant_id,status,status_fechamento,quantidade_contas,lucro_final,rede,created_at,fechada_em,deleted_at'),
       sb.from('remessas').select('id,meta_id,lucro,prejuizo,deposito,saque,resultado,created_at'),
-      sb.from('asaas_payments').select('id,tenant_id,amount,status,created_at').order('created_at', { ascending: false }),
+      sb.from('asaas_payments').select('id,tenant_id,amount,status,created_at,updated_at').order('created_at', { ascending: false }),
+      sb.from('mp_payments').select('id,tenant_id,amount,status,created_at,updated_at').order('created_at', { ascending: false }),
     ])
 
     const admins = (profiles || []).filter(p => p.role === 'admin')
     const operators = (profiles || []).filter(p => p.role === 'operator')
     const allMetas = (metas || []).filter(m => !m.deleted_at)
     const allRem = remessas || []
-    const allPay = payments || []
     const allSubs = subscriptions || []
+
+    // Mesclar pagamentos Asaas + Mercado Pago (gateways diferentes, mesma tela)
+    // Status MP: 'approved' = pago, 'refunded'/'cancelled' = estornado
+    const asaasNorm = (asaasPayments || []).map(p => ({ ...p, _gateway: 'asaas' }))
+    const mpNorm = (mpPayments || []).map(p => ({ ...p, _gateway: 'mp' }))
+    const allPay = [...asaasNorm, ...mpNorm].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 
     // Active / cancelled subs
     const activeSubs = allSubs.filter(s => s.status === 'active')
     const cancelledSubs = allSubs.filter(s => s.status === 'cancelled')
 
-    // Revenue calculations
-    const paidPayments = allPay.filter(p => ['RECEIVED','CONFIRMED','RECEIVED_IN_CASH','BILLING_TYPE_CONFIRMED'].includes(p.status))
-    const refundStatuses = ['REFUNDED','REFUND_REQUESTED','REFUND_IN_PROGRESS','CHARGEBACK_REQUESTED','CHARGEBACK_DISPUTE','AWAITING_CHARGEBACK_REVERSAL','PAYMENT_DELETED']
-    const refundPayments = allPay.filter(p => refundStatuses.includes(p.status))
+    // Revenue calculations — incluir status de ambos gateways
+    const PAID_STATUSES = new Set([
+      // Asaas
+      'RECEIVED','CONFIRMED','RECEIVED_IN_CASH','BILLING_TYPE_CONFIRMED',
+      // Mercado Pago
+      'approved',
+    ])
+    const REFUND_STATUSES = new Set([
+      // Asaas
+      'REFUNDED','REFUND_REQUESTED','REFUND_IN_PROGRESS','CHARGEBACK_REQUESTED','CHARGEBACK_DISPUTE','AWAITING_CHARGEBACK_REVERSAL','PAYMENT_DELETED',
+      // Mercado Pago
+      'refunded','cancelled','charged_back',
+    ])
+    const paidPayments = allPay.filter(p => PAID_STATUSES.has(p.status))
+    const refundPayments = allPay.filter(p => REFUND_STATUSES.has(p.status))
+    // mantida para retrocompat onde se referenciar
+    const refundStatuses = Array.from(REFUND_STATUSES)
     const totalRevenue = paidPayments.reduce((a, p) => a + Number(p.amount || 0), 0)
     const totalRefunded = refundPayments.reduce((a, p) => a + Number(p.amount || 0), 0)
 
@@ -114,7 +134,7 @@ export async function POST(req) {
       const ms = allMetas.filter(m => m.tenant_id === tid)
       const fechadas = ms.filter(m => m.status_fechamento === 'fechada')
       const rems = allRem.filter(r => ms.some(m => m.id === r.meta_id))
-      const paid = allPay.filter(p => p.tenant_id === tid && (p.status === 'RECEIVED' || p.status === 'CONFIRMED'))
+      const paid = allPay.filter(p => p.tenant_id === tid && PAID_STATUSES.has(p.status))
 
       // Fix plan status: check subscriptions with expiry + tenant trial status
       const hasSub = (subscriptions || []).some(s =>
@@ -174,7 +194,7 @@ export async function POST(req) {
     if (inactiveAdmins.length > 2) alerts.push({ text: `${inactiveAdmins.length} admins sem atividade nos ultimos 7 dias`, type: 'warn' })
     const noMeta = adminStats.filter(a => a.metas === 0)
     if (noMeta.length > 0) alerts.push({ text: `${noMeta.length} cliente(s) nunca criaram uma meta`, type: 'warn' })
-    const unpaid = allPay.filter(p => p.status === 'PENDING')
+    const unpaid = allPay.filter(p => p.status === 'PENDING' || p.status === 'pending')
     if (unpaid.length > 0) alerts.push({ text: `${unpaid.length} cobranca(s) pendente(s)`, type: 'critical' })
     // Reembolsos recentes (criticos)
     const refund24h = refundPayments.filter(p => (now - new Date(p.updated_at || p.created_at)) < 86400000)

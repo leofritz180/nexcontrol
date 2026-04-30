@@ -55,7 +55,7 @@ export default function Logo({
         />
       )}
       <img
-        src="/nexcontrol-icon.png"
+        src="/icons/nexcontrol-icon-clean.png"
         alt="NexControl"
         width={iconPx}
         height={iconPx}
@@ -110,7 +110,7 @@ export default function Logo({
 export function NexIcon({ size = 14 }) {
   return (
     <img
-      src="/nexcontrol-icon.png"
+      src="/icons/nexcontrol-icon-clean.png"
       alt="NexControl"
       width={size}
       height={size}

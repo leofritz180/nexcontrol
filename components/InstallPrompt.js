@@ -60,7 +60,7 @@ function PhoneMockup() {
       <div style={{ flex: 1, padding: '8px 12px', position: 'relative' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-          <img src="/nexcontrol-icon.png" alt="NexControl" width={18} height={18} style={{ width: 18, height: 18, objectFit: 'contain', display: 'block', borderRadius: 5 }}/>
+          <img src="/icons/nexcontrol-icon-clean.png" alt="NexControl" width={18} height={18} style={{ width: 18, height: 18, objectFit: 'contain', display: 'block', borderRadius: 5 }}/>
           <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>NexControl</span>
         </div>
         {/* KPIs */}
@@ -103,7 +103,7 @@ function PhoneMockup() {
                 boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}>
-              <img src="/nexcontrol-icon.png" alt="NexControl" width={26} height={26} style={{ width: 26, height: 26, objectFit: 'contain', display: 'block', borderRadius: 7, flexShrink: 0 }}/>
+              <img src="/icons/nexcontrol-icon-clean.png" alt="NexControl" width={26} height={26} style={{ width: 26, height: 26, objectFit: 'contain', display: 'block', borderRadius: 7, flexShrink: 0 }}/>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 8, fontWeight: 700, color: '#fff', marginBottom: 1 }}>+R$ 320 registrados</div>
                 <div style={{ fontSize: 7, color: 'rgba(255,255,255,0.35)' }}>Meta quase concluida</div>

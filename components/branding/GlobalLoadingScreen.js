@@ -57,7 +57,7 @@ export default function GlobalLoadingScreen() {
             }}
           >
             <img
-              src="/nexcontrol-icon.png"
+              src="/icons/nexcontrol-icon-clean.png"
               alt="NexControl"
               width={iconPx}
               height={iconPx}

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v14 (Logo oficial nexcontrol-icon.png em todo SaaS)
+// NexControl Service Worker — Push Notifications v15 (logo limpa nexcontrol-icon-clean.png — sem moldura preta)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

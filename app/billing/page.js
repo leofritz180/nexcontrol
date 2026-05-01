@@ -559,6 +559,7 @@ export default function BillingPage() {
           userName={profile?.nome}
           userEmail={user?.email}
           amount={upgradeAmount}
+          operatorCount={opQty}
           planName={isUpgrade ? `+${extraOps} operador${extraOps>1?'es':''}` : opQty>0?`Admin + ${opQty} ops`:'Admin Solo'}
           onSuccess={()=>{setShowPix(false);init()}}
           onClose={()=>setShowPix(false)}

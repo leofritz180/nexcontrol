@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 
-export default function PixPayment({ tenantId, userId, userName, userEmail, amount, planName, planId, onSuccess, onClose }) {
+export default function PixPayment({ tenantId, userId, userName, userEmail, amount, planName, planId, operatorCount, onSuccess, onClose }) {
   const [step, setStep] = useState('intro') // intro | loading | pix | paid | error
   const [pixData, setPixData] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -24,6 +24,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
           user_id: userId,
           plan_id: planId,
           amount,
+          operator_count: operatorCount,
           name: userName || (userEmail ? userEmail.split('@')[0] : 'Cliente'),
           email: userEmail,
           description: planName ? `NexControl — ${planName}` : 'NexControl',

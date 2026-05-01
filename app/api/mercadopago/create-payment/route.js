@@ -20,6 +20,7 @@ export async function POST(req) {
       tenant_id: tenantIdIn,
       user_id: userIdIn,
       plan_id,
+      operator_count: operatorCountIn,
     } = body
 
     if (!email || !name) {
@@ -83,6 +84,8 @@ export async function POST(req) {
     const qrCode = payment?.point_of_interaction?.transaction_data?.qr_code || ''
     const qrBase64 = payment?.point_of_interaction?.transaction_data?.qr_code_base64 || ''
 
+    // Persiste operator_count desejado (total apos a compra) para o webhook ler
+    const operatorCount = Number(operatorCountIn)
     await sb.from('mp_payments').insert({
       tenant_id: tenantId,
       user_id: userId,
@@ -91,6 +94,7 @@ export async function POST(req) {
       amount: transactionAmount,
       pix_qr_code: qrCode,
       pix_qr_code_base64: qrBase64,
+      operator_count: Number.isFinite(operatorCount) && operatorCount > 0 ? operatorCount : null,
     })
 
     // Retorno com aliases compativeis com o contrato do PixPayment.js (Asaas)

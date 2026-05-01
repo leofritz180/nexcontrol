@@ -45,7 +45,7 @@ export async function POST(req) {
     )
 
     const { data: record } = await sb.from('mp_payments')
-      .select('id,tenant_id,user_id,status,amount')
+      .select('id,tenant_id,user_id,status,amount,operator_count')
       .eq('mp_payment_id', String(payment.id)).maybeSingle()
 
     if (!record) {
@@ -74,12 +74,23 @@ export async function POST(req) {
         expires.setDate(expires.getDate() + 30)
         const now = new Date().toISOString()
 
-        // Contar operadores reais do tenant no momento do pagamento
-        // para gravar operator_count correto na subscription
-        const { count: opCount } = await sb.from('profiles')
-          .select('id', { count: 'exact', head: true })
-          .eq('tenant_id', record.tenant_id)
-          .eq('role', 'operator')
+        // Resolve operator_count: prioriza valor desejado salvo na compra.
+        // Fallback (pagamentos antigos sem o campo): usa MAX entre count atual+1
+        // e operator_count da sub anterior — nunca rebaixa o limite ja contratado.
+        let resolvedOpCount = Number(record.operator_count)
+        if (!Number.isFinite(resolvedOpCount) || resolvedOpCount <= 0) {
+          const { count: currentOps } = await sb.from('profiles')
+            .select('id', { count: 'exact', head: true })
+            .eq('tenant_id', record.tenant_id)
+            .eq('role', 'operator')
+          const { data: prevSub } = await sb.from('subscriptions')
+            .select('operator_count')
+            .eq('tenant_id', record.tenant_id)
+            .order('created_at', { ascending: false }).limit(1).maybeSingle()
+          const prevLimit = Number(prevSub?.operator_count || 0)
+          // Sem info: assume ao menos +1 sobre o atual (estavam pagando upgrade)
+          resolvedOpCount = Math.max(prevLimit, (currentOps || 0) + 1)
+        }
 
         await sb.from('tenants').update({
           subscription_status: 'active',
@@ -91,7 +102,7 @@ export async function POST(req) {
           payment_method: 'pix_mp',
           external_id: String(payment.id),
           total_amount: record.amount,
-          operator_count: opCount || 0,
+          operator_count: resolvedOpCount,
           starts_at: now,
           expires_at: expires.toISOString(),
         })

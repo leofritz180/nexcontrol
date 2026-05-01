@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v15 (logo limpa nexcontrol-icon-clean.png — sem moldura preta)
+// NexControl Service Worker — Push Notifications v16 (fix operator_count: persistir desejado, validar MAX entre subs)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

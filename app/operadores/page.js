@@ -716,19 +716,21 @@ export default function OperadoresPage() {
     if (!profile?.tenant_id) return
     setInvSaving(true); setInvMsg('')
 
-    // Validar limite do plano: contar operators + invites pendentes
-    // contra operator_count da subscription ativa mais recente
+    // Validar limite do plano: usa o MAIOR operator_count entre todas as
+    // subscriptions ativas e nao expiradas (varias compras coexistem; o
+    // teto e a maior delas, nao a mais recente).
     try {
-      const { data: subActive } = await supabase.from('subscriptions')
-        .select('operator_count, status, expires_at')
+      const { data: activeSubs } = await supabase.from('subscriptions')
+        .select('operator_count, expires_at')
         .eq('tenant_id', profile.tenant_id)
         .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(1).maybeSingle()
 
-      // Se tem sub ativa, validar limite. Se nao tem (trial), nao bloqueia.
-      if (subActive && (!subActive.expires_at || new Date(subActive.expires_at) > new Date())) {
-        const limit = Number(subActive.operator_count || 0)
+      const validLimits = (activeSubs || [])
+        .filter(s => !s.expires_at || new Date(s.expires_at) > new Date())
+        .map(s => Number(s.operator_count || 0))
+
+      if (validLimits.length > 0) {
+        const limit = Math.max(...validLimits)
         const currentOps = operators.length
         const pendingInvs = invites.filter(i => i.status === 'pending' || !i.status).length
         const used = currentOps + pendingInvs

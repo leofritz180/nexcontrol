@@ -46,16 +46,20 @@ function InvitePage() {
     const { data: valid } = await supabase.from('invites').select('id,tenant_id').eq('token', token).eq('status', 'pending').maybeSingle()
     if (!valid) { setError('Este convite expirou ou foi cancelado.'); setSaving(false); return }
 
-    // Validar limite do plano: contar operadores atuais do tenant vs operator_count da sub
+    // Validar limite do plano usando o MAIOR operator_count entre todas as
+    // subscriptions ativas e nao expiradas (multiplas compras coexistem).
     try {
       const tid = valid.tenant_id || invite?.tenant_id
       if (tid) {
-        const [{ count: opCount }, { data: subActive }] = await Promise.all([
+        const [{ count: opCount }, { data: activeSubs }] = await Promise.all([
           supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('tenant_id', tid).eq('role', 'operator'),
-          supabase.from('subscriptions').select('operator_count, expires_at').eq('tenant_id', tid).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('subscriptions').select('operator_count, expires_at').eq('tenant_id', tid).eq('status', 'active'),
         ])
-        if (subActive && (!subActive.expires_at || new Date(subActive.expires_at) > new Date())) {
-          const limit = Number(subActive.operator_count || 0)
+        const validLimits = (activeSubs || [])
+          .filter(s => !s.expires_at || new Date(s.expires_at) > new Date())
+          .map(s => Number(s.operator_count || 0))
+        if (validLimits.length > 0) {
+          const limit = Math.max(...validLimits)
           if ((opCount || 0) >= limit) {
             setSaving(false)
             setError('Este convite expirou por limite de plano. Peca ao admin para liberar uma vaga.')

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v23 (Apex lock owner + RankAmbient cinematic + reveal sessao)
+// NexControl Service Worker — Push Notifications v24 (Reveal mode=everyVisit no /performance + ref guard)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

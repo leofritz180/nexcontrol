@@ -501,7 +501,7 @@ export default function PerformancePage() {
 
                 return (
                   <>
-                    <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} ready={!loading && !!profile} mode="oncePerSession" forceApex={apexLocked} />
+                    <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} ready={!loading && !!profile} mode="everyVisit" forceApex={apexLocked} />
 
                     {/* Cinematic ambient wrapper — poeira/nebulosa atrás de TODA seção de ranks */}
                     <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginBottom: 6 }}>

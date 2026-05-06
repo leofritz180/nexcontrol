@@ -10,11 +10,14 @@ import RankIcon from './RankIcon'
  * Modos (`mode`):
  *  - 'firstTime' (default): só na PRIMEIRA vez que o usuário vê o rank (localStorage permanente)
  *    e em cada UPGRADE de tier. Usado em /operator (não invasivo).
- *  - 'oncePerSession': uma vez por sessão de browser (sessionStorage) ou em upgrades.
- *    Sai da sessão = exibe de novo na próxima entrada. Usado em /performance.
+ *  - 'everyVisit': toca uma única vez a cada MONT da página. Cada clique no menu
+ *    /performance = nova animação. Não repete enquanto fica na mesma página.
  *
  * IMPORTANTE: SÓ DISPARA depois que `ready=true` E `contas` está definido.
- * Sem isso, abre com Ferro (contas=0) durante loading e salva tier errado.
+ * Sem isso, abre com Ferro (contas=0) durante loading.
+ *
+ * O ref `triggered` garante "uma vez por mount" — protege contra re-renders.
+ * Quando o user navega pra outra rota e volta, o componente re-monta e o ref é zerado.
  */
 export default function RankReveal({ userId, contas, name = 'Operador', ready = true, mode = 'firstTime', forceApex = false }) {
   const [show, setShow] = useState(false)
@@ -33,20 +36,24 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
 
     const { current } = getRank(contas, { forceApex })
 
-    // Storage adequado pro modo
-    const isSession = mode === 'oncePerSession'
-    const storage = isSession ? sessionStorage : localStorage
-    const key = isSession ? `nx_rank_session_v1_${userId}` : `nx_rank_v1_${userId}`
+    if (mode === 'everyVisit') {
+      // Toca cada mount sem checar storage. O guard `triggered` evita
+      // re-disparar em re-renders do mesmo mount.
+      setData({ rank: current, isUpgrade: false, prevTier: null })
+      setTimeout(() => setShow(true), 700)
+      return
+    }
 
+    // mode === 'firstTime' — localStorage permanente
+    const key = `nx_rank_v1_${userId}`
     let last = null
-    try { last = storage.getItem(key) } catch {}
+    try { last = localStorage.getItem(key) } catch {}
     const lastTier = last ? Number(last) : null
 
-    // Mostra se: nunca viu (primeira vez na storage) OU subiu de rank
     if (lastTier === null || current.tier > lastTier) {
       setData({ rank: current, isUpgrade: lastTier !== null && current.tier > lastTier, prevTier: lastTier })
       setTimeout(() => setShow(true), 700)
-      try { storage.setItem(key, String(current.tier)) } catch {}
+      try { localStorage.setItem(key, String(current.tier)) } catch {}
     }
   }, [userId, contas, ready, mode, forceApex])
 

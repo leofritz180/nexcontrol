@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v20 (Performance toca rank reveal toda vez; Operator só primeira)
+// NexControl Service Worker — Push Notifications v21 (Rank visual AAA: glass premium, partículas, hover vivo, Apex holográfico)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

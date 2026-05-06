@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v28 (Sistema de Ranks horizontal staircase cinematografica)
+// NexControl Service Worker — Push Notifications v29 (Fix definitivo loop reveal — RankReveal fora do loading conditional)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -483,6 +483,17 @@ export default function PerformancePage() {
             </button>
           </motion.div>
 
+          {/* RankReveal SEMPRE renderizado fora do loading conditional — nunca desmonta.
+              Loading apenas trava a prop `ready`, evitando o reveal disparar antes dos dados.
+              Isso resolve o loop quando window.focus chama load() e re-renderiza tudo. */}
+          {(() => {
+            const apexLocked = isApexLocked(user?.email || profile?.email)
+            if (profile?.role === 'admin' && !apexLocked) return null
+            return (
+              <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} ready={!loading && !!profile} mode="everyVisit" forceApex={apexLocked} />
+            )
+          })()}
+
           {loading ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
               <motion.div
@@ -501,8 +512,6 @@ export default function PerformancePage() {
 
                 return (
                   <>
-                    <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} ready={!loading && !!profile} mode="everyVisit" forceApex={apexLocked} />
-
                     {/* Cinematic ambient wrapper — poeira/nebulosa atrás de TODA seção de ranks */}
                     <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginBottom: 6 }}>
                       <RankAmbient rank={ambientRank} density={ambientRank.tier >= 12 ? 'high' : 'normal'} />

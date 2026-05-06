@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v27 (Fix definitivo loop reveal — sessionStorage timestamp 5s gap)
+// NexControl Service Worker — Push Notifications v28 (Sistema de Ranks horizontal staircase cinematografica)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

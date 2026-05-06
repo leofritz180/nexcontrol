@@ -11,7 +11,8 @@ import { ProLockedCard } from '../../components/pro/ProGate'
 import ProBanner from '../../components/pro/ProBanner'
 import dynamic from 'next/dynamic'
 const Onboarding = dynamic(() => import('../../components/Onboarding'), { ssr: false })
-import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
+import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
+import DemoModeCard from '../../components/DemoModeCard'
 import RankBadge from '../../components/rank/RankBadge'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
@@ -370,7 +371,7 @@ function SalaryPanel({ meta, liqCalc, tenantOpModel, onSaved }) {
 /* ═══════════════════════════════════════════════════
    DEMO ADMIN DASHBOARD — onboarding visual premium
    ═══════════════════════════════════════════════════ */
-function DemoAdminDashboard({ onCreateMeta, userName }) {
+function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
   const [insightIdx, setInsightIdx] = useState(0)
   const [activityIdx, setActivityIdx] = useState(0)
 
@@ -390,11 +391,32 @@ function DemoAdminDashboard({ onCreateMeta, userName }) {
 
   return (
     <div>
-      {/* Demo banner */}
+      {/* Demo banner com botao SAIR DO MODO DEMO */}
       <motion.div className="demo-banner" initial={{ opacity:0, y:-8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }}
-        style={{ padding:'12px 20px', borderRadius:12, marginBottom:24, background:'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))', border:'1px solid rgba(229,57,53,0.15)', display:'flex', alignItems:'center', gap:10 }}>
-        <div className="demo-banner-dot" style={{ width:8, height:8, borderRadius:'50%', background:'#e53935', flexShrink:0 }} />
-        <span style={{ fontSize:13, color:'var(--t2)', fontWeight:500 }}>{DEMO_BANNER_TEXT}</span>
+        style={{ padding:'14px 18px', borderRadius:12, marginBottom:24, background:'linear-gradient(135deg, rgba(229,57,53,0.10), rgba(229,57,53,0.04))', border:'1px solid rgba(229,57,53,0.22)', display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', justifyContent:'space-between' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, flex:1, minWidth:240 }}>
+          <motion.div animate={{ boxShadow:['0 0 0 0 rgba(229,57,53,0.6)','0 0 0 6px rgba(229,57,53,0)','0 0 0 0 rgba(229,57,53,0)'] }} transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
+            style={{ width:9, height:9, borderRadius:'50%', background:'#e53935', flexShrink:0 }} />
+          <span style={{ fontSize:13, color:'var(--t2)', fontWeight:500 }}>{DEMO_BANNER_TEXT}</span>
+        </div>
+        {onExitDemo && (
+          <motion.button type="button" onClick={onExitDemo}
+            whileHover={{ scale:1.03, boxShadow:'0 8px 22px rgba(229,57,53,0.5)' }}
+            whileTap={{ scale:0.97 }}
+            style={{
+              display:'inline-flex', alignItems:'center', gap:8,
+              padding:'10px 16px', fontSize:12, fontWeight:800, fontFamily:'inherit',
+              letterSpacing:'0.08em', textTransform:'uppercase',
+              color:'#fff', background:'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
+              border:'none', borderRadius:8, cursor:'pointer',
+              boxShadow:'0 4px 14px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
+              transition:'box-shadow 0.2s',
+              flexShrink:0,
+            }}>
+            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sair do modo demo
+          </motion.button>
+        )}
       </motion.div>
 
       {/* Insight rotativo */}
@@ -1179,6 +1201,9 @@ export default function AdminPage() {
       </AnimatePresence>
 
       <Onboarding/>
+      {!loading && shouldShowDemo(metas, user?.id) && (
+        <DemoModeCard userId={user?.id} onExit={() => init()} />
+      )}
       {!(sub?.status === 'active' && new Date(sub.expires_at) > new Date()) && <ProBanner blockedCount={6}/>}
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
 
@@ -1828,10 +1853,11 @@ export default function AdminPage() {
             transition={{ duration: 0.25, ease }}>
 
           {/* ── DEMO MODE FOR NEW ADMINS ── */}
-          {!loading && shouldShowDemo(metas) ? (
+          {!loading && shouldShowDemo(metas, user?.id) ? (
             <DemoAdminDashboard
               onCreateMeta={() => { setTab('myops'); setTimeout(() => setMyShowForm(true), 300) }}
               userName={getName(profile)}
+              onExitDemo={() => { exitDemoMode(user?.id); init() }}
             />
           ) : (<>
 

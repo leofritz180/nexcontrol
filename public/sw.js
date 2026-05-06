@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v31 (Apex primary gold + secao rank no fim do myops + reveal on tab change)
+// NexControl Service Worker — Push Notifications v32 (DemoModeCard popup 3s + botao SAIR DO MODO DEMO no banner)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

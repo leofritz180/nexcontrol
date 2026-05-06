@@ -23,9 +23,12 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
   const [show, setShow] = useState(false)
   const [data, setData] = useState(null)
   const triggered = useRef(false)
+  const dismissed = useRef(false)
+  const timerRef = useRef(null)
 
   useEffect(() => {
     if (triggered.current) return
+    if (dismissed.current) return // user já fechou — nunca reabrir nesse mount
     if (!ready) return
     if (!userId) return
     if (contas === undefined || contas === null) return
@@ -36,12 +39,17 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
 
     const { current } = getRank(contas, { forceApex })
 
+    const fire = () => {
+      timerRef.current = setTimeout(() => {
+        if (dismissed.current) return // se usuario fechou antes do timer estourar, aborta
+        setShow(true)
+      }, 700)
+    }
+
     if (mode === 'everyVisit') {
-      // Toca cada mount sem checar storage. O guard `triggered` evita
-      // re-disparar em re-renders do mesmo mount.
       setData({ rank: current, isUpgrade: false, prevTier: null })
-      setTimeout(() => setShow(true), 700)
-      return
+      fire()
+      return () => { if (timerRef.current) clearTimeout(timerRef.current) }
     }
 
     // mode === 'firstTime' — localStorage permanente
@@ -52,12 +60,17 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
 
     if (lastTier === null || current.tier > lastTier) {
       setData({ rank: current, isUpgrade: lastTier !== null && current.tier > lastTier, prevTier: lastTier })
-      setTimeout(() => setShow(true), 700)
+      fire()
       try { localStorage.setItem(key, String(current.tier)) } catch {}
     }
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
   }, [userId, contas, ready, mode, forceApex])
 
-  function handleClose() { setShow(false) }
+  function handleClose() {
+    dismissed.current = true
+    if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null }
+    setShow(false)
+  }
 
   if (!data) return null
   const { rank, isUpgrade } = data

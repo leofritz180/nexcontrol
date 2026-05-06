@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v24 (Reveal mode=everyVisit no /performance + ref guard)
+// NexControl Service Worker — Push Notifications v25 (Rank cinematic AAA — energy spine + travel border + apex starfield + idle anims + click-expand)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -1,5 +1,44 @@
 'use client'
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
+
+/* Estrelas estáticas tipo nebula, distribuídas determinísticas */
+function ApexStarField() {
+  const stars = useMemo(() => {
+    const arr = []
+    for (let i = 0; i < 18; i++) {
+      const seed = (i * 9301 + 49297) % 233280
+      arr.push({
+        x: ((seed * 7) % 100),
+        y: ((seed * 13) % 100),
+        size: 0.8 + ((seed * 17) % 100) / 80,
+        delay: (seed % 30) / 10,
+        dur: 1.5 + ((seed * 3) % 100) / 50,
+        gold: i % 3 === 0,
+      })
+    }
+    return arr
+  }, [])
+  return (
+    <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+      {stars.map((s, i) => (
+        <motion.span
+          key={i}
+          animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.2, 0.8] }}
+          transition={{ duration: s.dur, repeat: Infinity, ease: 'easeInOut', delay: s.delay }}
+          style={{
+            position: 'absolute',
+            left: `${s.x}%`, top: `${s.y}%`,
+            width: s.size, height: s.size,
+            borderRadius: '50%',
+            background: s.gold ? '#FFD700' : '#FFFFFF',
+            boxShadow: `0 0 ${s.size * 4}px ${s.gold ? '#FFD700' : 'rgba(180,120,255,0.6)'}`,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
 
 /* ───────────────────────────────────────────
    Aura ambiente: glow de fundo refinado por rank
@@ -13,29 +52,41 @@ export function RankAura({ rank, intensity = 1, className }) {
   if (isApex) {
     return (
       <div aria-hidden className={className} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 'inherit', overflow: 'hidden' }}>
-        {/* deep void */}
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 30%, rgba(180,120,255,0.18) 0%, rgba(60,30,120,0.08) 35%, #000 70%)' }} />
-        {/* holographic shimmer */}
+        {/* deep void com gradient roxo profundo */}
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 30%, rgba(180,120,255,0.22) 0%, rgba(60,30,120,0.10) 30%, #000 70%)' }} />
+        {/* nebula púrpura respirando */}
         <motion.div
-          animate={{ backgroundPosition: ['0% 0%', '200% 200%'] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+          animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.95, 0.6] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
           style={{
-            position: 'absolute', inset: 0,
-            background: 'conic-gradient(from 180deg at 50% 50%, rgba(180,120,255,0.10) 0deg, rgba(80,160,255,0.08) 90deg, rgba(255,215,0,0.06) 180deg, rgba(255,80,200,0.08) 270deg, rgba(180,120,255,0.10) 360deg)',
-            backgroundSize: '200% 200%',
+            position: 'absolute', top: '20%', left: '10%', width: '50%', height: '60%',
+            background: 'radial-gradient(circle, rgba(180,120,255,0.20) 0%, transparent 65%)',
+            filter: 'blur(35px)',
+          }}
+        />
+        {/* holographic shimmer rotativo */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+          style={{
+            position: 'absolute', inset: '-10%',
+            background: 'conic-gradient(from 0deg, rgba(180,120,255,0.10) 0deg, rgba(80,160,255,0.10) 60deg, rgba(255,215,0,0.08) 120deg, rgba(255,80,200,0.10) 200deg, rgba(180,120,255,0.10) 360deg)',
             mixBlendMode: 'screen',
+            filter: 'blur(8px)',
           }}
         />
         {/* gold breath */}
         <motion.div
-          animate={{ opacity: [0.5, 0.9, 0.5] }}
+          animate={{ opacity: [0.5, 0.95, 0.5], scale: [1, 1.08, 1] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           style={{
             position: 'absolute', top: '-20%', right: '-15%', width: '60%', height: '80%',
-            background: 'radial-gradient(circle, rgba(255,215,0,0.18) 0%, transparent 60%)',
+            background: 'radial-gradient(circle, rgba(255,215,0,0.22) 0%, transparent 60%)',
             filter: 'blur(40px)',
           }}
         />
+        {/* Tiny stars cintilando estática */}
+        <ApexStarField />
       </div>
     )
   }

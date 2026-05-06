@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v17 (sistema de rank 15 tiers + fix divergência depositantes)
+// NexControl Service Worker — Push Notifications v18 (RankShowcase admin + /operator rank + fontes maiores)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

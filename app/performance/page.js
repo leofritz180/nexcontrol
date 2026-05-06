@@ -8,6 +8,7 @@ import { validClosedMetas } from '../../lib/operator-stats'
 import RankProgress from '../../components/rank/RankProgress'
 import RankReveal from '../../components/rank/RankReveal'
 import RankBadge from '../../components/rank/RankBadge'
+import RankShowcase from '../../components/rank/RankShowcase'
 
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 
@@ -501,6 +502,20 @@ export default function PerformancePage() {
                     style={{ marginBottom: 6 }}
                   >
                     <RankProgress contas={stats.totalDeps} name={getName(profile)} />
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.15 }}
+                    style={{
+                      padding: 22, borderRadius: 16,
+                      background: '#000',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
+                    }}
+                  >
+                    <RankShowcase contas={stats.totalDeps} mode="inline" />
                   </motion.div>
                 </>
               )}

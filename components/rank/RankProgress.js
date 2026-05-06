@@ -60,20 +60,20 @@ export default function RankProgress({ contas, name = 'Voce', compact = false })
           />
         </motion.div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0, marginBottom: 2 }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--t3)', letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0, marginBottom: 4 }}>
             Rank atual · Tier {current.tier}/15
           </p>
           <h2 style={{
-            fontSize: compact ? 22 : 28, fontWeight: 800, letterSpacing: '-0.02em',
+            fontSize: compact ? 28 : 36, fontWeight: 400, letterSpacing: '-0.02em',
             color: isPrismatic ? '#E0E0FF' : current.primary,
             margin: 0, lineHeight: 1.1,
-            textShadow: `0 0 16px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : current.glow}`,
+            textShadow: `0 0 18px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : current.glow}`,
             fontFamily: 'var(--font-display, serif)',
           }}>
             {current.name}
           </h2>
-          <p style={{ fontSize: 12, color: 'var(--t3)', margin: '4px 0 0' }}>
-            <span style={{ color: 'var(--t1)', fontWeight: 700, fontFamily: 'var(--mono)' }}>{contas.toLocaleString('pt-BR')}</span> depositantes processados
+          <p style={{ fontSize: 14, color: 'var(--t3)', margin: '6px 0 0' }}>
+            <span style={{ color: 'var(--t1)', fontWeight: 700, fontFamily: 'var(--mono)', fontSize: 15 }}>{contas.toLocaleString('pt-BR')}</span> depositantes processados
           </p>
         </div>
       </div>
@@ -81,16 +81,16 @@ export default function RankProgress({ contas, name = 'Voce', compact = false })
       {/* Barra de progresso */}
       {!isMax && (
         <div style={{ position: 'relative', marginBottom: 14 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-            <span style={{ fontSize: 11, color: 'var(--t2)', fontWeight: 500 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+            <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>
               Próximo: <span style={{ color: next.primary === 'prismatic' ? '#E0E0FF' : next.primary, fontWeight: 700 }}>{next.name}</span>
             </span>
-            <span style={{ fontSize: 11, fontFamily: 'var(--mono)', color: 'var(--t3)', fontWeight: 600 }}>
-              faltam <span style={{ color: 'var(--t1)' }}>{remaining.toLocaleString('pt-BR')}</span>
+            <span style={{ fontSize: 13, fontFamily: 'var(--mono)', color: 'var(--t3)', fontWeight: 600 }}>
+              faltam <span style={{ color: 'var(--t1)', fontWeight: 700 }}>{remaining.toLocaleString('pt-BR')}</span>
             </span>
           </div>
           <div style={{
-            height: 8, borderRadius: 4, overflow: 'hidden',
+            height: 10, borderRadius: 5, overflow: 'hidden',
             background: 'rgba(255,255,255,0.05)',
             border: '1px solid rgba(255,255,255,0.06)',
             position: 'relative',
@@ -100,9 +100,9 @@ export default function RankProgress({ contas, name = 'Voce', compact = false })
               animate={{ width: `${progress}%` }}
               transition={{ duration: 1.4, ease: [0.33, 1, 0.68, 1], delay: 0.2 }}
               style={{
-                height: '100%', borderRadius: 4,
+                height: '100%', borderRadius: 5,
                 background: bg,
-                boxShadow: `0 0 12px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : current.glow}`,
+                boxShadow: `0 0 14px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : current.glow}`,
                 position: 'relative', overflow: 'hidden',
               }}
             >
@@ -119,10 +119,10 @@ export default function RankProgress({ contas, name = 'Voce', compact = false })
               />
             </motion.div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
-            <span style={{ fontSize: 10, fontFamily: 'var(--mono)', color: 'var(--t4)' }}>{current.min.toLocaleString('pt-BR')}</span>
-            <span style={{ fontSize: 10, fontFamily: 'var(--mono)', color: 'var(--t1)', fontWeight: 700 }}>{progress.toFixed(1)}%</span>
-            <span style={{ fontSize: 10, fontFamily: 'var(--mono)', color: 'var(--t4)' }}>{next.min.toLocaleString('pt-BR')}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+            <span style={{ fontSize: 12, fontFamily: 'var(--mono)', color: 'var(--t3)' }}>{current.min.toLocaleString('pt-BR')}</span>
+            <span style={{ fontSize: 13, fontFamily: 'var(--mono)', color: 'var(--t1)', fontWeight: 700 }}>{progress.toFixed(1)}%</span>
+            <span style={{ fontSize: 12, fontFamily: 'var(--mono)', color: 'var(--t3)' }}>{next.min.toLocaleString('pt-BR')}</span>
           </div>
         </div>
       )}
@@ -144,31 +144,31 @@ export default function RankProgress({ contas, name = 'Voce', compact = false })
 
       {/* Próximos 3 ranks como teaser */}
       {!compact && nextRanks.length > 0 && (
-        <div style={{ marginTop: 14 }}>
-          <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--t4)', letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0, marginBottom: 8 }}>
+        <div style={{ marginTop: 18 }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--t3)', letterSpacing: '0.12em', textTransform: 'uppercase', margin: 0, marginBottom: 10 }}>
             Próximos níveis
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${nextRanks.length}, 1fr)`, gap: 6 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${nextRanks.length}, 1fr)`, gap: 8 }}>
             {nextRanks.map(r => (
               <div key={r.tier} style={{
-                padding: '8px 10px', borderRadius: 8,
+                padding: '10px 12px', borderRadius: 10,
                 background: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                display: 'flex', alignItems: 'center', gap: 6,
+                border: '1px solid rgba(255,255,255,0.08)',
+                display: 'flex', alignItems: 'center', gap: 8,
               }}>
                 <span style={{
-                  width: 22, height: 22, borderRadius: 5,
+                  width: 28, height: 28, borderRadius: 7,
                   background: rankBackground(r),
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  flexShrink: 0, opacity: 0.85,
+                  flexShrink: 0, opacity: 0.9,
                 }}>
-                  <RankIcon name={r.icon} size={12} color={rankTextColor(r)} />
+                  <RankIcon name={r.icon} size={15} color={rankTextColor(r)} />
                 </span>
                 <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: 10, fontWeight: 700, color: r.primary === 'prismatic' ? '#E0E0FF' : r.primary, margin: 0, lineHeight: 1, letterSpacing: '0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: r.primary === 'prismatic' ? '#E0E0FF' : r.primary, margin: 0, lineHeight: 1, letterSpacing: '0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {r.name}
                   </p>
-                  <p style={{ fontSize: 9, fontFamily: 'var(--mono)', color: 'var(--t4)', margin: '2px 0 0' }}>
+                  <p style={{ fontSize: 11, fontFamily: 'var(--mono)', color: 'var(--t3)', margin: '3px 0 0' }}>
                     {r.min.toLocaleString('pt-BR')}+
                   </p>
                 </div>

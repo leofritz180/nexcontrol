@@ -9,10 +9,10 @@ import RankIcon from './RankIcon'
 export default function RankBadge({ contas, size = 'sm', showName = true, showTier = false, style }) {
   const { current } = getRank(contas)
   const dims = {
-    xs: { iconBox: 18, icon: 11, fontSize: 9,  pad: '2px 6px',  gap: 4, radius: 4 },
-    sm: { iconBox: 22, icon: 13, fontSize: 10, pad: '3px 8px',  gap: 6, radius: 6 },
-    md: { iconBox: 28, icon: 16, fontSize: 12, pad: '5px 10px', gap: 7, radius: 7 },
-    lg: { iconBox: 40, icon: 22, fontSize: 14, pad: '8px 14px', gap: 10, radius: 10 },
+    xs: { iconBox: 22, icon: 13, fontSize: 11, pad: '3px 8px',  gap: 6, radius: 5 },
+    sm: { iconBox: 26, icon: 15, fontSize: 12, pad: '4px 10px', gap: 7, radius: 7 },
+    md: { iconBox: 34, icon: 19, fontSize: 14, pad: '6px 12px', gap: 8, radius: 8 },
+    lg: { iconBox: 46, icon: 26, fontSize: 16, pad: '10px 16px', gap: 12, radius: 11 },
   }[size] || {}
 
   const bg = rankBackground(current)

@@ -13,6 +13,9 @@ import dynamic from 'next/dynamic'
 const Onboarding = dynamic(() => import('../../components/Onboarding'), { ssr: false })
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 import RankBadge from '../../components/rank/RankBadge'
+import RankShowcase from '../../components/rank/RankShowcase'
+import RankIcon from '../../components/rank/RankIcon'
+import { rankBackground, rankTextColor, getRank } from '../../lib/rank-system'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -2154,6 +2157,101 @@ export default function AdminPage() {
               })()}
             </motion.div>
           </div>
+
+          {/* ── SISTEMA DE RANKS DA EQUIPE ── */}
+          {ranking.length > 0 && (() => {
+            const topOps = [...ranking].sort((a,b) => b.depositantesFinalizados - a.depositantesFinalizados).slice(0, 5)
+            const topRank = topOps[0] ? getRank(topOps[0].depositantesFinalizados).current : null
+            return (
+              <motion.div
+                initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35, delay:0.1 }}
+                style={{
+                  marginTop: 32, padding: 24, borderRadius: 16,
+                  background: '#000',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
+                  position: 'relative', overflow: 'hidden',
+                }}
+              >
+                {topRank && (
+                  <div aria-hidden style={{
+                    position:'absolute', top:0, right:0, width:'50%', height:'100%',
+                    background: `radial-gradient(circle at 100% 0%, ${topRank.glow === 'prismatic' ? 'rgba(180,120,255,0.12)' : (topRank.glow || 'rgba(255,255,255,0.05)').replace(/0\.\d+/, '0.12')} 0%, transparent 60%)`,
+                    pointerEvents:'none',
+                  }}/>
+                )}
+                <div style={{ position:'relative', display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:14, marginBottom:18 }}>
+                  <div>
+                    <h3 style={{
+                      fontFamily:'var(--font-display, serif)', fontSize:24, fontWeight:400,
+                      letterSpacing:'-0.02em', color:'var(--t1)', margin:0, lineHeight:1.1,
+                    }}>
+                      Sistema de Ranks da Equipe
+                    </h3>
+                    <p style={{ fontSize:13, color:'var(--t3)', margin:'4px 0 0' }}>
+                      {topOps.length} operador{topOps.length>1?'es':''} ranqueado{topOps.length>1?'s':''} · 15 níveis
+                    </p>
+                  </div>
+                  {topRank && (
+                    <div style={{ textAlign:'right' }}>
+                      <p style={{ fontSize:11, color:'var(--t3)', margin:0, letterSpacing:'0.1em', textTransform:'uppercase', fontWeight:700 }}>
+                        Maior rank do time
+                      </p>
+                      <p style={{
+                        fontFamily:'var(--font-display, serif)', fontSize:22, fontWeight:400,
+                        color: topRank.primary === 'prismatic' ? '#E0E0FF' : topRank.primary,
+                        margin:'2px 0 0', letterSpacing:'-0.02em',
+                        textShadow:`0 0 14px ${topRank.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : topRank.glow}`,
+                      }}>
+                        {topRank.name}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Top 5 operadores com seus ranks */}
+                <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:20 }}>
+                  {topOps.map((op, i) => {
+                    const r = getRank(op.depositantesFinalizados).current
+                    const isPrismatic = r.primary === 'prismatic'
+                    return (
+                      <div key={op.id} style={{
+                        display:'flex', alignItems:'center', gap:12,
+                        padding:'10px 14px', borderRadius:10,
+                        background:'rgba(255,255,255,0.02)',
+                        border:'1px solid rgba(255,255,255,0.06)',
+                      }}>
+                        <span style={{ fontSize:11, fontWeight:800, color:'var(--t4)', fontFamily:'var(--mono)', minWidth:18 }}>#{i+1}</span>
+                        <span style={{
+                          width:34, height:34, borderRadius:8,
+                          background: rankBackground(r),
+                          display:'inline-flex', alignItems:'center', justifyContent:'center', flexShrink:0,
+                          boxShadow:`0 0 10px ${r.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : r.glow}, inset 0 1px 0 rgba(255,255,255,0.18)`,
+                        }}>
+                          <RankIcon name={r.icon} size={18} color={rankTextColor(r)} />
+                        </span>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <p style={{ fontSize:14, fontWeight:700, color:'var(--t1)', margin:0 }}>{getName(op)}</p>
+                          <p style={{ fontSize:12, color: isPrismatic ? '#E0E0FF' : r.primary, fontWeight:700, margin:'2px 0 0', letterSpacing:'0.04em' }}>
+                            {r.name}
+                          </p>
+                        </div>
+                        <div style={{ textAlign:'right' }}>
+                          <p style={{ fontSize:14, fontFamily:'var(--mono)', fontWeight:700, color:'var(--t1)', margin:0 }}>
+                            {op.depositantesFinalizados.toLocaleString('pt-BR')}
+                          </p>
+                          <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', letterSpacing:'0.06em', textTransform:'uppercase', fontWeight:600 }}>depositantes</p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Vitrine inline de todos os 15 ranks */}
+                <RankShowcase contas={topOps[0]?.depositantesFinalizados || 0} mode="inline" />
+              </motion.div>
+            )
+          })()}
 
           {/* PRO locked cards — only show if NOT PRO active */}
           {!(sub?.status === 'active' && new Date(sub.expires_at) > new Date()) && <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginTop:24 }}>

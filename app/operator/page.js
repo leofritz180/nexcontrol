@@ -6,6 +6,9 @@ import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaCreated } from '../../lib/notify'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
+import { validClosedMetas } from '../../lib/operator-stats'
+import RankBadge from '../../components/rank/RankBadge'
+import RankReveal from '../../components/rank/RankReveal'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -613,11 +616,14 @@ export default function OperatorPage() {
   /* ── Demo mode ── */
   const isDemo = !loading && shouldShowDemo(metas)
 
-  /* ── Computed stats ── */
+  /* ── Computed stats ──
+   * SOURCE OF TRUTH: depositantes = soma de quantidade_contas em metas FECHADAS + não deletadas
+   * (mesmo critério usado em /admin, /operadores e /performance — não divergir)
+   */
   const stats = useMemo(() => {
     const ativas = metas.filter(m => (m.status || 'ativa') === 'ativa' && m.status_fechamento !== 'fechada').length
-    const fechadas = metas.filter(m => m.status_fechamento === 'fechada')
-    const totalDepositantes = metas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    const fechadas = validClosedMetas(metas)
+    const totalDepositantes = fechadas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
     const taxaConclusao = metas.length > 0 ? Math.round((fechadas.length / metas.length) * 100) : 0
     return {
       ativas,
@@ -631,9 +637,9 @@ export default function OperatorPage() {
 
   /* ── Performance stats for sidebar ── */
   const perfStats = useMemo(() => {
-    const fechadas = metas.filter(m => m.status_fechamento === 'fechada')
-    const totalDeps = metas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
-    const mediaDeps = metas.length > 0 ? Math.round(totalDeps / metas.length) : 0
+    const fechadas = validClosedMetas(metas)
+    const totalDeps = fechadas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    const mediaDeps = fechadas.length > 0 ? Math.round(totalDeps / fechadas.length) : 0
     const mediaRem = metas.length > 0 ? Math.round(remessas.length / metas.length) : 0
     return {
       fechadasCount: fechadas.length,
@@ -690,12 +696,18 @@ export default function OperatorPage() {
 
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
 
+          {/* Reveal modal animado na primeira vez (e em cada upgrade de rank) */}
+          <RankReveal userId={user?.id} contas={stats.totalDepositantes} name={getName(profile)} />
+
           {/* ── HEADER ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
             <div>
-              <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--t1)', margin: '0 0 4px' }}>
-                Ola, {getName(profile)}
-              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--t1)', margin: '0 0 4px' }}>
+                  Ola, {getName(profile)}
+                </h1>
+                <RankBadge contas={stats.totalDepositantes} size="sm" />
+              </div>
               <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, opacity: 0.75 }}>
                 {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
               </p>

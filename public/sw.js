@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v26 (Fix loop reveal — dismissed ref + timer cleanup)
+// NexControl Service Worker — Push Notifications v27 (Fix definitivo loop reveal — sessionStorage timestamp 5s gap)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

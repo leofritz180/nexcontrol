@@ -19,6 +19,10 @@ import RankIcon from './RankIcon'
  * O ref `triggered` garante "uma vez por mount" — protege contra re-renders.
  * Quando o user navega pra outra rota e volta, o componente re-monta e o ref é zerado.
  */
+// Distancia minima entre 2 fires (anti-loop por remount): 5 segundos.
+// Protege contra parents que destroem/remontam o componente em sequencia.
+const MIN_GAP_MS = 5000
+
 export default function RankReveal({ userId, contas, name = 'Operador', ready = true, mode = 'firstTime', forceApex = false }) {
   const [show, setShow] = useState(false)
   const [data, setData] = useState(null)
@@ -26,22 +30,36 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
   const dismissed = useRef(false)
   const timerRef = useRef(null)
 
+  // Chave sessionStorage usada como anti-loop entre remounts
+  const sessionKey = userId ? `nx_rank_reveal_lastfire_${mode}_${userId}` : null
+
   useEffect(() => {
     if (triggered.current) return
-    if (dismissed.current) return // user já fechou — nunca reabrir nesse mount
+    if (dismissed.current) return
     if (!ready) return
     if (!userId) return
     if (contas === undefined || contas === null) return
     if (typeof window === 'undefined') return
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) return
 
+    // ANTI-LOOP: se acabou de disparar/fechar nos ultimos 5s, este eh um remount
+    // forcado pelo parent — pula essa montagem.
+    let lastFire = 0
+    try { lastFire = Number(sessionStorage.getItem(sessionKey) || 0) } catch {}
+    if (lastFire && (Date.now() - lastFire) < MIN_GAP_MS) {
+      triggered.current = true // marca como ja-tratado nesse mount
+      return
+    }
+
     triggered.current = true
 
     const { current } = getRank(contas, { forceApex })
 
     const fire = () => {
+      // Salva timestamp ANTES do timer pra ja bloquear remounts simultaneos
+      try { sessionStorage.setItem(sessionKey, String(Date.now())) } catch {}
       timerRef.current = setTimeout(() => {
-        if (dismissed.current) return // se usuario fechou antes do timer estourar, aborta
+        if (dismissed.current) return
         setShow(true)
       }, 700)
     }
@@ -64,11 +82,13 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
       try { localStorage.setItem(key, String(current.tier)) } catch {}
     }
     return () => { if (timerRef.current) clearTimeout(timerRef.current) }
-  }, [userId, contas, ready, mode, forceApex])
+  }, [userId, contas, ready, mode, forceApex, sessionKey])
 
   function handleClose() {
     dismissed.current = true
     if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null }
+    // Refresca timestamp pra bloquear qualquer remount imediato (loop)
+    try { if (sessionKey) sessionStorage.setItem(sessionKey, String(Date.now())) } catch {}
     setShow(false)
   }
 

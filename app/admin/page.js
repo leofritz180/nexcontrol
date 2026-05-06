@@ -12,6 +12,7 @@ import ProBanner from '../../components/pro/ProBanner'
 import dynamic from 'next/dynamic'
 const Onboarding = dynamic(() => import('../../components/Onboarding'), { ssr: false })
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
+import RankBadge from '../../components/rank/RankBadge'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -811,11 +812,11 @@ export default function AdminPage() {
 
   const ranking = useMemo(()=>
     operators.map(op=>{
-      const opMetas = metas.filter(m=>m.operator_id===op.id&&m.status_fechamento==='fechada')
+      // SOURCE OF TRUTH: depositantes só de metas FECHADAS + não deletadas (mesma regra de /performance e /operadores)
+      const opMetas = metas.filter(m=>m.operator_id===op.id && m.status_fechamento==='fechada' && !m.deleted_at)
       const ids = new Set(opMetas.map(m=>m.id))
       const opRem = remessas.filter(r=>ids.has(r.meta_id))
       const sparkData = opMetas.map(m=>Number(m.lucro_final||0))
-      // Total de depositantes finalizados = soma do quantidade_contas de todas as metas fechadas
       const depositantesFinalizados = opMetas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
       return { ...op, metasFechadas:opMetas.length, lucroFinal:opMetas.reduce((a,m)=>a+Number(m.lucro_final||0),0), totalRem:opRem.length, depositantesFinalizados, sparkData }
     }).sort((a,b)=>b.lucroFinal-a.lucroFinal)
@@ -1928,7 +1929,7 @@ export default function AdminPage() {
                 { label:'Total depositado', value:global.totalDep, prefix:'R$ ' },
                 { label:'Total sacado', value:global.totalSaq, prefix:'R$ ' },
                 { label:'Metas', value:global.totalMetas, decimals:0 },
-                { label:'Depositantes', value:metas.filter(m=>m.status_fechamento==='fechada').reduce((a,m)=>a+Number(m.quantidade_contas||0),0), decimals:0 },
+                { label:'Depositantes', value:metas.filter(m=>m.status_fechamento==='fechada' && !m.deleted_at).reduce((a,m)=>a+Number(m.quantidade_contas||0),0), decimals:0 },
               ].map((k,i,arr)=>(
                 <div key={i} style={{
                   display:'flex', alignItems:'center', justifyContent:'space-between', gap:12,
@@ -2582,6 +2583,7 @@ export default function AdminPage() {
                               <span style={{ fontSize:12, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
                             </motion.div>
                             <p style={{ fontSize:16, fontWeight:800, color:isTop?medal:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>{getName(op)}</p>
+                            <RankBadge contas={op.depositantesFinalizados} size="xs" />
                             {i===0 && <span className="badge badge-warn">Lider</span>}
                           </div>
                           <p className="t-small" style={{ marginBottom:12 }}>{op.email}</p>

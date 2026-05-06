@@ -6,6 +6,8 @@ import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
 import { SLOTS } from '../../lib/slots-data'
 import { DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_METAS, DEMO_REMESSAS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
+import { validClosedMetas } from '../../lib/operator-stats'
+import RankBadge from '../../components/rank/RankBadge'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -99,7 +101,8 @@ function PerfBar({ value, max, delay = 0 }) {
 /* ── Operator Drawer ── */
 function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
   const opMetas = useMemo(() => allMetas.filter(m => m.operator_id === op.id), [op.id, allMetas])
-  const opClosed = useMemo(() => opMetas.filter(m => m.status_fechamento === 'fechada'), [opMetas])
+  // SOURCE OF TRUTH: depositantes só de metas fechadas + não deletadas
+  const opClosed = useMemo(() => validClosedMetas(opMetas), [opMetas])
   const opRemessas = useMemo(() => {
     const ids = new Set(opMetas.map(m => m.id))
     return allRemessas.filter(r => ids.has(r.meta_id))
@@ -764,7 +767,8 @@ export default function OperadoresPage() {
     setInvites(prev => prev.filter(i => i.id !== id))
   }
 
-  const closedMetas = useMemo(() => metas.filter(m => m.status_fechamento === 'fechada'), [metas])
+  // SOURCE OF TRUTH: closedMetas = fechadas + não deletadas (mesma regra usada em /performance)
+  const closedMetas = useMemo(() => validClosedMetas(metas), [metas])
 
   const operatorStats = useMemo(() => {
     return operators.map(op => {
@@ -1017,6 +1021,7 @@ export default function OperadoresPage() {
                                   border: `1px solid ${op.badge === 'Oscilando' ? 'rgba(255,255,255,0.18)' : 'rgba(209,250,229,0.18)'}`,
                                 }}>{op.badge}</span>
                               )}
+                              <RankBadge contas={op.totalDeposit} size="xs" />
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                               <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>

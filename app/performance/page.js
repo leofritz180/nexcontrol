@@ -4,6 +4,10 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
+import { validClosedMetas } from '../../lib/operator-stats'
+import RankProgress from '../../components/rank/RankProgress'
+import RankReveal from '../../components/rank/RankReveal'
+import RankBadge from '../../components/rank/RankBadge'
 
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 
@@ -269,12 +273,13 @@ export default function PerformancePage() {
     // For admin: load all operators' stats for ranking
     if (isAdmin && p?.tenant_id) {
       const { data: allMetas } = await supabase.from('metas').select('operator_id,quantidade_contas,status_fechamento,deleted_at').eq('tenant_id', p.tenant_id)
-      const filtered = (allMetas || []).filter(x => !x.deleted_at)
+      // Source of truth: depositantes só contam de metas FECHADAS + não deletadas
+      const filtered = (allMetas || []).filter(x => !x.deleted_at && x.status_fechamento === 'fechada')
       const byOp = {}
       filtered.forEach(mt => {
         if (!byOp[mt.operator_id]) byOp[mt.operator_id] = { deps: 0, fechadas: 0 }
         byOp[mt.operator_id].deps += Number(mt.quantidade_contas || 0)
-        if (mt.status_fechamento === 'fechada') byOp[mt.operator_id].fechadas++
+        byOp[mt.operator_id].fechadas++
       })
       const ranking = Object.entries(byOp)
         .map(([id, s]) => ({ id, ...s }))
@@ -291,10 +296,10 @@ export default function PerformancePage() {
     return metas.filter(m => m.operator_id === user?.id)
   }, [metas, profile, user])
 
-  /* ── KPI stats ── */
+  /* ── KPI stats ── (depositantes = SEMPRE de metas fechadas + não deletadas — source of truth) */
   const stats = useMemo(() => {
-    const fechadas = myMetas.filter(m => m.status_fechamento === 'fechada')
-    const totalDeps = myMetas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    const fechadas = validClosedMetas(myMetas)
+    const totalDeps = fechadas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
     const totalRem = remessas.filter(r => myMetas.some(m => m.id === r.meta_id)).length
     const taxa = myMetas.length > 0 ? Math.round((fechadas.length / myMetas.length) * 100) : 0
     return {
@@ -323,14 +328,14 @@ export default function PerformancePage() {
 
   /* ── Personal ranking stats ── */
   const rankingStats = useMemo(() => {
-    const fechadas = myMetas.filter(m => m.status_fechamento === 'fechada')
-    const totalDeps = myMetas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    const fechadas = validClosedMetas(myMetas)
+    const totalDeps = fechadas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
     const mediaDeps = fechadas.length > 0 ? Math.round(totalDeps / fechadas.length) : 0
 
-    // Best meta by depositantes
+    // Best meta by depositantes (entre as fechadas válidas)
     let melhorMeta = null
     let maxDeps = 0
-    myMetas.forEach(m => {
+    fechadas.forEach(m => {
       const d = Number(m.quantidade_contas || 0)
       if (d > maxDeps) { maxDeps = d; melhorMeta = m }
     })
@@ -355,8 +360,9 @@ export default function PerformancePage() {
 
   /* ── Achievements ── */
   const achievements = useMemo(() => {
-    const closedCount = myMetas.filter(m => m.status_fechamento === 'fechada').length
-    const totalDeps = myMetas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    const fechadas = validClosedMetas(myMetas)
+    const closedCount = fechadas.length
+    const totalDeps = fechadas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
     const totalRem = remessas.filter(r => myMetas.some(m => m.id === r.meta_id)).length
     return [
       { label: 'Primeira meta', achieved: myMetas.length >= 1, current: myMetas.length, target: 1 },
@@ -484,6 +490,21 @@ export default function PerformancePage() {
             </div>
           ) : (
             <>
+              {/* ══════ SECTION 0: RANK CARD HERO (apenas pra operator vendo a si mesmo) ══════ */}
+              {profile?.role !== 'admin' && (
+                <>
+                  <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} />
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    style={{ marginBottom: 6 }}
+                  >
+                    <RankProgress contas={stats.totalDeps} name={getName(profile)} />
+                  </motion.div>
+                </>
+              )}
+
               {/* ══════ SECTION 1: KPI CARDS ══════ */}
               <div style={{
                 display: 'grid',

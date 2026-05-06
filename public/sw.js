@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v18 (RankShowcase admin + /operator rank + fontes maiores)
+// NexControl Service Worker — Push Notifications v20 (Performance toca rank reveal toda vez; Operator só primeira)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

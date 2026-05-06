@@ -494,7 +494,7 @@ export default function PerformancePage() {
               {/* ══════ SECTION 0: RANK CARD HERO (apenas pra operator vendo a si mesmo) ══════ */}
               {profile?.role !== 'admin' && (
                 <>
-                  <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} />
+                  <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} ready={!loading && !!profile} alwaysShow />
                   <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}

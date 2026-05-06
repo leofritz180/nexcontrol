@@ -696,8 +696,8 @@ export default function OperatorPage() {
 
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
 
-          {/* Reveal modal animado na primeira vez (e em cada upgrade de rank) */}
-          <RankReveal userId={user?.id} contas={stats.totalDepositantes} name={getName(profile)} />
+          {/* Reveal modal animado — só dispara depois do loading, com contas reais */}
+          <RankReveal userId={user?.id} contas={stats.totalDepositantes} name={getName(profile)} ready={!loading && !!profile} />
 
           {/* ── HEADER ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>

@@ -1,24 +1,45 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getRank, rankBackground, rankTextColor } from '../../lib/rank-system'
 import RankIcon from './RankIcon'
 
 /**
- * Modal full-screen pra reveal do rank na PRIMEIRA vez que o operador entra.
- * Persistência via localStorage[`nx_rank_v1_${userId}`] = lastRankSeen.
- * Aparece também quando o operador sobe de tier (next time he opens).
+ * Modal full-screen pra reveal do rank.
+ *
+ * Modos:
+ *  - alwaysShow=false (default): toca uma vez por sessão de browser (primeira entrada
+ *    + cada upgrade de tier). Persistência em localStorage[`nx_rank_v1_${userId}`].
+ *  - alwaysShow=true: toca TODA vez que a página é montada (uso em /performance).
+ *
+ * IMPORTANTE: SÓ DISPARA depois que `ready=true` E `contas` está definido.
+ * Sem isso, abre com Ferro (contas=0) durante loading e salva tier errado.
  */
-export default function RankReveal({ userId, contas, name = 'Operador' }) {
+export default function RankReveal({ userId, contas, name = 'Operador', ready = true, alwaysShow = false }) {
   const [show, setShow] = useState(false)
   const [data, setData] = useState(null)
+  const triggered = useRef(false)
 
   useEffect(() => {
+    if (triggered.current) return
+    if (!ready) return
     if (!userId) return
+    if (contas === undefined || contas === null) return
     if (typeof window === 'undefined') return
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) return
 
+    triggered.current = true
+
     const { current } = getRank(contas)
+
+    if (alwaysShow) {
+      // Toca TODA vez — sem checar localStorage
+      setData({ rank: current, isUpgrade: false, prevTier: null })
+      setTimeout(() => setShow(true), 700)
+      return
+    }
+
+    // Modo padrão: localStorage decide
     const key = `nx_rank_v1_${userId}`
     let last = null
     try { last = localStorage.getItem(key) } catch {}
@@ -27,10 +48,10 @@ export default function RankReveal({ userId, contas, name = 'Operador' }) {
     // Mostra se: nunca viu (primeira vez) OU subiu de rank
     if (lastTier === null || current.tier > lastTier) {
       setData({ rank: current, isUpgrade: lastTier !== null && current.tier > lastTier, prevTier: lastTier })
-      setTimeout(() => setShow(true), 400)
+      setTimeout(() => setShow(true), 700)
       try { localStorage.setItem(key, String(current.tier)) } catch {}
     }
-  }, [userId, contas])
+  }, [userId, contas, ready, alwaysShow])
 
   function handleClose() { setShow(false) }
 

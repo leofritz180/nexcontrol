@@ -483,14 +483,18 @@ export default function PerformancePage() {
             </button>
           </motion.div>
 
-          {/* RankReveal SEMPRE renderizado fora do loading conditional — nunca desmonta.
-              Loading apenas trava a prop `ready`, evitando o reveal disparar antes dos dados.
-              Isso resolve o loop quando window.focus chama load() e re-renderiza tudo. */}
+          {/* RankReveal sempre renderizado fora do loading conditional.
+              Para admin: rank baseado em metas onde ele operou pessoalmente (operator_id === user.id).
+              Para operator: rank baseado nas próprias metas (já filtrado em myMetas).
+              Owner Darkzin (leofritz180) recebe Apex automatico. */}
           {(() => {
             const apexLocked = isApexLocked(user?.email || profile?.email)
-            if (profile?.role === 'admin' && !apexLocked) return null
+            const isAdmin = profile?.role === 'admin'
+            const myDeps = isAdmin
+              ? validClosedMetas(metas).filter(m => m.operator_id === user?.id).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+              : stats.totalDeps
             return (
-              <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} ready={!loading && !!profile} mode="everyVisit" forceApex={apexLocked} />
+              <RankReveal userId={user?.id} contas={myDeps} name={getName(profile)} ready={!loading && !!profile} mode="everyVisit" forceApex={apexLocked} />
             )
           })()}
 
@@ -507,12 +511,16 @@ export default function PerformancePage() {
               {/* ══════ SECTION 0: RANK CINEMATIC ZONE ══════ */}
               {(() => {
                 const apexLocked = isApexLocked(user?.email || profile?.email)
-                if (profile?.role === 'admin' && !apexLocked) return null
-                const ambientRank = getRank(stats.totalDeps, { forceApex: apexLocked }).current
+                const isAdmin = profile?.role === 'admin'
+                // Admin: rank pessoal baseado nas metas onde ele operou (operator_id===user.id)
+                // Operator: stats.totalDeps já é o próprio
+                const myDeps = isAdmin
+                  ? validClosedMetas(metas).filter(m => m.operator_id === user?.id).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+                  : stats.totalDeps
+                const ambientRank = getRank(myDeps, { forceApex: apexLocked }).current
 
                 return (
                   <>
-                    {/* Cinematic ambient wrapper — poeira/nebulosa atrás de TODA seção de ranks */}
                     <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginBottom: 6 }}>
                       <RankAmbient rank={ambientRank} density={ambientRank.tier >= 12 ? 'high' : 'normal'} />
 
@@ -522,7 +530,7 @@ export default function PerformancePage() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.5 }}
                         >
-                          <RankProgress contas={stats.totalDeps} name={getName(profile)} forceApex={apexLocked} />
+                          <RankProgress contas={myDeps} name={getName(profile)} forceApex={apexLocked} />
                         </motion.div>
 
                         <motion.div
@@ -539,7 +547,7 @@ export default function PerformancePage() {
                             boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
                           }}
                         >
-                          <RankShowcase contas={stats.totalDeps} mode="inline" forceApex={apexLocked} />
+                          <RankShowcase contas={myDeps} mode="inline" forceApex={apexLocked} />
                         </motion.div>
                       </div>
                     </div>

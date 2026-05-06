@@ -16,7 +16,10 @@ import RankBadge from '../../components/rank/RankBadge'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
 import RankAmbient from '../../components/rank/RankAmbient'
-import { rankBackground, rankTextColor, getRank } from '../../lib/rank-system'
+import RankProgress from '../../components/rank/RankProgress'
+import RankReveal from '../../components/rank/RankReveal'
+import { rankBackground, rankTextColor, getRank, isApexLocked } from '../../lib/rank-system'
+import { validClosedMetas } from '../../lib/operator-stats'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -1187,13 +1190,28 @@ export default function AdminPage() {
           transition={{ duration: 0.4, ease }}
           style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:32 }}>
           <div>
-            <motion.h1
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.05, ease }}
-              style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:'0 0 4px' }}>
-              Ola, {getName(profile)}
-            </motion.h1>
+            <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', marginBottom:4 }}>
+              <motion.h1
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.05, ease }}
+                style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:0 }}>
+                Ola, {getName(profile)}
+              </motion.h1>
+              {/* Rank do admin baseado nas metas onde ele operou pessoalmente.
+                  Owner Darkzin (leofritz180@gmail.com) recebe Apex automatico via isApexLocked. */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.15, ease }}
+              >
+                <RankBadge
+                  contas={validClosedMetas(myMetas).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)}
+                  forceApex={isApexLocked(user?.email || profile?.email)}
+                  size="sm"
+                />
+              </motion.div>
+            </div>
             <p style={{ fontSize:14, color:'var(--t2)', margin:'0 0 8px', fontWeight:500 }}>
               Central de operacoes
             </p>
@@ -1298,7 +1316,29 @@ export default function AdminPage() {
                 setMyTitulo('');setMyPlat('');setMyRede('');setMyContas('10');setMyShowForm(false)
                 router.push(`/meta/${data.id}`)
               }
+              const myDeps = validClosedMetas(myMetas).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+              const apexLocked = isApexLocked(user?.email || profile?.email)
+              const myAmbientRank = getRank(myDeps, { forceApex: apexLocked }).current
               return (<>
+                {/* Sistema de Ranks PESSOAL do admin — visível pra Darkzin com Apex auto */}
+                <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginBottom: 18 }}>
+                  <RankAmbient rank={myAmbientRank} density={myAmbientRank.tier >= 12 ? 'high' : 'normal'} />
+                  <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 16, padding: '4px 0' }}>
+                    <RankProgress contas={myDeps} name={getName(profile)} forceApex={apexLocked} />
+                    <div style={{
+                      position: 'relative',
+                      padding: 22, borderRadius: 16,
+                      background: 'rgba(0,0,0,0.55)',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
+                    }}>
+                      <RankShowcase contas={myDeps} mode="inline" forceApex={apexLocked} />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Hero da aba — header executivo */}
                 <motion.div
                   initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}

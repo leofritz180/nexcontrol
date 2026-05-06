@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v29 (Fix definitivo loop reveal — RankReveal fora do loading conditional)
+// NexControl Service Worker — Push Notifications v30 (Rank pessoal pra admin: header badge + Minha Operacao + /performance)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

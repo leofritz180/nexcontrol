@@ -1320,24 +1320,17 @@ export default function AdminPage() {
               const apexLocked = isApexLocked(user?.email || profile?.email)
               const myAmbientRank = getRank(myDeps, { forceApex: apexLocked }).current
               return (<>
-                {/* Sistema de Ranks PESSOAL do admin — visível pra Darkzin com Apex auto */}
-                <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginBottom: 18 }}>
-                  <RankAmbient rank={myAmbientRank} density={myAmbientRank.tier >= 12 ? 'high' : 'normal'} />
-                  <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 16, padding: '4px 0' }}>
-                    <RankProgress contas={myDeps} name={getName(profile)} forceApex={apexLocked} />
-                    <div style={{
-                      position: 'relative',
-                      padding: 22, borderRadius: 16,
-                      background: 'rgba(0,0,0,0.55)',
-                      backdropFilter: 'blur(8px)',
-                      WebkitBackdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
-                    }}>
-                      <RankShowcase contas={myDeps} mode="inline" forceApex={apexLocked} />
-                    </div>
-                  </div>
-                </div>
+                {/* Reveal animado a cada entrada na aba 'Minha operacao'.
+                    O componente so monta quando tab==='myops', entao a cada
+                    troca de tab pra ca dispara a animacao. */}
+                <RankReveal
+                  userId={user?.id}
+                  contas={myDeps}
+                  name={getName(profile)}
+                  ready={!loading && !!profile}
+                  mode="everyVisit"
+                  forceApex={apexLocked}
+                />
 
                 {/* Hero da aba — header executivo */}
                 <motion.div
@@ -1803,6 +1796,25 @@ export default function AdminPage() {
                       </motion.div>
                     )
                   })}
+                </div>
+
+                {/* Sistema de Ranks PESSOAL — fica no FINAL da aba pra nao tampar criar nova meta */}
+                <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginTop: 32 }}>
+                  <RankAmbient rank={myAmbientRank} density={myAmbientRank.tier >= 12 ? 'high' : 'normal'} />
+                  <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 16, padding: '4px 0' }}>
+                    <RankProgress contas={myDeps} name={getName(profile)} forceApex={apexLocked} />
+                    <div style={{
+                      position: 'relative',
+                      padding: 22, borderRadius: 16,
+                      background: 'rgba(0,0,0,0.55)',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
+                    }}>
+                      <RankShowcase contas={myDeps} mode="inline" forceApex={apexLocked} />
+                    </div>
+                  </div>
                 </div>
               </>)
             })()}

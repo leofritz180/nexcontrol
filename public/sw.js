@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v30 (Rank pessoal pra admin: header badge + Minha Operacao + /performance)
+// NexControl Service Worker — Push Notifications v31 (Apex primary gold + secao rank no fim do myops + reveal on tab change)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

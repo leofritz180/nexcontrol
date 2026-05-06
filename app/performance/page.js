@@ -5,10 +5,12 @@ import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { validClosedMetas } from '../../lib/operator-stats'
+import { isApexLocked, getRank } from '../../lib/rank-system'
 import RankProgress from '../../components/rank/RankProgress'
 import RankReveal from '../../components/rank/RankReveal'
 import RankBadge from '../../components/rank/RankBadge'
 import RankShowcase from '../../components/rank/RankShowcase'
+import RankAmbient from '../../components/rank/RankAmbient'
 
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 
@@ -491,34 +493,50 @@ export default function PerformancePage() {
             </div>
           ) : (
             <>
-              {/* ══════ SECTION 0: RANK CARD HERO (apenas pra operator vendo a si mesmo) ══════ */}
-              {profile?.role !== 'admin' && (
-                <>
-                  <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} ready={!loading && !!profile} alwaysShow />
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    style={{ marginBottom: 6 }}
-                  >
-                    <RankProgress contas={stats.totalDeps} name={getName(profile)} />
-                  </motion.div>
+              {/* ══════ SECTION 0: RANK CINEMATIC ZONE ══════ */}
+              {(() => {
+                const apexLocked = isApexLocked(user?.email || profile?.email)
+                if (profile?.role === 'admin' && !apexLocked) return null
+                const ambientRank = getRank(stats.totalDeps, { forceApex: apexLocked }).current
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.15 }}
-                    style={{
-                      padding: 22, borderRadius: 16,
-                      background: '#000',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
-                    }}
-                  >
-                    <RankShowcase contas={stats.totalDeps} mode="inline" />
-                  </motion.div>
-                </>
-              )}
+                return (
+                  <>
+                    <RankReveal userId={user?.id} contas={stats.totalDeps} name={getName(profile)} ready={!loading && !!profile} mode="oncePerSession" forceApex={apexLocked} />
+
+                    {/* Cinematic ambient wrapper — poeira/nebulosa atrás de TODA seção de ranks */}
+                    <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginBottom: 6 }}>
+                      <RankAmbient rank={ambientRank} density={ambientRank.tier >= 12 ? 'high' : 'normal'} />
+
+                      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 18, padding: '4px 0' }}>
+                        <motion.div
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <RankProgress contas={stats.totalDeps} name={getName(profile)} forceApex={apexLocked} />
+                        </motion.div>
+
+                        <motion.div
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: 0.15 }}
+                          style={{
+                            position: 'relative',
+                            padding: 22, borderRadius: 16,
+                            background: 'rgba(0,0,0,0.55)',
+                            backdropFilter: 'blur(8px)',
+                            WebkitBackdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
+                          }}
+                        >
+                          <RankShowcase contas={stats.totalDeps} mode="inline" forceApex={apexLocked} />
+                        </motion.div>
+                      </div>
+                    </div>
+                  </>
+                )
+              })()}
 
               {/* ══════ SECTION 1: KPI CARDS ══════ */}
               <div style={{

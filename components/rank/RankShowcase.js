@@ -10,12 +10,25 @@ import { RankAura, OrbitalParticles, GlowBorder, ShinePass, SignatureOverlay } f
  * Cada linha é uma cena visual: aura de cor, hover vivo, badges premium,
  * tratamento especial pros tiers 12-15 e Apex absurdo.
  */
-export default function RankShowcase({ contas, mode = 'inline', open = false, onClose }) {
-  const { current } = getRank(contas)
+export default function RankShowcase({ contas, mode = 'inline', open = false, onClose, forceApex = false }) {
+  const { current } = getRank(contas, { forceApex })
   const currentTier = current.tier
 
   const content = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+    <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 9 }}>
+      {/* Linha vertical de energia conectando os ranks (passa atrás dos ícones) */}
+      <motion.div
+        aria-hidden
+        animate={{ backgroundPosition: ['0% 0%', '0% 200%'] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+        style={{
+          position: 'absolute',
+          left: 51, top: 28, bottom: 28, width: 1,
+          background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.08) 5%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.08) 95%, transparent 100%), linear-gradient(180deg, transparent, rgba(180,120,255,0.25), transparent)',
+          backgroundSize: '100% 200%', backgroundRepeat: 'no-repeat',
+          opacity: 0.55, pointerEvents: 'none',
+        }}
+      />
       {RANK_TIERS.map((rank, i) => (
         <RankRow key={rank.tier} rank={rank} contas={contas} index={i} currentTier={currentTier} />
       ))}

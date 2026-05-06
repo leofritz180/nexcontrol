@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v21 (Rank visual AAA: glass premium, partículas, hover vivo, Apex holográfico)
+// NexControl Service Worker — Push Notifications v23 (Apex lock owner + RankAmbient cinematic + reveal sessao)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

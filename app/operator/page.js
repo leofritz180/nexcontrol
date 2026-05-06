@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase/client'
 import { notifyMetaCreated } from '../../lib/notify'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 import { validClosedMetas } from '../../lib/operator-stats'
+import { isApexLocked } from '../../lib/rank-system'
 import RankBadge from '../../components/rank/RankBadge'
 import RankReveal from '../../components/rank/RankReveal'
 
@@ -697,7 +698,7 @@ export default function OperatorPage() {
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
 
           {/* Reveal modal animado — só dispara depois do loading, com contas reais */}
-          <RankReveal userId={user?.id} contas={stats.totalDepositantes} name={getName(profile)} ready={!loading && !!profile} />
+          <RankReveal userId={user?.id} contas={stats.totalDepositantes} name={getName(profile)} ready={!loading && !!profile} forceApex={isApexLocked(user?.email || profile?.email)} />
 
           {/* ── HEADER ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
@@ -706,7 +707,7 @@ export default function OperatorPage() {
                 <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--t1)', margin: '0 0 4px' }}>
                   Ola, {getName(profile)}
                 </h1>
-                <RankBadge contas={stats.totalDepositantes} size="sm" />
+                <RankBadge contas={stats.totalDepositantes} size="sm" forceApex={isApexLocked(user?.email || profile?.email)} />
               </div>
               <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, opacity: 0.75 }}>
                 {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}

@@ -11,8 +11,8 @@ import { RankAura, OrbitalParticles, GlowBorder, ShinePass, SignatureOverlay } f
  *          conteúdo (ícone com glow refinado, título serif gradient, barra
  *          de energia com light traveling, próximos níveis com hover).
  */
-export default function RankProgress({ contas, name = 'Voce', compact = false }) {
-  const { current, next, progress, isMax, remaining } = getRank(contas)
+export default function RankProgress({ contas, name = 'Voce', compact = false, forceApex = false }) {
+  const { current, next, progress, isMax, remaining } = getRank(contas, { forceApex })
   const nextRanks = getNextRanks(current.tier, 3)
   const bg = rankBackground(current)
   const textColor = rankTextColor(current)

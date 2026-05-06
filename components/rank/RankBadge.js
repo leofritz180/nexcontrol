@@ -9,9 +9,9 @@ import { ShinePass } from './RankFX'
  * Badge inline premium pra rank.
  * size: 'xs' (lista compacta), 'sm' (default), 'md', 'lg' (hero)
  */
-export default function RankBadge({ contas, size = 'sm', showName = true, showTier = false, style }) {
+export default function RankBadge({ contas, size = 'sm', showName = true, showTier = false, style, forceApex = false }) {
   const [hover, setHover] = useState(false)
-  const { current } = getRank(contas)
+  const { current } = getRank(contas, { forceApex })
   const dims = {
     xs: { iconBox: 22, icon: 13, fontSize: 11, pad: '3px 9px',  gap: 6, radius: 6 },
     sm: { iconBox: 28, icon: 16, fontSize: 12, pad: '4px 11px', gap: 8, radius: 7 },

@@ -15,6 +15,7 @@ import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS
 import RankBadge from '../../components/rank/RankBadge'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
+import RankAmbient from '../../components/rank/RankAmbient'
 import { rankBackground, rankTextColor, getRank } from '../../lib/rank-system'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
@@ -2166,20 +2167,15 @@ export default function AdminPage() {
               <motion.div
                 initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35, delay:0.1 }}
                 style={{
-                  marginTop: 32, padding: 24, borderRadius: 16,
+                  marginTop: 32, padding: 28, borderRadius: 20,
                   background: '#000',
                   border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
+                  boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.4)',
                   position: 'relative', overflow: 'hidden',
                 }}
               >
-                {topRank && (
-                  <div aria-hidden style={{
-                    position:'absolute', top:0, right:0, width:'50%', height:'100%',
-                    background: `radial-gradient(circle at 100% 0%, ${topRank.glow === 'prismatic' ? 'rgba(180,120,255,0.12)' : (topRank.glow || 'rgba(255,255,255,0.05)').replace(/0\.\d+/, '0.12')} 0%, transparent 60%)`,
-                    pointerEvents:'none',
-                  }}/>
-                )}
+                {/* Ambientação cinematográfica — poeira espacial + nebulosas */}
+                {topRank && <RankAmbient rank={topRank} density={topRank.tier >= 12 ? 'high' : 'normal'} />}
                 <div style={{ position:'relative', display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:14, marginBottom:18 }}>
                   <div>
                     <h3 style={{

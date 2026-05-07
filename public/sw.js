@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v33 (Fix admin reativar meta + editar meta fechada)
+// NexControl Service Worker — Push Notifications v34 (Fix sendInvite — invites pendentes nao contam contra limite)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

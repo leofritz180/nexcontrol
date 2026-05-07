@@ -722,6 +722,12 @@ export default function OperadoresPage() {
     // Validar limite do plano: usa o MAIOR operator_count entre todas as
     // subscriptions ativas e nao expiradas (varias compras coexistem; o
     // teto e a maior delas, nao a mais recente).
+    //
+    // IMPORTANTE: aqui contamos APENAS operadores reais (que ja aceitaram
+    // o convite). Invites pendentes NAO contam — admin pode gerar quantos
+    // links quiser, a validacao real acontece no /invite/page.js no momento
+    // do accept. Antes contavamos pendentes e admin ficava bloqueado se
+    // tinha 3 links pendurados que ninguem aceitou.
     try {
       const { data: activeSubs } = await supabase.from('subscriptions')
         .select('operator_count, expires_at')
@@ -735,11 +741,9 @@ export default function OperadoresPage() {
       if (validLimits.length > 0) {
         const limit = Math.max(...validLimits)
         const currentOps = operators.length
-        const pendingInvs = invites.filter(i => i.status === 'pending' || !i.status).length
-        const used = currentOps + pendingInvs
-        if (used >= limit) {
+        if (currentOps >= limit) {
           setInvSaving(false)
-          setInvMsg(`Limite atingido: seu plano inclui ${limit} operador${limit !== 1 ? 'es' : ''}. Atualize em Assinatura para adicionar mais.`)
+          setInvMsg(`Limite atingido: seu plano inclui ${limit} operador${limit !== 1 ? 'es' : ''} e voce ja tem ${currentOps}. Atualize em Assinatura para adicionar mais.`)
           setTimeout(() => setInvMsg(''), 8000)
           return
         }

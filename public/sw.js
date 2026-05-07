@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v32 (DemoModeCard popup 3s + botao SAIR DO MODO DEMO no banner)
+// NexControl Service Worker — Push Notifications v33 (Fix admin reativar meta + editar meta fechada)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

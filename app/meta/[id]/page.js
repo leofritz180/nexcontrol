@@ -662,6 +662,9 @@ export default function MetaPage() {
           {(() => {
             const isFechada = meta?.status_fechamento==='fechada'
             const isFinalizada = meta?.status==='finalizada' && !isFechada
+            // canReactivate: tanto meta finalizada quanto fechada podem ser reabertas
+            const canReactivate = isFinalizada || isFechada
+            const isAdminUser = profile?.role === 'admin'
             const statusC = isFechada ? '#D1FAE5' : isFinalizada ? 'rgba(255,255,255,0.78)' : '#e53935'
             const statusL = isFechada ? 'FECHADA' : isFinalizada ? 'FINALIZADA' : 'AO VIVO'
             return (
@@ -728,7 +731,8 @@ export default function MetaPage() {
                     </div>
                   </div>
                   <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                    {meta && meta.status_fechamento !== 'fechada' && (
+                    {/* Editar: aparece em meta nao-fechada (todos) OU em meta fechada se for admin (com flag update_lucro_only) */}
+                    {meta && (meta.status_fechamento !== 'fechada' || isAdminUser) && (
                       <motion.button
                         onClick={()=>setShowEdit(true)}
                         whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }}
@@ -737,27 +741,27 @@ export default function MetaPage() {
                           fontSize:12, fontWeight:700, fontFamily:'inherit',
                           background:'rgba(255,255,255,0.03)', color:'var(--t2)',
                           display:'flex', alignItems:'center', gap:7,
-                        }} title="Editar meta">
+                        }} title={isFechada ? 'Editar lucro/ajustes (admin)' : 'Editar meta'}>
                         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         Editar
                       </motion.button>
                     )}
                     <motion.button
                       onClick={toggleStatus}
-                      whileHover={{ scale:1.03, boxShadow: isFinalizada ? '0 8px 24px rgba(209,250,229,0.45)' : '0 8px 24px rgba(229,57,53,0.45)' }}
+                      whileHover={{ scale:1.03, boxShadow: canReactivate ? '0 8px 24px rgba(209,250,229,0.45)' : '0 8px 24px rgba(229,57,53,0.45)' }}
                       whileTap={{ scale:0.97 }}
                       style={{
                         padding:'10px 18px', borderRadius:11, border:'none', cursor:'pointer',
                         fontSize:12, fontWeight:800, fontFamily:'inherit', color:'#fff',
-                        background: isFinalizada
+                        background: canReactivate
                           ? 'linear-gradient(145deg, #D1FAE5, #00a06d)'
                           : 'linear-gradient(145deg, #e53935, #c62828)',
-                        boxShadow: isFinalizada
+                        boxShadow: canReactivate
                           ? '0 6px 20px rgba(209,250,229,0.35), inset 0 1px 0 rgba(255,255,255,0.18)'
                           : '0 6px 20px rgba(229,57,53,0.35), inset 0 1px 0 rgba(255,255,255,0.18)',
                         display:'flex', alignItems:'center', gap:7,
                       }}>
-                      {isFinalizada?<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Reativar</>:<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Finalizar meta</>}
+                      {canReactivate?<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Reativar meta</>:<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Finalizar meta</>}
                     </motion.button>
                   </div>
                 </div>

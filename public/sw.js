@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v34 (Fix sendInvite — invites pendentes nao contam contra limite)
+// NexControl Service Worker — Push Notifications v35 (Faturamento: chips Hoje/Ontem/7d/30d)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

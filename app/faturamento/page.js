@@ -72,6 +72,29 @@ function ChartTooltip({ active, payload, label }) {
 
 /* ─── Filters ─── */
 function Filters({ operators, redes, filters, setFilters }) {
+  // Helpers pra setar quick-period (formato YYYY-MM-DD em local time)
+  const ymd = d => {
+    const off = d.getTimezoneOffset() * 60000
+    return new Date(d.getTime() - off).toISOString().slice(0, 10)
+  }
+  function setQuickPeriod(period) {
+    const today = new Date(); today.setHours(0,0,0,0)
+    if (period === 'hoje') {
+      setFilters(f => ({ ...f, dateFrom: ymd(today), dateTo: ymd(today), period: 'hoje' }))
+    } else if (period === 'ontem') {
+      const y = new Date(today); y.setDate(y.getDate() - 1)
+      setFilters(f => ({ ...f, dateFrom: ymd(y), dateTo: ymd(y), period: 'ontem' }))
+    } else if (period === '7d') {
+      const start = new Date(today); start.setDate(start.getDate() - 6)
+      setFilters(f => ({ ...f, dateFrom: ymd(start), dateTo: ymd(today), period: '7d' }))
+    } else if (period === '30d') {
+      const start = new Date(today); start.setDate(start.getDate() - 29)
+      setFilters(f => ({ ...f, dateFrom: ymd(start), dateTo: ymd(today), period: '30d' }))
+    }
+  }
+  const QUICK = [['hoje','Hoje'],['ontem','Ontem'],['7d','7 dias'],['30d','30 dias']]
+  const activePeriod = filters.period
+
   return (
     <div className="card a2" style={{ padding:'18px 22px', marginBottom:24 }}>
       <div style={{ display:'flex', alignItems:'center', gap:14, flexWrap:'wrap' }}>
@@ -79,8 +102,31 @@ function Filters({ operators, redes, filters, setFilters }) {
           <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
           <span className="t-label" style={{ fontSize:11 }}>Filtros</span>
         </div>
-        <input type="date" className="input" value={filters.dateFrom} onChange={e=>setFilters(f=>({...f,dateFrom:e.target.value}))} style={{ width:150, padding:'8px 12px', fontSize:12 }}/>
-        <input type="date" className="input" value={filters.dateTo} onChange={e=>setFilters(f=>({...f,dateTo:e.target.value}))} style={{ width:150, padding:'8px 12px', fontSize:12 }}/>
+        {/* Quick period chips */}
+        <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+          {QUICK.map(([key,label]) => {
+            const active = activePeriod === key
+            return (
+              <button key={key} type="button" onClick={()=>setQuickPeriod(key)}
+                style={{
+                  padding:'7px 12px', borderRadius:8, fontSize:11, fontWeight:700, fontFamily:'inherit',
+                  letterSpacing:'0.04em', cursor:'pointer',
+                  background: active ? 'rgba(229,57,53,0.14)' : 'rgba(255,255,255,0.03)',
+                  color: active ? '#ff6b6b' : 'var(--t2)',
+                  border: `1px solid ${active ? 'rgba(229,57,53,0.45)' : 'rgba(255,255,255,0.08)'}`,
+                  boxShadow: active ? '0 0 14px rgba(229,57,53,0.2)' : 'none',
+                  transition: 'all 0.18s',
+                }}
+                onMouseEnter={e => { if(!active) { e.currentTarget.style.background='rgba(255,255,255,0.06)'; e.currentTarget.style.color='var(--t1)' } }}
+                onMouseLeave={e => { if(!active) { e.currentTarget.style.background='rgba(255,255,255,0.03)'; e.currentTarget.style.color='var(--t2)' } }}>
+                {label}
+              </button>
+            )
+          })}
+        </div>
+        <div style={{ width:1, height:24, background:'rgba(255,255,255,0.08)' }}/>
+        <input type="date" className="input" value={filters.dateFrom} onChange={e=>setFilters(f=>({...f,dateFrom:e.target.value, period:''}))} style={{ width:150, padding:'8px 12px', fontSize:12 }}/>
+        <input type="date" className="input" value={filters.dateTo} onChange={e=>setFilters(f=>({...f,dateTo:e.target.value, period:''}))} style={{ width:150, padding:'8px 12px', fontSize:12 }}/>
         <select className="input" value={filters.operador} onChange={e=>setFilters(f=>({...f,operador:e.target.value}))} style={{ width:160, padding:'8px 12px', fontSize:12 }}>
           <option value="">Todos operadores</option>
           {operators.map(o=><option key={o.id} value={o.id}>{getName(o)}</option>)}
@@ -95,7 +141,7 @@ function Filters({ operators, redes, filters, setFilters }) {
           <option value="prejuizo">Somente prejuizo</option>
         </select>
         {(filters.dateFrom||filters.dateTo||filters.operador||filters.rede||filters.tipo) && (
-          <button onClick={()=>setFilters({dateFrom:'',dateTo:'',operador:'',rede:'',tipo:''})} className="btn btn-ghost btn-sm">Limpar</button>
+          <button onClick={()=>setFilters({dateFrom:'',dateTo:'',operador:'',rede:'',tipo:'',period:''})} className="btn btn-ghost btn-sm">Limpar</button>
         )}
       </div>
     </div>
@@ -113,7 +159,7 @@ export default function FaturamentoPage() {
   const [loading,setLoading]=useState(true)
   const [tab,setTab]=useState('overview')
   const [chartPeriod,setChartPeriod]=useState('day')
-  const [filters,setFilters]=useState({dateFrom:'',dateTo:'',operador:'',rede:'',tipo:''})
+  const [filters,setFilters]=useState({dateFrom:'',dateTo:'',operador:'',rede:'',tipo:'',period:''})
   const [editGoal,setEditGoal]=useState(false)
   const [goalInput,setGoalInput]=useState('')
   const [savingGoal,setSavingGoal]=useState(false)

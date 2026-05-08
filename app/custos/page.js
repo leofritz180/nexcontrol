@@ -97,7 +97,7 @@ export default function CustosPage() {
     loadData()
   }
 
-  const isDemo = !loading && shouldShowDemo(metas)
+  const isDemo = !loading && shouldShowDemo(metas, user?.id)
   const displayCosts = isDemo ? DEMO_COSTS : costs
 
   const today = new Date().toISOString().slice(0, 10)

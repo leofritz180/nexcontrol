@@ -172,13 +172,13 @@ export default function FaturamentoPage() {
 
   /* ── Demo mode: inject demo data when no real metas exist ── */
   useEffect(()=>{
-    if(!loading && shouldShowDemo(metas) && !demoMode) {
+    if(!loading && shouldShowDemo(metas, user?.id) && !demoMode) {
       setMetas(DEMO_METAS)
       setRemessas(DEMO_REMESSAS)
       setOperators(DEMO_OPERATORS)
       setDemoMode(true)
     }
-  },[loading, metas, demoMode])
+  },[loading, metas, demoMode, user?.id])
 
   const isPro = subData?.status === 'active' && (!subData.expires_at || new Date(subData.expires_at) > new Date())
 

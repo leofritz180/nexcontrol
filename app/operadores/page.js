@@ -886,7 +886,7 @@ export default function OperadoresPage() {
     }).filter(Boolean).sort((a, b) => b.pagamento - a.pagamento)
   }, [operators, closedMetas, tenant, folhaPeriod])
 
-  const isDemo = !loading && shouldShowDemo(metas)
+  const isDemo = !loading && shouldShowDemo(metas, user?.id)
 
   const DemoBanner = () => (
     <motion.div className="demo-banner" {...fadeUp(0)} style={{

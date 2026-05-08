@@ -569,7 +569,7 @@ export default function RedesPage() {
     setLoading(false)
   }
 
-  const isDemo = !loading && shouldShowDemo(metas)
+  const isDemo = !loading && shouldShowDemo(metas, user?.id)
 
   /* ── Compute redes data with Network Score ── */
   const redesData = useMemo(() => {

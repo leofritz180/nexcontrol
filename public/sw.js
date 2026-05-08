@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v35 (Faturamento: chips Hoje/Ontem/7d/30d)
+// NexControl Service Worker — Push Notifications v36 (Faturamento: lucro_final agora respeita filtro de data)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

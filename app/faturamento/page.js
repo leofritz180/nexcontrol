@@ -245,13 +245,35 @@ export default function FaturamentoPage() {
     const roi=dep>0?((liq/dep)*100):0
     const pos=fRem.filter(r=>Number(r.resultado||0)>=0).length
     const taxa=fRem.length>0?Math.round((pos/fRem.length)*100):0
-    // Lucro final das metas fechadas (valor real pos salario/custo)
-    const fechadas=metas.filter(m=>m.status_fechamento==='fechada')
+
+    // Janela de data dos filtros — aplicada tambem em metas fechadas + custos
+    // pra que lucro_final reflita o periodo selecionado.
+    const dFromObj = filters.dateFrom ? new Date(filters.dateFrom) : null
+    const dToObj = filters.dateTo ? (() => { const d = new Date(filters.dateTo); d.setDate(d.getDate()+1); return d })() : null
+    const inRange = (dStr) => {
+      if (!dFromObj && !dToObj) return true
+      if (!dStr) return false
+      const d = new Date(dStr)
+      if (dFromObj && d < dFromObj) return false
+      if (dToObj && d >= dToObj) return false
+      return true
+    }
+
+    // Lucro final das metas FECHADAS no periodo (usa fechada_em; fallback created_at)
+    let fechadas = metas.filter(m=>m.status_fechamento==='fechada')
+    fechadas = fechadas.filter(m => inRange(m.fechada_em || m.created_at))
+    // Tambem aplica filtros de operador/rede que sao do useMemo de Filters
+    if (filters.operador) fechadas = fechadas.filter(m => m.operator_id === filters.operador)
+    if (filters.rede) fechadas = fechadas.filter(m => m.rede === filters.rede)
     const lucroFinalBruto=fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
-    const custosTotal=costs.reduce((a,c)=>a+Number(c.amount||0),0)
+
+    // Custos do periodo (rows tem campo `date`)
+    const custosNoPeriodo = costs.filter(c => inRange(c.date))
+    const custosTotal=custosNoPeriodo.reduce((a,c)=>a+Number(c.amount||0),0)
+
     const lucroFinal=Number((lucroFinalBruto-custosTotal).toFixed(2))
     return {lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),liq:Number(liq.toFixed(2)),dep:Number(dep.toFixed(2)),saq:Number(saq.toFixed(2)),roi,taxa,total:fRem.length,pos,lucroFinal,lucroFinalBruto:Number(lucroFinalBruto.toFixed(2)),custosTotal:Number(custosTotal.toFixed(2)),fechadas:fechadas.length}
-  },[fRem,metas,costs])
+  },[fRem,metas,costs,filters])
 
   /* ── Chart data ── */
   const chartData = useMemo(()=>{

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v37 (Variant B billing: sticky bar + trial chip + smart trigger)
+// NexControl Service Worker — Push Notifications v38 (Preview mode pra visualizar variant B mesmo sem trial)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

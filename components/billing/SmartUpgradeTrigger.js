@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { motion, AnimatePresence } from 'framer-motion'
-import { getTrialStatus, formatPriceAnchor } from '../../lib/billing-variant'
+import { getTrialStatus, formatPriceAnchor, isPreviewMode } from '../../lib/billing-variant'
 
 const PixPayment = dynamic(() => import('../PixPayment'), { ssr: false })
 
@@ -28,7 +28,8 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
     const key = `nx_smart_trigger_${trigger}_${user.id}`
     let fired = false
     try { fired = localStorage.getItem(key) === '1' } catch {}
-    if (fired) return
+    // Em preview mode, ignora o flag pra deixar o user testar quantas vezes quiser
+    if (fired && !isPreviewMode()) return
 
     // Aguarda 1.2s pra criar momento emocional (user ve a meta criada antes do popup)
     const t = setTimeout(() => {

@@ -25,6 +25,7 @@ import { getBillingVariant } from '../../lib/billing-variant'
 import UpgradeStickyBar from '../../components/billing/UpgradeStickyBar'
 import TrialChip from '../../components/billing/TrialChip'
 import SmartUpgradeTrigger from '../../components/billing/SmartUpgradeTrigger'
+import PreviewIndicator from '../../components/billing/PreviewIndicator'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -1215,6 +1216,7 @@ export default function AdminPage() {
       {/* A/B Variant B: pacote agressivo de conversao (sticky bar + smart trigger) */}
       {billingVariant === 'B' && !loading && (
         <>
+          <PreviewIndicator onTriggerSmart={() => setFirstMetaJustCreated(true)} />
           <UpgradeStickyBar tenant={tenant} sub={sub} user={user} profile={profile} />
           <SmartUpgradeTrigger
             trigger="first_meta"

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v39 (Fix exitDemo: faturamento/operadores/redes/custos agora respeitam o flag)
+// NexControl Service Worker — Push Notifications v40 (Variant B aprovada e promovida pra producao default)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

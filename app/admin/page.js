@@ -21,6 +21,10 @@ import RankProgress from '../../components/rank/RankProgress'
 import RankReveal from '../../components/rank/RankReveal'
 import { rankBackground, rankTextColor, getRank, isApexLocked } from '../../lib/rank-system'
 import { validClosedMetas } from '../../lib/operator-stats'
+import { getBillingVariant } from '../../lib/billing-variant'
+import UpgradeStickyBar from '../../components/billing/UpgradeStickyBar'
+import TrialChip from '../../components/billing/TrialChip'
+import SmartUpgradeTrigger from '../../components/billing/SmartUpgradeTrigger'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -604,6 +608,10 @@ export default function AdminPage() {
   const [myMetas,setMyMetas]=useState([])
   const [myRem,setMyRem]=useState([])
   const [myShowForm,setMyShowForm]=useState(false)
+  // A/B billing variant + smart trigger
+  const [billingVariant,setBillingVariant]=useState('A')
+  const [firstMetaJustCreated,setFirstMetaJustCreated]=useState(false)
+  useEffect(()=>{ setBillingVariant(getBillingVariant()) },[])
   const [myTitulo,setMyTitulo]=useState('')
   const [myPlat,setMyPlat]=useState('')
   const [myRede,setMyRede]=useState('')
@@ -1204,6 +1212,17 @@ export default function AdminPage() {
       {!loading && shouldShowDemo(metas, user?.id) && (
         <DemoModeCard userId={user?.id} onExit={() => init()} />
       )}
+      {/* A/B Variant B: pacote agressivo de conversao (sticky bar + smart trigger) */}
+      {billingVariant === 'B' && !loading && (
+        <>
+          <UpgradeStickyBar tenant={tenant} sub={sub} user={user} profile={profile} />
+          <SmartUpgradeTrigger
+            trigger="first_meta"
+            active={firstMetaJustCreated}
+            tenant={tenant} sub={sub} user={user} profile={profile}
+          />
+        </>
+      )}
       {!(sub?.status === 'active' && new Date(sub.expires_at) > new Date()) && <ProBanner blockedCount={6}/>}
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
 
@@ -1236,6 +1255,16 @@ export default function AdminPage() {
                   size="sm"
                 />
               </motion.div>
+              {/* Trial chip (Variant B): countdown ao lado do nome */}
+              {billingVariant === 'B' && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, delay: 0.2, ease }}
+                >
+                  <TrialChip tenant={tenant} sub={sub} user={user} profile={profile} />
+                </motion.div>
+              )}
             </div>
             <p style={{ fontSize:14, color:'var(--t2)', margin:'0 0 8px', fontWeight:500 }}>
               Central de operacoes
@@ -1338,6 +1367,8 @@ export default function AdminPage() {
                 }).select().single()
                 setMySaving(false)
                 if(err){return}
+                // Marca primeira meta real → dispara SmartUpgradeTrigger (variant B)
+                if (myMetas.length === 0) setFirstMetaJustCreated(true)
                 setMyTitulo('');setMyPlat('');setMyRede('');setMyContas('10');setMyShowForm(false)
                 router.push(`/meta/${data.id}`)
               }

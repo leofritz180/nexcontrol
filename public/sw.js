@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v36 (Faturamento: lucro_final agora respeita filtro de data)
+// NexControl Service Worker — Push Notifications v37 (Variant B billing: sticky bar + trial chip + smart trigger)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

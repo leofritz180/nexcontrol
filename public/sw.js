@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v40 (Variant B aprovada e promovida pra producao default)
+// NexControl Service Worker — Push Notifications v41 (Onboarding ativo + win-back cron daily)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

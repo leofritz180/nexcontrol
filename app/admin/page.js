@@ -26,6 +26,7 @@ import UpgradeStickyBar from '../../components/billing/UpgradeStickyBar'
 import TrialChip from '../../components/billing/TrialChip'
 import SmartUpgradeTrigger from '../../components/billing/SmartUpgradeTrigger'
 import PreviewIndicator from '../../components/billing/PreviewIndicator'
+import OnboardingChecklist from '../../components/OnboardingChecklist'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -1224,6 +1225,22 @@ export default function AdminPage() {
             tenant={tenant} sub={sub} user={user} profile={profile}
           />
         </>
+      )}
+
+      {/* Onboarding ativo: checklist visual flutuante (some sozinho ao completar/dispensar) */}
+      {!loading && profile?.role === 'admin' && (
+        <OnboardingChecklist
+          userId={user?.id}
+          data={{
+            profile,
+            metas: myMetas,
+            remessas: myRem,
+            invites,
+            operators,
+            pixKeys: [], // pixKeys não está carregado no admin; usa fallback profile.pix_key
+          }}
+          onActionTab={(t) => setTab(t)}
+        />
       )}
       {!(sub?.status === 'active' && new Date(sub.expires_at) > new Date()) && <ProBanner blockedCount={6}/>}
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>

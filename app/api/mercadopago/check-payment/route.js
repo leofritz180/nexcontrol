@@ -79,9 +79,23 @@ async function activatePro(sb, record, paymentId) {
     return
   }
 
-  const expires = new Date()
-  expires.setDate(expires.getDate() + 30)
-  const now = new Date().toISOString()
+  const nowDate = new Date()
+  const now = nowDate.toISOString()
+
+  // ALINHAMENTO DE CICLO (mesma logica do webhook):
+  // Upgrade → usa expires_at MAIS ANTIGO de sub ativa valida
+  // Novo ciclo → now + 30 dias
+  const { data: activeSubsCheck } = await sb.from('subscriptions')
+    .select('expires_at')
+    .eq('tenant_id', record.tenant_id)
+    .eq('status', 'active')
+  const validExpiriesCheck = (activeSubsCheck || [])
+    .map(s => s.expires_at ? new Date(s.expires_at) : null)
+    .filter(d => d && d > nowDate)
+    .sort((a, b) => a - b)
+  const expires = validExpiriesCheck.length > 0
+    ? validExpiriesCheck[0]
+    : new Date(nowDate.getTime() + 30 * 86400000)
 
   // Resolve operator_count: prioriza valor desejado salvo na compra.
   // Fallback (pagamentos antigos sem o campo): usa MAX entre count atual+1

@@ -70,13 +70,34 @@ export async function POST(req) {
       if (existingSub) {
         console.log('[MP webhook] PRO ja ativo pra payment', payment.id)
       } else {
-        const expires = new Date()
-        expires.setDate(expires.getDate() + 30)
-        const now = new Date().toISOString()
+        const nowDate = new Date()
+        const now = nowDate.toISOString()
+
+        // ALINHAMENTO DE CICLO: se ja existe sub ativa valida (expires_at > now),
+        // este pagamento eh UPGRADE → expires_at = expires_at MAIS ANTIGO existente,
+        // mantendo o ciclo mensal alinhado com a data da assinatura original.
+        // Se nao tem nenhuma sub valida → novo ciclo: expires_at = now + 30 dias.
+        const { data: activeSubs } = await sb.from('subscriptions')
+          .select('expires_at')
+          .eq('tenant_id', record.tenant_id)
+          .eq('status', 'active')
+
+        const validExpiries = (activeSubs || [])
+          .map(s => s.expires_at ? new Date(s.expires_at) : null)
+          .filter(d => d && d > nowDate)
+          .sort((a, b) => a - b) // crescente: pegamos o MIN (data mais antiga = ciclo original)
+
+        let expires
+        if (validExpiries.length > 0) {
+          // Upgrade: alinha ao ciclo original
+          expires = validExpiries[0]
+          console.log('[MP webhook] alinhando expires_at ao ciclo do tenant:', expires.toISOString())
+        } else {
+          // Novo ciclo: now + 30 dias
+          expires = new Date(nowDate.getTime() + 30 * 86400000)
+        }
 
         // Resolve operator_count: prioriza valor desejado salvo na compra.
-        // Fallback (pagamentos antigos sem o campo): usa MAX entre count atual+1
-        // e operator_count da sub anterior — nunca rebaixa o limite ja contratado.
         let resolvedOpCount = Number(record.operator_count)
         if (!Number.isFinite(resolvedOpCount) || resolvedOpCount <= 0) {
           const { count: currentOps } = await sb.from('profiles')
@@ -88,7 +109,6 @@ export async function POST(req) {
             .eq('tenant_id', record.tenant_id)
             .order('created_at', { ascending: false }).limit(1).maybeSingle()
           const prevLimit = Number(prevSub?.operator_count || 0)
-          // Sem info: assume ao menos +1 sobre o atual (estavam pagando upgrade)
           resolvedOpCount = Math.max(prevLimit, (currentOps || 0) + 1)
         }
 

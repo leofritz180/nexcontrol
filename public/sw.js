@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v45 (Fix SubscriptionGate vencidos + cron diario de renewal)
+// NexControl Service Worker — Push Notifications v46 (Fix ciclo de cobranca: upgrades alinham ao expires_at original)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

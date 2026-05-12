@@ -5,6 +5,10 @@
       "schedule": "0 12 * * *"
     },
     {
+      "path": "/api/cron/renewal?secret=${CRON_SECRET}",
+      "schedule": "30 12 * * *"
+    },
+    {
       "path": "/api/cron/winback?secret=${CRON_SECRET}",
       "schedule": "0 14 * * *"
     }

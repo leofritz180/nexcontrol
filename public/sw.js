@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v44 (API presence faz UPDATE direto em profiles.last_seen_at — bypass trigger)
+// NexControl Service Worker — Push Notifications v45 (Fix SubscriptionGate vencidos + cron diario de renewal)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

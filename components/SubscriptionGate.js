@@ -39,28 +39,24 @@ export default function SubscriptionGate({ children }) {
       if (!t) { finish('ok'); return }
 
       const now = new Date()
-      const trialEnd = new Date(t.trial_end)
+      const trialEnd = t.trial_end ? new Date(t.trial_end) : null
 
-      // First check: active subscription in subscriptions table (source of truth)
-      const { data: sub } = await supabase.from('subscriptions')
+      // Source of truth: TODAS as subs ativas — qualquer uma com expires_at futuro libera.
+      // Antes pegava so a mais recente, podia perder caso de upgrade que cria nova sub.
+      const { data: subs } = await supabase.from('subscriptions')
         .select('status,expires_at').eq('tenant_id', p.tenant_id).eq('status', 'active')
-        .order('created_at', { ascending: false }).limit(1).maybeSingle()
 
-      if (sub && new Date(sub.expires_at) > now) {
+      const hasValidSub = (subs || []).some(s => !s.expires_at || new Date(s.expires_at) > now)
+      if (hasValidSub) { finish('ok'); return }
+
+      // Trial: libera se ainda dentro do prazo
+      if (t.subscription_status === 'trial' && trialEnd && now < trialEnd) {
         finish('ok'); return
       }
 
-      // Second check: tenant-level status
-      if (t.subscription_status === 'active') {
-        // tenant says active but no valid subscription found — allow but may be stale
-        finish('ok'); return
-      }
-
-      // Third check: trial
-      if (t.subscription_status === 'trial' && now < trialEnd) {
-        finish('ok'); return
-      }
-
+      // SEM sub valida e SEM trial vivo → bloqueia.
+      // (Removido o passe livre por tenant.subscription_status='active' — esse flag
+      //  fica eternamente ativo apos primeiro pagamento mesmo se sub vence.)
       finish('blocked')
     } catch {
       finish('ok')

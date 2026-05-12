@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v47 (BAU por remessa em metas apenas_bau)
+// NexControl Service Worker — Push Notifications v48 (BAU pro operador: RLS tenants + herdar operation_model)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

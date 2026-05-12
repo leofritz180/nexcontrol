@@ -572,6 +572,7 @@ export default function OperatorPage() {
   const [redeOpen, setRedeOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [tenantOpModel, setTenantOpModel] = useState('salario_bau')
   const [metaFilter, setMetaFilter] = useState('todas')
   const [showForm, setShowForm] = useState(false)
   const redeRef = useRef(null)
@@ -601,6 +602,11 @@ export default function OperatorPage() {
     setUser(u)
     const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
     setProfile(p)
+    // Busca operation_model do tenant pra novas metas herdarem (modo apenas_bau)
+    if (p?.tenant_id) {
+      const { data: t } = await supabase.from('tenants').select('operation_model').eq('id', p.tenant_id).maybeSingle()
+      if (t?.operation_model) setTenantOpModel(t.operation_model)
+    }
     const { data: m } = await supabase.from('metas').select('*').eq('operator_id', u.id).order('created_at', { ascending: false })
     const activeMetas = (m || []).filter(x => !x.deleted_at)
     setMetas(activeMetas)
@@ -630,6 +636,7 @@ export default function OperatorPage() {
       quantidade_contas: Number(contas || 10),
       status: 'ativa',
       tenant_id: profile?.tenant_id,
+      operation_model: tenantOpModel,
     }).select().single()
     setSaving(false)
     if (err) { setError(err.message); return }

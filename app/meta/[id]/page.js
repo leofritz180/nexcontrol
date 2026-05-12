@@ -10,14 +10,17 @@ import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engi
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 
-function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, onClose, onSaved }) {
+function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, bauAcumRemessas = 0, tenantOpModel = 'salario_bau', onClose, onSaved }) {
+  // Em metas apenas_bau o BAU ja foi registrado por remessa (entrou em lucro/prejuizo).
+  // Hide o campo BAU no fechamento pra nao contar duas vezes.
+  const isApenasBau = (meta?.operation_model||tenantOpModel||'salario_bau') === 'apenas_bau'
   const [salPlat, setSalPlat] = useState(String(meta.salario_plataforma||''))
-  const [bau, setBau] = useState(String(meta.bau||''))
+  const [bau, setBau] = useState(isApenasBau ? '0' : String(meta.bau||''))
   const [gastos, setGastos] = useState(String(meta.gastos_operacionais||''))
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
 
-  const salP = Number(salPlat||0), bauV = Number(bau||0), gastosV = Number(gastos||0)
+  const salP = Number(salPlat||0), bauV = isApenasBau ? 0 : Number(bau||0), gastosV = Number(gastos||0)
   const lucroFinal = lucroAcum + salP + bauV
   const prejFinal = prejAcum + gastosV
   const resultado = lucroFinal - prejFinal
@@ -84,10 +87,17 @@ function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, onClose, onSaved 
               <label className="t-label" style={{display:'block',marginBottom:6}}>Salario da plataforma (R$) <span style={{color:'var(--profit)',fontWeight:400}}>+ lucro</span></label>
               <input className="input" type="number" step="0.01" min="0" value={salPlat} onChange={e=>setSalPlat(e.target.value)} placeholder="0,00"/>
             </div>
-            <div>
-              <label className="t-label" style={{display:'block',marginBottom:6}}>BAU (R$) <span style={{color:'var(--profit)',fontWeight:400}}>+ lucro</span></label>
-              <input className="input" type="number" step="0.01" min="0" value={bau} onChange={e=>setBau(e.target.value)} placeholder="0,00"/>
-            </div>
+            {isApenasBau ? (
+              <div style={{padding:'10px 12px',borderRadius:10,background:'rgba(209,250,229,0.06)',border:'1px solid rgba(209,250,229,0.18)'}}>
+                <p className="t-label" style={{display:'block',marginBottom:4,color:'#D1FAE5'}}>BAU acumulado nas remessas</p>
+                <p className="t-num" style={{fontSize:14,fontWeight:700,color:'var(--profit)',margin:0}}>R$ {fmt(bauAcumRemessas)} <span style={{fontSize:10,fontWeight:500,color:'var(--t4)',marginLeft:6}}>ja contabilizado em lucro/prejuizo por remessa</span></p>
+              </div>
+            ) : (
+              <div>
+                <label className="t-label" style={{display:'block',marginBottom:6}}>BAU (R$) <span style={{color:'var(--profit)',fontWeight:400}}>+ lucro</span></label>
+                <input className="input" type="number" step="0.01" min="0" value={bau} onChange={e=>setBau(e.target.value)} placeholder="0,00"/>
+              </div>
+            )}
             <div>
               <label className="t-label" style={{display:'block',marginBottom:6}}>Gastos operacionais (R$) <span style={{color:'var(--loss)',fontWeight:400}}>− prejuizo</span></label>
               <input className="input" type="number" step="0.01" min="0" value={gastos} onChange={e=>setGastos(e.target.value)} placeholder="0,00"/>
@@ -282,6 +292,7 @@ export default function MetaPage() {
   const [tituloR, setTituloR] = useState('')
   const [saldoIni,setSaldoIni]= useState('1500')
   const [dep,     setDep]     = useState('')
+  const [bauR,    setBauR]    = useState('')
   const [showAdminClose, setShowAdminClose] = useState(false)
   const [showFinalePopup, setShowFinalePopup] = useState(false)
   const [saq,     setSaq]     = useState('')
@@ -294,6 +305,7 @@ export default function MetaPage() {
   const [obsRemessa, setObsRemessa] = useState('')
   const [feedback, setFeedback] = useState(null)
   const [tenantSlots, setTenantSlots] = useState([])
+  const [tenantOpModel, setTenantOpModel] = useState('salario_bau')
   const [selectedSlot, setSelectedSlot] = useState('')
   const [showEdit, setShowEdit] = useState(false)
 
@@ -318,6 +330,7 @@ export default function MetaPage() {
     setMeta(m||null); setRemessas(r||[])
     const slots = tenantData?.favorite_slots
     setTenantSlots(Array.isArray(slots) ? slots : [])
+    setTenantOpModel(tenantData?.operation_model || 'salario_bau')
     setLoading(false)
     // Insight: meta parada
     if (m && r && u) evaluateOnLoad({ remessas: r, meta: m, userId: u.id })
@@ -490,13 +503,21 @@ export default function MetaPage() {
     if (tipo !== 'redeposito' && (!contasRemessa || Number(contasRemessa) <= 0)) { setError('Informe o numero de contas nesta remessa.'); return }
     if (meta?.status==='finalizada'||meta?.status_fechamento==='fechada') { setError('Meta finalizada. Nao e possivel registrar.'); return }
     setSalvando(true); setError('')
-    const d=Number(parseVal(dep).toFixed(2)),s=Number(parseVal(saq).toFixed(2)),si=Number(parseVal(saldoIni).toFixed(2)),diff=Number((s-d).toFixed(2))
+    const d=Number(parseVal(dep).toFixed(2)),s=Number(parseVal(saq).toFixed(2)),si=Number(parseVal(saldoIni).toFixed(2))
+    // BAU da remessa (so usado em metas apenas_bau). Soma ao resultado pra entrar como lucro em tempo real.
+    const isApenasBau = (meta?.operation_model || tenantOpModel || 'salario_bau') === 'apenas_bau'
+    const bauVal = isApenasBau ? Number(parseVal(bauR || '0').toFixed(2)) : 0
+    const diffBase = s - d
+    const resultadoTotal = Number((diffBase + bauVal).toFixed(2))
+    const lucroVal = resultadoTotal > 0 ? resultadoTotal : 0
+    const prejVal  = resultadoTotal < 0 ? Math.abs(resultadoTotal) : 0
+    const diff = resultadoTotal  // pra showFeedback continuar funcionando igual
     const { error:err } = await supabase.from('remessas').insert({
       meta_id:Number(id),
       titulo:tituloR.trim()||`${tipo==='redeposito'?'Redepósito':tipo==='ajuste'?'Ajuste':'Remessa'} ${remessas.length+1}`,
-      tipo, saldo_inicial:si, deposito:d, saque:s,
-      lucro:diff>0?diff:0, prejuizo:diff<0?Math.abs(diff):0, resultado:diff,
-      resultado_por_conta: Number(contasRemessa||0) > 0 ? Number((diff / Number(contasRemessa)).toFixed(2)) : 0,
+      tipo, saldo_inicial:si, deposito:d, saque:s, bau:bauVal,
+      lucro:lucroVal, prejuizo:prejVal, resultado:resultadoTotal,
+      resultado_por_conta: Number(contasRemessa||0) > 0 ? Number((resultadoTotal / Number(contasRemessa)).toFixed(2)) : 0,
       tenant_id:profile?.tenant_id,
       status_problema:statusProb,
       contas_remessa: tipo === 'redeposito' ? 0 : Number(contasRemessa||0),
@@ -506,7 +527,7 @@ export default function MetaPage() {
     if (err) { setSalvando(false); setError(err.message); return }
     // Limpar form e desbloquear IMEDIATAMENTE
     const formContas = Number(contasRemessa||0)
-    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot(''); setObsRemessa('')
+    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setBauR(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot(''); setObsRemessa('')
     const formSlot = selectedSlot || ''
     setSalvando(false)
     showFeedback(diff, statusProb, formContas, formSlot)
@@ -514,7 +535,7 @@ export default function MetaPage() {
     const optimistic = {
       id: `temp-${Date.now()}`, meta_id: Number(id),
       titulo: tituloR.trim() || `${tipo==='redeposito'?'Redepósito':'Remessa'} ${remessas.length+1}`,
-      tipo, deposito: d, saque: s, lucro: diff>0?diff:0, prejuizo: diff<0?Math.abs(diff):0, resultado: diff,
+      tipo, deposito: d, saque: s, bau: bauVal, lucro: lucroVal, prejuizo: prejVal, resultado: resultadoTotal,
       contas_remessa: tipo === 'redeposito' ? 0 : formContas,
       slot_name: selectedSlot || null, status_problema: statusProb,
       observacoes: obsRemessa.trim() || null,
@@ -584,15 +605,35 @@ export default function MetaPage() {
     fetchData()
   }
 
+  const isApenasBauMeta = useMemo(() => (meta?.operation_model || tenantOpModel || 'salario_bau') === 'apenas_bau', [meta?.operation_model, tenantOpModel])
+
   const totais = useMemo(()=>{
-    let lucro=0,prej=0,d=0,s=0
-    remessas.forEach(r=>{lucro+=Number(r.lucro||0);prej+=Number(r.prejuizo||0);d+=Number(r.deposito||0);s+=Number(r.saque||0)})
-    return {lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),d:Number(d.toFixed(2)),s:Number(s.toFixed(2)),liq:Number((lucro-prej).toFixed(2))}
+    let lucro=0,prej=0,d=0,s=0,bauTotal=0
+    remessas.forEach(r=>{
+      lucro+=Number(r.lucro||0)
+      prej+=Number(r.prejuizo||0)
+      d+=Number(r.deposito||0)
+      s+=Number(r.saque||0)
+      bauTotal+=Number(r.bau||0)
+    })
+    return {
+      lucro:Number(lucro.toFixed(2)),
+      prej:Number(prej.toFixed(2)),
+      d:Number(d.toFixed(2)),
+      s:Number(s.toFixed(2)),
+      bau:Number(bauTotal.toFixed(2)),
+      liq:Number((lucro-prej).toFixed(2)),
+    }
   },[remessas])
 
   // Parse value: handle Brazilian format (1.055 = 1055, 1.055,00 = 1055)
   const parseVal = v => { const s = String(v||'0'); if (s.includes(',')) return Number(s.replace(/\./g,'').replace(',','.')); return Number(s) }
-  const prev = useMemo(()=>{ const diff=parseVal(saq)-parseVal(dep); return{diff,pos:diff>=0} },[dep,saq])
+  const prev = useMemo(()=>{
+    const base = parseVal(saq)-parseVal(dep)
+    const bauAdd = (meta?.operation_model||tenantOpModel||'salario_bau')==='apenas_bau' ? parseVal(bauR||'0') : 0
+    const diff = base + bauAdd
+    return { diff, pos: diff>=0, base, bauAdd }
+  },[dep,saq,bauR,meta?.operation_model,tenantOpModel])
 
   const pctAcerto = remessas.length>0?Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100):0
 
@@ -841,9 +882,12 @@ export default function MetaPage() {
         })()}
 
         {/* KPIs */}
-        <div className="g-5" style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:14, marginBottom:28 }}>
+        <div className="g-5" style={{ display:'grid', gridTemplateColumns:`repeat(${isApenasBauMeta ? 6 : 5},1fr)`, gap:14, marginBottom:28 }}>
           <KPI label="Deposito total"    value={`R$ ${fmt(totais.d)}`}   color="var(--t1)" accent="rgba(255,255,255,0.78)"/>
           <KPI label="Saque total"       value={`R$ ${fmt(totais.s)}`}   color="var(--t1)" accent="rgba(255,255,255,0.78)"/>
+          {isApenasBauMeta && (
+            <KPI label="BAU acumulado"   value={`R$ ${fmt(totais.bau)}`}  color="var(--profit)" accent="#D1FAE5"/>
+          )}
           <KPI label="Lucro acumulado"   value={`R$ ${fmt(totais.lucro)}`} color="var(--profit)" accent="#D1FAE5"/>
           <KPI label="Prejuizo acum."    value={`R$ ${fmt(totais.prej)}`}  color="var(--loss)" accent="#EF4444"/>
           <motion.div
@@ -1273,7 +1317,7 @@ export default function MetaPage() {
 
               {/* BLOCO 2 — Valores + Resultado */}
               <div style={{ padding:'12px 20px', borderBottom:'1px solid var(--b1)' }}>
-                <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1.3fr', gap:8, alignItems:'end' }}>
+                <div className="g-form" style={{ display:'grid', gridTemplateColumns: isApenasBauMeta ? '1fr 1fr 1fr 1.3fr' : '1fr 1fr 1.3fr', gap:8, alignItems:'end' }}>
                   <div>
                     <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>DEPOSITO *</label>
                     <input className="input" type="text" inputMode="decimal" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="Ex: 1055" style={{ fontSize:13, fontWeight:600, padding:'8px 10px' }}/>
@@ -1282,7 +1326,13 @@ export default function MetaPage() {
                     <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>SAQUE *</label>
                     <input className="input" type="text" inputMode="decimal" value={saq} onChange={e=>setSaq(e.target.value)} required placeholder="Ex: 941" style={{ fontSize:13, fontWeight:600, padding:'8px 10px' }}/>
                   </div>
-                  {(dep||saq) ? (
+                  {isApenasBauMeta && (
+                    <div>
+                      <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8, color:'#D1FAE5' }}>BAU</label>
+                      <input className="input" type="text" inputMode="decimal" value={bauR} onChange={e=>setBauR(e.target.value)} placeholder="Ex: 50" style={{ fontSize:13, fontWeight:600, padding:'8px 10px', borderColor:'rgba(209,250,229,0.25)' }}/>
+                    </div>
+                  )}
+                  {(dep||saq||(isApenasBauMeta && bauR)) ? (
                     <div style={{
                       padding:'8px 14px', borderRadius:8,
                       background:prev.pos?'rgba(209,250,229,0.06)':'rgba(239,68,68,0.06)',
@@ -1291,6 +1341,9 @@ export default function MetaPage() {
                     }}>
                       <div>
                         <p style={{ fontSize:8, fontWeight:700, color:prev.pos?'#D1FAE5':'#EF4444', margin:0, textTransform:'uppercase' }}>{prev.pos?'Lucro':'Prejuizo'}</p>
+                        {isApenasBauMeta && prev.bauAdd > 0 && (
+                          <p style={{ fontSize:8, color:'#D1FAE5', margin:'1px 0 0' }}>inclui BAU +R$ {fmt(prev.bauAdd)}</p>
+                        )}
                         {Number(contasRemessa||0) > 0 && <p style={{ fontSize:8, color:'var(--t4)', margin:'1px 0 0' }}>R$ {fmt(Math.abs(prev.diff)/Number(contasRemessa))}/conta</p>}
                       </div>
                       <span style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:900, color:prev.pos?'#D1FAE5':'#EF4444' }}>
@@ -1472,11 +1525,12 @@ export default function MetaPage() {
                           </button>
                         </div>
                       </div>
-                      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8 }}>
+                      <div style={{ display:'grid', gridTemplateColumns:`repeat(${isApenasBauMeta ? 5 : 4},1fr)`, gap:8 }}>
                         {[
                           { l:'Saldo ini.',  v:r.saldo_inicial, c:'var(--t2)' },
                           { l:'Depósito',    v:r.deposito,      c:'var(--t2)' },
                           { l:'Saque',       v:r.saque,         c:'var(--t2)' },
+                          ...(isApenasBauMeta ? [{ l:'BAU', v:r.bau, c:'var(--profit)' }] : []),
                           { l:'Por conta',   v:r.resultado_por_conta, c:pos?'var(--profit)':'var(--loss)' },
                         ].map(({l,v,c})=>(
                           <div key={l} style={{ background:'var(--void)', border:'1px solid var(--b1)', borderRadius:8, padding:'8px 12px' }}>
@@ -1534,9 +1588,12 @@ export default function MetaPage() {
         const lucroAcum = remessas.reduce((a,r)=>a+Number(r.lucro||0),0)
         const prejAcum = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
         const liqAcum = lucroAcum - prejAcum
+        const bauAcumRemessas = remessas.reduce((a,r)=>a+Number(r.bau||0),0)
         return (
         <AdminCloseModal
           meta={meta} lucroAcum={lucroAcum} prejAcum={prejAcum} liqAcum={liqAcum}
+          bauAcumRemessas={bauAcumRemessas}
+          tenantOpModel={tenantOpModel}
           onClose={()=>setShowAdminClose(false)}
           onSaved={()=>{setShowAdminClose(false);fetchData()}}
         />

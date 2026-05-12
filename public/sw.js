@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v46 (Fix ciclo de cobranca: upgrades alinham ao expires_at original)
+// NexControl Service Worker — Push Notifications v47 (BAU por remessa em metas apenas_bau)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

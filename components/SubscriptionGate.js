@@ -5,22 +5,27 @@ import { supabase } from '../lib/supabase/client'
 
 const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '/', '/owner', '/slots', '/proxy', '/performance', '/aulas', '/demo']
 
+const fmtBR = v => Number(v||0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
 export default function SubscriptionGate({ children }) {
   const router = useRouter()
   const pathname = usePathname()
   const [status, setStatus] = useState('ok')
-  const cache = useRef({ checked: false, result: 'ok', ts: 0 })
+  // reason: 'trial' (nunca pagou) | 'expired' (PRO venceu)
+  const [reason, setReason] = useState('trial')
+  const [stats, setStats] = useState({ metas: 0, ops: 0, lucro: 0 })
+  const cache = useRef({ checked: false, result: 'ok', ts: 0, reason: 'trial', stats: { metas: 0, ops: 0, lucro: 0 } })
 
   useEffect(() => {
-    // Skip check for free paths
     if (FREE_PATHS.some(p => pathname === p || pathname?.startsWith(p + '/'))) {
       setStatus('ok')
       return
     }
-    // Use cached result if checked within last 30s
     const now = Date.now()
     if (cache.current.checked && (now - cache.current.ts) < 30000) {
       setStatus(cache.current.result)
+      setReason(cache.current.reason)
+      setStats(cache.current.stats)
       return
     }
     check()
@@ -41,63 +46,183 @@ export default function SubscriptionGate({ children }) {
       const now = new Date()
       const trialEnd = t.trial_end ? new Date(t.trial_end) : null
 
-      // Source of truth: TODAS as subs ativas — qualquer uma com expires_at futuro libera.
-      // Antes pegava so a mais recente, podia perder caso de upgrade que cria nova sub.
       const { data: subs } = await supabase.from('subscriptions')
         .select('status,expires_at').eq('tenant_id', p.tenant_id).eq('status', 'active')
 
       const hasValidSub = (subs || []).some(s => !s.expires_at || new Date(s.expires_at) > now)
       if (hasValidSub) { finish('ok'); return }
 
-      // Trial: libera se ainda dentro do prazo
       if (t.subscription_status === 'trial' && trialEnd && now < trialEnd) {
         finish('ok'); return
       }
 
-      // SEM sub valida e SEM trial vivo → bloqueia.
-      // (Removido o passe livre por tenant.subscription_status='active' — esse flag
-      //  fica eternamente ativo apos primeiro pagamento mesmo se sub vence.)
-      finish('blocked')
+      // === Bloqueado. Determina se era trial ou ja foi PRO ===
+      // Se existe sub paga (mesmo vencida), trata como mensalidade vencida.
+      const { data: paidSubs } = await supabase.from('subscriptions')
+        .select('id, total_amount, payment_method, expires_at')
+        .eq('tenant_id', p.tenant_id)
+        .gt('total_amount', 0)
+        .limit(1)
+
+      const wasPaying = (paidSubs || []).length > 0
+      const reasonNow = wasPaying ? 'expired' : 'trial'
+
+      // Stats pra exibir na tela (so faz sentido pra ex-PRO)
+      let statsNow = { metas: 0, ops: 0, lucro: 0 }
+      if (wasPaying) {
+        const [{ count: metasCount }, { count: opsCount }, { data: metasClose }] = await Promise.all([
+          supabase.from('metas').select('id', { count: 'exact', head: true }).eq('tenant_id', p.tenant_id).is('deleted_at', null),
+          supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('tenant_id', p.tenant_id).eq('role', 'operator'),
+          supabase.from('metas').select('lucro_final').eq('tenant_id', p.tenant_id).eq('status_fechamento', 'fechada').is('deleted_at', null),
+        ])
+        const totalLucro = (metasClose || []).reduce((a, m) => a + Number(m.lucro_final || 0), 0)
+        statsNow = { metas: metasCount || 0, ops: opsCount || 0, lucro: totalLucro }
+      }
+
+      finish('blocked', reasonNow, statsNow)
     } catch {
       finish('ok')
     }
   }
 
-  function finish(result) {
-    cache.current = { checked: true, result, ts: Date.now() }
+  function finish(result, reasonNow = 'trial', statsNow = { metas: 0, ops: 0, lucro: 0 }) {
+    cache.current = { checked: true, result, ts: Date.now(), reason: reasonNow, stats: statsNow }
     setStatus(result)
+    setReason(reasonNow)
+    setStats(statsNow)
   }
 
-  if (status === 'blocked') return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 9999,
-      background: 'rgba(4,8,16,0.95)', backdropFilter: 'blur(20px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
-    }}>
+  if (status === 'blocked') {
+    const isExpired = reason === 'expired'
+
+    return (
       <div style={{
-        maxWidth: 480, width: '100%', textAlign: 'center',
-        background: 'var(--surface)', border: '1px solid var(--loss-border)',
-        borderRadius: 24, padding: '48px 40px',
-        boxShadow: '0 0 80px rgba(240,61,107,0.08), 0 40px 80px rgba(0,0,0,0.5)',
-        animation: 'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.96)', backdropFilter: 'blur(24px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
       }}>
-        <div style={{ width: 56, height: 56, borderRadius: 16, background: 'var(--loss-dim)', border: '1px solid var(--loss-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        {/* HUD grid sutil */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+        }}/>
+        {/* glow sutil */}
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+          width: 520, height: 520, borderRadius: '50%', pointerEvents: 'none',
+          background: isExpired
+            ? 'radial-gradient(circle, rgba(16,185,129,0.06), transparent 65%)'
+            : 'radial-gradient(circle, rgba(229,57,53,0.08), transparent 65%)',
+          filter: 'blur(40px)',
+        }}/>
+
+        <div style={{
+          position: 'relative', maxWidth: 480, width: '100%', textAlign: 'center',
+          background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: 20, padding: '40px 36px',
+          boxShadow: isExpired
+            ? '0 0 0 1px rgba(16,185,129,0.04), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(16,185,129,0.05)'
+            : '0 0 0 1px rgba(229,57,53,0.04), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(229,57,53,0.06)',
+          animation: 'scale-in 0.35s cubic-bezier(0.33,1,0.68,1) both',
+        }}>
+          {/* eyebrow mono */}
+          <div style={{
+            fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
+            fontSize: 9, fontWeight: 600, letterSpacing: '0.28em',
+            textTransform: 'uppercase',
+            color: isExpired ? '#10B981' : '#e53935',
+            marginBottom: 24,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+          }}>
+            <span style={{ width: 24, height: 1, background: isExpired ? '#10B981' : '#e53935' }}/>
+            {isExpired ? 'Assinatura · vencida' : 'Período de teste · expirado'}
+            <span style={{ width: 24, height: 1, background: isExpired ? '#10B981' : '#e53935' }}/>
+          </div>
+
+          {/* Title — Instrument Serif feel */}
+          <h2 style={{
+            fontSize: 26, fontWeight: 700, color: '#fafafa',
+            letterSpacing: '-0.02em', marginBottom: 10, lineHeight: 1.15,
+          }}>
+            {isExpired ? 'Sua mensalidade venceu.' : 'Acesso bloqueado.'}
+          </h2>
+
+          <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.62)', marginBottom: 28, lineHeight: 1.55, fontWeight: 300 }}>
+            {isExpired
+              ? 'Renove em segundos via PIX e retome o controle de onde parou.'
+              : 'Seu período de teste chegou ao fim. Assine pra continuar operando.'}
+          </p>
+
+          {/* Stats — so aparece pra ex-PRO */}
+          {isExpired && (stats.metas > 0 || stats.ops > 0 || stats.lucro > 0) && (
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1,
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: 12, padding: 1, marginBottom: 24, overflow: 'hidden',
+            }}>
+              <div style={{ padding: '14px 8px', background: '#050505' }}>
+                <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Metas</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: '#fafafa', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{stats.metas}</div>
+              </div>
+              <div style={{ padding: '14px 8px', background: '#050505' }}>
+                <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Operadores</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: '#fafafa', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{stats.ops}</div>
+              </div>
+              <div style={{ padding: '14px 8px', background: '#050505' }}>
+                <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Lucro acum.</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: '#6ee7b7', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>R$ {fmtBR(stats.lucro)}</div>
+              </div>
+            </div>
+          )}
+
+          {isExpired && (
+            <p style={{
+              fontSize: 11, color: 'rgba(255,255,255,0.42)',
+              marginBottom: 22, fontStyle: 'italic',
+              letterSpacing: '0.005em',
+            }}>
+              Tudo intacto. Seus dados continuam aqui — só esperando você voltar.
+            </p>
+          )}
+
+          <button
+            onClick={() => router.push('/billing')}
+            className="btn btn-profit btn-lg"
+            style={{
+              width: '100%', justifyContent: 'center', fontSize: 14.5, fontWeight: 800,
+              animation: 'cta-pulse 2.5s ease-in-out infinite',
+            }}
+          >
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+            {isExpired ? 'Renovar agora' : 'Desbloquear acesso'}
+          </button>
+
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.42)', marginTop: 14, letterSpacing: '0.01em' }}>
+            {isExpired
+              ? <>PIX instantâneo · a partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 39,90/mês</strong></>
+              : <>A partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 39,90/mês</strong></>}
+          </p>
+
+          <button
+            onClick={async () => { await supabase.auth.signOut(); router.push('/login') }}
+            style={{
+              display:'block', width:'100%', marginTop: 18, padding: 8,
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: 11, color: 'rgba(255,255,255,0.32)', textAlign: 'center',
+              letterSpacing: '0.02em',
+            }}
+          >
+            Sair da conta
+          </button>
         </div>
-        <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--t1)', marginBottom: 8 }}>Acesso bloqueado</h2>
-        <p style={{ fontSize: 14, color: 'var(--t2)', marginBottom: 6 }}>Seu periodo de teste expirou.</p>
-        <p style={{ fontSize: 13, color: 'var(--t3)', marginBottom: 28 }}>Assine o NexControl para continuar operando. Seus dados estao seguros.</p>
-        <button onClick={() => router.push('/billing')} className="btn btn-profit btn-lg" style={{ width: '100%', justifyContent: 'center', fontSize: 15, fontWeight: 800, animation: 'cta-pulse 2.5s ease-in-out infinite' }}>
-          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          Desbloquear acesso
-        </button>
-        <p style={{ fontSize: 12, color: 'var(--t3)', marginTop: 16 }}>A partir de <strong style={{ color: 'var(--brand-bright)' }}>R$ 39,90/mes</strong></p>
-        <button onClick={async () => { await supabase.auth.signOut(); router.push('/login') }} style={{ display:'block', width:'100%', marginTop: 16, padding: 10, background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--t4)', textAlign: 'center' }}>
-          Sair da conta
-        </button>
       </div>
-    </div>
-  )
+    )
+  }
 
   return children
 }

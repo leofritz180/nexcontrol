@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v48 (BAU pro operador: RLS tenants + herdar operation_model)
+// NexControl Service Worker — Push Notifications v49 (Gate de bloqueio: distingue trial vs PRO expirado + stats do tenant)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

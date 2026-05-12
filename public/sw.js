@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v43 (PresencePing usa user.id real quando autenticado — fix tempo real)
+// NexControl Service Worker — Push Notifications v44 (API presence faz UPDATE direto em profiles.last_seen_at — bypass trigger)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

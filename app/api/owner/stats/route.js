@@ -146,14 +146,21 @@ export async function POST(req) {
       const isTrial = tenant?.subscription_status === 'trial' && tenant?.trial_end && new Date(tenant.trial_end) > now
       const planStatus = hasSub ? 'PRO' : isTrial ? 'TRIAL' : 'FREE'
 
-      // Last activity: most recent meta or remessa created_at
+      // Last activity: profile.last_seen_at (atualizado pelo trigger via presence ping a cada 30s)
+      // Fallback: ultima meta/remessa created_at, ou profile.updated_at
       const metaDates = ms.map(m => m.created_at).filter(Boolean)
       const remDates = rems.map(r => r.created_at).filter(Boolean)
       const allDates = [...metaDates, ...remDates].sort((a, b) => new Date(b) - new Date(a))
-      const lastActivity = allDates.length > 0 ? allDates[0] : null
+      const lastDataActivity = allDates.length > 0 ? allDates[0] : null
 
-      // Last seen: profile updated_at or lastActivity
-      const lastSeen = a.updated_at || lastActivity
+      // Pega o MAIS RECENTE entre last_seen_at (real time) e ultima data/remessa
+      const candidates = [a.last_seen_at, lastDataActivity, a.updated_at].filter(Boolean)
+      const lastActivity = candidates.length > 0
+        ? candidates.sort((x, y) => new Date(y) - new Date(x))[0]
+        : null
+
+      // Last seen = mesma coisa pra retrocompat
+      const lastSeen = lastActivity
 
       // Lucro final
       const lucroFinal = fechadas.reduce((s, m) => s + Number(m.lucro_final || 0), 0)

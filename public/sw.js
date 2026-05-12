@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v41 (Onboarding ativo + win-back cron daily)
+// NexControl Service Worker — Push Notifications v42 (Owner usa last_seen_at em tempo real)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

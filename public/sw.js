@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v49 (Gate de bloqueio: distingue trial vs PRO expirado + stats do tenant)
+// NexControl Service Worker — Push Notifications v50 (Owner: ledger completo de pagamentos com search, filtros e sparkline 30d)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

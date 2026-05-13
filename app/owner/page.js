@@ -70,6 +70,11 @@ export default function OwnerPage() {
   const [hoveredBar, setHoveredBar] = useState(null)
   const [adminSearch, setAdminSearch] = useState('')
   const [selectedAdmin, setSelectedAdmin] = useState(null)
+  // Histórico de pagamentos: search + filtro de período
+  const [saleSearch, setSaleSearch] = useState('')
+  const [salePeriod, setSalePeriod] = useState('all') // all | today | 7d | 30d
+  const [salePage, setSalePage] = useState(1)
+  const SALES_PER_PAGE = 25
 
   const emailRef = useRef(null)
 
@@ -111,7 +116,7 @@ export default function OwnerPage() {
   )
   if (!data) return null
 
-  const { kpis, funnel, activity, adminStats, alerts, revenueByDay, recentSales = [], recentRefunds = [] } = data
+  const { kpis, funnel, activity, adminStats, alerts, revenueByDay, recentSales = [], recentRefunds = [], allSales = [], salesMeta = {} } = data
   const variation = kpis.revenueVariation || 0
   const variationUp = variation >= 0
 
@@ -590,6 +595,252 @@ export default function OwnerPage() {
             </div>
           )}
         </motion.div>
+
+        {/* ═══ HISTÓRICO COMPLETO DE PAGAMENTOS ═══ */}
+        {(() => {
+          const now = new Date()
+          const startOfToday = new Date(now); startOfToday.setHours(0,0,0,0)
+          const d7 = new Date(now.getTime() - 7 * 86400000)
+          const d30 = new Date(now.getTime() - 30 * 86400000)
+
+          const filtered = allSales.filter(s => {
+            if (salePeriod === 'today' && new Date(s.created_at) < startOfToday) return false
+            if (salePeriod === '7d' && new Date(s.created_at) < d7) return false
+            if (salePeriod === '30d' && new Date(s.created_at) < d30) return false
+            if (saleSearch.trim()) {
+              const q = saleSearch.trim().toLowerCase()
+              if (!s.name?.toLowerCase().includes(q) && !s.email?.toLowerCase().includes(q)) return false
+            }
+            return true
+          })
+
+          // Sparkline: receita por dia (30d)
+          const byDay = {}
+          allSales.forEach(s => {
+            const k = new Date(s.created_at).toISOString().slice(0,10)
+            byDay[k] = (byDay[k] || 0) + Number(s.amount || 0)
+          })
+          const last30 = []
+          for (let i = 29; i >= 0; i--) {
+            const d = new Date(now); d.setDate(d.getDate() - i)
+            const k = d.toISOString().slice(0,10)
+            last30.push(byDay[k] || 0)
+          }
+          const maxDay = Math.max(...last30, 1)
+          const filteredTotal = filtered.reduce((a, s) => a + Number(s.amount || 0), 0)
+          const totalPages = Math.max(1, Math.ceil(filtered.length / SALES_PER_PAGE))
+          const pageSafe = Math.min(salePage, totalPages)
+          const pageSlice = filtered.slice((pageSafe - 1) * SALES_PER_PAGE, pageSafe * SALES_PER_PAGE)
+
+          return (
+            <motion.div {...fadeUp(0, 0.34)} style={{ ...card, padding: 0, marginBottom: 28, overflow: 'hidden' }}>
+              {/* HEADER cinematográfico */}
+              <div style={{ padding: '22px 24px 18px', borderBottom: '1px solid rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden' }}>
+                <div style={{
+                  position: 'absolute', top: '-50%', right: '-10%',
+                  width: 280, height: 280, borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(209,250,229,0.05), transparent 70%)',
+                  pointerEvents: 'none', filter: 'blur(20px)',
+                }}/>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, position: 'relative' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 9, color: '#D1FAE5', letterSpacing: '0.28em', textTransform: 'uppercase', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ width: 24, height: 1, background: '#D1FAE5' }}/>
+                        Ledger · Histórico completo
+                      </span>
+                    </div>
+                    <h3 style={{ fontSize: 18, fontWeight: 700, color: '#F1F5F9', margin: 0, letterSpacing: '-0.015em' }}>Todos os pagamentos desde o lançamento</h3>
+                    <p style={{ fontSize: 11, color: '#64748B', margin: '4px 0 0', fontFamily: 'var(--mono)' }}>
+                      {salesMeta.total || 0} pagamentos · {salesMeta.uniqueCustomers || 0} clientes únicos
+                      {salesMeta.firstSaleAt && <> · desde {new Date(salesMeta.firstSaleAt).toLocaleDateString('pt-BR')}</>}
+                    </p>
+                  </div>
+
+                  {/* Sparkline + total */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 1.5, height: 36 }}>
+                      {last30.map((v, i) => {
+                        const h = Math.max(2, Math.round((v / maxDay) * 32))
+                        return (
+                          <div key={i} style={{
+                            width: 4, height: h, borderRadius: 1,
+                            background: v > 0 ? '#D1FAE5' : 'rgba(255,255,255,0.06)',
+                            opacity: v > 0 ? 0.85 : 1,
+                          }}/>
+                        )
+                      })}
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontFamily: 'var(--mono)', fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 4 }}>Total · 30d</div>
+                      <div style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: '#D1FAE5', letterSpacing: '-0.02em' }}>
+                        R$ {fmt(last30.reduce((a,v)=>a+v,0))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CONTROLES */}
+              <div style={{ padding: '12px 24px', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  value={saleSearch}
+                  onChange={e => { setSaleSearch(e.target.value); setSalePage(1) }}
+                  placeholder="Buscar nome ou e-mail..."
+                  style={{
+                    flex: 1, minWidth: 200,
+                    background: 'rgba(255,255,255,0.025)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    borderRadius: 7, padding: '7px 12px',
+                    fontSize: 12, color: '#F1F5F9',
+                    outline: 'none',
+                  }}
+                />
+                <div style={{ display: 'flex', gap: 4, background: 'rgba(255,255,255,0.02)', borderRadius: 7, padding: 3, border: '1px solid rgba(255,255,255,0.04)' }}>
+                  {[
+                    { k: 'today', l: 'Hoje' },
+                    { k: '7d',    l: '7d' },
+                    { k: '30d',   l: '30d' },
+                    { k: 'all',   l: 'Tudo' },
+                  ].map(o => (
+                    <button
+                      key={o.k}
+                      onClick={() => { setSalePeriod(o.k); setSalePage(1) }}
+                      style={{
+                        padding: '5px 11px', borderRadius: 5,
+                        border: 'none', cursor: 'pointer',
+                        fontSize: 10.5, fontWeight: 600,
+                        letterSpacing: '0.02em',
+                        background: salePeriod === o.k ? 'rgba(209,250,229,0.1)' : 'transparent',
+                        color: salePeriod === o.k ? '#D1FAE5' : '#64748B',
+                        transition: 'all 0.15s',
+                      }}>{o.l}</button>
+                  ))}
+                </div>
+                <div style={{
+                  fontFamily: 'var(--mono)', fontSize: 10,
+                  color: '#64748B', letterSpacing: '0.05em',
+                  padding: '6px 10px',
+                  borderLeft: '1px solid rgba(255,255,255,0.06)',
+                }}>
+                  {filtered.length} resultados · <span style={{ color: '#D1FAE5', fontWeight: 700 }}>R$ {fmt(filteredTotal)}</span>
+                </div>
+              </div>
+
+              {/* TABELA */}
+              {filtered.length === 0 ? (
+                <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                  <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>
+                    {saleSearch || salePeriod !== 'all' ? 'Nenhum resultado pros filtros aplicados.' : 'Nenhum pagamento registrado ainda.'}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div style={{ overflow: 'hidden' }}>
+                    {/* Cabeçalho */}
+                    <div style={{
+                      display: 'grid', gridTemplateColumns: '110px 1fr 1fr 80px 110px',
+                      padding: '10px 24px',
+                      background: 'rgba(255,255,255,0.015)',
+                      borderBottom: '1px solid rgba(255,255,255,0.04)',
+                      fontFamily: 'var(--mono)', fontSize: 9,
+                      color: '#64748B', letterSpacing: '0.18em',
+                      textTransform: 'uppercase', fontWeight: 600,
+                    }}>
+                      <span>Data</span>
+                      <span>Cliente</span>
+                      <span>E-mail</span>
+                      <span style={{ textAlign: 'center' }}>Gateway</span>
+                      <span style={{ textAlign: 'right' }}>Valor</span>
+                    </div>
+                    {/* Linhas */}
+                    {pageSlice.map((s, idx) => {
+                      const d = new Date(s.created_at)
+                      const dateStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
+                      const timeStr = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                      return (
+                        <div key={s.id} style={{
+                          display: 'grid', gridTemplateColumns: '110px 1fr 1fr 80px 110px',
+                          padding: '11px 24px',
+                          alignItems: 'center',
+                          borderBottom: '1px solid rgba(255,255,255,0.03)',
+                          background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
+                          transition: 'background 0.15s',
+                        }}>
+                          <span style={{ fontFamily: 'var(--mono)', fontSize: 10.5, color: '#94A3B8', letterSpacing: '0.02em' }}>
+                            <span style={{ color: '#CBD5E1', fontWeight: 600 }}>{dateStr}</span>
+                            <span style={{ color: '#475569', marginLeft: 6 }}>{timeStr}</span>
+                          </span>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: 8 }}>
+                            {s.name}
+                          </span>
+                          <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: 'var(--mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: 8 }}>
+                            {s.email}
+                          </span>
+                          <span style={{ textAlign: 'center' }}>
+                            <span style={{
+                              display: 'inline-block', padding: '2px 7px', borderRadius: 4,
+                              fontFamily: 'var(--mono)', fontSize: 8.5, fontWeight: 700,
+                              letterSpacing: '0.1em', textTransform: 'uppercase',
+                              background: s.gateway === 'mp' ? 'rgba(96,165,250,0.08)' : 'rgba(209,250,229,0.06)',
+                              color: s.gateway === 'mp' ? '#60A5FA' : '#D1FAE5',
+                              border: `1px solid ${s.gateway === 'mp' ? 'rgba(96,165,250,0.2)' : 'rgba(209,250,229,0.18)'}`,
+                            }}>
+                              {s.gateway === 'mp' ? 'MP' : 'Asaas'}
+                            </span>
+                          </span>
+                          <span style={{ textAlign: 'right', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#D1FAE5', letterSpacing: '-0.015em' }}>
+                            +R$ {fmt(s.amount)}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Paginação */}
+                  {totalPages > 1 && (
+                    <div style={{
+                      padding: '12px 24px',
+                      borderTop: '1px solid rgba(255,255,255,0.04)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    }}>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: '#64748B', letterSpacing: '0.05em' }}>
+                        Página <span style={{ color: '#F1F5F9', fontWeight: 700 }}>{pageSafe}</span> / {totalPages}
+                        <span style={{ marginLeft: 10, color: '#475569' }}>·</span>
+                        <span style={{ marginLeft: 10 }}>mostrando {pageSlice.length} de {filtered.length}</span>
+                      </span>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button
+                          onClick={() => setSalePage(Math.max(1, pageSafe - 1))}
+                          disabled={pageSafe === 1}
+                          style={{
+                            padding: '5px 11px', borderRadius: 6,
+                            border: '1px solid rgba(255,255,255,0.06)',
+                            background: 'rgba(255,255,255,0.025)',
+                            color: pageSafe === 1 ? '#475569' : '#CBD5E1',
+                            fontSize: 11, cursor: pageSafe === 1 ? 'not-allowed' : 'pointer',
+                            fontWeight: 600,
+                          }}>‹ anterior</button>
+                        <button
+                          onClick={() => setSalePage(Math.min(totalPages, pageSafe + 1))}
+                          disabled={pageSafe === totalPages}
+                          style={{
+                            padding: '5px 11px', borderRadius: 6,
+                            border: '1px solid rgba(255,255,255,0.06)',
+                            background: 'rgba(255,255,255,0.025)',
+                            color: pageSafe === totalPages ? '#475569' : '#CBD5E1',
+                            fontSize: 11, cursor: pageSafe === totalPages ? 'not-allowed' : 'pointer',
+                            fontWeight: 600,
+                          }}>próximo ›</button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </motion.div>
+          )
+        })()}
 
         {/* ═══ REEMBOLSOS & CHARGEBACKS ═══ */}
         {(recentRefunds.length > 0 || (kpis.totalRefunded || 0) > 0) && (

@@ -248,13 +248,40 @@ export async function POST(req) {
 
     // Recent sales (last 10 paid) — paidPayments already ordered desc by created_at
     const tenantNameMap = Object.fromEntries((tenants || []).map(t => [t.id, t.name]))
+    // Mapa tenant_id → admin profile (nome, email) pra resolver pagamentos
+    const adminByTenant = {}
+    for (const a of admins) {
+      if (!adminByTenant[a.tenant_id]) adminByTenant[a.tenant_id] = a
+    }
+    const resolveName = p => {
+      const a = adminByTenant[p.tenant_id]
+      return a?.nome || a?.email?.split('@')[0] || tenantNameMap[p.tenant_id] || 'Cliente'
+    }
+    const resolveEmail = p => adminByTenant[p.tenant_id]?.email || '—'
+
     const recentSales = paidPayments.slice(0, 10).map(p => ({
       id: p.id,
       tenant_id: p.tenant_id,
-      tenant_name: tenantNameMap[p.tenant_id] || 'Cliente',
+      tenant_name: resolveName(p),
       amount: Number(p.amount || 0),
       created_at: p.created_at,
     }))
+
+    // HISTORICO COMPLETO — todos pagamentos aprovados desde o lancamento
+    const allSales = paidPayments.map(p => ({
+      id: p.id,
+      tenant_id: p.tenant_id,
+      name: resolveName(p),
+      email: resolveEmail(p),
+      amount: Number(p.amount || 0),
+      gateway: p._gateway, // 'asaas' | 'mp'
+      created_at: p.created_at,
+    }))
+
+    // Agregados extras pro card de histórico
+    const firstSaleAt = allSales.length > 0 ? allSales[allSales.length - 1].created_at : null
+    const lastSaleAt = allSales.length > 0 ? allSales[0].created_at : null
+    const uniqueCustomers = new Set(allSales.map(s => s.tenant_id)).size
 
     // Recent refunds (last 10) — ordenar por updated_at (quando o estorno ocorreu)
     const refundsSorted = [...refundPayments].sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at))
@@ -293,6 +320,8 @@ export async function POST(req) {
       revenueByDay,
       recentSales,
       recentRefunds,
+      allSales,
+      salesMeta: { firstSaleAt, lastSaleAt, uniqueCustomers, total: allSales.length },
     })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })

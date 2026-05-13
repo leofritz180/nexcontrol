@@ -721,6 +721,134 @@ export default function OperatorPage() {
     return 'ativa'
   }
 
+  /* ═══════ Tela do operador REMOVIDO da equipe ═══════ */
+  // Disparada quando admin removeu o operador: tenant_id=null e removed_from_tenant_id setado
+  if (!loading && profile && !profile.tenant_id && profile.removed_from_tenant_id) {
+    return (
+      <main style={{
+        minHeight: '100vh', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 24, position: 'relative', overflow: 'hidden',
+      }}>
+        {/* HUD grid sutil */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+        }}/>
+        {/* glow */}
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+          width: 560, height: 560, borderRadius: '50%', pointerEvents: 'none',
+          background: 'radial-gradient(circle, rgba(229,57,53,0.07), transparent 65%)',
+          filter: 'blur(40px)',
+        }}/>
+
+        <div style={{
+          position: 'relative', maxWidth: 500, width: '100%', textAlign: 'center',
+          background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: 20, padding: '44px 38px',
+          boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(229,57,53,0.06), 0 0 0 1px rgba(229,57,53,0.04)',
+        }}>
+          {/* Eyebrow */}
+          <div style={{
+            fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
+            fontSize: 9, fontWeight: 600, letterSpacing: '0.28em',
+            textTransform: 'uppercase', color: '#e53935', marginBottom: 24,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+          }}>
+            <span style={{ width: 24, height: 1, background: '#e53935' }}/>
+            Acesso · Desvinculado
+            <span style={{ width: 24, height: 1, background: '#e53935' }}/>
+          </div>
+
+          {/* Icon */}
+          <div style={{
+            width: 56, height: 56, borderRadius: 14,
+            background: 'rgba(229,57,53,0.06)',
+            border: '1px solid rgba(229,57,53,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 22px', color: '#e53935',
+          }}>
+            <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="18" y1="8" x2="23" y2="13"/>
+              <line x1="23" y1="8" x2="18" y2="13"/>
+            </svg>
+          </div>
+
+          {/* Title */}
+          <h2 style={{
+            fontSize: 26, fontWeight: 700, color: '#fafafa',
+            letterSpacing: '-0.02em', marginBottom: 10, lineHeight: 1.15,
+          }}>
+            Você não faz parte de<br/>nenhuma equipe.
+          </h2>
+
+          <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.62)', marginBottom: 14, lineHeight: 1.55, fontWeight: 300 }}>
+            O admin do seu time encerrou seu acesso a esta conta em{' '}
+            <strong style={{ color: 'rgba(255,255,255,0.85)' }}>
+              {profile.removed_from_tenant_at
+                ? new Date(profile.removed_from_tenant_at).toLocaleDateString('pt-BR')
+                : '—'}
+            </strong>.
+          </p>
+
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.42)', marginBottom: 28, lineHeight: 1.55, fontStyle: 'italic' }}>
+            Seu histórico operacional fica preservado com o admin que removeu — nada foi apagado.
+          </p>
+
+          {/* CTAs */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
+            <button
+              onClick={() => router.push('/signup')}
+              className="btn btn-profit btn-lg"
+              style={{
+                width: '100%', justifyContent: 'center', fontSize: 14.5, fontWeight: 800,
+              }}
+            >
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              Continuar operando — criar minha conta
+            </button>
+
+            <button
+              onClick={() => router.push('/invite')}
+              style={{
+                width: '100%', padding: '11px', borderRadius: 10,
+                background: 'rgba(255,255,255,0.025)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: 'rgba(255,255,255,0.72)',
+                fontSize: 12.5, fontWeight: 600, cursor: 'pointer',
+              }}
+            >
+              Recebi um novo convite
+            </button>
+          </div>
+
+          {/* Helper text */}
+          <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.35)', marginBottom: 16, lineHeight: 1.55, fontFamily: 'var(--mono, monospace)', letterSpacing: '0.02em' }}>
+            Você pode virar admin do seu próprio tenant — começa com 7 dias de trial grátis.
+          </p>
+
+          <button
+            onClick={async () => { await supabase.auth.signOut(); router.push('/login') }}
+            style={{
+              display: 'block', width: '100%', padding: 8,
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: 11, color: 'rgba(255,255,255,0.32)', textAlign: 'center',
+              letterSpacing: '0.02em',
+            }}
+          >
+            Sair da conta
+          </button>
+        </div>
+      </main>
+    )
+  }
+
   /* ═══════ RENDER ═══════ */
   return (
     <main style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v50 (Owner: ledger completo de pagamentos com search, filtros e sparkline 30d)
+// NexControl Service Worker — Push Notifications v51 (Remover operador: preserva historico + libera vaga paga + tela 'sem equipe')
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

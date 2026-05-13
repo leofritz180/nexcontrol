@@ -677,6 +677,30 @@ export default function OperadoresPage() {
   const [invMsg, setInvMsg] = useState('')
   const [folhaPeriod, setFolhaPeriod] = useState('30')
   const [costs, setCosts] = useState([])
+  // Remoção de operador
+  const [removeConfirmOp, setRemoveConfirmOp] = useState(null)
+  const [removing, setRemoving] = useState(false)
+  const [removeError, setRemoveError] = useState('')
+
+  async function removeOperator(op) {
+    if (!op || removing) return
+    setRemoving(true); setRemoveError('')
+    try {
+      const res = await fetch('/api/admin/remove-operator', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operator_id: op.id, admin_id: profile?.id }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setRemoveError(json.error || 'Erro ao remover'); setRemoving(false); return }
+      setRemoveConfirmOp(null)
+      setSelectedOp(null)
+      await loadAll(profile?.tenant_id)
+    } catch (e) {
+      setRemoveError(e.message)
+    } finally {
+      setRemoving(false)
+    }
+  }
 
   useEffect(() => { checkAndLoad() }, [])
 
@@ -740,7 +764,8 @@ export default function OperadoresPage() {
 
       if (validLimits.length > 0) {
         const limit = Math.max(...validLimits)
-        const currentOps = operators.length
+        // Conta SOMENTE ativos do tenant — vaga de removido fica livre pra novo convite
+        const currentOps = activeOperators.length
         if (currentOps >= limit) {
           setInvSaving(false)
           setInvMsg(`Limite atingido: seu plano inclui ${limit} operador${limit !== 1 ? 'es' : ''} e voce ja tem ${currentOps}. Atualize em Assinatura para adicionar mais.`)
@@ -774,8 +799,19 @@ export default function OperadoresPage() {
   // SOURCE OF TRUTH: closedMetas = fechadas + não deletadas (mesma regra usada em /performance)
   const closedMetas = useMemo(() => validClosedMetas(metas), [metas])
 
+  // Operadores ativos no tenant atual (exclui removidos)
+  const activeOperators = useMemo(
+    () => operators.filter(o => o.tenant_id === profile?.tenant_id && !o.removed_from_tenant_id),
+    [operators, profile?.tenant_id]
+  )
+  // Operadores removidos do tenant atual (mantemos pra historico)
+  const removedOperators = useMemo(
+    () => operators.filter(o => o.removed_from_tenant_id === profile?.tenant_id),
+    [operators, profile?.tenant_id]
+  )
+
   const operatorStats = useMemo(() => {
-    return operators.map(op => {
+    return activeOperators.map(op => {
       const opMetas = metas.filter(m => m.operator_id === op.id)
       const opClosed = closedMetas.filter(m => m.operator_id === op.id)
       const metaIds = new Set(opMetas.map(m => m.id))
@@ -799,7 +835,22 @@ export default function OperadoresPage() {
       base.badge = getBadge(base)
       return base
     })
-  }, [operators, metas, closedMetas, remessas])
+  }, [activeOperators, metas, closedMetas, remessas])
+
+  // Stats dos removidos (preservados pra historico)
+  const removedOperatorStats = useMemo(() => {
+    return removedOperators.map(op => {
+      const opMetas = metas.filter(m => m.operator_id === op.id)
+      const opClosed = closedMetas.filter(m => m.operator_id === op.id)
+      const lucroFinal = opClosed.reduce((a, m) => a + Number(m.lucro_final || 0), 0)
+      return {
+        ...op,
+        metasCount: opMetas.length,
+        closedCount: opClosed.length,
+        lucroFinal,
+      }
+    })
+  }, [removedOperators, metas, closedMetas])
 
   // RANKING BY LUCRO FINAL
   const ranking = useMemo(() =>
@@ -955,7 +1006,7 @@ export default function OperadoresPage() {
 
             {/* KPIs */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
-              <KpiCard label="Operadores" value={isDemo && !operators.length ? 3 : operators.length} i={0} />
+              <KpiCard label="Operadores" value={isDemo && !activeOperators.length ? 3 : activeOperators.length} i={0} />
               <KpiCard label="Ativos" value={isDemo && !totalActive ? 2 : totalActive} i={1} />
               <KpiCard label="Depositantes totais" value={isDemo && !totalDeps ? 160 : totalDeps} i={2} />
               <KpiCard label="Acerto medio" value={isDemo && !avgWinRate ? 80 : avgWinRate} suffix="%" i={3} />
@@ -1256,15 +1307,15 @@ export default function OperadoresPage() {
             <div style={{ marginBottom: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Equipe ({isDemo && !operators.length ? DEMO_OPERATORS.length : operators.length})</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Equipe ({isDemo && !activeOperators.length ? DEMO_OPERATORS.length : activeOperators.length})</span>
               </div>
             </div>
 
-            {operators.length === 0 && !isDemo ? (
+            {activeOperators.length === 0 && !isDemo ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)' }}>
                 <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>Nenhum operador na equipe.</p>
               </div>
-            ) : operators.length === 0 && isDemo ? (
+            ) : activeOperators.length === 0 && isDemo ? (
               <div>
                 <DemoBanner />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -1364,9 +1415,92 @@ export default function OperadoresPage() {
                         </p>
                         <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasCount} metas</p>
                       </div>
+
+                      {/* Remover operador */}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setRemoveConfirmOp(op) }}
+                        title="Remover da equipe"
+                        style={{
+                          flexShrink: 0,
+                          width: 32, height: 32, borderRadius: 8,
+                          background: 'rgba(239,68,68,0.04)',
+                          border: '1px solid rgba(239,68,68,0.12)',
+                          color: 'rgba(239,68,68,0.6)',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'all 0.15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.color = '#ef4444' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.04)'; e.currentTarget.style.color = 'rgba(239,68,68,0.6)' }}
+                      >
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        </svg>
+                      </button>
                     </motion.div>
                   )
                 })}
+              </div>
+            )}
+
+            {/* ═══ REMOVIDOS DA EQUIPE — historico preservado ═══ */}
+            {removedOperatorStats.length > 0 && (
+              <div style={{ marginTop: 28 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2" strokeLinecap="round">
+                    <path d="M12 8v4M12 16h.01"/>
+                    <circle cx="12" cy="12" r="10"/>
+                  </svg>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontFamily: 'var(--mono, monospace)' }}>
+                    Removidos da equipe ({removedOperatorStats.length})
+                  </span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {removedOperatorStats.map((op, idx) => (
+                    <motion.div key={op.id} {...fadeUp(idx, 0.03)}
+                      onClick={() => setSelectedOp(op)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px',
+                        background: 'rgba(255,255,255,0.012)',
+                        border: '1px dashed rgba(255,255,255,0.06)',
+                        borderRadius: 12, cursor: 'pointer',
+                        opacity: 0.7, transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
+                      onMouseLeave={e => { e.currentTarget.style.opacity = '0.7' }}
+                    >
+                      <div style={{
+                        width: 34, height: 34, borderRadius: 10,
+                        background: 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.4)', flexShrink: 0,
+                      }}>{getInitial(op)}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                          <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.65)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
+                          <span style={{
+                            fontSize: 8.5, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
+                            color: 'rgba(239,68,68,0.7)', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)',
+                            letterSpacing: '0.1em', textTransform: 'uppercase',
+                          }}>Removido</span>
+                        </div>
+                        <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>
+                          {op.email} · removido em {op.removed_from_tenant_at ? new Date(op.removed_from_tenant_at).toLocaleDateString('pt-BR') : '—'}
+                        </p>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: 'rgba(209,250,229,0.55)' }}>
+                          R$ {fmt(op.lucroFinal)}
+                        </p>
+                        <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.28)', margin: 0 }}>{op.closedCount} metas · preservado</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 10, fontStyle: 'italic', lineHeight: 1.5 }}>
+                  Lucros e metas desses operadores continuam computados no total da plataforma. O histórico fica preservado.
+                </p>
               </div>
             )}
           </motion.div>
@@ -1667,6 +1801,175 @@ export default function OperadoresPage() {
       <AnimatePresence>
         {selectedOp && (
           <OperatorDrawer op={selectedOp} onClose={() => setSelectedOp(null)} allMetas={metas} allRemessas={remessas} />
+        )}
+      </AnimatePresence>
+
+      {/* ═══ MODAL REMOVER OPERADOR ═══ */}
+      <AnimatePresence>
+        {removeConfirmOp && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => !removing && setRemoveConfirmOp(null)}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 10000,
+              background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(16px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.94, opacity: 0, y: 8 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.94, opacity: 0, y: 8 }}
+              transition={{ duration: 0.25, ease: [0.33, 1, 0.68, 1] }}
+              onClick={e => e.stopPropagation()}
+              style={{
+                width: '100%', maxWidth: 440,
+                background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 18, padding: 28,
+                boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(239,68,68,0.05), 0 0 0 1px rgba(239,68,68,0.04)',
+              }}
+            >
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12,
+                  background: 'rgba(239,68,68,0.06)',
+                  border: '1px solid rgba(239,68,68,0.18)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#ef4444',
+                  flexShrink: 0,
+                }}>
+                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="8.5" cy="7" r="4"/>
+                    <line x1="18" y1="8" x2="23" y2="13"/>
+                    <line x1="23" y1="8" x2="18" y2="13"/>
+                  </svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{
+                    fontFamily: 'var(--mono, monospace)', fontSize: 9,
+                    color: '#ef4444', letterSpacing: '0.22em', textTransform: 'uppercase',
+                    fontWeight: 700, marginBottom: 4,
+                  }}>
+                    — Remover operador
+                  </div>
+                  <h3 style={{ fontSize: 17, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.015em' }}>
+                    Tem certeza?
+                  </h3>
+                </div>
+              </div>
+
+              {/* Operador info */}
+              <div style={{
+                background: 'rgba(255,255,255,0.025)',
+                border: '1px solid rgba(255,255,255,0.05)',
+                borderRadius: 10, padding: '12px 14px', marginBottom: 18,
+                display: 'flex', alignItems: 'center', gap: 12,
+              }}>
+                <div style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 13, fontWeight: 700, color: '#fff', flexShrink: 0,
+                }}>{getInitial(removeConfirmOp)}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {getName(removeConfirmOp)}
+                  </p>
+                  <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>
+                    {removeConfirmOp.email}
+                  </p>
+                </div>
+              </div>
+
+              {/* O que acontece */}
+              <div style={{ marginBottom: 22 }}>
+                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)', margin: '0 0 10px', lineHeight: 1.55 }}>
+                  Ao remover este operador da equipe:
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                  {[
+                    { icon: '✓', color: '#d1fae5', text: 'Lucros e metas geradas por ele permanecem no total da plataforma' },
+                    { icon: '✓', color: '#d1fae5', text: 'Você continua acessando o histórico dele com badge "Removido"' },
+                    { icon: '✓', color: '#d1fae5', text: 'A vaga paga fica livre — você pode convidar outro operador' },
+                    { icon: '!', color: '#ef4444', text: 'Ele perde acesso ao painel imediatamente no próximo login' },
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
+                      <span style={{
+                        width: 14, height: 14, borderRadius: 4,
+                        background: `${item.color}10`,
+                        border: `1px solid ${item.color}30`,
+                        color: item.color,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 9, fontWeight: 800, flexShrink: 0, marginTop: 1,
+                      }}>{item.icon}</span>
+                      <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.5 }}>
+                        {item.text}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {removeError && (
+                <div style={{
+                  background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.18)',
+                  borderRadius: 8, padding: '8px 12px', marginBottom: 14,
+                  fontSize: 11.5, color: '#ef4444',
+                }}>
+                  {removeError}
+                </div>
+              )}
+
+              {/* Botões */}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  onClick={() => setRemoveConfirmOp(null)}
+                  disabled={removing}
+                  style={{
+                    flex: 1, padding: '11px', borderRadius: 9,
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    color: 'rgba(255,255,255,0.65)',
+                    fontSize: 13, fontWeight: 600, cursor: removing ? 'not-allowed' : 'pointer',
+                  }}
+                >Cancelar</button>
+                <button
+                  onClick={() => removeOperator(removeConfirmOp)}
+                  disabled={removing}
+                  style={{
+                    flex: 1.4, padding: '11px', borderRadius: 9,
+                    background: removing ? 'rgba(239,68,68,0.15)' : '#ef4444',
+                    border: 'none',
+                    color: '#fff',
+                    fontSize: 13, fontWeight: 700, cursor: removing ? 'not-allowed' : 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  }}
+                >
+                  {removing ? (
+                    <>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ animation: 'spin 0.8s linear infinite' }}>
+                        <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                      </svg>
+                      Removendo...
+                    </>
+                  ) : (
+                    <>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                      </svg>
+                      Confirmar remoção
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </AppLayout>

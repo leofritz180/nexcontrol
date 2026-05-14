@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v51 (Remover operador: preserva historico + libera vaga paga + tela 'sem equipe')
+// NexControl Service Worker — Push Notifications v52 (Cron renewal: push apos 24h vencido, anti-spam reduzido pra 48h)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -58,20 +58,31 @@ export async function POST(req) {
       .select('tenant_id,expires_at,status')
       .eq('status', 'active')
 
-    const tenantValidity = {} // tid → { hasValid: bool, nearestExpiry: Date|null }
+    const tenantValidity = {} // tid → { hasValid: bool, nearestExpiry: Date|null, lastExpiredAt: Date|null }
     for (const s of (allSubs || [])) {
       const exp = s.expires_at ? new Date(s.expires_at) : null
-      if (!tenantValidity[s.tenant_id]) tenantValidity[s.tenant_id] = { hasValid: false, nearestExpiry: null }
+      if (!tenantValidity[s.tenant_id]) tenantValidity[s.tenant_id] = { hasValid: false, nearestExpiry: null, lastExpiredAt: null }
       if (!exp || exp > now) {
         tenantValidity[s.tenant_id].hasValid = true
-        // Salva o expires_at mais proximo (pra detectar expiring_soon)
         if (exp && (!tenantValidity[s.tenant_id].nearestExpiry || exp < tenantValidity[s.tenant_id].nearestExpiry)) {
           tenantValidity[s.tenant_id].nearestExpiry = exp
+        }
+      } else if (exp) {
+        // Sub vencida — salva a data MAIS RECENTE de expiracao (pra saber ha quanto tempo o tenant ta vencido)
+        if (!tenantValidity[s.tenant_id].lastExpiredAt || exp > tenantValidity[s.tenant_id].lastExpiredAt) {
+          tenantValidity[s.tenant_id].lastExpiredAt = exp
         }
       }
     }
 
-    const expiredTenants = Object.entries(tenantValidity).filter(([_, v]) => !v.hasValid).map(([t]) => t)
+    // Expired SO conta quem venceu ha >= 24h. Quem venceu hoje ganha 1 dia de gracia
+    // antes de receber o primeiro push de renovacao.
+    const oneDayAgo = new Date(now.getTime() - 24 * 3600000)
+    const expiredTenants = Object.entries(tenantValidity).filter(([_, v]) => {
+      if (v.hasValid) return false
+      if (!v.lastExpiredAt) return false // sem data, ignora
+      return v.lastExpiredAt <= oneDayAgo
+    }).map(([t]) => t)
     const expiringSoonTenants = Object.entries(tenantValidity)
       .filter(([_, v]) => v.hasValid && v.nearestExpiry && v.nearestExpiry < in3Days)
       .map(([t]) => t)
@@ -110,12 +121,15 @@ export async function POST(req) {
 
 async function notifyAdmin(sb, admin, segment, segmentId) {
   const result = { push: null, email: null }
-  // Anti-spam: ja enviamos esse segmento pra esse user nos ultimos 7 dias?
+  // Anti-spam: re-tenta a cada 48h enquanto o tenant nao renovar.
+  // Antes era 7d, mas isso espacava demais e perdia a janela quente
+  // de renovacao logo apos o vencimento.
+  const ANTI_SPAM_MS = 48 * 3600000
   const { data: recent } = await sb.from('winback_log')
     .select('id,channel')
     .eq('user_id', admin.id)
     .eq('segment', segmentId)
-    .gte('sent_at', new Date(Date.now() - 7 * 86400000).toISOString())
+    .gte('sent_at', new Date(Date.now() - ANTI_SPAM_MS).toISOString())
 
   const url = `${APP_URL}/billing?utm_source=renewal&utm_medium=email&utm_campaign=${segmentId}`
   const vars = { nome: (admin.nome || '').split(' ')[0] || 'Operador' }

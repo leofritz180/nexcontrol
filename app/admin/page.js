@@ -1990,6 +1990,7 @@ export default function AdminPage() {
 
             {/* LEFT — Hero ultra clean */}
             <motion.div
+              data-tour="hero-lucro"
               initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
               transition={{duration:0.4,ease}}
               style={{
@@ -2054,6 +2055,7 @@ export default function AdminPage() {
 
             {/* RIGHT — KPIs em lista clean */}
             <motion.div
+              data-tour="kpis-grid"
               initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
               transition={{duration:0.4,delay:0.1,ease}}
               style={{

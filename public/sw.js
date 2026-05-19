@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v56 (Tour cobre todas as tabs: clickBefore navega entre tabs antes de destacar)
+// NexControl Service Worker — Push Notifications v57 (Fix tour /admin: data-tour estava no componente DemoAdminDashboard inativo — movido pro dashboard real)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

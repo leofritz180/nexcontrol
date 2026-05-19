@@ -102,6 +102,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
           const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
           return (
             <Link key={item.href} href={item.href} onClick={()=>setMobileOpen(false)}
+              data-tour={`menu-${item.href.replace(/^\//, '').replace(/\//g, '-')}`}
               style={{
                 display:'flex', alignItems:'center', gap:11,
                 padding:'9px 12px', borderRadius:8, textDecoration:'none',

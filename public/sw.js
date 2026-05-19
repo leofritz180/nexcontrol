@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v52 (Cron renewal: push apos 24h vencido, anti-spam reduzido pra 48h)
+// NexControl Service Worker — Push Notifications v53 (Product Tour: spotlight tour no /admin com 14 passos, demo mode desativado)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

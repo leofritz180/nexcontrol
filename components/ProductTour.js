@@ -25,6 +25,18 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
     if (!open) setIndex(0)
   }, [open])
 
+  // Fecha com ESC (overlay nao bloqueia clicks mais)
+  useEffect(() => {
+    if (!open) return
+    function onKey(e) {
+      if (e.key === 'Escape') skip()
+      else if (e.key === 'ArrowRight') next()
+      else if (e.key === 'ArrowLeft') prev()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, index, steps.length])
+
   // Recalcula posicao do target quando step muda ou janela redimensiona
   useLayoutEffect(() => {
     if (!open || !step) { setTargetRect(null); return }
@@ -34,7 +46,6 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
       if (step.target) el = document.querySelector(step.target)
 
       if (!el) {
-        // Sem target: tooltip centralizado
         setTargetRect(null)
         setTooltipPos({
           top: window.innerHeight / 2,
@@ -44,62 +55,119 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
         return
       }
 
-      // Scroll suave pro elemento ficar visivel
-      try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }) } catch {}
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+
+      // Scroll pro alvo aparecer (top do alvo perto do top da viewport)
+      try {
+        const elRect = el.getBoundingClientRect()
+        const targetScrollTop = window.scrollY + elRect.top - 100
+        // So scrolla se necessario
+        if (elRect.top < 0 || elRect.top > vh * 0.6) {
+          window.scrollTo({ top: targetScrollTop, behavior: 'smooth' })
+        }
+      } catch {}
 
       const r = el.getBoundingClientRect()
       const padding = 8
+
+      // CLAMP: se o alvo for maior que 70% da viewport, mostra so a parte visivel.
+      // Isso evita ring gigante que quebra layout do tooltip.
+      const MAX_RING_H = vh * 0.7
+      const MAX_RING_W = vw * 0.85
+
+      const rawTop = r.top - padding
+      const rawBottom = r.bottom + padding
+      const rawLeft = r.left - padding
+      const rawRight = r.right + padding
+
+      // Limita ring ao que cabe na viewport
+      const ringTop = Math.max(20, rawTop)
+      const ringBottom = Math.min(vh - 20, rawBottom)
+      const ringLeft = Math.max(8, rawLeft)
+      const ringRight = Math.min(vw - 8, rawRight)
+
+      // Aplica limite maximo de tamanho
+      let finalTop = ringTop
+      let finalBottom = ringBottom
+      if (ringBottom - ringTop > MAX_RING_H) {
+        finalBottom = ringTop + MAX_RING_H
+      }
+      let finalLeft = ringLeft
+      let finalRight = ringRight
+      if (ringRight - ringLeft > MAX_RING_W) {
+        finalRight = ringLeft + MAX_RING_W
+      }
+
       const rect = {
-        top: r.top - padding,
-        left: r.left - padding,
-        width: r.width + padding * 2,
-        height: r.height + padding * 2,
-        bottom: r.bottom + padding,
-        right: r.right + padding,
+        top: finalTop,
+        left: finalLeft,
+        width: finalRight - finalLeft,
+        height: finalBottom - finalTop,
+        bottom: finalBottom,
+        right: finalRight,
       }
       setTargetRect(rect)
 
-      // Decide placement automatico
+      // Decide placement
       const tooltipW = 360
-      const tooltipH = 200
-      const spaceBelow = window.innerHeight - rect.bottom
+      const tooltipH = 220
+      const spaceBelow = vh - rect.bottom
       const spaceAbove = rect.top
-      const spaceRight = window.innerWidth - rect.right
+      const spaceRight = vw - rect.right
       const spaceLeft = rect.left
 
-      let placement = step.position || 'auto'
-      if (placement === 'auto') {
-        if (spaceBelow >= tooltipH + 16) placement = 'bottom'
-        else if (spaceAbove >= tooltipH + 16) placement = 'top'
-        else if (spaceRight >= tooltipW + 16) placement = 'right'
-        else placement = 'left'
+      // Score de cada placement (espaco disponivel)
+      const candidates = []
+      if (spaceBelow >= tooltipH + 16) candidates.push({ p: 'bottom', score: spaceBelow })
+      if (spaceAbove >= tooltipH + 16) candidates.push({ p: 'top', score: spaceAbove })
+      if (spaceRight >= tooltipW + 16) candidates.push({ p: 'right', score: spaceRight })
+      if (spaceLeft >= tooltipW + 16) candidates.push({ p: 'left', score: spaceLeft })
+
+      let placement
+      if (step.position && step.position !== 'auto') {
+        // Tenta usar o desejado; se nao cabe, fallback
+        const fits = candidates.find(c => c.p === step.position)
+        placement = fits ? step.position : (candidates[0]?.p || step.position)
+      } else {
+        placement = candidates.sort((a, b) => b.score - a.score)[0]?.p || 'bottom'
       }
 
-      // Calcula posicao do tooltip baseado no placement
+      // Calcula posicao
       let top = 0, left = 0
+      const centerX = rect.left + rect.width / 2 - tooltipW / 2
+      const centerY = rect.top + rect.height / 2 - tooltipH / 2
+
       if (placement === 'bottom') {
         top = rect.bottom + 14
-        left = Math.max(16, Math.min(rect.left + rect.width / 2 - tooltipW / 2, window.innerWidth - tooltipW - 16))
+        left = clamp(centerX, 16, vw - tooltipW - 16)
       } else if (placement === 'top') {
         top = rect.top - tooltipH - 14
-        left = Math.max(16, Math.min(rect.left + rect.width / 2 - tooltipW / 2, window.innerWidth - tooltipW - 16))
+        left = clamp(centerX, 16, vw - tooltipW - 16)
       } else if (placement === 'right') {
-        top = Math.max(16, Math.min(rect.top + rect.height / 2 - tooltipH / 2, window.innerHeight - tooltipH - 16))
+        top = clamp(centerY, 16, vh - tooltipH - 16)
         left = rect.right + 14
       } else if (placement === 'left') {
-        top = Math.max(16, Math.min(rect.top + rect.height / 2 - tooltipH / 2, window.innerHeight - tooltipH - 16))
+        top = clamp(centerY, 16, vh - tooltipH - 16)
         left = rect.left - tooltipW - 14
       }
+
+      // Garante que o tooltip nao sai da viewport
+      top = clamp(top, 16, vh - tooltipH - 16)
+      left = clamp(left, 16, vw - tooltipW - 16)
 
       setTooltipPos({ top, left, placement })
     }
 
-    // Recompute apos pequeno delay (esperar scroll)
-    const t = setTimeout(recompute, 350)
+    function clamp(v, min, max) { return Math.max(min, Math.min(v, max)) }
+
+    // Recompute apos delay (esperar scroll suave terminar)
+    const t1 = setTimeout(recompute, 100)
+    const t2 = setTimeout(recompute, 500)
     window.addEventListener('resize', recompute)
-    window.addEventListener('scroll', recompute, true)
+    window.addEventListener('scroll', recompute, { passive: true, capture: true })
     return () => {
-      clearTimeout(t)
+      clearTimeout(t1); clearTimeout(t2)
       window.removeEventListener('resize', recompute)
       window.removeEventListener('scroll', recompute, true)
     }
@@ -141,44 +209,46 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
         transition={{ duration: 0.25 }}
         style={{ position: 'fixed', inset: 0, zIndex: 9998, pointerEvents: 'none' }}
       >
-        {/* Overlay com 4 retangulos formando spotlight */}
+        {/* Overlay com 4 retangulos formando spotlight.
+            IMPORTANTE: pointer-events: none — permite scroll/click no fundo.
+            Fechar o tour eh apenas via botao X ou Esc. */}
         {!isCenter ? (
           <>
             {/* TOP */}
             <div style={{
               position: 'fixed', top: 0, left: 0, width: '100vw',
               height: Math.max(0, targetRect.top),
-              background: 'rgba(0,0,0,0.72)',
-              backdropFilter: 'blur(4px)',
-              pointerEvents: 'auto',
-            }} onClick={skip} />
+              background: 'rgba(0,0,0,0.68)',
+              backdropFilter: 'blur(3px)',
+              pointerEvents: 'none',
+            }} />
             {/* LEFT */}
             <div style={{
               position: 'fixed', top: targetRect.top, left: 0,
               width: Math.max(0, targetRect.left),
               height: targetRect.height,
-              background: 'rgba(0,0,0,0.72)',
-              backdropFilter: 'blur(4px)',
-              pointerEvents: 'auto',
-            }} onClick={skip} />
+              background: 'rgba(0,0,0,0.68)',
+              backdropFilter: 'blur(3px)',
+              pointerEvents: 'none',
+            }} />
             {/* RIGHT */}
             <div style={{
               position: 'fixed', top: targetRect.top, left: targetRect.right,
               width: Math.max(0, window.innerWidth - targetRect.right),
               height: targetRect.height,
-              background: 'rgba(0,0,0,0.72)',
-              backdropFilter: 'blur(4px)',
-              pointerEvents: 'auto',
-            }} onClick={skip} />
+              background: 'rgba(0,0,0,0.68)',
+              backdropFilter: 'blur(3px)',
+              pointerEvents: 'none',
+            }} />
             {/* BOTTOM */}
             <div style={{
               position: 'fixed', top: targetRect.bottom, left: 0,
               width: '100vw',
               height: Math.max(0, window.innerHeight - targetRect.bottom),
-              background: 'rgba(0,0,0,0.72)',
-              backdropFilter: 'blur(4px)',
-              pointerEvents: 'auto',
-            }} onClick={skip} />
+              background: 'rgba(0,0,0,0.68)',
+              backdropFilter: 'blur(3px)',
+              pointerEvents: 'none',
+            }} />
 
             {/* Ring de destaque no target */}
             <motion.div
@@ -198,13 +268,13 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
             />
           </>
         ) : (
-          // Center mode (sem target)
+          // Center mode (sem target) — overlay full, mas tambem nao bloqueia scroll
           <div style={{
             position: 'fixed', inset: 0,
-            background: 'rgba(0,0,0,0.82)',
+            background: 'rgba(0,0,0,0.78)',
             backdropFilter: 'blur(8px)',
-            pointerEvents: 'auto',
-          }} onClick={skip} />
+            pointerEvents: 'none',
+          }} />
         )}
 
         {/* TOOLTIP */}

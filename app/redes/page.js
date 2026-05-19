@@ -1070,7 +1070,7 @@ export default function RedesPage() {
           )}
 
           {/* ── Network Ranking with Heatmap ── */}
-          {!isDemo && <motion.div data-tour="redes-ranking" {...fadeUp(9)} style={{ marginBottom: 32 }}>
+          {!isDemo && <motion.div {...fadeUp(9)} style={{ marginBottom: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
               <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -1100,7 +1100,7 @@ export default function RedesPage() {
                   const heat = getHeatmapStyle(rede, isTop)
 
                   return (
-                    <motion.div key={rede.nome} {...fadeUp(10 + i)}>
+                    <motion.div key={rede.nome} data-tour={i === 0 ? 'redes-ranking' : undefined} {...fadeUp(10 + i)}>
                       <div
                         onClick={() => setSelectedRede(rede)}
                         style={{

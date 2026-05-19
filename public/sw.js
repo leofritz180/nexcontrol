@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v54 (Product Tour por modulo: tours individuais em todas as rotas + botao flutuante)
+// NexControl Service Worker — Push Notifications v55 (Fix Tour: overlay nao bloqueia scroll, ring clampado, ESC pra fechar, /redes destaca so 1 item)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

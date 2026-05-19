@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaCreated } from '../../lib/notify'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
@@ -888,6 +889,7 @@ export default function OperatorPage() {
                 <IconRefresh /> Atualizar
               </button>
               <button
+                data-tour="op-nova-meta"
                 onClick={() => setShowForm(!showForm)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
@@ -1226,7 +1228,7 @@ export default function OperatorPage() {
           ) : (
           <>
           {/* ── KPI CARDS (4 cards, neutral) ── */}
-          <div className="nxc-kpi-grid" style={{
+          <div data-tour="op-kpis" className="nxc-kpi-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
             gap: 16,
@@ -1273,7 +1275,7 @@ export default function OperatorPage() {
             {/* ════════════════════════════════════════════
                 LEFT COLUMN: Metas
                ════════════════════════════════════════════ */}
-            <div>
+            <div data-tour="op-metas">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
                 <div>
                   <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', margin: '0 0 2px' }}>Suas metas</h2>
@@ -1524,6 +1526,7 @@ export default function OperatorPage() {
 
               {/* ── Stats pessoais ── */}
               <motion.div
+                data-tour="op-stats"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.1 }}
                 style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
@@ -1550,6 +1553,7 @@ export default function OperatorPage() {
 
               {/* ── Ranking pessoal ── */}
               <motion.div
+                data-tour="op-ranking"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.16 }}
                 style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
@@ -1571,6 +1575,7 @@ export default function OperatorPage() {
 
               {/* ── Conquistas / Marcos ── */}
               <motion.div
+                data-tour="op-conquistas"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.22 }}
                 style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
@@ -1585,6 +1590,7 @@ export default function OperatorPage() {
 
               {/* ── Alertas ── */}
               <motion.div
+                data-tour="op-alertas"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.28 }}
                 style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
@@ -1684,6 +1690,7 @@ export default function OperatorPage() {
           </>
           )}
         </div>
+        <RouteTour tourId="operator" />
       </AppLayout>
     </main>
   )

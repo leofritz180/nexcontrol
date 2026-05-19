@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v58 (/admin hero default = mes corrente em vez de tudo desde o inicio)
+// NexControl Service Worker — Push Notifications v59 (Tour completo no /operator: 7 passos cobrindo KPIs, metas, stats, ranking, conquistas, alertas)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

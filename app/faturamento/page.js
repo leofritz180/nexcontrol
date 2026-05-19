@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 import { generateInsights, getHealthStatus } from '../../lib/insights'
 import { ProLockedCard } from '../../components/pro/ProGate'
@@ -452,7 +453,7 @@ export default function FaturamentoPage() {
         {tab==='overview' && (<div key="ov" className="tab-content">
 
           {/* ── HERO + KPIs side by side ── */}
-          <div className="g-side" style={{display:'grid',gridTemplateColumns:'1.6fr 1fr',gap:16,marginBottom:24}}>
+          <div data-tour="fat-kpis" className="g-side" style={{display:'grid',gridTemplateColumns:'1.6fr 1fr',gap:16,marginBottom:24}}>
 
             {/* Hero financeiro — cinematografico */}
             <div style={{
@@ -728,7 +729,7 @@ export default function FaturamentoPage() {
             return (
             <div className="g-side" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:24}}>
               {/* Health + Insights */}
-              <div style={{
+              <div data-tour="fat-insights" style={{
                 padding:'28px 28px', borderRadius:16,
                 background:'linear-gradient(145deg, #000000, #000000)',
                 border:'1px solid rgba(255,255,255,0.05)',
@@ -826,7 +827,7 @@ export default function FaturamentoPage() {
 
           {/* Mini chart + Quick stats */}
           <div className="g-side" style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16}}>
-            <div className="card a5" style={{padding:24}}>
+            <div data-tour="fat-chart" className="card a5" style={{padding:24}}>
               <h3 className="t-h3" style={{fontSize:14,marginBottom:16}}>Evolucao recente</h3>
               <div style={{height:200}}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -960,6 +961,7 @@ export default function FaturamentoPage() {
           </div>
         )}
       </div>
+      <RouteTour tourId="faturamento" />
       </AppLayout>
     </main>
   )

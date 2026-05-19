@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v53 (Product Tour: spotlight tour no /admin com 14 passos, demo mode desativado)
+// NexControl Service Worker — Push Notifications v54 (Product Tour por modulo: tours individuais em todas as rotas + botao flutuante)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

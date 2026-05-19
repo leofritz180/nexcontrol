@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -203,7 +204,7 @@ export default function PixPage() {
         </div>
 
         {/* Stats premium */}
-        <div className="a2 g-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 22 }}>
+        <div data-tour="pix-kpis" className="a2 g-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 22 }}>
           {[
             { l: 'Total', v: stats.total, c: '#F1F5F9', rgb:'148,163,184' },
             { l: 'Validas', v: stats.validas, c: '#D1FAE5', rgb:'34,197,94' },
@@ -234,7 +235,7 @@ export default function PixPage() {
 
         <div className="g-side" style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: 22 }}>
           {/* Left — Import */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div data-tour="pix-import" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div className="card a3" style={{ padding: 24 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
                 <div style={{ width: 34, height: 34, borderRadius: 9, background: 'var(--brand-dim)', border: '1px solid var(--brand-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -302,7 +303,7 @@ export default function PixPage() {
           </div>
 
           {/* Right — List */}
-          <div>
+          <div data-tour="pix-lista">
             {/* Search + Filter */}
             <div className="a3" style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
               <div style={{ flex: 1, minWidth: 200 }}>
@@ -406,6 +407,7 @@ export default function PixPage() {
           </div>
         </div>
       </div>
+      <RouteTour tourId="pix" />
       </AppLayout>
     </main>
   )

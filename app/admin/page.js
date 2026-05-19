@@ -11,8 +11,7 @@ import { ProLockedCard } from '../../components/pro/ProGate'
 import ProBanner from '../../components/pro/ProBanner'
 import dynamic from 'next/dynamic'
 const Onboarding = dynamic(() => import('../../components/Onboarding'), { ssr: false })
-import ProductTour, { hasSeenTour } from '../../components/ProductTour'
-import { ADMIN_TOUR_STEPS } from '../../lib/tour-config'
+import RouteTour from '../../components/RouteTour'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
 import DemoModeCard from '../../components/DemoModeCard'
 import RankBadge from '../../components/rank/RankBadge'
@@ -588,7 +587,6 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
 export default function AdminPage() {
   const router = useRouter()
   const [loading,   setLoading]   = useState(true)
-  const [tourOpen,  setTourOpen]  = useState(false)
   const [operators, setOperators] = useState([])
   const [metas,     setMetas]     = useState([])
   const [remessas,  setRemessas]  = useState([])
@@ -707,12 +705,7 @@ export default function AdminPage() {
       setMyRem((mr||[]).filter(x=>myIds.has(x.meta_id)))
     }
     setLoading(false)
-
-    // Tour automatico apenas na PRIMEIRA visita ao /admin
-    if (typeof window !== 'undefined' && !hasSeenTour('admin')) {
-      // delay pra DOM montar elementos com data-tour
-      setTimeout(() => setTourOpen(true), 900)
-    }
+    // Tour gerenciado pelo componente <RouteTour /> abaixo
   }
 
   async function handleRefresh() {
@@ -1306,54 +1299,27 @@ export default function AdminPage() {
               <span style={{ fontSize:12, color:'var(--t3)' }}>Dados em tempo real</span>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <motion.button
-              onClick={() => setTourOpen(true)}
-              whileTap={{ scale: 0.96 }}
-              title="Refazer tour do painel"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '7px 13px', borderRadius: 8,
-                background: 'rgba(255,255,255,0.025)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                color: 'rgba(255,255,255,0.7)',
-                fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              }}
-            >
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-              Tutorial
-            </motion.button>
-            <motion.button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="btn btn-brand btn-sm"
-              whileTap={{ scale: 0.96 }}
-              style={{ display:'flex', alignItems:'center', gap:6, opacity: refreshing ? 0.5 : 1 }}>
-              {refreshing ? (
-                <motion.div
-                  style={{ width:13,height:13,borderRadius:'50%',border:'2px solid var(--t4)',borderTopColor:'var(--t1)' }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                />
-              ) : (
-                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-              )}
-              {refreshing ? 'Atualizando...' : 'Atualizar'}
-            </motion.button>
-          </div>
+          <motion.button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="btn btn-brand btn-sm"
+            whileTap={{ scale: 0.96 }}
+            style={{ display:'flex', alignItems:'center', gap:6, opacity: refreshing ? 0.5 : 1 }}>
+            {refreshing ? (
+              <motion.div
+                style={{ width:13,height:13,borderRadius:'50%',border:'2px solid var(--t4)',borderTopColor:'var(--t1)' }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+              />
+            ) : (
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+            )}
+            {refreshing ? 'Atualizando...' : 'Atualizar'}
+          </motion.button>
         </motion.div>
 
-        {/* Product Tour — montado fora do fluxo principal */}
-        <ProductTour
-          steps={ADMIN_TOUR_STEPS}
-          tourId="admin"
-          open={tourOpen}
-          onClose={() => setTourOpen(false)}
-        />
+        {/* Tour da rota — auto-trigger + botao flutuante "?" */}
+        <RouteTour tourId="admin" />
 
         <TrialBanner tenant={tenant} subscription={sub} stats={convStats}/>
         <ConversionModal tenant={tenant} subscription={sub} stats={convStats}/>

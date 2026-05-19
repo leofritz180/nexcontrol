@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 import { DEMO_COSTS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 
@@ -163,6 +164,7 @@ export default function CustosPage() {
               </p>
             </div>
             <button
+              data-tour="custos-novo"
               onClick={() => setShowModal(true)}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
@@ -190,7 +192,7 @@ export default function CustosPage() {
           )}
 
           {/* KPI Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 32 }}>
+          <div data-tour="custos-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginBottom: 32 }}>
 
             {/* Card 1: Custo do dia */}
             <motion.div
@@ -352,7 +354,7 @@ export default function CustosPage() {
           )}
 
           {/* History List */}
-          <div className="card a2" style={{ borderRadius: 14, overflow: 'hidden' }}>
+          <div data-tour="custos-lista" className="card a2" style={{ borderRadius: 14, overflow: 'hidden' }}>
             <div style={{ padding: '18px 24px', borderBottom: '1px solid var(--b2)' }}>
               <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Historico de custos</p>
             </div>
@@ -666,6 +668,7 @@ export default function CustosPage() {
           @media (max-width: 768px) { .del-btn { opacity: 1 !important; } }
           @media (hover: none) { .del-btn { opacity: 0.6 !important; } }
         `}</style>
+        <RouteTour tourId="custos" />
       </AppLayout>
     </main>
   )

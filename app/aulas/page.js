@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 
 const OWNER_EMAIL = 'leofritz180@gmail.com'
@@ -338,7 +339,7 @@ export default function AulasVipPage() {
 
         {/* Hero */}
         {featured && !search && (
-          <div style={{ padding: '0 28px', maxWidth: 1400, margin: '0 auto' }}>
+          <div data-tour="aulas-hero" style={{ padding: '0 28px', maxWidth: 1400, margin: '0 auto' }}>
             <HeroBanner course={featured} onWatch={() => router.push(`/aulas/${featured.id}`)} onDetails={() => router.push(`/aulas/${featured.id}`)} />
           </div>
         )}
@@ -366,11 +367,14 @@ export default function AulasVipPage() {
           {continueWatching.length > 0 && <CategoryRow title="Continuar assistindo" icon="▶️" courses={continueWatching} progress={progress} delay={0.1} />}
 
           {/* Categories */}
-          {Object.entries(cats).map(([cat, list], i) => (
-            <CategoryRow key={cat} title={cat} courses={list} progress={progress} delay={0.15 + i * 0.05} />
-          ))}
+          <div data-tour="aulas-grid">
+            {Object.entries(cats).map(([cat, list], i) => (
+              <CategoryRow key={cat} title={cat} courses={list} progress={progress} delay={0.15 + i * 0.05} />
+            ))}
+          </div>
         </div>
       </div>
+      <RouteTour tourId="aulas" />
     </AppLayout>
   )
 }

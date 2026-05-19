@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import Link from 'next/link'
 import AppLayout from '../../components/AppLayout'
+import RouteTour from '../../components/RouteTour'
 import { PROVIDERS, SLOTS } from '../../lib/slots-data'
 
 const ease = [0.33, 1, 0.68, 1]
@@ -336,7 +337,7 @@ export default function SlotsPage() {
         {activeTab === 'catalogo' ? (
           <>
             {/* Filters */}
-            <motion.div {...fadeUp(2)} style={{
+            <motion.div data-tour="slots-filtros" {...fadeUp(2)} style={{
               display: 'flex', gap: 6, marginBottom: 32,
               overflowX: 'auto', WebkitOverflowScrolling: 'touch',
               scrollbarWidth: 'none', msOverflowStyle: 'none',
@@ -392,6 +393,7 @@ export default function SlotsPage() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={filter}
+                data-tour="slots-grid"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
@@ -431,6 +433,7 @@ export default function SlotsPage() {
           </motion.div>
         )}
       </div>
+      <RouteTour tourId="slots" />
     </AppLayout>
   )
 }

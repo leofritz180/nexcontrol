@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -110,7 +111,7 @@ export default function AfiliadosPage() {
         ) : (
           <>
             {/* LINK CARD */}
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.05 }}
+            <motion.div data-tour="afil-link" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.05 }}
               style={{ borderRadius: 18, padding: 24, marginBottom: 22, background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(209,250,229,0.04))', border: '1px solid rgba(255,255,255,0.18)', position: 'relative', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
                 <div>
@@ -133,7 +134,7 @@ export default function AfiliadosPage() {
             </motion.div>
 
             {/* KPIs */}
-            <div className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 22 }}>
+            <div data-tour="afil-kpis" className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 22 }}>
               {[
                 { l: 'Indicados', v: totals.totalIndicados || 0, c: 'rgba(255,255,255,0.78)', prefix: '' },
                 { l: 'Faturamento gerado', v: totals.totalFaturado || 0, c: '#60A5FA', prefix: 'R$ ' },
@@ -195,6 +196,7 @@ export default function AfiliadosPage() {
           </>
         )}
       </main>
+      <RouteTour tourId="afiliados" />
     </AppLayout>
   )
 }

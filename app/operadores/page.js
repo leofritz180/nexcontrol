@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
+import RouteTour from '../../components/RouteTour'
 import { SLOTS } from '../../lib/slots-data'
 import { DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_METAS, DEMO_REMESSAS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 import { validClosedMetas } from '../../lib/operator-stats'
@@ -981,7 +982,7 @@ export default function OperadoresPage() {
         </motion.div>
 
         {/* Tabs — underline minimalista */}
-        <motion.div {...fadeUp(1)} style={{
+        <motion.div {...fadeUp(1)} data-tour="ops-tabs" style={{
           display: 'flex', gap: 0, marginBottom: 28,
           borderBottom: '1px solid var(--b1)',
         }}>
@@ -1005,7 +1006,7 @@ export default function OperadoresPage() {
           <motion.div key="ranking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
 
             {/* KPIs */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
+            <div data-tour="ops-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
               <KpiCard label="Operadores" value={isDemo && !activeOperators.length ? 3 : activeOperators.length} i={0} />
               <KpiCard label="Ativos" value={isDemo && !totalActive ? 2 : totalActive} i={1} />
               <KpiCard label="Depositantes totais" value={isDemo && !totalDeps ? 160 : totalDeps} i={2} />
@@ -1208,6 +1209,7 @@ export default function OperadoresPage() {
 
             {/* Invite section — premium */}
             <motion.div
+              data-tour="ops-invite"
               initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
               transition={{duration:0.4}}
               style={{
@@ -1304,7 +1306,7 @@ export default function OperadoresPage() {
             </motion.div>
 
             {/* Operators list */}
-            <div style={{ marginBottom: 8 }}>
+            <div data-tour="ops-equipe" style={{ marginBottom: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                 <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Equipe ({isDemo && !activeOperators.length ? DEMO_OPERATORS.length : activeOperators.length})</span>
@@ -1972,6 +1974,7 @@ export default function OperadoresPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      <RouteTour tourId="operadores" />
     </AppLayout>
   )
 }

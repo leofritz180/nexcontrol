@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 import { DEMO_REDES_RANKING, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 
@@ -992,7 +993,7 @@ export default function RedesPage() {
           })()}
 
           {/* ── KPI Cards ── */}
-          {!isDemo && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 28 }}>
+          {!isDemo && <div data-tour="redes-kpis" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 28 }}>
             <KpiCard label="Total de redes" value={kpis.totalRedes} i={1} />
             <KpiCard label="Redes lucrativas" value={kpis.redesLucrativas} i={2} />
             <KpiCard label="Lucro total" value={0} prefix="R$ " i={3} isProfit={true} rawValue={kpis.lucroTotal} />
@@ -1069,7 +1070,7 @@ export default function RedesPage() {
           )}
 
           {/* ── Network Ranking with Heatmap ── */}
-          {!isDemo && <motion.div {...fadeUp(9)} style={{ marginBottom: 32 }}>
+          {!isDemo && <motion.div data-tour="redes-ranking" {...fadeUp(9)} style={{ marginBottom: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
               <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -1255,6 +1256,7 @@ export default function RedesPage() {
             )}
           </motion.div>}
         </div>
+        <RouteTour tourId="redes" />
       </AppLayout>
 
       {/* ── Drawer Panel ── */}

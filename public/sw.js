@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v55 (Fix Tour: overlay nao bloqueia scroll, ring clampado, ESC pra fechar, /redes destaca so 1 item)
+// NexControl Service Worker — Push Notifications v56 (Tour cobre todas as tabs: clickBefore navega entre tabs antes de destacar)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

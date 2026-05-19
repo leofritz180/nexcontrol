@@ -987,7 +987,7 @@ export default function OperadoresPage() {
           borderBottom: '1px solid var(--b1)',
         }}>
           {tabs.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)}
+            <button key={t.key} onClick={() => setTab(t.key)} data-tour-tab={t.key}
               style={{
                 padding: '12px 18px', fontSize: 13, fontWeight: 500,
                 border: 'none', background: 'transparent', cursor: 'pointer', fontFamily:'inherit',
@@ -1511,7 +1511,7 @@ export default function OperadoresPage() {
         {/* ═══════════ TAB 3: CONFIGURACOES ═══════════ */}
         {/* FOLHA DE PAGAMENTO */}
         {tab === 'folha' && (
-          <motion.div key="folha" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+          <motion.div key="folha" data-tour="ops-folha" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
             {/* Period filter */}
             <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
               {[{ v: 'hoje', l: 'Hoje' }, { v: '7', l: '7 dias' }, { v: '30', l: '30 dias' }, { v: 'all', l: 'Tudo' }].map(p => (
@@ -1705,7 +1705,7 @@ export default function OperadoresPage() {
         )}
 
         {tab === 'config' && (
-          <motion.div key="config" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+          <motion.div key="config" data-tour="ops-config" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
 
             {/* Modelo de operacao padrao */}
             <div style={{ padding: '22px 20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14, marginBottom: 16 }}>

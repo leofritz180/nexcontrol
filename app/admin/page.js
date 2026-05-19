@@ -1350,6 +1350,7 @@ export default function AdminPage() {
               <motion.button
                 key={k}
                 data-active={active ? 'true' : 'false'}
+                data-tour-tab={k}
                 onClick={()=>setTab(k)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -1373,7 +1374,7 @@ export default function AdminPage() {
 
         {/* ═══ MY OPS ═══ */}
         {tab==='myops' && (
-          <motion.div key="myops"
+          <motion.div key="myops" data-tour="tab-myops"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease }}>
             {(()=>{
@@ -2414,7 +2415,7 @@ export default function AdminPage() {
           }
           function getNC(rede){return NET_COLORS[rede]||NET_COLORS.DEFAULT}
           return (
-          <motion.div key="operations"
+          <motion.div key="operations" data-tour="tab-operations"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease }}>
             {/* Filters */}
@@ -3147,7 +3148,7 @@ export default function AdminPage() {
 
         {/* ═══ TRASH ═══ */}
         {tab==='trash' && (
-          <motion.div key="trash"
+          <motion.div key="trash" data-tour="tab-trash"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease }}>
 

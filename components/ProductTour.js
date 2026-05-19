@@ -41,9 +41,26 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
   useLayoutEffect(() => {
     if (!open || !step) { setTargetRect(null); return }
 
+    // Se step define clickBefore, dispara click no elemento (pra mudar tab/abrir menu/etc)
+    // e espera o DOM montar antes de medir.
+    if (step.clickBefore) {
+      try {
+        const btn = document.querySelector(step.clickBefore)
+        if (btn) btn.click()
+      } catch {}
+    }
+
     function recompute() {
       let el = null
       if (step.target) el = document.querySelector(step.target)
+
+      // Se elemento existe mas ainda sem dimensoes, retenta
+      if (el) {
+        const r = el.getBoundingClientRect()
+        if (r.width === 0 && r.height === 0) {
+          el = null
+        }
+      }
 
       if (!el) {
         setTargetRect(null)
@@ -161,17 +178,17 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
 
     function clamp(v, min, max) { return Math.max(min, Math.min(v, max)) }
 
-    // Recompute apos delay (esperar scroll suave terminar)
-    const t1 = setTimeout(recompute, 100)
-    const t2 = setTimeout(recompute, 500)
+    // Recompute em multiplos delays — primeiro rapido, depois espera tab/animacao terminar
+    const delays = step.clickBefore ? [200, 500, 900] : [80, 300, 700]
+    const timers = delays.map(d => setTimeout(recompute, d))
     window.addEventListener('resize', recompute)
     window.addEventListener('scroll', recompute, { passive: true, capture: true })
     return () => {
-      clearTimeout(t1); clearTimeout(t2)
+      timers.forEach(clearTimeout)
       window.removeEventListener('resize', recompute)
       window.removeEventListener('scroll', recompute, true)
     }
-  }, [open, step?.target, index])
+  }, [open, step?.target, step?.clickBefore, index])
 
   function next() {
     if (index < steps.length - 1) setIndex(index + 1)

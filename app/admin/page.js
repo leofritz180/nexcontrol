@@ -625,7 +625,7 @@ export default function AdminPage() {
   const [focusLoad, setFocusLoad] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [trashMetas, setTrashMetas] = useState([])
-  const [heroPeriod, setHeroPeriod] = useState('all')
+  const [heroPeriod, setHeroPeriod] = useState('month')
   const [costs, setCosts] = useState([])
   const tabRef = useRef(null)
   const [tabLine, setTabLine] = useState({ left: 0, width: 0 })
@@ -806,6 +806,10 @@ export default function AdminPage() {
       } else if(heroPeriod==='30d') {
         const d = new Date(now); d.setDate(d.getDate()-30)
         filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
+      } else if(heroPeriod==='month') {
+        // Mes atual: do dia 1 do mes corrente ate agora
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+        filtered = fechadas.filter(m=>new Date(m.fechada_em)>=monthStart)
       }
     }
     const lucro = Number(filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0).toFixed(2))
@@ -2001,10 +2005,21 @@ export default function AdminPage() {
               }}>
               <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:32 }}>
                 <p style={{ fontSize:12, color:'var(--t3)', fontWeight:500, margin:0, letterSpacing:'0' }}>
-                  {heroPeriod==='all'?'Lucro consolidado · desde o inicio':heroPeriod==='today'?'Lucro de hoje':heroPeriod==='yesterday'?'Lucro de ontem':heroPeriod==='7d'?'Lucro · ultimos 7 dias':'Lucro · ultimos 30 dias'}
+                  {(() => {
+                    if (heroPeriod === 'month') {
+                      const now = new Date()
+                      const monthName = now.toLocaleDateString('pt-BR', { month: 'long' })
+                      return `Lucro · ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`
+                    }
+                    if (heroPeriod === 'all') return 'Lucro consolidado · desde o inicio'
+                    if (heroPeriod === 'today') return 'Lucro de hoje'
+                    if (heroPeriod === 'yesterday') return 'Lucro de ontem'
+                    if (heroPeriod === '7d') return 'Lucro · ultimos 7 dias'
+                    return 'Lucro · ultimos 30 dias'
+                  })()}
                 </p>
                 <div style={{ display:'flex', gap:0 }}>
-                  {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d']].map(([k,l])=>(
+                  {[['month','Mes'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d'],['all','Tudo']].map(([k,l])=>(
                     <button key={k} onClick={()=>setHeroPeriod(k)}
                       style={{
                         fontSize:11, fontWeight:500, padding:'6px 12px',

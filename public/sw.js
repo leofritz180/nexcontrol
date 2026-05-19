@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v57 (Fix tour /admin: data-tour estava no componente DemoAdminDashboard inativo — movido pro dashboard real)
+// NexControl Service Worker — Push Notifications v58 (/admin hero default = mes corrente em vez de tudo desde o inicio)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -11,7 +11,7 @@ import { ProLockedCard } from '../../components/pro/ProGate'
 import ProBanner from '../../components/pro/ProBanner'
 import dynamic from 'next/dynamic'
 const Onboarding = dynamic(() => import('../../components/Onboarding'), { ssr: false })
-import RouteTour from '../../components/RouteTour'
+import TabAwareTour from '../../components/TabAwareTour'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
 import DemoModeCard from '../../components/DemoModeCard'
 import RankBadge from '../../components/rank/RankBadge'
@@ -1322,8 +1322,16 @@ export default function AdminPage() {
           </motion.button>
         </motion.div>
 
-        {/* Tour da rota — auto-trigger + botao flutuante "?" */}
-        <RouteTour tourId="admin" />
+        {/* Tour por tab — cada aba dispara seu proprio tour */}
+        <TabAwareTour
+          activeTab={tab}
+          tabMap={{
+            overview: 'admin',
+            myops: 'admin-myops',
+            operations: 'admin-operations',
+            trash: 'admin-trash',
+          }}
+        />
 
         <TrialBanner tenant={tenant} subscription={sub} stats={convStats}/>
         <ConversionModal tenant={tenant} subscription={sub} stats={convStats}/>
@@ -1419,6 +1427,7 @@ export default function AdminPage() {
 
                 {/* Hero da aba — header executivo */}
                 <motion.div
+                  data-tour="myops-header"
                   initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
                   transition={{duration:0.4, ease}}
                   style={{
@@ -1452,6 +1461,7 @@ export default function AdminPage() {
                       </div>
                     </div>
                     <motion.button
+                      data-tour="myops-new"
                       onClick={()=>setMyShowForm(!myShowForm)}
                       whileHover={{ scale: 1.03, boxShadow: myShowForm ? 'none' : '0 10px 32px rgba(229,57,53,0.55), 0 0 50px rgba(229,57,53,0.2)' }}
                       whileTap={{ scale: 0.96 }}
@@ -1768,7 +1778,7 @@ export default function AdminPage() {
                 )}
                 </AnimatePresence>
 
-                <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                <div data-tour="myops-list" style={{display:'flex',flexDirection:'column',gap:10}}>
                   {myMetas.length===0 ? (
                     <motion.div
                       initial={{opacity:0, scale:0.98}} animate={{opacity:1, scale:1}}
@@ -2436,7 +2446,7 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease }}>
             {/* Filters */}
-            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:24,flexWrap:'wrap'}}>
+            <div data-tour="ops-filters" style={{display:'flex',alignItems:'center',gap:10,marginBottom:24,flexWrap:'wrap'}}>
               <select className="input" value={selectedOp||''} onChange={e=>setSelectedOp(e.target.value||null)} style={{width:170,padding:'8px 14px',fontSize:12}}>
                 <option value="">Todos operadores</option>
                 {operators.map(op=><option key={op.id} value={op.id}>{getName(op)}</option>)}
@@ -2608,7 +2618,7 @@ export default function AdminPage() {
             })()}
 
             {/* Grid */}
-            <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:16}}>
+            <div data-tour="ops-list" className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:16}}>
               {[...filteredMetas].sort((a,b) => {
                 // When filtering by fechadas: most recent first
                 if (metaStatus === 'fechada') {

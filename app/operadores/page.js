@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
-import RouteTour from '../../components/RouteTour'
+import TabAwareTour from '../../components/TabAwareTour'
 import { SLOTS } from '../../lib/slots-data'
 import { DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_METAS, DEMO_REMESSAS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 import { validClosedMetas } from '../../lib/operator-stats'
@@ -1974,7 +1974,14 @@ export default function OperadoresPage() {
           </motion.div>
         )}
       </AnimatePresence>
-      <RouteTour tourId="operadores" />
+      <TabAwareTour
+        activeTab={tab}
+        tabMap={{
+          ranking: 'operadores',
+          folha: 'operadores-folha',
+          config: 'operadores-config',
+        }}
+      />
     </AppLayout>
   )
 }

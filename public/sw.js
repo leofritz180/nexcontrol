@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v59 (Tour completo no /operator: 7 passos cobrindo KPIs, metas, stats, ranking, conquistas, alertas)
+// NexControl Service Worker — Push Notifications v60 (Tour por tab: cada aba dispara seu proprio tour quando o user clica, sem antecipar)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

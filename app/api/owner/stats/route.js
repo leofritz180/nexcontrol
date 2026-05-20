@@ -38,7 +38,7 @@ export async function POST(req) {
       { data: mpPayments },
     ] = await Promise.all([
       sb.from('profiles').select('*'),
-      sb.from('tenants').select('id,name,created_at,trial_end,subscription_status'),
+      sb.from('tenants').select('id,name,created_at,trial_end,subscription_status,migrated_to_tenant_id,migrated_at'),
       sb.from('subscriptions').select('*'),
       sb.from('metas').select('id,operator_id,tenant_id,status,status_fechamento,quantidade_contas,lucro_final,rede,created_at,fechada_em,deleted_at'),
       sb.from('remessas').select('id,meta_id,lucro,prejuizo,deposito,saque,resultado,created_at'),
@@ -213,7 +213,8 @@ export async function POST(req) {
     if (refund7d.length > refund24h.length) {
       alerts.push({ text: `${refund7d.length} reembolso(s) nos ultimos 7 dias`, type: 'warn' })
     }
-    const expired = (tenants || []).filter(t => t.trial_end && new Date(t.trial_end) < now)
+    // Trials expirados sem sub — exclui tenants migrados (cliente foi pra conta nova)
+    const expired = (tenants || []).filter(t => t.trial_end && new Date(t.trial_end) < now && !t.migrated_to_tenant_id)
     const expiredNoSub = expired.filter(t => !allSubs.find(s => s.tenant_id === t.id && s.status === 'active'))
     if (expiredNoSub.length > 0) alerts.push({ text: `${expiredNoSub.length} trial(s) expirado(s) sem assinatura`, type: 'critical' })
 

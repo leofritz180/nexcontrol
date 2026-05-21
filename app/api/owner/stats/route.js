@@ -28,22 +28,44 @@ export async function POST(req) {
       return dt.toLocaleDateString('en-CA', { timeZone: BR_TZ })
     }
 
+    // ========================================================
+    // Helper: pagina automaticamente pra contornar limite 1000
+    // do Supabase. Sem isso, owner panel mostra dados parciais
+    // (caso da remessas com 10000+ linhas).
+    // ========================================================
+    async function fetchAll(table, select, opts = {}) {
+      const PAGE = 1000
+      let all = []
+      let from = 0
+      while (true) {
+        let q = sb.from(table).select(select).range(from, from + PAGE - 1)
+        if (opts.order) q = q.order(opts.order.column, { ascending: opts.order.ascending ?? false })
+        const { data, error } = await q
+        if (error) throw error
+        if (!data || data.length === 0) break
+        all = all.concat(data)
+        if (data.length < PAGE) break
+        from += PAGE
+      }
+      return all
+    }
+
     const [
-      { data: profiles },
-      { data: tenants },
-      { data: subscriptions },
-      { data: metas },
-      { data: remessas },
-      { data: asaasPayments },
-      { data: mpPayments },
+      profiles,
+      tenants,
+      subscriptions,
+      metas,
+      remessas,
+      asaasPayments,
+      mpPayments,
     ] = await Promise.all([
-      sb.from('profiles').select('*'),
-      sb.from('tenants').select('id,name,created_at,trial_end,subscription_status,migrated_to_tenant_id,migrated_at'),
-      sb.from('subscriptions').select('*'),
-      sb.from('metas').select('id,operator_id,tenant_id,status,status_fechamento,quantidade_contas,lucro_final,rede,created_at,fechada_em,deleted_at'),
-      sb.from('remessas').select('id,meta_id,lucro,prejuizo,deposito,saque,resultado,created_at'),
-      sb.from('asaas_payments').select('id,tenant_id,amount,status,created_at,updated_at').order('created_at', { ascending: false }),
-      sb.from('mp_payments').select('id,tenant_id,amount,status,created_at,updated_at').order('created_at', { ascending: false }),
+      fetchAll('profiles', '*'),
+      fetchAll('tenants', 'id,name,created_at,trial_end,subscription_status,migrated_to_tenant_id,migrated_at'),
+      fetchAll('subscriptions', '*'),
+      fetchAll('metas', 'id,operator_id,tenant_id,status,status_fechamento,quantidade_contas,lucro_final,rede,created_at,fechada_em,deleted_at'),
+      fetchAll('remessas', 'id,meta_id,lucro,prejuizo,deposito,saque,resultado,created_at'),
+      fetchAll('asaas_payments', 'id,tenant_id,amount,status,created_at,updated_at', { order: { column: 'created_at', ascending: false } }),
+      fetchAll('mp_payments', 'id,tenant_id,amount,status,created_at,updated_at', { order: { column: 'created_at', ascending: false } }),
     ])
 
     const admins = (profiles || []).filter(p => p.role === 'admin')

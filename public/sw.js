@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v60 (Tour por tab: cada aba dispara seu proprio tour quando o user clica, sem antecipar)
+// NexControl Service Worker — Push Notifications v61 (Fix /owner: pagina remessas/metas pra contornar limite 1000 do Supabase — dados estavam congelados)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -24,6 +24,7 @@ export default function BillingMpPage() {
   const router = useRouter()
   const sp = useSearchParams()
   const opQty = Math.max(0, Number(sp.get('operators')) || 0)
+  const isRenewal = sp.get('renewal') === '1'
 
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
@@ -130,7 +131,8 @@ export default function BillingMpPage() {
                 setSelectedPlan={setSelectedPlan}
                 selectedCalc={selectedCalc}
                 onConfirm={handleStart}
-                onBack={() => router.push('/billing')}
+                onBack={() => router.push(isRenewal ? '/admin' : '/billing')}
+                isRenewal={isRenewal}
               />
             </motion.div>
           )}
@@ -166,7 +168,7 @@ export default function BillingMpPage() {
 
 /* ── Cards ── */
 
-function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack }) {
+function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal }) {
   const planLabel = opQty > 0 ? `Admin + ${opQty} operador${opQty > 1 ? 'es' : ''}` : 'Admin Solo'
 
   return (
@@ -185,11 +187,29 @@ function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selecte
         Voltar
       </button>
 
+      {isRenewal && (
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 7,
+          padding: '5px 12px', borderRadius: 99, marginBottom: 14,
+          background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)',
+          fontSize: 10, fontWeight: 800, color: '#e53935', letterSpacing: '0.08em',
+        }}>
+          <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#e53935' }}/>
+          RENOVAÇÃO DE PLANO
+        </div>
+      )}
+
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round">
+            {isRenewal
+              ? <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+              : <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>}
+          </svg>
         </div>
-        <h1 style={{ fontSize: 22, fontWeight: 900, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Escolha o periodo</h1>
+        <h1 style={{ fontSize: 22, fontWeight: 900, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.02em' }}>
+          {isRenewal ? 'Renove seu plano' : 'Escolha o periodo'}
+        </h1>
         <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>
           {planLabel} · R$ {fmt(monthlyTier)}/mês
         </p>
@@ -293,7 +313,7 @@ function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selecte
         }}
       >
         <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Gerar PIX · R$ {fmt(selectedCalc.total)}
+        {isRenewal ? 'Renovar' : 'Gerar PIX'} · R$ {fmt(selectedCalc.total)}
       </motion.button>
 
       <p style={{ fontSize: 10, color: '#64748B', textAlign: 'center', margin: '12px 0 0' }}>

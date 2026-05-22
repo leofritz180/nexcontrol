@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v68 (Fluxo de assinatura: /billing → /billing-mp com seletor de periodo)
+// NexControl Service Worker — Push Notifications v69 (Renovacao pula direto pro seletor de periodo)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

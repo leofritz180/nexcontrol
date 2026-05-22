@@ -208,7 +208,7 @@ export default function SubscriptionGate({ children }) {
           )}
 
           <button
-            onClick={() => router.push('/billing')}
+            onClick={() => router.push(isExpired ? `/billing-mp?operators=${stats.ops || 0}&renewal=1` : '/billing')}
             className="btn btn-profit btn-lg"
             style={{
               width: '100%', justifyContent: 'center', fontSize: 14.5, fontWeight: 800,

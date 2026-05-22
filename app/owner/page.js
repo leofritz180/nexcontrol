@@ -577,17 +577,89 @@ export default function OwnerPage() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 18 }}
                     transition={{ duration: 0.38, ease }}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', borderRadius: 10, background: 'rgba(209,250,229,0.04)', border: '1px solid rgba(209,250,229,0.12)', gap: 12 }}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '11px 14px', borderRadius: 10, gap: 12,
+                      background: s.kind === 'renewal'
+                        ? 'rgba(229,57,53,0.05)'
+                        : s.kind === 'upgrade'
+                          ? 'rgba(255,255,255,0.03)'
+                          : 'rgba(209,250,229,0.05)',
+                      border: '1px solid ' + (
+                        s.kind === 'renewal'
+                          ? 'rgba(229,57,53,0.22)'
+                          : s.kind === 'upgrade'
+                            ? 'rgba(255,255,255,0.08)'
+                            : 'rgba(209,250,229,0.18)'
+                      ),
+                    }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(209,250,229,0.1)', border: '1px solid rgba(209,250,229,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: s.kind === 'renewal'
+                          ? 'rgba(229,57,53,0.1)'
+                          : s.kind === 'upgrade'
+                            ? 'rgba(255,255,255,0.05)'
+                            : 'rgba(209,250,229,0.12)',
+                        border: '1px solid ' + (
+                          s.kind === 'renewal'
+                            ? 'rgba(229,57,53,0.28)'
+                            : s.kind === 'upgrade'
+                              ? 'rgba(255,255,255,0.1)'
+                              : 'rgba(209,250,229,0.22)'
+                        ),
+                      }}>
+                        {s.kind === 'renewal' ? (
+                          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.5" strokeLinecap="round">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                          </svg>
+                        ) : s.kind === 'upgrade' ? (
+                          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.5" strokeLinecap="round">
+                            <polyline points="17 11 12 6 7 11"/>
+                            <polyline points="17 18 12 13 7 18"/>
+                          </svg>
+                        ) : (
+                          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                          </svg>
+                        )}
                       </div>
                       <p style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.tenant_name}</p>
+                      <span style={{
+                        fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 4,
+                        letterSpacing: '0.08em', textTransform: 'uppercase', flexShrink: 0,
+                        background: s.kind === 'renewal'
+                          ? 'rgba(229,57,53,0.12)'
+                          : s.kind === 'upgrade'
+                            ? 'rgba(255,255,255,0.06)'
+                            : 'rgba(209,250,229,0.12)',
+                        color: s.kind === 'renewal'
+                          ? '#e53935'
+                          : s.kind === 'upgrade'
+                            ? 'rgba(255,255,255,0.78)'
+                            : '#D1FAE5',
+                        border: '1px solid ' + (
+                          s.kind === 'renewal'
+                            ? 'rgba(229,57,53,0.28)'
+                            : s.kind === 'upgrade'
+                              ? 'rgba(255,255,255,0.1)'
+                              : 'rgba(209,250,229,0.22)'
+                        ),
+                      }}>
+                        {s.kind === 'renewal' ? '↻ Renovação' : s.kind === 'upgrade' ? 'Upgrade' : '✨ Novo'}
+                      </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
                       <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{relativeTime(s.created_at)}</span>
-                      <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#D1FAE5' }}>+R$ {fmt(s.amount)}</span>
+                      <span style={{
+                        fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800,
+                        color: s.kind === 'renewal' ? '#e53935' : s.kind === 'upgrade' ? '#F1F5F9' : '#D1FAE5',
+                      }}>+R$ {fmt(s.amount)}</span>
                     </div>
                   </motion.div>
                 ))}

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v62 (Owner vitalicio: leofritz180 nunca eh bloqueado pelo gate)
+// NexControl Service Worker — Push Notifications v63 (Owner vendas recentes: distingue Novo/Renovação/Upgrade com badge e cor)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -282,12 +282,36 @@ export async function POST(req) {
     }
     const resolveEmail = p => adminByTenant[p.tenant_id]?.email || '—'
 
+    // Pra cada tenant, calcula o PRIMEIRO pagamento aprovado (mais antigo)
+    // Isso permite classificar cada pagamento como new/upgrade/renewal:
+    //   - new:     eh o primeiro pagamento do tenant
+    //   - upgrade: nao eh o primeiro, gap < 25 dias do anterior do mesmo tenant
+    //   - renewal: nao eh o primeiro, gap >= 25 dias do anterior do mesmo tenant
+    const paidByTenant = {}
+    for (const p of paidPayments) {
+      if (!paidByTenant[p.tenant_id]) paidByTenant[p.tenant_id] = []
+      paidByTenant[p.tenant_id].push(p)
+    }
+    // Ordena cada tenant cronologico (mais antigo primeiro)
+    for (const tid of Object.keys(paidByTenant)) {
+      paidByTenant[tid].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    }
+    function classifySale(p) {
+      const list = paidByTenant[p.tenant_id] || []
+      const idx = list.findIndex(x => x.id === p.id && x._gateway === p._gateway)
+      if (idx <= 0) return 'new'
+      const prev = list[idx - 1]
+      const gapDays = (new Date(p.created_at) - new Date(prev.created_at)) / 86400000
+      return gapDays >= 25 ? 'renewal' : 'upgrade'
+    }
+
     const recentSales = paidPayments.slice(0, 10).map(p => ({
       id: p.id,
       tenant_id: p.tenant_id,
       tenant_name: resolveName(p),
       amount: Number(p.amount || 0),
       created_at: p.created_at,
+      kind: classifySale(p),
     }))
 
     // HISTORICO COMPLETO — todos pagamentos aprovados desde o lancamento
@@ -299,6 +323,7 @@ export async function POST(req) {
       amount: Number(p.amount || 0),
       gateway: p._gateway, // 'asaas' | 'mp'
       created_at: p.created_at,
+      kind: classifySale(p), // 'new' | 'renewal' | 'upgrade'
     }))
 
     // Agregados extras pro card de histórico

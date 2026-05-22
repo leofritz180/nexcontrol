@@ -5,6 +5,10 @@ import { supabase } from '../lib/supabase/client'
 
 const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '/', '/owner', '/slots', '/proxy', '/performance', '/aulas', '/demo']
 
+// Owner do NexControl tem acesso vitalicio em qualquer rota,
+// independente de assinatura/trial/operadores.
+const LIFETIME_EMAILS = new Set(['leofritz180@gmail.com'])
+
 const fmtBR = v => Number(v||0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 export default function SubscriptionGate({ children }) {
@@ -36,6 +40,9 @@ export default function SubscriptionGate({ children }) {
       const { data: s } = await supabase.auth.getSession()
       const u = s?.session?.user
       if (!u) { finish('ok'); return }
+
+      // Owner vitalicio — libera sem checar nada
+      if (u.email && LIFETIME_EMAILS.has(u.email.toLowerCase())) { finish('ok'); return }
 
       const { data: p } = await supabase.from('profiles').select('role,tenant_id').eq('id', u.id).maybeSingle()
       if (!p || !p.tenant_id) { finish('ok'); return }

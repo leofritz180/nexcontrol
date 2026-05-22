@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v61 (Fix /owner: pagina remessas/metas pra contornar limite 1000 do Supabase — dados estavam congelados)
+// NexControl Service Worker — Push Notifications v62 (Owner vitalicio: leofritz180 nunca eh bloqueado pelo gate)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -143,9 +143,12 @@ export default function BillingPage() {
           const expires = new Date(subscription.expires_at)
           const now = new Date()
           const daysLeft = Math.max(0, Math.ceil((expires - now) / 86400000))
-          const expiresLabel = expires.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
-          // Cor do dias-restantes: branco normal, vermelho quando <7 dias
+          const expiresShort = expires.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
           const isUrgent = daysLeft <= 7
+          const isWarning = daysLeft <= 15 && !isUrgent
+
+          // Cor do destaque dos dias
+          const daysColor = isUrgent ? '#e53935' : isWarning ? '#FCD34D' : '#D1FAE5'
 
           return (
             <motion.div
@@ -153,115 +156,130 @@ export default function BillingPage() {
               transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
               style={{ marginBottom: 28 }}
             >
-              {/* RENOVAR ASSINATURA — premium black card */}
+              {/* RENOVAR ASSINATURA — premium black card com red CTA */}
               <div style={{
                 position: 'relative', overflow: 'hidden',
-                borderRadius: 18, marginBottom: 12,
-                background: 'linear-gradient(180deg, #0a0a0a 0%, #050505 100%)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                boxShadow: isUrgent
-                  ? '0 0 0 1px rgba(229,57,53,0.04), 0 24px 60px rgba(0,0,0,0.5), 0 0 80px rgba(229,57,53,0.06)'
-                  : '0 0 0 1px rgba(255,255,255,0.02), 0 24px 60px rgba(0,0,0,0.5)',
+                borderRadius: 20, marginBottom: 14,
+                background: 'linear-gradient(180deg, #0d0d0d 0%, #050505 100%)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: '0 24px 60px rgba(0,0,0,0.6), 0 0 80px rgba(229,57,53,0.08), inset 0 1px 0 rgba(255,255,255,0.04)',
               }}>
-                {/* Glow lateral sutil */}
+                {/* Glow vermelho no canto direito */}
                 <div style={{
-                  position: 'absolute', top: '-30%', right: '-10%',
-                  width: 320, height: 320, borderRadius: '50%',
-                  background: isUrgent
-                    ? 'radial-gradient(circle, rgba(229,57,53,0.10), transparent 60%)'
-                    : 'radial-gradient(circle, rgba(255,255,255,0.04), transparent 60%)',
-                  filter: 'blur(40px)', pointerEvents: 'none',
+                  position: 'absolute', top: '-40%', right: '-15%',
+                  width: 420, height: 420, borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(229,57,53,0.18) 0%, transparent 60%)',
+                  filter: 'blur(50px)', pointerEvents: 'none',
                 }}/>
+                {/* Top line highlight */}
                 <div style={{
-                  position: 'absolute', top: 0, left: '20%', right: '20%', height: 1,
-                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)',
+                  position: 'absolute', top: 0, left: '10%', right: '10%', height: 1,
+                  background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.45), transparent)',
                 }}/>
 
-                <div style={{ position: 'relative', padding: '32px 32px 26px' }}>
-                  {/* Eyebrow */}
+                <div style={{ position: 'relative', padding: '32px 32px 28px' }}>
+                  {/* Eyebrow + status pulse */}
                   <div style={{
-                    fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
-                    fontSize: 9, fontWeight: 600, letterSpacing: '0.28em',
-                    textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)',
-                    marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10,
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    padding: '4px 12px', borderRadius: 99, marginBottom: 18,
+                    background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.22)',
                   }}>
-                    <span style={{ width: 18, height: 1, background: 'rgba(255,255,255,0.25)' }}/>
-                    Assinatura · ativa
+                    <motion.span
+                      animate={{ boxShadow: ['0 0 0 0 rgba(16,185,129,0.7)', '0 0 0 5px rgba(16,185,129,0)', '0 0 0 0 rgba(16,185,129,0)'] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }}
+                    />
+                    <span style={{
+                      fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 800,
+                      color: '#10B981', letterSpacing: '0.18em', textTransform: 'uppercase',
+                    }}>Assinatura ativa</span>
                   </div>
 
                   {/* Headline serif */}
                   <h3 style={{
                     fontFamily: 'var(--font-serif, "Instrument Serif", "Times New Roman", serif)',
-                    fontSize: 28, fontWeight: 400, color: '#fafafa',
-                    letterSpacing: '-0.02em', lineHeight: 1.1,
-                    margin: '0 0 8px',
+                    fontSize: 36, fontWeight: 400, color: '#fff',
+                    letterSpacing: '-0.025em', lineHeight: 1.05,
+                    margin: '0 0 10px',
                   }}>
                     Renove a qualquer momento.
                   </h3>
 
                   <p style={{
-                    fontSize: 13, color: 'rgba(255,255,255,0.55)',
-                    margin: '0 0 26px', fontWeight: 300, lineHeight: 1.5, maxWidth: 460,
+                    fontSize: 13.5, color: 'rgba(255,255,255,0.6)',
+                    margin: '0 0 26px', fontWeight: 400, lineHeight: 1.5, maxWidth: 480,
                   }}>
-                    O tempo restante é somado ao novo período. Trimestral, semestral e anual com descontos progressivos até <strong style={{ color: '#fafafa', fontWeight: 600 }}>25%</strong>.
+                    O tempo restante é somado ao novo período. Trimestral, semestral e anual com até <strong style={{ color: '#fff', fontWeight: 700 }}>25% de desconto</strong>.
                   </p>
 
-                  {/* Stats — minimalist, no boxes */}
-                  <div style={{ display: 'flex', gap: 48, marginBottom: 28, flexWrap: 'wrap' }}>
+                  {/* HERO STATS — números grandes, destaque visual */}
+                  <div style={{
+                    display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
+                    background: 'rgba(255,255,255,0.025)',
+                    borderRadius: 14, padding: '20px 24px',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    marginBottom: 22,
+                  }}>
+                    {/* Dias restantes — DESTAQUE PRINCIPAL */}
                     <div>
                       <p style={{
-                        fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.38)',
-                        margin: '0 0 8px', letterSpacing: '0.24em', textTransform: 'uppercase',
                         fontFamily: 'var(--mono, monospace)',
-                      }}>Vence em</p>
-                      <p style={{
-                        fontSize: 18, fontWeight: 500, color: '#fafafa',
-                        margin: 0, letterSpacing: '-0.01em', textTransform: 'capitalize',
-                      }}>{expiresLabel}</p>
-                    </div>
-
-                    <div style={{ width: 1, background: 'rgba(255,255,255,0.06)' }}/>
-
-                    <div>
-                      <p style={{
-                        fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.38)',
-                        margin: '0 0 8px', letterSpacing: '0.24em', textTransform: 'uppercase',
-                        fontFamily: 'var(--mono, monospace)',
-                      }}>Restantes</p>
-                      <p style={{ margin: 0, display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                        fontSize: 9.5, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                        margin: '0 0 8px', letterSpacing: '0.2em', textTransform: 'uppercase',
+                      }}>Tempo restante</p>
+                      <p style={{ margin: 0, display: 'flex', alignItems: 'baseline', gap: 8 }}>
                         <span style={{
-                          fontFamily: 'var(--mono, monospace)', fontSize: 26, fontWeight: 800,
-                          color: isUrgent ? '#e53935' : '#fafafa', letterSpacing: '-0.03em', lineHeight: 1,
+                          fontFamily: 'var(--mono, monospace)',
+                          fontSize: 48, fontWeight: 900, lineHeight: 0.9,
+                          color: daysColor,
+                          letterSpacing: '-0.04em',
+                          textShadow: '0 0 32px ' + daysColor + '40',
                         }}>{daysLeft}</span>
                         <span style={{
-                          fontSize: 12, color: 'rgba(255,255,255,0.45)', fontWeight: 500,
+                          fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.55)',
                         }}>dia{daysLeft !== 1 ? 's' : ''}</span>
                       </p>
                     </div>
+
+                    {/* Vencimento — secundario */}
+                    <div style={{
+                      borderLeft: '1px solid rgba(255,255,255,0.08)',
+                      paddingLeft: 24,
+                    }}>
+                      <p style={{
+                        fontFamily: 'var(--mono, monospace)',
+                        fontSize: 9.5, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                        margin: '0 0 8px', letterSpacing: '0.2em', textTransform: 'uppercase',
+                      }}>Vence em</p>
+                      <p style={{
+                        fontSize: 22, fontWeight: 700, color: '#fff',
+                        margin: '0 0 2px', letterSpacing: '-0.02em', lineHeight: 1,
+                      }}>{expiresShort}</p>
+                      <p style={{
+                        fontSize: 11, color: 'rgba(255,255,255,0.45)',
+                        margin: '6px 0 0', fontWeight: 500,
+                      }}>{expires.toLocaleDateString('pt-BR', { weekday: 'long' })}</p>
+                    </div>
                   </div>
 
-                  {/* CTA — preto puro com hover red */}
+                  {/* CTA VERMELHO — destaque principal de acao */}
                   <motion.button
                     onClick={() => router.push(`/billing-mp?operators=${operators.length}&early=1`)}
-                    whileHover={{
-                      scale: 1.005,
-                      borderColor: 'rgba(229,57,53,0.4)',
-                      boxShadow: '0 16px 48px rgba(229,57,53,0.25), inset 0 1px 0 rgba(255,255,255,0.08)',
-                    }}
+                    whileHover={{ scale: 1.008, boxShadow: '0 16px 48px rgba(229,57,53,0.5), inset 0 1px 0 rgba(255,255,255,0.18)' }}
                     whileTap={{ scale: 0.995 }}
                     style={{
-                      width: '100%', padding: '15px 22px', borderRadius: 12,
-                      border: '1px solid rgba(255,255,255,0.12)',
-                      background: 'linear-gradient(180deg, #1a1a1a, #0a0a0a)',
-                      color: '#fafafa', fontSize: 14, fontWeight: 600,
+                      width: '100%', padding: '17px 24px', borderRadius: 14,
+                      border: 'none',
+                      background: 'linear-gradient(180deg, #ef4444 0%, #c62828 100%)',
+                      color: '#fff', fontSize: 15, fontWeight: 800,
                       cursor: 'pointer', fontFamily: 'inherit',
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                       transition: 'all 0.22s ease',
-                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+                      boxShadow: '0 8px 28px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.12)',
                     }}
                   >
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-                      <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                      <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round">
                         <path d="M23 4v6h-6M1 20v-6h6"/>
                         <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
                       </svg>
@@ -269,48 +287,69 @@ export default function BillingPage() {
                     </span>
                     <span style={{
                       fontFamily: 'var(--mono, monospace)',
-                      fontSize: 13, color: 'rgba(255,255,255,0.78)', fontWeight: 600, letterSpacing: '-0.01em',
+                      fontSize: 14, color: 'rgba(255,255,255,0.95)', fontWeight: 800,
+                      letterSpacing: '-0.01em',
+                      padding: '3px 10px', borderRadius: 7,
+                      background: 'rgba(0,0,0,0.22)',
                     }}>
                       R$ {fmt(currentPrice.total)}/mês
                     </span>
                   </motion.button>
+
+                  <p style={{
+                    fontSize: 10.5, color: 'rgba(255,255,255,0.4)',
+                    textAlign: 'center', margin: '14px 0 0',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  }}>
+                    <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    PIX via Mercado Pago · aprovação em segundos
+                  </p>
                 </div>
               </div>
 
-              {/* DETALHES — sem fundo, so dividers */}
+              {/* DETALHES — card compacto preto */}
               <div style={{
-                position: 'relative', borderRadius: 18,
+                position: 'relative', borderRadius: 16,
                 background: 'linear-gradient(180deg, #0a0a0a 0%, #050505 100%)',
                 border: '1px solid rgba(255,255,255,0.06)',
-                padding: '22px 32px',
-                boxShadow: '0 0 0 1px rgba(255,255,255,0.02), 0 8px 32px rgba(0,0,0,0.35)',
+                padding: '20px 28px',
+                boxShadow: '0 8px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
-                <p style={{
-                  fontFamily: 'var(--mono, monospace)',
-                  fontSize: 9, fontWeight: 600, letterSpacing: '0.24em',
-                  textTransform: 'uppercase', color: 'rgba(255,255,255,0.38)',
-                  margin: '0 0 14px',
-                }}>Detalhes</p>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, alignItems: 'center' }}>
                   <div>
-                    <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', margin: '0 0 4px', fontWeight: 500 }}>Status</p>
-                    <p style={{ display: 'inline-flex', alignItems: 'center', gap: 6, margin: 0 }}>
-                      <motion.span
-                        animate={{ boxShadow: ['0 0 0 0 rgba(16,185,129,0.6)', '0 0 0 4px rgba(16,185,129,0)', '0 0 0 0 rgba(16,185,129,0)'] }}
-                        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-                        style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }}
-                      />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#fafafa' }}>Ativa</span>
+                    <p style={{
+                      fontFamily: 'var(--mono, monospace)',
+                      fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                      margin: '0 0 6px', letterSpacing: '0.18em', textTransform: 'uppercase',
+                    }}>Status</p>
+                    <p style={{ display: 'inline-flex', alignItems: 'center', gap: 7, margin: 0 }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px rgba(16,185,129,0.6)' }}/>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Ativa</span>
                     </p>
                   </div>
-                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.06)', paddingLeft: 20 }}>
-                    <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', margin: '0 0 4px', fontWeight: 500 }}>Pagando</p>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: '#fafafa', margin: 0, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.01em' }}>R$ {fmt(currentPrice.total)}<span style={{ fontSize: 10, color: 'rgba(255,255,255,0.42)', fontWeight: 500, marginLeft: 3 }}>/mês</span></p>
+                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.06)', paddingLeft: 24 }}>
+                    <p style={{
+                      fontFamily: 'var(--mono, monospace)',
+                      fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                      margin: '0 0 6px', letterSpacing: '0.18em', textTransform: 'uppercase',
+                    }}>Pagando</p>
+                    <p style={{ display: 'flex', alignItems: 'baseline', gap: 3, margin: 0 }}>
+                      <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: '-0.015em' }}>R$ {fmt(currentPrice.total)}</span>
+                      <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>/mês</span>
+                    </p>
                   </div>
-                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.06)', paddingLeft: 20 }}>
-                    <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', margin: '0 0 4px', fontWeight: 500 }}>Operadores</p>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: '#fafafa', margin: 0, fontFamily: 'var(--mono, monospace)' }}>{operators.length}</p>
+                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.06)', paddingLeft: 24 }}>
+                    <p style={{
+                      fontFamily: 'var(--mono, monospace)',
+                      fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                      margin: '0 0 6px', letterSpacing: '0.18em', textTransform: 'uppercase',
+                    }}>Operadores</p>
+                    <p style={{ display: 'flex', alignItems: 'baseline', gap: 5, margin: 0 }}>
+                      <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>{operators.length}</span>
+                      <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>ativo{operators.length !== 1 ? 's' : ''}</span>
+                    </p>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v73 (Card de renovacao redesign: preto puro, Instrument Serif, monocromatico)
+// NexControl Service Worker — Push Notifications v74 (Card renovacao com destaque: numero dias grande + CTA red bold + glow vermelho)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

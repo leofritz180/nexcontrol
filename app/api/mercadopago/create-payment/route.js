@@ -29,12 +29,19 @@ export async function POST(req) {
       return NextResponse.json({ error: 'email e name sao obrigatorios' }, { status: 400 })
     }
 
-    // Se vier plan_period, calcula com desconto. Senao usa amount manual ou default 39.9
+    // Resolucao do valor + duracao do plano:
+    //   plan_period + amount  → usa amount (frontend ja combinou tier+periodo) e periodo pra planMonths
+    //   plan_period sozinho   → calcula via lib/plans (so periodo, sem tier de operadores)
+    //   amount sozinho        → cobranca avulsa, 1 mes (upgrade de operador, etc)
+    //   nada                  → default 39.9 / 1 mes
     let transactionAmount, planMonths
     if (plan_period) {
-      const calc = calculatePrice(plan_period, operatorCountIn || 1)
-      transactionAmount = calc.total
-      planMonths = calc.plan.months
+      planMonths = getPlan(plan_period).months
+      if (Number(amount) > 0) {
+        transactionAmount = Number(amount)
+      } else {
+        transactionAmount = calculatePrice(plan_period, operatorCountIn || 1).total
+      }
     } else {
       transactionAmount = Number(amount) > 0 ? Number(amount) : 39.9
       planMonths = 1

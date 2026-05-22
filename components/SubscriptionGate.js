@@ -208,7 +208,7 @@ export default function SubscriptionGate({ children }) {
           )}
 
           <button
-            onClick={() => router.push('/billing-mp')}
+            onClick={() => router.push('/billing')}
             className="btn btn-profit btn-lg"
             style={{
               width: '100%', justifyContent: 'center', fontSize: 14.5, fontWeight: 800,

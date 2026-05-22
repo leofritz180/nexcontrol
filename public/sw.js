@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v67 (Asaas removido + reset tour flags por user)
+// NexControl Service Worker — Push Notifications v68 (Fluxo de assinatura: /billing → /billing-mp com seletor de periodo)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -201,7 +201,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
           {/* CTA */}
           <div style={{ padding: '18px 32px 28px' }}>
             <motion.button
-              onClick={() => router.push('/billing-mp')}
+              onClick={() => router.push('/billing')}
               whileHover={{ scale: 1.015, boxShadow: '0 0 0 1px rgba(209,250,229,0.35), 0 12px 28px rgba(209,250,229,0.28), 0 0 42px rgba(209,250,229,0.22)' }}
               whileTap={{ scale: 0.98 }}
               className="nc-unlock-cta"
@@ -349,7 +349,7 @@ export default function TrialBanner({ tenant, subscription, stats }) {
             </div>
           )}
           {/* CTA — increasingly prominent */}
-          <button onClick={()=>router.push('/billing-mp')} className={`btn ${t.trialExpired||t.level==='orange'?'btn-profit':t.level==='yellow'?'btn-brand':'btn-ghost'}`} style={{
+          <button onClick={()=>router.push('/billing')} className={`btn ${t.trialExpired||t.level==='orange'?'btn-profit':t.level==='yellow'?'btn-brand':'btn-ghost'}`} style={{
             whiteSpace:'nowrap',
             padding:t.level==='green'?'8px 16px':'12px 24px',
             fontSize:t.level==='green'?12:14,

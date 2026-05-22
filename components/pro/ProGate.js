@@ -155,7 +155,7 @@ export function ProUpgradeModal({ onClose, feature }) {
         </p>
 
         <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-          <Link href="/billing-mp" onClick={onClose}
+          <Link href="/billing" onClick={onClose}
             style={{
               display:'flex', alignItems:'center', justifyContent:'center', gap:8,
               padding:'14px 24px', borderRadius:12, fontSize:15, fontWeight:700,

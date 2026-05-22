@@ -131,7 +131,7 @@ async function notifyAdmin(sb, admin, segment, segmentId) {
     .eq('segment', segmentId)
     .gte('sent_at', new Date(Date.now() - ANTI_SPAM_MS).toISOString())
 
-  const url = `${APP_URL}/billing-mp?utm_source=renewal&utm_medium=email&utm_campaign=${segmentId}`
+  const url = `${APP_URL}/billing?utm_source=renewal&utm_medium=email&utm_campaign=${segmentId}`
   const vars = { nome: (admin.nome || '').split(' ')[0] || 'Operador' }
 
   // PUSH (1x por week)

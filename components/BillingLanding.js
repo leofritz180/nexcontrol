@@ -448,7 +448,7 @@ export default function BillingLanding() {
 
         {/* CTA */}
         <div style={{ textAlign: 'center' }}>
-          <Link href="/billing-mp" style={{
+          <Link href="/billing" style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             padding: '14px 32px', borderRadius: 14,
             fontSize: 15, fontWeight: 700, textDecoration: 'none',

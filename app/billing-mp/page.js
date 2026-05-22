@@ -1,23 +1,41 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
-import { PLANS, calculatePrice } from '../../lib/plans'
+import { PLANS, getPlan } from '../../lib/plans'
+import { calculatePrice as calcOpTier, BASE_PRICE, OP_BASE_PRICE } from '../../lib/pricing'
 
-const PRICE = 39.9
 const ease = [0.33, 1, 0.68, 1]
+const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+// Combina desconto de tier (operator-count) com desconto de periodo.
+// monthlyTier ja vem com desconto de tier aplicado.
+function combinedPrice(monthlyTier, planId) {
+  const plan = getPlan(planId)
+  const gross = monthlyTier * plan.months
+  const total = Number((gross * (1 - plan.discount)).toFixed(2))
+  const perMonth = Number((total / plan.months).toFixed(2))
+  const savings = Number((gross - total).toFixed(2))
+  return { total, perMonth, gross, savings, plan }
+}
 
 export default function BillingMpPage() {
   const router = useRouter()
+  const sp = useSearchParams()
+  const opQty = Math.max(0, Number(sp.get('operators')) || 0)
+
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
-  const [stage, setStage] = useState('intro') // intro | loading | pix | approved | error
+  const [stage, setStage] = useState('period') // period | loading | pix | approved | error
   const [payment, setPayment] = useState(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState('monthly')
+  const [selectedPlan, setSelectedPlan] = useState('annual') // default no anual (maior desconto)
   const pollRef = useRef(null)
+
+  // Preco mensal base ja com desconto de tier por quantidade de operadores
+  const monthlyTier = useMemo(() => calcOpTier(opQty).total, [opQty])
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -25,24 +43,32 @@ export default function BillingMpPage() {
       if (!u) { router.push('/login'); return }
       setUser(u)
       const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
+      if (!p || p.role !== 'admin') { router.push('/operator'); return }
       setProfile(p)
     })
   }, [])
 
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current) }, [])
 
+  const selectedCalc = useMemo(() => combinedPrice(monthlyTier, selectedPlan), [monthlyTier, selectedPlan])
+
   async function handleStart() {
     if (!user || !profile) return
     setStage('loading'); setError('')
     try {
+      const planLabel = opQty > 0 ? `Admin + ${opQty} op${opQty > 1 ? 's' : ''}` : 'Admin Solo'
       const res = await fetch('/api/mercadopago/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: user.email,
           name: profile.nome || user.email.split('@')[0],
+          tenant_id: profile.tenant_id,
+          user_id: user.id,
+          amount: selectedCalc.total,
+          operator_count: opQty,
           plan_period: selectedPlan,
-          operator_count: 1,
+          description: `NexControl PRO - ${planLabel} - ${selectedCalc.plan.label}`,
         }),
       })
       const data = await res.json()
@@ -70,7 +96,7 @@ export default function BillingMpPage() {
           body: JSON.stringify({ payment_id: paymentId }),
         })
         const d = await r.json()
-        if (d?.status === 'approved') {
+        if (d?.status === 'approved' || d?.status === 'RECEIVED' || d?.status === 'CONFIRMED') {
           clearInterval(pollRef.current)
           setStage('approved')
           setTimeout(() => router.push('/admin'), 2400)
@@ -90,15 +116,22 @@ export default function BillingMpPage() {
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative', zIndex: 1 }}>
-      {/* Ambient orbs */}
       <div style={{ position: 'fixed', top: '-18%', left: '-12%', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.14) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
       <div style={{ position: 'fixed', bottom: '-18%', right: '-8%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(209,250,229,0.1) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
 
-      <div style={{ width: '100%', maxWidth: 460, position: 'relative', zIndex: 2 }}>
+      <div style={{ width: '100%', maxWidth: 520, position: 'relative', zIndex: 2 }}>
         <AnimatePresence mode="wait">
-          {stage === 'intro' && (
-            <motion.div key="intro" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
-              <IntroCard onStart={handleStart} selectedPlan={selectedPlan} setSelectedPlan={setSelectedPlan} />
+          {stage === 'period' && (
+            <motion.div key="period" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
+              <PeriodCard
+                opQty={opQty}
+                monthlyTier={monthlyTier}
+                selectedPlan={selectedPlan}
+                setSelectedPlan={setSelectedPlan}
+                selectedCalc={selectedCalc}
+                onConfirm={handleStart}
+                onBack={() => router.push('/billing')}
+              />
             </motion.div>
           )}
 
@@ -110,7 +143,7 @@ export default function BillingMpPage() {
 
           {stage === 'pix' && payment && (
             <motion.div key="pix" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
-              <PixCard payment={payment} copied={copied} onCopy={copyPix} />
+              <PixCard payment={payment} copied={copied} onCopy={copyPix} amount={selectedCalc.total} planLabel={selectedCalc.plan.label} />
             </motion.div>
           )}
 
@@ -122,7 +155,7 @@ export default function BillingMpPage() {
 
           {stage === 'error' && (
             <motion.div key="error" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4, ease }}>
-              <ErrorCard error={error} onRetry={() => setStage('intro')} />
+              <ErrorCard error={error} onRetry={() => setStage('period')} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -133,23 +166,40 @@ export default function BillingMpPage() {
 
 /* ── Cards ── */
 
-function IntroCard({ onStart, selectedPlan, setSelectedPlan }) {
-  const calc = calculatePrice(selectedPlan, 1)
+function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack }) {
+  const planLabel = opQty > 0 ? `Admin + ${opQty} operador${opQty > 1 ? 'es' : ''}` : 'Admin Solo'
+
   return (
     <div style={cardStyle}>
-      <div style={{ textAlign: 'center', marginBottom: 22 }}>
-        <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-          <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      {/* Back */}
+      <button
+        type="button"
+        onClick={onBack}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          background: 'transparent', border: 'none', cursor: 'pointer',
+          color: '#94A3B8', fontSize: 12, fontWeight: 600, padding: 0, marginBottom: 14,
+        }}
+      >
+        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar
+      </button>
+
+      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
-        <h1 style={{ fontSize: 22, fontWeight: 900, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.02em' }}>NexControl PRO</h1>
-        <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Escolha seu plano</p>
+        <h1 style={{ fontSize: 22, fontWeight: 900, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Escolha o periodo</h1>
+        <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>
+          {planLabel} · R$ {fmt(monthlyTier)}/mês
+        </p>
       </div>
 
-      {/* SELETOR DE PLANO — 4 cards verticais */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
+      {/* Plan list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 20 }}>
         {PLANS.map(plan => {
           const isSelected = plan.id === selectedPlan
-          const planCalc = calculatePrice(plan.id, 1)
+          const calc = combinedPrice(monthlyTier, plan.id)
           return (
             <button
               key={plan.id}
@@ -158,8 +208,8 @@ function IntroCard({ onStart, selectedPlan, setSelectedPlan }) {
               style={{
                 position: 'relative',
                 width: '100%',
-                padding: '12px 14px',
-                borderRadius: 11,
+                padding: '14px 16px',
+                borderRadius: 12,
                 border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.08)'),
                 background: isSelected ? 'rgba(229,57,53,0.06)' : 'rgba(255,255,255,0.02)',
                 cursor: 'pointer',
@@ -170,11 +220,10 @@ function IntroCard({ onStart, selectedPlan, setSelectedPlan }) {
                 gap: 10,
               }}
             >
-              {/* Badge superior direita */}
               {plan.badge && (
                 <span style={{
-                  position: 'absolute', top: -7, right: 10,
-                  fontSize: 8.5, fontWeight: 800, padding: '2px 7px', borderRadius: 4,
+                  position: 'absolute', top: -8, right: 12,
+                  fontSize: 9, fontWeight: 800, padding: '2px 8px', borderRadius: 4,
                   background: plan.highlighted ? '#e53935' : 'rgba(209,250,229,0.15)',
                   color: plan.highlighted ? '#fff' : '#D1FAE5',
                   border: plan.highlighted ? 'none' : '1px solid rgba(209,250,229,0.3)',
@@ -182,29 +231,31 @@ function IntroCard({ onStart, selectedPlan, setSelectedPlan }) {
                 }}>{plan.badge}</span>
               )}
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                {/* Radio visual */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
                 <div style={{
-                  width: 16, height: 16, borderRadius: '50%',
+                  width: 18, height: 18, borderRadius: '50%',
                   border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.18)'),
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
                 }}>
-                  {isSelected && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935' }} />}
+                  {isSelected && <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#e53935' }} />}
                 </div>
 
                 <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>{plan.label}</p>
-                  <p style={{ fontSize: 10, color: '#64748B', margin: '2px 0 0' }}>{plan.description}</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>{plan.label}</p>
+                  <p style={{ fontSize: 10.5, color: '#64748B', margin: '2px 0 0' }}>
+                    {plan.months} {plan.months === 1 ? 'mês' : 'meses'}
+                    {calc.savings > 0 && ` · economiza R$ ${fmt(calc.savings)}`}
+                  </p>
                 </div>
               </div>
 
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: '#F1F5F9', margin: 0, letterSpacing: '-0.015em' }}>
-                  R$ {planCalc.total.toFixed(2).replace('.', ',')}
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 800, color: '#F1F5F9', margin: 0, letterSpacing: '-0.015em' }}>
+                  R$ {fmt(calc.total)}
                 </p>
-                <p style={{ fontSize: 9, color: '#64748B', margin: '1px 0 0' }}>
-                  R$ {planCalc.perMonth.toFixed(2).replace('.', ',')}/mês
+                <p style={{ fontSize: 10, color: '#64748B', margin: '1px 0 0' }}>
+                  R$ {fmt(calc.perMonth)}/mês
                 </p>
               </div>
             </button>
@@ -212,33 +263,42 @@ function IntroCard({ onStart, selectedPlan, setSelectedPlan }) {
         })}
       </div>
 
-      {/* Features incluidas */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18, padding: '10px 12px', borderRadius: 9, background: 'rgba(209,250,229,0.03)', border: '1px solid rgba(209,250,229,0.08)' }}>
-        {['Operadores ilimitados', 'Ranking de redes', 'Slots Premium', 'Suporte prioritario'].map((b, i) => (
-          <span key={i} style={{ fontSize: 10, color: '#D1FAE5', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-            {b}
-          </span>
-        ))}
+      {/* Summary box */}
+      <div style={{ padding: '14px 16px', borderRadius: 11, background: 'rgba(209,250,229,0.04)', border: '1px solid rgba(209,250,229,0.12)', marginBottom: 18 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <p style={{ fontSize: 11, color: '#94A3B8', margin: '0 0 2px', fontWeight: 600 }}>
+              Total {selectedCalc.plan.label.toLowerCase()}
+            </p>
+            <p style={{ fontSize: 10, color: '#64748B', margin: 0 }}>
+              PIX único · {selectedCalc.plan.months} {selectedCalc.plan.months === 1 ? 'mês' : 'meses'} de acesso
+            </p>
+          </div>
+          <p style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: '#D1FAE5', margin: 0, letterSpacing: '-0.02em' }}>
+            R$ {fmt(selectedCalc.total)}
+          </p>
+        </div>
       </div>
 
       <motion.button
-        onClick={onStart}
-        whileHover={{ scale: 1.02, boxShadow: '0 8px 40px rgba(229,57,53,0.5)' }}
+        onClick={onConfirm}
+        whileHover={{ scale: 1.015, boxShadow: '0 8px 40px rgba(229,57,53,0.5)' }}
         whileTap={{ scale: 0.97 }}
         style={{
-          width: '100%', padding: '14px 24px', borderRadius: 12, border: 'none', cursor: 'pointer',
+          width: '100%', padding: '15px 24px', borderRadius: 12, border: 'none', cursor: 'pointer',
           background: 'linear-gradient(145deg, #e53935, #c62828)',
-          color: 'white', fontSize: 14, fontWeight: 700, fontFamily: 'inherit',
+          color: 'white', fontSize: 15, fontWeight: 700, fontFamily: 'inherit',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           boxShadow: '0 4px 24px rgba(229,57,53,0.35)',
         }}
       >
         <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Assinar · R$ {calc.total.toFixed(2).replace('.', ',')}
+        Gerar PIX · R$ {fmt(selectedCalc.total)}
       </motion.button>
 
-      <p style={{ fontSize: 10, color: '#64748B', textAlign: 'center', margin: '10px 0 0' }}>PIX · aprovação imediata</p>
+      <p style={{ fontSize: 10, color: '#64748B', textAlign: 'center', margin: '12px 0 0' }}>
+        PIX via Mercado Pago · aprovação em segundos
+      </p>
     </div>
   )
 }
@@ -257,7 +317,7 @@ function LoadingCard() {
   )
 }
 
-function PixCard({ payment, copied, onCopy }) {
+function PixCard({ payment, copied, onCopy, amount, planLabel }) {
   return (
     <div style={cardStyle}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -270,10 +330,11 @@ function PixCard({ payment, copied, onCopy }) {
           <span style={{ fontSize: 10, color: '#FCD34D', letterSpacing: '0.1em', fontWeight: 700, textTransform: 'uppercase' }}>Aguardando pagamento</span>
         </div>
         <h2 style={{ fontSize: 20, fontWeight: 800, color: '#F1F5F9', margin: '0 0 4px' }}>Escaneie o QR Code</h2>
-        <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Ou copie o codigo e cole no app do banco</p>
+        <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>
+          {planLabel} · <strong style={{ color: '#D1FAE5' }}>R$ {fmt(amount)}</strong>
+        </p>
       </div>
 
-      {/* QR */}
       {payment.qr_code_base64 ? (
         <div style={{ background: '#fff', padding: 14, borderRadius: 14, margin: '0 auto 18px', width: 'fit-content' }}>
           <img
@@ -286,7 +347,6 @@ function PixCard({ payment, copied, onCopy }) {
         </div>
       ) : null}
 
-      {/* Copia e cola */}
       <div style={{ marginBottom: 18 }}>
         <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
           Codigo PIX copia e cola
@@ -320,7 +380,6 @@ function PixCard({ payment, copied, onCopy }) {
         </div>
       </div>
 
-      {/* Polling indicator */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)' }}>
         <motion.div
           style={{ width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.25)', borderTopColor: 'rgba(255,255,255,0.78)' }}

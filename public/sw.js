@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v72 (Cards Renovar+Detalhes no topo do modulo assinatura)
+// NexControl Service Worker — Push Notifications v73 (Card de renovacao redesign: preto puro, Instrument Serif, monocromatico)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

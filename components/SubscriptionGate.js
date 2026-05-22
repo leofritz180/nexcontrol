@@ -25,8 +25,10 @@ export default function SubscriptionGate({ children }) {
       setStatus('ok')
       return
     }
+    // Bypass cache se ?preview=... esta na URL (modo preview do owner)
+    const hasPreview = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('preview')
     const now = Date.now()
-    if (cache.current.checked && (now - cache.current.ts) < 30000) {
+    if (!hasPreview && cache.current.checked && (now - cache.current.ts) < 30000) {
       setStatus(cache.current.result)
       setReason(cache.current.reason)
       setStats(cache.current.stats)
@@ -52,6 +54,21 @@ export default function SubscriptionGate({ children }) {
           localStorage.setItem('nx_last_user_id', u.id)
         }
       } catch {}
+
+      // Modo preview pra owner: forca o bloqueio pra visualizar a UI sem precisar de sub vencida.
+      //   /admin?preview=renewal → bloqueio de mensalidade vencida (ex-PRO)
+      //   /admin?preview=trial   → bloqueio de trial expirado
+      if (typeof window !== 'undefined' && u.email && LIFETIME_EMAILS.has(u.email.toLowerCase())) {
+        const previewMode = new URLSearchParams(window.location.search).get('preview')
+        if (previewMode === 'renewal') {
+          finish('blocked', 'expired', { metas: 12, ops: 3, lucro: 4287.50 })
+          return
+        }
+        if (previewMode === 'trial') {
+          finish('blocked', 'trial', { metas: 0, ops: 0, lucro: 0 })
+          return
+        }
+      }
 
       // Owner vitalicio — libera sem checar nada
       if (u.email && LIFETIME_EMAILS.has(u.email.toLowerCase())) { finish('ok'); return }

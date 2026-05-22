@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v69 (Renovacao pula direto pro seletor de periodo)
+// NexControl Service Worker — Push Notifications v70 (Modo preview pra owner: ?preview=renewal|trial)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

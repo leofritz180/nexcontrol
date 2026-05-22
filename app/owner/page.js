@@ -72,6 +72,7 @@ export default function OwnerPage() {
   const [selectedAdmin, setSelectedAdmin] = useState(null)
   // Histórico de pagamentos: search + filtro de período
   const [saleSearch, setSaleSearch] = useState('')
+  const [recentSalesPage, setRecentSalesPage] = useState(1)
   const [salePeriod, setSalePeriod] = useState('all') // all | today | 7d | 30d
   const [salePage, setSalePage] = useState(1)
   const SALES_PER_PAGE = 25
@@ -562,14 +563,26 @@ export default function OwnerPage() {
             </h3>
             <span style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Ao vivo • atualiza a cada 20s</span>
           </div>
-          {recentSales.length === 0 ? (
-            <div style={{ padding: '24px 0', textAlign: 'center' }}>
-              <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>Nenhuma venda registrada ainda</p>
-            </div>
-          ) : (
+          {(() => {
+            // Pagina recent sales usando allSales (que ja tem TUDO + kind)
+            const PER_PAGE = 10
+            const source = (allSales && allSales.length > 0) ? allSales : recentSales
+            const totalPages = Math.max(1, Math.ceil(source.length / PER_PAGE))
+            const pageSafe = Math.min(recentSalesPage, totalPages)
+            const slice = source.slice((pageSafe - 1) * PER_PAGE, pageSafe * PER_PAGE)
+            // Normaliza shape (allSales usa 'name', recentSales usa 'tenant_name')
+            const items = slice.map(s => ({
+              ...s,
+              tenant_name: s.tenant_name || s.name,
+            }))
+            return items.length === 0 ? (
+              <div style={{ padding: '24px 0', textAlign: 'center' }}>
+                <p style={{ fontSize: 12, color: '#64748B', margin: 0 }}>Nenhuma venda registrada ainda</p>
+              </div>
+            ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <AnimatePresence initial={false}>
-                {recentSales.map(s => (
+                {items.map(s => (
                   <motion.div
                     key={s.id}
                     layout
@@ -664,8 +677,47 @@ export default function OwnerPage() {
                   </motion.div>
                 ))}
               </AnimatePresence>
+
+              {/* Paginacao */}
+              {totalPages > 1 && (
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.04)',
+                }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 10, color: '#64748B', letterSpacing: '0.05em' }}>
+                    Página <span style={{ color: '#F1F5F9', fontWeight: 700 }}>{pageSafe}</span> / {totalPages}
+                    <span style={{ marginLeft: 10, color: '#475569' }}>·</span>
+                    <span style={{ marginLeft: 10 }}>{source.length} vendas totais</span>
+                  </span>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button
+                      onClick={() => setRecentSalesPage(Math.max(1, pageSafe - 1))}
+                      disabled={pageSafe === 1}
+                      style={{
+                        padding: '5px 11px', borderRadius: 6,
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        background: 'rgba(255,255,255,0.025)',
+                        color: pageSafe === 1 ? '#475569' : '#CBD5E1',
+                        fontSize: 11, cursor: pageSafe === 1 ? 'not-allowed' : 'pointer',
+                        fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4,
+                      }}>‹ Anterior</button>
+                    <button
+                      onClick={() => setRecentSalesPage(Math.min(totalPages, pageSafe + 1))}
+                      disabled={pageSafe === totalPages}
+                      style={{
+                        padding: '5px 11px', borderRadius: 6,
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        background: 'rgba(255,255,255,0.025)',
+                        color: pageSafe === totalPages ? '#475569' : '#CBD5E1',
+                        fontSize: 11, cursor: pageSafe === totalPages ? 'not-allowed' : 'pointer',
+                        fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4,
+                      }}>Próximo ›</button>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+            )
+          })()}
         </motion.div>
 
         {/* ═══ HISTÓRICO COMPLETO DE PAGAMENTOS ═══ */}

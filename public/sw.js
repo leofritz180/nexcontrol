@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v63 (Owner vendas recentes: distingue Novo/Renovação/Upgrade com badge e cor)
+// NexControl Service Worker — Push Notifications v64 (Owner vendas recentes: paginacao + Novo/Renovacao/Upgrade)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

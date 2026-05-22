@@ -520,7 +520,110 @@ export default function BillingPage() {
           </div>
         )}
 
-        {/* ── SUBSCRIPTION INFO ── */}
+        {/* ── RENOVAR ASSINATURA — so quando sub ativa ── */}
+        {billing?.subActive && subscription?.expires_at && (() => {
+          const expires = new Date(subscription.expires_at)
+          const now = new Date()
+          const daysLeft = Math.max(0, Math.ceil((expires - now) / 86400000))
+          const expiresLabel = expires.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+          // Cor do status: verde >15d, amarelo 5-15d, vermelho <5d
+          const urgency = daysLeft <= 5 ? 'red' : daysLeft <= 15 ? 'yellow' : 'green'
+          const urgencyColor = urgency === 'red' ? '#EF4444' : urgency === 'yellow' ? '#FCD34D' : 'var(--profit)'
+          const urgencyBg = urgency === 'red' ? 'rgba(239,68,68,0.08)' : urgency === 'yellow' ? 'rgba(252,211,77,0.08)' : 'rgba(209,250,229,0.06)'
+          const urgencyBorder = urgency === 'red' ? 'rgba(239,68,68,0.22)' : urgency === 'yellow' ? 'rgba(252,211,77,0.22)' : 'rgba(209,250,229,0.18)'
+
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              style={{
+                position: 'relative', overflow: 'hidden',
+                borderRadius: 20, marginBottom: 24,
+                background: 'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                backdropFilter: 'blur(18px) saturate(150%)',
+                border: '1px solid ' + urgencyBorder,
+                boxShadow: '0 8px 32px rgba(0,0,0,0.45), 0 0 40px ' + urgencyBg + ', inset 0 1px 0 rgba(255,255,255,0.04)',
+              }}>
+              <div style={{ position: 'absolute', top: 0, left: '12%', right: '12%', height: 1, background: 'linear-gradient(90deg, transparent, ' + urgencyColor + '66, transparent)' }}/>
+
+              <div style={{ padding: '22px 26px' }}>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                  <div style={{
+                    width: 34, height: 34, borderRadius: 10,
+                    background: urgencyBg, border: '1px solid ' + urgencyBorder,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={urgencyColor} strokeWidth="2.2" strokeLinecap="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)', margin: '0 0 2px', letterSpacing: '-0.01em' }}>
+                      Assinatura ativa
+                    </p>
+                    <p style={{ fontSize: 11.5, color: 'var(--t3)', margin: 0 }}>
+                      Você pode renovar a qualquer momento. O tempo restante é somado ao novo período.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Stats grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 18 }}>
+                  <div style={{
+                    background: 'rgba(255,255,255,0.03)', borderRadius: 12,
+                    padding: '14px 16px', border: '1px solid rgba(255,255,255,0.05)',
+                  }}>
+                    <p style={{ fontSize: 9.5, fontWeight: 800, color: 'var(--t4)', margin: '0 0 6px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Vencimento</p>
+                    <p style={{ fontFamily: 'var(--mono)', fontSize: 17, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.015em' }}>{expiresLabel}</p>
+                  </div>
+                  <div style={{
+                    background: urgencyBg, borderRadius: 12,
+                    padding: '14px 16px', border: '1px solid ' + urgencyBorder,
+                  }}>
+                    <p style={{ fontSize: 9.5, fontWeight: 800, color: urgencyColor, margin: '0 0 6px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Restantes</p>
+                    <p style={{ display: 'flex', alignItems: 'baseline', gap: 4, margin: 0 }}>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 900, color: urgencyColor, letterSpacing: '-0.02em' }}>{daysLeft}</span>
+                      <span style={{ fontSize: 11, color: urgencyColor, fontWeight: 700 }}>dia{daysLeft !== 1 ? 's' : ''}</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* CTA Renovar */}
+                <motion.button
+                  onClick={() => router.push(`/billing-mp?operators=${operators.length}&early=1`)}
+                  whileHover={{ scale: 1.005, boxShadow: '0 8px 32px rgba(229,57,53,0.35)' }}
+                  whileTap={{ scale: 0.99 }}
+                  style={{
+                    width: '100%', padding: '14px 22px', borderRadius: 12,
+                    border: '1px solid rgba(229,57,53,0.35)',
+                    background: 'linear-gradient(145deg, rgba(229,57,53,0.15), rgba(229,57,53,0.05))',
+                    color: '#fff', fontSize: 14, fontWeight: 800,
+                    cursor: 'pointer', fontFamily: 'inherit',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                    transition: 'all 0.18s',
+                  }}
+                >
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.5" strokeLinecap="round">
+                    <path d="M23 4v6h-6M1 20v-6h6"/>
+                    <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                  </svg>
+                  <span style={{ color: '#fff' }}>Renovar assinatura</span>
+                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: 600 }}>·</span>
+                  <span style={{ color: '#e53935', fontSize: 13, fontWeight: 700 }}>
+                    R$ {fmt(currentPrice.total)}/mês
+                  </span>
+                </motion.button>
+
+                <p style={{ fontSize: 10, color: 'var(--t4)', textAlign: 'center', margin: '10px 0 0' }}>
+                  Trimestral, semestral ou anual com até 25% off · escolha na próxima tela
+                </p>
+              </div>
+            </motion.div>
+          )
+        })()}
+
+        {/* ── SUBSCRIPTION INFO (trial ou detalhes complementares) ── */}
         {(billing?.subActive||billing?.trialActive)&&(
           <div className="a5 card" style={{padding:24,marginBottom:24}}>
             <h3 style={{fontSize:13,fontWeight:700,color:'var(--t1)',marginBottom:12}}>Detalhes da assinatura</h3>

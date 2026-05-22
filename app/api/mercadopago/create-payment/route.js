@@ -30,10 +30,11 @@ export async function POST(req) {
     }
 
     // Resolucao do valor + duracao do plano:
-    //   plan_period + amount  → usa amount (frontend ja combinou tier+periodo) e periodo pra planMonths
+    //   plan_period + amount  → usa amount (frontend ja combinou tier+periodo), periodo define planMonths
     //   plan_period sozinho   → calcula via lib/plans (so periodo, sem tier de operadores)
-    //   amount sozinho        → cobranca avulsa, 1 mes (upgrade de operador, etc)
-    //   nada                  → default 39.9 / 1 mes
+    //   amount sozinho        → upgrade parcial (add-ops). planMonths=0 sinaliza pro webhook
+    //                           NAO estender ciclo (so atualizar operator_count).
+    //   nada                  → default 39.9 / 1 mes (fallback)
     let transactionAmount, planMonths
     if (plan_period) {
       planMonths = getPlan(plan_period).months
@@ -42,8 +43,12 @@ export async function POST(req) {
       } else {
         transactionAmount = calculatePrice(plan_period, operatorCountIn || 1).total
       }
+    } else if (Number(amount) > 0) {
+      // Upgrade parcial (add-ops) — frontend manda so o amount, sem periodo
+      transactionAmount = Number(amount)
+      planMonths = 0
     } else {
-      transactionAmount = Number(amount) > 0 ? Number(amount) : 39.9
+      transactionAmount = 39.9
       planMonths = 1
     }
 

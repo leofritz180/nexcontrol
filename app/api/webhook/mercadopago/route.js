@@ -73,10 +73,12 @@ export async function POST(req) {
         const nowDate = new Date()
         const now = nowDate.toISOString()
 
-        // ALINHAMENTO DE CICLO: se ja existe sub ativa valida (expires_at > now),
-        // este pagamento eh UPGRADE → expires_at = expires_at MAIS ANTIGO existente,
-        // mantendo o ciclo mensal alinhado com a data da assinatura original.
-        // Se nao tem nenhuma sub valida → novo ciclo: expires_at = now + 30 dias.
+        // CALCULO DE EXPIRES_AT:
+        //   planMonths > 0 (renovacao/assinatura completa):
+        //     - sub ativa valida → estende: expires = currentExpires + planMonths (cumulativo!)
+        //     - sem sub ativa    → novo ciclo: expires = now + planMonths
+        //   planMonths = 0 (add-ops, upgrade parcial):
+        //     - mantem expires_at do ciclo atual (so atualiza operator_count)
         const { data: activeSubs } = await sb.from('subscriptions')
           .select('expires_at')
           .eq('tenant_id', record.tenant_id)
@@ -85,21 +87,27 @@ export async function POST(req) {
         const validExpiries = (activeSubs || [])
           .map(s => s.expires_at ? new Date(s.expires_at) : null)
           .filter(d => d && d > nowDate)
-          .sort((a, b) => a - b) // crescente: pegamos o MIN (data mais antiga = ciclo original)
+          .sort((a, b) => b - a) // decrescente: pega o MAIOR expires_at (ultima renovacao valida)
 
-        // Periodo do plano (1=mensal, 3=trimestral, 6=semestral, 12=anual)
-        const planMonths = Number(record.plan_months) || 1
+        const planMonths = Number(record.plan_months) || 0
+        const latestExpires = validExpiries[0] // pode ser undefined
 
         let expires
-        if (validExpiries.length > 0) {
-          // Upgrade: alinha ao ciclo original
-          expires = validExpiries[0]
-          console.log('[MP webhook] alinhando expires_at ao ciclo do tenant:', expires.toISOString())
-        } else {
-          // Novo ciclo: now + N meses do plano
-          expires = new Date(nowDate)
+        if (planMonths > 0) {
+          // Plano completo → estende ciclo (renovacao antecipada acumula dias)
+          const baseDate = (latestExpires && latestExpires > nowDate) ? latestExpires : nowDate
+          expires = new Date(baseDate)
           expires.setMonth(expires.getMonth() + planMonths)
-          console.log('[MP webhook] novo ciclo de ' + planMonths + ' mes(es):', expires.toISOString())
+          console.log('[MP webhook] ciclo de ' + planMonths + ' mes(es) a partir de ' + baseDate.toISOString() + ' → ' + expires.toISOString())
+        } else if (latestExpires && latestExpires > nowDate) {
+          // Upgrade parcial (add-ops) → mantem ciclo atual
+          expires = latestExpires
+          console.log('[MP webhook] add-ops: mantendo expires_at atual:', expires.toISOString())
+        } else {
+          // Fallback: sem ciclo ativo + sem planMonths → 30 dias
+          expires = new Date(nowDate)
+          expires.setMonth(expires.getMonth() + 1)
+          console.log('[MP webhook] fallback 30 dias:', expires.toISOString())
         }
 
         // Resolve operator_count: prioriza valor desejado salvo na compra.

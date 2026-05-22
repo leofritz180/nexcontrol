@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v70 (Modo preview pra owner: ?preview=renewal|trial)
+// NexControl Service Worker — Push Notifications v71 (Renovacao antecipada acumula dias + grid 2x2 + painel de dias)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

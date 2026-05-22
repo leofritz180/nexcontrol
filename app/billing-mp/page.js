@@ -4,10 +4,11 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import { PLANS, getPlan } from '../../lib/plans'
-import { calculatePrice as calcOpTier, BASE_PRICE, OP_BASE_PRICE } from '../../lib/pricing'
+import { calculatePrice as calcOpTier } from '../../lib/pricing'
 
 const ease = [0.33, 1, 0.68, 1]
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const fmtDate = d => d ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
 
 // Combina desconto de tier (operator-count) com desconto de periodo.
 // monthlyTier ja vem com desconto de tier aplicado.
@@ -24,19 +25,29 @@ export default function BillingMpPage() {
   const router = useRouter()
   const sp = useSearchParams()
   const opQty = Math.max(0, Number(sp.get('operators')) || 0)
-  const isRenewal = sp.get('renewal') === '1'
+  const isRenewal = sp.get('renewal') === '1' || sp.get('early') === '1'
 
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
+  const [subscription, setSubscription] = useState(null) // sub ativa atual (se houver)
   const [stage, setStage] = useState('period') // period | loading | pix | approved | error
   const [payment, setPayment] = useState(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState('annual') // default no anual (maior desconto)
+  const [selectedPlan, setSelectedPlan] = useState('annual')
   const pollRef = useRef(null)
 
   // Preco mensal base ja com desconto de tier por quantidade de operadores
   const monthlyTier = useMemo(() => calcOpTier(opQty).total, [opQty])
+
+  // Dias restantes da sub atual (se houver)
+  const daysRemaining = useMemo(() => {
+    if (!subscription?.expires_at) return 0
+    const diff = new Date(subscription.expires_at) - new Date()
+    return Math.max(0, Math.ceil(diff / 86400000))
+  }, [subscription])
+
+  const isEarlyRenewal = daysRemaining > 0 && isRenewal
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
@@ -46,6 +57,14 @@ export default function BillingMpPage() {
       const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
       if (!p || p.role !== 'admin') { router.push('/operator'); return }
       setProfile(p)
+      // Busca sub ativa atual pra mostrar dias restantes + calcular renovacao antecipada
+      const { data: sub } = await supabase.from('subscriptions')
+        .select('expires_at,operator_count,status')
+        .eq('tenant_id', p.tenant_id)
+        .eq('status', 'active')
+        .order('expires_at', { ascending: false })
+        .limit(1).maybeSingle()
+      setSubscription(sub)
     })
   }, [])
 
@@ -120,7 +139,7 @@ export default function BillingMpPage() {
       <div style={{ position: 'fixed', top: '-18%', left: '-12%', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.14) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
       <div style={{ position: 'fixed', bottom: '-18%', right: '-8%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(209,250,229,0.1) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
 
-      <div style={{ width: '100%', maxWidth: 520, position: 'relative', zIndex: 2 }}>
+      <div style={{ width: '100%', maxWidth: 620, position: 'relative', zIndex: 2 }}>
         <AnimatePresence mode="wait">
           {stage === 'period' && (
             <motion.div key="period" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
@@ -133,6 +152,9 @@ export default function BillingMpPage() {
                 onConfirm={handleStart}
                 onBack={() => router.push(isRenewal ? '/admin' : '/billing')}
                 isRenewal={isRenewal}
+                isEarlyRenewal={isEarlyRenewal}
+                daysRemaining={daysRemaining}
+                currentExpires={subscription?.expires_at}
               />
             </motion.div>
           )}
@@ -168,38 +190,54 @@ export default function BillingMpPage() {
 
 /* ── Cards ── */
 
-function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal }) {
+function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
   const planLabel = opQty > 0 ? `Admin + ${opQty} operador${opQty > 1 ? 'es' : ''}` : 'Admin Solo'
+
+  // Dias adicionados (aproximado): planMonths * 30. Pra exibicao do painel.
+  const addedDays = selectedCalc.plan.months * 30
+  const totalDaysAfter = daysRemaining + addedDays
+
+  // Data final estimada apos a renovacao
+  const newExpiresDate = useMemo(() => {
+    const base = (currentExpires && new Date(currentExpires) > new Date())
+      ? new Date(currentExpires)
+      : new Date()
+    base.setMonth(base.getMonth() + selectedCalc.plan.months)
+    return base
+  }, [currentExpires, selectedCalc.plan.months])
 
   return (
     <div style={cardStyle}>
-      {/* Back */}
-      <button
-        type="button"
-        onClick={onBack}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          background: 'transparent', border: 'none', cursor: 'pointer',
-          color: '#94A3B8', fontSize: 12, fontWeight: 600, padding: 0, marginBottom: 14,
-        }}
-      >
-        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Voltar
-      </button>
+      {/* Top bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+        <button
+          type="button"
+          onClick={onBack}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            color: '#94A3B8', fontSize: 12, fontWeight: 600, padding: 0,
+          }}
+        >
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </button>
 
-      {isRenewal && (
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 7,
-          padding: '5px 12px', borderRadius: 99, marginBottom: 14,
-          background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)',
-          fontSize: 10, fontWeight: 800, color: '#e53935', letterSpacing: '0.08em',
-        }}>
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#e53935' }}/>
-          RENOVAÇÃO DE PLANO
-        </div>
-      )}
+        {isRenewal && (
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 7,
+            padding: '5px 12px', borderRadius: 99,
+            background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)',
+            fontSize: 10, fontWeight: 800, color: '#e53935', letterSpacing: '0.08em',
+          }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#e53935' }}/>
+            {isEarlyRenewal ? 'RENOVAÇÃO ANTECIPADA' : 'RENOVAÇÃO DE PLANO'}
+          </div>
+        )}
+      </div>
 
-      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+      {/* Header */}
+      <div style={{ textAlign: 'center', marginBottom: 22 }}>
         <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
           <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round">
             {isRenewal
@@ -207,97 +245,73 @@ function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selecte
               : <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>}
           </svg>
         </div>
-        <h1 style={{ fontSize: 22, fontWeight: 900, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.02em' }}>
+        <h1 style={{ fontSize: 24, fontWeight: 900, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.025em' }}>
           {isRenewal ? 'Renove seu plano' : 'Escolha o periodo'}
         </h1>
-        <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>
-          {planLabel} · R$ {fmt(monthlyTier)}/mês
+        <p style={{ fontSize: 12.5, color: '#94A3B8', margin: 0 }}>
+          {planLabel} · <strong style={{ color: '#CBD5E1' }}>R$ {fmt(monthlyTier)}/mês</strong>
         </p>
       </div>
 
-      {/* Plan list */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 20 }}>
+      {/* Painel de Upgrade — so aparece em renovacao antecipada */}
+      {isEarlyRenewal && (
+        <UpgradePanel
+          daysRemaining={daysRemaining}
+          addedDays={addedDays}
+          totalDaysAfter={totalDaysAfter}
+          newExpiresDate={newExpiresDate}
+          planLabel={selectedCalc.plan.label}
+        />
+      )}
+
+      {/* Grid 2x2 de planos */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 18 }}>
         {PLANS.map(plan => {
           const isSelected = plan.id === selectedPlan
           const calc = combinedPrice(monthlyTier, plan.id)
           return (
-            <button
+            <PlanCard
               key={plan.id}
-              type="button"
-              onClick={() => setSelectedPlan(plan.id)}
-              style={{
-                position: 'relative',
-                width: '100%',
-                padding: '14px 16px',
-                borderRadius: 12,
-                border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.08)'),
-                background: isSelected ? 'rgba(229,57,53,0.06)' : 'rgba(255,255,255,0.02)',
-                cursor: 'pointer',
-                textAlign: 'left',
-                transition: 'all 0.18s',
-                fontFamily: 'inherit',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                gap: 10,
-              }}
-            >
-              {plan.badge && (
-                <span style={{
-                  position: 'absolute', top: -8, right: 12,
-                  fontSize: 9, fontWeight: 800, padding: '2px 8px', borderRadius: 4,
-                  background: plan.highlighted ? '#e53935' : 'rgba(209,250,229,0.15)',
-                  color: plan.highlighted ? '#fff' : '#D1FAE5',
-                  border: plan.highlighted ? 'none' : '1px solid rgba(209,250,229,0.3)',
-                  letterSpacing: '0.06em',
-                }}>{plan.badge}</span>
-              )}
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
-                <div style={{
-                  width: 18, height: 18, borderRadius: '50%',
-                  border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.18)'),
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  flexShrink: 0,
-                }}>
-                  {isSelected && <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#e53935' }} />}
-                </div>
-
-                <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>{plan.label}</p>
-                  <p style={{ fontSize: 10.5, color: '#64748B', margin: '2px 0 0' }}>
-                    {plan.months} {plan.months === 1 ? 'mês' : 'meses'}
-                    {calc.savings > 0 && ` · economiza R$ ${fmt(calc.savings)}`}
-                  </p>
-                </div>
-              </div>
-
-              <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 800, color: '#F1F5F9', margin: 0, letterSpacing: '-0.015em' }}>
-                  R$ {fmt(calc.total)}
-                </p>
-                <p style={{ fontSize: 10, color: '#64748B', margin: '1px 0 0' }}>
-                  R$ {fmt(calc.perMonth)}/mês
-                </p>
-              </div>
-            </button>
+              plan={plan}
+              calc={calc}
+              isSelected={isSelected}
+              onSelect={() => setSelectedPlan(plan.id)}
+            />
           )
         })}
       </div>
 
-      {/* Summary box */}
-      <div style={{ padding: '14px 16px', borderRadius: 11, background: 'rgba(209,250,229,0.04)', border: '1px solid rgba(209,250,229,0.12)', marginBottom: 18 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <p style={{ fontSize: 11, color: '#94A3B8', margin: '0 0 2px', fontWeight: 600 }}>
-              Total {selectedCalc.plan.label.toLowerCase()}
-            </p>
-            <p style={{ fontSize: 10, color: '#64748B', margin: 0 }}>
-              PIX único · {selectedCalc.plan.months} {selectedCalc.plan.months === 1 ? 'mês' : 'meses'} de acesso
-            </p>
-          </div>
-          <p style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: '#D1FAE5', margin: 0, letterSpacing: '-0.02em' }}>
-            R$ {fmt(selectedCalc.total)}
-          </p>
+      {/* Summary final */}
+      <div style={{
+        padding: '14px 18px',
+        borderRadius: 12,
+        background: 'rgba(209,250,229,0.04)',
+        border: '1px solid rgba(209,250,229,0.12)',
+        marginBottom: 16,
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <span style={{ fontSize: 12, color: '#94A3B8' }}>Periodo</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#F1F5F9' }}>
+            {selectedCalc.plan.label} ({selectedCalc.plan.months} {selectedCalc.plan.months === 1 ? 'mês' : 'meses'})
+          </span>
         </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10 }}>
+          <span style={{ fontSize: 13, fontWeight: 800, color: '#F1F5F9' }}>Total a pagar</span>
+          <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: '#D1FAE5', letterSpacing: '-0.02em' }}>
+            R$ {fmt(selectedCalc.total)}
+          </span>
+        </div>
+        {isEarlyRenewal && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+            <span style={{ fontSize: 11, color: '#94A3B8', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+              <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Após a compra
+            </span>
+            <span style={{ fontSize: 11.5, fontWeight: 700, color: '#D1FAE5' }}>
+              ~{totalDaysAfter} dias de acesso
+            </span>
+          </div>
+        )}
       </div>
 
       <motion.button
@@ -305,21 +319,155 @@ function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selecte
         whileHover={{ scale: 1.015, boxShadow: '0 8px 40px rgba(229,57,53,0.5)' }}
         whileTap={{ scale: 0.97 }}
         style={{
-          width: '100%', padding: '15px 24px', borderRadius: 12, border: 'none', cursor: 'pointer',
+          width: '100%', padding: '16px 24px', borderRadius: 13, border: 'none', cursor: 'pointer',
           background: 'linear-gradient(145deg, #e53935, #c62828)',
-          color: 'white', fontSize: 15, fontWeight: 700, fontFamily: 'inherit',
+          color: 'white', fontSize: 15, fontWeight: 800, fontFamily: 'inherit',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           boxShadow: '0 4px 24px rgba(229,57,53,0.35)',
         }}
       >
-        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         {isRenewal ? 'Renovar' : 'Gerar PIX'} · R$ {fmt(selectedCalc.total)}
       </motion.button>
 
-      <p style={{ fontSize: 10, color: '#64748B', textAlign: 'center', margin: '12px 0 0' }}>
+      <p style={{ fontSize: 10.5, color: '#64748B', textAlign: 'center', margin: '12px 0 0' }}>
         PIX via Mercado Pago · aprovação em segundos
       </p>
     </div>
+  )
+}
+
+function UpgradePanel({ daysRemaining, addedDays, totalDaysAfter, newExpiresDate, planLabel }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease }}
+      style={{
+        position: 'relative',
+        padding: '16px 18px',
+        borderRadius: 14,
+        marginBottom: 18,
+        background: 'linear-gradient(145deg, rgba(229,57,53,0.08), rgba(229,57,53,0.02))',
+        border: '1px solid rgba(229,57,53,0.22)',
+        overflow: 'hidden',
+      }}
+    >
+      <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.5), transparent)' }}/>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ width: 22, height: 22, borderRadius: 7, background: 'rgba(229,57,53,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.5" strokeLinecap="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        </div>
+        <p style={{ fontSize: 12, fontWeight: 800, color: '#e53935', margin: 0, letterSpacing: '0.02em' }}>
+          Dias acumulados
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', alignItems: 'center', gap: 6 }}>
+        {/* Dias atuais */}
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: 9.5, color: '#94A3B8', margin: '0 0 3px', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>Atuais</p>
+          <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 900, color: '#F1F5F9', margin: 0, letterSpacing: '-0.02em' }}>{daysRemaining}</p>
+          <p style={{ fontSize: 9, color: '#64748B', margin: '2px 0 0' }}>dias</p>
+        </div>
+
+        <span style={{ fontSize: 16, color: '#475569', fontWeight: 300 }}>+</span>
+
+        {/* Dias adicionados */}
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: 9.5, color: '#94A3B8', margin: '0 0 3px', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>{planLabel}</p>
+          <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 900, color: '#F1F5F9', margin: 0, letterSpacing: '-0.02em' }}>+{addedDays}</p>
+          <p style={{ fontSize: 9, color: '#64748B', margin: '2px 0 0' }}>dias</p>
+        </div>
+
+        <span style={{ fontSize: 16, color: '#475569', fontWeight: 300 }}>=</span>
+
+        {/* Total */}
+        <div style={{ textAlign: 'center', padding: '4px 0', borderRadius: 8, background: 'rgba(209,250,229,0.06)' }}>
+          <p style={{ fontSize: 9.5, color: '#D1FAE5', margin: '0 0 3px', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 800 }}>Total</p>
+          <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 900, color: '#D1FAE5', margin: 0, letterSpacing: '-0.02em' }}>{totalDaysAfter}</p>
+          <p style={{ fontSize: 9, color: '#64748B', margin: '2px 0 0' }}>dias</p>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(229,57,53,0.12)' }}>
+        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <p style={{ fontSize: 10, color: '#94A3B8', margin: 0 }}>
+          Novo vencimento: <strong style={{ color: '#CBD5E1' }}>{fmtDate(newExpiresDate)}</strong>
+        </p>
+      </div>
+    </motion.div>
+  )
+}
+
+function PlanCard({ plan, calc, isSelected, onSelect }) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      style={{
+        position: 'relative',
+        padding: '16px 14px 14px',
+        borderRadius: 14,
+        border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.08)'),
+        background: isSelected
+          ? 'linear-gradient(145deg, rgba(229,57,53,0.10), rgba(229,57,53,0.02))'
+          : 'rgba(255,255,255,0.02)',
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'all 0.18s',
+        fontFamily: 'inherit',
+        display: 'flex', flexDirection: 'column', gap: 4,
+        boxShadow: isSelected ? '0 8px 28px rgba(229,57,53,0.15)' : 'none',
+        minHeight: 130,
+      }}
+    >
+      {plan.badge && (
+        <span style={{
+          position: 'absolute', top: -9, right: 12,
+          fontSize: 9, fontWeight: 800, padding: '3px 9px', borderRadius: 5,
+          background: plan.highlighted ? '#e53935' : 'rgba(209,250,229,0.15)',
+          color: plan.highlighted ? '#fff' : '#D1FAE5',
+          border: plan.highlighted ? 'none' : '1px solid rgba(209,250,229,0.3)',
+          letterSpacing: '0.06em',
+          boxShadow: plan.highlighted ? '0 4px 12px rgba(229,57,53,0.4)' : 'none',
+        }}>{plan.badge}</span>
+      )}
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+        <div style={{
+          width: 16, height: 16, borderRadius: '50%',
+          border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.18)'),
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          {isSelected && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935' }} />}
+        </div>
+        <p style={{ fontSize: 14, fontWeight: 800, color: '#F1F5F9', margin: 0, letterSpacing: '-0.01em' }}>
+          {plan.label}
+        </p>
+      </div>
+
+      <p style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 900, color: isSelected ? '#fff' : '#E2E8F0', margin: '4px 0 2px', letterSpacing: '-0.025em' }}>
+        R$ {fmt(calc.total)}
+      </p>
+
+      <p style={{ fontSize: 10.5, color: '#64748B', margin: 0 }}>
+        R$ {fmt(calc.perMonth)}/mês
+      </p>
+
+      {calc.savings > 0 ? (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4, fontSize: 9.5, color: '#D1FAE5', fontWeight: 700 }}>
+          <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          economia R$ {fmt(calc.savings)}
+        </div>
+      ) : (
+        <div style={{ fontSize: 9.5, color: '#64748B', marginTop: 4 }}>
+          {plan.months} {plan.months === 1 ? 'mês' : 'meses'}
+        </div>
+      )}
+    </button>
   )
 }
 
@@ -462,8 +610,8 @@ function ErrorCard({ error, onRetry }) {
 }
 
 const cardStyle = {
-  padding: 32, borderRadius: 20,
-  background: 'rgba(15, 24, 41, 0.75)',
+  padding: 32, borderRadius: 22,
+  background: 'rgba(15, 24, 41, 0.78)',
   backdropFilter: 'blur(30px) saturate(160%)',
   WebkitBackdropFilter: 'blur(30px) saturate(160%)',
   border: '1px solid rgba(255,255,255,0.08)',

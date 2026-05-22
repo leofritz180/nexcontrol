@@ -82,9 +82,9 @@ async function activatePro(sb, record, paymentId) {
   const nowDate = new Date()
   const now = nowDate.toISOString()
 
-  // ALINHAMENTO DE CICLO (mesma logica do webhook):
-  // Upgrade → usa expires_at MAIS ANTIGO de sub ativa valida
-  // Novo ciclo → now + 30 dias
+  // CALCULO DE EXPIRES_AT (mesma logica do webhook — ver comentarios la):
+  //   planMonths > 0 → estende ciclo (currentExpires + planMonths) ou cria novo (now + planMonths)
+  //   planMonths = 0 → mantem ciclo atual (add-ops)
   const { data: activeSubsCheck } = await sb.from('subscriptions')
     .select('expires_at')
     .eq('tenant_id', record.tenant_id)
@@ -92,14 +92,20 @@ async function activatePro(sb, record, paymentId) {
   const validExpiriesCheck = (activeSubsCheck || [])
     .map(s => s.expires_at ? new Date(s.expires_at) : null)
     .filter(d => d && d > nowDate)
-    .sort((a, b) => a - b)
-  const planMonths = Number(record.plan_months) || 1
+    .sort((a, b) => b - a) // pega o MAIOR
+  const planMonths = Number(record.plan_months) || 0
+  const latestExpires = validExpiriesCheck[0]
+
   let expires
-  if (validExpiriesCheck.length > 0) {
-    expires = validExpiriesCheck[0]
+  if (planMonths > 0) {
+    const baseDate = (latestExpires && latestExpires > nowDate) ? latestExpires : nowDate
+    expires = new Date(baseDate)
+    expires.setMonth(expires.getMonth() + planMonths)
+  } else if (latestExpires && latestExpires > nowDate) {
+    expires = latestExpires
   } else {
     expires = new Date(nowDate)
-    expires.setMonth(expires.getMonth() + planMonths)
+    expires.setMonth(expires.getMonth() + 1)
   }
 
   // Resolve operator_count: prioriza valor desejado salvo na compra.

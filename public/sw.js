@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v65 (Planos trimestral/semestral/anual com descontos em /billing-mp)
+// NexControl Service Worker — Push Notifications v67 (Asaas removido + reset tour flags por user)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

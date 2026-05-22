@@ -60,7 +60,7 @@ export default function ProBanner({ blockedCount = 3 }) {
                 Ative o PRO para ver previsoes, rankings e insights da sua operacao
               </p>
               <div style={{ display:'flex', gap:8 }}>
-                <Link href="/billing" onClick={dismiss}
+                <Link href="/billing-mp" onClick={dismiss}
                   style={{ fontSize:11, fontWeight:700, padding:'6px 14px', borderRadius:7, background:'#e53935', color:'white', textDecoration:'none' }}>
                   Desbloquear PRO
                 </Link>

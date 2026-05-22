@@ -41,7 +41,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
             ...(isAdmin ? [
               { href: '/admin', label: 'Admin' },
               { href: '/faturamento', label: 'Faturamento' },
-              { href: '/billing', label: 'Assinatura' },
+              { href: '/billing-mp', label: 'Assinatura' },
               { href: '/tutorial', label: 'Tutorial' },
               ...(userEmail === OWNER_EMAIL ? [{ href: '/owner', label: 'Owner' }] : []),
             ] : []),

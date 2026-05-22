@@ -196,7 +196,7 @@ function SlotCard({ slot, index, isPro }) {
         <div style={{ flex: 1 }} />
 
         {locked ? (
-          <Link href="/billing" onClick={e => e.stopPropagation()} style={{
+          <Link href="/billing-mp" onClick={e => e.stopPropagation()} style={{
             width: '100%', padding: '10px 14px', borderRadius: 10,
             fontSize: 11, fontWeight: 700, textDecoration: 'none',
             background: 'linear-gradient(135deg, rgba(229,57,53,0.12), rgba(229,57,53,0.06))',

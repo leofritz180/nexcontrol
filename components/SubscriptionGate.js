@@ -41,6 +41,18 @@ export default function SubscriptionGate({ children }) {
       const u = s?.session?.user
       if (!u) { finish('ok'); return }
 
+      // Reset tour flags se trocou de usuario (signup nova conta ou login em outra conta no mesmo browser).
+      // Sem isso, localStorage do antigo dono persiste e a conta nova nunca ve os tutoriais.
+      try {
+        const lastUserId = localStorage.getItem('nx_last_user_id')
+        if (lastUserId !== u.id) {
+          Object.keys(localStorage)
+            .filter(k => k.startsWith('nx_tour_completed_'))
+            .forEach(k => localStorage.removeItem(k))
+          localStorage.setItem('nx_last_user_id', u.id)
+        }
+      } catch {}
+
       // Owner vitalicio — libera sem checar nada
       if (u.email && LIFETIME_EMAILS.has(u.email.toLowerCase())) { finish('ok'); return }
 
@@ -196,7 +208,7 @@ export default function SubscriptionGate({ children }) {
           )}
 
           <button
-            onClick={() => router.push('/billing')}
+            onClick={() => router.push('/billing-mp')}
             className="btn btn-profit btn-lg"
             style={{
               width: '100%', justifyContent: 'center', fontSize: 14.5, fontWeight: 800,

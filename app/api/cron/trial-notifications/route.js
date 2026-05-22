@@ -9,7 +9,7 @@ export async function GET(req) {
   // Simple auth
   const { searchParams } = new URL(req.url)
   const secret = searchParams.get('secret')
-  if (secret !== process.env.CRON_SECRET && secret !== process.env.ASAAS_WEBHOOK_SECRET) {
+  if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -53,7 +53,7 @@ export async function GET(req) {
         body = 'Último dia grátis - assine para não perder acesso'
       }
 
-      await sendPushToTenant(supabase, t.id, { title, body, url: '/billing' })
+      await sendPushToTenant(supabase, t.id, { title, body, url: '/billing-mp' })
       await supabase.from('tenants').update({ last_trial_notif_date: today }).eq('id', t.id)
       sent++
 
@@ -62,7 +62,7 @@ export async function GET(req) {
       await sendPushToTenant(supabase, t.id, {
         title: 'NexControl',
         body: 'Teste expirado - assine para continuar usando o NexControl',
-        url: '/billing',
+        url: '/billing-mp',
       })
 
       await supabase.from('tenants').update({

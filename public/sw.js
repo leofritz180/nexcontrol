@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v71 (Renovacao antecipada acumula dias + grid 2x2 + painel de dias)
+// NexControl Service Worker — Push Notifications v72 (Cards Renovar+Detalhes no topo do modulo assinatura)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

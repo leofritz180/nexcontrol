@@ -47,7 +47,7 @@ export async function POST(req) {
     // Update payment status
     const { data: existing } = await supabase
       .from('asaas_payments')
-      .select('id,tenant_id,status,amount')
+      .select('id,tenant_id,status,amount,plan_months')
       .eq('asaas_payment_id', payment.id)
       .maybeSingle()
 
@@ -102,8 +102,9 @@ export async function POST(req) {
 
     // Activate subscription on confirmed payment
     if (payment.status === 'RECEIVED' || payment.status === 'CONFIRMED') {
+      const planMonths = Number(existing.plan_months) || 1
       const expires = new Date()
-      expires.setDate(expires.getDate() + 30)
+      expires.setMonth(expires.getMonth() + planMonths)
 
       // Update tenant subscription
       await supabase.from('tenants').update({
@@ -117,6 +118,7 @@ export async function POST(req) {
         payment_method: 'pix_asaas',
         external_id: payment.id,
         total_amount: payment.value,
+        plan_months: planMonths,
         starts_at: new Date().toISOString(),
         expires_at: expires.toISOString(),
       })

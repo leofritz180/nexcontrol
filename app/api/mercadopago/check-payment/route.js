@@ -37,7 +37,7 @@ async function check(id) {
   )
 
   const { data: record } = await sb.from('mp_payments')
-    .select('id,tenant_id,user_id,status,amount,operator_count')
+    .select('id,tenant_id,user_id,status,amount,operator_count,plan_months')
     .eq('mp_payment_id', String(id)).maybeSingle()
 
   if (!record) return NextResponse.json({ status: 'unknown' })
@@ -93,9 +93,14 @@ async function activatePro(sb, record, paymentId) {
     .map(s => s.expires_at ? new Date(s.expires_at) : null)
     .filter(d => d && d > nowDate)
     .sort((a, b) => a - b)
-  const expires = validExpiriesCheck.length > 0
-    ? validExpiriesCheck[0]
-    : new Date(nowDate.getTime() + 30 * 86400000)
+  const planMonths = Number(record.plan_months) || 1
+  let expires
+  if (validExpiriesCheck.length > 0) {
+    expires = validExpiriesCheck[0]
+  } else {
+    expires = new Date(nowDate)
+    expires.setMonth(expires.getMonth() + planMonths)
+  }
 
   // Resolve operator_count: prioriza valor desejado salvo na compra.
   // Fallback (pagamentos antigos sem o campo): usa MAX entre count atual+1
@@ -125,6 +130,7 @@ async function activatePro(sb, record, paymentId) {
     external_id: paymentId,
     total_amount: record.amount,
     operator_count: resolvedOpCount,
+    plan_months: planMonths,
     starts_at: now,
     expires_at: expires.toISOString(),
   })

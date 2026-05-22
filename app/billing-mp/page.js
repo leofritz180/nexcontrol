@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
+import { PLANS, calculatePrice } from '../../lib/plans'
 
 const PRICE = 39.9
 const ease = [0.33, 1, 0.68, 1]
@@ -15,6 +16,7 @@ export default function BillingMpPage() {
   const [payment, setPayment] = useState(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState('monthly')
   const pollRef = useRef(null)
 
   useEffect(() => {
@@ -39,6 +41,8 @@ export default function BillingMpPage() {
         body: JSON.stringify({
           email: user.email,
           name: profile.nome || user.email.split('@')[0],
+          plan_period: selectedPlan,
+          operator_count: 1,
         }),
       })
       const data = await res.json()
@@ -94,7 +98,7 @@ export default function BillingMpPage() {
         <AnimatePresence mode="wait">
           {stage === 'intro' && (
             <motion.div key="intro" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
-              <IntroCard onStart={handleStart} />
+              <IntroCard onStart={handleStart} selectedPlan={selectedPlan} setSelectedPlan={setSelectedPlan} />
             </motion.div>
           )}
 
@@ -129,38 +133,93 @@ export default function BillingMpPage() {
 
 /* ── Cards ── */
 
-function IntroCard({ onStart }) {
+function IntroCard({ onStart, selectedPlan, setSelectedPlan }) {
+  const calc = calculatePrice(selectedPlan, 1)
   return (
     <div style={cardStyle}>
-      <div style={{ textAlign: 'center', marginBottom: 24 }}>
-        <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+      <div style={{ textAlign: 'center', marginBottom: 22 }}>
+        <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
           <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
-        <h1 style={{ fontSize: 24, fontWeight: 900, color: '#F1F5F9', margin: '0 0 6px', letterSpacing: '-0.02em' }}>NexControl PRO</h1>
-        <p style={{ fontSize: 13, color: '#94A3B8', margin: 0 }}>Acesso completo por 30 dias</p>
+        <h1 style={{ fontSize: 22, fontWeight: 900, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.02em' }}>NexControl PRO</h1>
+        <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Escolha seu plano</p>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-        {[
-          'Operadores ilimitados',
-          'Ranking estrategico de redes',
-          'Slots Premium e Proxy',
-          'Previsoes inteligentes',
-          'Suporte prioritario',
-        ].map((b, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, background: 'rgba(209,250,229,0.04)', border: '1px solid rgba(209,250,229,0.08)' }}>
-            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-            <span style={{ fontSize: 13, color: '#E2E8F0' }}>{b}</span>
-          </div>
+      {/* SELETOR DE PLANO — 4 cards verticais */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 18 }}>
+        {PLANS.map(plan => {
+          const isSelected = plan.id === selectedPlan
+          const planCalc = calculatePrice(plan.id, 1)
+          return (
+            <button
+              key={plan.id}
+              type="button"
+              onClick={() => setSelectedPlan(plan.id)}
+              style={{
+                position: 'relative',
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: 11,
+                border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.08)'),
+                background: isSelected ? 'rgba(229,57,53,0.06)' : 'rgba(255,255,255,0.02)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.18s',
+                fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                gap: 10,
+              }}
+            >
+              {/* Badge superior direita */}
+              {plan.badge && (
+                <span style={{
+                  position: 'absolute', top: -7, right: 10,
+                  fontSize: 8.5, fontWeight: 800, padding: '2px 7px', borderRadius: 4,
+                  background: plan.highlighted ? '#e53935' : 'rgba(209,250,229,0.15)',
+                  color: plan.highlighted ? '#fff' : '#D1FAE5',
+                  border: plan.highlighted ? 'none' : '1px solid rgba(209,250,229,0.3)',
+                  letterSpacing: '0.06em',
+                }}>{plan.badge}</span>
+              )}
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                {/* Radio visual */}
+                <div style={{
+                  width: 16, height: 16, borderRadius: '50%',
+                  border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.18)'),
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0,
+                }}>
+                  {isSelected && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935' }} />}
+                </div>
+
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>{plan.label}</p>
+                  <p style={{ fontSize: 10, color: '#64748B', margin: '2px 0 0' }}>{plan.description}</p>
+                </div>
+              </div>
+
+              <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: '#F1F5F9', margin: 0, letterSpacing: '-0.015em' }}>
+                  R$ {planCalc.total.toFixed(2).replace('.', ',')}
+                </p>
+                <p style={{ fontSize: 9, color: '#64748B', margin: '1px 0 0' }}>
+                  R$ {planCalc.perMonth.toFixed(2).replace('.', ',')}/mês
+                </p>
+              </div>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Features incluidas */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18, padding: '10px 12px', borderRadius: 9, background: 'rgba(209,250,229,0.03)', border: '1px solid rgba(209,250,229,0.08)' }}>
+        {['Operadores ilimitados', 'Ranking de redes', 'Slots Premium', 'Suporte prioritario'].map((b, i) => (
+          <span key={i} style={{ fontSize: 10, color: '#D1FAE5', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            {b}
+          </span>
         ))}
-      </div>
-
-      <div style={{ textAlign: 'center', padding: '16px 0', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 20 }}>
-        <p style={{ fontSize: 11, color: '#64748B', margin: '0 0 4px', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>Preco unico</p>
-        <p style={{ fontSize: 34, fontWeight: 900, color: '#F1F5F9', margin: 0, fontFamily: 'var(--mono)', letterSpacing: '-0.03em' }}>
-          R$ {PRICE.toFixed(2).replace('.', ',')}
-        </p>
-        <p style={{ fontSize: 11, color: '#64748B', margin: '4px 0 0' }}>PIX · aprovacao imediata</p>
       </div>
 
       <motion.button
@@ -168,16 +227,18 @@ function IntroCard({ onStart }) {
         whileHover={{ scale: 1.02, boxShadow: '0 8px 40px rgba(229,57,53,0.5)' }}
         whileTap={{ scale: 0.97 }}
         style={{
-          width: '100%', padding: '15px 24px', borderRadius: 13, border: 'none', cursor: 'pointer',
+          width: '100%', padding: '14px 24px', borderRadius: 12, border: 'none', cursor: 'pointer',
           background: 'linear-gradient(145deg, #e53935, #c62828)',
-          color: 'white', fontSize: 15, fontWeight: 700, fontFamily: 'inherit',
+          color: 'white', fontSize: 14, fontWeight: 700, fontFamily: 'inherit',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           boxShadow: '0 4px 24px rgba(229,57,53,0.35)',
         }}
       >
         <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Assinar PRO
+        Assinar · R$ {calc.total.toFixed(2).replace('.', ',')}
       </motion.button>
+
+      <p style={{ fontSize: 10, color: '#64748B', textAlign: 'center', margin: '10px 0 0' }}>PIX · aprovação imediata</p>
     </div>
   )
 }

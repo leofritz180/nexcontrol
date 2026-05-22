@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v64 (Owner vendas recentes: paginacao + Novo/Renovacao/Upgrade)
+// NexControl Service Worker — Push Notifications v65 (Planos trimestral/semestral/anual com descontos em /billing-mp)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

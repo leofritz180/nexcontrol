@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { calculatePrice, getPlan } from '../../../../lib/plans'
 
 // Cria cobranca PIX via Mercado Pago.
 // Aceita amount variavel (plano base, upgrade de operador, etc).
@@ -21,13 +22,23 @@ export async function POST(req) {
       user_id: userIdIn,
       plan_id,
       operator_count: operatorCountIn,
+      plan_period, // 'monthly' | 'quarterly' | 'semiannual' | 'annual'
     } = body
 
     if (!email || !name) {
       return NextResponse.json({ error: 'email e name sao obrigatorios' }, { status: 400 })
     }
 
-    const transactionAmount = Number(amount) > 0 ? Number(amount) : 39.9
+    // Se vier plan_period, calcula com desconto. Senao usa amount manual ou default 39.9
+    let transactionAmount, planMonths
+    if (plan_period) {
+      const calc = calculatePrice(plan_period, operatorCountIn || 1)
+      transactionAmount = calc.total
+      planMonths = calc.plan.months
+    } else {
+      transactionAmount = Number(amount) > 0 ? Number(amount) : 39.9
+      planMonths = 1
+    }
 
     const sb = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -95,6 +106,7 @@ export async function POST(req) {
       pix_qr_code: qrCode,
       pix_qr_code_base64: qrBase64,
       operator_count: Number.isFinite(operatorCount) && operatorCount > 0 ? operatorCount : null,
+      plan_months: planMonths,
     })
 
     // Retorno com aliases compativeis com o contrato do PixPayment.js (Asaas)

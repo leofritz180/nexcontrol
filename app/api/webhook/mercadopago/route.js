@@ -45,7 +45,7 @@ export async function POST(req) {
     )
 
     const { data: record } = await sb.from('mp_payments')
-      .select('id,tenant_id,user_id,status,amount,operator_count')
+      .select('id,tenant_id,user_id,status,amount,operator_count,plan_months')
       .eq('mp_payment_id', String(payment.id)).maybeSingle()
 
     if (!record) {
@@ -87,14 +87,19 @@ export async function POST(req) {
           .filter(d => d && d > nowDate)
           .sort((a, b) => a - b) // crescente: pegamos o MIN (data mais antiga = ciclo original)
 
+        // Periodo do plano (1=mensal, 3=trimestral, 6=semestral, 12=anual)
+        const planMonths = Number(record.plan_months) || 1
+
         let expires
         if (validExpiries.length > 0) {
           // Upgrade: alinha ao ciclo original
           expires = validExpiries[0]
           console.log('[MP webhook] alinhando expires_at ao ciclo do tenant:', expires.toISOString())
         } else {
-          // Novo ciclo: now + 30 dias
-          expires = new Date(nowDate.getTime() + 30 * 86400000)
+          // Novo ciclo: now + N meses do plano
+          expires = new Date(nowDate)
+          expires.setMonth(expires.getMonth() + planMonths)
+          console.log('[MP webhook] novo ciclo de ' + planMonths + ' mes(es):', expires.toISOString())
         }
 
         // Resolve operator_count: prioriza valor desejado salvo na compra.
@@ -123,6 +128,7 @@ export async function POST(req) {
           external_id: String(payment.id),
           total_amount: record.amount,
           operator_count: resolvedOpCount,
+          plan_months: planMonths,
           starts_at: now,
           expires_at: expires.toISOString(),
         })

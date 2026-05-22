@@ -1,11 +1,23 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { getOrCreateCustomer, createPixPayment, getPixQrCode } from '../../../../lib/asaas/client'
+import { calculatePrice, getPlan } from '../../../../lib/plans'
 
 export async function POST(req) {
   try {
-    const { tenant_id, user_id, plan_id, amount, name, email, cpfCnpj } = await req.json()
-    if (!tenant_id || !user_id || !amount) {
+    const body = await req.json()
+    const { tenant_id, user_id, plan_id, amount, name, email, cpfCnpj, plan_period, operator_count } = body
+
+    // Calcula valor + meses se vier plan_period
+    let finalAmount = Number(amount) || 0
+    let planMonths = 1
+    if (plan_period) {
+      const calc = calculatePrice(plan_period, operator_count || 1)
+      finalAmount = calc.total
+      planMonths = calc.plan.months
+    }
+
+    if (!tenant_id || !user_id || !finalAmount) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
@@ -22,7 +34,8 @@ export async function POST(req) {
     })
 
     // 2. Create PIX payment
-    const payment = await createPixPayment(customerId, amount, `NexControl - Plano mensal`)
+    const periodLabel = planMonths === 12 ? 'anual' : planMonths === 6 ? 'semestral' : planMonths === 3 ? 'trimestral' : 'mensal'
+    const payment = await createPixPayment(customerId, finalAmount, `NexControl - Plano ${periodLabel}`)
 
     // 3. Get QR Code
     const pix = await getPixQrCode(payment.id)
@@ -35,10 +48,11 @@ export async function POST(req) {
       asaas_payment_id: payment.id,
       status: payment.status,
       billing_type: 'PIX',
-      amount,
+      amount: finalAmount,
       pix_payload: pix.payload,
       pix_qr_code: pix.encodedImage,
       plan_id: plan_id || null,
+      plan_months: planMonths,
     })
 
     return NextResponse.json({

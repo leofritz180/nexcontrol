@@ -12,6 +12,7 @@ import { validClosedMetas } from '../../lib/operator-stats'
 import { isApexLocked } from '../../lib/rank-system'
 import RankBadge from '../../components/rank/RankBadge'
 import RankReveal from '../../components/rank/RankReveal'
+import ContaMaeCard from '../../components/ContaMaeCard'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -571,6 +572,11 @@ export default function OperatorPage() {
   const [plataforma, setPlataforma] = useState('')
   const [rede, setRede] = useState('')
   const [redeOpen, setRedeOpen] = useState(false)
+  // Credenciais da conta mae (opcionais)
+  const [linkConta, setLinkConta] = useState('')
+  const [loginConta, setLoginConta] = useState('')
+  const [senhaConta, setSenhaConta] = useState('')
+  const [mostrarSenha, setMostrarSenha] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [tenantOpModel, setTenantOpModel] = useState('salario_bau')
@@ -638,10 +644,15 @@ export default function OperatorPage() {
       status: 'ativa',
       tenant_id: profile?.tenant_id,
       operation_model: tenantOpModel,
+      conta_link: linkConta.trim() || null,
+      conta_login: loginConta.trim() || null,
+      conta_senha: senhaConta || null,
     }).select().single()
     setSaving(false)
     if (err) { setError(err.message); return }
-    setTitulo(''); setObs(''); setContas('10'); setPlataforma(''); setRede(''); setShowForm(false)
+    setTitulo(''); setObs(''); setContas('10'); setPlataforma(''); setRede('')
+    setLinkConta(''); setLoginConta(''); setSenhaConta(''); setMostrarSenha(false)
+    setShowForm(false)
     notifyMetaCreated(profile?.tenant_id, getName(profile), data.quantidade_contas, data.rede)
     router.push(`/meta/${data.id}`)
   }
@@ -1113,6 +1124,14 @@ export default function OperatorPage() {
                         ))}
                       </div>
                     </div>
+
+                    {/* ── CONTA MAE — credenciais com cofre ── */}
+                    <ContaMaeCard
+                      link={linkConta} setLink={setLinkConta}
+                      login={loginConta} setLogin={setLoginConta}
+                      senha={senhaConta} setSenha={setSenhaConta}
+                      mostrarSenha={mostrarSenha} setMostrarSenha={setMostrarSenha}
+                    />
 
                     {/* Boas praticas */}
                     <div style={{ padding: '16px 18px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--b1)' }}>

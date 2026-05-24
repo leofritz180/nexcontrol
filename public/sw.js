@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v74 (Card renovacao com destaque: numero dias grande + CTA red bold + glow vermelho)
+// NexControl Service Worker — Push Notifications v75 (Conta mae: link + login + senha com cofre por meta)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

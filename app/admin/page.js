@@ -28,6 +28,7 @@ import TrialChip from '../../components/billing/TrialChip'
 import SmartUpgradeTrigger from '../../components/billing/SmartUpgradeTrigger'
 import PreviewIndicator from '../../components/billing/PreviewIndicator'
 import OnboardingChecklist from '../../components/OnboardingChecklist'
+import ContaMaeCard from '../../components/ContaMaeCard'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -620,6 +621,11 @@ export default function AdminPage() {
   const [myRede,setMyRede]=useState('')
   const [myContas,setMyContas]=useState('10')
   const [myOpModel,setMyOpModel]=useState('salario_bau')
+  // Credenciais conta mae (opcional)
+  const [myLink,setMyLink]=useState('')
+  const [myLogin,setMyLogin]=useState('')
+  const [mySenha,setMySenha]=useState('')
+  const [myMostrarSenha,setMyMostrarSenha]=useState(false)
   const [mySaving,setMySaving]=useState(false)
   const REDES=['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
   const [focusLoad, setFocusLoad] = useState(false)
@@ -1401,12 +1407,17 @@ export default function AdminPage() {
                   operator_id:user.id,titulo:myTitulo.trim(),plataforma:myPlat.trim(),rede:myRede,
                   quantidade_contas:Number(myContas||10),status:'ativa',tenant_id:profile?.tenant_id,
                   operation_model:myOpModel,
+                  conta_link: myLink.trim() || null,
+                  conta_login: myLogin.trim() || null,
+                  conta_senha: mySenha || null,
                 }).select().single()
                 setMySaving(false)
                 if(err){return}
                 // Marca primeira meta real → dispara SmartUpgradeTrigger (variant B)
                 if (myMetas.length === 0) setFirstMetaJustCreated(true)
-                setMyTitulo('');setMyPlat('');setMyRede('');setMyContas('10');setMyShowForm(false)
+                setMyTitulo('');setMyPlat('');setMyRede('');setMyContas('10')
+                setMyLink('');setMyLogin('');setMySenha('');setMyMostrarSenha(false)
+                setMyShowForm(false)
                 router.push(`/meta/${data.id}`)
               }
               const myDeps = validClosedMetas(myMetas).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
@@ -1666,6 +1677,14 @@ export default function AdminPage() {
                           })}
                         </div>
                       </div>
+
+                      {/* ── CONTA MAE — credenciais com cofre ── */}
+                      <ContaMaeCard
+                        link={myLink} setLink={setMyLink}
+                        login={myLogin} setLogin={setMyLogin}
+                        senha={mySenha} setSenha={setMySenha}
+                        mostrarSenha={myMostrarSenha} setMostrarSenha={setMyMostrarSenha}
+                      />
 
                       {/* Insights do admin — premium */}
                       {myMetas.length > 0 && (

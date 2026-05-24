@@ -6,6 +6,7 @@ import AppLayout from '../../../components/AppLayout'
 import { supabase } from '../../../lib/supabase/client'
 import { notifyRemessaCreated } from '../../../lib/notify'
 import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
+import { ContaMaeView } from '../../../components/ContaMaeCard'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -810,6 +811,17 @@ export default function MetaPage() {
             )
           })()}
         </div>
+
+        {/* ── Conta mae (credenciais salvas) ── */}
+        {meta && (meta.conta_link || meta.conta_login || meta.conta_senha) && (
+          <div style={{ marginBottom: 18 }}>
+            <ContaMaeView
+              link={meta.conta_link}
+              login={meta.conta_login}
+              senha={meta.conta_senha}
+            />
+          </div>
+        )}
 
         {/* ── Edit meta modal ── */}
         <AnimatePresence>

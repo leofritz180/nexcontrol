@@ -73,10 +73,12 @@ export default function ContaMaeCard({
           Link de acesso
         </label>
         <input
-          type="url"
+          type="text"
+          inputMode="url"
           value={link}
           onChange={e => setLink(e.target.value)}
-          placeholder="https://plataforma.com/login"
+          placeholder="plataforma.com/login (opcional)"
+          autoComplete="off"
           style={{
             width: '100%', padding: '10px 14px', fontSize: 13, fontWeight: 500,
             color: '#fafafa', background: 'rgba(0,0,0,0.4)',
@@ -291,7 +293,7 @@ function CredField({ label, value, displayValue, onCopy, copied, asLink, toggle,
         letterSpacing: (label === 'Senha' && !mostrar) ? '0.15em' : 'normal',
       }}>
         {asLink ? (
-          <a href={value} target="_blank" rel="noopener noreferrer" style={{
+          <a href={/^https?:\/\//i.test(value) ? value : `https://${value}`} target="_blank" rel="noopener noreferrer" style={{
             color: '#fafafa', textDecoration: 'none', borderBottom: '1px dotted rgba(229,57,53,0.4)',
           }}>{value}</a>
         ) : (displayValue ?? value)}

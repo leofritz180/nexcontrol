@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v75 (Conta mae: link + login + senha com cofre por meta)
+// NexControl Service Worker — Push Notifications v76 (Reconcile-payments: cron horario recupera webhooks perdidos)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

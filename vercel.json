@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/winback?secret=${CRON_SECRET}",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/reconcile-payments?secret=${CRON_SECRET}",
+      "schedule": "0 * * * *"
     }
   ]
 }

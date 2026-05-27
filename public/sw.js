@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v79 (Afiliados IMERSIVO · hero full-bleed, mesh gradient, marquee, phone mockup, count-up)
+// NexControl Service Worker — Push Notifications v80 (force rebuild afiliados premium · cache bust)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

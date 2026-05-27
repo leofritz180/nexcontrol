@@ -149,6 +149,33 @@ export default function AfiliadosPage() {
           .aff-hero-h1 { font-size: 56px !important; }
           .aff-grid-3 { grid-template-columns: 1fr !important; }
           .aff-grid-2 { grid-template-columns: 1fr !important; }
+
+          /* MOBILE PERFORMANCE — mata animacoes pesadas que causavam jitter */
+          /* Orbs gigantes com blur 80px = GPU killer no mobile.
+             Substitui por gradient estatico + sem blur. */
+          .aff-orb {
+            animation: none !important;
+            filter: none !important;
+            opacity: 0.5 !important;
+          }
+          /* Reduz altura do hero (92vh + barras chrome = layout shift) */
+          .aff-hero { min-height: auto !important; padding: 40px 20px 32px !important; }
+          /* Para shimmer text */
+          .aff-shimmer {
+            animation: none !important;
+            -webkit-text-fill-color: #ef4444 !important;
+            background: none !important;
+          }
+          /* Marquee mais lento OU desabilitado pra evitar repaints constantes */
+          .aff-marquee { animation-duration: 90s !important; }
+          /* Remove all backdrop-filter on mobile (GPU heavy) */
+          .aff-hero *[style*="backdropFilter"],
+          main *[style*="backdropFilter"] {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+          }
+          /* Hide scroll indicator do hero (animacao bounce extra) */
+          .aff-hero > div[style*="bottom: 24"] { display: none !important; }
         }
       `}</style>
     </AppLayout>
@@ -207,10 +234,21 @@ function LockedHero() {
 /* ── HERO FULL-BLEED ── */
 function HeroFullBleed({ rate, totals, link, code }) {
   const [copied, setCopied] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const heroRef = useRef(null)
   const { scrollY } = useScroll()
-  const heroY = useTransform(scrollY, [0, 600], [0, -120])
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3])
+  // Parallax SO no desktop — mobile tinha jitter pesado
+  const heroYDesktop = useTransform(scrollY, [0, 600], [0, -120])
+  const heroOpacityDesktop = useTransform(scrollY, [0, 400], [1, 0.3])
+  const heroY = isMobile ? 0 : heroYDesktop
+  const heroOpacity = isMobile ? 1 : heroOpacityDesktop
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.matchMedia('(max-width: 768px)').matches)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   async function copyLink() {
     try {
@@ -228,7 +266,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
   }
 
   return (
-    <section ref={heroRef} style={{
+    <section ref={heroRef} className="aff-hero" style={{
       position: 'relative',
       minHeight: '92vh',
       display: 'flex', alignItems: 'center',
@@ -236,8 +274,8 @@ function HeroFullBleed({ rate, totals, link, code }) {
       overflow: 'hidden',
     }}>
       {/* MESH GRADIENT animado */}
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-        <div style={{
+      <div className="aff-orbs" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <div className="aff-orb" style={{
           position: 'absolute', top: '-20%', left: '-10%',
           width: '60vw', height: '60vw', maxWidth: 900, maxHeight: 900,
           borderRadius: '50%',
@@ -245,7 +283,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
           filter: 'blur(80px)',
           animation: 'mesh-pulse 18s ease-in-out infinite',
         }} />
-        <div style={{
+        <div className="aff-orb" style={{
           position: 'absolute', top: '20%', right: '-15%',
           width: '50vw', height: '50vw', maxWidth: 800, maxHeight: 800,
           borderRadius: '50%',
@@ -253,7 +291,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
           filter: 'blur(80px)',
           animation: 'mesh-pulse 22s ease-in-out infinite reverse',
         }} />
-        <div style={{
+        <div className="aff-orb" style={{
           position: 'absolute', bottom: '-20%', left: '30%',
           width: '50vw', height: '50vw', maxWidth: 700, maxHeight: 700,
           borderRadius: '50%',
@@ -299,7 +337,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
             letterSpacing: '-0.045em', lineHeight: 0.9,
             margin: '0 0 28px', maxWidth: 1000,
           }}>
-          Indique. <span style={{
+          Indique. <span className="aff-shimmer" style={{
             background: 'linear-gradient(90deg, #fff 20%, #ef4444 60%, #fff 100%)',
             backgroundSize: '200% auto',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
@@ -429,7 +467,7 @@ function ActivityMarquee({ referrals }) {
       background: 'rgba(255,255,255,0.015)',
       padding: '16px 0',
     }}>
-      <div style={{
+      <div className="aff-marquee" style={{
         display: 'flex', gap: 28,
         animation: 'marquee 50s linear infinite',
         whiteSpace: 'nowrap',

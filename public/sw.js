@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v83 (Remove calculadora + pagamento 24h)
+// NexControl Service Worker — Push Notifications v84 (Mobile fix afiliados: parallax/orbs/shimmer/blur desabilitados no mobile)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

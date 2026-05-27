@@ -1,15 +1,21 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
-const sb = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+// Marca rotas como dinamicas pra evitar collect-page-data no build sem env
+export const dynamic = 'force-dynamic'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
+function getClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
+}
+
 export async function POST(req) {
   try {
+    const sb = getClient()
     const { user_id } = await req.json()
     if (user_id) {
       const now = new Date().toISOString()
@@ -36,6 +42,7 @@ export async function POST(req) {
 
 export async function GET() {
   try {
+    const sb = getClient()
     const cutoff = new Date(Date.now() - 300000).toISOString()
     const { count } = await sb.from('presence').select('*', { count: 'exact', head: true }).gte('last_seen', cutoff)
     return NextResponse.json({ online: count || 0 })

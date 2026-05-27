@@ -105,6 +105,9 @@ export default function AfiliadosPage() {
               <HowItWorks rate={rate} />
             </ContentBlock>
             <ContentBlock>
+              <WithdrawalCode code={data?.code} />
+            </ContentBlock>
+            <ContentBlock>
               <CalculatorMega rate={rate} />
             </ContentBlock>
             <ContentBlock>
@@ -112,9 +115,6 @@ export default function AfiliadosPage() {
             </ContentBlock>
             <ContentBlock>
               <ShareKitImersive link={link} userName={profile?.nome} />
-            </ContentBlock>
-            <ContentBlock>
-              <PixSection data={data} userEmail={user?.email} onRefresh={() => fetchStats(emailRef.current)} />
             </ContentBlock>
             <ContentBlock>
               <ReferralsAndTop referrals={referrals} />
@@ -298,18 +298,18 @@ function HeroFullBleed({ rate, totals, link, code }) {
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1, ease }}
           style={{
             fontFamily: 'var(--font-serif, "Instrument Serif", serif)',
-            fontSize: 96, fontWeight: 400, color: '#fff',
-            letterSpacing: '-0.04em', lineHeight: 0.92,
+            fontSize: 112, fontWeight: 400, color: '#fff',
+            letterSpacing: '-0.045em', lineHeight: 0.9,
             margin: '0 0 28px', maxWidth: 1000,
           }}>
-          Indique. Ganhe.<br/>
-          <span style={{
+          Indique. <span style={{
             background: 'linear-gradient(90deg, #fff 20%, #ef4444 60%, #fff 100%)',
             backgroundSize: '200% auto',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
             animation: 'shimmer 4s linear infinite',
-          }}>Repita.</span>
+            fontStyle: 'italic',
+          }}>Ganhe.</span>
         </motion.h1>
 
         {/* Subtítulo */}
@@ -415,9 +415,9 @@ function ActivityMarquee({ referrals }) {
     when: 'recente',
   }))
   const mockItems = [
-    { name: '@davir', action: 'recebeu R$ 28,02 via PIX', when: 'há 2h' },
+    { name: '@davir', action: 'recebeu R$ 28,02 em comissão', when: 'há 2h' },
     { name: '@rodrigo', action: 'indicou novo cliente', when: 'há 5h' },
-    { name: '@sergio_g', action: 'recebeu R$ 11,97 via PIX', when: 'há 1d' },
+    { name: '@sergio_g', action: 'solicitou pagamento via @nexcpa', when: 'há 1d' },
     { name: '@cpalflux', action: 'tornou-se afiliado', when: 'há 1d' },
     { name: '@thiago', action: 'compartilhou link no WhatsApp', when: 'há 2d' },
   ]
@@ -454,55 +454,240 @@ function ActivityMarquee({ referrals }) {
   )
 }
 
-/* ── HOW IT WORKS ── */
+/* ── HOW IT WORKS — timeline vertical criativa, sem caixinha vermelha ── */
 function HowItWorks({ rate }) {
   const steps = [
-    { n: '01', title: 'Compartilhe seu link', desc: 'Envia pro grupo, post no Insta, manda no DM. Sem limite.' },
-    { n: '02', title: 'Indicado assina o plano', desc: 'Quando ele entra pelo seu link e vira PRO, o sistema sabe automaticamente.' },
-    { n: '03', title: 'Receba via PIX', desc: `${Math.round(rate * 100)}% direto na sua chave PIX cadastrada.` },
+    {
+      n: '01',
+      title: 'Compartilhe seu link',
+      desc: 'Cola no grupo, posta no Stories, manda no DM. Sem limite, sem aprovação prévia.',
+      accent: '#94A3B8',
+    },
+    {
+      n: '02',
+      title: 'Indicado assina o plano',
+      desc: 'Quando entra pelo seu link e vira PRO, o sistema te credita automaticamente a comissão.',
+      accent: '#D1FAE5',
+    },
+    {
+      n: '03',
+      title: 'Solicite seu pagamento',
+      desc: `Quando atingir o valor que quiser sacar, chama o suporte com seu código único de afiliado.`,
+      accent: '#fff',
+      contact: true,
+    },
   ]
 
   return (
     <div>
       <SectionEyebrow>Em 3 passos</SectionEyebrow>
       <SectionTitle size={56}>Simples assim.</SectionTitle>
-      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 48px', lineHeight: 1.55 }}>
-        Sem código, sem cadastro complicado, sem espera. Tudo funciona em segundo plano.
+      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 56px', lineHeight: 1.55 }}>
+        Sem código complicado, sem cadastro burocrático. Tudo funciona em segundo plano.
       </p>
 
-      <div className="aff-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, position: 'relative' }}>
-        {/* Linha conectora (decorativa) */}
+      {/* Timeline vertical com linha lateral */}
+      <div style={{ position: 'relative', paddingLeft: 100, maxWidth: 900 }}>
+        {/* Linha vertical decorativa */}
         <div style={{
-          position: 'absolute', top: 60, left: '16%', right: '16%', height: 1,
-          background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.3), rgba(229,57,53,0.5), rgba(229,57,53,0.3), transparent)',
-          zIndex: 0,
+          position: 'absolute', left: 39, top: 30, bottom: 30,
+          width: 1,
+          background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.18), rgba(255,255,255,0.18), transparent)',
         }} />
 
         {steps.map((s, i) => (
           <motion.div key={s.n}
-            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6, delay: i * 0.12, ease }}
-            style={{
-              position: 'relative', zIndex: 1,
-              padding: '32px 26px', borderRadius: 18,
-              background: 'linear-gradient(180deg, #0d0d0d, #050505)',
-              border: '1px solid rgba(255,255,255,0.07)',
-            }}>
+            initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.55, delay: i * 0.14, ease }}
+            style={{ position: 'relative', marginBottom: i < steps.length - 1 ? 56 : 0 }}>
+
+            {/* Numero gigante outline na lateral */}
             <div style={{
-              width: 48, height: 48, borderRadius: 12,
-              background: 'linear-gradient(145deg, rgba(229,57,53,0.18), rgba(229,57,53,0.04))',
-              border: '1px solid rgba(229,57,53,0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              marginBottom: 18,
-              boxShadow: '0 0 30px rgba(229,57,53,0.15)',
+              position: 'absolute', left: -100, top: -6, width: 78,
+              display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end',
             }}>
-              <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>{s.n}</span>
+              <span style={{
+                fontFamily: 'var(--font-serif, serif)', fontSize: 76, fontWeight: 400,
+                color: 'transparent',
+                WebkitTextStroke: '1px rgba(255,255,255,0.18)',
+                letterSpacing: '-0.04em', lineHeight: 0.9,
+              }}>{s.n}</span>
             </div>
-            <h3 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 24, fontWeight: 400, color: '#fff', margin: '0 0 10px', letterSpacing: '-0.015em' }}>{s.title}</h3>
-            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.55)', margin: 0, lineHeight: 1.6 }}>{s.desc}</p>
+
+            {/* Dot na linha */}
+            <div style={{
+              position: 'absolute', left: -61, top: 14,
+              width: 11, height: 11, borderRadius: '50%',
+              background: '#050505',
+              border: `1.5px solid ${s.accent}`,
+              boxShadow: `0 0 0 4px #050505, 0 0 16px ${s.accent}66`,
+            }} />
+
+            {/* Conteúdo do step */}
+            <h3 style={{
+              fontFamily: 'var(--font-serif, serif)', fontSize: 32, fontWeight: 400,
+              color: '#fff', margin: '0 0 10px',
+              letterSpacing: '-0.02em', lineHeight: 1.1,
+            }}>{s.title}</h3>
+
+            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.58)', margin: 0, lineHeight: 1.6, maxWidth: 560 }}>{s.desc}</p>
+
+            {/* Step 3: cards de contato */}
+            {s.contact && (
+              <div style={{ display: 'flex', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
+                <a href="https://instagram.com/nexcpa" target="_blank" rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 10,
+                    padding: '12px 16px', borderRadius: 11,
+                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                    color: '#fff', textDecoration: 'none', fontSize: 13, fontWeight: 600,
+                    transition: 'all 0.18s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
+                  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                  <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.15 }}>
+                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.1em' }}>INSTAGRAM</span>
+                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, color: '#fff' }}>@nexcpa</span>
+                  </span>
+                </a>
+                <a href="https://wa.me/5532998348889" target="_blank" rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 10,
+                    padding: '12px 16px', borderRadius: 11,
+                    background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.24)',
+                    color: '#fff', textDecoration: 'none', fontSize: 13, fontWeight: 600,
+                    transition: 'all 0.18s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.14)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.08)' }}>
+                  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="1.8" strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.15 }}>
+                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, color: 'rgba(16,185,129,0.7)', letterSpacing: '0.1em' }}>WHATSAPP</span>
+                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, color: '#fff' }}>(32) 99834-8889</span>
+                  </span>
+                </a>
+              </div>
+            )}
           </motion.div>
         ))}
       </div>
+    </div>
+  )
+}
+
+/* ── WITHDRAWAL CODE — codigo unico de recebimento (anti-fraude) ── */
+function WithdrawalCode({ code }) {
+  const [revealed, setRevealed] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const masked = code ? code.slice(0, 2) + '••••' + code.slice(-2) : '••••••••'
+
+  async function copyCode() {
+    if (!code) return
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true); setTimeout(() => setCopied(false), 1800)
+    } catch {}
+  }
+
+  return (
+    <div>
+      <SectionEyebrow>Seu código de afiliado</SectionEyebrow>
+      <SectionTitle size={56}>Único. Pessoal. Intransferível.</SectionTitle>
+      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 640, margin: '0 0 36px', lineHeight: 1.55 }}>
+        Este código identifica você como dono da conta. Use ele pra solicitar seu pagamento — só assim a gente confirma que é você que está pedindo, e não outra pessoa.
+      </p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        transition={{ duration: 0.6, ease }}
+        style={{
+          position: 'relative', overflow: 'hidden',
+          padding: '40px 36px', borderRadius: 22,
+          background: 'linear-gradient(180deg, #0d0d0d, #050505)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.55)',
+        }}>
+        {/* Glow top */}
+        <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)' }} />
+        {/* Lateral glow sutil */}
+        <div style={{ position: 'absolute', top: '-30%', right: '-15%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.04), transparent 60%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
+
+          {/* Esquerda — código + ações */}
+          <div style={{ flex: '1 1 380px' }}>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>
+              Código de recebimento
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18, flexWrap: 'wrap' }}>
+              <p style={{
+                fontFamily: 'var(--mono, monospace)',
+                fontSize: 48, fontWeight: 800,
+                color: '#fff',
+                margin: 0, letterSpacing: '-0.025em', lineHeight: 1,
+                textShadow: revealed ? '0 0 40px rgba(255,255,255,0.15)' : 'none',
+                transition: 'all 0.3s',
+              }}>
+                {revealed ? code : masked}
+              </p>
+
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setRevealed(v => !v)} type="button"
+                  style={{
+                    padding: '10px 12px', borderRadius: 10, cursor: 'pointer',
+                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                    color: revealed ? '#ef4444' : 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                  }}>
+                  {revealed ? (
+                    <><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>Ocultar</>
+                  ) : (
+                    <><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Revelar</>
+                  )}
+                </button>
+                <button onClick={copyCode} type="button" disabled={!revealed}
+                  style={{
+                    padding: '10px 12px', borderRadius: 10, cursor: revealed ? 'pointer' : 'not-allowed',
+                    background: copied ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.04)',
+                    border: '1px solid ' + (copied ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'),
+                    color: copied ? '#10B981' : revealed ? '#fff' : 'rgba(255,255,255,0.3)',
+                    fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+                    display: 'inline-flex', alignItems: 'center', gap: 6, opacity: revealed ? 1 : 0.5,
+                  }}>
+                  {copied ? (<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Copiado</>)
+                    : (<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar</>)}
+                </button>
+              </div>
+            </div>
+
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.6, maxWidth: 420 }}>
+              <strong style={{ color: '#fff' }}>Mantenha sigilo.</strong> Esse código é a sua chave de identificação. Qualquer pessoa com ele pode tentar resgatar suas comissões em seu nome.
+            </p>
+          </div>
+
+          {/* Direita — instruções de saque */}
+          <div style={{ flex: '0 1 320px', padding: '22px 24px', borderRadius: 14, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>
+              Como solicitar
+            </p>
+            <ol style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 11 }}>
+              {[
+                'Chama no @nexcpa (Instagram) ou WhatsApp',
+                'Envie seu código de recebimento',
+                'Confirme dados pra receber via PIX, banco ou outro meio',
+                'Pagamento sai em até 7 dias úteis',
+              ].map((t, i) => (
+                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 12.5, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+                  <span style={{ flexShrink: 0, fontFamily: 'var(--mono, monospace)', fontSize: 10.5, fontWeight: 800, color: '#ef4444', minWidth: 18 }}>{i + 1}.</span>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </motion.div>
     </div>
   )
 }
@@ -973,13 +1158,16 @@ function StatusBadge({ status }) {
 function FAQImersive({ rate }) {
   const [open, setOpen] = useState(0)
   const items = [
-    { q: 'Como recebo minha comissão?', a: `Quando algum indicado seu paga uma mensalidade do NexControl, automaticamente gera uma comissão de ${Math.round(rate * 100)}% pra você. Eu pago via PIX manualmente em até 7 dias.` },
-    { q: 'Quanto custa pra começar?', a: 'Nada. Programa de afiliados é grátis pra todo cliente PRO. Basta cadastrar sua chave PIX acima e começar a divulgar.' },
-    { q: 'Tenho limite de indicações?', a: 'Não. Você pode indicar quantas pessoas quiser. Cada indicado pagante gera comissão pra você.' },
+    { q: 'Como recebo minha comissão?', a: `Quando algum indicado seu paga, automaticamente gera ${Math.round(rate * 100)}% de comissão pra você. Pra solicitar o pagamento, chama o @nexcpa no Instagram ou WhatsApp (32) 99834-8889 com seu código de afiliado.` },
+    { q: 'Pra que serve o código de afiliado?', a: 'É a sua chave de identificação. Sem ele, ninguém consegue resgatar suas comissões — nem alguém se passando por você. É a forma da gente confirmar que é VOCÊ quem está pedindo.' },
+    { q: 'E se eu perder meu código?', a: 'Você consegue ver ele aqui mesmo no painel, é só clicar em "Revelar". Recomenda salvar num gerenciador de senhas.' },
+    { q: 'Quanto custa pra começar?', a: 'Nada. Programa é grátis pra todo cliente PRO. Seu link e código já estão prontos pra usar.' },
+    { q: 'Tenho limite de indicações?', a: 'Não. Indique quantas pessoas quiser. Cada indicado pagante gera comissão pra você.' },
+    { q: 'Tem valor mínimo pra solicitar?', a: 'Sem mínimo oficial. Mas recomenda acumular pelo menos R$ 50 antes de pedir pra valer o esforço de fazer o pagamento.' },
     { q: 'E se o cliente cancelar depois?', a: 'A comissão que você já recebeu fica com você. Não tem clawback (devolução).' },
-    { q: 'Posso indicar meus próprios operadores?', a: 'Não. Cada tenant pode ter só um afiliado, e indicação de você mesmo (auto-referência) é bloqueada automaticamente.' },
-    { q: 'Quando o pagamento PIX cai?', a: 'O pagamento é feito manualmente em até 7 dias úteis após a comissão aparecer como pendente. Você recebe push aqui mesmo quando for pago.' },
-    { q: 'Posso mudar minha chave PIX depois?', a: 'Pode, sim. Comissões já marcadas como pagas não voltam, mas qualquer nova vai pra chave atualizada.' },
+    { q: 'Posso indicar meus próprios operadores?', a: 'Não. Cada tenant pode ter só um afiliado, e auto-indicação é bloqueada automaticamente.' },
+    { q: 'Quanto tempo demora pra cair?', a: 'Após o contato e confirmação dos dados, o pagamento sai em até 7 dias úteis. Geralmente em 1-2 dias.' },
+    { q: 'Como vou receber? PIX, banco?', a: 'Você decide na hora do contato. PIX é o mais rápido (mesmo dia), mas a gente também faz transferência bancária ou outras formas.' },
   ]
 
   return (
@@ -1052,10 +1240,10 @@ function FinalCTA({ link, rate }) {
           color: '#fff', margin: '0 0 24px', letterSpacing: '-0.035em', lineHeight: 0.95,
         }}>
           {Math.round(rate * 100)}% de comissão.<br/>
-          <span style={{ background: 'linear-gradient(90deg, #fff, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Direto no seu PIX.</span>
+          <span style={{ background: 'linear-gradient(90deg, #fff, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'italic' }}>Sua, sem trabalho.</span>
         </h2>
         <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', margin: '0 0 36px', lineHeight: 1.55 }}>
-          Pega seu link, manda no grupo, recebe a comissão. É literalmente isso.
+          Pega seu link, manda no grupo, espera o pagamento entrar.
         </p>
         <motion.button onClick={copyLink} whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(229,57,53,0.6)' }} whileTap={{ scale: 0.97 }}
           style={{

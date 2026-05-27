@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v80 (force rebuild afiliados premium · cache bust)
+// NexControl Service Worker — Push Notifications v81 (Afiliados refinado · codigo unico, contato @nexcpa, timeline criativa)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

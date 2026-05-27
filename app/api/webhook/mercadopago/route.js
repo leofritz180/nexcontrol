@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
 
 // Webhook do Mercado Pago: recebe notificacao, busca o pagamento na API,
 // atualiza status no DB e ativa PRO quando aprovado.
@@ -152,6 +153,13 @@ export async function POST(req) {
         }
 
         console.log('[MP webhook] PRO ativado', { tenant: record.tenant_id, payment: payment.id })
+
+        // Comissao de afiliado — UNICA VEZ na primeira mensalidade do indicado
+        await maybeCreateCommission(sb, {
+          tenantId: record.tenant_id,
+          paymentId: payment.id,
+          amount: record.amount,
+        })
       }
     }
 

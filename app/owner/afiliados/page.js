@@ -44,7 +44,19 @@ export default function OwnerAfiliadosPage() {
   )
   if (!data) return null
 
-  const { rows = [], totals = {} } = data
+  const { rows = [], totals = {}, pendingCommissions = [] } = data
+
+  async function markPaid(ids) {
+    const res = await fetch('/api/owner/affiliates/pay', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: emailRef.current, ids }),
+    })
+    if (res.ok) await fetchData(emailRef.current)
+  }
+
+  function copyText(t) {
+    try { navigator.clipboard.writeText(t) } catch {}
+  }
 
   return (
     <main style={{ minHeight: '100vh', background: '#000000' }}>
@@ -83,6 +95,62 @@ export default function OwnerAfiliadosPage() {
             </motion.div>
           ))}
         </div>
+
+        {/* PAGAMENTOS PENDENTES — owner paga via PIX e marca como paid */}
+        {pendingCommissions.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.18, ease }}
+            style={{ borderRadius: 16, padding: 24, marginBottom: 24, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(229,57,53,0.18)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 800, color: '#F1F5F9', margin: 0 }}>
+                💸 Pagamentos pendentes <span style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', marginLeft: 8 }}>({pendingCommissions.length})</span>
+              </h3>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: '#e53935' }}>
+                R$ {fmt(pendingCommissions.reduce((s, c) => s + c.commission_amount, 0))}
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {pendingCommissions.map(c => (
+                <div key={c.id} style={{ padding: '12px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', display: 'grid', gridTemplateColumns: '1fr 1fr 160px 130px', gap: 12, alignItems: 'center' }}>
+                  <div>
+                    <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Afiliado (recebe)</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>{c.affiliate.name}</p>
+                    <p style={{ fontSize: 10, color: '#94A3B8', margin: '2px 0 0', fontFamily: 'var(--mono)' }}>{c.affiliate.email}</p>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Indicou</p>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9', margin: 0 }}>{c.referred.name}</p>
+                    <p style={{ fontSize: 10, color: '#94A3B8', margin: '2px 0 0' }}>pagou R$ {fmt(c.payment_amount)}</p>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>PIX</p>
+                    {c.affiliate.pix_key ? (
+                      <button onClick={() => copyText(c.affiliate.pix_key)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}>
+                        <p style={{ fontSize: 11, fontFamily: 'var(--mono)', color: '#D1FAE5', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }} title="clique pra copiar">📋 {c.affiliate.pix_key}</p>
+                        <p style={{ fontSize: 9, color: '#64748B', margin: '2px 0 0' }}>{c.affiliate.pix_type || 'tipo —'}</p>
+                      </button>
+                    ) : (
+                      <p style={{ fontSize: 11, color: '#EF4444', margin: 0 }}>⚠️ sem PIX</p>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+                    <span style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 900, color: '#e53935' }}>R$ {fmt(c.commission_amount)}</span>
+                    <button onClick={() => markPaid([c.id])}
+                      disabled={!c.affiliate.pix_key}
+                      style={{
+                        fontSize: 10, fontWeight: 800, padding: '5px 10px', borderRadius: 6,
+                        background: c.affiliate.pix_key ? 'rgba(16,185,129,0.15)' : 'rgba(100,116,139,0.08)',
+                        color: c.affiliate.pix_key ? '#10B981' : '#64748B',
+                        border: `1px solid ${c.affiliate.pix_key ? 'rgba(16,185,129,0.3)' : 'rgba(100,116,139,0.2)'}`,
+                        cursor: c.affiliate.pix_key ? 'pointer' : 'not-allowed',
+                      }}>
+                      ✓ Marcar pago
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Ranking */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2, ease }}

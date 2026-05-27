@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v76 (Reconcile-payments: cron horario recupera webhooks perdidos)
+// NexControl Service Worker — Push Notifications v77 (Programa de afiliados ATIVO 50% primeira mensalidade)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

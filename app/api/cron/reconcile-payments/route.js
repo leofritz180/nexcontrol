@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
+import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
 
 // Reconcile pagamentos: pega TODOS mp_payments com status='pending' criados
 // ha mais de 10 min, consulta o MP e:
@@ -196,6 +197,13 @@ async function activatePro(sb, record, paymentId) {
       tag: 'pro-activated',
     })
   } catch {}
+
+  // Comissao de afiliado — UNICA VEZ
+  await maybeCreateCommission(sb, {
+    tenantId: record.tenant_id,
+    paymentId: paymentId,
+    amount: record.amount,
+  })
 
   return { created: true, sub_id: newSub.id, expires: expires.toISOString() }
 }

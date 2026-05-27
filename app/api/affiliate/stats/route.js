@@ -18,11 +18,11 @@ export async function POST(req) {
 
     let { data: aff } = await sb.from('affiliates').select('*').eq('tenant_id', prof.tenant_id).maybeSingle()
 
-    // Se nao tem registro, criar row disabled (admin pode ver tela de bloqueio)
+    // Auto-criar registro habilitado (programa liberado pra todos)
     if (!aff) {
       const code = Math.random().toString(36).slice(2, 10)
       const { data: inserted } = await sb.from('affiliates')
-        .insert({ tenant_id: prof.tenant_id, code, enabled: false, commission_rate: 0.30 })
+        .insert({ tenant_id: prof.tenant_id, code, enabled: true, commission_rate: 0.50 })
         .select().maybeSingle()
       aff = inserted
     }
@@ -92,6 +92,8 @@ export async function POST(req) {
       enabled: true,
       code: aff.code,
       rate: Number(aff.commission_rate),
+      pix_key: aff.pix_key || null,
+      pix_type: aff.pix_type || null,
       link,
       totals: {
         totalIndicados: (refs || []).length,

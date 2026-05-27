@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
 
 // Usado pelo polling do frontend. Consulta DB primeiro; se ainda pendente,
 // bate no MP pra atualizar o status (cobre caso de webhook atrasado).
@@ -150,6 +151,13 @@ async function activatePro(sb, record, paymentId) {
   } catch (e) {
     console.error('[MP check-payment] is_pro update failed (column may not exist)', e?.message)
   }
+
+  // Comissao de afiliado — UNICA VEZ
+  await maybeCreateCommission(sb, {
+    tenantId: record.tenant_id,
+    paymentId: paymentId,
+    amount: record.amount,
+  })
 
   console.log('[MP check-payment] PRO ativado', { tenant: record.tenant_id, payment: paymentId })
 }

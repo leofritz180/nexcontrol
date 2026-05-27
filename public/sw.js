@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v90 (OperatorLimitGate — bloqueio HARD quando excede limite)
+// NexControl Service Worker — Push Notifications v91 (Push so com primeiro nome do operador)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

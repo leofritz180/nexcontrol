@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v84 (Mobile fix afiliados: parallax/orbs/shimmer/blur desabilitados no mobile)
+// NexControl Service Worker — Push Notifications v85 (Tab Ranking dedicada no /admin antes da Lixeira)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

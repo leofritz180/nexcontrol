@@ -961,7 +961,7 @@ export default function AdminPage() {
     { label:'Lucro/conta', rawValue:Math.abs(global.lucroPerConta), value:`R$ ${fmt(Math.abs(global.lucroPerConta))}`, sub:'Media por depositante', color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', card:global.lucroPerConta>=0?'card-profit':'card-loss', badge:'rentabilidade' },
   ]
 
-  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['trash','Lixeira']]
+  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['ranking','Ranking'],['trash','Lixeira']]
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
@@ -1335,6 +1335,7 @@ export default function AdminPage() {
             overview: 'admin',
             myops: 'admin-myops',
             operations: 'admin-operations',
+            ranking: 'admin-ranking',
             trash: 'admin-trash',
           }}
         />
@@ -3191,6 +3192,82 @@ export default function AdminPage() {
             </div>
           </motion.div>
         )}
+
+        {/* ═══ RANKING ═══ */}
+        {tab==='ranking' && (() => {
+          const myDeps = validClosedMetas(myMetas).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+          const apexLocked = isApexLocked(user?.email || profile?.email)
+          const myAmbientRank = getRank(myDeps, { forceApex: apexLocked }).current
+          return (
+            <motion.div key="ranking"
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3, ease }}>
+
+              {/* HERO da aba — meu rank atual em destaque */}
+              <motion.div
+                initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
+                transition={{duration:0.4, ease}}
+                style={{ marginBottom: 24 }}>
+                <div style={{
+                  fontFamily: 'var(--mono, monospace)',
+                  fontSize: 10, fontWeight: 700, letterSpacing: '0.24em',
+                  textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)',
+                  marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10,
+                }}>
+                  <span style={{ width: 20, height: 1, background: 'rgba(255,255,255,0.25)' }}/>
+                  Seu progresso
+                </div>
+                <h2 style={{
+                  fontFamily: 'var(--font-serif, "Instrument Serif", serif)',
+                  fontSize: 42, fontWeight: 400, color: '#fff',
+                  letterSpacing: '-0.025em', lineHeight: 1.05,
+                  margin: '0 0 8px',
+                }}>Ranking.</h2>
+                <p style={{ fontSize: 14, color: 'var(--t3)', margin: 0, maxWidth: 580, lineHeight: 1.55 }}>
+                  Seu posicionamento atual baseado nas contas processadas. Quanto mais você opera, mais você sobe.
+                </p>
+              </motion.div>
+
+              {/* Rank pessoal — RankProgress (mesma do myops) */}
+              <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginBottom: 22 }}>
+                <RankAmbient rank={myAmbientRank} density={myAmbientRank.tier >= 12 ? 'high' : 'normal'} />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <RankProgress contas={myDeps} name={getName(profile)} forceApex={apexLocked} />
+                </div>
+              </div>
+
+              {/* Todos os ranks — showcase */}
+              <div style={{ marginBottom: 18 }}>
+                <div style={{
+                  fontFamily: 'var(--mono, monospace)',
+                  fontSize: 10, fontWeight: 700, letterSpacing: '0.24em',
+                  textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)',
+                  marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10,
+                }}>
+                  <span style={{ width: 20, height: 1, background: 'rgba(255,255,255,0.25)' }}/>
+                  Todos os tiers
+                </div>
+                <h3 style={{
+                  fontFamily: 'var(--font-serif, serif)',
+                  fontSize: 28, fontWeight: 400, color: '#fff',
+                  letterSpacing: '-0.02em', margin: '0 0 18px',
+                }}>O caminho completo.</h3>
+              </div>
+
+              <div style={{
+                position: 'relative',
+                padding: 22, borderRadius: 16,
+                background: 'rgba(0,0,0,0.55)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
+              }}>
+                <RankShowcase contas={myDeps} mode="inline" forceApex={apexLocked} />
+              </div>
+            </motion.div>
+          )
+        })()}
 
         {/* ═══ TRASH ═══ */}
         {tab==='trash' && (

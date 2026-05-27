@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useTransform, useInView, useSpring } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
@@ -10,6 +10,34 @@ const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits:
 const fmtN = v => Number(v || 0).toLocaleString('pt-BR')
 const ease = [0.33, 1, 0.68, 1]
 
+/* ── Animated count-up ── */
+function CountUp({ value, prefix = '', suffix = '', duration = 1.5, decimals = 0 }) {
+  const [display, setDisplay] = useState(0)
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-50px' })
+
+  useEffect(() => {
+    if (!isInView) return
+    const start = Date.now()
+    const from = 0
+    const to = Number(value) || 0
+    const tick = () => {
+      const elapsed = (Date.now() - start) / 1000
+      const t = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - t, 3)
+      setDisplay(from + (to - from) * eased)
+      if (t < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [isInView, value, duration])
+
+  const formatted = decimals > 0
+    ? display.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+    : Math.round(display).toLocaleString('pt-BR')
+
+  return <span ref={ref}>{prefix}{formatted}{suffix}</span>
+}
+
 export default function AfiliadosPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -17,6 +45,7 @@ export default function AfiliadosPage() {
   const [profile, setProfile] = useState(null)
   const [tenant, setTenant] = useState(null)
   const [data, setData] = useState(null)
+  const [globalStats, setGlobalStats] = useState({ totalPaid: 0, activeAffiliates: 0 })
   const emailRef = useRef(null)
 
   async function fetchStats(email) {
@@ -66,110 +95,125 @@ export default function AfiliadosPage() {
 
   return (
     <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} userId={user?.id} tenantId={profile?.tenant_id}>
-      <main style={{ minHeight: '100vh', position: 'relative' }}>
+      <main style={{ position: 'relative', overflow: 'hidden' }}>
 
-        {/* AMBIENT GLOW */}
-        <div style={{ position: 'fixed', top: '-20%', left: '-10%', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.08), transparent 60%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
-        <div style={{ position: 'fixed', bottom: '-20%', right: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(209,250,229,0.05), transparent 60%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
-
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: 1280, margin: '0 auto', padding: '48px 28px 100px' }}>
-
-          {!enabled ? <LockedHero /> : (
-            <>
-              <HeroSection rate={rate} totals={totals} />
-              <LinkCard link={link} code={data?.code} rate={rate} />
+        {!enabled ? <LockedHero /> : (
+          <>
+            <HeroFullBleed rate={rate} totals={totals} link={link} code={data?.code} />
+            <ActivityMarquee referrals={referrals} />
+            <ContentBlock>
               <HowItWorks rate={rate} />
-              <KPIGrid totals={totals} />
-
-              <div className="g-2-1" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20, marginBottom: 24 }}>
-                <ShareKit link={link} userName={profile?.nome} />
-                <RightColumn data={data} userEmail={user?.email} onRefresh={() => fetchStats(emailRef.current)} fmt={fmt} rate={rate} />
-              </div>
-
-              <ReferralsList referrals={referrals} />
-              <HistoryList referrals={referrals} fmt={fmt} />
-              <FAQ rate={rate} />
-            </>
-          )}
-        </div>
+            </ContentBlock>
+            <ContentBlock>
+              <CalculatorMega rate={rate} />
+            </ContentBlock>
+            <ContentBlock>
+              <KPISection totals={totals} />
+            </ContentBlock>
+            <ContentBlock>
+              <ShareKitImersive link={link} userName={profile?.nome} />
+            </ContentBlock>
+            <ContentBlock>
+              <PixSection data={data} userEmail={user?.email} onRefresh={() => fetchStats(emailRef.current)} />
+            </ContentBlock>
+            <ContentBlock>
+              <ReferralsAndTop referrals={referrals} />
+            </ContentBlock>
+            <ContentBlock>
+              <FAQImersive rate={rate} />
+            </ContentBlock>
+            <FinalCTA link={link} rate={rate} />
+          </>
+        )}
       </main>
       <RouteTour tourId="afiliados" />
 
-      <style jsx>{`
+      <style jsx global>{`
+        @keyframes mesh-pulse {
+          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+          33% { transform: translate(40px, -30px) scale(1.1); opacity: 0.9; }
+          66% { transform: translate(-30px, 40px) scale(0.95); opacity: 0.6; }
+        }
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        @keyframes float-up {
+          0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+          10% { opacity: 0.6; }
+          90% { opacity: 0.6; }
+          100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+        }
         @media (max-width: 768px) {
-          :global(.g-2-1) { grid-template-columns: 1fr !important; }
-          :global(.g-3-aff) { grid-template-columns: 1fr !important; }
-          :global(.g-4-kpi) { grid-template-columns: repeat(2, 1fr) !important; }
-          :global(.hero-h1) { font-size: 44px !important; }
+          .aff-hero-h1 { font-size: 56px !important; }
+          .aff-grid-3 { grid-template-columns: 1fr !important; }
+          .aff-grid-2 { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </AppLayout>
   )
 }
 
-/* ── LOCKED HERO (caso afiliado nao habilitado) ── */
+/* ── Helpers ── */
+function ContentBlock({ children }) {
+  return (
+    <section style={{ maxWidth: 1200, margin: '0 auto', padding: '60px 28px' }}>
+      {children}
+    </section>
+  )
+}
+
+function SectionEyebrow({ children }) {
+  return (
+    <div style={{
+      fontFamily: 'var(--mono, monospace)', fontSize: 10, fontWeight: 700,
+      color: '#e53935', letterSpacing: '0.28em', textTransform: 'uppercase',
+      marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10,
+    }}>
+      <span style={{ width: 20, height: 1, background: '#e53935' }} />
+      {children}
+    </div>
+  )
+}
+
+function SectionTitle({ children, size = 40 }) {
+  return (
+    <h2 style={{
+      fontFamily: 'var(--font-serif, "Instrument Serif", serif)',
+      fontSize: size, fontWeight: 400, color: '#fff',
+      letterSpacing: '-0.025em', lineHeight: 1.05,
+      margin: '0 0 16px',
+    }}>{children}</h2>
+  )
+}
+
+/* ── LOCKED ── */
 function LockedHero() {
   return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-      style={{ borderRadius: 20, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: '64px 36px', textAlign: 'center' }}>
-      <div style={{ width: 64, height: 64, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-        <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.6" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-      </div>
-      <h2 style={{ fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 32, fontWeight: 400, color: '#fff', margin: '0 0 12px', letterSpacing: '-0.02em' }}>Programa em ativação</h2>
-      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: '0 auto', maxWidth: 460, lineHeight: 1.6 }}>Liberação acontece automaticamente nas próximas horas. Volte em breve.</p>
-    </motion.div>
+    <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
+        style={{ maxWidth: 480, borderRadius: 20, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: '64px 36px', textAlign: 'center' }}>
+        <div style={{ width: 64, height: 64, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+          <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.6" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <h2 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 32, fontWeight: 400, color: '#fff', margin: '0 0 12px', letterSpacing: '-0.02em' }}>Programa em ativação</h2>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: '0 auto', maxWidth: 360, lineHeight: 1.6 }}>Liberação acontece automaticamente nas próximas horas. Volte em breve.</p>
+      </motion.div>
+    </div>
   )
 }
 
-/* ── HERO PREMIUM ── */
-function HeroSection({ rate, totals }) {
-  return (
-    <motion.section initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease }}
-      style={{ marginBottom: 40 }}>
-      <div style={{
-        fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
-        fontSize: 10, fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase',
-        color: '#e53935', marginBottom: 18,
-        display: 'flex', alignItems: 'center', gap: 10,
-      }}>
-        <span style={{ width: 24, height: 1, background: '#e53935' }} />
-        Programa de Afiliados · {Math.round(rate * 100)}% de comissão
-      </div>
-
-      <h1 className="hero-h1" style={{
-        fontFamily: 'var(--font-serif, "Instrument Serif", "Times New Roman", serif)',
-        fontSize: 64, fontWeight: 400, color: '#fff',
-        letterSpacing: '-0.035em', lineHeight: 0.95,
-        margin: '0 0 18px',
-      }}>
-        Indique. Ganhe.<br/>
-        <span style={{ background: 'linear-gradient(90deg, #fff 30%, rgba(229,57,53,0.85))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Repita.</span>
-      </h1>
-
-      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', maxWidth: 600, margin: '0 0 32px', lineHeight: 1.55, fontWeight: 300 }}>
-        Indique clientes pro NexControl e ganhe <strong style={{ color: '#fff', fontWeight: 600 }}>{Math.round(rate * 100)}% de comissão</strong> em cada assinatura. Pagamento via PIX, direto no seu app. Zero burocracia.
-      </p>
-
-      {/* HERO KPI strip — 2 grandes */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
-        <div style={{ padding: '22px 26px', borderRadius: 14, background: 'linear-gradient(145deg, rgba(229,57,53,0.06), rgba(229,57,53,0.01))', border: '1px solid rgba(229,57,53,0.18)' }}>
-          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.5)', margin: '0 0 8px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Comissão acumulada</p>
-          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 36, fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.025em', lineHeight: 1 }}>R$ {fmt(totals.totalComissao)}</p>
-        </div>
-        <div style={{ padding: '22px 26px', borderRadius: 14, background: 'linear-gradient(145deg, rgba(209,250,229,0.04), rgba(209,250,229,0.01))', border: '1px solid rgba(209,250,229,0.18)' }}>
-          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.5)', margin: '0 0 8px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>A receber</p>
-          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 36, fontWeight: 800, color: '#D1FAE5', margin: 0, letterSpacing: '-0.025em', lineHeight: 1 }}>R$ {fmt(totals.pendente)}</p>
-        </div>
-      </div>
-    </motion.section>
-  )
-}
-
-/* ── LINK CARD com QR + share ── */
-function LinkCard({ link, code, rate }) {
+/* ── HERO FULL-BLEED ── */
+function HeroFullBleed({ rate, totals, link, code }) {
   const [copied, setCopied] = useState(false)
-  const [showQR, setShowQR] = useState(false)
-  const qrUrl = link ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&color=ffffff&bgcolor=050505&qzone=1&data=${encodeURIComponent(link)}` : ''
+  const heroRef = useRef(null)
+  const { scrollY } = useScroll()
+  const heroY = useTransform(scrollY, [0, 600], [0, -120])
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3])
 
   async function copyLink() {
     try {
@@ -181,206 +225,406 @@ function LinkCard({ link, code, rate }) {
   async function shareLink() {
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: 'NexControl',
-          text: 'Sistema profissional pra gerenciar sua operação de CPA — teste 3 dias grátis',
-          url: link,
-        })
+        await navigator.share({ title: 'NexControl', text: 'Sistema profissional pra gerenciar sua operação de CPA', url: link })
       } catch {}
-    } else {
-      copyLink()
-    }
+    } else copyLink()
   }
 
   return (
-    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.1, ease }}
-      style={{ marginBottom: 36 }}>
-      <div style={{
-        position: 'relative', overflow: 'hidden',
-        borderRadius: 20,
-        background: 'linear-gradient(180deg, #0d0d0d, #050505)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 24px 60px rgba(0,0,0,0.55), 0 0 80px rgba(229,57,53,0.06)',
-      }}>
-        {/* glow top */}
-        <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.5), transparent)' }} />
-        {/* glow right */}
-        <div style={{ position: 'absolute', top: '-30%', right: '-15%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.12), transparent 60%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
-
-        <div style={{ position: 'relative', padding: '32px 36px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22, flexWrap: 'wrap', gap: 12 }}>
-            <div>
-              <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 700, color: 'rgba(255,255,255,0.45)', margin: '0 0 6px', letterSpacing: '0.22em', textTransform: 'uppercase' }}>Seu link único</p>
-              <p style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 22, fontWeight: 400, color: '#fff', margin: 0, letterSpacing: '-0.015em' }}>Compartilhe e ganhe.</p>
-            </div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 12px', borderRadius: 999, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.22)' }}>
-              <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
-              <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 800, color: '#10B981', letterSpacing: '0.15em' }}>LINK ATIVO</span>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: 10, alignItems: 'stretch', flexWrap: 'wrap', marginBottom: 14 }}>
-            <div style={{
-              flex: 1, minWidth: 260,
-              display: 'flex', alignItems: 'center',
-              padding: '14px 18px',
-              background: 'rgba(0,0,0,0.5)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 12,
-              fontFamily: 'var(--mono, monospace)', fontSize: 13.5, color: '#fff',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              letterSpacing: '-0.01em',
-            }}>
-              {link}
-            </div>
-            <motion.button onClick={copyLink} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-              style={{
-                padding: '14px 24px', borderRadius: 12, border: 'none', cursor: 'pointer',
-                fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
-                background: copied ? 'rgba(16,185,129,0.18)' : 'linear-gradient(180deg, #1a1a1a, #0a0a0a)',
-                color: copied ? '#10B981' : '#fff',
-                border: copied ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.12)',
-                display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'all 0.18s',
-              }}>
-              {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Copiado</>)
-                : (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar link</>)}
-            </motion.button>
-            <motion.button onClick={shareLink} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-              style={{
-                padding: '14px 20px', borderRadius: 12, border: 'none', cursor: 'pointer',
-                fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
-                background: 'linear-gradient(180deg, #ef4444, #c62828)',
-                color: '#fff', boxShadow: '0 4px 16px rgba(229,57,53,0.35)',
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-              }}>
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-              Compartilhar
-            </motion.button>
-            <motion.button onClick={() => setShowQR(true)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-              style={{
-                padding: '14px 18px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.12)', cursor: 'pointer',
-                fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
-                background: 'transparent', color: '#fff',
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-              }}>
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-              QR
-            </motion.button>
-          </div>
-
-          <div style={{ display: 'flex', gap: 24, fontSize: 11, color: 'rgba(255,255,255,0.5)', flexWrap: 'wrap' }}>
-            <span>Código: <strong style={{ color: 'rgba(255,255,255,0.78)', fontFamily: 'var(--mono, monospace)' }}>{code}</strong></span>
-            <span>Comissão: <strong style={{ color: '#D1FAE5', fontFamily: 'var(--mono, monospace)' }}>{Math.round(rate * 100)}%</strong></span>
-            <span>Validade: <strong style={{ color: 'rgba(255,255,255,0.78)' }}>Sem prazo</strong></span>
-          </div>
-        </div>
+    <section ref={heroRef} style={{
+      position: 'relative',
+      minHeight: '92vh',
+      display: 'flex', alignItems: 'center',
+      padding: '80px 28px 60px',
+      overflow: 'hidden',
+    }}>
+      {/* MESH GRADIENT animado */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <div style={{
+          position: 'absolute', top: '-20%', left: '-10%',
+          width: '60vw', height: '60vw', maxWidth: 900, maxHeight: 900,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(229,57,53,0.22), transparent 70%)',
+          filter: 'blur(80px)',
+          animation: 'mesh-pulse 18s ease-in-out infinite',
+        }} />
+        <div style={{
+          position: 'absolute', top: '20%', right: '-15%',
+          width: '50vw', height: '50vw', maxWidth: 800, maxHeight: 800,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(229,57,53,0.18), transparent 70%)',
+          filter: 'blur(80px)',
+          animation: 'mesh-pulse 22s ease-in-out infinite reverse',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-20%', left: '30%',
+          width: '50vw', height: '50vw', maxWidth: 700, maxHeight: 700,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(209,250,229,0.06), transparent 70%)',
+          filter: 'blur(80px)',
+          animation: 'mesh-pulse 25s ease-in-out infinite',
+        }} />
       </div>
 
-      {/* QR Modal */}
-      <AnimatePresence>
-        {showQR && (
-          <motion.div onClick={() => setShowQR(false)}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-            <motion.div onClick={e => e.stopPropagation()}
-              initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3, ease }}
-              style={{ background: '#050505', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 36, textAlign: 'center', maxWidth: 380 }}>
-              <p style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 24, color: '#fff', margin: '0 0 8px' }}>Aponte a câmera</p>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', margin: '0 0 22px' }}>QR Code do seu link de indicação</p>
-              <img src={qrUrl} alt="QR Code" width={280} height={280} style={{ borderRadius: 12, display: 'block', margin: '0 auto 18px' }} />
-              <a href={qrUrl} download="nexcontrol-qr.png" target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', fontSize: 12, fontWeight: 700, textDecoration: 'none' }}>
-                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Baixar QR
-              </a>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.section>
+      {/* Grid background sutil */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)',
+        backgroundSize: '64px 64px',
+        zIndex: 0,
+        maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 75%)',
+        WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 75%)',
+      }} />
+
+      <motion.div style={{ position: 'relative', zIndex: 2, maxWidth: 1200, margin: '0 auto', width: '100%', y: heroY, opacity: heroOpacity }}>
+
+        {/* Eyebrow flutuante */}
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            padding: '7px 16px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+            marginBottom: 28, backdropFilter: 'blur(8px)',
+          }}>
+          <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2, repeat: Infinity }}
+            style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
+          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10.5, color: 'rgba(255,255,255,0.78)', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+            Programa de Afiliados · {Math.round(rate * 100)}% de comissão
+          </span>
+        </motion.div>
+
+        {/* Headline gigante */}
+        <motion.h1 className="aff-hero-h1"
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1, ease }}
+          style={{
+            fontFamily: 'var(--font-serif, "Instrument Serif", serif)',
+            fontSize: 96, fontWeight: 400, color: '#fff',
+            letterSpacing: '-0.04em', lineHeight: 0.92,
+            margin: '0 0 28px', maxWidth: 1000,
+          }}>
+          Indique. Ganhe.<br/>
+          <span style={{
+            background: 'linear-gradient(90deg, #fff 20%, #ef4444 60%, #fff 100%)',
+            backgroundSize: '200% auto',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            animation: 'shimmer 4s linear infinite',
+          }}>Repita.</span>
+        </motion.h1>
+
+        {/* Subtítulo */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25, ease }}
+          style={{
+            fontSize: 19, color: 'rgba(255,255,255,0.65)',
+            maxWidth: 620, margin: '0 0 40px',
+            lineHeight: 1.5, fontWeight: 300,
+          }}>
+          Indique clientes pro NexControl, ganhe <strong style={{ color: '#fff', fontWeight: 500 }}>{Math.round(rate * 100)}%</strong> de comissão em cada assinatura. Direto na sua chave PIX, sem burocracia.
+        </motion.p>
+
+        {/* CTAs duplos */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4, ease }}
+          style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 56 }}>
+          <motion.button onClick={shareLink} whileHover={{ scale: 1.03, boxShadow: '0 16px 48px rgba(229,57,53,0.5)' }} whileTap={{ scale: 0.97 }}
+            style={{
+              padding: '16px 28px', borderRadius: 12, border: 'none', cursor: 'pointer',
+              background: 'linear-gradient(180deg, #ef4444, #c62828)',
+              color: '#fff', fontSize: 14.5, fontWeight: 700, fontFamily: 'inherit',
+              display: 'inline-flex', alignItems: 'center', gap: 10,
+              boxShadow: '0 8px 32px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
+            }}>
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Compartilhar meu link
+          </motion.button>
+          <motion.button onClick={copyLink} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            style={{
+              padding: '16px 24px', borderRadius: 12, cursor: 'pointer',
+              background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              color: '#fff', fontSize: 14.5, fontWeight: 600, fontFamily: 'inherit',
+              display: 'inline-flex', alignItems: 'center', gap: 10,
+            }}>
+            {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style={{ color: '#10B981' }}>Copiado</span></>)
+              : (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar link</>)}
+          </motion.button>
+        </motion.div>
+
+        {/* Link preview */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.55, ease }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 12,
+            padding: '10px 14px', borderRadius: 10,
+            background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)',
+            backdropFilter: 'blur(8px)', marginBottom: 80,
+            maxWidth: '100%', overflow: 'hidden',
+          }}>
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 12, color: 'rgba(255,255,255,0.78)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link}</span>
+          <span style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
+          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.1em', flexShrink: 0 }}>
+            <span style={{ color: '#D1FAE5' }}>{code}</span>
+          </span>
+        </motion.div>
+
+        {/* Hero stats strip — 3 grandes */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.7, ease }}
+          className="aff-grid-3"
+          style={{
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1,
+            background: 'rgba(255,255,255,0.06)', borderRadius: 16, overflow: 'hidden',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}>
+          {[
+            { l: 'Indicados', v: totals.totalIndicados || 0, prefix: '', suffix: '', dec: 0, c: '#fff' },
+            { l: 'Comissão acumulada', v: totals.totalComissao || 0, prefix: 'R$ ', suffix: '', dec: 2, c: '#D1FAE5' },
+            { l: 'A receber', v: totals.pendente || 0, prefix: 'R$ ', suffix: '', dec: 2, c: '#ef4444' },
+          ].map((k, i) => (
+            <div key={k.l} style={{ background: '#050505', padding: '24px 28px' }}>
+              <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 8px' }}>{k.l}</p>
+              <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 32, fontWeight: 800, color: k.c, margin: 0, letterSpacing: '-0.025em', lineHeight: 1 }}>
+                <CountUp value={k.v} prefix={k.prefix} suffix={k.suffix} decimals={k.dec} />
+              </p>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+            color: 'rgba(255,255,255,0.35)',
+          }}>
+          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}>Explorar</span>
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </motion.div>
+      </motion.div>
+    </section>
   )
 }
 
-/* ── HOW IT WORKS · 3 steps ── */
+/* ── ACTIVITY MARQUEE (feed simulado) ── */
+function ActivityMarquee({ referrals }) {
+  // Combina indicados reais com mockup pra parecer movimentado
+  const realItems = referrals.slice(0, 6).map(r => ({
+    name: r.tenant_name,
+    action: `gerou R$ ${fmt(r.commission || 0)} de comissão`,
+    when: 'recente',
+  }))
+  const mockItems = [
+    { name: '@davir', action: 'recebeu R$ 28,02 via PIX', when: 'há 2h' },
+    { name: '@rodrigo', action: 'indicou novo cliente', when: 'há 5h' },
+    { name: '@sergio_g', action: 'recebeu R$ 11,97 via PIX', when: 'há 1d' },
+    { name: '@cpalflux', action: 'tornou-se afiliado', when: 'há 1d' },
+    { name: '@thiago', action: 'compartilhou link no WhatsApp', when: 'há 2d' },
+  ]
+  const items = realItems.length > 0 ? [...realItems, ...mockItems] : mockItems
+  const doubled = [...items, ...items]
+
+  return (
+    <div style={{
+      position: 'relative', overflow: 'hidden',
+      borderTop: '1px solid rgba(255,255,255,0.06)',
+      borderBottom: '1px solid rgba(255,255,255,0.06)',
+      background: 'rgba(255,255,255,0.015)',
+      padding: '16px 0',
+    }}>
+      <div style={{
+        display: 'flex', gap: 28,
+        animation: 'marquee 50s linear infinite',
+        whiteSpace: 'nowrap',
+      }}>
+        {doubled.map((item, i) => (
+          <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px rgba(16,185,129,0.6)' }} />
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>
+              <strong style={{ color: '#fff', fontWeight: 700 }}>{item.name}</strong> {item.action} <span style={{ color: 'rgba(255,255,255,0.35)' }}>· {item.when}</span>
+            </span>
+            <span style={{ color: 'rgba(255,255,255,0.15)' }}>•</span>
+          </div>
+        ))}
+      </div>
+      {/* Fade laterais */}
+      <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 80, background: 'linear-gradient(90deg, #050505, transparent)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 80, background: 'linear-gradient(-90deg, #050505, transparent)', pointerEvents: 'none' }} />
+    </div>
+  )
+}
+
+/* ── HOW IT WORKS ── */
 function HowItWorks({ rate }) {
   const steps = [
-    {
-      n: '01',
-      title: 'Compartilhe seu link',
-      desc: 'Envia pro grupo, post no Insta, manda no DM. Você usa onde quiser — sem limite.',
-      icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
-    },
-    {
-      n: '02',
-      title: 'Indicado se cadastra e assina',
-      desc: 'Quando ele entra pelo seu link e vira PRO, ficamos sabendo automaticamente.',
-      icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>,
-    },
-    {
-      n: '03',
-      title: 'Você recebe via PIX',
-      desc: `${Math.round(rate * 100)}% de comissão direto na sua chave PIX cadastrada. Acompanha tudo aqui no painel.`,
-      icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
-    },
+    { n: '01', title: 'Compartilhe seu link', desc: 'Envia pro grupo, post no Insta, manda no DM. Sem limite.' },
+    { n: '02', title: 'Indicado assina o plano', desc: 'Quando ele entra pelo seu link e vira PRO, o sistema sabe automaticamente.' },
+    { n: '03', title: 'Receba via PIX', desc: `${Math.round(rate * 100)}% direto na sua chave PIX cadastrada.` },
   ]
 
   return (
-    <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.18, ease }}
-      style={{ marginBottom: 36 }}>
-      <h2 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 28, color: '#fff', margin: '0 0 22px', fontWeight: 400, letterSpacing: '-0.02em' }}>Como funciona</h2>
-      <div className="g-3-aff" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+    <div>
+      <SectionEyebrow>Em 3 passos</SectionEyebrow>
+      <SectionTitle size={56}>Simples assim.</SectionTitle>
+      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 48px', lineHeight: 1.55 }}>
+        Sem código, sem cadastro complicado, sem espera. Tudo funciona em segundo plano.
+      </p>
+
+      <div className="aff-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, position: 'relative' }}>
+        {/* Linha conectora (decorativa) */}
+        <div style={{
+          position: 'absolute', top: 60, left: '16%', right: '16%', height: 1,
+          background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.3), rgba(229,57,53,0.5), rgba(229,57,53,0.3), transparent)',
+          zIndex: 0,
+        }} />
+
         {steps.map((s, i) => (
           <motion.div key={s.n}
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 + i * 0.08, ease }}
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.6, delay: i * 0.12, ease }}
             style={{
-              position: 'relative', overflow: 'hidden',
+              position: 'relative', zIndex: 1,
+              padding: '32px 26px', borderRadius: 18,
+              background: 'linear-gradient(180deg, #0d0d0d, #050505)',
+              border: '1px solid rgba(255,255,255,0.07)',
+            }}>
+            <div style={{
+              width: 48, height: 48, borderRadius: 12,
+              background: 'linear-gradient(145deg, rgba(229,57,53,0.18), rgba(229,57,53,0.04))',
+              border: '1px solid rgba(229,57,53,0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: 18,
+              boxShadow: '0 0 30px rgba(229,57,53,0.15)',
+            }}>
+              <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>{s.n}</span>
+            </div>
+            <h3 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 24, fontWeight: 400, color: '#fff', margin: '0 0 10px', letterSpacing: '-0.015em' }}>{s.title}</h3>
+            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.55)', margin: 0, lineHeight: 1.6 }}>{s.desc}</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ── CALCULATOR MEGA ── */
+function CalculatorMega({ rate }) {
+  const [n, setN] = useState(15)
+  const ticket = 39.90
+  const earnings = n * ticket * rate
+  const annual = earnings * 12 / 3 // simulando renovação 3x
+
+  return (
+    <div>
+      <SectionEyebrow>Calculadora</SectionEyebrow>
+      <SectionTitle size={56}>Quanto você pode ganhar?</SectionTitle>
+      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 40px', lineHeight: 1.55 }}>
+        Mova o controle e veja em tempo real. Cada indicado pagante = comissão na sua conta.
+      </p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        transition={{ duration: 0.6, ease }}
+        className="aff-grid-2"
+        style={{
+          display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 0,
+          borderRadius: 22, overflow: 'hidden',
+          background: 'linear-gradient(180deg, #0d0d0d, #050505)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.5)',
+        }}>
+
+        {/* Controle */}
+        <div style={{ padding: '40px 36px', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 18px' }}>Indicados pagantes</p>
+
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 30 }}>
+            <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 72, fontWeight: 800, color: '#fff', letterSpacing: '-0.04em', lineHeight: 0.9 }}>{n}</span>
+            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>pessoas</span>
+          </div>
+
+          <input type="range" min="1" max="100" value={n} onChange={e => setN(Number(e.target.value))}
+            style={{ width: '100%', accentColor: '#e53935', cursor: 'pointer' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 8, fontFamily: 'var(--mono, monospace)' }}>
+            <span>1</span><span>25</span><span>50</span><span>75</span><span>100</span>
+          </div>
+
+          <div style={{ marginTop: 28, padding: '14px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.5 }}>
+              Cálculo baseado em ticket médio de <strong style={{ color: '#fff' }}>R$ {fmt(ticket)}</strong>/mês × <strong style={{ color: '#fff' }}>{Math.round(rate * 100)}% de comissão</strong>.
+            </p>
+          </div>
+        </div>
+
+        {/* Resultados */}
+        <div style={{ position: 'relative', padding: '40px 36px', background: 'linear-gradient(135deg, rgba(229,57,53,0.05), rgba(229,57,53,0)) , #050505' }}>
+          <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.15), transparent 70%)', filter: 'blur(40px)' }} />
+
+          <div style={{ position: 'relative' }}>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>Sua comissão</p>
+
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 64, fontWeight: 800, color: '#D1FAE5', margin: 0, letterSpacing: '-0.035em', lineHeight: 0.95, textShadow: '0 0 60px rgba(209,250,229,0.3)' }}>
+              R$ <CountUp value={earnings} decimals={2} duration={0.6} />
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 30 }}>
+              <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: '0 0 4px', letterSpacing: '0.06em' }}>POR INDICADO</p>
+                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>R$ {fmt(ticket * rate)}</p>
+              </div>
+              <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: '0 0 4px', letterSpacing: '0.06em' }}>SE INDICAR 100</p>
+                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: '#D1FAE5', margin: 0 }}>R$ {fmt(100 * ticket * rate)}</p>
+              </div>
+            </div>
+
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', margin: '20px 0 0', lineHeight: 1.55 }}>
+              <strong style={{ color: 'rgba(255,255,255,0.6)' }}>Realidade:</strong> tickets reais variam de R$ 39 (Solo) a R$ 219+ (Admin + operadores). Quem indica conta grande, ganha proporcionalmente mais.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+/* ── KPI SECTION ── */
+function KPISection({ totals }) {
+  const items = [
+    { l: 'Pessoas indicadas', v: totals.totalIndicados || 0, dec: 0, prefix: '', c: '#fff' },
+    { l: 'Faturamento gerado', v: totals.totalFaturado || 0, dec: 2, prefix: 'R$ ', c: 'rgba(255,255,255,0.78)' },
+    { l: 'Comissão paga até hoje', v: totals.pago || 0, dec: 2, prefix: 'R$ ', c: '#D1FAE5' },
+    { l: 'A receber via PIX', v: totals.pendente || 0, dec: 2, prefix: 'R$ ', c: '#ef4444' },
+  ]
+  return (
+    <div>
+      <SectionEyebrow>Seus números</SectionEyebrow>
+      <SectionTitle size={56}>Sua performance.</SectionTitle>
+
+      <div className="aff-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginTop: 32 }}>
+        {items.map((k, i) => (
+          <motion.div key={k.l}
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: i * 0.08, ease }}
+            style={{
               padding: '26px 24px', borderRadius: 16,
               background: 'linear-gradient(180deg, #0a0a0a, #050505)',
               border: '1px solid rgba(255,255,255,0.06)',
             }}>
-            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 38, fontWeight: 800, color: 'rgba(255,255,255,0.05)', margin: 0, position: 'absolute', top: 16, right: 22, lineHeight: 1, letterSpacing: '-0.04em' }}>{s.n}</p>
-            <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, color: '#e53935' }}>
-              {s.icon}
-            </div>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#fff', margin: '0 0 6px', letterSpacing: '-0.01em' }}>{s.title}</h3>
-            <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.55)', margin: 0, lineHeight: 1.55 }}>{s.desc}</p>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 10px' }}>{k.l}</p>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 28, fontWeight: 800, color: k.c, margin: 0, letterSpacing: '-0.025em', lineHeight: 1 }}>
+              <CountUp value={k.v} prefix={k.prefix} decimals={k.dec} />
+            </p>
           </motion.div>
         ))}
       </div>
-    </motion.section>
+    </div>
   )
 }
 
-/* ── KPI GRID ── */
-function KPIGrid({ totals }) {
-  const items = [
-    { l: 'Indicados', v: fmtN(totals.totalIndicados || 0), c: '#fff', icon: <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg> },
-    { l: 'Faturamento gerado', v: 'R$ ' + fmt(totals.totalFaturado || 0), c: 'rgba(255,255,255,0.78)', icon: <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
-    { l: 'Comissão paga', v: 'R$ ' + fmt(totals.pago || 0), c: '#D1FAE5', icon: <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> },
-    { l: 'A receber', v: 'R$ ' + fmt(totals.pendente || 0), c: '#e53935', icon: <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
-  ]
-  return (
-    <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25, ease }}
-      className="g-4-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 36 }}>
-      {items.map((k, i) => (
-        <motion.div key={k.l}
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.3 + i * 0.05, ease }}
-          style={{ padding: '20px 22px', borderRadius: 14, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.05)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.45)', margin: 0, letterSpacing: '0.16em', textTransform: 'uppercase' }}>{k.l}</p>
-            <span style={{ color: 'rgba(255,255,255,0.35)' }}>{k.icon}</span>
-          </div>
-          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 22, fontWeight: 800, color: k.c, margin: 0, letterSpacing: '-0.02em', lineHeight: 1 }}>{k.v}</p>
-        </motion.div>
-      ))}
-    </motion.section>
-  )
-}
-
-/* ── SHARE KIT (tabs WhatsApp/Instagram/DM + preview) ── */
-function ShareKit({ link, userName }) {
-  const [activeTab, setActiveTab] = useState('whatsapp')
+/* ── SHARE KIT IMERSIVE (com phone mockup) ── */
+function ShareKitImersive({ link, userName }) {
+  const [tab, setTab] = useState('whatsapp')
   const [copied, setCopied] = useState(false)
 
   const TEMPLATES = {
@@ -402,84 +646,137 @@ function ShareKit({ link, userName }) {
     email: {
       label: 'E-mail',
       icon: <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
-      text: `Olá!\n\nQueria te apresentar o NexControl — sistema completo pra gerenciar operação de CPA / iGaming.\n\nO sistema cobre:\n- Gestão de metas e remessas\n- Operadores ilimitados\n- BAU e lucro automático\n- Push em tempo real\n- Painel de fechamento\n\nVocê tem 3 dias pra testar grátis: ${link}\n\nAbraço${userName ? ',\n' + userName : ''}`,
+      text: `Olá!\n\nQueria te apresentar o NexControl — sistema completo pra gerenciar operação de CPA / iGaming.\n\nO sistema cobre:\n- Gestão de metas e remessas\n- Operadores ilimitados\n- BAU e lucro automático\n- Push em tempo real\n- Painel de fechamento\n\n3 dias grátis: ${link}\n\nAbraço${userName ? ',\n' + userName : ''}`,
     },
   }
 
   function copyTpl() {
     try {
-      navigator.clipboard.writeText(TEMPLATES[activeTab].text)
+      navigator.clipboard.writeText(TEMPLATES[tab].text)
       setCopied(true); setTimeout(() => setCopied(false), 1800)
     } catch {}
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.35, ease }}
-      style={{ borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: 28, position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)' }} />
+    <div>
+      <SectionEyebrow>Kit de divulgação</SectionEyebrow>
+      <SectionTitle size={56}>Copie. Cole. Envie.</SectionTitle>
+      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 40px', lineHeight: 1.55 }}>
+        Mensagens prontas pensadas pra cada canal. Sem precisar inventar nada.
+      </p>
 
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 8 }}>
-        <h3 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 22, color: '#fff', margin: 0, fontWeight: 400, letterSpacing: '-0.015em' }}>Kit de divulgação</h3>
-        <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: 0, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Copy pronta · cole e envie</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        transition={{ duration: 0.5, ease }}
+        className="aff-grid-2"
+        style={{
+          display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24,
+          alignItems: 'start',
+        }}>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 14, padding: 4, background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.05)', overflowX: 'auto' }}>
-        {Object.entries(TEMPLATES).map(([k, v]) => {
-          const active = k === activeTab
-          return (
-            <button key={k} type="button" onClick={() => setActiveTab(k)}
-              style={{
-                flex: '1 0 auto', padding: '9px 12px', borderRadius: 7, border: 'none', cursor: 'pointer',
-                background: active ? 'rgba(229,57,53,0.12)' : 'transparent',
-                color: active ? '#e53935' : 'rgba(255,255,255,0.55)',
-                fontSize: 11.5, fontWeight: 700, fontFamily: 'inherit',
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                transition: 'all 0.15s', whiteSpace: 'nowrap',
-              }}>
-              {v.icon}
-              {v.label}
-            </button>
-          )
-        })}
-      </div>
+        {/* Tabs + Preview */}
+        <div style={{ borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: 28 }}>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 18, padding: 4, background: 'rgba(255,255,255,0.03)', borderRadius: 11, border: '1px solid rgba(255,255,255,0.05)', overflowX: 'auto' }}>
+            {Object.entries(TEMPLATES).map(([k, v]) => {
+              const active = k === tab
+              return (
+                <button key={k} onClick={() => setTab(k)} type="button"
+                  style={{
+                    flex: '1 0 auto', padding: '10px 14px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                    background: active ? 'rgba(229,57,53,0.14)' : 'transparent',
+                    color: active ? '#e53935' : 'rgba(255,255,255,0.55)',
+                    fontSize: 12, fontWeight: 700, fontFamily: 'inherit',
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7, whiteSpace: 'nowrap',
+                    transition: 'all 0.15s',
+                  }}>
+                  {v.icon}{v.label}
+                </button>
+              )
+            })}
+          </div>
 
-      {/* Preview */}
-      <div style={{ position: 'relative', padding: '18px 18px', borderRadius: 12, background: '#050505', border: '1px solid rgba(255,255,255,0.06)', minHeight: 180 }}>
-        <p style={{ fontSize: 13, color: '#CBD5E1', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.55, fontFamily: 'inherit' }}>
-          {TEMPLATES[activeTab].text}
-        </p>
-      </div>
+          <div style={{ padding: 20, borderRadius: 12, background: '#050505', border: '1px solid rgba(255,255,255,0.06)', minHeight: 220 }}>
+            <p style={{ fontSize: 13.5, color: '#CBD5E1', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{TEMPLATES[tab].text}</p>
+          </div>
 
-      <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
-        <motion.button onClick={copyTpl} whileTap={{ scale: 0.97 }}
-          style={{
-            flex: 1, padding: '13px 20px', borderRadius: 11, border: 'none', cursor: 'pointer',
-            background: copied ? 'rgba(16,185,129,0.18)' : 'linear-gradient(180deg, #ef4444, #c62828)',
-            color: copied ? '#10B981' : '#fff',
-            fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            boxShadow: copied ? 'none' : '0 4px 16px rgba(229,57,53,0.3)',
-          }}>
-          {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Copiado pra área de transferência</>)
-            : 'Copiar mensagem'}
-        </motion.button>
-      </div>
-    </motion.div>
-  )
-}
+          <motion.button onClick={copyTpl} whileTap={{ scale: 0.97 }}
+            style={{
+              width: '100%', marginTop: 14, padding: '14px 20px', borderRadius: 11, border: 'none', cursor: 'pointer',
+              background: copied ? 'rgba(16,185,129,0.18)' : 'linear-gradient(180deg, #ef4444, #c62828)',
+              color: copied ? '#10B981' : '#fff',
+              fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              boxShadow: copied ? 'none' : '0 4px 16px rgba(229,57,53,0.35)',
+            }}>
+            {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Copiado pra área de transferência</>)
+              : (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar esta mensagem</>)}
+          </motion.button>
+        </div>
 
-/* ── RIGHT COLUMN: PIX + Simulator ── */
-function RightColumn({ data, userEmail, onRefresh, fmt, rate }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <PixCard data={data} userEmail={userEmail} onRefresh={onRefresh} />
-      <Simulator rate={rate} fmt={fmt} />
+        {/* Phone Mockup Preview */}
+        <PhoneMockup text={TEMPLATES[tab].text} channel={tab} />
+      </motion.div>
     </div>
   )
 }
 
-function PixCard({ data, userEmail, onRefresh }) {
+function PhoneMockup({ text, channel }) {
+  const isWhats = channel === 'whatsapp'
+  return (
+    <div style={{
+      position: 'relative',
+      width: '100%', maxWidth: 320,
+      aspectRatio: '9/19.5',
+      borderRadius: 38,
+      background: 'linear-gradient(180deg, #1a1a1a, #050505)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      padding: 8,
+      boxShadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(229,57,53,0.08)',
+      margin: '0 auto',
+    }}>
+      {/* Notch */}
+      <div style={{
+        position: 'absolute', top: 18, left: '50%', transform: 'translateX(-50%)',
+        width: 100, height: 24, borderRadius: 12, background: '#000', zIndex: 2,
+      }} />
+      {/* Tela */}
+      <div style={{
+        width: '100%', height: '100%', borderRadius: 32,
+        background: isWhats ? '#0b141a' : '#000', overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+      }}>
+        {/* Header phone */}
+        <div style={{ padding: '42px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(145deg, #e53935, #c62828)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>V</span>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: '#fff', margin: 0 }}>Você</p>
+              <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.45)', margin: '1px 0 0' }}>online · agora</p>
+            </div>
+          </div>
+        </div>
+        {/* Mensagem */}
+        <div style={{ flex: 1, padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{
+            alignSelf: 'flex-end',
+            maxWidth: '85%',
+            padding: '8px 12px',
+            borderRadius: '14px 14px 4px 14px',
+            background: isWhats ? '#005c4b' : 'linear-gradient(135deg, #1d4ed8, #1e3a8a)',
+          }}>
+            <p style={{ fontSize: 10.5, color: '#fff', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.4 }}>{text}</p>
+            <p style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)', margin: '4px 0 0', textAlign: 'right' }}>20:30 ✓✓</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── PIX SECTION ── */
+function PixSection({ data, userEmail, onRefresh }) {
   const [pixKey, setPixKey] = useState(data?.pix_key || '')
   const [pixType, setPixType] = useState(data?.pix_type || 'email')
   const [saving, setSaving] = useState(false)
@@ -497,146 +794,166 @@ function PixCard({ data, userEmail, onRefresh }) {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: userEmail, pix_key: pixKey, pix_type: pixType }),
       })
-      if (res.ok) {
-        setSavedFlash(true); setTimeout(() => setSavedFlash(false), 2000)
-        onRefresh?.()
-      }
+      if (res.ok) { setSavedFlash(true); setTimeout(() => setSavedFlash(false), 2000); onRefresh?.() }
     } finally { setSaving(false) }
   }
 
   const hasPix = !!data?.pix_key
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.4, ease }}
-      style={{ borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid ' + (hasPix ? 'rgba(16,185,129,0.18)' : 'rgba(229,57,53,0.22)'), padding: 22, position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: 1, background: hasPix ? 'linear-gradient(90deg, transparent, rgba(16,185,129,0.35), transparent)' : 'linear-gradient(90deg, transparent, rgba(229,57,53,0.45), transparent)' }} />
+    <div>
+      <SectionEyebrow>Onde você recebe</SectionEyebrow>
+      <SectionTitle size={56}>Sua chave PIX.</SectionTitle>
+      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 40px', lineHeight: 1.55 }}>
+        {hasPix ? 'Tudo pronto. Comissões cairão direto na chave abaixo.' : 'Cadastre uma chave pra que suas comissões possam ser enviadas.'}
+      </p>
 
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14, gap: 10 }}>
-        <div>
-          <h3 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 18, color: '#fff', margin: '0 0 4px', fontWeight: 400 }}>Sua chave PIX</h3>
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: 0 }}>Sem PIX, comissões ficam paradas</p>
-        </div>
-        <span style={{
-          fontFamily: 'var(--mono, monospace)', fontSize: 9, fontWeight: 800, padding: '4px 9px', borderRadius: 5,
-          background: hasPix ? 'rgba(16,185,129,0.1)' : 'rgba(229,57,53,0.1)',
-          color: hasPix ? '#10B981' : '#e53935',
-          border: hasPix ? '1px solid rgba(16,185,129,0.25)' : '1px solid rgba(229,57,53,0.25)',
-          letterSpacing: '0.08em',
-        }}>{hasPix ? 'CADASTRADA' : 'PENDENTE'}</span>
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-        <select value={pixType} onChange={e => setPixType(e.target.value)}
-          style={{ padding: '11px 12px', borderRadius: 10, background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 12, fontFamily: 'inherit', cursor: 'pointer', outline: 'none' }}>
-          <option value="cpf">CPF</option>
-          <option value="email">E-mail</option>
-          <option value="phone">Telefone</option>
-          <option value="random">Aleatória</option>
-        </select>
-        <input value={pixKey} onChange={e => setPixKey(e.target.value)}
-          placeholder={pixType === 'cpf' ? '000.000.000-00' : pixType === 'email' ? 'voce@email.com' : pixType === 'phone' ? '+55 31 99999-9999' : 'chave aleatória'}
-          style={{ flex: 1, padding: '11px 12px', borderRadius: 10, background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 12, fontFamily: 'var(--mono, monospace)', outline: 'none' }} />
-      </div>
-      <button onClick={save} disabled={saving || !pixKey.trim()}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        transition={{ duration: 0.5, ease }}
+        className="aff-grid-2"
         style={{
-          width: '100%', padding: '11px 16px', borderRadius: 10, border: 'none',
-          cursor: saving || !pixKey.trim() ? 'not-allowed' : 'pointer',
-          background: savedFlash ? 'rgba(16,185,129,0.18)' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(180deg, #1a1a1a, #0a0a0a)',
-          color: savedFlash ? '#10B981' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.35)' : '#fff',
-          border: '1px solid ' + (savedFlash ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.12)'),
-          fontSize: 12, fontWeight: 700, fontFamily: 'inherit',
+          display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 16,
         }}>
-        {savedFlash ? '✓ Chave salva' : saving ? 'Salvando...' : 'Salvar chave PIX'}
-      </button>
-    </motion.div>
+
+        {/* Form */}
+        <div style={{
+          padding: 32, borderRadius: 18,
+          background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          border: '1px solid ' + (hasPix ? 'rgba(16,185,129,0.22)' : 'rgba(229,57,53,0.25)'),
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: 0 }}>Chave atual</p>
+            <span style={{
+              fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 800, padding: '5px 10px', borderRadius: 6,
+              background: hasPix ? 'rgba(16,185,129,0.12)' : 'rgba(229,57,53,0.12)',
+              color: hasPix ? '#10B981' : '#e53935',
+              border: '1px solid ' + (hasPix ? 'rgba(16,185,129,0.3)' : 'rgba(229,57,53,0.3)'),
+              letterSpacing: '0.12em',
+            }}>{hasPix ? '● CADASTRADA' : '⚠ PENDENTE'}</span>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+            <select value={pixType} onChange={e => setPixType(e.target.value)}
+              style={{ padding: '14px 14px', borderRadius: 11, background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 13, fontFamily: 'inherit', cursor: 'pointer', outline: 'none' }}>
+              <option value="cpf">CPF</option>
+              <option value="email">E-mail</option>
+              <option value="phone">Telefone</option>
+              <option value="random">Aleatória</option>
+            </select>
+            <input value={pixKey} onChange={e => setPixKey(e.target.value)}
+              placeholder={pixType === 'cpf' ? '000.000.000-00' : pixType === 'email' ? 'voce@email.com' : pixType === 'phone' ? '+55 31 99999-9999' : 'chave aleatória'}
+              style={{ flex: 1, padding: '14px 14px', borderRadius: 11, background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 13, fontFamily: 'var(--mono, monospace)', outline: 'none' }} />
+          </div>
+
+          <button onClick={save} disabled={saving || !pixKey.trim()}
+            style={{
+              width: '100%', padding: '14px 18px', borderRadius: 11, border: 'none',
+              cursor: saving || !pixKey.trim() ? 'not-allowed' : 'pointer',
+              background: savedFlash ? 'rgba(16,185,129,0.18)' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(180deg, #ef4444, #c62828)',
+              color: savedFlash ? '#10B981' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.35)' : '#fff',
+              fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
+              boxShadow: (savedFlash || saving || !pixKey.trim()) ? 'none' : '0 4px 16px rgba(229,57,53,0.3)',
+            }}>
+            {savedFlash ? '✓ Chave salva' : saving ? 'Salvando...' : 'Salvar chave PIX'}
+          </button>
+        </div>
+
+        {/* Info card */}
+        <div style={{
+          padding: 28, borderRadius: 18,
+          background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          border: '1px solid rgba(255,255,255,0.06)',
+        }}>
+          <h4 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 20, fontWeight: 400, color: '#fff', margin: '0 0 14px', letterSpacing: '-0.015em' }}>Como funciona</h4>
+          <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[
+              'Comissão aparece em "A receber"',
+              'Pagamento manual via PIX em até 7 dias',
+              'Você recebe push aqui quando for pago',
+              'Chave pode ser alterada a qualquer momento',
+            ].map((t, i) => (
+              <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="3" strokeLinecap="round" style={{ flexShrink: 0, marginTop: 4 }}><polyline points="20 6 9 17 4 12"/></svg>
+                {t}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </motion.div>
+    </div>
   )
 }
 
-function Simulator({ rate, fmt }) {
-  const [n, setN] = useState(10)
-  const ticket = 39.90
-  const earnings = n * ticket * rate
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.45, ease }}
-      style={{ borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: 22 }}>
-      <h3 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 18, color: '#fff', margin: '0 0 4px', fontWeight: 400 }}>Simulador</h3>
-      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: '0 0 16px' }}>Veja seu potencial de ganho</p>
-
-      <div style={{ marginBottom: 12 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>Indicados pagantes</span>
-          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, fontWeight: 800, color: '#fff' }}>{n}</span>
-        </div>
-        <input type="range" min="1" max="50" value={n} onChange={e => setN(Number(e.target.value))}
-          style={{ width: '100%', accentColor: '#e53935' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: 'rgba(255,255,255,0.35)', marginTop: 4, fontFamily: 'var(--mono, monospace)' }}>
-          <span>1</span><span>25</span><span>50</span>
-        </div>
-      </div>
-
-      <div style={{ padding: '18px 18px', borderRadius: 12, background: 'linear-gradient(145deg, rgba(209,250,229,0.05), rgba(209,250,229,0.01))', border: '1px solid rgba(209,250,229,0.18)', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, color: 'rgba(255,255,255,0.5)', margin: '0 0 6px', letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 700 }}>Sua comissão</p>
-        <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 32, fontWeight: 900, color: '#D1FAE5', margin: 0, letterSpacing: '-0.025em', lineHeight: 1 }}>R$ {fmt(earnings)}</p>
-        <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: '6px 0 0' }}>{Math.round(rate * 100)}% × R$ {fmt(ticket)} × {n}</p>
-      </div>
-    </motion.div>
-  )
-}
-
-/* ── REFERRALS LIST premium ── */
-function ReferralsList({ referrals }) {
+/* ── REFERRALS + TOP ── */
+function ReferralsAndTop({ referrals }) {
   if (referrals.length === 0) {
     return (
-      <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.55, ease }}
-        style={{ borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: 36, textAlign: 'center', marginBottom: 24 }}>
-        <div style={{ width: 50, height: 50, borderRadius: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-          <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.6" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-        </div>
-        <h3 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 22, color: '#fff', margin: '0 0 6px', fontWeight: 400 }}>Esperando o primeiro</h3>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', margin: 0 }}>Compartilhe seu link e veja seu primeiro indicado aparecer aqui</p>
-      </motion.section>
+      <div>
+        <SectionEyebrow>Seus indicados</SectionEyebrow>
+        <SectionTitle size={56}>Esperando o primeiro.</SectionTitle>
+        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 540, margin: '0 0 28px', lineHeight: 1.55 }}>
+          Compartilhe seu link com 3 pessoas hoje. Sério: literalmente 3 mensagens no WhatsApp.
+        </p>
+      </div>
     )
   }
 
+  const withComm = referrals.filter(r => r.commission > 0).sort((a, b) => b.commission - a.commission).slice(0, 5)
+
   return (
-    <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.55, ease }}
-      style={{ marginBottom: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 28, color: '#fff', margin: 0, fontWeight: 400, letterSpacing: '-0.02em' }}>Seus indicados</h2>
-        <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.4)', margin: 0, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Atualiza a cada 20s</p>
-      </div>
-      <div style={{ borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+    <div>
+      <SectionEyebrow>Seus indicados</SectionEyebrow>
+      <SectionTitle size={56}>Quem entrou pelo seu link.</SectionTitle>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        transition={{ duration: 0.5, ease }}
+        style={{
+          borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden', marginTop: 28,
+        }}>
         <AnimatePresence initial={false}>
           {referrals.map((r, i) => (
             <motion.div key={r.tenant_id} layout
               initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
               transition={{ duration: 0.3, ease }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 14,
-                padding: '16px 22px',
-                borderBottom: i < referrals.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-              }}>
-              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(145deg, rgba(229,57,53,0.18), rgba(229,57,53,0.04))', border: '1px solid rgba(229,57,53,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>{(r.tenant_name || '?')[0].toUpperCase()}</span>
+              style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '18px 24px', borderBottom: i < referrals.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+              <div style={{ width: 42, height: 42, borderRadius: 11, background: 'linear-gradient(145deg, rgba(229,57,53,0.2), rgba(229,57,53,0.04))', border: '1px solid rgba(229,57,53,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>{(r.tenant_name || '?')[0].toUpperCase()}</span>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 13.5, fontWeight: 700, color: '#fff', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.tenant_name}</p>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.tenant_name}</p>
+                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   {r.email && <span>{r.email}</span>}
                   <StatusBadge status={r.subscription_status} />
                   {r.payments_count > 0 && <span style={{ color: 'rgba(255,255,255,0.55)' }}>· {r.payments_count} pagto(s)</span>}
                 </p>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: '#D1FAE5', margin: 0, letterSpacing: '-0.015em' }}>+R$ {fmt(r.commission)}</p>
+                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 18, fontWeight: 800, color: '#D1FAE5', margin: 0, letterSpacing: '-0.015em' }}>+R$ {fmt(r.commission)}</p>
                 <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>de R$ {fmt(r.generated)}</p>
               </div>
             </motion.div>
           ))}
         </AnimatePresence>
-      </div>
-    </motion.section>
+      </motion.div>
+
+      {withComm.length > 0 && (
+        <div style={{ marginTop: 32 }}>
+          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>🏆 Seu top 5</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {withComm.map((r, i) => (
+              <div key={r.tenant_id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', borderRadius: 11, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'rgba(255,255,255,0.35)', minWidth: 32 }}>#{i + 1}</span>
+                <p style={{ flex: 1, fontSize: 13.5, fontWeight: 600, color: '#fff', margin: 0 }}>{r.tenant_name}</p>
+                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: '#D1FAE5', margin: 0 }}>R$ {fmt(r.commission)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -652,71 +969,106 @@ function StatusBadge({ status }) {
   )
 }
 
-/* ── HISTORY (timeline simples por indicado) ── */
-function HistoryList({ referrals, fmt }) {
-  // Ordena por commission desc, pega os top 5 que geraram dinheiro
-  const withComm = referrals.filter(r => r.commission > 0).slice(0, 5)
-  if (withComm.length === 0) return null
-
-  return (
-    <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.6, ease }}
-      style={{ marginBottom: 36 }}>
-      <h2 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 22, color: '#fff', margin: '0 0 14px', fontWeight: 400 }}>Top indicados</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {withComm.map((r, i) => (
-          <div key={r.tenant_id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
-            <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'rgba(255,255,255,0.35)', minWidth: 24 }}>#{i + 1}</span>
-            <p style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: '#fff', margin: 0 }}>{r.tenant_name}</p>
-            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 12, fontWeight: 700, color: '#D1FAE5', margin: 0 }}>R$ {fmt(r.commission)}</p>
-          </div>
-        ))}
-      </div>
-    </motion.section>
-  )
-}
-
-/* ── FAQ collapsible ── */
-function FAQ({ rate }) {
-  const [open, setOpen] = useState(null)
+/* ── FAQ IMERSIVO ── */
+function FAQImersive({ rate }) {
+  const [open, setOpen] = useState(0)
   const items = [
-    { q: 'Como recebo minha comissão?', a: 'Quando algum indicado seu paga uma mensalidade do NexControl, automaticamente gera uma comissão de ' + Math.round(rate * 100) + '% pra você. Eu pago via PIX manualmente em até 7 dias.' },
+    { q: 'Como recebo minha comissão?', a: `Quando algum indicado seu paga uma mensalidade do NexControl, automaticamente gera uma comissão de ${Math.round(rate * 100)}% pra você. Eu pago via PIX manualmente em até 7 dias.` },
     { q: 'Quanto custa pra começar?', a: 'Nada. Programa de afiliados é grátis pra todo cliente PRO. Basta cadastrar sua chave PIX acima e começar a divulgar.' },
     { q: 'Tenho limite de indicações?', a: 'Não. Você pode indicar quantas pessoas quiser. Cada indicado pagante gera comissão pra você.' },
-    { q: 'E se o cliente cancelar depois?', a: 'A comissão que você já recebeu fica com você. Não tem clawback.' },
-    { q: 'Posso indicar meus operadores?', a: 'Não. Cada tenant pode ter só um afiliado, e indicação de você mesmo (auto-referência) é bloqueada automaticamente.' },
+    { q: 'E se o cliente cancelar depois?', a: 'A comissão que você já recebeu fica com você. Não tem clawback (devolução).' },
+    { q: 'Posso indicar meus próprios operadores?', a: 'Não. Cada tenant pode ter só um afiliado, e indicação de você mesmo (auto-referência) é bloqueada automaticamente.' },
     { q: 'Quando o pagamento PIX cai?', a: 'O pagamento é feito manualmente em até 7 dias úteis após a comissão aparecer como pendente. Você recebe push aqui mesmo quando for pago.' },
     { q: 'Posso mudar minha chave PIX depois?', a: 'Pode, sim. Comissões já marcadas como pagas não voltam, mas qualquer nova vai pra chave atualizada.' },
   ]
+
   return (
-    <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.7, ease }}
-      style={{ marginBottom: 24 }}>
-      <h2 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 28, color: '#fff', margin: '0 0 14px', fontWeight: 400, letterSpacing: '-0.02em' }}>Perguntas frequentes</h2>
-      <div style={{ borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+    <div>
+      <SectionEyebrow>Tirando dúvidas</SectionEyebrow>
+      <SectionTitle size={56}>Perguntas frequentes.</SectionTitle>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        transition={{ duration: 0.5, ease }}
+        style={{ marginTop: 32, borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
         {items.map((item, i) => {
           const isOpen = open === i
           return (
             <div key={i} style={{ borderBottom: i < items.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-              <button type="button" onClick={() => setOpen(isOpen ? null : i)}
-                style={{ width: '100%', padding: '18px 24px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textAlign: 'left', fontFamily: 'inherit' }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{item.q}</span>
-                <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.22, ease }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <button type="button" onClick={() => setOpen(isOpen ? -1 : i)}
+                style={{ width: '100%', padding: '22px 26px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textAlign: 'left', fontFamily: 'inherit' }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: '#fff', paddingRight: 16 }}>{item.q}</span>
+                <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.22, ease }} style={{ flexShrink: 0 }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </motion.div>
               </button>
               <AnimatePresence initial={false}>
                 {isOpen && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease }}
+                    transition={{ duration: 0.28, ease }}
                     style={{ overflow: 'hidden' }}>
-                    <p style={{ padding: '0 24px 18px', fontSize: 13, color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: 1.6 }}>{item.a}</p>
+                    <p style={{ padding: '0 26px 22px', fontSize: 14, color: 'rgba(255,255,255,0.62)', margin: 0, lineHeight: 1.65 }}>{item.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
           )
         })}
-      </div>
-    </motion.section>
+      </motion.div>
+    </div>
+  )
+}
+
+/* ── FINAL CTA ── */
+function FinalCTA({ link, rate }) {
+  const [copied, setCopied] = useState(false)
+  async function copyLink() {
+    try { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch {}
+  }
+  return (
+    <section style={{
+      position: 'relative', overflow: 'hidden',
+      padding: '100px 28px 120px',
+      borderTop: '1px solid rgba(255,255,255,0.05)',
+      textAlign: 'center',
+    }}>
+      <div style={{
+        position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)',
+        width: '70vw', height: '70vw', maxWidth: 900, maxHeight: 900,
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(229,57,53,0.15), transparent 70%)',
+        filter: 'blur(80px)', pointerEvents: 'none',
+      }} />
+      <motion.div
+        initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        transition={{ duration: 0.7, ease }}
+        style={{ position: 'relative', maxWidth: 800, margin: '0 auto' }}>
+        <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10.5, color: '#e53935', letterSpacing: '0.28em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 24px' }}>
+          Pronto pra começar?
+        </p>
+        <h2 style={{
+          fontFamily: 'var(--font-serif, serif)', fontSize: 72, fontWeight: 400,
+          color: '#fff', margin: '0 0 24px', letterSpacing: '-0.035em', lineHeight: 0.95,
+        }}>
+          {Math.round(rate * 100)}% de comissão.<br/>
+          <span style={{ background: 'linear-gradient(90deg, #fff, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Direto no seu PIX.</span>
+        </h2>
+        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', margin: '0 0 36px', lineHeight: 1.55 }}>
+          Pega seu link, manda no grupo, recebe a comissão. É literalmente isso.
+        </p>
+        <motion.button onClick={copyLink} whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(229,57,53,0.6)' }} whileTap={{ scale: 0.97 }}
+          style={{
+            padding: '18px 36px', borderRadius: 14, border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(180deg, #ef4444, #c62828)',
+            color: '#fff', fontSize: 15, fontWeight: 800, fontFamily: 'inherit',
+            display: 'inline-flex', alignItems: 'center', gap: 12,
+            boxShadow: '0 12px 40px rgba(229,57,53,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',
+          }}>
+          {copied ? (<><svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Link copiado · agora cola onde quiser</>)
+            : (<><svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar meu link agora</>)}
+        </motion.button>
+      </motion.div>
+    </section>
   )
 }

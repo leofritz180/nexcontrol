@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToTenant } from '../../../../lib/push'
+import { getOperatorLimitStatus } from '../../../../lib/operator-limit'
 
 // Call daily via Vercel Cron or external scheduler
 // GET /api/cron/trial-notifications?secret=YOUR_SECRET
@@ -74,5 +75,38 @@ export async function GET(req) {
     }
   }
 
-  return NextResponse.json({ sent, expired, total: tenants.length })
+  // ── BONUS: detecta excesso de operadores e notifica admins ──
+  // Roda 1x/dia (mesmo cron diario). Aviso suave, nao bloqueia.
+  let opExcessNotified = 0
+  try {
+    const { data: activeTenants } = await supabase
+      .from('tenants')
+      .select('id, name, subscription_status')
+      .eq('subscription_status', 'active')
+    for (const t of activeTenants || []) {
+      const status = await getOperatorLimitStatus(supabase, t.id)
+      if (!status || status.excess === 0) continue
+      // Anti-spam: so notifica 1x a cada 7 dias
+      const { data: last } = await supabase
+        .from('winback_log').select('id, sent_at')
+        .eq('tenant_id', t.id).eq('segment', 'op_limit')
+        .gte('sent_at', new Date(Date.now() - 7 * 86400000).toISOString())
+        .limit(1).maybeSingle()
+      if (last) continue
+      await sendPushToTenant(supabase, t.id, {
+        title: 'Limite de operadores excedido',
+        body: `Você tem ${status.current} operadores mas o plano cobre ${status.limit}. Remova ${status.excess} ou faça upgrade.`,
+        url: '/operadores',
+        tag: 'op-limit',
+      })
+      await supabase.from('winback_log').insert({
+        tenant_id: t.id, segment: 'op_limit', channel: 'push', sent_at: new Date().toISOString(),
+      })
+      opExcessNotified++
+    }
+  } catch (e) {
+    console.error('[trial-cron] op-limit check failed', e?.message)
+  }
+
+  return NextResponse.json({ sent, expired, total: tenants.length, opExcessNotified })
 }

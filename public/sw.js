@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v85 (Tab Ranking dedicada no /admin antes da Lixeira)
+// NexControl Service Worker — Push Notifications v86 (OperatorLimitBanner + push diario quando excede operadores)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
+import OperatorLimitBanner from '../../components/OperatorLimitBanner'
 import TabAwareTour from '../../components/TabAwareTour'
 import { SLOTS } from '../../lib/slots-data'
 import { DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_METAS, DEMO_REMESSAS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
@@ -972,6 +973,8 @@ export default function OperadoresPage() {
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
+
+        <OperatorLimitBanner tenantId={profile?.tenant_id} />
 
         {/* Hero — clean */}
         <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>

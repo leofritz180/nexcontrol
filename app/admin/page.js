@@ -29,6 +29,7 @@ import SmartUpgradeTrigger from '../../components/billing/SmartUpgradeTrigger'
 import PreviewIndicator from '../../components/billing/PreviewIndicator'
 import OnboardingChecklist from '../../components/OnboardingChecklist'
 import ContaMaeCard from '../../components/ContaMaeCard'
+import OperatorLimitBanner from '../../components/OperatorLimitBanner'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -1342,6 +1343,7 @@ export default function AdminPage() {
 
         <TrialBanner tenant={tenant} subscription={sub} stats={convStats}/>
         <ConversionModal tenant={tenant} subscription={sub} stats={convStats}/>
+        <OperatorLimitBanner tenantId={profile?.tenant_id} />
 
         {/* ── PREMIUM TABS ── */}
         <motion.div

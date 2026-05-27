@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v82 (Pagamento afiliado em ate 24h)
+// NexControl Service Worker — Push Notifications v83 (Remove calculadora + pagamento 24h)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

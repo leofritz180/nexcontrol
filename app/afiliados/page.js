@@ -108,9 +108,6 @@ export default function AfiliadosPage() {
               <WithdrawalCode code={data?.code} />
             </ContentBlock>
             <ContentBlock>
-              <CalculatorMega rate={rate} />
-            </ContentBlock>
-            <ContentBlock>
               <KPISection totals={totals} />
             </ContentBlock>
             <ContentBlock>

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v77 (Programa de afiliados ATIVO 50% primeira mensalidade)
+// NexControl Service Worker — Push Notifications v78 (Programa de afiliados REDESIGN premium · 30% comissao + cap silencioso 3 pagtos)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

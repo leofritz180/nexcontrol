@@ -22,7 +22,7 @@ export async function POST(req) {
     if (!aff) {
       const code = Math.random().toString(36).slice(2, 10)
       const { data: inserted } = await sb.from('affiliates')
-        .insert({ tenant_id: prof.tenant_id, code, enabled: true, commission_rate: 0.50 })
+        .insert({ tenant_id: prof.tenant_id, code, enabled: true, commission_rate: 0.30 })
         .select().maybeSingle()
       aff = inserted
     }

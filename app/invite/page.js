@@ -93,10 +93,12 @@ function InvitePage() {
 
   if (!token || !invite) return (
     <main style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:24, zIndex:1, position:'relative' }}>
-      <div className="card card-glass" style={{ padding:40, textAlign:'center', maxWidth:400 }}>
-        <h2 className="t-h2" style={{ marginBottom:8 }}>Convite invalido</h2>
-        <p className="t-body" style={{ marginBottom:24 }}>Este link de convite expirou ou nao existe.</p>
-        <Link href="/login" className="btn btn-brand">Ir para login</Link>
+      <div className="card card-glass" style={{ padding:40, textAlign:'center', maxWidth:440 }}>
+        <h2 className="t-h2" style={{ marginBottom:8 }}>Convite indisponível</h2>
+        <p className="t-body" style={{ marginBottom:8 }}>Este link expirou ou foi revogado pelo administrador.</p>
+        <p className="t-body" style={{ marginBottom:24, fontSize:13, color:'var(--t3)' }}>
+          <strong style={{ color:'var(--t2)' }}>NÃO crie uma conta nova</strong> — peça um novo link de convite ao administrador da sua operação.
+        </p>
       </div>
     </main>
   )

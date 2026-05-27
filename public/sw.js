@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v88 (Fix2 convite: remove select de coluna inexistente expires_at)
+// NexControl Service Worker — Push Notifications v89 (Convites compartilhaveis · sem mais orfaos)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

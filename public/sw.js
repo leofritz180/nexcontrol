@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v86 (OperatorLimitBanner + push diario quando excede operadores)
+// NexControl Service Worker — Push Notifications v87 (Fix CRITICO convite invalido — RLS bloqueava anonimo, agora usa /api/invite/lookup)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -28,12 +28,15 @@ function InvitePage() {
   }, [token])
 
   async function loadInvite() {
-    const { data: inv } = await supabase.from('invites').select('*').eq('token', token).eq('status', 'pending').maybeSingle()
-    if (!inv) { setLoading(false); return }
-    setInvite(inv)
-    if (inv.email) setEmail(inv.email)
-    const { data: t } = await supabase.from('tenants').select('name').eq('id', inv.tenant_id).maybeSingle()
-    setTenant(t)
+    // Usa endpoint publico (service role) — RLS impede operador anonimo ler invites direto
+    try {
+      const res = await fetch('/api/invite/lookup?token=' + encodeURIComponent(token))
+      const data = await res.json()
+      if (!data?.valid) { setLoading(false); return }
+      setInvite(data.invite)
+      if (data.invite.email) setEmail(data.invite.email)
+      setTenant(data.tenant)
+    } catch {}
     setLoading(false)
   }
 
@@ -42,9 +45,10 @@ function InvitePage() {
     if (!email || !pass || !nome.trim()) return
     setSaving(true); setError('')
 
-    // Re-validate invite still exists and is pending
-    const { data: valid } = await supabase.from('invites').select('id,tenant_id').eq('token', token).eq('status', 'pending').maybeSingle()
-    if (!valid) { setError('Este convite expirou ou foi cancelado.'); setSaving(false); return }
+    // Re-validate invite via endpoint publico (RLS bloqueia anonimo no select direto)
+    const lookup = await fetch('/api/invite/lookup?token=' + encodeURIComponent(token)).then(r => r.json()).catch(() => null)
+    if (!lookup?.valid) { setError('Este convite expirou ou foi cancelado.'); setSaving(false); return }
+    const valid = lookup.invite
 
     // Validar limite do plano usando o MAIOR operator_count entre todas as
     // subscriptions ativas e nao expiradas (multiplas compras coexistem).

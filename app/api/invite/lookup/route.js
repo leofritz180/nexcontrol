@@ -19,18 +19,17 @@ export async function GET(req) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
-    const { data: inv } = await sb.from('invites')
-      .select('id, tenant_id, email, role, status, expires_at')
+    const { data: inv, error: invErr } = await sb.from('invites')
+      .select('id, tenant_id, email, role, status')
       .eq('token', token)
       .eq('status', 'pending')
       .maybeSingle()
 
-    if (!inv) return NextResponse.json({ valid: false, reason: 'not_found_or_consumed' })
-
-    // Checa expiracao se houver
-    if (inv.expires_at && new Date(inv.expires_at) < new Date()) {
-      return NextResponse.json({ valid: false, reason: 'expired' })
+    if (invErr) {
+      console.error('[invite/lookup] DB error:', invErr.message)
+      return NextResponse.json({ valid: false, reason: 'db_error', error: invErr.message }, { status: 500 })
     }
+    if (!inv) return NextResponse.json({ valid: false, reason: 'not_found_or_consumed' })
 
     // Pega nome do tenant pra mostrar na tela
     const { data: t } = await sb.from('tenants').select('name').eq('id', inv.tenant_id).maybeSingle()

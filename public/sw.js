@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v87 (Fix CRITICO convite invalido — RLS bloqueava anonimo, agora usa /api/invite/lookup)
+// NexControl Service Worker — Push Notifications v88 (Fix2 convite: remove select de coluna inexistente expires_at)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

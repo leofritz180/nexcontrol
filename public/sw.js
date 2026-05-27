@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v81 (Afiliados refinado · codigo unico, contato @nexcpa, timeline criativa)
+// NexControl Service Worker — Push Notifications v82 (Pagamento afiliado em ate 24h)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

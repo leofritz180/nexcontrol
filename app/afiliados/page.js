@@ -677,7 +677,7 @@ function WithdrawalCode({ code }) {
                 'Chama no @nexcpa (Instagram) ou WhatsApp',
                 'Envie seu código de recebimento',
                 'Confirme dados pra receber via PIX, banco ou outro meio',
-                'Pagamento sai em até 7 dias úteis',
+                'Pagamento sai em até 24 horas',
               ].map((t, i) => (
                 <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 12.5, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
                   <span style={{ flexShrink: 0, fontFamily: 'var(--mono, monospace)', fontSize: 10.5, fontWeight: 800, color: '#ef4444', minWidth: 18 }}>{i + 1}.</span>
@@ -1054,7 +1054,7 @@ function PixSection({ data, userEmail, onRefresh }) {
           <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
               'Comissão aparece em "A receber"',
-              'Pagamento manual via PIX em até 7 dias',
+              'Pagamento manual via PIX em até 24 horas',
               'Você recebe push aqui quando for pago',
               'Chave pode ser alterada a qualquer momento',
             ].map((t, i) => (
@@ -1166,7 +1166,7 @@ function FAQImersive({ rate }) {
     { q: 'Tem valor mínimo pra solicitar?', a: 'Sem mínimo oficial. Mas recomenda acumular pelo menos R$ 50 antes de pedir pra valer o esforço de fazer o pagamento.' },
     { q: 'E se o cliente cancelar depois?', a: 'A comissão que você já recebeu fica com você. Não tem clawback (devolução).' },
     { q: 'Posso indicar meus próprios operadores?', a: 'Não. Cada tenant pode ter só um afiliado, e auto-indicação é bloqueada automaticamente.' },
-    { q: 'Quanto tempo demora pra cair?', a: 'Após o contato e confirmação dos dados, o pagamento sai em até 7 dias úteis. Geralmente em 1-2 dias.' },
+    { q: 'Quanto tempo demora pra cair?', a: 'Após o contato e confirmação dos dados, o pagamento sai em até 24 horas. Geralmente em poucas horas.' },
     { q: 'Como vou receber? PIX, banco?', a: 'Você decide na hora do contato. PIX é o mais rápido (mesmo dia), mas a gente também faz transferência bancária ou outras formas.' },
   ]
 

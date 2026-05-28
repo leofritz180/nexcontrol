@@ -1170,3 +1170,127 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   letter-spacing: -0.04em;
   line-height: 1;
 }
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE PERFORMANCE SHIELD · max-width: 768px
+   Mata animacoes infinitas e efeitos pesados que causavam
+   pulsing / jitter / repaints em devices mobile.
+   Desktop 100% intacto.
+═══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* 1. ELIMINA filter: blur grande nos orbs/glows ambient
+     (custo de GPU enorme em mobile, causa frame drops)
+     Mantem text-shadow e blur pequeno. */
+  *[style*="filter: blur(40px)"],
+  *[style*="filter: blur(45px)"],
+  *[style*="filter: blur(50px)"],
+  *[style*="filter: blur(60px)"],
+  *[style*="filter: blur(70px)"],
+  *[style*="filter: blur(80px)"],
+  *[style*="filter: blur(90px)"],
+  *[style*="filter: blur(100px)"],
+  *[style*="filter:blur(40px)"],
+  *[style*="filter:blur(50px)"],
+  *[style*="filter:blur(60px)"],
+  *[style*="filter:blur(80px)"] {
+    filter: none !important;
+    opacity: 0.5 !important;
+  }
+
+  /* 2. ELIMINA backdrop-filter (segundo culpado de jitter) */
+  *[style*="backdropFilter"],
+  *[style*="backdrop-filter"],
+  *[style*="WebkitBackdropFilter"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 3. Reduz animacoes infinitas — pulse/scale loops
+     Mantem visibilidade mas para o pulso. */
+  motion.div,
+  .pulse-glow,
+  .ambient-pulse {
+    animation: none !important;
+  }
+
+  /* 4. Reset hover transforms (touch nao deveria disparar isso) */
+  *:hover {
+    transform: none !important;
+  }
+  button:hover,
+  a:hover,
+  [role="button"]:hover {
+    box-shadow: inherit !important;
+  }
+
+  /* 5. min-height: 100vh / 92vh causa jitter por causa da chrome bar
+     que aparece/some no scroll. Usa svh (small viewport height) ou auto. */
+  *[style*="minHeight: '100vh'"],
+  *[style*="minHeight:'100vh'"],
+  *[style*="min-height: 100vh"] {
+    min-height: 100svh !important;
+  }
+  *[style*="minHeight: '92vh'"],
+  *[style*="minHeight:'92vh'"],
+  *[style*="92vh"] {
+    min-height: auto !important;
+  }
+
+  /* 6. position: fixed com glow gigante força layer compositing
+     Desabilita pra reduzir custo de paint */
+  div[style*="position: 'fixed'"][style*="blur"],
+  div[style*="position:'fixed'"][style*="blur"] {
+    display: none !important;
+  }
+
+  /* 7. Disable scroll-driven parallax via reduced motion fallback
+     (framer-motion respeita prefers-reduced-motion) */
+  @media (prefers-reduced-motion: no-preference) {
+    /* Mesmo sem reduce-motion definido, mobile recebe reducao */
+    .parallax-section { transform: none !important; }
+  }
+
+  /* 8. Cards com box-shadow gigante (>0 12px 32px) causam GPU stress
+     Reduz pra metade */
+  *[style*="boxShadow"][style*="40px"],
+  *[style*="boxShadow"][style*="60px"],
+  *[style*="boxShadow"][style*="80px"],
+  *[style*="boxShadow"][style*="100px"] {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+  }
+
+  /* 9. Pulsos com radial-gradient grandes
+     Background ambient mesh sem animacao */
+  *[style*="radial-gradient"][style*="filter"] {
+    animation: none !important;
+  }
+
+  /* 10. Disable framer ambient animations (custom keyframes pesados) */
+  @keyframes mesh-pulse { 0%,100% { opacity: 0.4; } }
+  @keyframes cta-pulse { 0%,100% { transform: none; opacity: 1; } }
+  @keyframes shimmer { 0%,100% { background-position: 0; } }
+
+  /* 11. Sticky/fixed bottom bars que pulam com keyboard
+     dao reset pra evitar layout shift */
+  *[style*="bottom: '24'"],
+  *[style*="bottom:'24'"] {
+    transition: none !important;
+  }
+}
+
+/* Tela MUITO pequena - extras */
+@media (max-width: 480px) {
+  /* Remove TODAS animacoes infinitas */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+  }
+  /* Mas permite micro-transitions de UI essenciais */
+  button, a, [role="button"], input, select, textarea {
+    transition-duration: 0.15s !important;
+  }
+}

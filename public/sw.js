@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v91 (Push so com primeiro nome do operador)
+// NexControl Service Worker — Push Notifications v92 (MOBILE SHIELD global — mata animacoes pesadas em telas pequenas)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

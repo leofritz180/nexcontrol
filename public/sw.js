@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v92 (MOBILE SHIELD global — mata animacoes pesadas em telas pequenas)
+// NexControl Service Worker — Push Notifications v93 (Editar remessa: campo BAU adicionado)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

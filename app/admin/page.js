@@ -2659,6 +2659,9 @@ export default function AdminPage() {
                 const prejR=mRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
                 const liqR=lucroR-prejR
                 const fechada=m.status_fechamento==='fechada'
+                // Primeiro nome do operador (capitalizado) — display sutil no card
+                const opFull = (operators.find(o => o.id === m.operator_id)?.nome || '').trim()
+                const opFirst = opFull ? (opFull.split(/\s+/)[0]).charAt(0).toUpperCase() + (opFull.split(/\s+/)[0]).slice(1).toLowerCase() : ''
                 const nc=getNC(m.rede)
                 const totalContas=m.quantidade_contas||0
                 const remDone=mRem.length
@@ -2764,7 +2767,10 @@ export default function AdminPage() {
                           textShadow:`0 0 8px ${insightColor}30`,
                         }}>{insightText}</p>
                       )}
-                      <p style={{fontSize:10, color:'var(--t4)', margin:'5px 0 14px', paddingLeft:15, fontFamily:'var(--mono)'}}>{metaDate} · {remDone} remessa{remDone!==1?'s':''}</p>
+                      <p style={{fontSize:10, color:'var(--t4)', margin:'5px 0 14px', paddingLeft:15, fontFamily:'var(--mono)'}}>
+                        {opFirst && (<span style={{ color:'rgba(255,255,255,0.55)', fontWeight:600 }}>{opFirst} · </span>)}
+                        {metaDate} · {remDone} remessa{remDone!==1?'s':''}
+                      </p>
                       {/* Progress */}
                       <div style={{marginBottom:12}}>
                         <div style={{display:'flex',justifyContent:'space-between',marginBottom:5}}>

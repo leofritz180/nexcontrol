@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v93 (Editar remessa: campo BAU adicionado)
+// NexControl Service Worker — Push Notifications v94 (Cards de meta em /admin Metas&Fechamento mostram primeiro nome do operador)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

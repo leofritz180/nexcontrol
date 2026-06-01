@@ -147,9 +147,21 @@ function KpiCard({ label, value, prefix, i, isProfit, rawValue, suffix }) {
 function AlertCard({ alert, i }) {
   const isDanger = alert.type === 'danger'
   const isSuccess = alert.type === 'success'
+  const isInfo = alert.type === 'info'
 
-  const accent = isDanger ? '#EF4444' : isSuccess ? '#D1FAE5' : 'var(--t1)'
-  const action = isDanger ? 'reduzir' : isSuccess ? 'escalar' : alert.type === 'warning' ? 'observar' : 'analisar'
+  const accent = isDanger ? '#EF4444' : isSuccess ? '#D1FAE5' : isInfo ? '#93C5FD' : 'var(--t1)'
+  // Action chip: nao usa 'reduzir' por padrao — so quando eh queda real
+  const action = alert.label === 'Queda real' ? 'investigar'
+    : alert.label === 'Prejuizo acumulado' ? 'revisar'
+    : alert.label === 'Baixo acerto' ? 'analisar'
+    : alert.label === 'Sem atividade' ? 'reativar'
+    : alert.label === 'Pico de lucro' ? 'escalar'
+    : alert.label === 'Oportunidade' ? 'escalar'
+    : alert.label === 'Top performer' ? 'manter'
+    : alert.label === 'Mais consistente' ? 'manter'
+    : isDanger ? 'investigar'
+    : isSuccess ? 'manter'
+    : 'observar'
 
   return (
     <motion.div {...fadeUp(i)}
@@ -168,12 +180,14 @@ function AlertCard({ alert, i }) {
         width: 28, height: 28, borderRadius: 8, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: 'rgba(255,255,255,0.04)',
-        border: `1px solid ${isDanger ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.1)'}`,
+        border: `1px solid ${isDanger ? 'rgba(239,68,68,0.25)' : isInfo ? 'rgba(147,197,253,0.25)' : 'rgba(255,255,255,0.1)'}`,
       }}>
         {isSuccess ? (
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth={2.5} strokeLinecap="round"><polyline points="22 4 12 14.01 9 11.01" /></svg>
         ) : isDanger ? (
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth={2.5} strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+        ) : isInfo ? (
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
         ) : alert.type === 'warning' ? (
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth={2.5} strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
         ) : (
@@ -731,50 +745,108 @@ export default function RedesPage() {
     return recs.slice(0, 5)
   }, [redesData])
 
-  /* ── Strategic Alerts ── */
+  /* ── Strategic Alerts — insights inteligentes (sem falsos positivos) ── */
   const strategicAlerts = useMemo(() => {
     const alerts = []
     if (redesData.length === 0) return alerts
 
-    // Peak profit detection
+    // Conta metas fechadas em cada janela (precisa pra distinguir "queda real" de "sem operacao")
+    Object.values(redesData).forEach(r => {
+      const now = new Date()
+      const d7 = new Date(now); d7.setDate(d7.getDate() - 7)
+      const d14 = new Date(now); d14.setDate(d14.getDate() - 14)
+      r.metasLast7 = r.metas.filter(m => new Date(m.updated_at || m.created_at) >= d7).length
+      r.metasPrev7 = r.metas.filter(m => { const d = new Date(m.updated_at || m.created_at); return d >= d14 && d < d7 }).length
+    })
+
+    // 1) PICO DE LUCRO REAL — melhor semana de toda a sparkline
     redesData.forEach(r => {
       const last = r.sparkline[r.sparkline.length - 1]
       const prev = r.sparkline.slice(0, -1)
-      const maxPrev = Math.max(...prev)
-      if (last > 0 && last > maxPrev && maxPrev > 0) {
+      const maxPrev = Math.max(...prev, 0)
+      if (last > 0 && last > maxPrev && maxPrev > 0 && r.metasLast7 >= 1) {
         alerts.push({
           type: 'success', label: 'Pico de lucro',
-          text: `${r.nome} atingiu pico de lucro semanal: R$ ${fmt(last)}`,
+          text: `${r.nome} atingiu pico de lucro semanal: R$ ${fmt(last)}. Considere escalar.`,
         })
       }
     })
 
-    // Decline alerts
+    // 2) QUEDA REAL — operou nas duas semanas, e caiu MAIS de 25%
+    // Importante: precisa ter operado nas DUAS semanas. Sem isso, nao eh queda — eh ausencia.
     redesData.forEach(r => {
-      if (r.trendPct < -15) {
+      if (r.metasLast7 > 0 && r.metasPrev7 > 0 && r.trendPct < -25 && r.prev7Lucro > 100) {
         alerts.push({
-          type: 'danger', label: 'Queda detectada',
-          text: `Queda de ${Math.abs(r.trendPct).toFixed(0)}% na ${r.nome} na ultima semana`,
+          type: 'danger', label: 'Queda real',
+          text: `${r.nome} caiu ${Math.abs(r.trendPct).toFixed(0)}% na ultima semana (R$ ${fmt(r.prev7Lucro)} → R$ ${fmt(r.last7Lucro)}). Investigar causa.`,
         })
       }
     })
 
-    // Negative networks
-    const negatives = redesData.filter(r => r.lucroFinal < 0)
+    // 3) PREJUIZO ACUMULADO — rede com lucro_final geral negativo
+    const negatives = redesData.filter(r => r.lucroFinal < -100 && r.metas.length >= 2)
     if (negatives.length > 0) {
       alerts.push({
-        type: 'warning', label: 'Redes no vermelho',
-        text: `${negatives.length} rede${negatives.length > 1 ? 's' : ''} com prejuizo acumulado: ${negatives.map(n => n.nome).slice(0, 3).join(', ')}`,
+        type: 'warning', label: 'Prejuizo acumulado',
+        text: `${negatives.length} rede${negatives.length > 1 ? 's' : ''} com prejuizo total: ${negatives.map(n => `${n.nome} (R$ ${fmt(n.lucroFinal)})`).slice(0, 3).join(', ')}`,
       })
     }
 
-    // Low win rate alert
-    redesData.filter(r => r.winRate < 40 && r.metas.length >= 3).forEach(r => {
+    // 4) WIN RATE BAIXO com volume suficiente
+    redesData.filter(r => r.winRate < 40 && r.metas.length >= 5).forEach(r => {
       alerts.push({
-        type: 'warning', label: 'Win rate baixo',
-        text: `${r.nome} com apenas ${r.winRate.toFixed(0)}% de taxa de acerto em ${r.metas.length} metas`,
+        type: 'warning', label: 'Baixo acerto',
+        text: `${r.nome}: apenas ${r.winRate.toFixed(0)}% das ${r.metas.length} metas deram lucro. Revisar estrategia.`,
       })
     })
+
+    // 5) ALTA EFICIENCIA SUBESTIMADA — bom lucro/depositante mas pouco volume
+    const eficientes = redesData
+      .filter(r => r.lucroPorDepositante > 0 && r.depositantes >= 20)
+      .sort((a, b) => b.lucroPorDepositante - a.lucroPorDepositante)
+    if (eficientes.length > 0) {
+      const top = eficientes[0]
+      const avgEff = eficientes.reduce((s, r) => s + r.lucroPorDepositante, 0) / eficientes.length
+      // So sinaliza se a top eh BEM acima da media E tem volume razoavelmente baixo
+      if (top.lucroPorDepositante > avgEff * 1.5 && top.depositantes < 500) {
+        alerts.push({
+          type: 'success', label: 'Oportunidade',
+          text: `${top.nome} rende R$ ${fmt(top.lucroPorDepositante)}/conta (${(top.lucroPorDepositante / avgEff).toFixed(1)}x a media). Volume baixo — escalar.`,
+        })
+      }
+    }
+
+    // 6) REDE INATIVA — operava regularmente, parou
+    // (eh INFO, nao alerta de "reduzir")
+    redesData.forEach(r => {
+      if (r.metasLast7 === 0 && r.metasPrev7 >= 2 && r.lucroFinal > 0) {
+        alerts.push({
+          type: 'info', label: 'Sem atividade',
+          text: `${r.nome} sem metas na ultima semana (antes: ${r.metasPrev7} metas, R$ ${fmt(r.prev7Lucro)}). Avaliar reativar.`,
+        })
+      }
+    })
+
+    // 7) REDE MAIS CONSISTENTE — win rate alto + volume
+    const consistentes = redesData
+      .filter(r => r.metas.length >= 5 && r.winRate >= 75)
+      .sort((a, b) => b.winRate - a.winRate)
+    if (consistentes.length > 0 && alerts.length < 5) {
+      const top = consistentes[0]
+      alerts.push({
+        type: 'success', label: 'Mais consistente',
+        text: `${top.nome} tem ${top.winRate.toFixed(0)}% de acerto em ${top.metas.length} metas. Sua referencia de estabilidade.`,
+      })
+    }
+
+    // 8) MAIOR LUCRO ACUMULADO
+    const topLucro = [...redesData].sort((a, b) => b.lucroFinal - a.lucroFinal)[0]
+    if (topLucro && topLucro.lucroFinal > 0 && alerts.length < 6 && !alerts.some(a => a.text.includes(topLucro.nome))) {
+      alerts.push({
+        type: 'success', label: 'Top performer',
+        text: `${topLucro.nome} eh sua rede mais lucrativa: R$ ${fmt(topLucro.lucroFinal)} acumulado em ${topLucro.metas.length} metas.`,
+      })
+    }
 
     return alerts.slice(0, 6)
   }, [redesData])

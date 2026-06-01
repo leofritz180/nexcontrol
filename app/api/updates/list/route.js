@@ -31,12 +31,13 @@ export async function GET(req) {
       const { data: reads } = await sb.from('user_updates_read')
         .select('update_id')
         .eq('user_id', userId)
-      readIds = new Set((reads || []).map(r => r.update_id))
+      // Normaliza pra Number — bigint pode vir como string em JSON
+      readIds = new Set((reads || []).map(r => Number(r.update_id)))
     }
 
     const list = (updates || []).map(u => ({
       ...u,
-      read: readIds.has(u.id),
+      read: readIds.has(Number(u.id)),
     }))
 
     const unreadCount = list.filter(u => !u.read).length

@@ -15,11 +15,16 @@ export async function GET(req) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     )
 
-    const { data: updates } = await sb.from('system_updates')
-      .select('id, title, body, category, icon, created_at')
+    const { data: updates, error: updErr, count } = await sb.from('system_updates')
+      .select('id, title, body, category, icon, created_at', { count: 'exact' })
       .eq('published', true)
       .order('created_at', { ascending: false })
       .limit(30)
+
+    if (updErr) {
+      console.error('[updates/list] erro:', updErr.message, updErr.code)
+      return NextResponse.json({ updates: [], unreadCount: 0, debug: { err: updErr.message, code: updErr.code } }, { status: 200 })
+    }
 
     let readIds = new Set()
     if (userId) {

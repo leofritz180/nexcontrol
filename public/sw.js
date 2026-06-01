@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v94 (Cards de meta em /admin Metas&Fechamento mostram primeiro nome do operador)
+// NexControl Service Worker — Push Notifications v95 (Sistema de Atualizacoes · sino com changelog)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -7,6 +7,7 @@ const OperatorLimitGate = dynamic(() => import('../components/OperatorLimitGate'
 const GlobalLoadingScreen = dynamic(() => import('../components/branding/GlobalLoadingScreen'), { ssr: false })
 const InstallPrompt = dynamic(() => import('../components/InstallPrompt'), { ssr: false })
 const PresencePing = dynamic(() => import('../components/PresencePing'), { ssr: false })
+const UpdatesBell = dynamic(() => import('../components/UpdatesBell'), { ssr: false })
 
 export const metadata = {
   title: 'NexControl',
@@ -56,6 +57,7 @@ export default function RootLayout({ children }) {
         <Suspense fallback={null}><SubscriptionGate><OperatorLimitGate>{children}</OperatorLimitGate></SubscriptionGate></Suspense>
         <Suspense fallback={null}><InstallPrompt/></Suspense>
         <Suspense fallback={null}><PresencePing/></Suspense>
+        <Suspense fallback={null}><UpdatesBell/></Suspense>
       </body>
     </html>
   )

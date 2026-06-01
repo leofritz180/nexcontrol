@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v96 (Alertas de redes inteligentes — sem falso positivo de 'queda' quando eh ausencia)
+// NexControl Service Worker — Push Notifications v97 (Push pro owner em cada pagamento confirmado)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

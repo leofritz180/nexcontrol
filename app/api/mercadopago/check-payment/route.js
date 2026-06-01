@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
+import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
 
 // Usado pelo polling do frontend. Consulta DB primeiro; se ainda pendente,
 // bate no MP pra atualizar o status (cobre caso de webhook atrasado).
@@ -157,6 +158,14 @@ async function activatePro(sb, record, paymentId) {
     tenantId: record.tenant_id,
     paymentId: paymentId,
     amount: record.amount,
+  })
+
+  // Notifica owner via push (idempotente)
+  await notifyOwnerOfPayment(sb, {
+    tenantId: record.tenant_id,
+    paymentId: paymentId,
+    amount: record.amount,
+    planMonths,
   })
 
   console.log('[MP check-payment] PRO ativado', { tenant: record.tenant_id, payment: paymentId })

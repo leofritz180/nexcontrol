@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
+import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
 
 // Webhook do Mercado Pago: recebe notificacao, busca o pagamento na API,
 // atualiza status no DB e ativa PRO quando aprovado.
@@ -159,6 +160,14 @@ export async function POST(req) {
           tenantId: record.tenant_id,
           paymentId: payment.id,
           amount: record.amount,
+        })
+
+        // Notifica owner via push (idempotente por payment_id)
+        await notifyOwnerOfPayment(sb, {
+          tenantId: record.tenant_id,
+          paymentId: payment.id,
+          amount: record.amount,
+          planMonths,
         })
       }
     }

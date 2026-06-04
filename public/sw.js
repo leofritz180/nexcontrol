@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v98 (Comando de voz global + lote PT2)
+// NexControl Service Worker — Push Notifications v99 (voz: dashboard → admin)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

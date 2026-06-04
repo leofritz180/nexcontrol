@@ -8,7 +8,7 @@ const BETA_EMAILS = new Set(['leofritz180@gmail.com'])
 
 // Comandos de navegacao — slug → rota (e variantes faladas)
 const NAV_COMMANDS = [
-  { keys: ['dashboard', 'painel', 'admin', 'inicio'],              label: 'dashboard',     route: '/admin' },
+  { keys: ['admin', 'painel', 'dashboard', 'inicio'],              label: 'admin',         route: '/admin' },
   { keys: ['operadores', 'operador'],                              label: 'operadores',    route: '/operadores' },
   { keys: ['redes', 'rede'],                                       label: 'redes',         route: '/redes' },
   { keys: ['faturamento', 'fatura'],                               label: 'faturamento',   route: '/faturamento' },

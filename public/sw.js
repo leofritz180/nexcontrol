@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v108 (voz + card liberados pra todos admins)
+// NexControl Service Worker — Push Notifications v109 (FIX CRITICO: deadlock auth no F5 - tela zerada)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

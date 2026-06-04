@@ -127,21 +127,26 @@ export default function VoiceCommandPanel({ userEmail }) {
     })
     return () => { active = false; authSub?.subscription?.unsubscribe?.() }
   }, [userEmail])
-  // Papel do usuario (admin/operator) — voz e liberada pra admin + owner
+  // Papel do usuario (admin/operator) — voz e liberada pra admin + owner.
+  // CUIDADO: NUNCA chamar getSession() ou queries supabase DENTRO do callback do
+  // onAuthStateChange — isso segura o lock do auth e congela TODAS as queries no
+  // carregamento (tela zerada / "sem plano" no F5). Usar a session do callback e
+  // adiar a consulta com setTimeout(0) pra sair do lock.
   const [role, setRole] = useState('')
   useEffect(() => {
     let active = true
-    async function loadRole() {
+    async function fetchRole(uid) {
+      if (!uid) { if (active) setRole(''); return }
       try {
-        const { data } = await supabase.auth.getSession()
-        const uid = data?.session?.user?.id
-        if (!uid) { if (active) setRole(''); return }
         const { data: prof } = await supabase.from('profiles').select('role').eq('id', uid).maybeSingle()
         if (active) setRole(prof?.role || '')
-      } catch { if (active) setRole('') }
+      } catch { /* mantem role atual */ }
     }
-    loadRole()
-    const { data: sub } = supabase.auth.onAuthStateChange(() => loadRole())
+    supabase.auth.getSession().then(({ data }) => { if (active) fetchRole(data?.session?.user?.id) })
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      const uid = session?.user?.id
+      setTimeout(() => { if (active) fetchRole(uid) }, 0)
+    })
     return () => { active = false; sub?.subscription?.unsubscribe?.() }
   }, [])
   const isOwner = String(resolvedEmail || '').toLowerCase() === OWNER_EMAIL

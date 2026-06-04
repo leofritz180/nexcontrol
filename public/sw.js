@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v103 (seletor de vozes: nomes limpos + dica Edge)
+// NexControl Service Worker — Push Notifications v104 (voz da resposta sempre automatica - seletor removido)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

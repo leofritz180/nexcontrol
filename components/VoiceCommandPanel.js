@@ -154,10 +154,8 @@ export default function VoiceCommandPanel({ userEmail }) {
     }
     load()
     window.speechSynthesis.addEventListener?.('voiceschanged', load)
-    try {
-      const v = localStorage.getItem('voice:selectedVoice'); if (v) setSelectedVoiceName(v)
-      const p = parseFloat(localStorage.getItem('voice:pitch') || ''); if (!isNaN(p)) setPitch(p)
-    } catch {}
+    // Voz sempre AUTOMATICA: limpa qualquer escolha manual antiga salva.
+    try { localStorage.removeItem('voice:selectedVoice'); localStorage.removeItem('voice:pitch') } catch {}
     return () => { try { window.speechSynthesis.removeEventListener?.('voiceschanged', load) } catch {} }
   }, [])
 
@@ -605,65 +603,6 @@ export default function VoiceCommandPanel({ userEmail }) {
 
             {/* Commands list */}
             <div style={{ overflowY: 'auto', padding: '12px 16px' }}>
-              {/* ── Seletor de voz da resposta ── */}
-              {(() => {
-                const ptVoices = availableVoices.filter(v => /^pt/i.test(v.lang))
-                const others = availableVoices.filter(v => !/^pt/i.test(v.lang))
-                const shown = showAllVoices ? [...ptVoices, ...others] : ptVoices
-                const rowBase = { display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8, marginBottom: 4 }
-                const VoiceRow = ({ name, lang, voiceObj, selected }) => (
-                  <div style={{ ...rowBase, background: selected ? 'rgba(209,250,229,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid ' + (selected ? 'rgba(209,250,229,0.25)' : 'rgba(255,255,255,0.06)') }}>
-                    <button type="button" onClick={() => selectVoice(name)} style={{ flex: 1, textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: selected ? '#D1FAE5' : '#F1F5F9', fontSize: 12, fontWeight: selected ? 700 : 500, display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-                      <span style={{ fontSize: 11 }}>{selected ? '●' : '○'}</span>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prettyVoz(name)}</span>
-                      {isVozNatural(name) && <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: 'rgba(209,250,229,0.12)', color: '#D1FAE5' }}>natural</span>}
-                      {lang && <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{lang}</span>}
-                    </button>
-                    {voiceObj !== undefined && (
-                      <button type="button" onClick={() => previewVoice(voiceObj)} title="Ouvir exemplo" style={{ flexShrink: 0, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, cursor: 'pointer', color: '#F1F5F9', width: 28, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
-                        <svg width={11} height={11} viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-                      </button>
-                    )}
-                  </div>
-                )
-                return (
-                  <div style={{ marginBottom: 16 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      Voz da resposta
-                      <span style={{ fontSize: 9, color: '#64748B' }}>· {availableVoices.length} no aparelho</span>
-                    </div>
-                    {availableVoices.length === 0 && (
-                      <div style={{ fontSize: 11, color: '#64748B', marginBottom: 8 }}>Carregando vozes do navegador...</div>
-                    )}
-                    {/* Automática */}
-                    <VoiceRow name="" lang="" voiceObj={resolveVoice(availableVoices)} selected={!selectedVoiceName} />
-                    {/* Vozes */}
-                    {shown.map(v => (
-                      <VoiceRow key={v.name + v.lang} name={v.name} lang={v.lang} voiceObj={v} selected={selectedVoiceName === v.name} />
-                    ))}
-                    {!showAllVoices && others.length > 0 && (
-                      <button type="button" onClick={() => setShowAllVoices(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', fontSize: 11, padding: '4px 0', textDecoration: 'underline' }}>
-                        mostrar todas as vozes (+{others.length} de outros idiomas)
-                      </button>
-                    )}
-                    {ptVoices.length === 0 && availableVoices.length > 0 && !showAllVoices && (
-                      <div style={{ fontSize: 11, color: '#F59E0B', marginTop: 4 }}>Nenhuma voz em português detectada. Toque acima pra ver todas.</div>
-                    )}
-                    {/* Tom (pitch) */}
-                    <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 10, color: '#64748B', flexShrink: 0 }}>Grave</span>
-                      <input type="range" min="0.5" max="1.5" step="0.1" value={pitch} onChange={e => changePitch(parseFloat(e.target.value))} style={{ flex: 1, accentColor: '#D1FAE5', cursor: 'pointer' }} />
-                      <span style={{ fontSize: 10, color: '#64748B', flexShrink: 0 }}>Aguda</span>
-                    </div>
-                    {!ptVoices.some(v => isVozNatural(v.name)) && (
-                      <div style={{ marginTop: 10, padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', fontSize: 11, color: '#94A3B8', lineHeight: 1.5 }}>
-                        As vozes do seu navegador soam robóticas? As vozes brasileiras <strong style={{ color: '#F1F5F9' }}>naturais</strong> aparecem de graça no <strong style={{ color: '#F1F5F9' }}>Microsoft Edge</strong>. Abra o sistema no Edge e volte aqui — elas vão surgir nesta lista.
-                      </div>
-                    )}
-                  </div>
-                )
-              })()}
-
               <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Navegacao</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                 {NAV_COMMANDS.map(c => (

@@ -125,15 +125,67 @@ export default function VoiceCommandPanel({ userEmail }) {
   const voicesRef = useRef([])
   const mutedRef = useRef(false) // true enquanto o robo fala (ignora o proprio audio captado)
   const [speaking, setSpeaking] = useState(false)
+  const [availableVoices, setAvailableVoices] = useState([])
+  const [selectedVoiceName, setSelectedVoiceName] = useState('')
+  const [showAllVoices, setShowAllVoices] = useState(false)
+  const [pitch, setPitch] = useState(1.0)
 
-  // Carrega vozes do navegador (chega async no Chrome)
+  // Carrega vozes do navegador (chega async no Chrome) + escolha salva
   useEffect(() => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return
-    const load = () => { voicesRef.current = window.speechSynthesis.getVoices() || [] }
+    const load = () => {
+      const list = window.speechSynthesis.getVoices() || []
+      voicesRef.current = list
+      setAvailableVoices(list)
+    }
     load()
     window.speechSynthesis.addEventListener?.('voiceschanged', load)
+    try {
+      const v = localStorage.getItem('voice:selectedVoice'); if (v) setSelectedVoiceName(v)
+      const p = parseFloat(localStorage.getItem('voice:pitch') || ''); if (!isNaN(p)) setPitch(p)
+    } catch {}
     return () => { try { window.speechSynthesis.removeEventListener?.('voiceschanged', load) } catch {} }
   }, [])
+
+  // Resolve a voz a usar: escolha salva > melhor pt-BR automatica
+  function resolveVoice(voices) {
+    if (selectedVoiceName) {
+      const v = voices.find(x => x.name === selectedVoiceName)
+      if (v) return v
+    }
+    const ptBR = voices.filter(v => /pt[-_]?BR/i.test(v.lang))
+    return ptBR.find(v => /google/i.test(v.name))
+      || ptBR.find(v => /natural|maria|luciana|francisca|fernanda|thalita|brenda/i.test(v.name))
+      || ptBR[0]
+      || voices.find(v => /^pt/i.test(v.lang))
+      || null
+  }
+
+  function selectVoice(name) {
+    setSelectedVoiceName(name)
+    try { localStorage.setItem('voice:selectedVoice', name || '') } catch {}
+  }
+  function changePitch(p) {
+    setPitch(p)
+    try { localStorage.setItem('voice:pitch', String(p)) } catch {}
+  }
+
+  // Toca um exemplo com uma voz especifica (pra audicionar)
+  function previewVoice(v) {
+    try {
+      const synth = typeof window !== 'undefined' && window.speechSynthesis
+      if (!synth) return
+      synth.cancel()
+      const u = new SpeechSynthesisUtterance('Olá Leonardo, boa noite. Seu lucro de hoje foi de 1.250 reais.')
+      u.lang = 'pt-BR'; u.pitch = pitch; u.rate = 1.0; u.volume = 1
+      if (v) u.voice = v
+      mutedRef.current = true
+      setSpeaking(true)
+      u.onend = () => { setSpeaking(false); setTimeout(() => { mutedRef.current = false }, 350) }
+      u.onerror = () => { setSpeaking(false); mutedRef.current = false }
+      synth.speak(u)
+    } catch { mutedRef.current = false; setSpeaking(false) }
+  }
 
   // Fala um texto com voz grave/robotica em pt-BR
   function speak(text) {
@@ -143,17 +195,12 @@ export default function VoiceCommandPanel({ userEmail }) {
       synth.cancel()
       const u = new SpeechSynthesisUtterance(text)
       u.lang = 'pt-BR'
-      u.pitch = 1.0   // natural, sem efeito robotico
+      u.pitch = pitch
       u.rate = 1.0
       u.volume = 1
-      // Escolhe a voz pt-BR mais natural disponivel (Google/Natural > qualquer pt-BR > pt)
       const voices = voicesRef.current.length ? voicesRef.current : (synth.getVoices() || [])
-      const ptBR = voices.filter(v => /pt[-_]?BR/i.test(v.lang))
-      const best = ptBR.find(v => /google/i.test(v.name))
-        || ptBR.find(v => /natural|maria|luciana|francisca|fernanda|thalita|brenda/i.test(v.name))
-        || ptBR[0]
-        || voices.find(v => /^pt/i.test(v.lang))
-      if (best) u.voice = best
+      const chosen = resolveVoice(voices)
+      if (chosen) u.voice = chosen
       mutedRef.current = true
       setSpeaking(true)
       u.onend = () => { setSpeaking(false); setTimeout(() => { mutedRef.current = false }, 350) }
@@ -544,6 +591,59 @@ export default function VoiceCommandPanel({ userEmail }) {
 
             {/* Commands list */}
             <div style={{ overflowY: 'auto', padding: '12px 16px' }}>
+              {/* ── Seletor de voz da resposta ── */}
+              {(() => {
+                const ptVoices = availableVoices.filter(v => /^pt/i.test(v.lang))
+                const others = availableVoices.filter(v => !/^pt/i.test(v.lang))
+                const shown = showAllVoices ? [...ptVoices, ...others] : ptVoices
+                const rowBase = { display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px', borderRadius: 8, marginBottom: 4 }
+                const VoiceRow = ({ name, lang, voiceObj, selected }) => (
+                  <div style={{ ...rowBase, background: selected ? 'rgba(209,250,229,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid ' + (selected ? 'rgba(209,250,229,0.25)' : 'rgba(255,255,255,0.06)') }}>
+                    <button type="button" onClick={() => selectVoice(name)} style={{ flex: 1, textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: selected ? '#D1FAE5' : '#F1F5F9', fontSize: 12, fontWeight: selected ? 700 : 500, display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                      <span style={{ fontSize: 11 }}>{selected ? '●' : '○'}</span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name || 'Automática (recomendada)'}</span>
+                      {lang && <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{lang}</span>}
+                    </button>
+                    {voiceObj !== undefined && (
+                      <button type="button" onClick={() => previewVoice(voiceObj)} title="Ouvir exemplo" style={{ flexShrink: 0, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, cursor: 'pointer', color: '#F1F5F9', width: 28, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                        <svg width={11} height={11} viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                      </button>
+                    )}
+                  </div>
+                )
+                return (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      Voz da resposta
+                      <span style={{ fontSize: 9, color: '#64748B' }}>· {availableVoices.length} no aparelho</span>
+                    </div>
+                    {availableVoices.length === 0 && (
+                      <div style={{ fontSize: 11, color: '#64748B', marginBottom: 8 }}>Carregando vozes do navegador...</div>
+                    )}
+                    {/* Automática */}
+                    <VoiceRow name="" lang="" voiceObj={resolveVoice(availableVoices)} selected={!selectedVoiceName} />
+                    {/* Vozes */}
+                    {shown.map(v => (
+                      <VoiceRow key={v.name + v.lang} name={v.name} lang={v.lang} voiceObj={v} selected={selectedVoiceName === v.name} />
+                    ))}
+                    {!showAllVoices && others.length > 0 && (
+                      <button type="button" onClick={() => setShowAllVoices(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', fontSize: 11, padding: '4px 0', textDecoration: 'underline' }}>
+                        mostrar todas as vozes (+{others.length} de outros idiomas)
+                      </button>
+                    )}
+                    {ptVoices.length === 0 && availableVoices.length > 0 && !showAllVoices && (
+                      <div style={{ fontSize: 11, color: '#F59E0B', marginTop: 4 }}>Nenhuma voz em português detectada. Toque acima pra ver todas.</div>
+                    )}
+                    {/* Tom (pitch) */}
+                    <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 10, color: '#64748B', flexShrink: 0 }}>Grave</span>
+                      <input type="range" min="0.5" max="1.5" step="0.1" value={pitch} onChange={e => changePitch(parseFloat(e.target.value))} style={{ flex: 1, accentColor: '#D1FAE5', cursor: 'pointer' }} />
+                      <span style={{ fontSize: 10, color: '#64748B', flexShrink: 0 }}>Aguda</span>
+                    </div>
+                  </div>
+                )
+              })()}
+
               <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Navegacao</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                 {NAV_COMMANDS.map(c => (

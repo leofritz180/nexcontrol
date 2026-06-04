@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v101 (voz natural + saudacao personalizada por nome/horario)
+// NexControl Service Worker — Push Notifications v102 (seletor de vozes + testar + tom ajustavel)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

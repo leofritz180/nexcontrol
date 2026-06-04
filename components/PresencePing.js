@@ -53,9 +53,13 @@ export default function PresencePing() {
       pingRef.current = setInterval(ping, 30000)
     })
 
-    // Re-resolve quando o auth muda (login/logout)
-    const { data: sub } = supabase.auth.onAuthStateChange(() => {
-      resolveSid().then(() => { if (!cancelled) ping() })
+    // Re-resolve quando o auth muda (login/logout).
+    // NAO chamar getSession() dentro do callback (trava o lock do auth). Usa a
+    // session do evento; o fallback anon roda fora do lock via setTimeout(0).
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      const uid = session?.user?.id
+      if (uid) { sidRef.current = uid; if (!cancelled) ping(); return }
+      setTimeout(() => { if (!cancelled) resolveSid().then(() => { if (!cancelled) ping() }) }, 0)
     })
 
     // Tambem pinga ao voltar pra tab

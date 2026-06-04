@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v109 (FIX CRITICO: deadlock auth no F5 - tela zerada)
+// NexControl Service Worker — Push Notifications v110 (FIX auth lock: PresencePing tambem blindado)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

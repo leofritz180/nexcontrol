@@ -71,6 +71,20 @@ function matchPergunta(norm) {
   return null
 }
 
+// Nome amigavel da voz (tira prefixos tecnicos) + se e "natural"/premium
+function prettyVoz(name) {
+  if (!name) return 'Automática (recomendada)'
+  let s = String(name)
+    .replace(/Microsoft\s+/i, '')
+    .replace(/\s*Online\s*\(Natural\)\s*/i, ' ')
+    .replace(/\s*-\s*Portugu[eê]s.*$/i, '')
+    .replace(/Google\s+portugu[eê]s\s+do\s+brasil/i, 'Google Brasil')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+  return s || name
+}
+function isVozNatural(name) { return /natural|google|premium|neural/i.test(name || '') }
+
 // Saudacao pelo horario de Brasilia (bom dia / boa tarde / boa noite)
 function saudacaoHora() {
   let h
@@ -601,7 +615,8 @@ export default function VoiceCommandPanel({ userEmail }) {
                   <div style={{ ...rowBase, background: selected ? 'rgba(209,250,229,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid ' + (selected ? 'rgba(209,250,229,0.25)' : 'rgba(255,255,255,0.06)') }}>
                     <button type="button" onClick={() => selectVoice(name)} style={{ flex: 1, textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: selected ? '#D1FAE5' : '#F1F5F9', fontSize: 12, fontWeight: selected ? 700 : 500, display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
                       <span style={{ fontSize: 11 }}>{selected ? '●' : '○'}</span>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name || 'Automática (recomendada)'}</span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{prettyVoz(name)}</span>
+                      {isVozNatural(name) && <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: 'rgba(209,250,229,0.12)', color: '#D1FAE5' }}>natural</span>}
                       {lang && <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{lang}</span>}
                     </button>
                     {voiceObj !== undefined && (
@@ -640,6 +655,11 @@ export default function VoiceCommandPanel({ userEmail }) {
                       <input type="range" min="0.5" max="1.5" step="0.1" value={pitch} onChange={e => changePitch(parseFloat(e.target.value))} style={{ flex: 1, accentColor: '#D1FAE5', cursor: 'pointer' }} />
                       <span style={{ fontSize: 10, color: '#64748B', flexShrink: 0 }}>Aguda</span>
                     </div>
+                    {!ptVoices.some(v => isVozNatural(v.name)) && (
+                      <div style={{ marginTop: 10, padding: '8px 10px', borderRadius: 8, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', fontSize: 11, color: '#94A3B8', lineHeight: 1.5 }}>
+                        As vozes do seu navegador soam robóticas? As vozes brasileiras <strong style={{ color: '#F1F5F9' }}>naturais</strong> aparecem de graça no <strong style={{ color: '#F1F5F9' }}>Microsoft Edge</strong>. Abra o sistema no Edge e volte aqui — elas vão surgir nesta lista.
+                      </div>
+                    )}
                   </div>
                 )
               })()}

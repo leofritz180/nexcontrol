@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v104 (voz da resposta sempre automatica - seletor removido)
+// NexControl Service Worker — Push Notifications v105 (fala espera vozes carregarem - usa sempre a boa automatica)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

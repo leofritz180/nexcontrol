@@ -199,26 +199,44 @@ export default function VoiceCommandPanel({ userEmail }) {
     } catch { mutedRef.current = false; setSpeaking(false) }
   }
 
-  // Fala um texto com voz grave/robotica em pt-BR
+  // Fala um texto SEMPRE com a melhor voz pt-BR (a "automatica").
+  // Espera as vozes carregarem antes de falar — senao o navegador cai na voz
+  // padrao robotica quando a resposta dispara cedo demais.
   function speak(text) {
-    try {
-      const synth = typeof window !== 'undefined' && window.speechSynthesis
-      if (!synth) return
-      synth.cancel()
-      const u = new SpeechSynthesisUtterance(text)
-      u.lang = 'pt-BR'
-      u.pitch = pitch
-      u.rate = 1.0
-      u.volume = 1
-      const voices = voicesRef.current.length ? voicesRef.current : (synth.getVoices() || [])
-      const chosen = resolveVoice(voices)
-      if (chosen) u.voice = chosen
-      mutedRef.current = true
-      setSpeaking(true)
-      u.onend = () => { setSpeaking(false); setTimeout(() => { mutedRef.current = false }, 350) }
-      u.onerror = () => { setSpeaking(false); mutedRef.current = false }
-      synth.speak(u)
-    } catch { mutedRef.current = false; setSpeaking(false) }
+    const synth = typeof window !== 'undefined' && window.speechSynthesis
+    if (!synth) return
+    const doSpeak = (voices) => {
+      try {
+        synth.cancel()
+        const u = new SpeechSynthesisUtterance(text)
+        u.lang = 'pt-BR'
+        u.pitch = 1.0   // natural
+        u.rate = 1.0
+        u.volume = 1
+        const chosen = resolveVoice(voices || [])
+        if (chosen) u.voice = chosen
+        mutedRef.current = true
+        setSpeaking(true)
+        u.onend = () => { setSpeaking(false); setTimeout(() => { mutedRef.current = false }, 350) }
+        u.onerror = () => { setSpeaking(false); mutedRef.current = false }
+        synth.speak(u)
+      } catch { mutedRef.current = false; setSpeaking(false) }
+    }
+    // Se as vozes ja estao prontas, fala na hora.
+    let voices = voicesRef.current.length ? voicesRef.current : (synth.getVoices() || [])
+    if (voices.length) { doSpeak(voices); return }
+    // Senao, espera o evento voiceschanged (ou um timeout) antes de falar.
+    let done = false
+    const go = () => {
+      if (done) return
+      done = true
+      const v = synth.getVoices() || []
+      voicesRef.current = v
+      try { synth.removeEventListener?.('voiceschanged', go) } catch {}
+      doSpeak(v)
+    }
+    synth.addEventListener?.('voiceschanged', go)
+    setTimeout(go, 900)
   }
 
   // Busca o valor (silent = sem push) e responde falando

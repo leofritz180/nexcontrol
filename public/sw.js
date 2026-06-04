@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v105 (fala espera vozes carregarem - usa sempre a boa automatica)
+// NexControl Service Worker — Push Notifications v106 (voz da resposta masculina pt-BR)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

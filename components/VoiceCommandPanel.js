@@ -159,16 +159,19 @@ export default function VoiceCommandPanel({ userEmail }) {
     return () => { try { window.speechSynthesis.removeEventListener?.('voiceschanged', load) } catch {} }
   }, [])
 
-  // Resolve a voz a usar: escolha salva > melhor pt-BR automatica
+  // Resolve a voz a usar. Preferencia do user: voz MASCULINA em portugues.
   function resolveVoice(voices) {
     if (selectedVoiceName) {
       const v = voices.find(x => x.name === selectedVoiceName)
       if (v) return v
     }
     const ptBR = voices.filter(v => /pt[-_]?BR/i.test(v.lang))
-    return ptBR.find(v => /google/i.test(v.name))
-      || ptBR.find(v => /natural|maria|luciana|francisca|fernanda|thalita|brenda/i.test(v.name))
-      || ptBR[0]
+    const pt = ptBR.length ? ptBR : voices.filter(v => /^pt/i.test(v.lang))
+    // Nomes masculinos comuns nas vozes pt-BR (Windows/Edge/Azure/Apple/Google)
+    const MALE = /daniel|ant[oô]nio|felipe|donato|f[aá]bio|humberto|j[uú]lio|nicolau|val[eé]rio|heitor|joaquim|ricardo|paulo|jorge|rafael|carlos|m[aá]rcio|male|masculin|homem/i
+    return pt.find(v => MALE.test(v.name) && /natural|online|neural/i.test(v.name)) // masculina natural (Edge/Azure)
+      || pt.find(v => MALE.test(v.name))                                            // qualquer masculina pt
+      || pt[0]                                                                      // fallback: primeira pt disponivel
       || voices.find(v => /^pt/i.test(v.lang))
       || null
   }

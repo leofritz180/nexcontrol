@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v110 (FIX auth lock: PresencePing tambem blindado)
+// NexControl Service Worker — Push Notifications v111 (gate: fail-safe pagante - nunca bloqueia tenant active)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

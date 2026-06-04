@@ -76,17 +76,21 @@ export default function SubscriptionGate({ children }) {
       const { data: p } = await supabase.from('profiles').select('role,tenant_id').eq('id', u.id).maybeSingle()
       if (!p || !p.tenant_id) { finish('ok'); return }
 
-      const { data: t } = await supabase.from('tenants').select('trial_end,subscription_status').eq('id', p.tenant_id).maybeSingle()
-      if (!t) { finish('ok'); return }
+      const { data: t, error: tErr } = await supabase.from('tenants').select('trial_end,subscription_status').eq('id', p.tenant_id).maybeSingle()
+      if (tErr || !t) { finish('ok'); return } // erro/sem leitura → NUNCA bloqueia
 
       const now = new Date()
       const trialEnd = t.trial_end ? new Date(t.trial_end) : null
 
-      const { data: subs } = await supabase.from('subscriptions')
+      const { data: subs, error: subsErr } = await supabase.from('subscriptions')
         .select('status,expires_at').eq('tenant_id', p.tenant_id).eq('status', 'active')
+      if (subsErr) { finish('ok'); return } // erro de leitura → nao arrisca barrar pagante
 
       const hasValidSub = (subs || []).some(s => !s.expires_at || new Date(s.expires_at) > now)
-      if (hasValidSub) { finish('ok'); return }
+      // FAIL-SAFE de pagante: tenant 'active' e flag autoritativa (setada pelo webhook
+      // de pagamento, revertida pra 'expired' pelo cron de renovacao). Nunca bloquear
+      // quem esta 'active', mesmo que a tabela subscriptions venha vazia por glitch.
+      if (hasValidSub || t.subscription_status === 'active') { finish('ok'); return }
 
       if (t.subscription_status === 'trial' && trialEnd && now < trialEnd) {
         finish('ok'); return

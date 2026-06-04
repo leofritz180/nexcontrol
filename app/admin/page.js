@@ -11,6 +11,11 @@ import { ProLockedCard } from '../../components/pro/ProGate'
 import ProBanner from '../../components/pro/ProBanner'
 import dynamic from 'next/dynamic'
 const Onboarding = dynamic(() => import('../../components/Onboarding'), { ssr: false })
+const MetodosTab = dynamic(() => import('../../components/MetodosTab'), { ssr: false })
+const MetodosKpiCard = dynamic(() => import('../../components/MetodosKpiCard'), { ssr: false })
+
+// Beta flag — features visiveis so pra owner enquanto valida
+const BETA_EMAILS = new Set(['leofritz180@gmail.com'])
 import TabAwareTour from '../../components/TabAwareTour'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
 import DemoModeCard from '../../components/DemoModeCard'
@@ -594,6 +599,8 @@ export default function AdminPage() {
   const [remessas,  setRemessas]  = useState([])
   const [user,      setUser]      = useState(null)
   const [profile,   setProfile]   = useState(null)
+  // Metodos (beta) — agregados pra somar em lucroHoje / lucroFinalTotal
+  const [metodosData, setMetodosData] = useState({ hojeLiquido: 0, totalLiquido: 0 })
   const [selectedOp,setSelectedOp]= useState(null)
   const [modalMeta, setModalMeta] = useState(null)
   const [tab,       setTab]       = useState('overview')
@@ -772,13 +779,14 @@ export default function AdminPage() {
     const totalDep = remessas.reduce((a,r)=>a+Number(r.deposito||0),0)
     const totalSaq = remessas.reduce((a,r)=>a+Number(r.saque||0),0)
     const today = new Date().toDateString()
-    const lucroHoje = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&new Date(m.fechada_em).toDateString()===today).reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    const lucroHojeCpa = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&new Date(m.fechada_em).toDateString()===today).reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const fechadas  = metas.filter(m=>m.status_fechamento==='fechada')
-    const lucroFinalTotal = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    const lucroFinalTotalCpa = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const totalContasFechadas = fechadas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
-    const lucroPerConta = totalContasFechadas>0 ? lucroFinalTotal/totalContasFechadas : 0
-    const lucroPerMeta = fechadas.length>0 ? lucroFinalTotal/fechadas.length : 0
-    // Break-even calculation
+    // Metricas POR conta/meta usam APENAS CPA (Metodos nao tem conta/meta atribuida)
+    const lucroPerConta = totalContasFechadas>0 ? lucroFinalTotalCpa/totalContasFechadas : 0
+    const lucroPerMeta = fechadas.length>0 ? lucroFinalTotalCpa/fechadas.length : 0
+    // Break-even calculation (CPA puro)
     const totalBauFechadas = fechadas.reduce((a,m)=>a+Number(m.bau||0),0)
     const totalCustosFechadas = fechadas.reduce((a,m)=>a+Number(m.custo_fixo||0)+Number(m.taxa_agente||0)+Number(m.salario||0),0)
     const avgBauPerConta = totalContasFechadas>0 ? totalBauFechadas/totalContasFechadas : 0
@@ -789,10 +797,13 @@ export default function AdminPage() {
     const todayISO = new Date().toISOString().slice(0,10)
     const custosHoje = Number(costs.filter(c=>c.date===todayISO).reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
     const custosTotal = Number(costs.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
+    // Metodos (beta): somados a lucroHoje e lucroFinalTotal pra refletir em
+    // todos os cards/insights/banners. Metricas per-conta/per-meta NAO incluem.
+    const lucroHoje = lucroHojeCpa + Number(metodosData?.hojeLiquido || 0)
+    const lucroFinalTotal = lucroFinalTotalCpa + Number(metodosData?.totalLiquido || 0)
     // ALL values returned BRUTO (without costs subtracted)
-    // Costs subtraction happens ONCE in the UI, not here
-    return { lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),liq:Number((lucro-prej).toFixed(2)),totalDep:Number(totalDep.toFixed(2)),totalSaq:Number(totalSaq.toFixed(2)),lucroHoje:Number(lucroHoje.toFixed(2)),custosHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal:Number(lucroFinalTotal.toFixed(2)),custosTotal,lucroPerConta:Number(lucroPerConta.toFixed(2)),lucroPerMeta:Number(lucroPerMeta.toFixed(2)),ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas }
-  },[operators,metas,remessas,costs])
+    return { lucro:Number(lucro.toFixed(2)),prej:Number(prej.toFixed(2)),liq:Number((lucro-prej).toFixed(2)),totalDep:Number(totalDep.toFixed(2)),totalSaq:Number(totalSaq.toFixed(2)),lucroHoje:Number(lucroHoje.toFixed(2)),lucroHojeCpa:Number(lucroHojeCpa.toFixed(2)),custosHoje,ativas:metas.filter(m=>(m.status||'ativa')==='ativa').length,fechadas:fechadas.length,lucroFinalTotal:Number(lucroFinalTotal.toFixed(2)),lucroFinalTotalCpa:Number(lucroFinalTotalCpa.toFixed(2)),custosTotal,lucroPerConta:Number(lucroPerConta.toFixed(2)),lucroPerMeta:Number(lucroPerMeta.toFixed(2)),ops:operators.length,totalMetas:metas.length,totalRem:remessas.length,avgBauPerConta,breakEvenContas,metodosLiquidoTotal:Number(metodosData?.totalLiquido || 0),metodosLiquidoHoje:Number(metodosData?.hojeLiquido || 0) }
+  },[operators,metas,remessas,costs,metodosData])
 
   // Hero card: lucro final por periodo — BRUTO por periodo, custos TOTAIS fixos
   const heroLucro = useMemo(()=>{
@@ -962,7 +973,99 @@ export default function AdminPage() {
     { label:'Lucro/conta', rawValue:Math.abs(global.lucroPerConta), value:`R$ ${fmt(Math.abs(global.lucroPerConta))}`, sub:'Media por depositante', color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', card:global.lucroPerConta>=0?'card-profit':'card-loss', badge:'rentabilidade' },
   ]
 
-  const TABS = [['overview','Visao geral'],['myops','Minha operacao'],['operations','Metas & Fechamento'],['ranking','Ranking'],['trash','Lixeira']]
+  const isBetaUser = !!(user?.email && BETA_EMAILS.has(String(user.email).toLowerCase()))
+
+  // Comando de voz "visao geral" / "metodos" / etc → muda tab
+  useEffect(() => {
+    if (!isBetaUser) return
+    function onVoiceTab(e) {
+      const t = e?.detail?.tab
+      if (t) setTab(t)
+    }
+    window.addEventListener('voice:tab', onVoiceTab)
+    return () => window.removeEventListener('voice:tab', onVoiceTab)
+  }, [isBetaUser])
+
+  // Comando de voz "lucro 150" / "prejuizo 80" → vai pra aba Metodos
+  useEffect(() => {
+    if (!isBetaUser) return
+    function onVoiceMetodo() {
+      setTab('metodos')
+    }
+    window.addEventListener('voice:metodo', onVoiceMetodo)
+    return () => window.removeEventListener('voice:metodo', onVoiceMetodo)
+  }, [isBetaUser])
+
+  // Comando de voz disparado de OUTRA rota → aplica ao chegar no /admin
+  useEffect(() => {
+    if (!isBetaUser) return
+    try {
+      const pendingTab = sessionStorage.getItem('voice:pendingTab')
+      if (pendingTab) {
+        sessionStorage.removeItem('voice:pendingTab')
+        setTab(pendingTab)
+      }
+      const pendingMetodo = sessionStorage.getItem('voice:pendingMetodo')
+      if (pendingMetodo) {
+        sessionStorage.removeItem('voice:pendingMetodo')
+        const detail = JSON.parse(pendingMetodo)
+        setTab('metodos')
+        // espera a aba Metodos montar antes de reemitir o prefill
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('voice:metodo', { detail }))
+        }, 400)
+      }
+    } catch {}
+  }, [isBetaUser])
+
+  // Carrega registros de Metodos (beta) e calcula liquido total + hoje.
+  // Re-fetch automatico em: mount, 15s polling, evento 'metodos:updated',
+  // volta de aba do navegador. Garante que lucroHoje/lucroFinalTotal
+  // sempre incluem os ultimos lancamentos sem reload.
+  useEffect(() => {
+    if (!isBetaUser) { setMetodosData({ hojeLiquido: 0, totalLiquido: 0 }); return }
+    let alive = true
+    async function loadMetodos() {
+      try {
+        const { data: s } = await supabase.auth.getSession()
+        const token = s?.session?.access_token
+        if (!token) return
+        const r = await fetch('/api/metodos', { headers: { Authorization: 'Bearer ' + token }, cache: 'no-store' })
+        if (!r.ok) return
+        const j = await r.json()
+        if (!alive || !Array.isArray(j.items)) return
+        const todayKey = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+        let hojeLiq = 0, totalLiq = 0
+        for (const it of j.items) {
+          const v = Number(it.valor || 0) * (it.tipo === 'lucro' ? 1 : -1)
+          totalLiq += v
+          const itDay = new Date(it.created_at).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+          if (itDay === todayKey) hojeLiq += v
+        }
+        setMetodosData({ hojeLiquido: Number(hojeLiq.toFixed(2)), totalLiquido: Number(totalLiq.toFixed(2)) })
+      } catch {}
+    }
+    loadMetodos()
+    const interval = setInterval(loadMetodos, 15000)
+    const handler = () => loadMetodos()
+    window.addEventListener('metodos:updated', handler)
+    const onVis = () => { if (document.visibilityState === 'visible') loadMetodos() }
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      alive = false; clearInterval(interval)
+      window.removeEventListener('metodos:updated', handler)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [isBetaUser])
+
+  const TABS = [
+    ['overview','Visao geral'],
+    ['myops','Minha operacao'],
+    ['operations','Metas & Fechamento'],
+    ...(isBetaUser ? [['metodos','Metodos']] : []),
+    ['ranking','Ranking'],
+    ['trash','Lixeira'],
+  ]
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
@@ -1981,6 +2084,14 @@ export default function AdminPage() {
             )
           })()}
 
+          {/* ── Metodos (beta) — breakdown CPA puro vs Metodos vs Consolidado ── */}
+          {isBetaUser && (
+            <MetodosKpiCard
+              lucroCpa={(global.lucroFinalTotalCpa || 0) - (global.custosTotal || 0)}
+              onGoToTab={setTab}
+            />
+          )}
+
           {/* ── Insights rotativos ── */}
           {(() => {
             const tips = []
@@ -2818,6 +2929,15 @@ export default function AdminPage() {
           </motion.div>
           )
         })()}
+
+        {/* ═══ METODOS (beta — gated por email) ═══ */}
+        {tab==='metodos' && isBetaUser && (
+          <motion.div key="metodos"
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease }}>
+            <MetodosTab />
+          </motion.div>
+        )}
 
         {/* ═══ RANKING ═══ */}
         {tab==='ranking' && (

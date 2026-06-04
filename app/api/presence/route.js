@@ -13,6 +13,15 @@ function getClient() {
   )
 }
 
+async function triggerReconcile(req) {
+  try {
+    const host = req.headers.get('host')
+    if (!host) return
+    const proto = host.includes('localhost') ? 'http' : 'https'
+    fetch(`${proto}://${host}/api/reconcile-pending`, { method: 'GET', cache: 'no-store' }).catch(() => {})
+  } catch {}
+}
+
 export async function POST(req) {
   try {
     const sb = getClient()
@@ -34,17 +43,25 @@ export async function POST(req) {
     }
     const cutoff = new Date(Date.now() - 300000).toISOString()
     const { count } = await sb.from('presence').select('*', { count: 'exact', head: true }).gte('last_seen', cutoff)
+
+    // Fire-and-forget: dispara reconcile de pagamentos pendentes em background.
+    // Endpoint internamente rate-limited (1 exec/minuto) entao varios pings nao
+    // sobrecarregam. Garante que pagamentos orfaos sao capturados em ~30s mesmo
+    // se o webhook do MP falhar.
+    triggerReconcile(req)
+
     return NextResponse.json({ online: count || 0 })
   } catch (err) {
     return NextResponse.json({ online: 0 })
   }
 }
 
-export async function GET() {
+export async function GET(req) {
   try {
     const sb = getClient()
     const cutoff = new Date(Date.now() - 300000).toISOString()
     const { count } = await sb.from('presence').select('*', { count: 'exact', head: true }).gte('last_seen', cutoff)
+    triggerReconcile(req)
     return NextResponse.json({ online: count || 0 })
   } catch {
     return NextResponse.json({ online: 0 })

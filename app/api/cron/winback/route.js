@@ -39,14 +39,17 @@ async function processOne(sb, profile, opts = {}) {
 
   if (!segment) return { skipped: true, reason: 'no_matching_segment', daysInactive }
 
-  // Anti-spam: pega logs recentes do user
+  // Anti-spam: pega logs recentes do user (janela larga pra cobrir cooldown de segmentos reativacao)
   const { data: recentLogs } = await sb.from('winback_log')
     .select('segment, channel, sent_at')
     .eq('user_id', profile.id)
-    .gte('sent_at', new Date(now - 30 * 86400000).toISOString())
+    .gte('sent_at', new Date(now - 90 * 86400000).toISOString())
 
   const vars = { nome: (profile.nome || '').split(' ')[0] || 'Operador' }
-  const url = `${APP_URL}/admin?utm_source=winback&utm_medium=email&utm_campaign=${segment.id}`
+  // Segmentos longos (14d, reativacao) levam direto pro checkout. Curtos vao pro painel.
+  const isLateStage = segment.id === '14d' || segment.id === 'reativacao'
+  const targetPath = isLateStage ? '/billing-mp' : '/admin'
+  const url = `${APP_URL}${targetPath}?utm_source=winback&utm_medium=email&utm_campaign=${segment.id}`
   const results = { user_id: profile.id, segment: segment.id, daysInactive, push: null, email: null }
 
   // PUSH

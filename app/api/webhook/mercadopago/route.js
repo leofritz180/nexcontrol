@@ -7,17 +7,9 @@ import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
 // atualiza status no DB e ativa PRO quando aprovado.
 export async function POST(req) {
   try {
-    // Validacao de origem (opcional): se MP_WEBHOOK_SECRET estiver setada,
-    // exige header x-mp-secret ou query ?secret=...
-    const expected = process.env.MP_WEBHOOK_SECRET
-    if (expected) {
-      const headerSecret = req.headers.get('x-mp-secret')
-      const querySecret = new URL(req.url).searchParams.get('secret')
-      if (headerSecret !== expected && querySecret !== expected) {
-        console.warn('[MP webhook] unauthorized request')
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      }
-    }
+    // Sem validacao de secret: o MP nao envia secret consistentemente entre eventos,
+    // e o webhook ja valida o pagamento contra a API do MP com MP_ACCESS_TOKEN antes
+    // de processar — so atua sobre pagamentos reais cujo id existe no MP.
 
     const body = await req.json().catch(() => ({}))
     // MP envia { type: 'payment', data: { id } } ou { action: 'payment.updated', data: { id } }

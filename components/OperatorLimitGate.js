@@ -7,7 +7,7 @@ import { getOperatorLimitStatus } from '../lib/operator-limit'
 
 // Rotas onde o admin PODE acessar mesmo com excesso de operadores
 // (pra ele resolver o problema)
-const ALLOWED_PATHS = ['/operadores', '/billing', '/billing-mp', '/login', '/logout', '/owner']
+const ALLOWED_PATHS = ['/operadores', '/billing', '/billing-mp', '/login', '/logout', '/owner', '/reset-password']
 
 const OWNER_EMAILS = new Set(['leofritz180@gmail.com'])
 

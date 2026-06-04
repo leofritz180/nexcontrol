@@ -65,7 +65,7 @@ export async function POST(req) {
       fetchAll('metas', 'id,operator_id,tenant_id,status,status_fechamento,quantidade_contas,lucro_final,rede,created_at,fechada_em,deleted_at'),
       fetchAll('remessas', 'id,meta_id,lucro,prejuizo,deposito,saque,resultado,created_at'),
       fetchAll('asaas_payments', 'id,tenant_id,amount,status,created_at,updated_at', { order: { column: 'created_at', ascending: false } }),
-      fetchAll('mp_payments', 'id,tenant_id,amount,status,created_at,updated_at', { order: { column: 'created_at', ascending: false } }),
+      fetchAll('mp_payments', 'id,mp_payment_id,tenant_id,amount,status,created_at,updated_at', { order: { column: 'created_at', ascending: false } }),
     ])
 
     const admins = (profiles || []).filter(p => p.role === 'admin')
@@ -94,8 +94,10 @@ export async function POST(req) {
     const REFUND_STATUSES = new Set([
       // Asaas
       'REFUNDED','REFUND_REQUESTED','REFUND_IN_PROGRESS','CHARGEBACK_REQUESTED','CHARGEBACK_DISPUTE','AWAITING_CHARGEBACK_REVERSAL','PAYMENT_DELETED',
-      // Mercado Pago
-      'refunded','cancelled','charged_back',
+      // Mercado Pago — APENAS reembolsos reais (passou por approved e foi devolvido).
+      // NAO incluir 'cancelled' (PIX que expirou sem pagamento — nunca houve dinheiro)
+      // nem 'rejected' (pagamento recusado — tambem nunca houve dinheiro).
+      'refunded','charged_back',
     ])
     const paidPayments = allPay.filter(p => PAID_STATUSES.has(p.status))
     const refundPayments = allPay.filter(p => REFUND_STATUSES.has(p.status))
@@ -345,6 +347,198 @@ export async function POST(req) {
     const refundsMonth = refundPayments.filter(p => brDateKey(p.updated_at || p.created_at).startsWith(monthPrefix)).reduce((a, p) => a + Number(p.amount || 0), 0)
     const netRevenue = totalRevenue - totalRefunded
 
+    // ============================================================
+    // WEBHOOK HEALTH — saude do gateway MP
+    // Calcula latencia entre criacao do PIX e confirmacao da MP.
+    // <60s = instant (ideal), 60-300s = delayed, >300s = orfao.
+    // ============================================================
+    const cutoff24h = new Date(Date.now() - 24 * 3600 * 1000).getTime()
+    const cutoff7d = new Date(Date.now() - 7 * 24 * 3600 * 1000).getTime()
+    const mpApproved24h = (mpPayments || []).filter(p =>
+      p.status === 'approved' &&
+      new Date(p.created_at).getTime() > cutoff24h
+    )
+    const mpApproved7d = (mpPayments || []).filter(p =>
+      p.status === 'approved' &&
+      new Date(p.created_at).getTime() > cutoff7d
+    )
+    const calcLatency = list => {
+      const buckets = { instant: 0, delayed: 0, orfao: 0, total: list.length }
+      const recent = []
+      for (const p of list) {
+        const delta = Math.round((new Date(p.updated_at).getTime() - new Date(p.created_at).getTime()) / 1000)
+        if (delta < 60) buckets.instant++
+        else if (delta < 300) buckets.delayed++
+        else buckets.orfao++
+        recent.push({
+          mp_id: p.mp_payment_id || String(p.id),
+          amount: Number(p.amount || 0),
+          created_at: p.created_at,
+          updated_at: p.updated_at,
+          latency_s: delta,
+          tenant_id: p.tenant_id,
+        })
+      }
+      return { buckets, recent }
+    }
+    const health24h = calcLatency(mpApproved24h)
+    const health7d = calcLatency(mpApproved7d)
+
+    // Pendings antigos (>10min) que ainda nao foram processados — indicador critico
+    const pendingsOld = (mpPayments || [])
+      .filter(p => p.status === 'pending' && new Date(p.created_at).getTime() < Date.now() - 10 * 60 * 1000)
+      .slice(0, 20)
+      .map(p => ({
+        mp_id: p.mp_payment_id || String(p.id),
+        amount: Number(p.amount || 0),
+        created_at: p.created_at,
+        tenant_id: p.tenant_id,
+      }))
+
+    const webhookHealth = {
+      h24: {
+        total: health24h.buckets.total,
+        instant: health24h.buckets.instant,
+        delayed: health24h.buckets.delayed,
+        orfao: health24h.buckets.orfao,
+        successRate: health24h.buckets.total > 0
+          ? Math.round((health24h.buckets.instant / health24h.buckets.total) * 100)
+          : 100,
+      },
+      d7: {
+        total: health7d.buckets.total,
+        instant: health7d.buckets.instant,
+        delayed: health7d.buckets.delayed,
+        orfao: health7d.buckets.orfao,
+        successRate: health7d.buckets.total > 0
+          ? Math.round((health7d.buckets.instant / health7d.buckets.total) * 100)
+          : 100,
+      },
+      lastPayments: health24h.recent.slice(0, 15),
+      pendingsOld,
+    }
+
+    // ============================================================
+    // ISSUES DETECTADOS — painel de problemas operacionais
+    // 4 categorias: pendings antigos, excesso de operadores, operadores
+    // duplicados, webhooks lentos. Cada uma com lista acionavel.
+    // ============================================================
+    const tenantMap = new Map((tenants || []).map(t => [t.id, t]))
+    const adminByTenantMap = new Map()
+    for (const p of admins) {
+      if (p.tenant_id && !adminByTenantMap.has(p.tenant_id)) adminByTenantMap.set(p.tenant_id, p)
+    }
+    const tenantLabel = tid => {
+      const t = tenantMap.get(tid)
+      const a = adminByTenantMap.get(tid)
+      return t?.name || a?.nome || a?.email?.split('@')[0] || tid?.slice(0, 8) || '?'
+    }
+
+    // Emails de teste/dev que poluem os paineis — filtrar do "Problemas detectados"
+    const TEST_EMAIL_PATTERNS = ['leofritz', 'testandodarkzin', 'bob@bob', 'tk@gmail', '@test.', 'fake@']
+    const isTestTenant = tid => {
+      const adm = adminByTenantMap.get(tid)
+      const em = (adm?.email || '').toLowerCase()
+      if (!em) return false
+      return TEST_EMAIL_PATTERNS.some(p => em.includes(p))
+    }
+
+    // 1. Pagamentos pendentes >10min (ja calculado acima) — sem testes
+    const issuePendings = pendingsOld
+      .filter(p => !isTestTenant(p.tenant_id))
+      .map(p => ({
+        mp_id: p.mp_id,
+        amount: p.amount,
+        tenant: tenantLabel(p.tenant_id),
+        tenant_id: p.tenant_id,
+        created_at: p.created_at,
+        minutesOld: Math.round((Date.now() - new Date(p.created_at).getTime()) / 60000),
+      }))
+
+    // 2. Tenants excedendo limite de operadores (active subs)
+    const issueOpLimit = []
+    const activeSubsByTenant = new Map()
+    for (const s of allSubs) {
+      if (s.status !== 'active') continue
+      const exp = s.expires_at ? new Date(s.expires_at) : null
+      if (exp && exp < now) continue
+      const cur = activeSubsByTenant.get(s.tenant_id) || 0
+      const v = Number(s.operator_count || 0)
+      activeSubsByTenant.set(s.tenant_id, Math.max(cur, v))
+    }
+    const opsByTenant = new Map()
+    for (const op of operators) {
+      if (!op.tenant_id) continue
+      opsByTenant.set(op.tenant_id, (opsByTenant.get(op.tenant_id) || 0) + 1)
+    }
+    for (const [tid, limit] of activeSubsByTenant) {
+      if (isTestTenant(tid)) continue
+      const current = opsByTenant.get(tid) || 0
+      if (current > limit) {
+        issueOpLimit.push({
+          tenant: tenantLabel(tid),
+          tenant_id: tid,
+          limit,
+          current,
+          excess: current - limit,
+        })
+      }
+    }
+    issueOpLimit.sort((a, b) => b.excess - a.excess)
+
+    // 3. Operadores duplicados — mesmo primeiro+segundo nome no mesmo tenant
+    const issueDup = []
+    const seenByTenant = new Map() // tid → Map(normName → [opIds])
+    for (const op of operators) {
+      if (!op.tenant_id || !op.nome) continue
+      if (isTestTenant(op.tenant_id)) continue
+      const parts = String(op.nome).trim().toLowerCase().split(/\s+/)
+      // Considera duplicado se primeiro + segundo nome batem (evita match so pelo primeiro nome)
+      const key = parts.slice(0, 2).join(' ')
+      if (key.length < 3) continue
+      let m = seenByTenant.get(op.tenant_id)
+      if (!m) { m = new Map(); seenByTenant.set(op.tenant_id, m) }
+      const arr = m.get(key) || []
+      arr.push({ id: op.id, nome: op.nome })
+      m.set(key, arr)
+    }
+    for (const [tid, m] of seenByTenant) {
+      for (const [name, arr] of m) {
+        if (arr.length >= 2) {
+          issueDup.push({
+            tenant: tenantLabel(tid),
+            tenant_id: tid,
+            name,
+            count: arr.length,
+            ops: arr,
+          })
+        }
+      }
+    }
+    issueDup.sort((a, b) => b.count - a.count)
+
+    // 4. Webhooks com latencia anormal (>10min — abaixo disso eh cliente normal demorando pra pagar)
+    const issueSlowHooks = health24h.recent
+      .filter(p => p.latency_s >= 600)
+      .filter(p => !isTestTenant(p.tenant_id))
+      .map(p => ({
+        mp_id: p.mp_id,
+        amount: p.amount,
+        tenant: tenantLabel(p.tenant_id),
+        tenant_id: p.tenant_id,
+        created_at: p.created_at,
+        latency_min: Math.round(p.latency_s / 60),
+      }))
+      .sort((a, b) => b.latency_min - a.latency_min)
+
+    const issues = {
+      pendings: issuePendings,
+      opLimit: issueOpLimit,
+      duplicates: issueDup,
+      slowHooks: issueSlowHooks,
+      totalCount: issuePendings.length + issueOpLimit.length + issueDup.length + issueSlowHooks.length,
+    }
+
     return NextResponse.json({
       kpis: {
         totalAdmins: admins.length, totalOperators: operators.length,
@@ -370,6 +564,8 @@ export async function POST(req) {
       recentRefunds,
       allSales,
       salesMeta: { firstSaleAt, lastSaleAt, uniqueCustomers, total: allSales.length },
+      webhookHealth,
+      issues,
     })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })

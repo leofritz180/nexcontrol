@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '../lib/supabase/client'
 
-const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '/', '/owner', '/slots', '/proxy', '/performance', '/aulas', '/demo']
+const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '/', '/owner', '/slots', '/proxy', '/performance', '/aulas', '/demo', '/reset-password']
 
 // Owner do NexControl tem acesso vitalicio em qualquer rota,
 // independente de assinatura/trial/operadores.

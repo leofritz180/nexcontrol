@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import OnlineCounter from '../../components/OnlineCounter'
+import dynamicImport from 'next/dynamic'
+const QuickNotifyPanel = dynamicImport(() => import('../../components/QuickNotifyPanel'), { ssr: false })
 
 const OWNER = 'leofritz180@gmail.com'
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -92,22 +94,31 @@ export default function OwnerPage() {
   }
 
   useEffect(() => {
-    let interval
+    let interval, reconcileInterval
     async function init() {
       const { data: s } = await supabase.auth.getSession()
       const u = s?.session?.user
       if (!u || u.email !== OWNER) { router.push('/admin'); return }
       setUserId(u.id)
       emailRef.current = u.email
+      // Reconcile pagamentos orfaos no mount (fire-and-forget)
+      fetch('/api/reconcile-pending', { method: 'GET', cache: 'no-store' }).catch(() => {})
       const ok = await fetchStats(u.email)
       if (!ok) { router.push('/admin'); return }
       setLoading(false)
       interval = setInterval(() => {
         if (emailRef.current) fetchStats(emailRef.current)
       }, 20000)
+      // Polling de reconcile a cada 60s enquanto owner estiver com /owner aberto
+      reconcileInterval = setInterval(() => {
+        fetch('/api/reconcile-pending', { method: 'GET', cache: 'no-store' }).catch(() => {})
+      }, 60000)
     }
     init()
-    return () => { if (interval) clearInterval(interval) }
+    return () => {
+      if (interval) clearInterval(interval)
+      if (reconcileInterval) clearInterval(reconcileInterval)
+    }
   }, [])
 
   if (loading) return (
@@ -117,7 +128,7 @@ export default function OwnerPage() {
   )
   if (!data) return null
 
-  const { kpis, funnel, activity, adminStats, alerts, revenueByDay, recentSales = [], recentRefunds = [], allSales = [], salesMeta = {} } = data
+  const { kpis, funnel, activity, adminStats, alerts, revenueByDay, recentSales = [], recentRefunds = [], allSales = [], salesMeta = {}, webhookHealth = null, issues = null } = data
   const variation = kpis.revenueVariation || 0
   const variationUp = variation >= 0
 
@@ -300,55 +311,6 @@ export default function OwnerPage() {
                   <p style={{ fontSize: 9, color: '#64748B', margin: '6px 0 0', textAlign: 'right' }}>Ultimos 30 dias</p>
                 </div>
               </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ═══ LUCRO TOTAL DA PLATAFORMA ═══ */}
-        <motion.div {...fadeUp(1, 0.06)} style={{ marginBottom: 16 }}>
-          <div style={{
-            ...card,
-            position: 'relative', overflow: 'hidden', padding: '28px 32px',
-            border: `1px solid rgba(${lucroRgb}, 0.22)`,
-            boxShadow: `0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03), 0 0 60px rgba(${lucroRgb},0.08)`,
-          }}>
-            {/* Glow dinamico no fundo baseado no sinal */}
-            <motion.div
-              aria-hidden
-              animate={{ opacity: [0.4, 0.7, 0.4] }}
-              transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-              style={{
-                position: 'absolute', top: '-30%', right: '-10%',
-                width: 420, height: 300, borderRadius: '50%',
-                background: `radial-gradient(circle, rgba(${lucroRgb},0.14), transparent 65%)`,
-                filter: 'blur(60px)', pointerEvents: 'none',
-              }}
-            />
-            <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: `linear-gradient(90deg, transparent, rgba(${lucroRgb},0.35), transparent)` }} />
-
-            <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0 }}>
-                <div style={{ width: 48, height: 48, borderRadius: 14, background: `rgba(${lucroRgb},0.1)`, border: `1px solid rgba(${lucroRgb},0.22)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={lucroColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d={lucroPos ? 'M23 6l-9.5 9.5-5-5L1 18' : 'M23 18l-9.5-9.5-5 5L1 6'} />
-                    <polyline points={lucroPos ? '17 6 23 6 23 12' : '17 18 23 18 23 12'} />
-                  </svg>
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, margin: '0 0 3px' }}>Lucro total da plataforma</p>
-                  <p style={{ fontSize: 12, color: '#94A3B8', margin: 0 }}>Soma de todos os admins · metas fechadas</p>
-                </div>
-              </div>
-              <motion.p
-                animate={{ textShadow: [`0 0 24px rgba(${lucroRgb},0.12)`, `0 0 48px rgba(${lucroRgb},0.22)`, `0 0 24px rgba(${lucroRgb},0.12)`] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                style={{
-                  fontFamily: 'var(--mono)', fontSize: 38, fontWeight: 900,
-                  color: lucroColor, lineHeight: 1, letterSpacing: '-0.03em', margin: 0, whiteSpace: 'nowrap',
-                }}
-              >
-                {lucroPos ? '+' : '-'}<CountUp value={Math.abs(globalLucroPlataforma)} prefix="R$ " />
-              </motion.p>
             </div>
           </div>
         </motion.div>
@@ -1092,6 +1054,199 @@ export default function OwnerPage() {
           )}
         </div>
 
+        {/* ═══ ISSUES DETECTADOS — Painel de problemas operacionais ═══ */}
+        {issues && issues.totalCount > 0 && (
+          <motion.div {...fadeUp(0, 0.3)} style={{ ...card, padding: 24, marginBottom: 28, border: '1px solid rgba(239,68,68,0.25)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+              <div>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>Problemas detectados</h3>
+                <p style={{ fontSize: 11, color: '#64748B', margin: '2px 0 0' }}>Atualizado a cada 20s · acoes recomendadas</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 8,
+                background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444' }} />
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#EF4444', letterSpacing: '0.04em' }}>{issues.totalCount} ITEM{issues.totalCount !== 1 ? 'S' : ''}</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+              {/* 1. Pagamentos pendentes >10min */}
+              {issues.pendings?.length > 0 && (
+                <div style={{ padding: '14px 16px', borderRadius: 10,
+                  background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#EF4444' }}>Pagamentos pendentes ha mais de 10min</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(239,68,68,0.15)', color: '#EF4444' }}>{issues.pendings.length}</span>
+                    </div>
+                    <span style={{ fontSize: 10, color: '#64748B' }}>reconcile cobre auto · investigue se &gt;1h</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {issues.pendings.slice(0, 6).map(p => (
+                      <div key={p.mp_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 6, background: 'rgba(0,0,0,0.2)' }}>
+                        <span style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, minWidth: 70 }}>R$ {p.amount.toFixed(2).replace('.',',')}</span>
+                        <span style={{ fontSize: 11, color: '#94A3B8', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.tenant}</span>
+                        <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{p.mp_id}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', minWidth: 50, textAlign: 'right' }}>{p.minutesOld}min</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 2. Excesso de operadores */}
+              {issues.opLimit?.length > 0 && (
+                <div style={{ padding: '14px 16px', borderRadius: 10,
+                  background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>Tenants excedendo limite de operadores</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}>{issues.opLimit.length}</span>
+                    </div>
+                    <span style={{ fontSize: 10, color: '#64748B' }}>cliente bloqueado · cobrar upgrade</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {issues.opLimit.slice(0, 8).map(t => (
+                      <div key={t.tenant_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 6, background: 'rgba(0,0,0,0.2)' }}>
+                        <span style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.tenant}</span>
+                        <span style={{ fontSize: 11, color: '#94A3B8' }}>{t.current} ops · plano {t.limit}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', minWidth: 40, textAlign: 'right' }}>+{t.excess}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 3. Operadores duplicados */}
+              {issues.duplicates?.length > 0 && (
+                <div style={{ padding: '14px 16px', borderRadius: 10,
+                  background: 'rgba(96,165,250,0.04)', border: '1px solid rgba(96,165,250,0.2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#60A5FA' }}>Operadores possivelmente duplicados</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(96,165,250,0.15)', color: '#60A5FA' }}>{issues.duplicates.length}</span>
+                    </div>
+                    <span style={{ fontSize: 10, color: '#64748B' }}>mesmo nome no mesmo tenant</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {issues.duplicates.slice(0, 8).map((d, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 6, background: 'rgba(0,0,0,0.2)' }}>
+                        <span style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, minWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
+                        <span style={{ fontSize: 11, color: '#94A3B8', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.tenant}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#60A5FA', minWidth: 40, textAlign: 'right' }}>x{d.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 4. Webhooks lentos */}
+              {issues.slowHooks?.length > 0 && (
+                <div style={{ padding: '14px 16px', borderRadius: 10,
+                  background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.2)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>Webhooks lentos nas ultimas 24h</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}>{issues.slowHooks.length}</span>
+                    </div>
+                    <span style={{ fontSize: 10, color: '#64748B' }}>chegaram com mais de 5min · padrao = MP instavel</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {issues.slowHooks.slice(0, 6).map(p => (
+                      <div key={p.mp_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 6, background: 'rgba(0,0,0,0.2)' }}>
+                        <span style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, minWidth: 70 }}>R$ {p.amount.toFixed(2).replace('.',',')}</span>
+                        <span style={{ fontSize: 11, color: '#94A3B8', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.tenant}</span>
+                        <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{p.mp_id}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', minWidth: 50, textAlign: 'right' }}>{p.latency_min}min</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </motion.div>
+        )}
+
+        {/* ═══ WEBHOOK HEALTH — Saude do Mercado Pago ═══ */}
+        {webhookHealth && (
+          <motion.div {...fadeUp(0, 0.35)} style={{ ...card, padding: 24, marginBottom: 28 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+              <div>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>Saude do gateway</h3>
+                <p style={{ fontSize: 11, color: '#64748B', margin: '2px 0 0' }}>Webhook MP · ultimas 24h</p>
+              </div>
+              {(() => {
+                const sr = webhookHealth.h24.successRate
+                const color = sr >= 95 ? '#10B981' : sr >= 80 ? '#F59E0B' : '#EF4444'
+                const label = sr >= 95 ? 'Saudavel' : sr >= 80 ? 'Atencao' : 'Critico'
+                return (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 8,
+                    background: `${color}10`, border: `1px solid ${color}40` }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
+                    <span style={{ fontSize: 11, fontWeight: 700, color, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label} · {sr}%</span>
+                  </div>
+                )
+              })()}
+            </div>
+
+            {/* Buckets 24h */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 20 }}>
+              {[
+                { label: 'Total 24h', value: webhookHealth.h24.total, color: '#F1F5F9' },
+                { label: 'Instant (<60s)', value: webhookHealth.h24.instant, color: '#10B981' },
+                { label: 'Atrasado (1-5min)', value: webhookHealth.h24.delayed, color: '#F59E0B' },
+                { label: 'Orfao (>5min)', value: webhookHealth.h24.orfao, color: '#EF4444' },
+              ].map((b, i) => (
+                <div key={i} style={{ padding: '12px 14px', borderRadius: 10,
+                  background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 4 }}>{b.label}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: b.color, fontFamily: 'var(--font-display)', letterSpacing: '-0.01em' }}>{b.value}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Pendings antigos — critico, sempre destacado se houver */}
+            {webhookHealth.pendingsOld?.length > 0 && (
+              <div style={{ padding: '12px 14px', borderRadius: 10, marginBottom: 16,
+                background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.25)' }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#EF4444', marginBottom: 6 }}>
+                  {webhookHealth.pendingsOld.length} pagamento(s) pendente(s) ha mais de 10min
+                </div>
+                <div style={{ fontSize: 11, color: '#94A3B8' }}>
+                  O reconcile automatico vai capturar em segundos. Se persistir, MP esta com instabilidade.
+                </div>
+              </div>
+            )}
+
+            {/* Lista ultimos 15 */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 10 }}>
+                Ultimos {webhookHealth.lastPayments.length} pagamentos · latencia do webhook
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {webhookHealth.lastPayments.map(p => {
+                  const sec = p.latency_s
+                  const color = sec < 60 ? '#10B981' : sec < 300 ? '#F59E0B' : '#EF4444'
+                  const label = sec < 60 ? sec + 's' : sec < 3600 ? Math.round(sec/60) + 'min' : Math.round(sec/3600) + 'h'
+                  const dt = new Date(p.created_at).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+                  return (
+                    <div key={p.mp_id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 10px', borderRadius: 6,
+                      background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: 'var(--mono)', minWidth: 90 }}>{dt}</span>
+                      <span style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, minWidth: 70 }}>R$ {p.amount.toFixed(2).replace('.',',')}</span>
+                      <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.mp_id}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color, fontFamily: 'var(--mono)', minWidth: 50, textAlign: 'right' }}>{label}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* ═══ LEVEL 3: RANKING ═══ */}
         <motion.div {...fadeUp(0, 0.4)} style={{ ...card, padding: 24, marginBottom: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
@@ -1339,6 +1494,7 @@ export default function OwnerPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      <QuickNotifyPanel userEmail={emailRef.current || ''} />
     </main>
   )
 }

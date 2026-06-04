@@ -30,26 +30,50 @@ export async function POST(req) {
     }
 
     // Resolucao do valor + duracao do plano:
-    //   plan_period + amount  → usa amount (frontend ja combinou tier+periodo), periodo define planMonths
-    //   plan_period sozinho   → calcula via lib/plans (so periodo, sem tier de operadores)
-    //   amount sozinho        → upgrade parcial (add-ops). planMonths=0 sinaliza pro webhook
-    //                           NAO estender ciclo (so atualizar operator_count).
+    //   plan_period + amount  → valida amount contra calculatePrice (anti-fraude:
+    //                           cliente nao pode mandar amount adulterado via devtools)
+    //   plan_period sozinho   → calcula via lib/plans
+    //   amount sozinho        → upgrade parcial (add-ops). planMonths=0. Minimo R$ 1,00.
     //   nada                  → default 39.9 / 1 mes (fallback)
     let transactionAmount, planMonths
     if (plan_period) {
       planMonths = getPlan(plan_period).months
+      const opsForCalc = Math.max(1, Number(operatorCountIn) || 1)
+      const expected = calculatePrice(plan_period, opsForCalc).total
       if (Number(amount) > 0) {
+        // Aceita amount enviado SE estiver dentro de 5% do valor esperado (margem de
+        // arredondamento ou desconto promocional). Adulteracao via devtools (ex: 0,01
+        // em vez de 359,10) sera bloqueada.
+        const minAllowed = expected * 0.95
+        if (Number(amount) < minAllowed) {
+          console.warn('[MP create-payment] BLOQUEADO: amount adulterado', {
+            email, plan_period, opsForCalc, expected, sent: Number(amount),
+          })
+          return NextResponse.json({
+            error: 'Valor invalido para o plano selecionado.',
+          }, { status: 400 })
+        }
         transactionAmount = Number(amount)
       } else {
-        transactionAmount = calculatePrice(plan_period, operatorCountIn || 1).total
+        transactionAmount = expected
       }
     } else if (Number(amount) > 0) {
       // Upgrade parcial (add-ops) — frontend manda so o amount, sem periodo
+      if (Number(amount) < 1) {
+        console.warn('[MP create-payment] BLOQUEADO: amount <R$1 sem plan_period', { email, sent: Number(amount) })
+        return NextResponse.json({ error: 'Valor minimo de R$ 1,00.' }, { status: 400 })
+      }
       transactionAmount = Number(amount)
       planMonths = 0
     } else {
       transactionAmount = 39.9
       planMonths = 1
+    }
+
+    // Safety net global: NUNCA aceitar pagamento abaixo de R$ 1,00 (alem das validacoes acima)
+    if (transactionAmount < 1) {
+      console.warn('[MP create-payment] BLOQUEADO: transactionAmount final <R$1', { email, transactionAmount })
+      return NextResponse.json({ error: 'Valor invalido.' }, { status: 400 })
     }
 
     const sb = createClient(
@@ -68,6 +92,34 @@ export async function POST(req) {
       tenantId = tenantId || profile.tenant_id
       userId = userId || profile.id
     }
+
+    // Anti-duplicacao: se ja existe PIX pending dos ultimos 10min pro mesmo user
+    // com o mesmo valor, reaproveita. Evita rajada de cliques + sobrecarga MP +
+    // confusao (cliente paga o errado e fica orfao).
+    try {
+      const cutoff = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+      const { data: existing } = await sb.from('mp_payments')
+        .select('mp_payment_id,amount,pix_qr_code,pix_qr_code_base64,created_at')
+        .eq('user_id', userId)
+        .eq('status', 'pending')
+        .eq('amount', transactionAmount)
+        .gt('created_at', cutoff)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (existing?.mp_payment_id) {
+        console.log('[MP create-payment] reaproveitando PIX pending', existing.mp_payment_id, 'user', userId)
+        return NextResponse.json({
+          id: existing.mp_payment_id,
+          payment_id: existing.mp_payment_id,
+          qr_code: existing.pix_qr_code || '',
+          qr_code_base64: existing.pix_qr_code_base64 || '',
+          pix_payload: existing.pix_qr_code || '',
+          pix_qr_code: existing.pix_qr_code_base64 || '',
+          reused: true,
+        })
+      }
+    } catch (e) { console.error('[MP create-payment] dedup check failed', e?.message) }
 
     // Monta payer (CPF opcional — se vier, melhora conversao)
     const payer = { email, first_name: name }

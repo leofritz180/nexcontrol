@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
 const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false })
+const QuickNotifyPanel = dynamic(() => import('./QuickNotifyPanel'), { ssr: false })
 
 const pageVariants = {
   initial: { opacity: 0, y: 14 },
@@ -37,6 +38,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
           </motion.div>
         </AnimatePresence>
       </div>
+      <QuickNotifyPanel userEmail={userEmail} />
       <style jsx global>{`
         @media (max-width: 768px) {
           .app-content { margin-left: 0 !important; }

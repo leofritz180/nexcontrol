@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { sendPushToTenant } from '../../../../lib/push'
+import { sendPushToTenant, sendPushToUser } from '../../../../lib/push'
 import { getOperatorLimitStatus } from '../../../../lib/operator-limit'
+import { pickEngagementSegment, fillTemplate } from '../../../../lib/engagement-segments'
 
 // Call daily via Vercel Cron or external scheduler
 // GET /api/cron/trial-notifications?secret=YOUR_SECRET
@@ -40,30 +41,33 @@ export async function GET(req) {
     if (t.last_trial_notif_date === today) continue
 
     if (daysLeft > 0) {
-      // Trial active — send daily reminder
-      let title, body
+      // Trial active — send daily reminder (so notifica em momentos chave: 3d, 1d, 0d)
+      let title, body, shouldNotify = false
 
-      if (daysLeft >= 3) {
-        title = 'NexControl'
-        body = `Teste grátis ativo - ${daysLeft} dias restantes`
-      } else if (daysLeft >= 2) {
-        title = 'NexControl'
-        body = `Seu teste acaba em ${daysLeft} dias - escolha um plano`
-      } else {
-        title = 'NexControl'
-        body = 'Último dia grátis - assine para não perder acesso'
+      if (daysLeft === 3) {
+        title = 'Faltam 3 dias do seu teste'
+        body = 'Assine agora e garanta R$ 39,90/mes. Apos o trial o acesso e bloqueado.'
+        shouldNotify = true
+      } else if (daysLeft === 1) {
+        title = 'Ultimo dia do seu teste gratis'
+        body = 'Amanha o acesso e bloqueado. Assine em 1 clique pra nao perder seus dados.'
+        shouldNotify = true
       }
+      // dias intermediarios (2, 4-7): nao notifica (evita spam)
 
-      await sendPushToTenant(supabase, t.id, { title, body, url: '/billing' })
-      await supabase.from('tenants').update({ last_trial_notif_date: today }).eq('id', t.id)
-      sent++
+      if (shouldNotify) {
+        await sendPushToTenant(supabase, t.id, { title, body, url: '/billing-mp', tag: 'trial-' + daysLeft + 'd' })
+        await supabase.from('tenants').update({ last_trial_notif_date: today }).eq('id', t.id)
+        sent++
+      }
 
     } else if (!t.trial_expired_notified) {
       // Trial expired — send expiration notice + update status
       await sendPushToTenant(supabase, t.id, {
-        title: 'NexControl',
-        body: 'Teste expirado - assine para continuar usando o NexControl',
-        url: '/billing',
+        title: 'Seu teste expirou',
+        body: 'Assine agora pra recuperar acesso e nao perder seus dados.',
+        url: '/billing-mp',
+        tag: 'trial-expired',
       })
 
       await supabase.from('tenants').update({
@@ -108,5 +112,57 @@ export async function GET(req) {
     console.error('[trial-cron] op-limit check failed', e?.message)
   }
 
-  return NextResponse.json({ sent, expired, total: tenants.length, opExcessNotified })
+  // ── ENGAGEMENT PUSH: clientes PAGANTES inativos ha 1, 2, 3 ou 7 dias ──
+  // Anti-spam: cada (user_id, segment) so dispara 1x — winback_log impede repeticao.
+  let engagementSent = 0
+  try {
+    // Pega tenants com sub ativa nao expirada
+    const { data: activeSubs } = await supabase.from('subscriptions')
+      .select('tenant_id, expires_at, status').eq('status', 'active')
+    const nowMs = Date.now()
+    const activeTids = new Set(
+      (activeSubs || [])
+        .filter(s => !s.expires_at || new Date(s.expires_at).getTime() > nowMs)
+        .map(s => s.tenant_id)
+    )
+    if (activeTids.size > 0) {
+      const { data: admins } = await supabase.from('profiles')
+        .select('id, nome, tenant_id, last_seen_at')
+        .eq('role', 'admin')
+        .in('tenant_id', [...activeTids])
+      for (const adm of admins || []) {
+        const lastSeen = adm.last_seen_at ? new Date(adm.last_seen_at).getTime() : null
+        if (!lastSeen) continue // se nunca acessou, ignora (cobertura tem trial-cron)
+        const daysInactive = Math.floor((nowMs - lastSeen) / 86400000)
+        const seg = pickEngagementSegment(daysInactive)
+        if (!seg) continue
+        // Anti-spam: ja enviou esse segmento pra esse user?
+        const { data: prev } = await supabase.from('winback_log')
+          .select('id').eq('user_id', adm.id).eq('segment', seg.id).limit(1).maybeSingle()
+        if (prev) continue
+        // Cooldown global 24h: nao spam se ja recebeu qualquer push hoje
+        const dayAgo = new Date(nowMs - 24 * 3600000).toISOString()
+        const { data: recent } = await supabase.from('winback_log')
+          .select('id').eq('user_id', adm.id).gte('sent_at', dayAgo).limit(1).maybeSingle()
+        if (recent) continue
+        const vars = { nome: (adm.nome || '').split(' ')[0] || 'Operador' }
+        await sendPushToUser(supabase, adm.id, {
+          title: fillTemplate(seg.push.title, vars),
+          body: fillTemplate(seg.push.body, vars),
+          url: '/admin',
+          tag: seg.id,
+        })
+        await supabase.from('winback_log').insert({
+          user_id: adm.id, tenant_id: adm.tenant_id,
+          segment: seg.id, channel: 'push',
+          sent_at: new Date().toISOString(),
+        })
+        engagementSent++
+      }
+    }
+  } catch (e) {
+    console.error('[trial-cron] engagement push failed', e?.message)
+  }
+
+  return NextResponse.json({ sent, expired, total: tenants.length, opExcessNotified, engagementSent })
 }

@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v97 (Push pro owner em cada pagamento confirmado)
+// NexControl Service Worker — Push Notifications v98 (Comando de voz global + lote PT2)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

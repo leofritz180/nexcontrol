@@ -13,6 +13,31 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [showPass, setShowPass] = useState(false)
 
+  // Esqueci a senha
+  const [showForgot, setShowForgot] = useState(false)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotLoading, setForgotLoading] = useState(false)
+  const [forgotMsg, setForgotMsg] = useState('')
+  const [forgotError, setForgotError] = useState('')
+
+  async function handleForgot(e) {
+    e.preventDefault()
+    setForgotError(''); setForgotMsg('')
+    const em = (forgotEmail || '').trim()
+    if (!em || !em.includes('@')) { setForgotError('Digite um email valido.'); return }
+    setForgotLoading(true)
+    try {
+      const redirectTo = typeof window !== 'undefined' ? (window.location.origin + '/reset-password') : undefined
+      const { error: err } = await supabase.auth.resetPasswordForEmail(em, { redirectTo })
+      if (err) { setForgotError(err.message); setForgotLoading(false); return }
+      setForgotMsg('Se este email estiver cadastrado, voce recebera um link para redefinir a senha nos proximos minutos. Verifique tambem a caixa de spam.')
+      setForgotLoading(false)
+    } catch (e) {
+      setForgotError(e?.message || 'Erro ao enviar email. Tente novamente.')
+      setForgotLoading(false)
+    }
+  }
+
   function withTimeout(promise, ms, label) {
     return Promise.race([
       promise.then(v => ({ value: v })),
@@ -185,6 +210,21 @@ export default function LoginPage() {
                 </svg>
               </button>
             </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6 }}>
+              <button
+                type="button"
+                onClick={() => { setForgotEmail(email); setForgotMsg(''); setForgotError(''); setShowForgot(true) }}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                  fontSize: 12, color: 'var(--t3)', fontFamily: 'inherit',
+                  transition: 'color 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--t1)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--t3)'}
+              >
+                Esqueceu a senha?
+              </button>
+            </div>
           </div>
 
           <AnimatePresence>
@@ -251,6 +291,135 @@ export default function LoginPage() {
           Conexao segura · Dados criptografados
         </p>
       </motion.div>
+
+      <AnimatePresence>
+        {showForgot && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            onClick={() => setShowForgot(false)}
+            style={{
+              position: 'fixed', inset: 0, zIndex: 50,
+              background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: 20,
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.97 }}
+              transition={{ duration: 0.22, ease: [0.33, 1, 0.68, 1] }}
+              onClick={e => e.stopPropagation()}
+              style={{
+                width: '100%', maxWidth: 380,
+                background: '#0a0a0a',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 14, padding: 28,
+              }}
+            >
+              <h2 style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 26, fontWeight: 400, letterSpacing: '-0.02em',
+                color: 'var(--t1)', margin: '0 0 8px',
+              }}>
+                Recuperar senha
+              </h2>
+              <p style={{ fontSize: 13, color: 'var(--t2)', margin: '0 0 22px', lineHeight: 1.5 }}>
+                Digite seu email cadastrado. Enviaremos um link para voce criar uma nova senha.
+              </p>
+
+              <form onSubmit={handleForgot} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <input
+                  type="email" value={forgotEmail}
+                  onChange={e => setForgotEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  required autoComplete="email"
+                  disabled={!!forgotMsg}
+                  style={{
+                    width: '100%', fontSize: 14, fontWeight: 400,
+                    padding: '12px 14px', borderRadius: 8, outline: 'none',
+                    color: 'var(--t1)',
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    transition: 'border-color 0.15s, background 0.15s',
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.background = 'rgba(255,255,255,0.02)' }}
+                />
+
+                <AnimatePresence>
+                  {forgotError && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }}
+                      style={{
+                        padding: '10px 12px', borderRadius: 8,
+                        background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)',
+                        fontSize: 12, color: '#EF4444',
+                      }}>
+                      {forgotError}
+                    </motion.div>
+                  )}
+                  {forgotMsg && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }}
+                      style={{
+                        padding: '12px 14px', borderRadius: 8,
+                        background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.25)',
+                        fontSize: 12, color: '#10B981', lineHeight: 1.5,
+                      }}>
+                      {forgotMsg}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowForgot(false)}
+                    style={{
+                      flex: 1, padding: '11px 16px', fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
+                      borderRadius: 8, cursor: 'pointer', color: 'var(--t2)',
+                      background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+                      transition: 'background 0.15s, color 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--t1)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--t2)'; e.currentTarget.style.background = 'transparent' }}
+                  >
+                    {forgotMsg ? 'Fechar' : 'Cancelar'}
+                  </button>
+                  {!forgotMsg && (
+                    <button
+                      type="submit" disabled={forgotLoading}
+                      style={{
+                        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                        padding: '11px 16px', fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
+                        borderRadius: 8, border: 'none', cursor: forgotLoading ? 'not-allowed' : 'pointer',
+                        color: 'white',
+                        background: forgotLoading ? 'rgba(229,57,53,0.5)' : '#e53935',
+                        transition: 'background 0.15s', opacity: forgotLoading ? 0.7 : 1,
+                      }}
+                      onMouseEnter={e => { if (!forgotLoading) e.currentTarget.style.background = '#d32f2f' }}
+                      onMouseLeave={e => { if (!forgotLoading) e.currentTarget.style.background = '#e53935' }}
+                    >
+                      {forgotLoading ? (
+                        <>
+                          <motion.div style={{ width: 12, height: 12, borderRadius: '50%',
+                            border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white' }}
+                            animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} />
+                          Enviando
+                        </>
+                      ) : 'Enviar link'}
+                    </button>
+                  )}
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   )
 }

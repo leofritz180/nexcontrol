@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v106 (voz da resposta masculina pt-BR)
+// NexControl Service Worker — Push Notifications v107 (card de boas-vindas do comando de voz - fase owner)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

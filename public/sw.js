@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v107 (card de boas-vindas do comando de voz - fase owner)
+// NexControl Service Worker — Push Notifications v108 (voz + card liberados pra todos admins)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -4,7 +4,9 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 
-const BETA_EMAILS = new Set(['leofritz180@gmail.com'])
+const OWNER_EMAIL = 'leofritz180@gmail.com'
+// Acoes de Metodos continuam beta so do owner; o resto da voz e pra todo admin.
+const BETA_EMAILS = new Set([OWNER_EMAIL])
 
 // Comandos de navegacao — slug → rota (e variantes faladas)
 const NAV_COMMANDS = [
@@ -125,7 +127,25 @@ export default function VoiceCommandPanel({ userEmail }) {
     })
     return () => { active = false; authSub?.subscription?.unsubscribe?.() }
   }, [userEmail])
-  const enabled = !!(resolvedEmail && BETA_EMAILS.has(String(resolvedEmail).toLowerCase()))
+  // Papel do usuario (admin/operator) — voz e liberada pra admin + owner
+  const [role, setRole] = useState('')
+  useEffect(() => {
+    let active = true
+    async function loadRole() {
+      try {
+        const { data } = await supabase.auth.getSession()
+        const uid = data?.session?.user?.id
+        if (!uid) { if (active) setRole(''); return }
+        const { data: prof } = await supabase.from('profiles').select('role').eq('id', uid).maybeSingle()
+        if (active) setRole(prof?.role || '')
+      } catch { if (active) setRole('') }
+    }
+    loadRole()
+    const { data: sub } = supabase.auth.onAuthStateChange(() => loadRole())
+    return () => { active = false; sub?.subscription?.unsubscribe?.() }
+  }, [])
+  const isOwner = String(resolvedEmail || '').toLowerCase() === OWNER_EMAIL
+  const enabled = !!(resolvedEmail && (isOwner || role === 'admin'))
   const [open, setOpen] = useState(false)
   const [listening, setListening] = useState(false)
   const [transcript, setTranscript] = useState('')

@@ -5,11 +5,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 
 // ── Lancamento em fases ──────────────────────────────────────────────
-// 'owner' = card aparece SO pra leofritz180 (fase de preview)
-// 'all'   = card aparece pra todos (operadores + admins)
-// Pra liberar geral depois, troque pra 'all' (e lembre de liberar o
-// proprio comando de voz no VoiceCommandPanel, hoje beta so do owner).
-const ANNOUNCE_AUDIENCE = 'owner'
+// 'owner' = SO leofritz180 | 'admin' = owner + todos admins | 'all' = todos
+// O comando de voz (VoiceCommandPanel) tambem esta liberado pra admin + owner.
+const ANNOUNCE_AUDIENCE = 'admin'
 
 // Versao do aviso — bump invalida o "ja vi" e mostra de novo a todos
 const SEEN_KEY = 'nexVoiceAnnounce_v1'
@@ -44,12 +42,13 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
   useEffect(() => {
     if (!email) return
     if (ANNOUNCE_AUDIENCE === 'owner' && !isOwner) return
+    if (ANNOUNCE_AUDIENCE === 'admin' && !(isOwner || isAdmin)) return
     let seen = false
     try { seen = localStorage.getItem(SEEN_KEY) === '1' } catch {}
     if (seen) return
     const t = setTimeout(() => setShow(true), 700) // deixa a dashboard montar
     return () => clearTimeout(t)
-  }, [email, isOwner])
+  }, [email, isOwner, isAdmin])
 
   function dismiss() {
     try { localStorage.setItem(SEEN_KEY, '1') } catch {}

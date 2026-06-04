@@ -187,15 +187,16 @@ export async function POST(req) {
   if (!type) return NextResponse.json({ error: 'type obrigatorio' }, { status: 400 })
 
   const sb = sbAdmin()
-  const { data: prof } = await sb.from('profiles').select('tenant_id, role').eq('id', user.id).maybeSingle()
+  const { data: prof } = await sb.from('profiles').select('tenant_id, role, nome').eq('id', user.id).maybeSingle()
   if (!prof?.tenant_id) return NextResponse.json({ error: 'Sem tenant' }, { status: 404 })
 
   const payload = await buildPayload(sb, prof.tenant_id, type)
   if (!payload) return NextResponse.json({ error: 'Tipo nao reconhecido' }, { status: 400 })
 
   // Modo silent: usado pela voz — so calcula e retorna o valor, sem disparar push.
+  // Inclui o nome do user pra montar a saudacao falada ("Ola Leonardo...").
   if (silent) {
-    return NextResponse.json({ ok: true, sent: 0, silent: true, payload })
+    return NextResponse.json({ ok: true, sent: 0, silent: true, payload, userName: prof.nome || '' })
   }
 
   const result = await sendPushToUser(sb, user.id, {

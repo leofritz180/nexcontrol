@@ -71,6 +71,17 @@ function matchPergunta(norm) {
   return null
 }
 
+// Saudacao pelo horario de Brasilia (bom dia / boa tarde / boa noite)
+function saudacaoHora() {
+  let h
+  try {
+    h = parseInt(new Intl.DateTimeFormat('en-US', { hour: '2-digit', hourCycle: 'h23', timeZone: 'America/Sao_Paulo' }).format(new Date()), 10)
+  } catch { h = new Date().getHours() }
+  if (h >= 5 && h < 12) return 'bom dia'
+  if (h >= 12 && h < 18) return 'boa tarde'
+  return 'boa noite'
+}
+
 // Monta a frase falada a partir do valor numerico (TTS pt-BR le inteiros bem).
 function fraseLucro(value, periodo) {
   const v = Number(value) || 0
@@ -132,12 +143,17 @@ export default function VoiceCommandPanel({ userEmail }) {
       synth.cancel()
       const u = new SpeechSynthesisUtterance(text)
       u.lang = 'pt-BR'
-      u.pitch = 0.35  // grave = robotico
-      u.rate = 0.96
+      u.pitch = 1.0   // natural, sem efeito robotico
+      u.rate = 1.0
       u.volume = 1
+      // Escolhe a voz pt-BR mais natural disponivel (Google/Natural > qualquer pt-BR > pt)
       const voices = voicesRef.current.length ? voicesRef.current : (synth.getVoices() || [])
-      const pt = voices.find(v => /pt[-_]?BR/i.test(v.lang)) || voices.find(v => /^pt/i.test(v.lang))
-      if (pt) u.voice = pt
+      const ptBR = voices.filter(v => /pt[-_]?BR/i.test(v.lang))
+      const best = ptBR.find(v => /google/i.test(v.name))
+        || ptBR.find(v => /natural|maria|luciana|francisca|fernanda|thalita|brenda/i.test(v.name))
+        || ptBR[0]
+        || voices.find(v => /^pt/i.test(v.lang))
+      if (best) u.voice = best
       mutedRef.current = true
       setSpeaking(true)
       u.onend = () => { setSpeaking(false); setTimeout(() => { mutedRef.current = false }, 350) }
@@ -160,8 +176,14 @@ export default function VoiceCommandPanel({ userEmail }) {
       })
       const j = await r.json()
       const val = j?.payload?.value
-      if (val == null) { speak('Nao encontrei esse dado.'); setLastAction({ ok: false, msg: 'Sem dados pra ' + q.periodo }); return }
-      const frase = fraseLucro(val, q.periodo)
+      if (val == null) { speak('Desculpa, nao encontrei esse dado agora.'); setLastAction({ ok: false, msg: 'Sem dados pra ' + q.periodo }); return }
+      // Saudacao personalizada: "Ola Leonardo, boa noite. Seu lucro de hoje foi de..."
+      const primeiroNome = String(j?.userName || '').trim().split(/\s+/)[0] || ''
+      const saud = saudacaoHora()
+      const abertura = primeiroNome
+        ? `Olá ${primeiroNome}, ${saud}. `
+        : `${saud.charAt(0).toUpperCase() + saud.slice(1)}. `
+      const frase = abertura + fraseLucro(val, q.periodo)
       const fmt = (Number(val) || 0).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')
       setLastAction({ ok: true, msg: (val >= 0 ? '+' : '-') + 'R$ ' + fmt.replace('-', '') + ' · ' + q.periodo })
       speak(frase)

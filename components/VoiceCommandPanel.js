@@ -55,6 +55,34 @@ function parseValor(s) {
   return Number(str) || 0
 }
 
+// Perguntas que a voz RESPONDE falando (texto ja normalizado: sem acento, minusculo).
+// Detecta intencao de lucro + periodo. Retorna { type, periodo } ou null.
+const QUERY_PERGUNTAS = [
+  { test: n => /hoje/.test(n),            type: 'lucro_hoje',      periodo: 'de hoje' },
+  { test: n => /semana/.test(n),          type: 'lucro_semana',    periodo: 'da semana' },
+  { test: n => /(mes|mês)\s*atual/.test(n), type: 'lucro_mes_atual', periodo: 'deste mês' },
+  { test: n => /(mes|mês)/.test(n),       type: 'lucro_mes_atual', periodo: 'do mês' },
+]
+function matchPergunta(norm) {
+  // Precisa ter intencao de "quanto lucrei / qual meu lucro / quanto faturei"
+  const querLucro = /quanto/.test(norm) || /lucr/.test(norm) || /faturei|fatur/.test(norm) || /ganhei/.test(norm)
+  if (!querLucro) return null
+  for (const q of QUERY_PERGUNTAS) if (q.test(norm)) return q
+  return null
+}
+
+// Monta a frase falada a partir do valor numerico (TTS pt-BR le inteiros bem).
+function fraseLucro(value, periodo) {
+  const v = Number(value) || 0
+  const noun = v >= 0 ? 'lucro' : 'prejuízo'
+  const abs = Math.abs(v)
+  const reais = Math.floor(abs)
+  const cent = Math.round((abs - reais) * 100)
+  let s = `Seu ${noun} ${periodo} foi de ${reais} ${reais === 1 ? 'real' : 'reais'}`
+  if (cent > 0) s += ` e ${cent} ${cent === 1 ? 'centavo' : 'centavos'}`
+  return s + '.'
+}
+
 export default function VoiceCommandPanel({ userEmail }) {
   const router = useRouter()
   // Email pode vir por prop (montagem antiga) ou ser resolvido sozinho (montagem global no layout raiz)
@@ -83,6 +111,65 @@ export default function VoiceCommandPanel({ userEmail }) {
   const recogRef = useRef(null)
   const listeningRef = useRef(false)
   const handleCommandRef = useRef(() => {})
+  const voicesRef = useRef([])
+  const mutedRef = useRef(false) // true enquanto o robo fala (ignora o proprio audio captado)
+  const [speaking, setSpeaking] = useState(false)
+
+  // Carrega vozes do navegador (chega async no Chrome)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return
+    const load = () => { voicesRef.current = window.speechSynthesis.getVoices() || [] }
+    load()
+    window.speechSynthesis.addEventListener?.('voiceschanged', load)
+    return () => { try { window.speechSynthesis.removeEventListener?.('voiceschanged', load) } catch {} }
+  }, [])
+
+  // Fala um texto com voz grave/robotica em pt-BR
+  function speak(text) {
+    try {
+      const synth = typeof window !== 'undefined' && window.speechSynthesis
+      if (!synth) return
+      synth.cancel()
+      const u = new SpeechSynthesisUtterance(text)
+      u.lang = 'pt-BR'
+      u.pitch = 0.35  // grave = robotico
+      u.rate = 0.96
+      u.volume = 1
+      const voices = voicesRef.current.length ? voicesRef.current : (synth.getVoices() || [])
+      const pt = voices.find(v => /pt[-_]?BR/i.test(v.lang)) || voices.find(v => /^pt/i.test(v.lang))
+      if (pt) u.voice = pt
+      mutedRef.current = true
+      setSpeaking(true)
+      u.onend = () => { setSpeaking(false); setTimeout(() => { mutedRef.current = false }, 350) }
+      u.onerror = () => { setSpeaking(false); mutedRef.current = false }
+      synth.speak(u)
+    } catch { mutedRef.current = false; setSpeaking(false) }
+  }
+
+  // Busca o valor (silent = sem push) e responde falando
+  async function responderPergunta(q) {
+    setLastAction({ ok: true, msg: 'Calculando ' + q.periodo + '...' })
+    try {
+      const { data } = await supabase.auth.getSession()
+      const token = data?.session?.access_token
+      if (!token) { speak('Nao consegui autenticar.'); return }
+      const r = await fetch('/api/notify/self', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ type: q.type, silent: true }),
+      })
+      const j = await r.json()
+      const val = j?.payload?.value
+      if (val == null) { speak('Nao encontrei esse dado.'); setLastAction({ ok: false, msg: 'Sem dados pra ' + q.periodo }); return }
+      const frase = fraseLucro(val, q.periodo)
+      const fmt = (Number(val) || 0).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+      setLastAction({ ok: true, msg: (val >= 0 ? '+' : '-') + 'R$ ' + fmt.replace('-', '') + ' · ' + q.periodo })
+      speak(frase)
+    } catch {
+      speak('Tive um erro ao buscar.')
+      setLastAction({ ok: false, msg: 'Erro ao calcular ' + q.periodo })
+    }
+  }
 
   // Atualiza ref do handler pra evitar stale closure
   useEffect(() => {
@@ -90,6 +177,13 @@ export default function VoiceCommandPanel({ userEmail }) {
       if (!heard) return
       const norm = normalize(heard)
       console.log('[voice] command:', norm)
+
+      // 0) Perguntas que a voz RESPONDE falando (quanto lucrei hoje/semana/mes)
+      const perg = matchPergunta(norm)
+      if (perg) {
+        responderPergunta(perg)
+        return
+      }
 
       // 1) Acoes com valor (registrar lucro 150)
       for (const a of ACTION_COMMANDS) {
@@ -164,6 +258,9 @@ export default function VoiceCommandPanel({ userEmail }) {
     if (!listening) {
       try { recogRef.current?.stop() } catch {}
       recogRef.current = null
+      try { window.speechSynthesis?.cancel() } catch {}
+      mutedRef.current = false
+      setSpeaking(false)
       if (status === 'listening' || status === 'starting') setStatus('idle')
       return
     }
@@ -195,6 +292,8 @@ export default function VoiceCommandPanel({ userEmail }) {
     }
 
     rec.onresult = (e) => {
+      // Enquanto o robo fala, ignora o que o microfone captar (evita auto-loop)
+      if (mutedRef.current) return
       let finalText = ''
       let interimText = ''
       for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -283,8 +382,8 @@ export default function VoiceCommandPanel({ userEmail }) {
 
   if (!enabled) return null
 
-  const statusColor = status === 'listening' ? '#10B981' : status === 'starting' ? '#F59E0B' : status === 'error' ? '#EF4444' : '#64748B'
-  const statusLabel = status === 'listening' ? 'Ouvindo' : status === 'starting' ? 'Iniciando...' : status === 'error' ? 'Erro' : 'Inativo'
+  const statusColor = speaking ? '#D1FAE5' : status === 'listening' ? '#10B981' : status === 'starting' ? '#F59E0B' : status === 'error' ? '#EF4444' : '#64748B'
+  const statusLabel = speaking ? 'Respondendo' : status === 'listening' ? 'Ouvindo' : status === 'starting' ? 'Iniciando...' : status === 'error' ? 'Erro' : 'Inativo'
 
   return (
     <>
@@ -441,6 +540,25 @@ export default function VoiceCommandPanel({ userEmail }) {
                     <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
                   </div>
                 ))}
+              </div>
+
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                Perguntas
+                <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: 'rgba(209,250,229,0.12)', color: '#D1FAE5' }}>voz responde</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                  <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei hoje?"</span>
+                  <span style={{ fontSize: 11, color: '#64748B' }}> — fala o lucro de hoje</span>
+                </div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                  <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei essa semana?"</span>
+                  <span style={{ fontSize: 11, color: '#64748B' }}> — lucro dos 7 dias</span>
+                </div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                  <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"qual meu lucro do mês?"</span>
+                  <span style={{ fontSize: 11, color: '#64748B' }}> — lucro do mês atual</span>
+                </div>
               </div>
 
               <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Acoes rapidas</div>

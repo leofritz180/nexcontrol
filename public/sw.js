@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v99 (voz: dashboard → admin)
+// NexControl Service Worker — Push Notifications v100 (voz responde por fala: lucro hoje/semana/mes)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

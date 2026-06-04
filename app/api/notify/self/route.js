@@ -75,6 +75,7 @@ async function buildPayload(sb, tenantId, type) {
       title: 'Lucro de hoje',
       body: '🚀 ' + sign + 'R$ ' + fmtBRL(Math.abs(total)),
       url: '/admin',
+      value: total,
     }
   }
   if (type === 'lucro_semana') {
@@ -86,6 +87,7 @@ async function buildPayload(sb, tenantId, type) {
       title: 'Lucro da semana',
       body: '🚀 ' + sign + 'R$ ' + fmtBRL(Math.abs(total)),
       url: '/admin',
+      value: total,
     }
   }
   if (type === 'lucro_mes') {
@@ -97,6 +99,7 @@ async function buildPayload(sb, tenantId, type) {
       title: 'Lucro do mes (ultimos 30d)',
       body: '🚀 ' + sign + 'R$ ' + fmtBRL(Math.abs(total)),
       url: '/admin',
+      value: total,
     }
   }
   if (type === 'lucro_mes_atual') {
@@ -108,6 +111,7 @@ async function buildPayload(sb, tenantId, type) {
       title: 'Lucro do mes atual',
       body: '🚀 ' + sign + 'R$ ' + fmtBRL(Math.abs(total)),
       url: '/admin',
+      value: total,
     }
   }
   if (type === 'top_operador') {
@@ -179,7 +183,7 @@ export async function POST(req) {
   const user = await authUser(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { type } = await req.json().catch(() => ({}))
+  const { type, silent } = await req.json().catch(() => ({}))
   if (!type) return NextResponse.json({ error: 'type obrigatorio' }, { status: 400 })
 
   const sb = sbAdmin()
@@ -188,6 +192,11 @@ export async function POST(req) {
 
   const payload = await buildPayload(sb, prof.tenant_id, type)
   if (!payload) return NextResponse.json({ error: 'Tipo nao reconhecido' }, { status: 400 })
+
+  // Modo silent: usado pela voz — so calcula e retorna o valor, sem disparar push.
+  if (silent) {
+    return NextResponse.json({ ok: true, sent: 0, silent: true, payload })
+  }
 
   const result = await sendPushToUser(sb, user.id, {
     ...payload,

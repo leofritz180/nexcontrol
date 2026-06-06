@@ -26,6 +26,17 @@ const NAV_COMMANDS = [
   { keys: ['owner', 'dono', 'painel dono'],                        label: 'owner',         route: '/owner' },
 ]
 
+// Navegacao disponivel pro OPERADOR — apenas as telas que ele acessa.
+const OPERATOR_NAV = [
+  { keys: ['inicio', 'painel', 'dashboard', 'operador', 'minha operacao'], label: 'inicio',     route: '/operator' },
+  { keys: ['desempenho', 'performance', 'minha performance'],              label: 'desempenho', route: '/performance' },
+  { keys: ['slots', 'slot'],                                               label: 'slots',      route: '/slots' },
+  { keys: ['proxy', 'proxis'],                                             label: 'proxy',      route: '/proxy' },
+  { keys: ['pix'],                                                         label: 'pix',        route: '/pix' },
+  { keys: ['aulas', 'aula'],                                               label: 'aulas',      route: '/aulas' },
+  { keys: ['tutorial', 'tutoriais'],                                       label: 'tutorial',   route: '/tutorial' },
+]
+
 const TAB_COMMANDS = [
   { keys: ['visao geral', 'visao', 'geral'],         tab: 'overview',   label: 'visao geral' },
   { keys: ['minha operacao', 'operacao'],            tab: 'myops',      label: 'minha operacao' },
@@ -150,7 +161,10 @@ export default function VoiceCommandPanel({ userEmail }) {
     return () => { active = false; sub?.subscription?.unsubscribe?.() }
   }, [])
   const isOwner = String(resolvedEmail || '').toLowerCase() === OWNER_EMAIL
-  const enabled = !!(resolvedEmail && (isOwner || role === 'admin'))
+  const isAdminLevel = isOwner || role === 'admin'
+  // Operador tambem tem voz, porem com funcoes LIMITADAS (so navegacao das telas
+  // dele) — sem perguntas de lucro, sem abas de admin, sem acoes de Metodos.
+  const enabled = !!(resolvedEmail && (isAdminLevel || role === 'operator'))
   const [open, setOpen] = useState(false)
   const [listening, setListening] = useState(false)
   const [transcript, setTranscript] = useState('')
@@ -305,15 +319,17 @@ export default function VoiceCommandPanel({ userEmail }) {
       const norm = normalize(heard)
       console.log('[voice] command:', norm)
 
-      // 0) Perguntas que a voz RESPONDE falando (quanto lucrei hoje/semana/mes)
-      const perg = matchPergunta(norm)
-      if (perg) {
-        responderPergunta(perg)
-        return
+      // 0) Perguntas de lucro — SO admin/owner (operador nao ve financeiro)
+      if (isAdminLevel) {
+        const perg = matchPergunta(norm)
+        if (perg) {
+          responderPergunta(perg)
+          return
+        }
       }
 
-      // 1) Acoes com valor (registrar lucro 150)
-      for (const a of ACTION_COMMANDS) {
+      // 1) Acoes de Metodos (lucro 150 / novo metodo) — SO owner (beta)
+      if (isOwner) for (const a of ACTION_COMMANDS) {
         const m = norm.match(a.regex)
         if (m) {
           const onAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')
@@ -345,8 +361,8 @@ export default function VoiceCommandPanel({ userEmail }) {
         }
       }
 
-      // 2) Abas
-      for (const t of TAB_COMMANDS) {
+      // 2) Abas do painel admin — SO admin/owner
+      if (isAdminLevel) for (const t of TAB_COMMANDS) {
         for (const k of t.keys) {
           if (norm.includes(k)) {
             const onAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')
@@ -362,8 +378,9 @@ export default function VoiceCommandPanel({ userEmail }) {
         }
       }
 
-      // 3) Navegacao
-      for (const c of NAV_COMMANDS) {
+      // 3) Navegacao — admin usa tudo; operador so as telas dele
+      const navList = isAdminLevel ? NAV_COMMANDS : OPERATOR_NAV
+      for (const c of navList) {
         for (const k of c.keys) {
           if (norm.includes(k)) {
             router.push(c.route)
@@ -651,7 +668,7 @@ export default function VoiceCommandPanel({ userEmail }) {
             <div style={{ overflowY: 'auto', padding: '12px 16px' }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Navegacao</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
-                {NAV_COMMANDS.map(c => (
+                {(isAdminLevel ? NAV_COMMANDS : OPERATOR_NAV).map(c => (
                   <div key={c.label} style={{ fontSize: 12, color: '#94A3B8', display: 'flex', alignItems: 'baseline', gap: 6 }}>
                     <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"{c.keys[0]}"</span>
                     <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
@@ -659,50 +676,58 @@ export default function VoiceCommandPanel({ userEmail }) {
                 ))}
               </div>
 
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Abas do painel</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
-                {TAB_COMMANDS.map(c => (
-                  <div key={c.tab} style={{ fontSize: 12, color: '#94A3B8', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"{c.keys[0]}"</span>
-                    <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
+              {isAdminLevel && (
+                <>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Abas do painel</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
+                    {TAB_COMMANDS.map(c => (
+                      <div key={c.tab} style={{ fontSize: 12, color: '#94A3B8', display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                        <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"{c.keys[0]}"</span>
+                        <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
 
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                Perguntas
-                <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: 'rgba(209,250,229,0.12)', color: '#D1FAE5' }}>voz responde</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>
-                  <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei hoje?"</span>
-                  <span style={{ fontSize: 11, color: '#64748B' }}> — fala o lucro de hoje</span>
-                </div>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>
-                  <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei essa semana?"</span>
-                  <span style={{ fontSize: 11, color: '#64748B' }}> — lucro dos 7 dias</span>
-                </div>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>
-                  <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"qual meu lucro do mês?"</span>
-                  <span style={{ fontSize: 11, color: '#64748B' }}> — lucro do mês atual</span>
-                </div>
-              </div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    Perguntas
+                    <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: 'rgba(209,250,229,0.12)', color: '#D1FAE5' }}>voz responde</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
+                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei hoje?"</span>
+                      <span style={{ fontSize: 11, color: '#64748B' }}> — fala o lucro de hoje</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei essa semana?"</span>
+                      <span style={{ fontSize: 11, color: '#64748B' }}> — lucro dos 7 dias</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"qual meu lucro do mês?"</span>
+                      <span style={{ fontSize: 11, color: '#64748B' }}> — lucro do mês atual</span>
+                    </div>
+                  </div>
+                </>
+              )}
 
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Acoes rapidas</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>
-                  <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"lucro 150"</span>
-                  <span style={{ fontSize: 11, color: '#64748B' }}> — abre Metodos com R$ 150</span>
-                </div>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>
-                  <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"prejuizo 80"</span>
-                  <span style={{ fontSize: 11, color: '#64748B' }}> — idem prejuizo</span>
-                </div>
-                <div style={{ fontSize: 12, color: '#94A3B8' }}>
-                  <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"novo metodo"</span>
-                  <span style={{ fontSize: 11, color: '#64748B' }}> — abre form vazio</span>
-                </div>
-              </div>
+              {isOwner && (
+                <>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Acoes rapidas</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"lucro 150"</span>
+                      <span style={{ fontSize: 11, color: '#64748B' }}> — abre Metodos com R$ 150</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"prejuizo 80"</span>
+                      <span style={{ fontSize: 11, color: '#64748B' }}> — idem prejuizo</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"novo metodo"</span>
+                      <span style={{ fontSize: 11, color: '#64748B' }}> — abre form vazio</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </motion.div>
         )}

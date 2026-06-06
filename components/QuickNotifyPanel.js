@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 
-// Liberado pra todos admin/operator logados (gate removido em 03/06).
-const ALL_ADMINS = true
+// SO admin/owner — operador NAO dispara (essas notificacoes expoem financeiro).
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 
 // Categorias de notificacao manual. Cada tipo bate em /api/notify/self
@@ -28,8 +27,28 @@ const ITEMS = [
 ]
 
 export default function QuickNotifyPanel({ userEmail }) {
-  const [enabled] = useState(() => ALL_ADMINS && !!userEmail)
   const isOwner = String(userEmail || '').toLowerCase() === OWNER_EMAIL
+  // Descobre o papel sozinho (nao confia em prop de pagina — /tutorial passa
+  // isAdmin fixo). So admin/owner ve o painel. Padrao seguro anti-deadlock:
+  // nunca chamar getSession/query dentro do callback do onAuthStateChange.
+  const [role, setRole] = useState('')
+  useEffect(() => {
+    let active = true
+    async function fetchRole(uid) {
+      if (!uid) { if (active) setRole(''); return }
+      try {
+        const { data: prof } = await supabase.from('profiles').select('role').eq('id', uid).maybeSingle()
+        if (active) setRole(prof?.role || '')
+      } catch {}
+    }
+    supabase.auth.getSession().then(({ data }) => { if (active) fetchRole(data?.session?.user?.id) })
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      const uid = session?.user?.id
+      setTimeout(() => { if (active) fetchRole(uid) }, 0)
+    })
+    return () => { active = false; sub?.subscription?.unsubscribe?.() }
+  }, [])
+  const enabled = !!userEmail && (isOwner || role === 'admin')
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(null) // type que esta enviando
   const [toast, setToast] = useState(null)

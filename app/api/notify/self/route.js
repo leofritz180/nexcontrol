@@ -190,6 +190,10 @@ export async function POST(req) {
   const { data: prof } = await sb.from('profiles').select('tenant_id, role, nome').eq('id', user.id).maybeSingle()
   if (!prof?.tenant_id) return NextResponse.json({ error: 'Sem tenant' }, { status: 404 })
 
+  // SO admin/owner — estes dados sao financeiros do tenant; operador nao pode ver.
+  const isAdminUser = prof.role === 'admin' || (user.email || '').toLowerCase() === 'leofritz180@gmail.com'
+  if (!isAdminUser) return NextResponse.json({ error: 'Apenas administradores' }, { status: 403 })
+
   const payload = await buildPayload(sb, prof.tenant_id, type)
   if (!payload) return NextResponse.json({ error: 'Tipo nao reconhecido' }, { status: 400 })
 

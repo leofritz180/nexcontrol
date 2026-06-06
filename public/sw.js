@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v112 (acesso vitalicio: luizmanutti)
+// NexControl Service Worker — Push Notifications v113 (QuickNotify so admin + voz pro operador limitada)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

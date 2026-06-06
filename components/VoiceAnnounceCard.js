@@ -6,8 +6,8 @@ const OWNER_EMAIL = 'leofritz180@gmail.com'
 
 // ── Lancamento em fases ──────────────────────────────────────────────
 // 'owner' = SO leofritz180 | 'admin' = owner + todos admins | 'all' = todos
-// O comando de voz (VoiceCommandPanel) tambem esta liberado pra admin + owner.
-const ANNOUNCE_AUDIENCE = 'admin'
+// Voz liberada pra admin (completa) + operador (limitada). Card vai pra todos.
+const ANNOUNCE_AUDIENCE = 'all'
 
 // Versao do aviso — bump invalida o "ja vi" e mostra de novo a todos
 const SEEN_KEY = 'nexVoiceAnnounce_v1'
@@ -23,7 +23,7 @@ const PERGUNTAS = [
 const NAV = {
   owner: ['admin', 'operadores', 'redes', 'faturamento', 'custos', 'pix', 'slots', 'proxy', 'afiliados', 'aulas', 'planejamento', 'tutorial', 'cobrar', 'owner'],
   admin: ['admin', 'operadores', 'redes', 'faturamento', 'custos', 'pix', 'slots', 'proxy', 'afiliados', 'aulas', 'tutorial'],
-  operator: ['slots', 'proxy', 'pix', 'aulas', 'tutorial'],
+  operator: ['inicio', 'desempenho', 'slots', 'proxy', 'pix', 'aulas', 'tutorial'],
 }
 
 // Acoes rapidas de Metodos (beta) — so owner

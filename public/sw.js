@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v111 (gate: fail-safe pagante - nunca bloqueia tenant active)
+// NexControl Service Worker — Push Notifications v112 (acesso vitalicio: luizmanutti)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -5,9 +5,12 @@ import { supabase } from '../lib/supabase/client'
 
 const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '/', '/owner', '/slots', '/proxy', '/performance', '/aulas', '/demo', '/reset-password']
 
-// Owner do NexControl tem acesso vitalicio em qualquer rota,
-// independente de assinatura/trial/operadores.
-const LIFETIME_EMAILS = new Set(['leofritz180@gmail.com'])
+// Emails com acesso VITALICIO em qualquer rota, independente de
+// assinatura/trial/operadores (owner + admins liberados manualmente).
+const LIFETIME_EMAILS = new Set([
+  'leofritz180@gmail.com',
+  'luizmanutti@gmail.com',
+])
 
 const fmtBR = v => Number(v||0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 

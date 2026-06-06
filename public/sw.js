@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v113 (QuickNotify so admin + voz pro operador limitada)
+// NexControl Service Worker — Push Notifications v114 (botao fixo Ativar notificacoes no menu)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

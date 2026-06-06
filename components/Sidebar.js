@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 import Logo from './Logo'
+import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription } from '../lib/pushClient'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
@@ -40,6 +41,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const [mobileOpen, setMobileOpen] = useState(false)
   const [ownSub, setOwnSub] = useState(null)
   const [showAulas, setShowAulas] = useState(false)
+  const [pushState, setPushState] = useState('loading') // loading|unsupported|default|prompt|granted|denied|error
+  const [pushBusy, setPushBusy] = useState(false)
 
   // Sidebar fetches subscription independently — never depends on parent passing it
   useEffect(() => {
@@ -60,6 +63,33 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   }, [tenantId, userEmail])
 
   async function logout() { await supabase.auth.signOut(); router.push('/login') }
+
+  // Estado do push (botao fixo no menu pra ativar — vale pra admin e operador)
+  useEffect(() => {
+    if (!isPushSupported()) { setPushState('unsupported'); return }
+    setPushState(getPermissionState())
+  }, [])
+
+  async function enablePush() {
+    if (pushBusy) return
+    setPushBusy(true)
+    try {
+      const permission = await Notification.requestPermission()
+      if (permission !== 'granted') { setPushState(permission); setPushBusy(false); return }
+      const reg = await registerSW()
+      if (!reg) { setPushState('error'); setPushBusy(false); return }
+      const sub = await subscribePush(reg)
+      const saved = await savePushSubscription(sub, userId, tenantId)
+      if (saved) {
+        setPushState('granted')
+        fetch('/api/push/send', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, title: 'NexControl', body: 'Notificações ativadas — você receberá alertas em tempo real', url: isAdmin ? '/admin' : '/operator' }),
+        }).catch(() => {})
+      } else { setPushState('error') }
+    } catch (e) { setPushState('error') }
+    setPushBusy(false)
+  }
 
   const name = userName || userEmail?.split('@')[0] || '?'
   const initial = name[0].toUpperCase()
@@ -165,6 +195,38 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
           </span>
         </div>
       </div>
+
+      {/* ── Ativar notificacoes (push) — fixo no menu, admin + operador ── */}
+      {userId && tenantId && pushState !== 'unsupported' && pushState !== 'loading' && (
+        <div style={{ padding:'0 12px 12px' }}>
+          {pushState === 'granted' ? (
+            <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderRadius:8, fontSize:12, fontWeight:500, color:'#D1FAE5', background:'rgba(209,250,229,0.06)', border:'1px solid rgba(209,250,229,0.18)' }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M20 6L9 17l-5-5"/></svg>
+              Notificações ativadas
+            </div>
+          ) : pushState === 'denied' ? (
+            <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderRadius:8, fontSize:11, color:'var(--t3)', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)', lineHeight:1.4 }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ flexShrink:0 }}><path d="M18.36 6.64A9 9 0 0 1 20.77 15"/><path d="M6.16 6.16a9 9 0 1 0 12.68 12.68"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+              Notificações bloqueadas — libere nas configurações do navegador
+            </div>
+          ) : (
+            <button onClick={enablePush} disabled={pushBusy}
+              style={{
+                width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                padding:'10px 14px', borderRadius:8, fontSize:12.5, fontWeight:600,
+                color:'#fff', background:'#e53935', border:'none',
+                cursor: pushBusy ? 'default' : 'pointer', opacity: pushBusy ? 0.7 : 1,
+                transition:'background 0.15s',
+              }}
+              onMouseEnter={e=>{ if(!pushBusy) e.currentTarget.style.background='#d32f2f' }}
+              onMouseLeave={e=>{ if(!pushBusy) e.currentTarget.style.background='#e53935' }}
+            >
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              {pushBusy ? 'Ativando...' : 'Ativar notificações'}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* ── User + logout ── */}
       <div style={{ padding:'14px 14px 18px', borderTop:'1px solid rgba(255,255,255,0.04)' }}>

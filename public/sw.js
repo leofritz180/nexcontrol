@@ -1,4 +1,4 @@
-// NexControl Service Worker — Push Notifications v114 (botao fixo Ativar notificacoes no menu)
+// NexControl Service Worker — Push Notifications v115 (lembrete pulsante + pontinho vermelho push)
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()

@@ -217,6 +217,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                 color:'#fff', background:'#e53935', border:'none',
                 cursor: pushBusy ? 'default' : 'pointer', opacity: pushBusy ? 0.7 : 1,
                 transition:'background 0.15s',
+                animation: pushBusy ? 'none' : 'notif-pulse 2.2s ease-in-out infinite',
               }}
               onMouseEnter={e=>{ if(!pushBusy) e.currentTarget.style.background='#d32f2f' }}
               onMouseLeave={e=>{ if(!pushBusy) e.currentTarget.style.background='#e53935' }}
@@ -288,6 +289,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             : <><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></>
           }
         </svg>
+        {/* Lembrete: pontinho vermelho quando ainda nao ativou push */}
+        {!mobileOpen && userId && tenantId && (pushState === 'default' || pushState === 'prompt') && (
+          <span style={{ position:'absolute', top:5, right:5, width:9, height:9, borderRadius:'50%', background:'#e53935', border:'2px solid #000', animation:'notif-pulse 1.8s ease-in-out infinite' }}/>
+        )}
       </motion.button>
 
       {/* Mobile drawer */}
@@ -313,6 +318,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       <PushManager userId={userId} tenantId={tenantId}/>
 
       <style jsx global>{`
+        @keyframes notif-pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0.5); }
+          60% { box-shadow: 0 0 0 7px rgba(229,57,53,0); }
+        }
         .sidebar-desktop { display: block !important; }
         .sidebar-mobile-toggle { display: none !important; }
         @media (max-width: 768px) {

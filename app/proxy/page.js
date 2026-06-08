@@ -7,8 +7,8 @@ import AppLayout from '../../components/AppLayout'
 
 const ease = [0.33, 1, 0.68, 1]
 
-// FASE DE TESTE: só esta conta vê o botão SSO; os demais seguem com o link
-// externo atual. Pra liberar geral, deixar SSO_TEST_EMAIL = null.
+// FASE DE TESTE: só esta conta vê a loja embutida (SSO). Demais seguem com o
+// card + link externo. Pra liberar geral, deixar SSO_TEST_EMAIL = null.
 const SSO_TEST_EMAIL = 'leofritz178@gmail.com'
 
 export default function ProxyPage() {
@@ -18,7 +18,9 @@ export default function ProxyPage() {
   const [tenant, setTenant] = useState(null)
   const [sub, setSub] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [ssoLoading, setSsoLoading] = useState(false)
+  const [iframeUrl, setIframeUrl] = useState(null)
+  const [iframeLoading, setIframeLoading] = useState(true)
+  const [iframeErr, setIframeErr] = useState(false)
 
   useEffect(() => { init() }, [])
 
@@ -43,34 +45,28 @@ export default function ProxyPage() {
 
   const ssoEnabled = SSO_TEST_EMAIL ? user?.email?.toLowerCase() === SSO_TEST_EMAIL : true
 
-  // Abre a Loja Bettify logada (SSO) em NOVA ABA. Cookies de sessao nao
-  // funcionam em iframe cross-origin (Chrome/Safari), por isso nova aba.
-  async function abrirLoja() {
-    if (ssoLoading) return
-    setSsoLoading(true)
-    // Abre a aba JA, no gesto do clique (evita popup blocker); redireciona depois.
-    let win = null
-    try { win = window.open('', '_blank') } catch {}
-    try {
-      const { data: s } = await supabase.auth.getSession()
-      const token = s?.session?.access_token
-      const res = await fetch('/api/proxy-sso', { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
-      if (!res.ok) throw new Error('falha')
-      const { url } = await res.json()
-      if (!url) throw new Error('sem url')
-      if (win) { try { win.opener = null } catch {} win.location.href = url }
-      else window.open(url, '_blank', 'noopener,noreferrer')
-    } catch {
-      if (win) { try { win.close() } catch {} }
-      alert('Nao foi possivel abrir a loja. Tenta de novo.')
-    } finally {
-      setSsoLoading(false)
-    }
-  }
+  // Gera a URL SSO (token fresco, server-side) assim que entra — loja embutida.
+  useEffect(() => {
+    if (!ssoEnabled || !user) return
+    let alive = true
+    setIframeErr(false); setIframeLoading(true)
+    ;(async () => {
+      try {
+        const { data: s } = await supabase.auth.getSession()
+        const token = s?.session?.access_token
+        const res = await fetch('/api/proxy-sso', { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+        if (!res.ok) throw new Error('falha')
+        const { url } = await res.json()
+        if (alive && url) setIframeUrl(url)
+        else if (alive) setIframeErr(true)
+      } catch { if (alive) setIframeErr(true) }
+    })()
+    return () => { alive = false }
+  }, [ssoEnabled, user])
 
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, var(--surface), var(--surface))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
         </motion.div>
@@ -80,234 +76,90 @@ export default function ProxyPage() {
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
-      <div style={{ maxWidth: ssoEnabled ? 720 : 900, margin: '0 auto', padding: '32px 20px' }}>
-
-        {/* Hero — clean */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          style={{ marginBottom: 28 }}
-        >
-          <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Loja Proxy</h1>
-          <p style={{ fontSize:13, color:'var(--t3)', margin:0, fontWeight:400 }}>
-            Infraestrutura de proxies residenciais para operacoes em escala · parceiro oficial
-          </p>
-        </motion.div>
-
-        {ssoEnabled ? (
-          /* Card SSO — abre a loja logada em NOVA ABA */
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
-            style={{
-              position: 'relative', overflow: 'hidden', borderRadius: 24, textAlign: 'center',
-              padding: '48px 40px 44px',
-              background: 'linear-gradient(160deg, var(--surface), var(--surface))',
-              border: '1px solid var(--b1)',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 80px rgba(229,57,53,0.06)',
-            }}
-          >
-            {/* glow vermelho ambiente */}
-            <div style={{ position: 'absolute', top: -70, left: '50%', marginLeft: -150, width: 300, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.14), transparent 70%)', pointerEvents: 'none' }} />
-
-            {/* Logo Bettify (some se nao carregar) */}
-            <img src="https://bettifyproxy.com/logo.png" alt="Bettify Proxy"
-              style={{ height: 46, maxWidth: 220, objectFit: 'contain', margin: '0 auto 22px', display: 'block', position: 'relative' }}
-              onError={e => { e.currentTarget.style.display = 'none' }} />
-
-            <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.02em', margin: '0 0 8px', position: 'relative' }}>
-              Loja Bettify Proxy
-            </h2>
-            <p style={{ fontSize: 14, color: 'var(--t3)', maxWidth: 440, margin: '0 auto 28px', lineHeight: 1.6, position: 'relative' }}>
-              Sua loja oficial de proxies residenciais — login automatico, sem precisar criar senha.
-            </p>
-
-            {/* Benefícios */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, maxWidth: 440, margin: '0 auto 30px', position: 'relative' }}>
-              {[
-                'Entrega automatica na hora',
-                'IPs residenciais BR',
-                'Login automatico (SSO)',
-                'Suporte especializado',
-              ].map((b, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--t2)', textAlign: 'left' }}>{b}</span>
-                </div>
-              ))}
+      {ssoEnabled ? (
+        /* Loja Bettify embutida — ocupa toda a area de conteudo, ja logada */
+        <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 92px)', minHeight: 480, background: '#000' }}>
+          {iframeErr ? (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: 'var(--surface)', textAlign: 'center', padding: 24 }}>
+              <p style={{ color: 'var(--t2)', fontSize: 14, margin: 0 }}>Nao consegui carregar a loja aqui dentro.</p>
+              <a href={iframeUrl || 'https://bettifyproxy.com'} target="_blank" rel="noopener noreferrer" style={{ color: '#e53935', fontWeight: 600, fontSize: 13 }}>Abrir em nova aba</a>
             </div>
-
-            {/* Botão — abre em nova aba */}
-            <button type="button" onClick={abrirLoja} disabled={ssoLoading}
-              style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                padding: '16px 44px', borderRadius: 14, border: 'none',
-                fontSize: 15, fontWeight: 700, fontFamily: 'inherit',
-                color: '#fff', background: 'linear-gradient(135deg, #e53935, #c62828)',
-                cursor: ssoLoading ? 'default' : 'pointer', opacity: ssoLoading ? 0.7 : 1,
-                boxShadow: '0 8px 28px rgba(229,57,53,0.4)', position: 'relative',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-              }}
-              onMouseEnter={e => { if (!ssoLoading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(229,57,53,0.5)' } }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(229,57,53,0.4)' }}>
-              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-              {ssoLoading ? 'Abrindo...' : 'Abrir Loja Bettify Proxy'}
-            </button>
-
-            <p style={{ fontSize: 11, color: 'var(--t4)', marginTop: 16, position: 'relative' }}>
-              Abre em nova aba, ja logado com seu email do NexControl
+          ) : (
+            <>
+              {(iframeLoading || !iframeUrl) && (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: 'rgba(0,0,0,0.5)', zIndex: 10 }}>
+                  <div className="spinner" style={{ width: 30, height: 30 }} />
+                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, margin: 0 }}>Carregando loja...</p>
+                </div>
+              )}
+              {iframeUrl && (
+                <iframe src={iframeUrl} title="Loja Bettify Proxy" onLoad={() => setIframeLoading(false)}
+                  style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: '#000' }}
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation"
+                  referrerPolicy="origin-when-cross-origin"
+                  allow="payment; clipboard-write" />
+              )}
+              {iframeUrl && (
+                <a href={iframeUrl} target="_blank" rel="noopener noreferrer" title="Abrir em nova aba"
+                  style={{ position: 'absolute', top: 12, right: 12, zIndex: 20, display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 16, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
+                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                  Nova aba
+                </a>
+              )}
+            </>
+          )}
+        </div>
+      ) : (
+        /* Demais contas — card de marketing + link externo */
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 20px' }}>
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} style={{ marginBottom: 28 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 600, color: 'var(--t1)', letterSpacing: '-0.03em', margin: '0 0 6px' }}>Loja Proxy</h1>
+            <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, fontWeight: 400 }}>
+              Infraestrutura de proxies residenciais para operacoes em escala · parceiro oficial
             </p>
           </motion.div>
-        ) : (<>
-        {/* Main card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1, ease }}
-          style={{
-            borderRadius: 24, overflow: 'hidden', position: 'relative',
-            background: 'linear-gradient(160deg, var(--surface), var(--surface))',
-            border: '1px solid rgba(255,255,255,0.06)',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02), 0 0 80px rgba(255,255,255,0.04)',
-          }}
-        >
-          {/* Top visual area */}
-          <div style={{
-            padding: '48px 40px 40px', textAlign: 'center',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04) 50%, transparent)',
-            borderBottom: '1px solid rgba(255,255,255,0.04)',
-            position: 'relative', overflow: 'hidden',
-          }}>
-            {/* Ambient glow */}
-            <div style={{
-              position: 'absolute', top: -60, left: '50%', marginLeft: -150,
-              width: 300, height: 200, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%)',
-              pointerEvents: 'none',
-            }} />
 
-            {/* Icon */}
-            <div style={{
-              width: 64, height: 64, borderRadius: 18, margin: '0 auto 24px',
-              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 40px rgba(255,255,255,0.12)',
-              position: 'relative',
-            }}>
-              <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1, ease }}
+            style={{ borderRadius: 24, overflow: 'hidden', position: 'relative', background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
+            <div style={{ padding: '48px 40px 40px', textAlign: 'center', borderBottom: '1px solid var(--b1)' }}>
+              <div style={{ width: 64, height: 64, borderRadius: 18, margin: '0 auto 24px', background: 'var(--fill-2)', border: '1px solid var(--b2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              </div>
+              <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.03em', marginBottom: 12 }}>
+                Proxies Premium de Alta Performance
+              </h2>
+              <p style={{ fontSize: 14, color: 'var(--t3)', maxWidth: 460, margin: '0 auto 28px', lineHeight: 1.6 }}>
+                Parceiro oficial do NexControl para conexoes rapidas, seguras e preparadas para alta demanda operacional.
+              </p>
             </div>
 
-            <h2 style={{
-              fontSize: 26, fontWeight: 800, color: '#fff',
-              letterSpacing: '-0.03em', marginBottom: 12,
-              position: 'relative',
-            }}>
-              Proxies Premium de Alta Performance
-            </h2>
-            <p style={{
-              fontSize: 14, color: 'rgba(255,255,255,0.45)', maxWidth: 460,
-              margin: '0 auto 28px', lineHeight: 1.6, position: 'relative',
-            }}>
-              Parceiro oficial do NexControl para conexoes rapidas, seguras e preparadas para alta demanda operacional. Escale sua operacao com infraestrutura profissional.
-            </p>
+            <div style={{ padding: '32px 40px 36px', textAlign: 'center' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 28, maxWidth: 400, margin: '0 auto 28px' }}>
+                {['IPs residenciais de alta qualidade', 'Suporte tecnico especializado', 'Gerenciamento completo de conexoes', 'Condicoes exclusivas NexControl'].map((f, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12l2 2 4-4" /></svg>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--t2)', textAlign: 'left' }}>{f}</span>
+                  </div>
+                ))}
+              </div>
 
-            {/* Stats */}
-            <div style={{
-              display: 'flex', justifyContent: 'center', gap: 32, marginBottom: 4,
-              position: 'relative',
-            }}>
-              {[
-                { icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', label: 'Baixa latencia' },
-                { icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', label: 'Protecao avancada' },
-                { icon: 'M21 12a9 9 0 11-18 0 9 9 0 0118 0z', label: 'Cobertura global' },
-              ].map((s, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d={s.icon} />
-                  </svg>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>{s.label}</span>
-                </div>
-              ))}
+              <a href="https://bettifyproxy.com" target="_blank" rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 40px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', background: 'linear-gradient(135deg, rgba(255,255,255,0.78), #2563eb)', color: '#fff', boxShadow: '0 6px 24px rgba(255,255,255,0.25)', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'none' }}>
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+                Acessar Proxy Premium
+              </a>
             </div>
-          </div>
-
-          {/* Bottom action area */}
-          <div style={{ padding: '32px 40px 36px', textAlign: 'center' }}>
-            {/* Features */}
-            <div style={{
-              display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10,
-              marginBottom: 28, maxWidth: 400, margin: '0 auto 28px',
-            }}>
-              {[
-                { icon: 'M9 12l2 2 4-4', label: 'IPs residenciais de alta qualidade' },
-                { icon: 'M9 12l2 2 4-4', label: 'Suporte tecnico especializado' },
-                { icon: 'M9 12l2 2 4-4', label: 'Gerenciamento completo de conexoes' },
-                { icon: 'M9 12l2 2 4-4', label: 'Condicoes exclusivas NexControl' },
-              ].map((f, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  padding: '10px 14px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
-                }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d={f.icon} />
-                  </svg>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>{f.label}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* CTA (demais contas) — link externo atual */}
-            <a href="https://bettifyproxy.com" target="_blank" rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                padding: '15px 40px', borderRadius: 14,
-                fontSize: 15, fontWeight: 700, textDecoration: 'none',
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.78), #2563eb)', color: '#fff',
-                boxShadow: '0 6px 24px rgba(255,255,255,0.25)',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(255,255,255,0.35)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(255,255,255,0.25)' }}
-            >
-              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-              Acessar Proxy Premium
-            </a>
-
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 16 }}>
-              Acesso externo seguro — plataforma verificada
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Trust badge */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.4 }}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            marginTop: 24,
-          }}
-        >
-          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.8" strokeLinecap="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>Infraestrutura verificada — Parceiro oficial NexControl</span>
-        </motion.div>
-        </>)}
-      </div>
+          </motion.div>
+        </div>
+      )}
     </AppLayout>
   )
 }

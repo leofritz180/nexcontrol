@@ -18,8 +18,7 @@ export default function ProxyPage() {
   const [tenant, setTenant] = useState(null)
   const [sub, setSub] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [iframeUrl, setIframeUrl] = useState(null)
-  const [iframeErr, setIframeErr] = useState(false)
+  const [ssoLoading, setSsoLoading] = useState(false)
 
   useEffect(() => { init() }, [])
 
@@ -44,9 +43,14 @@ export default function ProxyPage() {
 
   const ssoEnabled = SSO_TEST_EMAIL ? user?.email?.toLowerCase() === SSO_TEST_EMAIL : true
 
-  // Loja Bettify EMBUTIDA: pede a URL SSO ao server e carrega no iframe (sem sair do NexControl)
-  async function carregarLoja() {
-    setIframeErr(false); setIframeUrl(null)
+  // Abre a Loja Bettify logada (SSO) em NOVA ABA. Cookies de sessao nao
+  // funcionam em iframe cross-origin (Chrome/Safari), por isso nova aba.
+  async function abrirLoja() {
+    if (ssoLoading) return
+    setSsoLoading(true)
+    // Abre a aba JA, no gesto do clique (evita popup blocker); redireciona depois.
+    let win = null
+    try { win = window.open('', '_blank') } catch {}
     try {
       const { data: s } = await supabase.auth.getSession()
       const token = s?.session?.access_token
@@ -54,27 +58,15 @@ export default function ProxyPage() {
       if (!res.ok) throw new Error('falha')
       const { url } = await res.json()
       if (!url) throw new Error('sem url')
-      setIframeUrl(url)
-    } catch { setIframeErr(true) }
+      if (win) { try { win.opener = null } catch {} win.location.href = url }
+      else window.open(url, '_blank', 'noopener,noreferrer')
+    } catch {
+      if (win) { try { win.close() } catch {} }
+      alert('Nao foi possivel abrir a loja. Tenta de novo.')
+    } finally {
+      setSsoLoading(false)
+    }
   }
-
-  useEffect(() => {
-    if (!ssoEnabled || !user) return
-    let alive = true
-    ;(async () => {
-      setIframeErr(false)
-      try {
-        const { data: s } = await supabase.auth.getSession()
-        const token = s?.session?.access_token
-        const res = await fetch('/api/proxy-sso', { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
-        if (!res.ok) throw new Error('falha')
-        const { url } = await res.json()
-        if (alive && url) setIframeUrl(url)
-        else if (alive) setIframeErr(true)
-      } catch { if (alive) setIframeErr(true) }
-    })()
-    return () => { alive = false }
-  }, [ssoEnabled, user])
 
   if (loading || !profile) {
     return (
@@ -88,7 +80,7 @@ export default function ProxyPage() {
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
-      <div style={{ maxWidth: ssoEnabled ? 1180 : 900, margin: '0 auto', padding: '24px 16px' }}>
+      <div style={{ maxWidth: ssoEnabled ? 720 : 900, margin: '0 auto', padding: '32px 20px' }}>
 
         {/* Hero — clean */}
         <motion.div
@@ -104,32 +96,72 @@ export default function ProxyPage() {
         </motion.div>
 
         {ssoEnabled ? (
-          /* Loja embutida (iframe SSO) — sem sair do NexControl */
+          /* Card SSO — abre a loja logada em NOVA ABA */
           <motion.div
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-            style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', border: '1px solid var(--b1)', background: 'var(--surface)' }}
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
+            style={{
+              position: 'relative', overflow: 'hidden', borderRadius: 24, textAlign: 'center',
+              padding: '48px 40px 44px',
+              background: 'linear-gradient(160deg, var(--surface), var(--surface))',
+              border: '1px solid var(--b1)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 80px rgba(229,57,53,0.06)',
+            }}
           >
-            {iframeErr ? (
-              <div style={{ padding: '64px 24px', textAlign: 'center' }}>
-                <p style={{ color: 'var(--t2)', fontSize: 14, margin: '0 0 14px' }}>Nao consegui carregar a loja aqui dentro.</p>
-                <button type="button" onClick={carregarLoja}
-                  style={{ padding: '11px 22px', borderRadius: 10, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: 13, color: '#fff', background: '#e53935', fontFamily: 'inherit' }}>
-                  Tentar de novo
-                </button>
-                <p style={{ marginTop: 14, fontSize: 12, color: 'var(--t3)' }}>
-                  Se persistir, <a href="https://bettifyproxy.com" target="_blank" rel="noopener noreferrer" style={{ color: '#e53935', fontWeight: 600 }}>abrir em nova aba</a>
-                </p>
-              </div>
-            ) : !iframeUrl ? (
-              <div style={{ padding: '90px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-                <div className="spinner" style={{ width: 26, height: 26 }} />
-                <p style={{ color: 'var(--t3)', fontSize: 13, margin: 0 }}>Conectando a loja...</p>
-              </div>
-            ) : (
-              <iframe src={iframeUrl} title="Loja Bettify Proxy"
-                style={{ width: '100%', height: 'calc(100vh - 170px)', minHeight: 560, border: 'none', display: 'block', background: 'var(--surface)' }}
-                allow="clipboard-write; payment" />
-            )}
+            {/* glow vermelho ambiente */}
+            <div style={{ position: 'absolute', top: -70, left: '50%', marginLeft: -150, width: 300, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.14), transparent 70%)', pointerEvents: 'none' }} />
+
+            {/* Logo Bettify (some se nao carregar) */}
+            <img src="https://bettifyproxy.com/logo.png" alt="Bettify Proxy"
+              style={{ height: 46, maxWidth: 220, objectFit: 'contain', margin: '0 auto 22px', display: 'block', position: 'relative' }}
+              onError={e => { e.currentTarget.style.display = 'none' }} />
+
+            <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.02em', margin: '0 0 8px', position: 'relative' }}>
+              Loja Bettify Proxy
+            </h2>
+            <p style={{ fontSize: 14, color: 'var(--t3)', maxWidth: 440, margin: '0 auto 28px', lineHeight: 1.6, position: 'relative' }}>
+              Sua loja oficial de proxies residenciais — login automatico, sem precisar criar senha.
+            </p>
+
+            {/* Benefícios */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, maxWidth: 440, margin: '0 auto 30px', position: 'relative' }}>
+              {[
+                'Entrega automatica na hora',
+                'IPs residenciais BR',
+                'Login automatico (SSO)',
+                'Suporte especializado',
+              ].map((b, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--t2)', textAlign: 'left' }}>{b}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Botão — abre em nova aba */}
+            <button type="button" onClick={abrirLoja} disabled={ssoLoading}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                padding: '16px 44px', borderRadius: 14, border: 'none',
+                fontSize: 15, fontWeight: 700, fontFamily: 'inherit',
+                color: '#fff', background: 'linear-gradient(135deg, #e53935, #c62828)',
+                cursor: ssoLoading ? 'default' : 'pointer', opacity: ssoLoading ? 0.7 : 1,
+                boxShadow: '0 8px 28px rgba(229,57,53,0.4)', position: 'relative',
+                transition: 'transform 0.2s, box-shadow 0.2s',
+              }}
+              onMouseEnter={e => { if (!ssoLoading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(229,57,53,0.5)' } }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(229,57,53,0.4)' }}>
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+              {ssoLoading ? 'Abrindo...' : 'Abrir Loja Bettify Proxy'}
+            </button>
+
+            <p style={{ fontSize: 11, color: 'var(--t4)', marginTop: 16, position: 'relative' }}>
+              Abre em nova aba, ja logado com seu email do NexControl
+            </p>
           </motion.div>
         ) : (<>
         {/* Main card */}

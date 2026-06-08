@@ -153,41 +153,69 @@
    MODO CLARO — camada global de correção (cobre TODO o sistema:
    modais, dropdowns, tooltips, tabelas, cards). Sobrescreve cores
    FIXAS inline. Só ativa em .nx-light (escuro 100% intacto).
+
+   IMPORTANTE: o React aplica estilos via CSSOM, então o navegador
+   RE-SERIALIZA as cores no atributo style: '#fff' vira
+   'rgb(255, 255, 255)' e '#050505' vira 'rgb(5, 5, 5)'. Por isso os
+   seletores miram nas formas rgb() (com espaço após a vírgula). Os
+   gradientes que usam var() mantêm o hex literal, então mantemos
+   também alguns seletores em hex para esses casos.
    ════════════════════════════════════════════════════════════════ */
 
-/* 1) Fundos escuros fixos → superfície clara */
-.nx-light [style*="background:#050505"], .nx-light [style*="background: #050505"],
-.nx-light [style*="background:#0d0d0d"], .nx-light [style*="background: #0d0d0d"], .nx-light [style*="background:#0D0D0D"],
-.nx-light [style*="background:#0f0f0f"], .nx-light [style*="background:#0F0F0F"],
-.nx-light [style*="background:#101010"], .nx-light [style*="background: #101010"],
-.nx-light [style*="background:#141414"], .nx-light [style*="background:#1a1a1a"], .nx-light [style*="background:#181818"],
-.nx-light [style*="background:#0c1220"], .nx-light [style*="background:#0C1220"],
-.nx-light [style*="background:#04070e"], .nx-light [style*="background:#04070E"],
-.nx-light [style*="background:#0c1424"], .nx-light [style*="background:#080e1a"], .nx-light [style*="background:#0a0e1a"],
-.nx-light [style*="background:#060606"], .nx-light [style*="background:#0a0a0a"] {
+/* 1) Fundos escuros fixos → superfície clara. Seletores "bare" porque
+      estes tons só aparecem como fundo/gradiente, nunca como cor de texto.
+      Cobre sólido (rgb serializado), gradiente (rgb no meio) e gradiente
+      com var() (hex literal preservado). */
+.nx-light [style*="rgb(5, 5, 5)"],   .nx-light [style*="#050505"],
+.nx-light [style*="rgb(6, 6, 6)"],   .nx-light [style*="#060606"],
+.nx-light [style*="rgb(10, 10, 10)"],.nx-light [style*="#0a0a0a"],
+.nx-light [style*="rgb(13, 13, 13)"],.nx-light [style*="#0d0d0d"], .nx-light [style*="#0D0D0D"],
+.nx-light [style*="rgb(15, 15, 15)"],.nx-light [style*="#0f0f0f"],
+.nx-light [style*="rgb(16, 16, 16)"],.nx-light [style*="#101010"],
+.nx-light [style*="rgb(20, 20, 20)"],.nx-light [style*="#141414"],
+.nx-light [style*="rgb(24, 24, 24)"],.nx-light [style*="#181818"],
+.nx-light [style*="rgb(26, 26, 26)"],.nx-light [style*="#1a1a1a"],
+.nx-light [style*="rgb(12, 18, 32)"],.nx-light [style*="#0c1220"],
+.nx-light [style*="rgb(4, 7, 14)"],  .nx-light [style*="#04070e"],
+.nx-light [style*="rgb(12, 20, 36)"],.nx-light [style*="#0c1424"],
+.nx-light [style*="rgb(8, 14, 26)"], .nx-light [style*="#080e1a"],
+.nx-light [style*="rgb(10, 14, 26)"],.nx-light [style*="#0a0e1a"] {
   background: var(--surface) !important;
 }
 
-/* 2) Texto branco/claro fixo → escuro. EXCEÇÃO: elementos cuja cor de fundo
-      é vermelha/marca ou gradiente (botões/faixas) mantêm o texto branco. */
-.nx-light [style*="color:#fff"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#d10000"]):not([style*="#c62828"]):not([style*="#ff4444"]):not([style*="#FF3131"]):not([style*="#10B981"]):not([style*="#059669"]):not([style*="gradient"]),
-.nx-light [style*="color: #fff"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]),
-.nx-light [style*="color:#ffffff"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]),
-.nx-light [style*="color:#FFFFFF"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]),
-.nx-light [style*="color:white"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]),
-.nx-light [style*="color:#fafafa"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="gradient"]),
-.nx-light [style*="color:#E2E8F0"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="gradient"]),
-.nx-light [style*="color:#CBD5E1"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="gradient"]) {
+/* 2) Texto branco/claro fixo → escuro. EXCEÇÃO: elementos cujo PRÓPRIO
+      style declara fundo vermelho/marca/verde/preto ou gradiente
+      (botões, faixas, badges, overlays) — nesses o branco fica. */
+.nx-light [style*="color: rgb(255, 255, 255)"]:not([style*="rgb(229, 57, 53)"]):not([style*="rgb(209, 0, 0)"]):not([style*="rgb(198, 40, 40)"]):not([style*="rgb(211, 47, 47)"]):not([style*="rgb(255, 68, 68)"]):not([style*="rgb(16, 185, 129)"]):not([style*="rgb(5, 150, 105)"]):not([style*="rgb(0, 0, 0)"]):not([style*="rgba(0, 0, 0"]):not([style*="#e53935"]):not([style*="#c62828"]):not([style*="#d32f2f"]):not([style*="#D10000"]):not([style*="#d10000"]):not([style*="#10B981"]):not([style*="var(--brand)"]):not([style*="var(--loss)"]):not([style*="var(--profit)"]),
+.nx-light [style*="color: rgb(250, 250, 250)"]:not([style*="rgb(229, 57, 53)"]):not([style*="rgb(209, 0, 0)"]):not([style*="rgb(0, 0, 0)"]):not([style*="rgba(0, 0, 0"]):not([style*="#e53935"]):not([style*="#D10000"]):not([style*="var(--brand)"]):not([style*="var(--loss)"]),
+.nx-light [style*="color: rgb(226, 232, 240)"]:not([style*="rgb(229, 57, 53)"]):not([style*="#e53935"]):not([style*="var(--brand)"]):not([style*="var(--loss)"]),
+.nx-light [style*="color: rgb(203, 213, 225)"]:not([style*="rgb(229, 57, 53)"]):not([style*="#e53935"]):not([style*="var(--brand)"]):not([style*="var(--loss)"]),
+.nx-light [style*="color: rgb(212, 212, 216)"]:not([style*="rgb(229, 57, 53)"]):not([style*="#e53935"]):not([style*="var(--brand)"]):not([style*="var(--loss)"]) {
   color: var(--t1) !important;
 }
 /* texto branco translúcido (secundário) → cinza escuro */
-.nx-light [style*="color:rgba(255,255,255"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]) {
+.nx-light [style*="color: rgba(255, 255, 255"]:not([style*="rgb(229, 57, 53)"]):not([style*="rgb(209, 0, 0)"]):not([style*="rgb(198, 40, 40)"]):not([style*="rgb(16, 185, 129)"]):not([style*="rgb(0, 0, 0)"]):not([style*="rgba(0, 0, 0"]):not([style*="#e53935"]):not([style*="#c62828"]):not([style*="#D10000"]):not([style*="#10B981"]):not([style*="var(--brand)"]):not([style*="var(--loss)"]):not([style*="var(--profit)"]) {
   color: var(--t2) !important;
 }
 
 /* 3) Texto com gradiente clipado (efeito hero) → sólido escuro no claro */
-.nx-light [style*="text-fill-color:transparent"], .nx-light [style*="WebkitTextFillColor"] {
+.nx-light [style*="-webkit-text-fill-color: transparent"],
+.nx-light [style*="text-fill-color: transparent"] {
   -webkit-text-fill-color: var(--t1) !important;
+  background: none !important;
+}
+
+/* 4) Bordas branco-translúcidas (somem no claro) → borda escura sutil.
+      Só border-color, preservando largura/estilo originais. */
+.nx-light [style*="solid rgba(255, 255, 255"] {
+  border-color: var(--b1) !important;
+}
+
+/* 5) Preenchimentos brancos sólidos sutis (fills de card/chip) → fill escuro.
+      Exceto gradientes (divisores/shimmer) que devem manter o efeito. */
+.nx-light [style*="background: rgba(255, 255, 255"]:not([style*="gradient"]),
+.nx-light [style*="background-color: rgba(255, 255, 255"]:not([style*="gradient"]) {
+  background: var(--fill-2) !important;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

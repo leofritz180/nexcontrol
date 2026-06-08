@@ -341,7 +341,8 @@ export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.
         <Reveal><p style={{ fontSize: 14, color: 'var(--t3)', textAlign: 'center', margin: '18px 0 0' }}>O sistema costuma se pagar na <strong style={{ color: 'var(--t1)' }}>primeira meta recuperada</strong>.</p></Reveal>
       </section>
 
-      {/* ═══ 5 · RESULTADO REAL ═══ */}
+      {/* ═══ 5 · RESULTADO REAL (só renderiza com lucro real rastreado) ═══ */}
+      {hasReal && (
       <section style={{ ...SECTION, paddingBottom: 80 }}>
         <Reveal>
           <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 26, border: `1px solid ${PROFIT}33`, background: 'linear-gradient(180deg, var(--raised), var(--surface))', padding: 'clamp(34px, 6vw, 56px) clamp(24px, 5vw, 48px)', textAlign: 'center' }}>
@@ -367,6 +368,7 @@ export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.
           </div>
         </Reveal>
       </section>
+      )}
 
       {/* ═══ 6 · DIFERENCIAIS DO PRO ═══ */}
       <section style={{ ...SECTION, paddingBottom: 80 }}>

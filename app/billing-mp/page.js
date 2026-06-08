@@ -34,7 +34,7 @@ export default function BillingMpPage() {
   const [payment, setPayment] = useState(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState('annual')
+  const [selectedPlan, setSelectedPlan] = useState('monthly')
   const pollRef = useRef(null)
 
   // Preco mensal base ja com desconto de tier por quantidade de operadores
@@ -54,8 +54,6 @@ export default function BillingMpPage() {
       const u = data?.session?.user
       if (!u) { router.push('/login'); return }
       setUser(u)
-      // Teste de conversao (leofritz178): abre no MENSAL, nao no anual.
-      if ((u.email || '').toLowerCase() === 'leofritz178@gmail.com') setSelectedPlan('monthly')
       const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
       if (!p || p.role !== 'admin') { router.push('/operator'); return }
       setProfile(p)
@@ -73,7 +71,7 @@ export default function BillingMpPage() {
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current) }, [])
 
   const selectedCalc = useMemo(() => combinedPrice(monthlyTier, selectedPlan), [monthlyTier, selectedPlan])
-  const isV2 = (user?.email || '').toLowerCase() === 'leofritz178@gmail.com'
+  const isV2 = true // seletor de periodo novo liberado p/ todos os admins
 
   async function handleStart() {
     if (!user || !profile) return

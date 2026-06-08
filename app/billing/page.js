@@ -58,8 +58,8 @@ export default function BillingPage() {
   const price = useMemo(()=>calculatePrice(opQty),[opQty])
   const currentPrice = useMemo(()=>calculatePrice(operators.length),[operators])
   const tiers = getAllTiers()
-  // Feature flag — nova versao da pagina Assinatura isolada na conta de teste.
-  const isV2 = (user?.email || '').toLowerCase() === 'leofritz178@gmail.com'
+  // Nova pagina Assinatura LIBERADA para todos os admins (so admins acessam /billing).
+  const isV2 = true
 
   if(loading) return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>

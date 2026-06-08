@@ -14,8 +14,9 @@ export default function VoiceBanner({ userEmail }) {
   useEffect(() => {
     if (!email) return
     if (new Date() > BANNER_UNTIL) return // janela de 7 dias encerrada
+    // "já vi" é por SESSÃO → reaparece a cada login/abertura nos próximos 7 dias
     let seen = false
-    try { seen = localStorage.getItem(SEEN_KEY) === '1' } catch {}
+    try { seen = sessionStorage.getItem(SEEN_KEY) === '1' } catch {}
     if (seen) return
     // Sinaliza pro sequenciador: banner é o 1º passo — segura tutorial/checklist
     try { window.__nxBannerOpen = true } catch {}
@@ -24,7 +25,7 @@ export default function VoiceBanner({ userEmail }) {
   }, [email])
 
   function dismiss() {
-    try { localStorage.setItem(SEEN_KEY, '1') } catch {}
+    try { sessionStorage.setItem(SEEN_KEY, '1') } catch {}
     try { window.__nxBannerOpen = false; window.dispatchEvent(new Event('nx-banner-closed')) } catch {}
     setShow(false)
   }

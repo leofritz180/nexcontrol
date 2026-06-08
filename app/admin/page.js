@@ -2248,13 +2248,20 @@ export default function AdminPage() {
 
             {/* RIGHT — Funil premium (redesign) ou KPIs */}
             {redesign ? (
-              <RedesignFunnel items={[
-                { label:'Lucro total na plataforma', value: global.lucroFinalTotal - global.custosTotal, prefix:'R$ ', currency:true },
-                { label:'Lucro do dia', value: global.lucroHoje - global.custosHoje, prefix:'R$ ', currency:true },
-                { label:'Contas no sistema', value: metas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0) },
-                { label:'Remessas no sistema', value: global.totalRem },
-                { label:'Metas no sistema', value: global.totalMetas },
-              ]} />
+              <RedesignFunnel items={(() => {
+                const y = new Date(); y.setDate(y.getDate() - 1)
+                const yKey = y.toDateString()
+                const lucroOntem = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&new Date(m.fechada_em).toDateString()===yKey).reduce((a,m)=>a+Number(m.lucro_final||0),0)
+                const lucroHojeNet = global.lucroHoje - global.custosHoje
+                const varDia = lucroOntem !== 0 ? Math.round((lucroHojeNet - lucroOntem) / Math.abs(lucroOntem) * 100) : null
+                return [
+                  { label:'Lucro total na plataforma', value: global.lucroFinalTotal - global.custosTotal, prefix:'R$ ', currency:true },
+                  { label:'Lucro do dia', value: lucroHojeNet, prefix:'R$ ', currency:true, variation: varDia },
+                  { label:'Contas no sistema', value: metas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0) },
+                  { label:'Remessas no sistema', value: global.totalRem },
+                  { label:'Metas no sistema', value: global.totalMetas },
+                ]
+              })()} />
             ) : (
             <motion.div
               data-tour="kpis-grid"

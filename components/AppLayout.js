@@ -7,6 +7,7 @@ const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false })
 const QuickNotifyPanel = dynamic(() => import('./QuickNotifyPanel'), { ssr: false })
 const VoiceAnnounceCard = dynamic(() => import('./VoiceAnnounceCard'), { ssr: false })
 const RedesignHeader = dynamic(() => import('./RedesignHeader'), { ssr: false })
+const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
 
 const pageVariants = {
   initial: { opacity: 0, y: 14 },
@@ -44,6 +45,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       </div>
       <QuickNotifyPanel userEmail={userEmail} />
       <VoiceAnnounceCard userEmail={userEmail} isAdmin={isAdmin} />
+      <VoiceBanner userEmail={userEmail} />
       <style jsx global>{`
         @media (max-width: 768px) {
           .app-content { margin-left: 0 !important; }

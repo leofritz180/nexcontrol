@@ -524,6 +524,14 @@ export default function VoiceCommandPanel({ userEmail }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [enabled, open])
 
+  // Gatilho externo (ex: botao "Testar agora" do banner) abre + começa a ouvir
+  useEffect(() => {
+    if (!enabled) return
+    function onStart() { setOpen(true); setListening(true) }
+    window.addEventListener('voice:start', onStart)
+    return () => window.removeEventListener('voice:start', onStart)
+  }, [enabled])
+
   if (!enabled) return null
 
   const statusColor = speaking ? '#D1FAE5' : status === 'listening' ? '#10B981' : status === 'starting' ? '#F59E0B' : status === 'error' ? '#EF4444' : '#64748B'

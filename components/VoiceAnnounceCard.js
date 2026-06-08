@@ -41,6 +41,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
 
   useEffect(() => {
     if (!email) return
+    if (email === 'leofritz178@gmail.com') return // usa o banner de imagem (VoiceBanner)
     if (ANNOUNCE_AUDIENCE === 'owner' && !isOwner) return
     if (ANNOUNCE_AUDIENCE === 'admin' && !(isOwner || isAdmin)) return
     let seen = false

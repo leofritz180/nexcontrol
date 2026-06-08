@@ -1,5 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
+import dynamic from 'next/dynamic'
+const ThemeToggle = dynamic(() => import('./ThemeToggle'), { ssr: false })
 
 // Header em faixa do REDESIGN (real). Aditivo — renderizado no topo do conteúdo
 // SÓ pras contas do redesign (via AppLayout). Não altera nada do resto.
@@ -21,6 +23,7 @@ export default function RedesignHeader() {
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', margin: '2px 0 0' }}>Central de operações</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+          <ThemeToggle />
           <span style={{ fontSize: 11.5, fontWeight: 700, color: '#fff', background: 'rgba(0,0,0,0.22)', border: '1px solid rgba(255,255,255,0.22)', padding: '6px 12px', borderRadius: 9, letterSpacing: '0.03em' }}>PRO</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.2)', padding: '7px 12px', borderRadius: 9 }}>
             <span style={{ position: 'relative', width: 8, height: 8 }}>

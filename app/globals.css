@@ -85,6 +85,34 @@
    (lucro/prejuízo) usam cor explícita, então não são afetados. */
 .nx-redesign svg[stroke="currentColor"] { color: #D10000; }
 
+/* ── MODO CLARO (gated, alternável) — remapeia os tokens de tema ──
+   v1: cobre as áreas que usam as variáveis de tema. Blocos com cor fixa
+   (preto/branco-alpha hardcoded) podem precisar de ajuste fino depois. */
+.nx-light {
+  --void: #EDEFF2;
+  --base: #F4F5F7;
+  --sidebar: #FFFFFF;
+  --surface: #FFFFFF;
+  --raised: #F7F8FA;
+  --overlay: #FFFFFF;
+  --float: #FFFFFF;
+  --t1: #18181B;
+  --t2: #3F3F46;
+  --t3: #6B7280;
+  --t4: #9CA3AF;
+  --b1: rgba(0,0,0,0.08);
+  --b2: rgba(0,0,0,0.12);
+  --b3: rgba(0,0,0,0.18);
+  --warn: rgba(0,0,0,0.7);
+  --warn-dim: rgba(0,0,0,0.04);
+  --warn-border: rgba(0,0,0,0.12);
+  --info: rgba(0,0,0,0.7);
+  --info-dim: rgba(0,0,0,0.04);
+  --info-border: rgba(0,0,0,0.12);
+  color-scheme: light;
+}
+.nx-light body { background: #F4F5F7 !important; color: var(--t1); }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background: var(--base); }
 a { color: inherit; text-decoration: none; }

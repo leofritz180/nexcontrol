@@ -22,7 +22,13 @@ export default function DesignMode() {
     }
     function apply(email) {
       const on = isRedesign(email)
-      try { document.documentElement.classList.toggle('nx-redesign', on) } catch {}
+      try {
+        document.documentElement.classList.toggle('nx-redesign', on)
+        // Modo claro só pra quem tem redesign; persiste a escolha (localStorage)
+        let light = false
+        if (on) { try { light = localStorage.getItem('nx_theme') === 'light' } catch {} }
+        document.documentElement.classList.toggle('nx-light', light)
+      } catch {}
       if (on) ensureFont()
     }
     // CUIDADO anti-deadlock: getSession só fora do callback; no onAuthStateChange

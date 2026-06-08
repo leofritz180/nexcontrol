@@ -137,9 +137,9 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             <Link key={item.href} href={item.href} onClick={()=>setMobileOpen(false)}
               data-tour={`menu-${item.href.replace(/^\//, '').replace(/\//g, '-')}`}
               style={{
-                display:'flex', alignItems:'center', gap:11,
-                padding:'9px 12px', borderRadius:8, textDecoration:'none',
-                fontSize:13, fontWeight: active?500:400,
+                display:'flex', alignItems:'center', gap: redesign?13:11,
+                padding: redesign?'10px 14px':'9px 12px', borderRadius: redesign?10:8, textDecoration:'none',
+                fontSize: redesign?13.5:13, fontWeight: active?(redesign?600:500):(redesign?500:400),
                 color: active?'var(--t1)':'var(--t3)',
                 background: active?'var(--raised)':'transparent',
                 transition:'background 0.15s ease, color 0.15s ease',
@@ -147,7 +147,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='var(--raised)';e.currentTarget.style.color='var(--t2)'}}}
               onMouseLeave={e=>{ if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'}}}
             >
-              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity:active?0.9:0.45 }}>
+              <svg className="sb-ico" width={redesign?20:15} height={redesign?20:15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={redesign?1.9:1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity: redesign ? (active?1:0.85) : (active?0.9:0.45) }}>
                 <path d={item.icon}/>
               </svg>
               <span className="sb-label">{item.label}</span>
@@ -184,7 +184,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             onMouseEnter={e=>{e.currentTarget.style.background='#2563eb'}}
             onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.78)'}}
           >
-            Desbloquear PRO
+            <span className="sb-label">Desbloquear PRO</span>
           </Link>
         </div>
       )}
@@ -193,7 +193,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       <div style={{ padding:'0 12px 12px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 12px' }}>
           <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'var(--profit)':'#9ca3af' }}/>
-          <span style={{ fontSize:11, color:'var(--t3)', fontWeight:400 }}>
+          <span className="sb-label" style={{ fontSize:11, color:'var(--t3)', fontWeight:400 }}>
             {subActive?'PRO ativo':'Trial · 3 dias'}
           </span>
         </div>
@@ -205,7 +205,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
           {pushState === 'granted' ? (
             <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderRadius:8, fontSize:12, fontWeight:500, color:'var(--profit)', background:'rgba(209,250,229,0.06)', border:'1px solid rgba(209,250,229,0.18)' }}>
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M20 6L9 17l-5-5"/></svg>
-              Notificações ativadas
+              <span className="sb-label">Notificações ativadas</span>
             </div>
           ) : pushState === 'denied' ? (
             <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderRadius:8, fontSize:11, color:'var(--t3)', background:'var(--fill-1)', border:'1px solid var(--fill-3)', lineHeight:1.4 }}>
@@ -226,7 +226,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               onMouseLeave={e=>{ if(!pushBusy) e.currentTarget.style.background='#e53935' }}
             >
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-              {pushBusy ? 'Ativando...' : 'Ativar notificações'}
+              <span className="sb-label">{pushBusy ? 'Ativando...' : 'Ativar notificações'}</span>
             </button>
           )}
         </div>
@@ -238,9 +238,9 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
           <div style={{ width:28, height:28, borderRadius:'50%', background:'transparent', border:'1px solid var(--fill-3)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <span style={{ fontSize:11, fontWeight:500, color:'var(--t2)' }}>{initial}</span>
           </div>
-          <div style={{ flex:1, minWidth:0 }}>
-            <p style={{ fontSize:12, fontWeight:600, color:'var(--t1)', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{name}</p>
-            <p style={{ fontSize:9, color:'var(--t4)', margin:'1px 0 0', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{userEmail}</p>
+          <div className="sb-label" style={{ flex:1, minWidth:0 }}>
+            <p style={{ fontSize: redesign?13:12, fontWeight:600, color:'var(--t1)', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{name}</p>
+            <p style={{ fontSize: redesign?11:9, color:'var(--t4)', margin:'1px 0 0', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{userEmail}</p>
           </div>
         </div>
         <button onClick={logout}
@@ -256,7 +256,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
           <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
-          Sair
+          <span className="sb-label">Sair</span>
         </button>
       </div>
     </div>
@@ -333,6 +333,13 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         .sb-rd:hover { width: 248px !important; }
         .sb-rd .sb-label, .sb-rd .logo-text { opacity: 0; white-space: nowrap; transition: opacity .18s; }
         .sb-rd:hover .sb-label, .sb-rd:hover .logo-text { opacity: 1; }
+        /* Colapsada: ícones centralizados e maiores (padrão do preview) */
+        .sb-rd:not(:hover) .sb-label { width: 0; overflow: hidden; }
+        .sb-rd:not(:hover) nav a { justify-content: center; padding-left: 0 !important; padding-right: 0 !important; }
+        .sb-rd:not(:hover) nav a > span:not(.sb-label) { display: none; }
+        .sb-rd:not(:hover) > div > a:first-child { justify-content: center; padding-left: 0 !important; padding-right: 0 !important; }
+        .sb-rd .sb-ico { transition: transform .18s ease; }
+        .sb-rd:not(:hover) nav a:hover .sb-ico { transform: scale(1.08); }
         @media (max-width: 768px) {
           .sidebar-desktop { display: none !important; }
           .sidebar-mobile-toggle { display: flex !important; }

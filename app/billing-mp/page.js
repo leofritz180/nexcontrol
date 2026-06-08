@@ -54,6 +54,8 @@ export default function BillingMpPage() {
       const u = data?.session?.user
       if (!u) { router.push('/login'); return }
       setUser(u)
+      // Teste de conversao (leofritz178): abre no MENSAL, nao no anual.
+      if ((u.email || '').toLowerCase() === 'leofritz178@gmail.com') setSelectedPlan('monthly')
       const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
       if (!p || p.role !== 'admin') { router.push('/operator'); return }
       setProfile(p)
@@ -71,6 +73,7 @@ export default function BillingMpPage() {
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current) }, [])
 
   const selectedCalc = useMemo(() => combinedPrice(monthlyTier, selectedPlan), [monthlyTier, selectedPlan])
+  const isV2 = (user?.email || '').toLowerCase() === 'leofritz178@gmail.com'
 
   async function handleStart() {
     if (!user || !profile) return
@@ -144,6 +147,7 @@ export default function BillingMpPage() {
           {stage === 'period' && (
             <motion.div key="period" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
               <PeriodCard
+                v2={isV2}
                 opQty={opQty}
                 monthlyTier={monthlyTier}
                 selectedPlan={selectedPlan}
@@ -190,7 +194,7 @@ export default function BillingMpPage() {
 
 /* ── Cards ── */
 
-function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
+function PeriodCard({ v2, opQty, monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
   const planLabel = opQty > 0 ? `Admin + ${opQty} operador${opQty > 1 ? 'es' : ''}` : 'Admin Solo'
 
   // Dias adicionados (aproximado): planMonths * 30. Pra exibicao do painel.
@@ -207,7 +211,7 @@ function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selecte
   }, [currentExpires, selectedCalc.plan.months])
 
   return (
-    <div style={cardStyle}>
+    <div style={v2 ? cardStyleV2 : cardStyle}>
       {/* Top bar */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
         <button
@@ -264,22 +268,30 @@ function PeriodCard({ opQty, monthlyTier, selectedPlan, setSelectedPlan, selecte
         />
       )}
 
-      {/* Grid 2x2 de planos */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 18 }}>
-        {PLANS.map(plan => {
-          const isSelected = plan.id === selectedPlan
-          const calc = combinedPrice(monthlyTier, plan.id)
-          return (
-            <PlanCard
+      {/* Seletor de periodo — v2: lista vertical premium · padrao: grid 2x2 */}
+      {v2 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginBottom: 18 }}>
+          {PLANS.map(plan => (
+            <PlanRowV2
               key={plan.id}
               plan={plan}
-              calc={calc}
-              isSelected={isSelected}
+              calc={combinedPrice(monthlyTier, plan.id)}
+              isSelected={plan.id === selectedPlan}
               onSelect={() => setSelectedPlan(plan.id)}
             />
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 18 }}>
+          {PLANS.map(plan => {
+            const isSelected = plan.id === selectedPlan
+            const calc = combinedPrice(monthlyTier, plan.id)
+            return (
+              <PlanCard key={plan.id} plan={plan} calc={calc} isSelected={isSelected} onSelect={() => setSelectedPlan(plan.id)} />
+            )
+          })}
+        </div>
+      )}
 
       {/* Summary final */}
       <div style={{
@@ -471,6 +483,38 @@ function PlanCard({ plan, calc, isSelected, onSelect }) {
   )
 }
 
+// Linha de periodo premium (v2) — limpa, combina com o sistema
+function PlanRowV2({ plan, calc, isSelected, onSelect }) {
+  const isPop = plan.highlighted
+  return (
+    <button type="button" onClick={onSelect} style={{
+      position: 'relative', width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+      padding: '15px 16px', borderRadius: 14, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
+      border: '1.5px solid ' + (isSelected ? '#e53935' : 'var(--b1)'),
+      background: isSelected ? 'linear-gradient(90deg, rgba(229,57,53,0.10), rgba(229,57,53,0.02))' : 'var(--surface)',
+      boxShadow: isSelected ? '0 0 26px rgba(229,57,53,0.14)' : 'none',
+      transition: 'all 0.18s',
+    }}>
+      <span style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, border: '1.5px solid ' + (isSelected ? '#e53935' : 'var(--b2)'), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {isSelected && <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e53935' }} />}
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.01em' }}>{plan.label}</span>
+          {plan.badge && <span style={{ fontSize: 8.5, fontWeight: 800, padding: '2px 7px', borderRadius: 5, letterSpacing: '0.05em', background: isPop ? '#e53935' : 'rgba(34,197,94,0.14)', color: isPop ? '#fff' : '#22C55E', border: isPop ? 'none' : '1px solid rgba(34,197,94,0.3)' }}>{plan.badge}</span>}
+        </div>
+        <p style={{ fontSize: 11, color: 'var(--t3)', margin: '3px 0 0' }}>
+          R$ {fmt(calc.perMonth)}/mês{calc.savings > 0 ? ` · economia R$ ${fmt(calc.savings)}` : ''}
+        </p>
+      </div>
+      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+        <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 900, color: isSelected ? '#fff' : 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>R$ {fmt(calc.total)}</p>
+        <p style={{ fontSize: 10, color: 'var(--t4)', margin: '2px 0 0' }}>{plan.months === 1 ? 'à vista' : `${plan.months} meses`}</p>
+      </div>
+    </button>
+  )
+}
+
 function LoadingCard() {
   return (
     <div style={{ ...cardStyle, textAlign: 'center' }}>
@@ -616,4 +660,12 @@ const cardStyle = {
   WebkitBackdropFilter: 'blur(30px) saturate(160%)',
   border: '1px solid rgba(255,255,255,0.08)',
   boxShadow: '0 40px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)',
+}
+
+// v2 (teste 178) — card limpo, alinhado ao tema (sem o glass azulado)
+const cardStyleV2 = {
+  padding: 32, borderRadius: 22,
+  background: 'var(--surface)',
+  border: '1px solid var(--b1)',
+  boxShadow: '0 30px 70px rgba(0,0,0,0.5)',
 }

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
+import { SLOTS } from '../lib/slots-data'
 
 // ─────────────────────────────────────────────────────────────────────────
 // BillingProV2 — PREVIEW premium da página Assinatura (teste de conversão).
@@ -312,6 +313,44 @@ export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.
             </Reveal>
           ))}
         </div>
+      </section>
+
+      {/* ═══ 6.5 · 48 SLOTS PREMIUM (cadeado) ═══ */}
+      <section style={{ ...SECTION, paddingBottom: 80 }}>
+        <Reveal>
+          <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 24, border: '1px solid var(--b1)', background: 'linear-gradient(180deg, var(--raised), var(--surface))', padding: 'clamp(34px, 5vw, 44px) clamp(20px, 4vw, 40px)' }}>
+            <div style={{ position: 'absolute', top: -70, right: -40, width: 240, height: 240, borderRadius: '50%', background: `radial-gradient(circle, ${BRAND}1c, transparent 70%)`, filter: 'blur(50px)', pointerEvents: 'none' }} />
+            <div style={{ textAlign: 'center', marginBottom: 26, position: 'relative' }}>
+              <p style={{ ...EYEBROW, marginBottom: 12 }}>Exclusivo PRO</p>
+              <h2 style={{ fontFamily: 'var(--mono, monospace)', fontSize: 'clamp(34px, 7vw, 60px)', fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.04em', lineHeight: 1, margin: '0 0 10px' }}>
+                48 <span style={{ color: BRAND }}>SLOTS</span> PREMIUM
+              </h2>
+              <p style={{ fontSize: 14, color: 'var(--t2)', margin: 0 }}>Catálogo completo de slots — liberado na assinatura.</p>
+            </div>
+
+            {/* parede de slots travados */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(56px, 1fr))', gap: 8, position: 'relative' }}>
+              {SLOTS.slice(0, 48).map(s => (
+                <div key={s.id} style={{ position: 'relative', aspectRatio: '1 / 1', borderRadius: 10, overflow: 'hidden', border: '1px solid var(--b1)', background: 'var(--raised)' }}>
+                  <img src={s.image} alt="" loading="lazy"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(5px) brightness(0.45) saturate(0.6)' }}
+                    onError={e => { e.currentTarget.style.display = 'none' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.62))' }} />
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={BRAND} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 5px ${BRAND}88)` }}>
+                      <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--t3)', margin: '24px 0 0', position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 7, width: '100%', justifyContent: 'center' }}>
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={BRAND} strokeWidth="2.2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+              48 slots bloqueados — <strong style={{ color: 'var(--t1)' }}>desbloqueie com o PRO</strong>
+            </p>
+          </div>
+        </Reveal>
       </section>
 
       {/* ═══ 7 · NOTIFICAÇÕES (mockup celular) ═══ */}

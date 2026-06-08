@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { NexIcon } from './Logo'
+import { afterVoiceBanner } from '../lib/onboardingSeq'
 
 const KEY = 'nexcontrol_onboarded'
 
@@ -21,14 +22,9 @@ export default function Onboarding() {
     setStep(0)
     let t
     const showTips = () => { t = setTimeout(() => setStep(1), 2000) }
-    // Sequenciador: dicas só depois do banner de onboarding fechar.
-    if (typeof window !== 'undefined' && window.__nxBannerOpen) {
-      const onClosed = () => showTips()
-      window.addEventListener('nx-banner-closed', onClosed, { once: true })
-      return () => { window.removeEventListener('nx-banner-closed', onClosed); clearTimeout(t) }
-    }
-    showTips()
-    return () => clearTimeout(t)
+    // Sequenciador determinístico: dicas só depois do banner de voz fechar.
+    const off = afterVoiceBanner(showTips)
+    return () => { off(); clearTimeout(t) }
   }, [])
 
   function next() {

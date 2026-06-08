@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import ProductTour, { hasSeenTour } from './ProductTour'
 import { getTour } from '../lib/tour-config'
+import { afterVoiceBanner } from '../lib/onboardingSeq'
 
 /**
  * RouteTour — wrapper de tour por rota.
@@ -27,8 +28,10 @@ export default function RouteTour({ tourId, steps, autoDelay = 900, disableAuto 
   useEffect(() => {
     if (disableAuto || !tourSteps || tourSteps.length === 0) return
     if (hasSeenTour(tourId)) return
-    const t = setTimeout(() => setOpen(true), autoDelay)
-    return () => clearTimeout(t)
+    let t
+    // Sequenciador: tutorial só começa DEPOIS do banner de voz fechar.
+    const off = afterVoiceBanner(() => { t = setTimeout(() => setOpen(true), autoDelay) })
+    return () => { off(); clearTimeout(t) }
   }, [tourId, autoDelay, disableAuto, tourSteps?.length])
 
   if (!tourSteps || tourSteps.length === 0) return null

@@ -6,6 +6,7 @@ import {
   ONBOARDING_STEPS, calculateOnboardingProgress,
   isDismissed, dismiss, markCompletedNow, getCompletedAt,
 } from '../lib/onboarding-steps'
+import { afterVoiceBanner } from '../lib/onboardingSeq'
 
 /* ───────────────────────────────────────────
    Icones SVG por step
@@ -32,11 +33,19 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
   const [collapsed, setCollapsed] = useState(false)
   const [showCelebration, setShowCelebration] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [ready, setReady] = useState(false) // só aparece depois do banner (e do tutorial começar)
 
   useEffect(() => {
     setMounted(true)
     if (userId) setDismissedState(isDismissed(userId))
   }, [userId])
+
+  // Sequenciador: banner -> tutorial -> passo a passo (este checklist)
+  useEffect(() => {
+    let t
+    const off = afterVoiceBanner(() => { t = setTimeout(() => setReady(true), 1200) })
+    return () => { off(); clearTimeout(t) }
+  }, [])
 
   const progress = useMemo(() => calculateOnboardingProgress(data || {}), [data])
 
@@ -51,7 +60,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
     }
   }, [progress.isComplete, userId, mounted])
 
-  if (!mounted || dismissed) return null
+  if (!mounted || dismissed || !ready) return null
   // Esconde 5 dias depois de concluir
   if (userId) {
     const completedAt = getCompletedAt(userId)

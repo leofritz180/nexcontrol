@@ -1,12 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { VOICE_BANNER_SEEN_KEY as SEEN_KEY, VOICE_BANNER_UNTIL as BANNER_UNTIL } from '../lib/onboardingSeq'
 
 // Banner "Comando de Voz" — card de imagem, aparece 1x por usuário.
-// FASE PREVIEW: só leofritz178 (pra você ver). Pra liberar geral depois:
-// troque a checagem por () => true (ou ajuste BANNER_EMAILS).
-const BANNER_EMAILS = new Set(['leofritz178@gmail.com'])
-const SEEN_KEY = 'nx_voicebanner_v2'
+// LIBERADO GERAL (2026-06-08): todos os logados, dentro da janela de 7 dias
+// (até 15/06). Depois disso não aparece mais para quem não viu.
 
 export default function VoiceBanner({ userEmail }) {
   const [show, setShow] = useState(false)
@@ -14,7 +13,7 @@ export default function VoiceBanner({ userEmail }) {
 
   useEffect(() => {
     if (!email) return
-    if (!BANNER_EMAILS.has(email)) return // fase preview
+    if (new Date() > BANNER_UNTIL) return // janela de 7 dias encerrada
     let seen = false
     try { seen = localStorage.getItem(SEEN_KEY) === '1' } catch {}
     if (seen) return

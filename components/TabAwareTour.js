@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import ProductTour, { hasSeenTour } from './ProductTour'
 import { getTour } from '../lib/tour-config'
+import { afterVoiceBanner } from '../lib/onboardingSeq'
 
 /**
  * TabAwareTour — dispara tour conforme a tab ativa muda.
@@ -39,14 +40,9 @@ export default function TabAwareTour({ activeTab, tabMap, autoDelay = 700 }) {
 
     let t
     const start = () => { t = setTimeout(() => setOpen(true), autoDelay) }
-    // Sequenciador de onboarding: tutorial só começa DEPOIS do banner fechar.
-    if (typeof window !== 'undefined' && window.__nxBannerOpen) {
-      const onClosed = () => start()
-      window.addEventListener('nx-banner-closed', onClosed, { once: true })
-      return () => { window.removeEventListener('nx-banner-closed', onClosed); clearTimeout(t) }
-    }
-    start()
-    return () => clearTimeout(t)
+    // Sequenciador determinístico: tutorial só começa DEPOIS do banner fechar.
+    const off = afterVoiceBanner(start)
+    return () => { off(); clearTimeout(t) }
   }, [activeTab, tabMap])
 
   const steps = tourId ? getTour(tourId) : []

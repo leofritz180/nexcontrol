@@ -329,8 +329,8 @@ export default function VoiceCommandPanel({ userEmail }) {
         }
       }
 
-      // 1) Acoes de Metodos (lucro 150 / novo metodo) — usuarios beta
-      if (isBeta) for (const a of ACTION_COMMANDS) {
+      // 1) Acoes de Metodos (lucro 150 / novo metodo) — admins (financeiro)
+      if (isAdminLevel) for (const a of ACTION_COMMANDS) {
         const m = norm.match(a.regex)
         if (m) {
           const onAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')
@@ -718,7 +718,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                 </>
               )}
 
-              {isBeta && (
+              {isAdminLevel && (
                 <>
                   <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Acoes rapidas</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

@@ -22,7 +22,7 @@ export default function DesignMode() {
     }
     function apply(email) {
       const on = isRedesign(email)
-      const aqua = String(email || '').toLowerCase() === 'leofritz178@gmail.com'
+      const aqua = on // verde-água + acento vermelho acompanham o redesign (geral)
       try {
         document.documentElement.classList.toggle('nx-redesign', on)
         // Paleta de verde água (#7FFFD4) — só na conta de teste leofritz178

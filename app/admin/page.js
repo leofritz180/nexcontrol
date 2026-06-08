@@ -983,7 +983,8 @@ export default function AdminPage() {
     { label:'Lucro/conta', rawValue:Math.abs(global.lucroPerConta), value:`R$ ${fmt(Math.abs(global.lucroPerConta))}`, sub:'Media por depositante', color:global.lucroPerConta>=0?'var(--profit)':'var(--loss)', card:global.lucroPerConta>=0?'card-profit':'card-loss', badge:'rentabilidade' },
   ]
 
-  const isBetaUser = !!(user?.email && BETA_EMAILS.has(String(user.email).toLowerCase()))
+  // Metodos liberado para TODOS os admins/owner (antes era beta por email)
+  const isBetaUser = !!(profile?.role === 'admin' || profile?.role === 'owner' || (user?.email && BETA_EMAILS.has(String(user.email).toLowerCase())))
 
   // Comando de voz "visao geral" / "metodos" / etc → muda tab
   useEffect(() => {

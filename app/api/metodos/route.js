@@ -39,16 +39,20 @@ async function authUser(req) {
   return data?.user || null
 }
 
-function isBeta(user) { return user?.email && BETA_EMAILS.has(user.email.toLowerCase()) }
+// Liberado para TODOS os admins/owner (antes era beta por email).
+function isAllowed(user, prof) {
+  if (prof?.role === 'admin' || prof?.role === 'owner') return true
+  return !!(user?.email && BETA_EMAILS.has(user.email.toLowerCase()))
+}
 
 // GET — lista registros do tenant do user logado
 export async function GET(req) {
   const user = await authUser(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  if (!isBeta(user)) return NextResponse.json({ error: 'Feature em beta' }, { status: 403 })
 
   const sb = sbAdmin()
-  const { data: prof } = await sb.from('profiles').select('tenant_id').eq('id', user.id).maybeSingle()
+  const { data: prof } = await sb.from('profiles').select('tenant_id, role').eq('id', user.id).maybeSingle()
+  if (!isAllowed(user, prof)) return NextResponse.json({ error: 'Sem acesso' }, { status: 403 })
   if (!prof?.tenant_id) return NextResponse.json({ items: [] })
 
   const { data: items } = await sb.from('metodos_registros')
@@ -65,7 +69,11 @@ export async function GET(req) {
 export async function POST(req) {
   const user = await authUser(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  if (!isBeta(user)) return NextResponse.json({ error: 'Feature em beta' }, { status: 403 })
+
+  const sb = sbAdmin()
+  const { data: prof } = await sb.from('profiles').select('tenant_id, role').eq('id', user.id).maybeSingle()
+  if (!isAllowed(user, prof)) return NextResponse.json({ error: 'Sem acesso' }, { status: 403 })
+  if (!prof?.tenant_id) return NextResponse.json({ error: 'Tenant nao encontrado' }, { status: 404 })
 
   const body = await req.json().catch(() => ({}))
   const { modalidade, tipo, valor, descricao } = body
@@ -74,10 +82,6 @@ export async function POST(req) {
   if (!['lucro', 'prejuizo'].includes(tipo)) return NextResponse.json({ error: 'Tipo invalido' }, { status: 400 })
   const v = Number(valor)
   if (!Number.isFinite(v) || v <= 0) return NextResponse.json({ error: 'Valor invalido' }, { status: 400 })
-
-  const sb = sbAdmin()
-  const { data: prof } = await sb.from('profiles').select('tenant_id').eq('id', user.id).maybeSingle()
-  if (!prof?.tenant_id) return NextResponse.json({ error: 'Tenant nao encontrado' }, { status: 404 })
 
   const { data: inserted, error } = await sb.from('metodos_registros').insert({
     tenant_id: prof.tenant_id,
@@ -95,14 +99,14 @@ export async function POST(req) {
 export async function DELETE(req) {
   const user = await authUser(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  if (!isBeta(user)) return NextResponse.json({ error: 'Feature em beta' }, { status: 403 })
 
   const { searchParams } = new URL(req.url)
   const id = searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'id obrigatorio' }, { status: 400 })
 
   const sb = sbAdmin()
-  const { data: prof } = await sb.from('profiles').select('tenant_id').eq('id', user.id).maybeSingle()
+  const { data: prof } = await sb.from('profiles').select('tenant_id, role').eq('id', user.id).maybeSingle()
+  if (!isAllowed(user, prof)) return NextResponse.json({ error: 'Sem acesso' }, { status: 403 })
   if (!prof?.tenant_id) return NextResponse.json({ error: 'Tenant nao encontrado' }, { status: 404 })
 
   const { error } = await sb.from('metodos_registros')

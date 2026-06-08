@@ -36,9 +36,7 @@ export default function PreviewSidebar() {
     >
       {/* Logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '4px 4px 22px' }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: RED, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 14px rgba(255,49,49,0.35)' }}>
-          <span style={{ color: '#fff', fontWeight: 800, fontSize: 19, lineHeight: 1, fontFamily: 'var(--mono, monospace)' }}>N</span>
-        </div>
+        <img src="/icons/nexcontrol-icon-clean.png" alt="NexControl" style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0, objectFit: 'contain' }} />
         <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em', color: '#F4F6FB', opacity: exp ? 1 : 0, transition: 'opacity 0.2s' }}>
           Nex<span style={{ color: RED }}>Control</span>
         </span>

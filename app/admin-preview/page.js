@@ -2177,7 +2177,7 @@ export default function AdminPage() {
 
               {/* ── Gráfico de evolução do lucro (preview) ── */}
               <div style={{ marginTop:24 }}>
-                <LucroAreaChart data={chartSeries} color="#D1FAE5" height={130} />
+                <LucroAreaChart data={chartSeries} color="#FF3131" height={140} />
               </div>
 
               <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:32, marginTop:24, paddingTop:24, borderTop:'1px solid var(--b1)' }}>

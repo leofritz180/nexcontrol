@@ -15,17 +15,15 @@ export default function PreviewHeader({ onRefresh }) {
         initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
         style={{
           height: 82, borderRadius: 16, padding: '0 22px',
-          background: 'linear-gradient(100deg, #5e0d0d 0%, #b21f1f 28%, #ff3b3b 50%, #b21f1f 72%, #5e0d0d 100%)',
-          boxShadow: '0 10px 34px rgba(120,10,10,0.35), inset 0 1px 0 rgba(255,255,255,0.12)',
-          border: '1px solid rgba(255,90,90,0.25)',
+          background: '#FF3131',
+          boxShadow: '0 10px 34px rgba(255,49,49,0.22), inset 0 1px 0 rgba(255,255,255,0.14)',
+          border: '1px solid rgba(255,255,255,0.12)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
         }}
       >
         {/* Esquerda — logo + titulo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0 }}>
-          <div style={{ width: 42, height: 42, borderRadius: 11, flexShrink: 0, background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: '#fff', fontWeight: 800, fontSize: 22, lineHeight: 1, fontFamily: 'var(--mono, monospace)' }}>N</span>
-          </div>
+          <img src="/icons/nexcontrol-icon-clean.png" alt="NexControl" style={{ width: 44, height: 44, borderRadius: 11, flexShrink: 0, objectFit: 'contain', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.18)' }} />
           <div style={{ minWidth: 0 }}>
             <p style={{ fontSize: 17, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.01em', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>Dashboard Operacional</p>
             <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.82)', margin: '2px 0 0' }}>Visão Geral</p>

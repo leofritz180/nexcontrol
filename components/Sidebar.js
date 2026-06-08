@@ -26,7 +26,7 @@ const ADMIN_NAV = [
   { href:'/afiliados', label:'Afiliados', icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M13 7a4 4 0 11-8 0 4 4 0 018 0zm6 3a2 2 0 100-4 2 2 0 000 4zM9 13a4 4 0 00-4 4v2h8v-2a4 4 0 00-4-4z' },
   { href:'/billing', label:'Assinatura', icon:'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
   { href:'/slots', label:'Slots Premium', icon:'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z', pro: true },
-  { href:'/proxy', label:'Loja Proxy', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' },
+  { href:'/proxy', label:'Loja Proxy', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', bettify: true },
   { href:'/tutorial', label:'Tutorial', icon:'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
 ]
 
@@ -34,7 +34,7 @@ const OP_NAV = [
   { href:'/operator', label:'Operador', icon:'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
   { href:'/performance', label:'Performance', icon:'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
   { href:'/slots', label:'Slots Premium', icon:'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z', pro: true },
-  { href:'/proxy', label:'Loja Proxy', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' },
+  { href:'/proxy', label:'Loja Proxy', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', bettify: true },
   { href:'/pix', label:'Chaves PIX', icon:'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
 ]
 
@@ -148,24 +148,41 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       <nav style={{ flex:1, padding:'0 12px', display:'flex', flexDirection:'column', gap:2 }}>
         {allItems.map(item => {
           const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+          const bettify = item.bettify
+          const BETT_BG = 'linear-gradient(135deg, rgba(255,107,0,0.16), rgba(255,107,0,0.05))'
+          const BETT_BG_HOVER = 'linear-gradient(135deg, rgba(255,107,0,0.28), rgba(255,107,0,0.09))'
           return (
             <Link key={item.href} href={item.href} onClick={()=>setMobileOpen(false)}
               data-tour={`menu-${item.href.replace(/^\//, '').replace(/\//g, '-')}`}
               style={{
                 display:'flex', alignItems:'center', gap: redesign?13:11,
                 padding: redesign?'10px 14px':'9px 12px', borderRadius: redesign?10:8, textDecoration:'none',
-                fontSize: redesign?13.5:13, fontWeight: active?(redesign?600:500):(redesign?500:400),
-                color: active?'var(--t1)':'var(--t3)',
-                background: active?'var(--raised)':'transparent',
-                transition:'background 0.15s ease, color 0.15s ease',
+                fontSize: redesign?13.5:13, fontWeight: bettify?700:(active?(redesign?600:500):(redesign?500:400)),
+                color: bettify ? 'var(--t1)' : (active?'var(--t1)':'var(--t3)'),
+                background: bettify ? BETT_BG : (active?'var(--raised)':'transparent'),
+                border: bettify ? '1px solid rgba(255,107,0,0.4)' : '1px solid transparent',
+                boxShadow: bettify ? '0 0 18px rgba(255,107,0,0.10)' : 'none',
+                transition:'background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
               }}
-              onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='var(--raised)';e.currentTarget.style.color='var(--t2)'}}}
-              onMouseLeave={e=>{ if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'}}}
+              onMouseEnter={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG_HOVER; e.currentTarget.style.boxShadow='0 6px 22px rgba(255,107,0,0.22)' } else if(!active){e.currentTarget.style.background='var(--raised)';e.currentTarget.style.color='var(--t2)'} }}
+              onMouseLeave={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG; e.currentTarget.style.boxShadow='0 0 18px rgba(255,107,0,0.10)' } else if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'} }}
             >
-              <svg className="sb-ico" width={redesign?20:15} height={redesign?20:15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={redesign?1.9:1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity: redesign ? (active?1:0.85) : (active?0.9:0.45) }}>
-                <path d={item.icon}/>
-              </svg>
+              {bettify ? (
+                <img className="sb-ico" src="/bettify-logo.png" alt="Bettify" width={redesign?22:18} height={redesign?22:18}
+                  style={{ flexShrink:0, objectFit:'contain', filter:'drop-shadow(0 0 6px rgba(255,107,0,0.55))' }} />
+              ) : (
+                <svg className="sb-ico" width={redesign?20:15} height={redesign?20:15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={redesign?1.9:1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity: redesign ? (active?1:0.85) : (active?0.9:0.45) }}>
+                  <path d={item.icon}/>
+                </svg>
+              )}
               <span className="sb-label">{item.label}</span>
+              {bettify && (
+                <span className="sb-label" style={{
+                  marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
+                  background:'rgba(255,107,0,0.18)', color:'#FF8A3D', border:'1px solid rgba(255,107,0,0.4)',
+                  letterSpacing:'0.06em',
+                }}>PARCEIRO</span>
+              )}
               {item.pro && !subActive && (
                 <span style={{
                   marginLeft:'auto', fontSize:8, fontWeight:600, padding:'2px 6px', borderRadius:4,

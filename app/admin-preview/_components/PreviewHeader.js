@@ -23,7 +23,6 @@ export default function PreviewHeader({ onRefresh }) {
       >
         {/* Esquerda — logo + titulo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0 }}>
-          <img src="/icons/nexcontrol-icon-clean.png" alt="NexControl" style={{ width: 44, height: 44, borderRadius: 11, flexShrink: 0, objectFit: 'contain', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.18)' }} />
           <div style={{ minWidth: 0 }}>
             <p style={{ fontSize: 17, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.01em', textShadow: '0 1px 2px rgba(0,0,0,0.25)' }}>Dashboard Operacional</p>
             <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.82)', margin: '2px 0 0' }}>Visão Geral</p>

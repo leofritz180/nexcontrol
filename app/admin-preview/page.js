@@ -2096,6 +2096,21 @@ export default function AdminPage() {
             )
           })()}
 
+          {/* Seletor de período — acima e fora do card (preview) */}
+          <div style={{ display:'flex', justifyContent:'flex-end', gap:0, marginBottom:14 }}>
+            {[['month','Mes'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d'],['all','Tudo']].map(([k,l])=>(
+              <button key={k} type="button" onClick={()=>setHeroPeriod(k)}
+                style={{
+                  fontSize:11, fontWeight:500, padding:'6px 12px', cursor:'pointer', border:'none', background:'transparent',
+                  color: heroPeriod===k ? 'var(--t1)' : 'var(--t3)',
+                  borderBottom: heroPeriod===k ? '1px solid var(--t1)' : '1px solid transparent',
+                  transition:'all 0.15s', fontFamily:'inherit',
+                }}>
+                {l}
+              </button>
+            ))}
+          </div>
+
           {/* ── HERO + KPIs — side by side ── */}
           {(() => {
             // Compute NET hero value ONCE (bruto - custos do periodo)
@@ -2137,20 +2152,6 @@ export default function AdminPage() {
                     return 'Lucro · ultimos 30 dias'
                   })()}
                 </p>
-                <div style={{ display:'flex', gap:0 }}>
-                  {[['month','Mes'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d'],['all','Tudo']].map(([k,l])=>(
-                    <button key={k} onClick={()=>setHeroPeriod(k)}
-                      style={{
-                        fontSize:11, fontWeight:500, padding:'6px 12px',
-                        cursor:'pointer', border:'none', background:'transparent',
-                        color: heroPeriod===k ? 'var(--t1)' : 'var(--t3)',
-                        borderBottom: heroPeriod===k ? '1px solid var(--t1)' : '1px solid transparent',
-                        transition:'all 0.15s', fontFamily:'inherit',
-                      }}>
-                      {l}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <AnimatedNumber
@@ -2160,7 +2161,7 @@ export default function AdminPage() {
                 className="hero-value"
                 style={{
                   fontFamily:'var(--mono)', fontSize:60, fontWeight:700,
-                  color: heroNet>=0 ? 'var(--profit)' : 'var(--loss)',
+                  color: heroNet>=0 ? '#FFFFFF' : 'var(--loss)',
                   lineHeight:1, letterSpacing:'-0.04em', display:'block',
                 }}
               />

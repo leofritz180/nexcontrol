@@ -149,6 +149,31 @@
 }
 .nx-light body { background: var(--base) !important; color: var(--t1); }
 
+/* ── Paleta verde-água (#7FFFD4) — só na conta teste leofritz178 (.nx-aqua) ──
+   Substitui o verde claro (mint) do modo escuro. Mantém o claro com verde
+   legível (não aplica em .nx-light, onde #7FFFD4 teria pouco contraste). */
+html.nx-aqua:not(.nx-light) {
+  --profit:        #7FFFD4;
+  --profit-dim:    rgba(127,255,212,0.10);
+  --profit-border: rgba(127,255,212,0.28);
+  --profit-glow:   rgba(127,255,212,0.16);
+  --success:       #7FFFD4;
+  --glow-profit: 0 0 24px rgba(127,255,212,0.20), 0 0 60px rgba(127,255,212,0.06);
+}
+
+/* ── Identidade RED nos cards (leofritz178) — vale em todos os módulos ──
+   Inspirado em dashboards temáticas: cada card ganha um acento vermelho na
+   borda esquerda e os rótulos/eyebrows ficam em vermelho. Aplica em claro e
+   escuro. Escopado em .nx-aqua (só a conta leofritz178). */
+.nx-aqua [style*="border-radius: 14px"][style*="solid var(--b1)"],
+.nx-aqua [style*="border-radius: 12px"][style*="solid var(--b1)"] {
+  border-left: 3px solid #e53935 !important;
+}
+/* eyebrows / rótulos em CAPS viram vermelho (identidade RED) */
+.nx-aqua p[style*="text-transform: uppercase"] {
+  color: #e53935 !important;
+}
+
 /* ════════════════════════════════════════════════════════════════
    MODO CLARO — camada global de correção (cobre TODO o sistema:
    modais, dropdowns, tooltips, tabelas, cards). Sobrescreve cores

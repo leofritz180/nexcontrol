@@ -22,8 +22,11 @@ export default function DesignMode() {
     }
     function apply(email) {
       const on = isRedesign(email)
+      const aqua = String(email || '').toLowerCase() === 'leofritz178@gmail.com'
       try {
         document.documentElement.classList.toggle('nx-redesign', on)
+        // Paleta de verde água (#7FFFD4) — só na conta de teste leofritz178
+        document.documentElement.classList.toggle('nx-aqua', aqua)
         // Modo claro só pra quem tem redesign; persiste a escolha (localStorage)
         let light = false
         if (on) { try { light = localStorage.getItem('nx_theme') === 'light' } catch {} }

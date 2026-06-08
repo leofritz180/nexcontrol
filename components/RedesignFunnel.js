@@ -119,7 +119,7 @@ export default function RedesignFunnel({ items = [] }) {
                     <span style={{
                       flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 3,
                       fontSize: 10.5, fontWeight: 700, fontFamily: 'var(--mono)',
-                      color: v >= 0 ? '#8ff0b5' : '#ffd0d0',
+                      color: v >= 0 ? 'var(--profit)' : '#ffd0d0',
                     }}>
                       <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ transform: v >= 0 ? 'none' : 'rotate(180deg)' }}>
                         <polyline points="6 15 12 9 18 15" />

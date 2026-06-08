@@ -603,7 +603,7 @@ export default function AdminPage() {
   const [user,      setUser]      = useState(null)
   const [profile,   setProfile]   = useState(null)
   // Metodos (beta) — agregados pra somar em lucroHoje / lucroFinalTotal
-  const [metodosData, setMetodosData] = useState({ hojeLiquido: 0, totalLiquido: 0 })
+  const [metodosData, setMetodosData] = useState({ hojeLiquido: 0, totalLiquido: 0, registros: 0 })
   const [selectedOp,setSelectedOp]= useState(null)
   const [modalMeta, setModalMeta] = useState(null)
   const [tab,       setTab]       = useState('overview')
@@ -1026,7 +1026,7 @@ export default function AdminPage() {
   // volta de aba do navegador. Garante que lucroHoje/lucroFinalTotal
   // sempre incluem os ultimos lancamentos sem reload.
   useEffect(() => {
-    if (!isBetaUser) { setMetodosData({ hojeLiquido: 0, totalLiquido: 0 }); return }
+    if (!isBetaUser) { setMetodosData({ hojeLiquido: 0, totalLiquido: 0, registros: 0 }); return }
     let alive = true
     async function loadMetodos() {
       try {
@@ -1045,7 +1045,7 @@ export default function AdminPage() {
           const itDay = new Date(it.created_at).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
           if (itDay === todayKey) hojeLiq += v
         }
-        setMetodosData({ hojeLiquido: Number(hojeLiq.toFixed(2)), totalLiquido: Number(totalLiq.toFixed(2)) })
+        setMetodosData({ hojeLiquido: Number(hojeLiq.toFixed(2)), totalLiquido: Number(totalLiq.toFixed(2)), registros: j.items.length })
       } catch {}
     }
     loadMetodos()
@@ -2120,13 +2120,9 @@ export default function AdminPage() {
           {/* ── Status global da operacao (no redesign vai ABAIXO do card de lucro) ── */}
           {!isRedesign(user?.email) && renderOpStatus()}
 
-          {/* ── Metodos (beta) — breakdown CPA puro vs Metodos vs Consolidado ── */}
-          {isBetaUser && (
-            <MetodosKpiCard
-              lucroCpa={(global.lucroFinalTotalCpa || 0) - (global.custosTotal || 0)}
-              onGoToTab={setTab}
-            />
-          )}
+          {/* Metodos (beta): breakdown grande REMOVIDO do topo — agora vira um
+              card menor mais abaixo (nao prioriza Metodos na dobra). O lucro de
+              Metodos continua somado em global.lucroHoje/lucroFinalTotal. */}
 
           {/* ── Insights rotativos (no redesign vao ABAIXO do card de lucro) ── */}
           {!isRedesign(user?.email) && renderInsights()}
@@ -2366,6 +2362,37 @@ export default function AdminPage() {
                   </div>
                 )}
               </div>
+            </motion.div>
+          )}
+
+          {/* ── Metodos (beta) — card MENOR, abaixo (nao prioriza no topo) ── */}
+          {isBetaUser && metodosData.registros > 0 && (
+            <motion.div
+              initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{duration:0.4,ease}}
+              onClick={()=>setTab('metodos')}
+              style={{
+                display:'flex', alignItems:'center', justifyContent:'space-between', gap:14, flexWrap:'wrap',
+                padding:'14px 18px', borderRadius:12, marginBottom:32, cursor:'pointer',
+                background:'var(--surface)', border:'1px solid var(--b1)',
+                transition:'border-color 0.15s',
+              }}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(229,57,53,0.35)'}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--b1)'}}
+            >
+              <div style={{ display:'flex', alignItems:'center', gap:12, minWidth:0 }}>
+                <div style={{ width:34, height:34, borderRadius:9, flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(229,57,53,0.10)', border:'1px solid rgba(229,57,53,0.25)' }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                </div>
+                <div style={{ minWidth:0 }}>
+                  <p style={{ fontSize:11, color:'var(--t3)', margin:0, fontWeight:500, letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                    Lucro parcial · Métodos <span style={{ fontSize:8.5, fontWeight:800, padding:'1px 5px', borderRadius:4, background:'rgba(229,57,53,0.14)', color:'#e53935', letterSpacing:'0.05em', marginLeft:4 }}>BETA</span>
+                  </p>
+                  <p style={{ fontSize:12, color:'var(--t4)', margin:'2px 0 0' }}>{metodosData.registros} registro{metodosData.registros!==1?'s':''} · clique pra abrir</p>
+                </div>
+              </div>
+              <p style={{ fontFamily:'var(--mono)', fontSize:20, fontWeight:700, margin:0, letterSpacing:'-0.02em', color: metodosData.totalLiquido>=0 ? 'var(--profit)' : 'var(--loss)', whiteSpace:'nowrap' }}>
+                {metodosData.totalLiquido>=0?'+':'−'}R$ {fmt(Math.abs(metodosData.totalLiquido))}
+              </p>
             </motion.div>
           )}
 

@@ -12,6 +12,7 @@ const MODALIDADES = [
   { id: 'cashback',       label: 'Cashback' },
   { id: 'arbitragem',     label: 'Arbitragem / Surebet' },
   { id: 'promo_casa',     label: 'Promo da casa' },
+  { id: 'mentoria',       label: 'Mentoria' },
   { id: 'outro',          label: 'Outro' },
 ]
 

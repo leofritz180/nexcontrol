@@ -15,6 +15,7 @@ const MODALIDADES = new Set([
   'cashback',
   'arbitragem',
   'promo_casa',
+  'mentoria',
   'outro',
 ])
 

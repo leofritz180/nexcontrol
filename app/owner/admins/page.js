@@ -34,7 +34,7 @@ const FILTERS = [
 ]
 
 const planColors = {
-  PRO: { bg: 'rgba(209,250,229,0.08)', c: '#D1FAE5', b: 'rgba(209,250,229,0.2)' },
+  PRO: { bg: 'rgba(209,250,229,0.08)', c: 'var(--profit)', b: 'rgba(209,250,229,0.2)' },
   TRIAL: { bg: 'rgba(255,255,255,0.08)', c: 'rgba(255,255,255,0.78)', b: 'rgba(255,255,255,0.2)' },
   FREE: { bg: 'rgba(100,116,139,0.08)', c: '#64748B', b: 'rgba(100,116,139,0.2)' },
 }
@@ -89,26 +89,26 @@ export default function AdminsPage() {
 
   const card = {
     borderRadius: 18,
-    background: 'linear-gradient(145deg, #000000, #000000)',
+    background: 'linear-gradient(145deg, var(--surface), var(--surface))',
     border: '1px solid rgba(255,255,255,0.05)',
     boxShadow: '0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
   }
 
   if (loading) return (
-    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000000' }}>
+    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface)' }}>
       <div className="spinner" style={{ width: 24, height: 24, borderTopColor: '#e53935' }} />
     </main>
   )
 
   return (
-    <main style={{ minHeight: '100vh', background: '#000000', position: 'relative', zIndex: 1 }}>
+    <main style={{ minHeight: '100vh', background: 'var(--surface)', position: 'relative', zIndex: 1 }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 28px 80px' }}>
 
         {/* Header */}
         <motion.div {...fadeUp(0)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <button onClick={() => router.push('/owner')}
-              style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: '#94A3B8', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6 }}
+              style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'var(--t3)', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 6 }}
               onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,0.08)' }}
               onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.04)' }}
             >
@@ -162,8 +162,8 @@ export default function AdminsPage() {
                     </div>
                     <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name || a.email.split('@')[0]}</p>
                     <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: plan.bg, color: plan.c, border: `1px solid ${plan.b}` }}>{a.planStatus}</span>
-                    <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: '#D1FAE5', margin: '8px 0 6px' }}>{a.metas} metas</p>
-                    <p style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? '#D1FAE5' : '#EF4444', margin: '0 0 8px' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</p>
+                    <p style={{ fontFamily: 'var(--mono)', fontSize: 16, fontWeight: 800, color: 'var(--profit)', margin: '8px 0 6px' }}>{a.metas} metas</p>
+                    <p style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '0 0 8px' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</p>
                     <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${(a.metas / maxM) * 100}%`, borderRadius: 2, background: medals[i], opacity: 0.6 }} />
                     </div>
@@ -194,7 +194,7 @@ export default function AdminsPage() {
                 {filtered.map((a, i) => {
                   const plan = planColors[a.planStatus] || planColors.FREE
                   const days = a.daysSinceActivity
-                  const dot = days <= 0 ? '#D1FAE5' : days <= 7 ? 'rgba(255,255,255,0.78)' : '#EF4444'
+                  const dot = days <= 0 ? 'var(--profit)' : days <= 7 ? 'rgba(255,255,255,0.78)' : 'var(--loss)'
                   return (
                     <tr key={a.id}
                       style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer', transition: 'background 0.15s' }}
@@ -202,12 +202,12 @@ export default function AdminsPage() {
                       onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
-                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontWeight: 700, color: i < 3 ? '#D1FAE5' : '#64748B', fontSize: 12 }}>{i + 1}</td>
+                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontWeight: 700, color: i < 3 ? 'var(--profit)' : '#64748B', fontSize: 12 }}>{i + 1}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 28, height: 28, borderRadius: 7, background: i < 3 ? 'rgba(209,250,229,0.1)' : '#000000', border: `1px solid ${i < 3 ? 'rgba(209,250,229,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
-                            <span style={{ fontSize: 11, fontWeight: 700, color: i < 3 ? '#D1FAE5' : '#94A3B8' }}>{(a.name || a.email)[0].toUpperCase()}</span>
-                            <div style={{ position: 'absolute', bottom: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: dot, border: '2px solid #000000' }} />
+                          <div style={{ width: 28, height: 28, borderRadius: 7, background: i < 3 ? 'rgba(209,250,229,0.1)' : 'var(--surface)', border: `1px solid ${i < 3 ? 'rgba(209,250,229,0.2)' : 'rgba(255,255,255,0.06)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: i < 3 ? 'var(--profit)' : 'var(--t3)' }}>{(a.name || a.email)[0].toUpperCase()}</span>
+                            <div style={{ position: 'absolute', bottom: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: dot, border: '2px solid var(--surface)' }} />
                           </div>
                           <div style={{ minWidth: 0 }}>
                             <p style={{ fontSize: 11, fontWeight: 600, color: '#F1F5F9', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }}>{a.name || a.email.split('@')[0]}</p>
@@ -216,12 +216,12 @@ export default function AdminsPage() {
                         </div>
                       </td>
                       <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 800, color: '#F1F5F9' }}>{a.metas}</td>
-                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 600, color: '#94A3B8' }}>{a.operators}</td>
-                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? '#D1FAE5' : '#EF4444' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</td>
+                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 600, color: 'var(--t3)' }}>{a.operators}</td>
+                      <td style={{ padding: '10px 12px', fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: (a.lucroFinal || 0) >= 0 ? 'var(--profit)' : 'var(--loss)' }}>{(a.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(a.lucroFinal || 0)}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <span style={{ fontSize: 9, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: plan.bg, color: plan.c, border: `1px solid ${plan.b}` }}>{a.planStatus}</span>
                       </td>
-                      <td style={{ padding: '10px 12px', fontSize: 10, color: days <= 0 ? '#D1FAE5' : days <= 7 ? '#94A3B8' : '#EF4444' }}>{relativeTime(a.lastActivity)}</td>
+                      <td style={{ padding: '10px 12px', fontSize: 10, color: days <= 0 ? 'var(--profit)' : days <= 7 ? 'var(--t3)' : 'var(--loss)' }}>{relativeTime(a.lastActivity)}</td>
                     </tr>
                   )
                 })}
@@ -243,7 +243,7 @@ export default function AdminsPage() {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.3, ease }}
               onClick={e => e.stopPropagation()}
-              style={{ width: '100%', maxWidth: 520, padding: 28, borderRadius: 20, background: 'linear-gradient(160deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 100px rgba(0,0,0,0.7)', position: 'relative', maxHeight: 'calc(100dvh - 48px)', overflowY: 'auto' }}>
+              style={{ width: '100%', maxWidth: 520, padding: 28, borderRadius: 20, background: 'linear-gradient(160deg, var(--surface), var(--surface))', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 40px 100px rgba(0,0,0,0.7)', position: 'relative', maxHeight: 'calc(100dvh - 48px)', overflowY: 'auto' }}>
               <button onClick={() => setSelectedAdmin(null)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 4 }}>
                 <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>
@@ -260,12 +260,12 @@ export default function AdminsPage() {
               <div style={{ padding: '16px 18px', borderRadius: 14, marginBottom: 14, background: (selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(209,250,229,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${(selectedAdmin.lucroFinal || 0) >= 0 ? 'rgba(209,250,229,0.12)' : 'rgba(239,68,68,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
                   <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Lucro final</p>
-                  <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>{selectedAdmin.totalContas || 0} contas · R$ {fmt(selectedAdmin.lucroPerConta || 0)}/conta</p>
+                  <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>{selectedAdmin.totalContas || 0} contas · R$ {fmt(selectedAdmin.lucroPerConta || 0)}/conta</p>
                 </div>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: (selectedAdmin.lucroFinal || 0) >= 0 ? '#D1FAE5' : '#EF4444', margin: 0 }}>{(selectedAdmin.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(selectedAdmin.lucroFinal || 0)}</p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: (selectedAdmin.lucroFinal || 0) >= 0 ? 'var(--profit)' : 'var(--loss)', margin: 0 }}>{(selectedAdmin.lucroFinal || 0) >= 0 ? '+' : ''}R$ {fmt(selectedAdmin.lucroFinal || 0)}</p>
               </div>
               <div className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginBottom: 14 }}>
-                {[{ l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' }, { l: 'Fechadas', v: selectedAdmin.fechadas, c: '#D1FAE5' }, { l: 'Ops', v: selectedAdmin.operators, c: '#F1F5F9' }, { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' }].map((s, i) => (
+                {[{ l: 'Metas', v: selectedAdmin.metas, c: '#F1F5F9' }, { l: 'Fechadas', v: selectedAdmin.fechadas, c: 'var(--profit)' }, { l: 'Ops', v: selectedAdmin.operators, c: '#F1F5F9' }, { l: 'Remessas', v: selectedAdmin.totalRemessas || selectedAdmin.remessas, c: '#F1F5F9' }].map((s, i) => (
                   <div key={i} style={{ textAlign: 'center', padding: '12px 6px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: s.c, margin: '0 0 3px' }}>{s.v}</p>
                     <p style={{ fontSize: 8, color: '#64748B', margin: 0, textTransform: 'uppercase', fontWeight: 600 }}>{s.l}</p>
@@ -292,16 +292,16 @@ export default function AdminsPage() {
                         <span style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9' }}>{r.rede}</span>
                         <span style={{ fontSize: 10, color: '#64748B' }}>{r.metas}m</span>
                       </div>
-                      <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: r.lucro >= 0 ? '#D1FAE5' : '#EF4444' }}>{r.lucro >= 0 ? '+' : ''}R$ {fmt(r.lucro)}</span>
+                      <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: r.lucro >= 0 ? 'var(--profit)' : 'var(--loss)' }}>{r.lucro >= 0 ? '+' : ''}R$ {fmt(r.lucro)}</span>
                     </div>
                   ))}
                 </div>
               )}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                 {[
-                  { l: 'Pago', v: `R$ ${fmt(selectedAdmin.totalPaid)}`, c: selectedAdmin.totalPaid > 0 ? '#D1FAE5' : '#64748B', mono: true },
-                  { l: 'Atividade', v: relativeTime(selectedAdmin.lastActivity), c: selectedAdmin.daysSinceActivity <= 0 ? '#D1FAE5' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : '#EF4444' },
-                  { l: 'Criado', v: selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '--', c: '#94A3B8' },
+                  { l: 'Pago', v: `R$ ${fmt(selectedAdmin.totalPaid)}`, c: selectedAdmin.totalPaid > 0 ? 'var(--profit)' : '#64748B', mono: true },
+                  { l: 'Atividade', v: relativeTime(selectedAdmin.lastActivity), c: selectedAdmin.daysSinceActivity <= 0 ? 'var(--profit)' : selectedAdmin.daysSinceActivity <= 7 ? '#F1F5F9' : 'var(--loss)' },
+                  { l: 'Criado', v: selectedAdmin.created_at ? new Date(selectedAdmin.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '--', c: 'var(--t3)' },
                 ].map((s, i) => (
                   <div key={i} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
                     <p style={{ fontSize: 8, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', fontWeight: 600 }}>{s.l}</p>

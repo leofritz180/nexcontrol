@@ -99,14 +99,14 @@ export default function SignupPage() {
   const labelStyle = { display: 'block', fontSize: 13, fontWeight: 500, color: 'var(--t1)', marginBottom: 8 }
 
   if (success) return (
-    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', background: '#000000' }}>
+    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', background: 'var(--surface)' }}>
       <div style={{ width: '100%', maxWidth: 380, textAlign: 'center' }}>
         <div style={{
           width: 56, height: 56, borderRadius: 14,
           background: 'rgba(0,140,94,0.08)', border: '1px solid rgba(0,140,94,0.25)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px',
         }}>
-          <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+          <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
         </div>
         <h1 style={{
           fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 400, letterSpacing: '-0.02em',
@@ -135,7 +135,7 @@ export default function SignupPage() {
   return (
     <main style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '40px 24px', position: 'relative', overflow: 'hidden', background: '#000000',
+      padding: '40px 24px', position: 'relative', overflow: 'hidden', background: 'var(--surface)',
     }}>
       <div aria-hidden style={{
         position: 'fixed', top: 0, left: 0, width: '40vw', height: '100vh', pointerEvents: 'none',
@@ -253,7 +253,7 @@ export default function SignupPage() {
                   padding: '10px 12px', borderRadius: 8,
                   background: 'rgba(239,68,68,0.06)',
                   border: '1px solid rgba(239,68,68,0.2)',
-                  fontSize: 12, color: '#EF4444',
+                  fontSize: 12, color: 'var(--loss)',
                 }}
               >
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

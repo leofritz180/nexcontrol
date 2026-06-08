@@ -171,7 +171,7 @@ export default function MetodosTab() {
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>Modalidade</label>
                   <select value={form.modalidade} onChange={e => setForm({ ...form, modalidade: e.target.value })}
                     style={{ width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 14, color: 'var(--t1)', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', outline: 'none', fontFamily: 'inherit' }}>
-                    {MODALIDADES.map(m => <option key={m.id} value={m.id} style={{ background: '#0a0a0a' }}>{m.label}</option>)}
+                    {MODALIDADES.map(m => <option key={m.id} value={m.id} style={{ background: 'var(--raised)' }}>{m.label}</option>)}
                   </select>
                 </div>
                 <div>
@@ -181,7 +181,7 @@ export default function MetodosTab() {
                       <button key={t} type="button" onClick={() => setForm({ ...form, tipo: t })}
                         style={{
                           flex: 1, padding: '10px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-                          color: form.tipo === t ? (t === 'lucro' ? '#10B981' : '#EF4444') : 'var(--t3)',
+                          color: form.tipo === t ? (t === 'lucro' ? '#10B981' : 'var(--loss)') : 'var(--t3)',
                           background: form.tipo === t ? (t === 'lucro' ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)') : 'rgba(255,255,255,0.02)',
                           border: form.tipo === t
                             ? '1px solid ' + (t === 'lucro' ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)')
@@ -210,7 +210,7 @@ export default function MetodosTab() {
               </div>
 
               {error && (
-                <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', fontSize: 12, color: '#EF4444' }}>{error}</div>
+                <div style={{ padding: '10px 12px', borderRadius: 8, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', fontSize: 12, color: 'var(--loss)' }}>{error}</div>
               )}
 
               <button type="submit" disabled={saving}
@@ -226,8 +226,8 @@ export default function MetodosTab() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         {[
           { label: 'Lucro do mes', value: stats.lucroMes, color: '#10B981' },
-          { label: 'Prejuizo do mes', value: stats.prejuizoMes, color: '#EF4444' },
-          { label: 'Liquido do mes', value: stats.liquidoMes, color: stats.liquidoMes >= 0 ? '#D1FAE5' : '#EF4444', signed: true },
+          { label: 'Prejuizo do mes', value: stats.prejuizoMes, color: 'var(--loss)' },
+          { label: 'Liquido do mes', value: stats.liquidoMes, color: stats.liquidoMes >= 0 ? 'var(--profit)' : 'var(--loss)', signed: true },
         ].map((k, i) => (
           <div key={i} style={{ ...card, padding: '18px 20px' }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>{k.label}</div>
@@ -250,7 +250,7 @@ export default function MetodosTab() {
                 <div key={row.k} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 10px', borderRadius: 6, background: 'rgba(255,255,255,0.015)' }}>
                   <span style={{ fontSize: 12, color: 'var(--t1)', fontWeight: 600, flex: 1 }}>{modLabel(row.k)}</span>
                   <span style={{ fontSize: 11, color: 'var(--t4)' }}>{row.count} reg</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'var(--mono)', color: row.liquido >= 0 ? '#10B981' : '#EF4444', minWidth: 110, textAlign: 'right' }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'var(--mono)', color: row.liquido >= 0 ? '#10B981' : 'var(--loss)', minWidth: 110, textAlign: 'right' }}>
                     {row.liquido >= 0 ? '+' : '-'}R$ {fmtBRL(Math.abs(row.liquido))}
                   </span>
                 </div>
@@ -277,16 +277,16 @@ export default function MetodosTab() {
               const isLucro = it.tipo === 'lucro'
               return (
                 <div key={it.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)' }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: isLucro ? '#10B981' : '#EF4444', flexShrink: 0 }} />
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: isLucro ? '#10B981' : 'var(--loss)', flexShrink: 0 }} />
                   <span style={{ fontSize: 12, color: 'var(--t1)', fontWeight: 600, minWidth: 130 }}>{modLabel(it.modalidade)}</span>
                   <span style={{ fontSize: 11, color: 'var(--t3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.descricao || '—'}</span>
                   <span style={{ fontSize: 10, color: 'var(--t4)', fontFamily: 'var(--mono)' }}>{fmtDate(it.created_at)}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'var(--mono)', color: isLucro ? '#10B981' : '#EF4444', minWidth: 110, textAlign: 'right' }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'var(--mono)', color: isLucro ? '#10B981' : 'var(--loss)', minWidth: 110, textAlign: 'right' }}>
                     {isLucro ? '+' : '-'}R$ {fmtBRL(it.valor)}
                   </span>
                   <button type="button" onClick={() => remove(it.id)} aria-label="Apagar"
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--t4)', padding: 4, display: 'flex', alignItems: 'center', transition: 'color 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#EF4444'}
+                    onMouseEnter={e => e.currentTarget.style.color = 'var(--loss)'}
                     onMouseLeave={e => e.currentTarget.style.color = 'var(--t4)'}>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />

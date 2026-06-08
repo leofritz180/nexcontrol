@@ -12,11 +12,11 @@ const getName = p => p?.nome || p?.email?.split('@')[0] || '?'
 
 const COST_TYPES = [
   { id: 'proxy', label: 'Proxy', icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', color: 'rgba(255,255,255,0.78)' },
-  { id: 'sms', label: 'SMS', icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: '#D1FAE5' },
+  { id: 'sms', label: 'SMS', icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: 'var(--profit)' },
   { id: 'instagram', label: 'Postagem Instagram', icon: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5z', color: '#E53935' },
   { id: 'bot', label: 'Bot / Automacao', icon: 'M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a2 2 0 010 4h-1a7 7 0 01-7 7h-2a7 7 0 01-7-7H4a2 2 0 010-4h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z', color: 'rgba(255,255,255,0.78)' },
   { id: 'vps', label: 'VPS / Servidor', icon: 'M22 12H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11zM6 16h.01M10 16h.01', color: 'rgba(255,255,255,0.78)' },
-  { id: 'outros', label: 'Outros', icon: 'M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6', color: '#94A3B8' },
+  { id: 'outros', label: 'Outros', icon: 'M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6', color: 'var(--t3)' },
 ]
 
 const typeMap = Object.fromEntries(COST_TYPES.map(t => [t.id, t]))
@@ -209,9 +209,9 @@ export default function CustosPage() {
                 boxShadow: '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}
             >
-              <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:'#EF4444', boxShadow:'0 0 8px #EF4444' }}/>
+              <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:'var(--loss)', boxShadow:'0 0 8px var(--loss)' }}/>
               <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Custo do dia</p>
-              <p style={{ fontSize: 28, fontWeight: 900, color: '#EF4444', fontFamily: 'var(--mono)', letterSpacing: '-0.025em', margin: 0, textShadow:'0 0 18px rgba(239,68,68,0.22)' }}>
+              <p style={{ fontSize: 28, fontWeight: 900, color: 'var(--loss)', fontFamily: 'var(--mono)', letterSpacing: '-0.025em', margin: 0, textShadow:'0 0 18px rgba(239,68,68,0.22)' }}>
                 R$ {fmt(kpis.custoHoje)}
               </p>
               <p style={{
@@ -253,18 +253,18 @@ export default function CustosPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: 12, color: 'var(--t3)', fontWeight: 500 }}>Lucro bruto</span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#D1FAE5', fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.lucroHoje)}</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--profit)', fontFamily: 'var(--mono)' }}>R$ {fmt(kpis.lucroHoje)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: 12, color: 'var(--t3)', fontWeight: 500 }}>Custos</span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#EF4444', fontFamily: 'var(--mono)' }}>- R$ {fmt(kpis.custoHoje)}</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--loss)', fontFamily: 'var(--mono)' }}>- R$ {fmt(kpis.custoHoje)}</span>
               </div>
               <div style={{ height: 1, background: 'var(--b2)', margin: '10px 0' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 13, color: 'var(--t1)', fontWeight: 700 }}>Lucro liquido</span>
                 <span style={{
                   fontSize: 22, fontWeight: 800, fontFamily: 'var(--mono)', letterSpacing: '-0.02em',
-                  color: kpis.lucroLiquido >= 0 ? '#D1FAE5' : '#EF4444',
+                  color: kpis.lucroLiquido >= 0 ? 'var(--profit)' : 'var(--loss)',
                 }}>
                   R$ {fmt(kpis.lucroLiquido)}
                 </span>
@@ -466,7 +466,7 @@ export default function CustosPage() {
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.22)' }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)' }}
                       >
-                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth={2.2} strokeLinecap="round">
+                        <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth={2.2} strokeLinecap="round">
                           <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
                         </svg>
                       </motion.button>}
@@ -497,7 +497,7 @@ export default function CustosPage() {
                 onClick={e => e.stopPropagation()}
                 style={{
                   width: '100%', maxWidth: 480, maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto',
-                  background: 'linear-gradient(160deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 22,
+                  background: 'linear-gradient(160deg, var(--surface), var(--surface))', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 22,
                   padding: '32px', boxShadow: '0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.03)',
                   position: 'relative',
                 }}
@@ -521,7 +521,7 @@ export default function CustosPage() {
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', damping: 15, stiffness: 300 }}
                       >
-                        <svg width={48} height={48} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                        <svg width={48} height={48} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
                       </motion.div>
@@ -541,7 +541,7 @@ export default function CustosPage() {
                       display:'flex', alignItems:'center', justifyContent:'center',
                       boxShadow:'0 0 16px rgba(239,68,68,0.18)',
                     }}>
-                      <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                      <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
                     </div>
                     <div>
                       <h2 style={{ fontSize: 19, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing:'-0.02em' }}>Novo custo</h2>
@@ -549,7 +549,7 @@ export default function CustosPage() {
                     </div>
                   </div>
                   <button onClick={() => setShowModal(false)} style={{ width: 34, height: 34, borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--t3)', transition: 'all 0.15s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.color = '#EF4444' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.color = 'var(--loss)' }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--t3)' }}
                   >
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">

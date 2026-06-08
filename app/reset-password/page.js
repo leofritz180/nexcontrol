@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
   return (
     <main style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '40px 24px', position: 'relative', overflow: 'hidden', background: '#000000',
+      padding: '40px 24px', position: 'relative', overflow: 'hidden', background: 'var(--surface)',
     }}>
       <div aria-hidden style={{
         position: 'fixed', top: 0, left: 0, width: '40vw', height: '100vh', pointerEvents: 'none',
@@ -119,7 +119,7 @@ export default function ResetPasswordPage() {
           <div style={{
             padding: '14px 16px', borderRadius: 8,
             background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)',
-            fontSize: 13, color: '#EF4444', textAlign: 'center',
+            fontSize: 13, color: 'var(--loss)', textAlign: 'center',
           }}>
             Link invalido ou expirado.<br />
             <Link href="/login" style={{ color: 'var(--t1)', fontWeight: 600, textDecoration: 'none', borderBottom: '1px solid var(--t3)' }}>
@@ -183,7 +183,7 @@ export default function ResetPasswordPage() {
                   style={{ display: 'flex', alignItems: 'center', gap: 8,
                     padding: '10px 12px', borderRadius: 8,
                     background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)',
-                    fontSize: 12, color: '#EF4444' }}>
+                    fontSize: 12, color: 'var(--loss)' }}>
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                     <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>

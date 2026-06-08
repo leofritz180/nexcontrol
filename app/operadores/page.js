@@ -32,8 +32,8 @@ function calcScore(op) {
 
 /* ── Badges (max 1 shown) ── */
 function getBadge(op) {
-  if (op.winRate >= 70 && op.closedCount >= 3) return { text: 'Top performer', color: '#d1fae5' }
-  if (op.trend === 'up' && op.closedCount >= 3) return { text: 'Em alta', color: '#d1fae5' }
+  if (op.winRate >= 70 && op.closedCount >= 3) return { text: 'Top performer', color: 'var(--profit)' }
+  if (op.trend === 'up' && op.closedCount >= 3) return { text: 'Em alta', color: 'var(--profit)' }
   if (op.trend === 'down' && op.closedCount >= 3) return { text: 'Oscilando', color: 'rgba(255,255,255,0.78)' }
   return null
 }
@@ -60,13 +60,13 @@ function useCountUp(target, duration = 1200, decimals = 0) {
 function KpiCard({ label, value, suffix, i, isCurrency, dynamicColor }) {
   const numVal = typeof value === 'number' ? value : parseFloat(value) || 0
   const animated = useCountUp(numVal, 1400, isCurrency ? 2 : (suffix === '%' ? 1 : 0))
-  const valueColor = dynamicColor ? (numVal >= 0 ? '#D1FAE5' : '#EF4444') : 'var(--t1)'
+  const valueColor = dynamicColor ? (numVal >= 0 ? 'var(--profit)' : 'var(--loss)') : 'var(--t1)'
 
   return (
     <motion.div {...fadeUp(i)}
       style={{
         padding: '18px 20px', position: 'relative',
-        background: '#000000',
+        background: 'var(--surface)',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: 12,
         boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
@@ -87,7 +87,7 @@ function KpiCard({ label, value, suffix, i, isCurrency, dynamicColor }) {
 /* ── Performance Bar ── */
 function PerfBar({ value, max, delay = 0 }) {
   const pct = max > 0 ? Math.min((Math.abs(value) / max) * 100, 100) : 0
-  const color = value >= 0 ? '#d1fae5' : '#ef4444'
+  const color = value >= 0 ? 'var(--profit)' : 'var(--loss)'
   return (
     <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.05)', overflow: 'hidden', flex: 1 }}>
       <motion.div
@@ -143,9 +143,9 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
   }, [winRate, lucroPerRemessa, op.trend, opClosed.length])
 
   let recommendation = null
-  if (winRate >= 60 && lucroFinal > 0) recommendation = { text: 'Aumentar volume', desc: 'Boa consistencia. Escalar pode aumentar retorno.', color: '#d1fae5' }
+  if (winRate >= 60 && lucroFinal > 0) recommendation = { text: 'Aumentar volume', desc: 'Boa consistencia. Escalar pode aumentar retorno.', color: 'var(--profit)' }
   else if (winRate < 45 && opClosed.length > 3) recommendation = { text: 'Reduzir exposicao', desc: 'Revisar redes e estrategia.', color: 'rgba(255,255,255,0.78)' }
-  else if (lucroFinal < 0) recommendation = { text: 'Pausar e revisar', desc: 'Resultado negativo.', color: '#ef4444' }
+  else if (lucroFinal < 0) recommendation = { text: 'Pausar e revisar', desc: 'Resultado negativo.', color: 'var(--loss)' }
 
   return (
     <motion.div
@@ -158,7 +158,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         transition={{ duration: 0.3, ease }}
         style={{
           width: '100%', maxWidth: 420, height: '100%', overflowY: 'auto',
-          background: 'linear-gradient(180deg, #000000, #000000)',
+          background: 'linear-gradient(180deg, var(--surface), var(--surface))',
           borderLeft: '1px solid rgba(255,255,255,0.06)',
           padding: '32px 26px',
         }}>
@@ -190,7 +190,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         {/* Lucro destaque */}
         <div style={{ marginBottom: 24, padding: '20px', borderRadius: 14, background: lucroFinal >= 0 ? 'rgba(209,250,229,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${lucroFinal >= 0 ? 'rgba(209,250,229,0.12)' : 'rgba(239,68,68,0.12)'}` }}>
           <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Lucro final</p>
-          <p style={{ fontSize: 32, fontWeight: 800, color: lucroFinal >= 0 ? '#d1fae5' : '#ef4444', margin: 0, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.03em' }}>
+          <p style={{ fontSize: 32, fontWeight: 800, color: lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)', margin: 0, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.03em' }}>
             {lucroFinal >= 0 ? '+' : ''}R$ {fmt(lucroFinal)}
           </p>
         </div>
@@ -198,12 +198,12 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         {/* Stats Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 24 }}>
           {[
-            { label: 'Acerto', value: `${winRate.toFixed(0)}%`, color: winRate >= 50 ? '#d1fae5' : '#ef4444' },
+            { label: 'Acerto', value: `${winRate.toFixed(0)}%`, color: winRate >= 50 ? 'var(--profit)' : 'var(--loss)' },
             { label: 'Depositantes', value: totalDeposit, color: 'rgba(255,255,255,0.6)' },
             { label: 'Remessas', value: opRemessas.length, color: 'rgba(255,255,255,0.6)' },
             { label: 'Metas', value: opClosed.length, color: 'rgba(255,255,255,0.6)' },
-            { label: 'Lucro/remessa', value: `R$${fmt(lucroPerRemessa)}`, color: lucroPerRemessa >= 0 ? '#d1fae5' : '#ef4444' },
-            { label: 'Tendencia', value: op.trend === 'up' ? 'Alta' : op.trend === 'down' ? 'Queda' : 'Estavel', color: op.trend === 'up' ? '#d1fae5' : op.trend === 'down' ? '#ef4444' : 'rgba(255,255,255,0.4)' },
+            { label: 'Lucro/remessa', value: `R$${fmt(lucroPerRemessa)}`, color: lucroPerRemessa >= 0 ? 'var(--profit)' : 'var(--loss)' },
+            { label: 'Tendencia', value: op.trend === 'up' ? 'Alta' : op.trend === 'down' ? 'Queda' : 'Estavel', color: op.trend === 'up' ? 'var(--profit)' : op.trend === 'down' ? 'var(--loss)' : 'rgba(255,255,255,0.4)' },
           ].map((s, i) => (
             <div key={i} style={{ padding: '12px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
               <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 5px' }}>{s.label}</p>
@@ -223,7 +223,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
                 <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
                   <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }}
                     transition={{ duration: 0.6, delay: i * 0.08, ease }}
-                    style={{ width: '100%', maxWidth: 20, borderRadius: 3, minHeight: 2, background: v >= 0 ? '#d1fae5' : '#ef4444' }} />
+                    style={{ width: '100%', maxWidth: 20, borderRadius: 3, minHeight: 2, background: v >= 0 ? 'var(--profit)' : 'var(--loss)' }} />
                   <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)' }}>S{i + 1}</span>
                 </div>
               )
@@ -273,7 +273,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
                       <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', margin: 0 }}>{m.rede || 'Rede'}</p>
                       <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', margin: 0 }}>{m.created_at ? new Date(m.created_at).toLocaleDateString('pt-BR') : ''}</p>
                     </div>
-                    <p style={{ fontSize: 13, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: lf >= 0 ? '#d1fae5' : '#ef4444' }}>
+                    <p style={{ fontSize: 13, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: lf >= 0 ? 'var(--profit)' : 'var(--loss)' }}>
                       {lf >= 0 ? '+' : ''}R$ {fmt(lf)}
                     </p>
                   </div>
@@ -471,7 +471,7 @@ function InviteCard({ inv, onCopy, onDelete }) {
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{createdAt}</span>
-          {used && <span style={{ fontSize: 9, fontWeight: 600, color: '#d1fae5', padding: '1px 6px', borderRadius: 4, background: 'rgba(209,250,229,0.1)' }}>Usado</span>}
+          {used && <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--profit)', padding: '1px 6px', borderRadius: 4, background: 'rgba(209,250,229,0.1)' }}>Usado</span>}
           {!used && <span style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.78)', padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.1)' }}>Pendente</span>}
         </div>
       </div>
@@ -483,7 +483,7 @@ function InviteCard({ inv, onCopy, onDelete }) {
           }}>Copiar</button>
           <button onClick={() => onDelete(inv.id)} style={{
             padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 8, border: '1px solid rgba(239,68,68,0.2)',
-            background: 'rgba(239,68,68,0.08)', color: '#EF4444', cursor: 'pointer', transition: 'all 0.2s',
+            background: 'rgba(239,68,68,0.08)', color: 'var(--loss)', cursor: 'pointer', transition: 'all 0.2s',
           }}>Excluir</button>
         </div>
       )}
@@ -538,7 +538,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
   return (
     <div style={{ padding:'22px 20px', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:14 }}>
       <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
-        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#d1fae5" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <span style={{ fontSize:14, fontWeight:700, color:'#fff' }}>Pagamento de operadores</span>
         {isDivisao && <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.78)', border:'1px solid rgba(255,255,255,0.2)' }}>SPLIT {tenant?.operator_payment_value || 50}%</span>}
       </div>
@@ -547,7 +547,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
       <div style={{ display:'flex', gap:8, marginBottom:14, flexWrap:'wrap' }}>
         {MODELS.map(opt => {
           const active = currentModel === opt.key
-          const accentColor = opt.key === 'divisao_resultado' ? 'rgba(255,255,255,0.78)' : '#d1fae5'
+          const accentColor = opt.key === 'divisao_resultado' ? 'rgba(255,255,255,0.78)' : 'var(--profit)'
           return (
             <button key={opt.key} type="button" onClick={() => active ? null : selectModel(opt.key)} style={{
               flex:1, minWidth:120, padding:'12px 14px', borderRadius:10, cursor: active ? 'default' : 'pointer',
@@ -587,7 +587,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
           onClick={() => { setShowConfirm(false); setPendingModel(null) }}>
           <div onClick={e => e.stopPropagation()} style={{
             width:'100%', maxWidth:480, padding:28, borderRadius:20,
-            background:'linear-gradient(160deg, #000000, #000000)',
+            background:'linear-gradient(160deg, var(--surface), var(--surface))',
             border:'1px solid rgba(255,255,255,0.08)',
             boxShadow:'0 40px 100px rgba(0,0,0,0.7)',
           }}>
@@ -597,7 +597,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
               </div>
               <div>
                 <h3 style={{ fontSize:16, fontWeight:800, color:'#F1F5F9', margin:'0 0 2px' }}>Confirmar alteracao de modelo</h3>
-                <p style={{ fontSize:12, color:'#94A3B8', margin:0 }}>Esta acao vale apenas para novas metas</p>
+                <p style={{ fontSize:12, color:'var(--t3)', margin:0 }}>Esta acao vale apenas para novas metas</p>
               </div>
             </div>
 
@@ -605,12 +605,12 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
             <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, padding:16, marginBottom:16 }}>
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
                 <span style={{ fontSize:11, color:'#64748B' }}>Modelo atual</span>
-                <span style={{ fontSize:12, fontWeight:600, color:'#94A3B8' }}>{MODELS.find(m=>m.key===currentModel)?.label}</span>
+                <span style={{ fontSize:12, fontWeight:600, color:'var(--t3)' }}>{MODELS.find(m=>m.key===currentModel)?.label}</span>
               </div>
               <div style={{ width:'100%', height:1, background:'rgba(255,255,255,0.04)', margin:'0 0 10px' }} />
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
                 <span style={{ fontSize:11, color:'#64748B' }}>Novo modelo</span>
-                <span style={{ fontSize:12, fontWeight:700, color: pendingModel === 'divisao_resultado' ? 'rgba(255,255,255,0.78)' : '#d1fae5' }}>{MODELS.find(m=>m.key===pendingModel)?.label}</span>
+                <span style={{ fontSize:12, fontWeight:700, color: pendingModel === 'divisao_resultado' ? 'rgba(255,255,255,0.78)' : 'var(--profit)' }}>{MODELS.find(m=>m.key===pendingModel)?.label}</span>
               </div>
               {/* Value input for new model */}
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
@@ -632,20 +632,20 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
               ].filter(Boolean).map((text, i) => (
                 <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:8 }}>
                   <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round" style={{ marginTop:2, flexShrink:0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  <span style={{ fontSize:11, color:'#94A3B8', lineHeight:1.4 }}>{text}</span>
+                  <span style={{ fontSize:11, color:'var(--t3)', lineHeight:1.4 }}>{text}</span>
                 </div>
               ))}
             </div>
 
             <div style={{ display:'flex', gap:10 }}>
               <button type="button" onClick={() => { setShowConfirm(false); setPendingModel(null) }}
-                style={{ flex:1, padding:'12px', borderRadius:10, border:'1px solid rgba(255,255,255,0.08)', background:'transparent', color:'#94A3B8', fontSize:13, fontWeight:600, cursor:'pointer' }}>
+                style={{ flex:1, padding:'12px', borderRadius:10, border:'1px solid rgba(255,255,255,0.08)', background:'transparent', color:'var(--t3)', fontSize:13, fontWeight:600, cursor:'pointer' }}>
                 Cancelar
               </button>
               <button type="button" onClick={confirmChange} disabled={saving || !pendingValue || Number(pendingValue) <= 0}
                 style={{
                   flex:2, padding:'12px', borderRadius:10, border:'none', cursor:'pointer',
-                  background: pendingModel === 'divisao_resultado' ? 'linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,255,255,0.78))' : '#d1fae5',
+                  background: pendingModel === 'divisao_resultado' ? 'linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,255,255,0.78))' : 'var(--profit)',
                   color:'#fff', fontSize:13, fontWeight:700,
                   opacity: saving || !pendingValue || Number(pendingValue) <= 0 ? 0.5 : 1,
                 }}>
@@ -954,7 +954,7 @@ export default function OperadoresPage() {
 
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #000000, #000000)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, var(--surface), var(--surface))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Carregando...</p>
@@ -1075,7 +1075,7 @@ export default function OperadoresPage() {
                               {op.badge && (
                                 <span style={{
                                   fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 5,
-                                  color: op.badge === 'Top performer' ? '#d1fae5' : op.badge === 'Em alta' ? '#d1fae5' : 'rgba(255,255,255,0.78)',
+                                  color: op.badge === 'Top performer' ? 'var(--profit)' : op.badge === 'Em alta' ? 'var(--profit)' : 'rgba(255,255,255,0.78)',
                                   background: op.badge === 'Oscilando' ? 'rgba(255,255,255,0.08)' : 'rgba(209,250,229,0.08)',
                                   border: `1px solid ${op.badge === 'Oscilando' ? 'rgba(255,255,255,0.18)' : 'rgba(209,250,229,0.18)'}`,
                                 }}>{op.badge}</span>
@@ -1172,7 +1172,7 @@ export default function OperadoresPage() {
 
               <div style={{ position:'relative', display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {insights.map((ins, i) => {
-                  const c = ins.type === 'up' ? '#D1FAE5' : ins.type === 'down' ? '#EF4444' : ins.type === 'warn' ? 'rgba(255,255,255,0.78)' : 'rgba(255,255,255,0.78)'
+                  const c = ins.type === 'up' ? 'var(--profit)' : ins.type === 'down' ? 'var(--loss)' : ins.type === 'warn' ? 'rgba(255,255,255,0.78)' : 'rgba(255,255,255,0.78)'
                   return (
                     <motion.div key={i}
                       initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }}
@@ -1256,7 +1256,7 @@ export default function OperadoresPage() {
                   whileTap={invSaving?{}:{ scale:0.97 }}
                   style={{
                     padding: '11px 22px', fontSize: 13, fontWeight: 800, fontFamily:'inherit',
-                    background: invSaving ? 'rgba(209,250,229,0.2)' : 'linear-gradient(145deg, #D1FAE5, #00a06d)',
+                    background: invSaving ? 'rgba(209,250,229,0.2)' : 'linear-gradient(145deg, var(--profit), #00a06d)',
                     border: 'none',
                     borderRadius: 11, color: '#fff', cursor: invSaving?'not-allowed':'pointer',
                     display: 'flex', alignItems: 'center', gap: 8,
@@ -1286,7 +1286,7 @@ export default function OperadoresPage() {
                     style={{
                       fontSize: 12, fontWeight: 700,
                       padding:'6px 12px', borderRadius:8,
-                      color: invMsg.startsWith('Erro') ? '#EF4444' : '#D1FAE5',
+                      color: invMsg.startsWith('Erro') ? 'var(--loss)' : 'var(--profit)',
                       background: invMsg.startsWith('Erro') ? 'rgba(239,68,68,0.08)' : 'rgba(209,250,229,0.08)',
                       border: `1px solid ${invMsg.startsWith('Erro') ? 'rgba(239,68,68,0.2)' : 'rgba(209,250,229,0.2)'}`,
                     }}>{invMsg}</motion.span>
@@ -1311,7 +1311,7 @@ export default function OperadoresPage() {
             {/* Operators list */}
             <div data-tour="ops-equipe" style={{ marginBottom: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                 <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Equipe ({isDemo && !activeOperators.length ? DEMO_OPERATORS.length : activeOperators.length})</span>
               </div>
             </div>
@@ -1344,19 +1344,19 @@ export default function OperadoresPage() {
                             <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0 }}>{getName(op)}</p>
                             <span style={{
                               fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
-                              color: '#94A3B8', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
+                              color: 'var(--t3)', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
                             }}>Operador</span>
                           </div>
                           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.email}</p>
                         </div>
                         <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: isActiveOp ? '#d1fae5' : 'rgba(255,255,255,0.15)' }} />
-                          <span style={{ fontSize: 10, color: isActiveOp ? '#d1fae5' : 'rgba(255,255,255,0.25)' }}>
+                          <div style={{ width: 6, height: 6, borderRadius: '50%', background: isActiveOp ? 'var(--profit)' : 'rgba(255,255,255,0.15)' }} />
+                          <span style={{ fontSize: 10, color: isActiveOp ? 'var(--profit)' : 'rgba(255,255,255,0.25)' }}>
                             {isActiveOp ? 'Ativo' : 'Inativo'}
                           </span>
                         </div>
                         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                          <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? '#d1fae5' : '#ef4444' }}>
+                          <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)' }}>
                             {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
                           </p>
                           <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasFechadas + op.metasAtivas} metas</p>
@@ -1396,7 +1396,7 @@ export default function OperadoresPage() {
                           <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
                           <span style={{
                             fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
-                            color: '#94A3B8', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
+                            color: 'var(--t3)', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
                           }}>Operador</span>
                         </div>
                         <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.email}</p>
@@ -1406,16 +1406,16 @@ export default function OperadoresPage() {
                       <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
                         <div style={{
                           width: 6, height: 6, borderRadius: '50%',
-                          background: isActiveOp ? '#d1fae5' : 'rgba(255,255,255,0.15)',
+                          background: isActiveOp ? 'var(--profit)' : 'rgba(255,255,255,0.15)',
                         }} />
-                        <span style={{ fontSize: 10, color: isActiveOp ? '#d1fae5' : 'rgba(255,255,255,0.25)' }}>
+                        <span style={{ fontSize: 10, color: isActiveOp ? 'var(--profit)' : 'rgba(255,255,255,0.25)' }}>
                           {isActiveOp ? 'Ativo' : 'Inativo'}
                         </span>
                       </div>
 
                       {/* Lucro */}
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? '#d1fae5' : '#ef4444' }}>
+                        <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)' }}>
                           {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
                         </p>
                         <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasCount} metas</p>
@@ -1434,7 +1434,7 @@ export default function OperadoresPage() {
                           cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           transition: 'all 0.15s',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.color = '#ef4444' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.color = 'var(--loss)' }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.04)'; e.currentTarget.style.color = 'rgba(239,68,68,0.6)' }}
                       >
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1776,14 +1776,14 @@ export default function OperadoresPage() {
                       transition: 'all 0.15s', position: 'relative',
                     }}>
                       {selected && (
-                        <div style={{ position: 'absolute', top: 4, right: 4, width: 16, height: 16, borderRadius: '50%', background: '#d1fae5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ position: 'absolute', top: 4, right: 4, width: 16, height: 16, borderRadius: '50%', background: 'var(--profit)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
                       )}
                       <div style={{ width: '100%', height: 60, borderRadius: 6, overflow: 'hidden', marginBottom: 4, background: 'rgba(0,0,0,0.2)' }}>
                         <img src={slot.image} alt={slot.name} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: selected ? 1 : 0.5, transition: 'opacity 0.15s' }} />
                       </div>
-                      <p style={{ fontSize: 10, fontWeight: 600, color: selected ? '#d1fae5' : 'rgba(255,255,255,0.4)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.name}</p>
+                      <p style={{ fontSize: 10, fontWeight: 600, color: selected ? 'var(--profit)' : 'rgba(255,255,255,0.4)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.name}</p>
                     </button>
                   )
                 })}
@@ -1830,7 +1830,7 @@ export default function OperadoresPage() {
               onClick={e => e.stopPropagation()}
               style={{
                 width: '100%', maxWidth: 440,
-                background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+                background: 'linear-gradient(180deg, var(--raised), #050505)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 18, padding: 28,
                 boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(239,68,68,0.05), 0 0 0 1px rgba(239,68,68,0.04)',
@@ -1843,7 +1843,7 @@ export default function OperadoresPage() {
                   background: 'rgba(239,68,68,0.06)',
                   border: '1px solid rgba(239,68,68,0.18)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#ef4444',
+                  color: 'var(--loss)',
                   flexShrink: 0,
                 }}>
                   <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1856,7 +1856,7 @@ export default function OperadoresPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{
                     fontFamily: 'var(--mono, monospace)', fontSize: 9,
-                    color: '#ef4444', letterSpacing: '0.22em', textTransform: 'uppercase',
+                    color: 'var(--loss)', letterSpacing: '0.22em', textTransform: 'uppercase',
                     fontWeight: 700, marginBottom: 4,
                   }}>
                     — Remover operador
@@ -1898,10 +1898,10 @@ export default function OperadoresPage() {
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                   {[
-                    { icon: '✓', color: '#d1fae5', text: 'Lucros e metas geradas por ele permanecem no total da plataforma' },
-                    { icon: '✓', color: '#d1fae5', text: 'Você continua acessando o histórico dele com badge "Removido"' },
-                    { icon: '✓', color: '#d1fae5', text: 'A vaga paga fica livre — você pode convidar outro operador' },
-                    { icon: '!', color: '#ef4444', text: 'Ele perde acesso ao painel imediatamente no próximo login' },
+                    { icon: '✓', color: 'var(--profit)', text: 'Lucros e metas geradas por ele permanecem no total da plataforma' },
+                    { icon: '✓', color: 'var(--profit)', text: 'Você continua acessando o histórico dele com badge "Removido"' },
+                    { icon: '✓', color: 'var(--profit)', text: 'A vaga paga fica livre — você pode convidar outro operador' },
+                    { icon: '!', color: 'var(--loss)', text: 'Ele perde acesso ao painel imediatamente no próximo login' },
                   ].map((item, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
                       <span style={{
@@ -1924,7 +1924,7 @@ export default function OperadoresPage() {
                 <div style={{
                   background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.18)',
                   borderRadius: 8, padding: '8px 12px', marginBottom: 14,
-                  fontSize: 11.5, color: '#ef4444',
+                  fontSize: 11.5, color: 'var(--loss)',
                 }}>
                   {removeError}
                 </div>
@@ -1948,7 +1948,7 @@ export default function OperadoresPage() {
                   disabled={removing}
                   style={{
                     flex: 1.4, padding: '11px', borderRadius: 9,
-                    background: removing ? 'rgba(239,68,68,0.15)' : '#ef4444',
+                    background: removing ? 'rgba(239,68,68,0.15)' : 'var(--loss)',
                     border: 'none',
                     color: '#fff',
                     fontSize: 13, fontWeight: 700, cursor: removing ? 'not-allowed' : 'pointer',

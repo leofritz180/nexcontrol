@@ -90,7 +90,7 @@ export default function OperatorLimitGate({ children }) {
           transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
           style={{
             position: 'relative', maxWidth: 520, width: '100%', textAlign: 'center',
-            background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+            background: 'linear-gradient(180deg, var(--raised), #050505)',
             border: '1px solid rgba(239,68,68,0.22)',
             borderRadius: 20, padding: '44px 36px',
             boxShadow: '0 0 0 1px rgba(239,68,68,0.06), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(239,68,68,0.08)',
@@ -102,12 +102,12 @@ export default function OperatorLimitGate({ children }) {
           <div style={{
             fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
             fontSize: 9.5, fontWeight: 700, letterSpacing: '0.28em',
-            textTransform: 'uppercase', color: '#ef4444',
+            textTransform: 'uppercase', color: 'var(--loss)',
             marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           }}>
-            <span style={{ width: 24, height: 1, background: '#ef4444' }}/>
+            <span style={{ width: 24, height: 1, background: 'var(--loss)' }}/>
             Ação obrigatória
-            <span style={{ width: 24, height: 1, background: '#ef4444' }}/>
+            <span style={{ width: 24, height: 1, background: 'var(--loss)' }}/>
           </div>
 
           {/* Icone alerta grande */}
@@ -118,7 +118,7 @@ export default function OperatorLimitGate({ children }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 0 32px rgba(239,68,68,0.25)',
             }}>
-              <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.2" strokeLinecap="round">
+              <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                 <line x1="12" y1="9" x2="12" y2="13"/>
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -144,7 +144,7 @@ export default function OperatorLimitGate({ children }) {
             fontSize: 14, color: 'rgba(255,255,255,0.65)',
             margin: '0 0 28px', lineHeight: 1.55, fontWeight: 300,
           }}>
-            Pra continuar usando o painel, <strong style={{ color: '#ef4444', fontWeight: 700 }}>remova {status.excess} operador{status.excess !== 1 ? 'es' : ''}</strong> ou faça upgrade do plano.
+            Pra continuar usando o painel, <strong style={{ color: 'var(--loss)', fontWeight: 700 }}>remova {status.excess} operador{status.excess !== 1 ? 'es' : ''}</strong> ou faça upgrade do plano.
           </p>
 
           {/* Stats visuais */}
@@ -160,11 +160,11 @@ export default function OperatorLimitGate({ children }) {
             </div>
             <div style={{ padding: '14px 8px', background: '#050505' }}>
               <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Atual</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#ef4444', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{status.current}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--loss)', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{status.current}</div>
             </div>
             <div style={{ padding: '14px 8px', background: '#050505' }}>
               <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Excesso</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#ef4444', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>+{status.excess}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--loss)', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>+{status.excess}</div>
             </div>
           </div>
 
@@ -174,7 +174,7 @@ export default function OperatorLimitGate({ children }) {
               style={{
                 flex: 1, minWidth: 200,
                 padding: '14px 22px', borderRadius: 12, border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(180deg, #ef4444, #c62828)',
+                background: 'linear-gradient(180deg, var(--loss), #c62828)',
                 color: '#fff', fontSize: 13.5, fontWeight: 800, fontFamily: 'inherit',
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 boxShadow: '0 6px 22px rgba(239,68,68,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',

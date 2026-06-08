@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase/client'
 const ease = [0.33, 1, 0.68, 1]
 
 const CATEGORY_STYLE = {
-  feature: { label: 'Novidade', color: '#D1FAE5', bg: 'rgba(209,250,229,0.08)', border: 'rgba(209,250,229,0.22)' },
+  feature: { label: 'Novidade', color: 'var(--profit)', bg: 'rgba(209,250,229,0.08)', border: 'rgba(209,250,229,0.22)' },
   fix: { label: 'Correção', color: '#FCD34D', bg: 'rgba(252,211,77,0.08)', border: 'rgba(252,211,77,0.22)' },
   improvement: { label: 'Melhoria', color: '#93C5FD', bg: 'rgba(147,197,253,0.08)', border: 'rgba(147,197,253,0.22)' },
   important: { label: 'Importante', color: '#fca5a5', bg: 'rgba(252,165,165,0.08)', border: 'rgba(252,165,165,0.22)' },
@@ -116,7 +116,7 @@ export default function UpdatesBell() {
               position: 'absolute', top: -4, right: -4,
               minWidth: 18, height: 18, padding: '0 5px',
               borderRadius: 9,
-              background: 'linear-gradient(180deg, #ef4444, #c62828)',
+              background: 'linear-gradient(180deg, var(--loss), #c62828)',
               color: '#fff', fontSize: 10, fontWeight: 800,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               border: '2px solid #050505',
@@ -140,7 +140,7 @@ export default function UpdatesBell() {
               style={{
                 position: 'fixed', top: 0, right: 0, bottom: 0,
                 width: '100%', maxWidth: 440, zIndex: 202,
-                background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+                background: 'linear-gradient(180deg, var(--raised), #050505)',
                 borderLeft: '1px solid rgba(255,255,255,0.06)',
                 boxShadow: '-20px 0 60px rgba(0,0,0,0.7)',
                 display: 'flex', flexDirection: 'column',
@@ -194,7 +194,7 @@ export default function UpdatesBell() {
                             <span style={{
                               position: 'absolute', top: 14, left: 6,
                               width: 5, height: 5, borderRadius: '50%',
-                              background: '#ef4444', boxShadow: '0 0 8px rgba(239,68,68,0.6)',
+                              background: 'var(--loss)', boxShadow: '0 0 8px rgba(239,68,68,0.6)',
                             }}/>
                           )}
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>

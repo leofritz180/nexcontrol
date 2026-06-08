@@ -31,7 +31,7 @@ export const metadata = {
       { url: '/apple-touch-icon.png?v=7', sizes: '180x180', type: 'image/png' },
     ],
   },
-  themeColor: '#000000',
+  themeColor: 'var(--surface)',
   openGraph: {
     title: 'NexControl',
     description: 'Gestao inteligente de metas, operadores e faturamento',

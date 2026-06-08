@@ -308,7 +308,7 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
             transform: isCenter ? 'translate(-50%, -50%)' : 'none',
             width: 360,
             maxWidth: 'calc(100vw - 32px)',
-            background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+            background: 'linear-gradient(180deg, var(--raised), #050505)',
             border: '1px solid rgba(255,255,255,0.1)',
             borderRadius: 14,
             padding: '20px 22px',

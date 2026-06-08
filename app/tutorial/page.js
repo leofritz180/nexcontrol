@@ -130,7 +130,7 @@ export default function TutorialPage() {
                 style={{
                   height: '100%', borderRadius: 99,
                   background: allDone
-                    ? 'linear-gradient(90deg, #D1FAE5, #4ADE80)'
+                    ? 'linear-gradient(90deg, var(--profit), #4ADE80)'
                     : 'linear-gradient(90deg, rgba(255,255,255,0.78), rgba(255,255,255,0.78))',
                   boxShadow: allDone
                     ? '0 0 12px rgba(209,250,229,0.3)'
@@ -290,7 +290,7 @@ export default function TutorialPage() {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.5 }}
                           transition={{ duration: 0.2, ease }}
-                          width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="3" strokeLinecap="round"
+                          width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="3" strokeLinecap="round"
                         >
                           <polyline points="20 6 9 17 4 12" />
                         </motion.svg>
@@ -358,7 +358,7 @@ export default function TutorialPage() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                   }}
                 >
-                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round">
+                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                     <polyline points="22 4 12 14.01 9 11.01" />
                   </svg>

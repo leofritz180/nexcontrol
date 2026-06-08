@@ -74,7 +74,7 @@ export default function OperatorLimitBanner({ tenantId, variant = 'default' }) {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: '0 0 18px rgba(239,68,68,0.18)',
           }}>
-            <svg width={variant === 'compact' ? 16 : 19} height={variant === 'compact' ? 16 : 19} viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.2" strokeLinecap="round">
+            <svg width={variant === 'compact' ? 16 : 19} height={variant === 'compact' ? 16 : 19} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2.2" strokeLinecap="round">
               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
               <line x1="12" y1="9" x2="12" y2="13"/>
               <line x1="12" y1="17" x2="12.01" y2="17"/>
@@ -85,7 +85,7 @@ export default function OperatorLimitBanner({ tenantId, variant = 'default' }) {
           <div style={{ flex: '1 1 280px', minWidth: 0 }}>
             <p style={{
               fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 700,
-              color: '#ef4444', letterSpacing: '0.18em', textTransform: 'uppercase',
+              color: 'var(--loss)', letterSpacing: '0.18em', textTransform: 'uppercase',
               margin: '0 0 4px',
             }}>Limite excedido</p>
             <p style={{
@@ -114,7 +114,7 @@ export default function OperatorLimitBanner({ tenantId, variant = 'default' }) {
             )}
             <button onClick={onUpgrade} type="button" style={{
               padding: '10px 16px', borderRadius: 10, border: 'none', cursor: 'pointer',
-              background: 'linear-gradient(180deg, #ef4444, #c62828)',
+              background: 'linear-gradient(180deg, var(--loss), #c62828)',
               color: '#fff', fontSize: 12.5, fontWeight: 800, fontFamily: 'inherit',
               display: 'inline-flex', alignItems: 'center', gap: 6,
               boxShadow: '0 4px 14px rgba(239,68,68,0.4)',

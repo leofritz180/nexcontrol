@@ -470,17 +470,17 @@ export default function FaturamentoPage() {
               <svg style={{ position:'absolute', bottom:0, left:0, right:0, pointerEvents:'none', opacity:0.22 }} viewBox="0 0 400 80" preserveAspectRatio="none" width="100%" height="80">
                 <defs>
                   <linearGradient id="fatHeroArea" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor={stats.lucroFinal>=0?'#D1FAE5':'#EF4444'} stopOpacity="0.2"/>
-                    <stop offset="100%" stopColor={stats.lucroFinal>=0?'#D1FAE5':'#EF4444'} stopOpacity="0"/>
+                    <stop offset="0%" stopColor={stats.lucroFinal>=0?'var(--profit)':'var(--loss)'} stopOpacity="0.2"/>
+                    <stop offset="100%" stopColor={stats.lucroFinal>=0?'var(--profit)':'var(--loss)'} stopOpacity="0"/>
                   </linearGradient>
                 </defs>
                 <path d="M0,60 L40,55 L80,48 L120,50 L160,40 L200,34 L240,38 L280,26 L320,20 L360,12 L400,6 L400,80 L0,80 Z" fill="url(#fatHeroArea)"/>
-                <path d="M0,60 L40,55 L80,48 L120,50 L160,40 L200,34 L240,38 L280,26 L320,20 L360,12 L400,6" fill="none" stroke={stats.lucroFinal>=0?'#D1FAE5':'#EF4444'} strokeWidth="1.8" strokeLinecap="round" strokeOpacity="0.6"/>
+                <path d="M0,60 L40,55 L80,48 L120,50 L160,40 L200,34 L240,38 L280,26 L320,20 L360,12 L400,6" fill="none" stroke={stats.lucroFinal>=0?'var(--profit)':'var(--loss)'} strokeWidth="1.8" strokeLinecap="round" strokeOpacity="0.6"/>
               </svg>
 
               <div style={{position:'relative',zIndex:1}}>
                 <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:6 }}>
-                  <div style={{ width:3, height:12, borderRadius:2, background: stats.lucroFinal>=0?'#D1FAE5':'#EF4444', boxShadow:`0 0 10px ${stats.lucroFinal>=0?'rgba(209,250,229,0.7)':'rgba(239,68,68,0.7)'}` }}/>
+                  <div style={{ width:3, height:12, borderRadius:2, background: stats.lucroFinal>=0?'var(--profit)':'var(--loss)', boxShadow:`0 0 10px ${stats.lucroFinal>=0?'rgba(209,250,229,0.7)':'rgba(239,68,68,0.7)'}` }}/>
                   <p style={{fontSize:10, color:'var(--t4)', fontWeight:800, letterSpacing:'0.14em', textTransform:'uppercase', margin:0}}>
                     Receita consolidada
                   </p>
@@ -499,10 +499,10 @@ export default function FaturamentoPage() {
                     background: predictions.pctChange>0?'rgba(209,250,229,0.1)':'rgba(239,68,68,0.1)',
                     border:`1px solid ${predictions.pctChange>0?'rgba(209,250,229,0.22)':'rgba(239,68,68,0.22)'}`,
                   }}>
-                    <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={predictions.pctChange>0?'#D1FAE5':'#EF4444'} strokeWidth="2.5" strokeLinecap="round">
+                    <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={predictions.pctChange>0?'var(--profit)':'var(--loss)'} strokeWidth="2.5" strokeLinecap="round">
                       <polyline points={predictions.pctChange>0?"23 6 13.5 15.5 8.5 10.5 1 18":"1 18 10.5 8.5 15.5 13.5 23 6"}/>
                     </svg>
-                    <span style={{fontSize:11, color:predictions.pctChange>0?'#D1FAE5':'#EF4444', fontWeight:800, letterSpacing:'0.02em'}}>
+                    <span style={{fontSize:11, color:predictions.pctChange>0?'var(--profit)':'var(--loss)', fontWeight:800, letterSpacing:'0.02em'}}>
                       {predictions.pctChange>0?'+':''}{predictions.pctChange}% vs semana anterior
                     </span>
                   </div>
@@ -534,7 +534,7 @@ export default function FaturamentoPage() {
             {/* Right — 4 KPI cards premium */}
             <div style={{display:'flex',flexDirection:'column',gap:10}}>
               {[
-                {l:'Lucro bruto', sub:'Soma de lucros', v:`R$ ${fmt(stats.lucro)}`, accent:'#D1FAE5'},
+                {l:'Lucro bruto', sub:'Soma de lucros', v:`R$ ${fmt(stats.lucro)}`, accent:'var(--profit)'},
                 {l:'Total depositado', sub:'Volume em entradas', v:`R$ ${fmt(stats.dep)}`, accent:'rgba(255,255,255,0.78)'},
                 {l:'Total sacado', sub:'Volume em saidas', v:`R$ ${fmt(stats.saq)}`, accent:'rgba(255,255,255,0.78)'},
                 {l:'Taxa de acerto', sub:'Remessas positivas', v:`${stats.taxa}%`, accent:'rgba(255,255,255,0.78)'},
@@ -671,7 +671,7 @@ export default function FaturamentoPage() {
                     background:'rgba(255,255,255,0.03)', color:'var(--t2)',
                     display:'flex', alignItems:'center', gap:5, transition:'all 0.2s',
                   }}
-                  onMouseEnter={e=>{ e.currentTarget.style.background='rgba(209,250,229,0.08)'; e.currentTarget.style.color='#D1FAE5'; e.currentTarget.style.borderColor='rgba(209,250,229,0.22)' }}
+                  onMouseEnter={e=>{ e.currentTarget.style.background='rgba(209,250,229,0.08)'; e.currentTarget.style.color='var(--profit)'; e.currentTarget.style.borderColor='rgba(209,250,229,0.22)' }}
                   onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.03)'; e.currentTarget.style.color='var(--t2)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)' }}>
                   <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   Editar
@@ -731,7 +731,7 @@ export default function FaturamentoPage() {
               {/* Health + Insights */}
               <div data-tour="fat-insights" style={{
                 padding:'28px 28px', borderRadius:16,
-                background:'linear-gradient(145deg, #000000, #000000)',
+                background:'linear-gradient(145deg, var(--surface), var(--surface))',
                 border:'1px solid rgba(255,255,255,0.05)',
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
@@ -765,7 +765,7 @@ export default function FaturamentoPage() {
               {/* Alerts */}
               <div style={{
                 padding:'28px 28px', borderRadius:16,
-                background:'linear-gradient(145deg, #000000, #000000)',
+                background:'linear-gradient(145deg, var(--surface), var(--surface))',
                 border:'1px solid rgba(255,255,255,0.05)',
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
@@ -833,13 +833,13 @@ export default function FaturamentoPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData.slice(-14)}>
                     <defs>
-                      <linearGradient id="gProfit" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#D1FAE5" stopOpacity={0.3}/><stop offset="100%" stopColor="#D1FAE5" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gProfit" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--profit)" stopOpacity={0.3}/><stop offset="100%" stopColor="var(--profit)" stopOpacity={0}/></linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/>
                     <XAxis dataKey="name" tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`}/>
                     <Tooltip content={<ChartTooltip/>}/>
-                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="#D1FAE5" fill="url(#gProfit)" strokeWidth={2}/>
+                    <Area type="monotone" dataKey="liquido" name="Liquido" stroke="var(--profit)" fill="url(#gProfit)" strokeWidth={2}/>
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -880,16 +880,16 @@ export default function FaturamentoPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>
-                      <linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#D1FAE5" stopOpacity={0.25}/><stop offset="100%" stopColor="#D1FAE5" stopOpacity={0}/></linearGradient>
-                      <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#EF4444" stopOpacity={0.2}/><stop offset="100%" stopColor="#EF4444" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gL" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--profit)" stopOpacity={0.25}/><stop offset="100%" stopColor="var(--profit)" stopOpacity={0}/></linearGradient>
+                      <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--loss)" stopOpacity={0.2}/><stop offset="100%" stopColor="var(--loss)" stopOpacity={0}/></linearGradient>
                       <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="rgba(255,255,255,0.78)" stopOpacity={0.25}/><stop offset="100%" stopColor="rgba(255,255,255,0.78)" stopOpacity={0}/></linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)"/>
                     <XAxis dataKey="name" tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false} tickFormatter={v=>`R$${(v/1000).toFixed(1)}k`}/>
                     <Tooltip content={<ChartTooltip/>}/>
-                    <Area type="monotone" dataKey="lucro" name="Lucro" stroke="#D1FAE5" fill="url(#gL)" strokeWidth={2}/>
-                    <Area type="monotone" dataKey="prejuizo" name="Prejuizo" stroke="#EF4444" fill="url(#gP)" strokeWidth={2}/>
+                    <Area type="monotone" dataKey="lucro" name="Lucro" stroke="var(--profit)" fill="url(#gL)" strokeWidth={2}/>
+                    <Area type="monotone" dataKey="prejuizo" name="Prejuizo" stroke="var(--loss)" fill="url(#gP)" strokeWidth={2}/>
                     <Area type="monotone" dataKey="liquido" name="Liquido" stroke="rgba(255,255,255,0.78)" fill="url(#gN)" strokeWidth={2.5}/>
                   </AreaChart>
                 </ResponsiveContainer>
@@ -905,8 +905,8 @@ export default function FaturamentoPage() {
                     <XAxis dataKey="name" tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#4a5878'}} axisLine={false} tickLine={false}/>
                     <Tooltip content={<ChartTooltip/>}/>
-                    <Bar dataKey="lucro" name="Lucro" fill="#D1FAE5" radius={[4,4,0,0]} maxBarSize={32}/>
-                    <Bar dataKey="prejuizo" name="Prejuizo" fill="#EF4444" radius={[4,4,0,0]} maxBarSize={32}/>
+                    <Bar dataKey="lucro" name="Lucro" fill="var(--profit)" radius={[4,4,0,0]} maxBarSize={32}/>
+                    <Bar dataKey="prejuizo" name="Prejuizo" fill="var(--loss)" radius={[4,4,0,0]} maxBarSize={32}/>
                   </BarChart>
                 </ResponsiveContainer>
               </div>

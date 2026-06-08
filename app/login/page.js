@@ -92,7 +92,7 @@ export default function LoginPage() {
   return (
     <main style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '40px 24px', position: 'relative', overflow: 'hidden', background: '#000000',
+      padding: '40px 24px', position: 'relative', overflow: 'hidden', background: 'var(--surface)',
     }}>
       {/* Edge cinematic gradients — efeito silk Resend, em tom brand red */}
       <div aria-hidden style={{
@@ -239,7 +239,7 @@ export default function LoginPage() {
                   padding: '10px 12px', borderRadius: 8,
                   background: 'rgba(239,68,68,0.06)',
                   border: '1px solid rgba(239,68,68,0.2)',
-                  fontSize: 12, color: '#EF4444',
+                  fontSize: 12, color: 'var(--loss)',
                 }}
               >
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -313,7 +313,7 @@ export default function LoginPage() {
               onClick={e => e.stopPropagation()}
               style={{
                 width: '100%', maxWidth: 380,
-                background: '#0a0a0a',
+                background: 'var(--raised)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 14, padding: 28,
               }}
@@ -356,7 +356,7 @@ export default function LoginPage() {
                       style={{
                         padding: '10px 12px', borderRadius: 8,
                         background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)',
-                        fontSize: 12, color: '#EF4444',
+                        fontSize: 12, color: 'var(--loss)',
                       }}>
                       {forgotError}
                     </motion.div>

@@ -55,7 +55,7 @@ function SlotCard({ slot, index, isPro }) {
   }
 
   const isAlta = slot.performance === 'alta'
-  const lvColor = isAlta ? '#d1fae5' : slot.performance === 'baixa' ? '#60a5fa' : 'rgba(255,255,255,0.78)'
+  const lvColor = isAlta ? 'var(--profit)' : slot.performance === 'baixa' ? '#60a5fa' : 'rgba(255,255,255,0.78)'
 
   return (
     <motion.div
@@ -220,7 +220,7 @@ function SlotCard({ slot, index, isPro }) {
               width: '100%', padding: '10px 14px', borderRadius: 10,
               fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
               background: copied ? 'rgba(209,250,229,0.12)' : 'rgba(229,57,53,0.08)',
-              color: copied ? '#d1fae5' : '#e53935',
+              color: copied ? 'var(--profit)' : '#e53935',
               border: `1px solid ${copied ? 'rgba(209,250,229,0.2)' : 'rgba(229,57,53,0.15)'}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               transition: 'all 0.2s',
@@ -291,7 +291,7 @@ export default function SlotsPage() {
 
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #000000, #000000)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, var(--surface), var(--surface))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
           <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Carregando...</p>
@@ -375,7 +375,7 @@ export default function SlotsPage() {
             }}>
               {[
                 { label: 'Total', value: filtered.length, color: 'rgba(255,255,255,0.6)' },
-                { label: 'Alta performance', value: filtered.filter(s => s.performance === 'alta').length, color: '#d1fae5' },
+                { label: 'Alta performance', value: filtered.filter(s => s.performance === 'alta').length, color: 'var(--profit)' },
                 { label: 'Media', value: filtered.filter(s => s.performance === 'media').length, color: 'rgba(255,255,255,0.78)' },
               ].map((s, i) => (
                 <div key={i} style={{

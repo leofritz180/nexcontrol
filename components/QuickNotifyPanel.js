@@ -168,7 +168,7 @@ export default function QuickNotifyPanel({ userEmail }) {
               <div style={{
                 padding: '10px 16px', fontSize: 11, fontWeight: 600,
                 background: toast.ok ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
-                color: toast.ok ? '#10B981' : '#EF4444',
+                color: toast.ok ? '#10B981' : 'var(--loss)',
                 borderBottom: '1px solid rgba(255,255,255,0.04)',
               }}>
                 {toast.ok ? '✓' : '⚠'} {toast.msg}

@@ -90,7 +90,7 @@ function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, bauAcumRemessas =
             </div>
             {isApenasBau ? (
               <div style={{padding:'10px 12px',borderRadius:10,background:'rgba(209,250,229,0.06)',border:'1px solid rgba(209,250,229,0.18)'}}>
-                <p className="t-label" style={{display:'block',marginBottom:4,color:'#D1FAE5'}}>BAU acumulado nas remessas</p>
+                <p className="t-label" style={{display:'block',marginBottom:4,color:'var(--profit)'}}>BAU acumulado nas remessas</p>
                 <p className="t-num" style={{fontSize:14,fontWeight:700,color:'var(--profit)',margin:0}}>R$ {fmt(bauAcumRemessas)} <span style={{fontSize:10,fontWeight:500,color:'var(--t4)',marginLeft:6}}>ja contabilizado em lucro/prejuizo por remessa</span></p>
               </div>
             ) : (
@@ -640,9 +640,9 @@ export default function MetaPage() {
   const pctAcerto = remessas.length>0?Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100):0
 
   const fbCfg = {
-    good: { bg: 'linear-gradient(145deg, #0a1a12, #000000)', border: 'rgba(209,250,229,0.3)', color: '#D1FAE5', iconPath: 'M20 6L9 17l-5-5' },
+    good: { bg: 'linear-gradient(145deg, #0a1a12, var(--surface))', border: 'rgba(209,250,229,0.3)', color: 'var(--profit)', iconPath: 'M20 6L9 17l-5-5' },
     warn: { bg: 'linear-gradient(145deg, #1a1608, #14120a)', border: 'rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.78)', iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' },
-    critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: '#EF4444', iconPath: 'M18 6L6 18M6 6l12 12' },
+    critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: 'var(--loss)', iconPath: 'M18 6L6 18M6 6l12 12' },
   }
 
   return (
@@ -708,7 +708,7 @@ export default function MetaPage() {
             // canReactivate: tanto meta finalizada quanto fechada podem ser reabertas
             const canReactivate = isFinalizada || isFechada
             const isAdminUser = profile?.role === 'admin'
-            const statusC = isFechada ? '#D1FAE5' : isFinalizada ? 'rgba(255,255,255,0.78)' : '#e53935'
+            const statusC = isFechada ? 'var(--profit)' : isFinalizada ? 'rgba(255,255,255,0.78)' : '#e53935'
             const statusL = isFechada ? 'FECHADA' : isFinalizada ? 'FINALIZADA' : 'AO VIVO'
             return (
               <motion.div
@@ -764,8 +764,8 @@ export default function MetaPage() {
                       </div>
                       <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
                       <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={pctAcerto>=70?'#D1FAE5':pctAcerto>=50?'rgba(255,255,255,0.78)':'#EF4444'} strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        <span style={{ fontSize:11, color: pctAcerto>=70?'#D1FAE5':pctAcerto>=50?'rgba(255,255,255,0.78)':'#EF4444', fontFamily:'var(--mono)', fontWeight:700 }}>{pctAcerto}% acerto</span>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={pctAcerto>=70?'var(--profit)':pctAcerto>=50?'rgba(255,255,255,0.78)':'var(--loss)'} strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span style={{ fontSize:11, color: pctAcerto>=70?'var(--profit)':pctAcerto>=50?'rgba(255,255,255,0.78)':'var(--loss)', fontFamily:'var(--mono)', fontWeight:700 }}>{pctAcerto}% acerto</span>
                       </div>
                       {meta?.rede && (<>
                         <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
@@ -797,7 +797,7 @@ export default function MetaPage() {
                         padding:'10px 18px', borderRadius:11, border:'none', cursor:'pointer',
                         fontSize:12, fontWeight:800, fontFamily:'inherit', color:'#fff',
                         background: canReactivate
-                          ? 'linear-gradient(145deg, #D1FAE5, #00a06d)'
+                          ? 'linear-gradient(145deg, var(--profit), #00a06d)'
                           : 'linear-gradient(145deg, #e53935, #c62828)',
                         boxShadow: canReactivate
                           ? '0 6px 20px rgba(209,250,229,0.35), inset 0 1px 0 rgba(255,255,255,0.18)'
@@ -849,7 +849,7 @@ export default function MetaPage() {
           const liq = totais.liq
           let insightStatus, insightColor, insightText, insightSub
           if (liq < 0 && negSeq >= 2) {
-            insightStatus = 'Critica'; insightColor = '#EF4444'
+            insightStatus = 'Critica'; insightColor = 'var(--loss)'
             insightText = 'Meta em prejuizo com sequencia negativa'
             insightSub = `${negSeq} das ultimas 3 remessas negativas`
           } else if (liq < 0) {
@@ -861,7 +861,7 @@ export default function MetaPage() {
             insightText = 'Oscilacao detectada, atencao'
             insightSub = `${negSeq} remessas negativas recentes apesar de lucro geral`
           } else if (posSeq >= 2 && liq > 0) {
-            insightStatus = 'Saudavel'; insightColor = '#D1FAE5'
+            insightStatus = 'Saudavel'; insightColor = 'var(--profit)'
             insightText = 'Meta saudavel com boa consistencia'
             insightSub = `${posSeq} remessas positivas consecutivas`
           } else {
@@ -899,10 +899,10 @@ export default function MetaPage() {
           <KPI label="Deposito total"    value={`R$ ${fmt(totais.d)}`}   color="var(--t1)" accent="rgba(255,255,255,0.78)"/>
           <KPI label="Saque total"       value={`R$ ${fmt(totais.s)}`}   color="var(--t1)" accent="rgba(255,255,255,0.78)"/>
           {isApenasBauMeta && (
-            <KPI label="BAU acumulado"   value={`R$ ${fmt(totais.bau)}`}  color="var(--profit)" accent="#D1FAE5"/>
+            <KPI label="BAU acumulado"   value={`R$ ${fmt(totais.bau)}`}  color="var(--profit)" accent="var(--profit)"/>
           )}
-          <KPI label="Lucro acumulado"   value={`R$ ${fmt(totais.lucro)}`} color="var(--profit)" accent="#D1FAE5"/>
-          <KPI label="Prejuizo acum."    value={`R$ ${fmt(totais.prej)}`}  color="var(--loss)" accent="#EF4444"/>
+          <KPI label="Lucro acumulado"   value={`R$ ${fmt(totais.lucro)}`} color="var(--profit)" accent="var(--profit)"/>
+          <KPI label="Prejuizo acum."    value={`R$ ${fmt(totais.prej)}`}  color="var(--loss)" accent="var(--loss)"/>
           <motion.div
             initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
             transition={{ duration:0.4 }}
@@ -922,7 +922,7 @@ export default function MetaPage() {
             <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:`linear-gradient(90deg, transparent, ${totais.liq>=0?'rgba(209,250,229,0.5)':'rgba(239,68,68,0.5)'}, transparent)`, pointerEvents:'none' }}/>
 
             <div style={{ position:'relative', zIndex:1, display:'flex', alignItems:'center', gap:6, marginBottom:6 }}>
-              <div style={{ width:3, height:11, borderRadius:2, background: totais.liq>=0?'#D1FAE5':'#EF4444', boxShadow:`0 0 8px ${totais.liq>=0?'#D1FAE5':'#EF4444'}` }}/>
+              <div style={{ width:3, height:11, borderRadius:2, background: totais.liq>=0?'var(--profit)':'var(--loss)', boxShadow:`0 0 8px ${totais.liq>=0?'var(--profit)':'var(--loss)'}` }}/>
               <p style={{ fontSize:10, color: totais.liq>=0?'#4ade80':'#fca5a5', fontWeight:800, margin:0, letterSpacing:'0.1em', textTransform:'uppercase' }}>Resultado liquido</p>
             </div>
             <motion.p
@@ -1176,7 +1176,7 @@ export default function MetaPage() {
           const pctExact = target > 0 ? (done / target) * 100 : 0
           const remaining = Math.max(0, target - done)
           const isDone = pct >= 100
-          const barC = isDone ? '#D1FAE5' : pct >= 70 ? '#D1FAE5' : pct >= 40 ? 'rgba(255,255,255,0.78)' : '#e53935'
+          const barC = isDone ? 'var(--profit)' : pct >= 70 ? 'var(--profit)' : pct >= 40 ? 'rgba(255,255,255,0.78)' : '#e53935'
           return target > 0 ? (
             <motion.div
               initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
@@ -1237,9 +1237,9 @@ export default function MetaPage() {
                     position:'relative',
                     height: '100%', borderRadius: 5,
                     background: isDone
-                      ? 'linear-gradient(90deg, #D1FAE5, #00a06d, #D1FAE5)'
+                      ? 'linear-gradient(90deg, var(--profit), #00a06d, var(--profit))'
                       : pct >= 70
-                      ? 'linear-gradient(90deg, #D1FAE5, #00a06d)'
+                      ? 'linear-gradient(90deg, var(--profit), #00a06d)'
                       : pct >= 40
                       ? 'linear-gradient(90deg, rgba(255,255,255,0.78), #1d4ed8)'
                       : 'linear-gradient(90deg, #e53935, #c62828)',
@@ -1341,7 +1341,7 @@ export default function MetaPage() {
                   </div>
                   {isApenasBauMeta && (
                     <div>
-                      <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8, color:'#D1FAE5' }}>BAU</label>
+                      <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8, color:'var(--profit)' }}>BAU</label>
                       <input className="input" type="text" inputMode="decimal" value={bauR} onChange={e=>setBauR(e.target.value)} placeholder="Ex: 50" style={{ fontSize:13, fontWeight:600, padding:'8px 10px', borderColor:'rgba(209,250,229,0.25)' }}/>
                     </div>
                   )}
@@ -1353,13 +1353,13 @@ export default function MetaPage() {
                       display:'flex', alignItems:'center', justifyContent:'space-between',
                     }}>
                       <div>
-                        <p style={{ fontSize:8, fontWeight:700, color:prev.pos?'#D1FAE5':'#EF4444', margin:0, textTransform:'uppercase' }}>{prev.pos?'Lucro':'Prejuizo'}</p>
+                        <p style={{ fontSize:8, fontWeight:700, color:prev.pos?'var(--profit)':'var(--loss)', margin:0, textTransform:'uppercase' }}>{prev.pos?'Lucro':'Prejuizo'}</p>
                         {isApenasBauMeta && prev.bauAdd > 0 && (
-                          <p style={{ fontSize:8, color:'#D1FAE5', margin:'1px 0 0' }}>inclui BAU +R$ {fmt(prev.bauAdd)}</p>
+                          <p style={{ fontSize:8, color:'var(--profit)', margin:'1px 0 0' }}>inclui BAU +R$ {fmt(prev.bauAdd)}</p>
                         )}
                         {Number(contasRemessa||0) > 0 && <p style={{ fontSize:8, color:'var(--t4)', margin:'1px 0 0' }}>R$ {fmt(Math.abs(prev.diff)/Number(contasRemessa))}/conta</p>}
                       </div>
-                      <span style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:900, color:prev.pos?'#D1FAE5':'#EF4444' }}>
+                      <span style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:900, color:prev.pos?'var(--profit)':'var(--loss)' }}>
                         {prev.pos?'+':'\u2212'}R$ {fmt(Math.abs(prev.diff))}
                       </span>
                     </div>
@@ -1379,9 +1379,9 @@ export default function MetaPage() {
                       <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>STATUS</label>
                       <div style={{ display:'flex', gap:2, background:'rgba(255,255,255,0.02)', borderRadius:7, padding:2, border:'1px solid var(--b1)' }}>
                         {[
-                          { k:'normal', l:'Normal', c:'#D1FAE5' },
+                          { k:'normal', l:'Normal', c:'var(--profit)' },
                           { k:'saque_pendente', l:'Pendente', c:'rgba(255,255,255,0.78)' },
-                          { k:'conta_bloqueada', l:'Bloqueada', c:'#EF4444' },
+                          { k:'conta_bloqueada', l:'Bloqueada', c:'var(--loss)' },
                           { k:'banco_analise', l:'Analise', c:'rgba(255,255,255,0.78)' },
                         ].map(s=>(
                           <button key={s.k} type="button" onClick={()=>setStatusProb(s.k)} style={{
@@ -1694,7 +1694,7 @@ export default function MetaPage() {
                 initial={{ opacity:0, scale:0.96, y:20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.97 }}
                 transition={{ duration:0.5, delay:T.card, ease:[0.33,1,0.68,1] }}
                 onClick={e => e.stopPropagation()}
-                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:28, background:'linear-gradient(160deg, #000000, #000000)', border:'1px solid rgba(255,255,255,0.06)', boxShadow:`0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(${glowColor},0.04), inset 0 1px 0 rgba(255,255,255,0.03)` }}
+                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:28, background:'linear-gradient(160deg, var(--surface), var(--surface))', border:'1px solid rgba(255,255,255,0.06)', boxShadow:`0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(${glowColor},0.04), inset 0 1px 0 rgba(255,255,255,0.03)` }}
               >
                 {/* Header */}
                 <div style={{ padding:'40px 32px 28px', textAlign:'center', borderBottom:'1px solid rgba(255,255,255,0.04)', background:`linear-gradient(180deg, rgba(${glowColor},0.05), transparent)`, position:'relative', overflow:'hidden' }}>
@@ -1821,7 +1821,7 @@ export default function MetaPage() {
                     style={{
                       width:'100%', padding:'16px 28px', borderRadius:14, border:'none', cursor:'pointer',
                       fontSize:15, fontWeight:700, color:'#fff',
-                      background: liq>=0 ? 'linear-gradient(135deg, #d1fae5, #00a06d)' : 'linear-gradient(135deg, #e53935, #c62828)',
+                      background: liq>=0 ? 'linear-gradient(135deg, var(--profit), #00a06d)' : 'linear-gradient(135deg, #e53935, #c62828)',
                       boxShadow: `0 6px 24px rgba(${glowColor},0.3)`,
                       display:'flex', alignItems:'center', justifyContent:'center', gap:8,
                     }}

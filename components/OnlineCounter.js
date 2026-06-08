@@ -38,7 +38,7 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
         style={{
           padding: '22px 26px',
           borderRadius: 18,
-          background: 'linear-gradient(145deg, #000000, #000000)',
+          background: 'linear-gradient(145deg, var(--surface), var(--surface))',
           border: '1px solid rgba(209,250,229,0.12)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.35), 0 0 30px rgba(209,250,229,0.04), inset 0 1px 0 rgba(255,255,255,0.03)',
           display: 'flex',
@@ -52,17 +52,17 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
           <motion.div
             animate={{ boxShadow: ['0 0 0 0 rgba(209,250,229,0)', '0 0 0 8px rgba(209,250,229,0.2)', '0 0 0 0 rgba(209,250,229,0)'] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ width: 12, height: 12, borderRadius: '50%', background: '#D1FAE5', flexShrink: 0 }}
+            style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--profit)', flexShrink: 0 }}
           />
           <div>
             <p style={{ fontSize: 11, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Usuarios online agora</p>
-            <p style={{ fontSize: 11, color: '#94A3B8', margin: 0 }}>Ativos na plataforma neste momento</p>
+            <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>Ativos na plataforma neste momento</p>
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
           <p style={{
             fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
-            fontSize: 36, fontWeight: 900, color: '#D1FAE5', margin: 0, lineHeight: 1,
+            fontSize: 36, fontWeight: 900, color: 'var(--profit)', margin: 0, lineHeight: 1,
             textShadow: '0 0 20px rgba(209,250,229,0.15)',
           }}>
             {count}
@@ -86,11 +86,11 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
     >
       <span style={{
         width: 6, height: 6, borderRadius: '50%',
-        background: '#D1FAE5',
+        background: 'var(--profit)',
         boxShadow: '0 0 6px rgba(209,250,229,0.5)',
         animation: 'onlinePulse 2s ease-in-out infinite',
       }} />
-      <span style={{ fontFamily: 'var(--mono, monospace)', fontWeight: 700, color: '#D1FAE5' }}>{count}</span>
+      <span style={{ fontFamily: 'var(--mono, monospace)', fontWeight: 700, color: 'var(--profit)' }}>{count}</span>
       <span className="online-label" style={{ color: 'var(--t4)' }}>online</span>
       <style>{`
         @keyframes onlinePulse {

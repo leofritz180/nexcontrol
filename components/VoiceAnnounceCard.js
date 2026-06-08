@@ -62,7 +62,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
 
   const Chip = ({ children }) => (
     <span style={{
-      display: 'inline-block', fontSize: 12, fontWeight: 600, color: '#F5F5F5',
+      display: 'inline-block', fontSize: 12, fontWeight: 600, color: 'var(--t1)',
       padding: '4px 9px', borderRadius: 7, background: 'rgba(255,255,255,0.04)',
       border: '1px solid rgba(255,255,255,0.08)', fontFamily: 'var(--mono)',
       whiteSpace: 'nowrap',
@@ -72,7 +72,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
   const SectionTitle = ({ children, accent }) => (
     <p style={{
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em',
-      color: accent || 'var(--t3, #71717A)', margin: '0 0 10px',
+      color: accent || 'var(--t3, var(--t3))', margin: '0 0 10px',
     }}>{children}</p>
   )
 
@@ -100,7 +100,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
             onClick={e => e.stopPropagation()}
             style={{
               position: 'relative', width: '100%', maxWidth: 540, maxHeight: '88vh', overflowY: 'auto',
-              background: '#000000',
+              background: 'var(--surface)',
               border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: 18,
               boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.05), inset -1px 0 0 rgba(255,255,255,0.05), 0 24px 70px rgba(0,0,0,0.7), 0 0 40px rgba(255,255,255,0.03)',
@@ -111,7 +111,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
             <button type="button" onClick={dismiss} aria-label="Fechar" style={{
               position: 'absolute', top: 16, right: 16, width: 28, height: 28, borderRadius: 7,
               background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              color: '#A1A1AA', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
+              color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
             }}>
               <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
             </button>
@@ -130,17 +130,17 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: '#e53935', textTransform: 'uppercase' }}>Novidade</span>
-                  <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.06)', color: '#A1A1AA', letterSpacing: '0.05em' }}>BETA</span>
+                  <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.06)', color: 'var(--t2)', letterSpacing: '0.05em' }}>BETA</span>
                 </div>
-                <h2 style={{ fontFamily: 'var(--font-display, Georgia), serif', fontWeight: 400, fontSize: 30, lineHeight: 1.1, letterSpacing: '-0.02em', color: '#F5F5F5', margin: '2px 0 0' }}>
+                <h2 style={{ fontFamily: 'var(--font-display, Georgia), serif', fontWeight: 400, fontSize: 30, lineHeight: 1.1, letterSpacing: '-0.02em', color: 'var(--t1)', margin: '2px 0 0' }}>
                   Comando de Voz
                 </h2>
               </div>
             </div>
 
             {/* Intro */}
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: '#A1A1AA', margin: '0 0 18px' }}>
-              Agora voce comanda o NexControl <strong style={{ color: '#F5F5F5' }}>falando</strong>. Navegue entre telas{showPerguntas ? ' e pergunte seus numeros' : ''} sem tocar na tela.
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--t2)', margin: '0 0 18px' }}>
+              Agora voce comanda o NexControl <strong style={{ color: 'var(--t1)' }}>falando</strong>. Navegue entre telas{showPerguntas ? ' e pergunte seus numeros' : ''} sem tocar na tela.
             </p>
 
             {/* Como ativar */}
@@ -148,24 +148,24 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
               display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', marginBottom: 20,
               background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10,
             }}>
-              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                 <rect x="9" y="2" width="6" height="12" rx="3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" />
               </svg>
               <p style={{ fontSize: 13, lineHeight: 1.5, color: '#D4D4D8', margin: 0 }}>
-                Toque no <strong style={{ color: '#F5F5F5' }}>microfone</strong> no canto inferior direito da tela
-                <span style={{ color: '#71717A' }}> (ou tecla </span><kbd style={{ fontSize: 11, padding: '1px 5px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', fontFamily: 'var(--mono)' }}>F3</kbd><span style={{ color: '#71717A' }}> no computador)</span> e fale.
+                Toque no <strong style={{ color: 'var(--t1)' }}>microfone</strong> no canto inferior direito da tela
+                <span style={{ color: 'var(--t3)' }}> (ou tecla </span><kbd style={{ fontSize: 11, padding: '1px 5px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', fontFamily: 'var(--mono)' }}>F3</kbd><span style={{ color: 'var(--t3)' }}> no computador)</span> e fale.
               </p>
             </div>
 
             {/* Perguntas */}
             {showPerguntas && (
               <div style={{ marginBottom: 20 }}>
-                <SectionTitle accent="#D1FAE5">Pergunte e ouca a resposta</SectionTitle>
+                <SectionTitle accent="var(--profit)">Pergunte e ouca a resposta</SectionTitle>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {PERGUNTAS.map(p => (
                     <div key={p.cmd} style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                       <Chip>{p.cmd}</Chip>
-                      <span style={{ fontSize: 12, color: '#71717A' }}>{p.desc}</span>
+                      <span style={{ fontSize: 12, color: 'var(--t3)' }}>{p.desc}</span>
                     </div>
                   ))}
                 </div>
@@ -188,7 +188,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
                   {ACOES.map(a => (
                     <div key={a.cmd} style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                       <Chip>{a.cmd}</Chip>
-                      <span style={{ fontSize: 12, color: '#71717A' }}>{a.desc}</span>
+                      <span style={{ fontSize: 12, color: 'var(--t3)' }}>{a.desc}</span>
                     </div>
                   ))}
                 </div>

@@ -98,9 +98,9 @@ export default function BillingPage() {
             <motion.div
               animate={{ boxShadow:[`0 0 0 0 ${billing?.subActive?'rgba(209,250,229,0.6)':billing?.trialActive?'rgba(255,255,255,0.6)':'rgba(239,68,68,0.6)'}`,`0 0 0 5px ${billing?.subActive?'rgba(209,250,229,0)':billing?.trialActive?'rgba(255,255,255,0)':'rgba(239,68,68,0)'}`,`0 0 0 0 rgba(0,0,0,0)`] }}
               transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-              style={{ width:7, height:7, borderRadius:'50%', background:billing?.subActive?'#D1FAE5':billing?.trialActive?'rgba(255,255,255,0.78)':'#EF4444' }}
+              style={{ width:7, height:7, borderRadius:'50%', background:billing?.subActive?'var(--profit)':billing?.trialActive?'rgba(255,255,255,0.78)':'var(--loss)' }}
             />
-            <span style={{ fontSize:11, fontWeight:800, color:billing?.subActive?'#D1FAE5':billing?.trialActive?'rgba(255,255,255,0.78)':'#EF4444', letterSpacing:'0.08em' }}>
+            <span style={{ fontSize:11, fontWeight:800, color:billing?.subActive?'var(--profit)':billing?.trialActive?'rgba(255,255,255,0.78)':'var(--loss)', letterSpacing:'0.08em' }}>
               {billing?.subActive?'ASSINATURA ATIVA':billing?.trialActive?`TRIAL · ${billing.daysLeft} DIA${billing.daysLeft!==1?'S':''} RESTANTE${billing.daysLeft!==1?'S':''}`:'ASSINE PARA CONTINUAR'}
             </span>
           </motion.div>
@@ -110,7 +110,7 @@ export default function BillingPage() {
             transition={{duration:0.5, delay:0.15, ease:[0.33,1,0.68,1]}}
             style={{ fontSize:38, fontWeight:900, color:'var(--t1)', letterSpacing:'-0.035em', marginBottom:12, lineHeight:1.1 }}>
             Escale sua operacao<br/>
-            <span style={{ background:'linear-gradient(135deg, rgba(255,255,255,0.78), #D1FAE5)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>com estrutura profissional</span>
+            <span style={{ background:'linear-gradient(135deg, rgba(255,255,255,0.78), var(--profit))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>com estrutura profissional</span>
           </motion.h1>
 
           <motion.p
@@ -126,9 +126,9 @@ export default function BillingPage() {
             transition={{duration:0.45, delay:0.35}}
             style={{ display:'flex', gap:18, justifyContent:'center', flexWrap:'wrap' }}>
             {[
-              { icon:<svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>, t:'Cancele quando quiser' },
-              { icon:<svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, t:'Pagamento 100% seguro' },
-              { icon:<svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, t:'Liberacao imediata' },
+              { icon:<svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>, t:'Cancele quando quiser' },
+              { icon:<svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, t:'Pagamento 100% seguro' },
+              { icon:<svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, t:'Liberacao imediata' },
             ].map((x,i)=>(
               <div key={i} style={{ display:'flex', alignItems:'center', gap:6 }}>
                 {x.icon}
@@ -148,7 +148,7 @@ export default function BillingPage() {
           const isWarning = daysLeft <= 15 && !isUrgent
 
           // Cor do destaque dos dias
-          const daysColor = isUrgent ? '#e53935' : isWarning ? '#FCD34D' : '#D1FAE5'
+          const daysColor = isUrgent ? '#e53935' : isWarning ? '#FCD34D' : 'var(--profit)'
 
           return (
             <motion.div
@@ -270,7 +270,7 @@ export default function BillingPage() {
                     style={{
                       width: '100%', padding: '17px 24px', borderRadius: 14,
                       border: 'none',
-                      background: 'linear-gradient(180deg, #ef4444 0%, #c62828 100%)',
+                      background: 'linear-gradient(180deg, var(--loss) 0%, #c62828 100%)',
                       color: '#fff', fontSize: 15, fontWeight: 800,
                       cursor: 'pointer', fontFamily: 'inherit',
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -312,7 +312,7 @@ export default function BillingPage() {
               {/* DETALHES — card compacto preto */}
               <div style={{
                 position: 'relative', borderRadius: 16,
-                background: 'linear-gradient(180deg, #0a0a0a 0%, #050505 100%)',
+                background: 'linear-gradient(180deg, var(--raised) 0%, #050505 100%)',
                 border: '1px solid rgba(255,255,255,0.06)',
                 padding: '20px 28px',
                 boxShadow: '0 8px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)',
@@ -384,7 +384,7 @@ export default function BillingPage() {
                   <h3 style={{fontSize:18,fontWeight:900,color:'var(--t1)',margin:0, letterSpacing:'-0.02em'}}>Admin Solo</h3>
                 </div>
                 {opQty===0 && (
-                  <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(145deg, #94A3B8, #64748B)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 12px rgba(148,163,184,0.4)'}}>
+                  <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(145deg, var(--t3), #64748B)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 12px rgba(148,163,184,0.4)'}}>
                     <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
                 )}
@@ -398,7 +398,7 @@ export default function BillingPage() {
                 {['Acesso completo ao painel','Gestao de metas e remessas','Faturamento e relatorios','Chaves PIX','Sem operadores'].map((t,i)=>(
                   <div key={i} style={{display:'flex',alignItems:'center',gap:8}}>
                     <div style={{ width:16, height:16, borderRadius:4, background: i<4?'rgba(209,250,229,0.12)':'rgba(148,163,184,0.08)', border:`1px solid ${i<4?'rgba(209,250,229,0.25)':'rgba(148,163,184,0.18)'}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={i<4?'#D1FAE5':'#64748B'} strokeWidth="3" strokeLinecap="round">
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={i<4?'var(--profit)':'#64748B'} strokeWidth="3" strokeLinecap="round">
                         {i<4?<polyline points="20 6 9 17 4 12"/>:<line x1="5" y1="12" x2="19" y2="12"/>}
                       </svg>
                     </div>
@@ -456,8 +456,8 @@ export default function BillingPage() {
                 <span style={{fontSize:13,color:'var(--t4)',fontWeight:600}}>+ R$ {fmt(OP_BASE_PRICE)}/op</span>
               </div>
               <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'3px 10px', borderRadius:6, background:'rgba(209,250,229,0.1)', border:'1px solid rgba(209,250,229,0.22)', marginBottom:16 }}>
-                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                <span style={{ fontSize:10, color:'#D1FAE5', fontWeight:800, letterSpacing:'0.04em' }}>ATE 25% DE DESCONTO</span>
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                <span style={{ fontSize:10, color:'var(--profit)', fontWeight:800, letterSpacing:'0.04em' }}>ATE 25% DE DESCONTO</span>
               </div>
               <div style={{display:'flex',flexDirection:'column',gap:9}}>
                 {[
@@ -468,7 +468,7 @@ export default function BillingPage() {
                 ].map((item,i)=>(
                   <div key={i} style={{display:'flex',alignItems:'center',gap:8}}>
                     <div style={{ width:16, height:16, borderRadius:4, background:'rgba(209,250,229,0.14)', border:'1px solid rgba(209,250,229,0.3)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, boxShadow: item.strong?'0 0 8px rgba(209,250,229,0.25)':'none' }}>
-                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                     </div>
                     <span style={{fontSize:12, color: item.strong?'var(--t1)':'var(--t2)', fontWeight: item.strong?700:500}}>{item.t}</span>
                   </div>
@@ -501,7 +501,7 @@ export default function BillingPage() {
                   display:'flex', alignItems:'center', justifyContent:'center',
                   boxShadow:'0 0 12px rgba(209,250,229,0.18)',
                 }}>
-                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.2" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.2" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 </div>
                 <div>
                   <p style={{fontSize:13,fontWeight:800,color:'var(--t1)', margin:0, letterSpacing:'-0.01em'}}>Descontos progressivos</p>
@@ -527,12 +527,12 @@ export default function BillingPage() {
                       transition:'all 0.25s',
                     }}>
                     {isActive && (
-                      <div style={{ position:'absolute', top:-4, left:'50%', transform:'translateX(-50%)', padding:'2px 8px', borderRadius:'0 0 6px 6px', background:'#D1FAE5', fontSize:7, fontWeight:900, color:'white', letterSpacing:'0.08em' }}>
+                      <div style={{ position:'absolute', top:-4, left:'50%', transform:'translateX(-50%)', padding:'2px 8px', borderRadius:'0 0 6px 6px', background:'var(--profit)', fontSize:7, fontWeight:900, color:'white', letterSpacing:'0.08em' }}>
                         ATIVO
                       </div>
                     )}
-                    <p style={{fontSize:9, fontWeight:800, color:isActive?'#D1FAE5':'var(--t4)', letterSpacing:'0.08em', marginBottom:5, marginTop: isActive?4:0, textTransform:'uppercase'}}>{t.label}</p>
-                    <p className="t-num" style={{fontSize:isActive?20:16, fontWeight:900, color:isActive?'#D1FAE5':t.discount>0?'var(--t1)':'var(--t4)', marginBottom:3, letterSpacing:'-0.02em', textShadow: isActive?'0 0 14px rgba(209,250,229,0.3)':'none'}}>
+                    <p style={{fontSize:9, fontWeight:800, color:isActive?'var(--profit)':'var(--t4)', letterSpacing:'0.08em', marginBottom:5, marginTop: isActive?4:0, textTransform:'uppercase'}}>{t.label}</p>
+                    <p className="t-num" style={{fontSize:isActive?20:16, fontWeight:900, color:isActive?'var(--profit)':t.discount>0?'var(--t1)':'var(--t4)', marginBottom:3, letterSpacing:'-0.02em', textShadow: isActive?'0 0 14px rgba(209,250,229,0.3)':'none'}}>
                       {t.discount>0?`-${t.discount}%`:'—'}
                     </p>
                     <p style={{fontSize:9, color:'var(--t4)', margin:0, fontFamily:'var(--mono)', fontWeight:500}}>R$ {fmt(t.unitPrice)}/op</p>

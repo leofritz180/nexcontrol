@@ -171,7 +171,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
             <div style={{ padding: '0 32px 12px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                 {[
-                  { l: 'Movimentado', v: `R$ ${Number(moved).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, c: '#D1FAE5' },
+                  { l: 'Movimentado', v: `R$ ${Number(moved).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, c: 'var(--profit)' },
                   { l: 'Metas', v: metas, c: '#60A5FA' },
                   { l: 'Remessas', v: remessas, c: 'rgba(255,255,255,0.78)' },
                 ].map(({ l, v, c }) => (
@@ -189,10 +189,10 @@ export function ConversionModal({ tenant, subscription, stats }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', padding: '14px 18px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
               <div>
                 <p style={{ fontSize: 11, color: '#64748B', margin: '0 0 2px', fontWeight: 600 }}>A partir de</p>
-                <p style={{ fontSize: 10, color: '#94A3B8', margin: 0 }}>Menos que 1 operação perdida por dia</p>
+                <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>Menos que 1 operação perdida por dia</p>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: '#D1FAE5', letterSpacing: '-0.02em' }}>R$ 39,90</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: 'var(--profit)', letterSpacing: '-0.02em' }}>R$ 39,90</span>
                 <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4, fontWeight: 600 }}>/mês</span>
               </div>
             </div>
@@ -209,7 +209,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
                 position: 'relative', overflow: 'hidden',
                 width: '100%', padding: '15px 22px', borderRadius: 12,
                 border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(180deg, #d1fae5, #00a06d)',
+                background: 'linear-gradient(180deg, var(--profit), #00a06d)',
                 color: '#04120a',
                 fontSize: 15, fontWeight: 800,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -239,7 +239,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
                   fontSize: 11, color: '#64748B', textAlign: 'center',
                   transition: 'color 0.2s',
                 }}
-                onMouseEnter={e => e.currentTarget.style.color = '#94A3B8'}
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--t3)'}
                 onMouseLeave={e => e.currentTarget.style.color = '#64748B'}
               >
                 Continuar no trial

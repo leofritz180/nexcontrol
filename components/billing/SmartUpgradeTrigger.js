@@ -110,7 +110,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
 
               <div style={{
                 position: 'relative',
-                background: 'linear-gradient(145deg, #0a0a0a 0%, #050505 100%)',
+                background: 'linear-gradient(145deg, var(--raised) 0%, #050505 100%)',
                 borderRadius: 19, padding: '32px 28px',
                 overflow: 'hidden',
               }}>
@@ -193,7 +193,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
                     <p style={{ fontSize: 9, fontWeight: 800, color: 'var(--t3)', letterSpacing: '0.16em', textTransform: 'uppercase', fontFamily: 'var(--mono)', margin: 0 }}>
                       Equivale a
                     </p>
-                    <p style={{ fontSize: 18, fontWeight: 800, color: '#D1FAE5', fontFamily: 'var(--mono)', margin: '4px 0 0' }}>
+                    <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--profit)', fontFamily: 'var(--mono)', margin: '4px 0 0' }}>
                       {daily}<span style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)', marginLeft: 3 }}>/dia</span>
                     </p>
                   </div>

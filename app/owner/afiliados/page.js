@@ -38,7 +38,7 @@ export default function OwnerAfiliadosPage() {
   }, [])
 
   if (loading) return (
-    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000000' }}>
+    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface)' }}>
       <div className="spinner" style={{ width: 22, height: 22, borderTopColor: '#e53935' }} />
     </main>
   )
@@ -59,7 +59,7 @@ export default function OwnerAfiliadosPage() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', background: '#000000' }}>
+    <main style={{ minHeight: '100vh', background: 'var(--surface)' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 28px 80px' }}>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}
@@ -74,7 +74,7 @@ export default function OwnerAfiliadosPage() {
             </div>
           </div>
           <button onClick={() => router.push('/owner')}
-            style={{ fontSize: 12, fontWeight: 600, padding: '8px 18px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#94A3B8' }}>
+            style={{ fontSize: 12, fontWeight: 600, padding: '8px 18px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: 'var(--t3)' }}>
             Voltar ao Centro
           </button>
         </motion.div>
@@ -85,11 +85,11 @@ export default function OwnerAfiliadosPage() {
             { l: 'Afiliados ativos', v: `${totals.enabled || 0} / ${totals.affiliates || 0}`, c: 'rgba(255,255,255,0.78)' },
             { l: 'Indicados', v: totals.indicados || 0, c: '#60A5FA' },
             { l: 'Faturamento gerado', v: `R$ ${fmt(totals.totalFaturado)}`, c: '#F1F5F9' },
-            { l: 'Comissão total', v: `R$ ${fmt(totals.totalComissao)}`, c: '#D1FAE5' },
+            { l: 'Comissão total', v: `R$ ${fmt(totals.totalComissao)}`, c: 'var(--profit)' },
             { l: 'A pagar', v: `R$ ${fmt(totals.pendente)}`, c: 'rgba(255,255,255,0.78)' },
           ].map((k, i) => (
             <motion.div key={k.l} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06 + i * 0.05, ease }}
-              style={{ borderRadius: 14, padding: '18px 20px', background: 'linear-gradient(145deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              style={{ borderRadius: 14, padding: '18px 20px', background: 'linear-gradient(145deg, var(--surface), var(--surface))', border: '1px solid rgba(255,255,255,0.05)' }}>
               <p style={{ fontSize: 10, color: '#64748B', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>{k.l}</p>
               <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>{k.v}</p>
             </motion.div>
@@ -99,10 +99,10 @@ export default function OwnerAfiliadosPage() {
         {/* PAGAMENTOS PENDENTES — owner paga via PIX e marca como paid */}
         {pendingCommissions.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.18, ease }}
-            style={{ borderRadius: 16, padding: 24, marginBottom: 24, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(229,57,53,0.18)' }}>
+            style={{ borderRadius: 16, padding: 24, marginBottom: 24, background: 'linear-gradient(180deg, var(--raised), #050505)', border: '1px solid rgba(229,57,53,0.18)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <h3 style={{ fontSize: 14, fontWeight: 800, color: '#F1F5F9', margin: 0 }}>
-                💸 Pagamentos pendentes <span style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', marginLeft: 8 }}>({pendingCommissions.length})</span>
+                💸 Pagamentos pendentes <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)', marginLeft: 8 }}>({pendingCommissions.length})</span>
               </h3>
               <span style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: '#e53935' }}>
                 R$ {fmt(pendingCommissions.reduce((s, c) => s + c.commission_amount, 0))}
@@ -114,22 +114,22 @@ export default function OwnerAfiliadosPage() {
                   <div>
                     <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Afiliado (recebe)</p>
                     <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>{c.affiliate.name}</p>
-                    <p style={{ fontSize: 10, color: '#94A3B8', margin: '2px 0 0', fontFamily: 'var(--mono)' }}>{c.affiliate.email}</p>
+                    <p style={{ fontSize: 10, color: 'var(--t3)', margin: '2px 0 0', fontFamily: 'var(--mono)' }}>{c.affiliate.email}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Indicou</p>
                     <p style={{ fontSize: 12, fontWeight: 600, color: '#F1F5F9', margin: 0 }}>{c.referred.name}</p>
-                    <p style={{ fontSize: 10, color: '#94A3B8', margin: '2px 0 0' }}>pagou R$ {fmt(c.payment_amount)}</p>
+                    <p style={{ fontSize: 10, color: 'var(--t3)', margin: '2px 0 0' }}>pagou R$ {fmt(c.payment_amount)}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: 9, color: '#64748B', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>PIX</p>
                     {c.affiliate.pix_key ? (
                       <button onClick={() => copyText(c.affiliate.pix_key)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}>
-                        <p style={{ fontSize: 11, fontFamily: 'var(--mono)', color: '#D1FAE5', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }} title="clique pra copiar">📋 {c.affiliate.pix_key}</p>
+                        <p style={{ fontSize: 11, fontFamily: 'var(--mono)', color: 'var(--profit)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 140 }} title="clique pra copiar">📋 {c.affiliate.pix_key}</p>
                         <p style={{ fontSize: 9, color: '#64748B', margin: '2px 0 0' }}>{c.affiliate.pix_type || 'tipo —'}</p>
                       </button>
                     ) : (
-                      <p style={{ fontSize: 11, color: '#EF4444', margin: 0 }}>⚠️ sem PIX</p>
+                      <p style={{ fontSize: 11, color: 'var(--loss)', margin: 0 }}>⚠️ sem PIX</p>
                     )}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
@@ -154,7 +154,7 @@ export default function OwnerAfiliadosPage() {
 
         {/* Ranking */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2, ease }}
-          style={{ borderRadius: 16, padding: 24, background: 'linear-gradient(145deg, #000000, #000000)', border: '1px solid rgba(255,255,255,0.05)' }}>
+          style={{ borderRadius: 16, padding: 24, background: 'linear-gradient(145deg, var(--surface), var(--surface))', border: '1px solid rgba(255,255,255,0.05)' }}>
           <h3 style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: '0 0 14px' }}>Ranking de afiliados</h3>
           {rows.length === 0 ? (
             <div style={{ padding: '40px 0', textAlign: 'center' }}>
@@ -189,14 +189,14 @@ export default function OwnerAfiliadosPage() {
                           </div>
                         </td>
                         <td style={{ padding: '12px' }}>
-                          <span style={{ fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 5, background: r.enabled ? 'rgba(209,250,229,0.08)' : 'rgba(100,116,139,0.08)', color: r.enabled ? '#D1FAE5' : '#64748B', border: `1px solid ${r.enabled ? 'rgba(209,250,229,0.2)' : 'rgba(100,116,139,0.2)'}` }}>
+                          <span style={{ fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 5, background: r.enabled ? 'rgba(209,250,229,0.08)' : 'rgba(100,116,139,0.08)', color: r.enabled ? 'var(--profit)' : '#64748B', border: `1px solid ${r.enabled ? 'rgba(209,250,229,0.2)' : 'rgba(100,116,139,0.2)'}` }}>
                             {r.enabled ? 'ATIVO' : 'INATIVO'}
                           </span>
                         </td>
-                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', color: '#94A3B8' }}>{Math.round(r.rate * 100)}%</td>
+                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', color: 'var(--t3)' }}>{Math.round(r.rate * 100)}%</td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: '#F1F5F9' }}>{r.indicados}</td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', color: '#60A5FA' }}>R$ {fmt(r.totalFaturado)}</td>
-                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: '#D1FAE5' }}>R$ {fmt(r.totalComissao)}</td>
+                        <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: 'var(--profit)' }}>R$ {fmt(r.totalComissao)}</td>
                         <td style={{ padding: '12px', fontFamily: 'var(--mono)', fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>R$ {fmt(r.pendente)}</td>
                       </tr>
                     )

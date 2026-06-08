@@ -9,7 +9,7 @@ export default function AdminError({ error, reset }) {
   return (
     <main style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: 24, background: '#000000',
+      padding: 24, background: 'var(--surface)',
     }}>
       <div style={{
         maxWidth: 520, width: '100%', padding: 32, borderRadius: 20,
@@ -23,19 +23,19 @@ export default function AdminError({ error, reset }) {
             background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth={2} strokeLinecap="round">
+            <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth={2} strokeLinecap="round">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
           </div>
           <div>
             <h2 style={{ fontSize: 20, fontWeight: 800, color: '#F1F5F9', margin: 0 }}>Ops, algo quebrou</h2>
-            <p style={{ fontSize: 12, color: '#94A3B8', margin: '2px 0 0' }}>O painel nao pode carregar esta visualizacao.</p>
+            <p style={{ fontSize: 12, color: 'var(--t3)', margin: '2px 0 0' }}>O painel nao pode carregar esta visualizacao.</p>
           </div>
         </div>
         <div style={{
           padding: 14, borderRadius: 10, marginBottom: 18,
           background: 'rgba(4,8,16,0.7)', border: '1px solid rgba(255,255,255,0.06)',
-          fontSize: 11, fontFamily: 'var(--mono, monospace)', color: '#EF4444',
+          fontSize: 11, fontFamily: 'var(--mono, monospace)', color: 'var(--loss)',
           maxHeight: 140, overflowY: 'auto',
         }}>
           {error?.message || 'Erro desconhecido'}
@@ -50,7 +50,7 @@ export default function AdminError({ error, reset }) {
           }}>Tentar novamente</button>
           <button onClick={() => { if (typeof window !== 'undefined') window.location.href = '/login' }} style={{
             padding: '12px 20px', borderRadius: 11, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
-            fontSize: 13, fontWeight: 700, fontFamily: 'inherit', color: '#94A3B8',
+            fontSize: 13, fontWeight: 700, fontFamily: 'inherit', color: 'var(--t3)',
             background: 'rgba(255,255,255,0.03)',
           }}>Ir para login</button>
         </div>

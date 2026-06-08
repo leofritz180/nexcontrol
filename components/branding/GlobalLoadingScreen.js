@@ -35,7 +35,7 @@ export default function GlobalLoadingScreen() {
             position: 'fixed',
             inset: 0,
             zIndex: 99999,
-            background: '#000000',
+            background: 'var(--surface)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

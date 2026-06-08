@@ -100,7 +100,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
           <div style={{ padding: '22px 24px 18px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <div style={{ minWidth: 0 }}>
               <h2 style={{ fontSize: 18, fontWeight: 800, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Pagamento via Pix</h2>
-              <p style={{ fontSize: 12, color: '#94A3B8', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {planName || 'NexControl'} · <strong style={{ color: '#e53935', fontFamily: 'var(--mono)' }}>R$ {fmt(amount)}</strong>
               </p>
             </div>
@@ -111,10 +111,10 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 width: 34, height: 34, borderRadius: 10, flexShrink: 0,
                 background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#94A3B8', transition: 'all 0.2s',
+                color: 'var(--t3)', transition: 'all 0.2s',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.12)'; e.currentTarget.style.color = '#e53935' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = '#94A3B8' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = 'var(--t3)' }}
             >
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
@@ -133,7 +133,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                   <p style={{ fontSize: 15, color: '#E2E8F0', margin: '0 0 6px', fontWeight: 600, lineHeight: 1.4 }}>
                     Pague em poucos segundos
                   </p>
-                  <p style={{ fontSize: 13, color: '#94A3B8', margin: 0, lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, lineHeight: 1.5 }}>
                     Libere o acesso PRO imediatamente após o pagamento.
                   </p>
                 </div>
@@ -155,7 +155,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 </button>
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, marginTop: 16, padding: '8px 14px', borderRadius: 10, background: 'rgba(209,250,229,0.04)', border: '1px solid rgba(209,250,229,0.1)' }}>
-                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   <span style={{ fontSize: 11, color: 'rgba(209,250,229,0.75)', fontWeight: 600, letterSpacing: '0.02em' }}>
                     Pagamento 100% seguro via Mercado Pago
                   </span>
@@ -235,7 +235,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                       transition: 'all 0.2s',
                       background: copied ? 'rgba(209,250,229,0.15)' : 'linear-gradient(145deg, #e53935, #c62828)',
-                      color: copied ? '#D1FAE5' : 'white',
+                      color: copied ? 'var(--profit)' : 'white',
                       boxShadow: copied
                         ? '0 0 0 1px rgba(209,250,229,0.3) inset'
                         : '0 4px 20px rgba(229,57,53,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
@@ -283,16 +283,16 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                   animation: 'pix-pop 0.5s cubic-bezier(0.33,1.4,0.68,1) both',
                   boxShadow: '0 0 40px rgba(209,250,229,0.25)',
                 }}>
-                  <svg width={34} height={34} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg width={34} height={34} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
-                <h3 style={{ fontSize: 19, fontWeight: 800, color: '#D1FAE5', margin: '0 0 6px' }}>
+                <h3 style={{ fontSize: 19, fontWeight: 800, color: 'var(--profit)', margin: '0 0 6px' }}>
                   ✅ Pagamento confirmado!
                 </h3>
-                <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 18px' }}>
+                <p style={{ fontSize: 13, color: 'var(--t3)', margin: '0 0 18px' }}>
                   Liberando acesso...
                 </p>
                 <div style={{ width: '100%', height: 3, borderRadius: 2, overflow: 'hidden', background: 'rgba(209,250,229,0.08)' }}>
-                  <div style={{ height: '100%', background: '#D1FAE5', animation: 'pix-bar 1.8s linear both', transformOrigin: 'left' }}/>
+                  <div style={{ height: '100%', background: 'var(--profit)', animation: 'pix-bar 1.8s linear both', transformOrigin: 'left' }}/>
                 </div>
               </div>
             )}
@@ -306,12 +306,12 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 16px',
                 }}>
-                  <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
                 <p style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9', margin: '0 0 6px' }}>
                   Erro ao gerar pagamento
                 </p>
-                <p style={{ fontSize: 13, color: '#94A3B8', margin: '0 0 22px' }}>
+                <p style={{ fontSize: 13, color: 'var(--t3)', margin: '0 0 22px' }}>
                   Tente novamente em alguns segundos.
                 </p>
                 <button

@@ -79,7 +79,7 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
 
           <div style={{
             position: 'relative',
-            background: 'linear-gradient(145deg, #0a0a0a 0%, #050505 100%)',
+            background: 'linear-gradient(145deg, var(--raised) 0%, #050505 100%)',
             borderRadius: 17,
             padding: '20px 22px',
             overflow: 'hidden',
@@ -166,7 +166,7 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
                   transition={{ delay: 0.15 + i * 0.07, duration: 0.4 }}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--t2)' }}
                 >
-                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                   {t}
                 </motion.li>
               ))}

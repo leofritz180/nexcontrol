@@ -136,7 +136,7 @@ function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
 /* ── Status badge ── */
 function StatusBadge({ status }) {
   const cfg = {
-    ativa: { bg: 'rgba(209,250,229,0.12)', color: '#D1FAE5', border: 'rgba(209,250,229,0.25)', label: 'ATIVA' },
+    ativa: { bg: 'rgba(209,250,229,0.12)', color: 'var(--profit)', border: 'rgba(209,250,229,0.25)', label: 'ATIVA' },
     finalizada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Finalizada' },
     fechada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Fechada' },
   }
@@ -180,7 +180,7 @@ function MilestoneBadge({ label, achieved }) {
         width: 20, height: 20, borderRadius: 6,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: achieved ? 'rgba(209,250,229,0.15)' : 'transparent',
-        color: achieved ? '#D1FAE5' : 'var(--t4)',
+        color: achieved ? 'var(--profit)' : 'var(--t4)',
       }}>
         {achieved ? <IconCheck /> : <IconLock />}
       </div>
@@ -219,7 +219,7 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
   const totalSaq = demoRem.reduce((a, r) => a + Number(r.saque || 0), 0)
 
   const insight = DEMO_INSIGHTS[insightIdx]
-  const insightColors = { profit: '#D1FAE5', loss: '#EF4444', warn: 'rgba(255,255,255,0.78)', info: '#e53935' }
+  const insightColors = { profit: 'var(--profit)', loss: 'var(--loss)', warn: 'rgba(255,255,255,0.78)', info: '#e53935' }
 
   return (
     <div>
@@ -323,7 +323,7 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
               position: 'relative', overflow: 'hidden', marginBottom: 16,
             }}
           >
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #D1FAE5, rgba(209,250,229,0.3))' }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--profit), rgba(209,250,229,0.3))' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
               <h3 style={{ fontSize: 24, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>
                 {demoMeta.quantidade_contas} DEP {demoMeta.rede}
@@ -343,7 +343,7 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 1.2, ease: [0.33, 1, 0.68, 1] }}
-                  style={{ height: '100%', borderRadius: 4, background: 'linear-gradient(90deg, #D1FAE5, #00A06D)' }}
+                  style={{ height: '100%', borderRadius: 4, background: 'linear-gradient(90deg, var(--profit), #00A06D)' }}
                 />
               </div>
             </div>
@@ -480,7 +480,7 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
             style={{ padding: 22, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#D1FAE5', animation: 'demoPulse 2s infinite' }} />
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--profit)', animation: 'demoPulse 2s infinite' }} />
               <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Atividade recente</h3>
             </div>
             <div style={{ minHeight: 32 }}>
@@ -757,7 +757,7 @@ export default function OperatorPage() {
 
         <div style={{
           position: 'relative', maxWidth: 500, width: '100%', textAlign: 'center',
-          background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          background: 'linear-gradient(180deg, var(--raised), #050505)',
           border: '1px solid rgba(255,255,255,0.08)',
           borderRadius: 20, padding: '44px 38px',
           boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(229,57,53,0.06), 0 0 0 1px rgba(229,57,53,0.04)',
@@ -962,7 +962,7 @@ export default function OperatorPage() {
                 style={{
                   width: '100%', maxWidth: 540, maxHeight: 'calc(100dvh - 40px)', overflowY: 'auto',
                   padding: 32, borderRadius: 20,
-                  background: 'linear-gradient(160deg, #000000, #000000)',
+                  background: 'linear-gradient(160deg, var(--surface), var(--surface))',
                   border: '1px solid rgba(255,255,255,0.06)',
                   boxShadow: '0 40px 100px rgba(0,0,0,0.7)',
                 }}>
@@ -1230,7 +1230,7 @@ export default function OperatorPage() {
                     <div style={{
                       marginTop: 14, padding: '10px 14px', borderRadius: 10,
                       background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)',
-                      color: '#EF4444', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8,
+                      color: 'var(--loss)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8,
                     }}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                       {error}
@@ -1379,7 +1379,7 @@ export default function OperatorPage() {
                         }}
                       >
                         {/* Green accent line at top */}
-                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #D1FAE5, rgba(209,250,229,0.3))' }} />
+                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, var(--profit), rgba(209,250,229,0.3))' }} />
 
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -1406,7 +1406,7 @@ export default function OperatorPage() {
                               transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
                               style={{
                                 height: '100%', borderRadius: 4,
-                                background: 'linear-gradient(90deg, #D1FAE5, #00A06D)',
+                                background: 'linear-gradient(90deg, var(--profit), #00A06D)',
                               }}
                             />
                           </div>
@@ -1438,12 +1438,12 @@ export default function OperatorPage() {
                             width: '100%', padding: '14px 28px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                             fontSize: 14, fontWeight: 700, color: '#fff',
-                            background: '#D1FAE5', border: 'none', borderRadius: 11,
+                            background: 'var(--profit)', border: 'none', borderRadius: 11,
                             cursor: 'pointer', boxShadow: '0 4px 16px rgba(209,250,229,0.3)',
                             transition: 'all 0.2s ease',
                           }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#00A06D' }}
-                          onMouseLeave={e => { e.currentTarget.style.background = '#D1FAE5' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'var(--profit)' }}
                         >
                           <IconPlay /> Continuar operando
                         </button>
@@ -1647,8 +1647,8 @@ export default function OperatorPage() {
                         padding: '8px 12px', borderRadius: 8,
                         background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
                       }}>
-                        <span style={{ fontSize: 12, color: '#EF4444', fontWeight: 600 }}>Conta bloqueada</span>
-                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: '#EF4444' }}>{alertas.cb}</span>
+                        <span style={{ fontSize: 12, color: 'var(--loss)', fontWeight: 600 }}>Conta bloqueada</span>
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'var(--loss)' }}>{alertas.cb}</span>
                       </div>
                     )}
                     {alertas.ba > 0 && (

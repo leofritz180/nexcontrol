@@ -39,7 +39,7 @@ function useCountUp(target, duration = 1200, decimals = 0) {
 }
 
 /* ── Mini Sparkline (CSS bars, last 6 weeks) ── */
-function MiniSparkline({ data, color = '#D1FAE5', width = 90, height = 32 }) {
+function MiniSparkline({ data, color = 'var(--profit)', width = 90, height = 32 }) {
   if (!data || data.length < 2) return null
   const max = Math.max(...data.map(Math.abs))
   const range = max || 1
@@ -55,7 +55,7 @@ function MiniSparkline({ data, color = '#D1FAE5', width = 90, height = 32 }) {
             width: barW, height: h, borderRadius: 2,
             background: v >= 0
               ? `linear-gradient(180deg, ${color}, rgba(209,250,229,0.3))`
-              : 'linear-gradient(180deg, #EF4444, rgba(239,68,68,0.3))',
+              : 'linear-gradient(180deg, var(--loss), rgba(239,68,68,0.3))',
             opacity: 0.4 + (i / data.length) * 0.6,
             boxShadow: isLast && v > 0 ? `0 0 6px ${color}40` : 'none',
             transition: 'height 0.6s ease',
@@ -71,7 +71,7 @@ function ScoreRing({ score, size = 52, strokeWidth = 4 }) {
   const radius = (size - strokeWidth) / 2
   const circumference = 2 * Math.PI * radius
   const offset = circumference - (score / 100) * circumference
-  const color = score >= 70 ? '#D1FAE5' : score >= 40 ? 'rgba(255,255,255,0.78)' : '#EF4444'
+  const color = score >= 70 ? 'var(--profit)' : score >= 40 ? 'rgba(255,255,255,0.78)' : 'var(--loss)'
   const bgColor = score >= 70 ? 'rgba(209,250,229,0.08)' : score >= 40 ? 'rgba(255,255,255,0.08)' : 'rgba(239,68,68,0.08)'
 
   return (
@@ -108,14 +108,14 @@ function KpiCard({ label, value, prefix, i, isProfit, rawValue, suffix }) {
   const displayCount = useCountUp(typeof rawValue === 'number' ? Math.abs(rawValue) : value, 1400, typeof rawValue === 'number' ? 2 : 0)
 
   const valueColor = isProfit
-    ? (rawValue >= 0 ? '#D1FAE5' : '#EF4444')
+    ? (rawValue >= 0 ? 'var(--profit)' : 'var(--loss)')
     : 'var(--t1)'
 
   return (
     <motion.div {...fadeUp(i)}
       style={{
         padding: '18px 20px', position: 'relative',
-        background: '#000000',
+        background: 'var(--surface)',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: 12,
         boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
@@ -149,7 +149,7 @@ function AlertCard({ alert, i }) {
   const isSuccess = alert.type === 'success'
   const isInfo = alert.type === 'info'
 
-  const accent = isDanger ? '#EF4444' : isSuccess ? '#D1FAE5' : isInfo ? '#93C5FD' : 'var(--t1)'
+  const accent = isDanger ? 'var(--loss)' : isSuccess ? 'var(--profit)' : isInfo ? '#93C5FD' : 'var(--t1)'
   // Action chip: nao usa 'reduzir' por padrao — so quando eh queda real
   const action = alert.label === 'Queda real' ? 'investigar'
     : alert.label === 'Prejuizo acumulado' ? 'revisar'
@@ -169,7 +169,7 @@ function AlertCard({ alert, i }) {
         position: 'relative',
         display: 'flex', alignItems: 'center', gap: 12,
         padding: '14px 16px', borderRadius: 12,
-        background: '#000000',
+        background: 'var(--surface)',
         border: `1px solid ${isDanger ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)'}`,
         transition: 'border-color 0.2s ease',
       }}
@@ -292,7 +292,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 9999,
           width: '100%', maxWidth: 480,
-          background: 'linear-gradient(180deg, #000000 0%, #000000 100%)',
+          background: 'linear-gradient(180deg, var(--surface) 0%, var(--surface) 100%)',
           borderLeft: '1px solid rgba(255,255,255,0.06)',
           overflowY: 'auto', padding: '28px 24px 40px',
           boxShadow: '-24px 0 80px rgba(0,0,0,0.6)',
@@ -310,23 +310,23 @@ function DrawerPanel({ rede, onClose, allRedes }) {
                     fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 6,
                     textTransform: 'uppercase', letterSpacing: '0.06em',
                     background: rede.trend === 'up' ? 'rgba(209,250,229,0.12)' : rede.trend === 'down' ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.05)',
-                    color: rede.trend === 'up' ? '#D1FAE5' : rede.trend === 'down' ? '#EF4444' : '#94A3B8',
+                    color: rede.trend === 'up' ? 'var(--profit)' : rede.trend === 'down' ? 'var(--loss)' : 'var(--t3)',
                     border: `1px solid ${rede.trend === 'up' ? 'rgba(209,250,229,0.2)' : rede.trend === 'down' ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.08)'}`,
                   }}>
                     {rede.trend === 'up' ? '\u2191 Crescimento' : rede.trend === 'down' ? '\u2193 Queda' : '\u2194 Estavel'}
                   </span>
-                  <span style={{ fontSize: 11, color: '#94A3B8' }}>#{ranking} de {totalRedes}</span>
+                  <span style={{ fontSize: 11, color: 'var(--t3)' }}>#{ranking} de {totalRedes}</span>
                 </div>
               </div>
             </div>
           </div>
           <button onClick={onClose} style={{
             width: 36, height: 36, borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)',
-            background: 'rgba(255,255,255,0.04)', color: '#94A3B8', cursor: 'pointer',
+            background: 'rgba(255,255,255,0.04)', color: 'var(--t3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', flexShrink: 0,
           }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#F1F5F9' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#94A3B8' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--t3)' }}
           >
             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
           </button>
@@ -344,7 +344,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
             <p style={{
               fontSize: 30, fontWeight: 800, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.03em',
-              color: rede.lucroFinal >= 0 ? '#D1FAE5' : '#EF4444',
+              color: rede.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)',
               textShadow: rede.lucroFinal >= 0 ? '0 0 24px rgba(209,250,229,0.2)' : '0 0 24px rgba(239,68,68,0.2)',
               margin: 0,
             }}>
@@ -352,7 +352,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
             </p>
             <span style={{
               fontSize: 12, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
-              color: vsAvg >= 0 ? '#D1FAE5' : '#EF4444',
+              color: vsAvg >= 0 ? 'var(--profit)' : 'var(--loss)',
             }}>
               {vsAvg >= 0 ? '+' : ''}{vsAvg.toFixed(1)}% vs media
             </span>
@@ -365,8 +365,8 @@ function DrawerPanel({ rede, onClose, allRedes }) {
           background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8' }}>Percentil entre redes</span>
-            <span style={{ fontSize: 13, fontWeight: 800, fontFamily: 'var(--mono, monospace)', color: percentile >= 60 ? '#D1FAE5' : percentile >= 30 ? 'rgba(255,255,255,0.78)' : '#EF4444' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)' }}>Percentil entre redes</span>
+            <span style={{ fontSize: 13, fontWeight: 800, fontFamily: 'var(--mono, monospace)', color: percentile >= 60 ? 'var(--profit)' : percentile >= 30 ? 'rgba(255,255,255,0.78)' : 'var(--loss)' }}>
               Top {Math.max(1, 100 - percentile)}%
             </span>
           </div>
@@ -378,10 +378,10 @@ function DrawerPanel({ rede, onClose, allRedes }) {
               style={{
                 height: '100%', borderRadius: 3,
                 background: percentile >= 60
-                  ? 'linear-gradient(90deg, rgba(209,250,229,0.6), #D1FAE5)'
+                  ? 'linear-gradient(90deg, rgba(209,250,229,0.6), var(--profit))'
                   : percentile >= 30
                     ? 'linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.78))'
-                    : 'linear-gradient(90deg, rgba(239,68,68,0.6), #EF4444)',
+                    : 'linear-gradient(90deg, rgba(239,68,68,0.6), var(--loss))',
               }}
             />
           </div>
@@ -419,10 +419,10 @@ function DrawerPanel({ rede, onClose, allRedes }) {
               { label: 'Lucro por meta', value: lucroPorMeta, prefix: 'R$ ' },
             ].map((m, idx) => (
               <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 12, color: '#94A3B8' }}>{m.label}</span>
+                <span style={{ fontSize: 12, color: 'var(--t3)' }}>{m.label}</span>
                 <span style={{
                   fontSize: 13, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
-                  color: m.value >= 0 ? '#D1FAE5' : '#EF4444',
+                  color: m.value >= 0 ? 'var(--profit)' : 'var(--loss)',
                   padding: '2px 8px', borderRadius: 6,
                   background: m.value >= 0 ? 'rgba(209,250,229,0.08)' : 'rgba(239,68,68,0.08)',
                 }}>
@@ -481,7 +481,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
                   border: `1px solid ${lucro >= 0 ? 'rgba(209,250,229,0.06)' : 'rgba(239,68,68,0.06)'}`,
                 }}>
                   <div>
-                    <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 500 }}>
+                    <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>
                       {m.operador_nome || 'Operador'}
                     </span>
                     <span style={{ fontSize: 10, color: '#64748B', marginLeft: 8 }}>
@@ -490,7 +490,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
                   </div>
                   <span style={{
                     fontSize: 12, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
-                    color: lucro >= 0 ? '#D1FAE5' : '#EF4444',
+                    color: lucro >= 0 ? 'var(--profit)' : 'var(--loss)',
                   }}>
                     {lucro >= 0 ? '+' : ''}R$ {fmt(lucro)}
                   </span>
@@ -865,7 +865,7 @@ export default function RedesPage() {
         : 0.02
 
     return {
-      background: '#000000',
+      background: 'var(--surface)',
       borderColor: `rgba(${rgb},${intensity + 0.1})`,
       glowColor: `rgba(${rgb},${intensity * 0.5})`,
       rgb,
@@ -875,7 +875,7 @@ export default function RedesPage() {
   /* ── Loading state ── */
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #000000, #000000)' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, var(--surface), var(--surface))' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             style={{ width: 32, height: 32, border: '3px solid rgba(229,57,53,0.2)', borderTopColor: '#e53935', borderRadius: '50%' }} />
@@ -938,7 +938,7 @@ export default function RedesPage() {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {DEMO_REDES_RANKING.map((rede, i) => {
-                      const scoreColor = rede.score >= 70 ? '#D1FAE5' : rede.score >= 40 ? 'rgba(255,255,255,0.78)' : '#EF4444'
+                      const scoreColor = rede.score >= 70 ? 'var(--profit)' : rede.score >= 40 ? 'rgba(255,255,255,0.78)' : 'var(--loss)'
                       const scoreRgb = rede.score >= 70 ? '34,197,94' : rede.score >= 40 ? '245,158,11' : '239,68,68'
                       const isTop = i === 0
                       const bgIntensity = isTop ? 0.1 : 0.05
@@ -987,7 +987,7 @@ export default function RedesPage() {
                                     fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 6,
                                     textTransform: 'uppercase', letterSpacing: '0.05em',
                                     background: rede.trend === 'up' ? 'rgba(209,250,229,0.1)' : rede.trend === 'down' ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.04)',
-                                    color: rede.trend === 'up' ? '#D1FAE5' : rede.trend === 'down' ? '#EF4444' : '#94A3B8',
+                                    color: rede.trend === 'up' ? 'var(--profit)' : rede.trend === 'down' ? 'var(--loss)' : 'var(--t3)',
                                     border: `1px solid ${rede.trend === 'up' ? 'rgba(209,250,229,0.15)' : rede.trend === 'down' ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.06)'}`,
                                   }}>
                                     {rede.trend === 'up' ? '\u2191 Alta' : rede.trend === 'down' ? '\u2193 Queda' : '\u2194 Estavel'}
@@ -996,16 +996,16 @@ export default function RedesPage() {
                                 {/* Metrics row */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
                                   <span style={{ fontSize: 11, color: '#64748B' }}>
-                                    <span style={{ fontWeight: 700, color: '#94A3B8' }}>{rede.metas}</span> metas
+                                    <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.metas}</span> metas
                                   </span>
                                   <span style={{ fontSize: 11, color: '#64748B' }}>
-                                    <span style={{ fontWeight: 700, color: '#94A3B8' }}>{rede.contas}</span> contas
+                                    <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.contas}</span> contas
                                   </span>
                                   <span style={{ fontSize: 11, color: '#64748B' }}>
-                                    <span style={{ fontWeight: 700, color: '#94A3B8' }}>{rede.remessas}</span> rem.
+                                    <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.remessas}</span> rem.
                                   </span>
                                   <span style={{ fontSize: 11, color: '#64748B' }}>
-                                    win <span style={{ fontWeight: 700, color: rede.winRate >= 50 ? '#D1FAE5' : '#EF4444', fontFamily: 'var(--mono, monospace)' }}>{rede.winRate}%</span>
+                                    win <span style={{ fontWeight: 700, color: rede.winRate >= 50 ? 'var(--profit)' : 'var(--loss)', fontFamily: 'var(--mono, monospace)' }}>{rede.winRate}%</span>
                                   </span>
                                 </div>
                               </div>
@@ -1015,7 +1015,7 @@ export default function RedesPage() {
                                 <span style={{
                                   fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
                                   padding: '3px 8px', borderRadius: 6,
-                                  color: rede.lucroPerConta >= 0 ? '#60a5fa' : '#EF4444',
+                                  color: rede.lucroPerConta >= 0 ? '#60a5fa' : 'var(--loss)',
                                   background: 'rgba(255,255,255,0.06)',
                                   border: '1px solid rgba(255,255,255,0.1)',
                                 }}>
@@ -1027,7 +1027,7 @@ export default function RedesPage() {
                               <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 100 }}>
                                 <p style={{
                                   fontSize: 20, fontWeight: 800, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em',
-                                  color: rede.lucroFinal >= 0 ? '#D1FAE5' : '#EF4444',
+                                  color: rede.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)',
                                   textShadow: rede.lucroFinal >= 0 ? '0 0 16px rgba(209,250,229,0.2)' : 'none',
                                   marginBottom: 2, margin: 0,
                                 }}>
@@ -1046,10 +1046,10 @@ export default function RedesPage() {
                                 style={{
                                   height: '100%', borderRadius: 2,
                                   background: rede.score >= 70
-                                    ? 'linear-gradient(90deg, rgba(209,250,229,0.6), #D1FAE5)'
+                                    ? 'linear-gradient(90deg, rgba(209,250,229,0.6), var(--profit))'
                                     : rede.score >= 40
                                       ? 'linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.78))'
-                                      : 'linear-gradient(90deg, rgba(239,68,68,0.6), #EF4444)',
+                                      : 'linear-gradient(90deg, rgba(239,68,68,0.6), var(--loss))',
                                   boxShadow: rede.score >= 70 ? '0 0 8px rgba(209,250,229,0.15)' : 'none',
                                 }}
                               />
@@ -1110,7 +1110,7 @@ export default function RedesPage() {
                       }}>
                         <span style={{
                           fontSize: 12, fontWeight: 700,
-                          color: rec.type === 'success' ? '#D1FAE5' : rec.type === 'danger' ? '#EF4444' : rec.type === 'warning' ? 'rgba(255,255,255,0.78)' : '#818CF8',
+                          color: rec.type === 'success' ? 'var(--profit)' : rec.type === 'danger' ? 'var(--loss)' : rec.type === 'warning' ? 'rgba(255,255,255,0.78)' : '#818CF8',
                         }}>
                           {rec.type === 'success' ? '\u2191' : rec.type === 'danger' ? '\u2193' : rec.type === 'warning' ? '!' : '\u2192'}
                         </span>
@@ -1161,7 +1161,7 @@ export default function RedesPage() {
                   <path d="M16.24 7.76a6 6 0 010 8.49m-8.48-.01a6 6 0 010-8.49" />
                   <circle cx="12" cy="12" r="2" />
                 </svg>
-                <p style={{ fontSize: 14, color: '#94A3B8', fontWeight: 500 }}>Nenhuma rede com metas fechadas ainda</p>
+                <p style={{ fontSize: 14, color: 'var(--t3)', fontWeight: 500 }}>Nenhuma rede com metas fechadas ainda</p>
                 <p style={{ fontSize: 12, color: '#64748B', marginTop: 6 }}>Feche metas para ativar o sistema estrategico</p>
               </div>
             ) : (
@@ -1220,7 +1220,7 @@ export default function RedesPage() {
                                 fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 6,
                                 textTransform: 'uppercase', letterSpacing: '0.05em',
                                 background: rede.trend === 'up' ? 'rgba(209,250,229,0.1)' : rede.trend === 'down' ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.04)',
-                                color: rede.trend === 'up' ? '#D1FAE5' : rede.trend === 'down' ? '#EF4444' : '#94A3B8',
+                                color: rede.trend === 'up' ? 'var(--profit)' : rede.trend === 'down' ? 'var(--loss)' : 'var(--t3)',
                                 border: `1px solid ${rede.trend === 'up' ? 'rgba(209,250,229,0.15)' : rede.trend === 'down' ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.06)'}`,
                               }}>
                                 {rede.trend === 'up' ? '\u2191 Alta' : rede.trend === 'down' ? '\u2193 Queda' : '\u2194 Estavel'}
@@ -1229,7 +1229,7 @@ export default function RedesPage() {
                               {rede.rankMovement !== 0 && (
                                 <span style={{
                                   fontSize: 10, fontWeight: 700,
-                                  color: rede.rankMovement > 0 ? '#D1FAE5' : '#EF4444',
+                                  color: rede.rankMovement > 0 ? 'var(--profit)' : 'var(--loss)',
                                 }}>
                                   {rede.rankMovement > 0 ? `\u25B2${rede.rankMovement}` : `\u25BC${Math.abs(rede.rankMovement)}`}
                                 </span>
@@ -1238,16 +1238,16 @@ export default function RedesPage() {
                             {/* Metrics row */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
                               <span style={{ fontSize: 11, color: '#64748B' }}>
-                                <span style={{ fontWeight: 700, color: '#94A3B8' }}>{rede.metas.length}</span> metas
+                                <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.metas.length}</span> metas
                               </span>
                               <span style={{ fontSize: 11, color: '#64748B' }}>
-                                <span style={{ fontWeight: 700, color: '#94A3B8' }}>{rede.depositantes}</span> dep.
+                                <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.depositantes}</span> dep.
                               </span>
                               <span style={{ fontSize: 11, color: '#64748B' }}>
-                                <span style={{ fontWeight: 700, color: '#94A3B8' }}>{rede.remessaCount}</span> rem.
+                                <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.remessaCount}</span> rem.
                               </span>
                               <span style={{ fontSize: 11, color: '#64748B' }}>
-                                win <span style={{ fontWeight: 700, color: rede.winRate >= 50 ? '#D1FAE5' : '#EF4444', fontFamily: 'var(--mono, monospace)' }}>{rede.winRate.toFixed(0)}%</span>
+                                win <span style={{ fontWeight: 700, color: rede.winRate >= 50 ? 'var(--profit)' : 'var(--loss)', fontFamily: 'var(--mono, monospace)' }}>{rede.winRate.toFixed(0)}%</span>
                               </span>
                             </div>
                           </div>
@@ -1258,7 +1258,7 @@ export default function RedesPage() {
                               <span style={{
                                 fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
                                 padding: '3px 8px', borderRadius: 6,
-                                color: rede.lucroPorRemessa >= 0 ? '#D1FAE5' : '#EF4444',
+                                color: rede.lucroPorRemessa >= 0 ? 'var(--profit)' : 'var(--loss)',
                                 background: rede.lucroPorRemessa >= 0 ? 'rgba(209,250,229,0.08)' : 'rgba(239,68,68,0.08)',
                                 border: `1px solid ${rede.lucroPorRemessa >= 0 ? 'rgba(209,250,229,0.12)' : 'rgba(239,68,68,0.12)'}`,
                               }}>
@@ -1269,7 +1269,7 @@ export default function RedesPage() {
                               <span style={{
                                 fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
                                 padding: '3px 8px', borderRadius: 6,
-                                color: rede.lucroPorDepositante >= 0 ? '#60a5fa' : '#EF4444',
+                                color: rede.lucroPorDepositante >= 0 ? '#60a5fa' : 'var(--loss)',
                                 background: 'rgba(255,255,255,0.06)',
                                 border: '1px solid rgba(255,255,255,0.1)',
                               }}>
@@ -1279,13 +1279,13 @@ export default function RedesPage() {
                           </div>
 
                           {/* Sparkline */}
-                          <MiniSparkline data={rede.sparkline} color={rede.lucroFinal >= 0 ? '#D1FAE5' : '#EF4444'} />
+                          <MiniSparkline data={rede.sparkline} color={rede.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)'} />
 
                           {/* Lucro */}
                           <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 100 }}>
                             <p style={{
                               fontSize: 20, fontWeight: 800, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em',
-                              color: rede.lucroFinal >= 0 ? '#D1FAE5' : '#EF4444',
+                              color: rede.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)',
                               textShadow: rede.lucroFinal >= 0 ? '0 0 16px rgba(209,250,229,0.2)' : 'none',
                               marginBottom: 2, margin: 0,
                             }}>
@@ -1304,10 +1304,10 @@ export default function RedesPage() {
                             style={{
                               height: '100%', borderRadius: 2,
                               background: rede.score >= 70
-                                ? 'linear-gradient(90deg, rgba(209,250,229,0.6), #D1FAE5)'
+                                ? 'linear-gradient(90deg, rgba(209,250,229,0.6), var(--profit))'
                                 : rede.score >= 40
                                   ? 'linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.78))'
-                                  : 'linear-gradient(90deg, rgba(239,68,68,0.6), #EF4444)',
+                                  : 'linear-gradient(90deg, rgba(239,68,68,0.6), var(--loss))',
                               boxShadow: rede.score >= 70 ? '0 0 8px rgba(209,250,229,0.15)' : 'none',
                             }}
                           />

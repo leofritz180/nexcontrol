@@ -163,7 +163,7 @@ export default function SubscriptionGate({ children }) {
 
         <div style={{
           position: 'relative', maxWidth: 480, width: '100%', textAlign: 'center',
-          background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          background: 'linear-gradient(180deg, var(--raised), #050505)',
           border: '1px solid rgba(255,255,255,0.08)',
           borderRadius: 20, padding: '40px 36px',
           boxShadow: isExpired

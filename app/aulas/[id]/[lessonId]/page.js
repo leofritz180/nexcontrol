@@ -34,7 +34,7 @@ function ProgressBar({ percent, height = 6 }) {
 function CheckIcon({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="8" fill="#d1fae5" />
+      <circle cx="8" cy="8" r="8" fill="var(--profit)" />
       <path d="M4.5 8.5L7 11L11.5 5.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -234,7 +234,7 @@ export default function LessonPlayerPage() {
                 display: 'flex', alignItems: 'center', gap: 8, padding: '10px 22px', fontSize: 13, fontWeight: 700,
                 borderRadius: 10, border: 'none', cursor: completing ? 'not-allowed' : 'pointer',
                 background: isCompleted ? 'rgba(209,250,229,0.15)' : `linear-gradient(135deg, ${AMBER}, ${AMBER_DK})`,
-                color: isCompleted ? '#d1fae5' : '#000',
+                color: isCompleted ? 'var(--profit)' : '#000',
                 transition: 'all 0.2s',
                 boxShadow: isCompleted ? 'none' : '0 4px 16px rgba(255,255,255,0.25)',
               }}>

@@ -102,11 +102,11 @@ function LessonRow({ lesson, idx, total, onSave, onDelete, onMove }) {
           <ArrowBtns onUp={() => onMove('up')} onDown={() => onMove('down')} disableUp={idx === 0} disableDown={idx === total - 1} />
           <span style={{ fontSize: 12, color: 'var(--t2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lesson.title || 'Sem titulo'}</span>
           <span style={{ fontSize: 10, color: 'var(--t4)', flexShrink: 0 }}>{lesson.duration_min || 0}min</span>
-          <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: lesson.status === 'published' ? 'rgba(209,250,229,0.15)' : 'rgba(255,255,255,0.15)', color: lesson.status === 'published' ? '#d1fae5' : AMBER, fontWeight: 600, flexShrink: 0 }}>{lesson.status}</span>
+          <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: lesson.status === 'published' ? 'rgba(209,250,229,0.15)' : 'rgba(255,255,255,0.15)', color: lesson.status === 'published' ? 'var(--profit)' : AMBER, fontWeight: 600, flexShrink: 0 }}>{lesson.status}</span>
         </div>
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
           <Btn small outline onClick={() => setEditing(!editing)}>{editing ? 'Fechar' : 'Editar'}</Btn>
-          <Btn small outline color="#ef4444" onClick={onDelete}>X</Btn>
+          <Btn small outline color="var(--loss)" onClick={onDelete}>X</Btn>
         </div>
       </div>
       <AnimatePresence>
@@ -147,7 +147,7 @@ function ModuleSection({ mod, idx, total, lessons, onSaveMod, onDeleteMod, onMov
         </div>
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
           <Btn small outline onClick={() => setEditing(!editing)}>{editing ? 'Fechar' : 'Editar'}</Btn>
-          <Btn small outline color="#ef4444" onClick={() => onDeleteMod()}>X</Btn>
+          <Btn small outline color="var(--loss)" onClick={() => onDeleteMod()}>X</Btn>
           <span style={{ fontSize: 16, color: 'var(--t3)', transform: expanded ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s', cursor: 'pointer', userSelect: 'none' }} onClick={() => setExpanded(!expanded)}>&#9660;</span>
         </div>
       </div>
@@ -417,7 +417,7 @@ export default function AulasAdminPage() {
                     <span style={{
                       fontSize: 9, padding: '2px 8px', borderRadius: 4, fontWeight: 700, textTransform: 'uppercase',
                       background: course.status === 'published' ? 'rgba(209,250,229,0.15)' : 'rgba(255,255,255,0.15)',
-                      color: course.status === 'published' ? '#d1fae5' : AMBER,
+                      color: course.status === 'published' ? 'var(--profit)' : AMBER,
                     }}>{course.status}</span>
                     {course.category && <span style={{ fontSize: 10, color: 'var(--t3)', background: 'var(--base)', padding: '2px 8px', borderRadius: 4 }}>{course.category}</span>}
                   </div>
@@ -426,7 +426,7 @@ export default function AulasAdminPage() {
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
                   <Toggle on={course.status === 'published'} onToggle={() => toggleCourseStatus(course)} label="" />
                   <Btn small outline onClick={() => { setEditCourse(course); setShowForm(true) }}>Editar</Btn>
-                  <Btn small outline color="#ef4444" onClick={() => deleteCourse(course.id)}>Deletar</Btn>
+                  <Btn small outline color="var(--loss)" onClick={() => deleteCourse(course.id)}>Deletar</Btn>
                   <span style={{ fontSize: 18, color: 'var(--t3)', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s', cursor: 'pointer' }}
                     onClick={() => setExpandedCourse(isExpanded ? null : course.id)}>&#9660;</span>
                 </div>

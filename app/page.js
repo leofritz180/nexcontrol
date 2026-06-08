@@ -17,12 +17,12 @@ const DEMO_OPS = [
 ]
 
 const FEED_EVENTS = [
-  { text:'Carlos registrou +R$ 120', color:'#D1FAE5' },
-  { text:'Meta concluida com sucesso', color:'#D1FAE5' },
+  { text:'Carlos registrou +R$ 120', color:'var(--profit)' },
+  { text:'Meta concluida com sucesso', color:'var(--profit)' },
   { text:'Novo operador ativo', color:'#e53935' },
-  { text:'+R$ 68 registrado agora', color:'#D1FAE5' },
-  { text:'Pedro finalizou meta', color:'#D1FAE5' },
-  { text:'Ana registrou +R$ 95', color:'#D1FAE5' },
+  { text:'+R$ 68 registrado agora', color:'var(--profit)' },
+  { text:'Pedro finalizou meta', color:'var(--profit)' },
+  { text:'Ana registrou +R$ 95', color:'var(--profit)' },
   { text:'Nova remessa processada', color:'#e53935' },
 ]
 
@@ -85,7 +85,7 @@ function SocialProofNumber({ target, suffix, active, mode }) {
     ? `${(val / 1000000).toFixed(val < target ? 1 : 0)}`
     : target >= 1000 ? val.toLocaleString('pt-BR') : String(val)
 
-  const numColor = delta > 0 ? '#D1FAE5' : '#fff'
+  const numColor = delta > 0 ? 'var(--profit)' : '#fff'
   const glowColor = delta > 0 ? 'rgba(209,250,229,0.2)' : 'rgba(255,255,255,0.06)'
 
   return (
@@ -168,14 +168,14 @@ function MiniChart({ active }) {
       <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow:'visible' }}>
         <defs>
           <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#D1FAE5" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="#D1FAE5" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--profit)" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="var(--profit)" stopOpacity="0" />
           </linearGradient>
         </defs>
         <path d={areaD} fill="url(#chartGrad)" />
-        <path d={d} fill="none" stroke="#D1FAE5" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" style={{ filter:'drop-shadow(0 0 4px rgba(209,250,229,0.3))' }} />
+        <path d={d} fill="none" stroke="var(--profit)" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" style={{ filter:'drop-shadow(0 0 4px rgba(209,250,229,0.3))' }} />
         {/* Live dot at end */}
-        <circle cx={w} cy={h - (points[points.length - 1] / 100) * h} r="2.5" fill="#D1FAE5" style={{ filter:'drop-shadow(0 0 6px rgba(209,250,229,0.5))' }}>
+        <circle cx={w} cy={h - (points[points.length - 1] / 100) * h} r="2.5" fill="var(--profit)" style={{ filter:'drop-shadow(0 0 6px rgba(209,250,229,0.5))' }}>
           <animate attributeName="r" values="2.5;3.5;2.5" dur="2s" repeatCount="indefinite" />
         </circle>
       </svg>
@@ -406,7 +406,7 @@ function LiveDashboardDemo() {
           borderRadius:16, overflow:'hidden', position:'relative',
           border:'1px solid rgba(255,255,255,0.06)',
           boxShadow:'0 20px 60px rgba(0,0,0,0.5)',
-          background:'linear-gradient(145deg, #000000, #000000)',
+          background:'linear-gradient(145deg, var(--surface), var(--surface))',
           padding:'20px 24px 24px',
           transition:'box-shadow 0.5s ease',
         }}
@@ -443,7 +443,7 @@ function LiveDashboardDemo() {
                   <span style={{ fontSize:7, color:'rgba(255,255,255,0.2)' }}>agora</span>
                 </div>
                 <p style={{ fontSize:9, color:'rgba(255,255,255,0.45)', margin:'3px 0 0' }}>
-                  {op.name} registrou: <span style={{ color:'#D1FAE5', fontWeight:700 }}>+R$ {op.value},00</span>
+                  {op.name} registrou: <span style={{ color:'var(--profit)', fontWeight:700 }}>+R$ {op.value},00</span>
                 </p>
               </div>
             </motion.div>
@@ -459,7 +459,7 @@ function LiveDashboardDemo() {
           <div style={{ display:'flex', alignItems:'center', gap:5 }}>
             <motion.div animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.5)','0 0 0 4px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}
               transition={{ duration:2, repeat:Infinity }}
-              style={{ width:6, height:6, borderRadius:'50%', background:'#D1FAE5' }}/>
+              style={{ width:6, height:6, borderRadius:'50%', background:'var(--profit)' }}/>
             <span style={{ fontSize:8, color:'rgba(255,255,255,0.2)' }}>ao vivo</span>
           </div>
         </div>
@@ -473,7 +473,7 @@ function LiveDashboardDemo() {
           >
             <p style={{ fontSize:9, color:'rgba(255,255,255,0.3)', margin:'0 0 8px' }}>Lucro final acumulado</p>
             <p style={{
-              fontFamily:'var(--mono)', fontSize:28, fontWeight:900, color:'#D1FAE5', margin:0,
+              fontFamily:'var(--mono)', fontSize:28, fontWeight:900, color:'var(--profit)', margin:0,
               textShadow: flash ? '0 0 20px rgba(209,250,229,0.25)' : 'none',
               transition:'text-shadow 0.3s',
             }}>
@@ -509,7 +509,7 @@ function LiveDashboardDemo() {
                   </div>
                   <span style={{ fontSize:9, color:'rgba(255,255,255,0.4)' }}>{item.n}</span>
                 </div>
-                <span style={{ fontFamily:'var(--mono)', fontSize:10, fontWeight:700, color:item.g?'#D1FAE5':'#EF4444' }}>{item.g?'+':'-'}R$ {item.v},00</span>
+                <span style={{ fontFamily:'var(--mono)', fontSize:10, fontWeight:700, color:item.g?'var(--profit)':'var(--loss)' }}>{item.g?'+':'-'}R$ {item.v},00</span>
               </motion.div>
             ))}
           </AnimatePresence>
@@ -570,7 +570,7 @@ export default function HomePage() {
               <span style={{ color:'#F1F5F9' }}>Nex</span><span style={{ color:'#e53935' }}>Control</span>
             </h2>
             <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:8 }}>
-              <span style={{ width:6, height:6, borderRadius:'50%', background:'#D1FAE5', boxShadow:'0 0 8px rgba(209,250,229,0.5)' }}/>
+              <span style={{ width:6, height:6, borderRadius:'50%', background:'var(--profit)', boxShadow:'0 0 8px rgba(209,250,229,0.5)' }}/>
               <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.4)', letterSpacing:'0.12em', textTransform:'uppercase' }}>Sistema operacional ativo</span>
             </div>
           </div>
@@ -634,7 +634,7 @@ export default function HomePage() {
             { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe com performance', d:'Saiba exatamente quem está performando e quem está te fazendo perder dinheiro.' },
             { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real, não estimativa', d:'Pare de operar no achismo. Veja o resultado real da sua operação.' },
           ].map(({icon,t,d},i) => (
-            <div key={i} style={{ padding:'28px 24px', borderRadius:14, background:'linear-gradient(145deg, #000000, #000000)', border:'1px solid rgba(255,255,255,0.05)' }}>
+            <div key={i} style={{ padding:'28px 24px', borderRadius:14, background:'linear-gradient(145deg, var(--surface), var(--surface))', border:'1px solid rgba(255,255,255,0.05)' }}>
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:16 }}>
                 <path d={icon}/>
               </svg>
@@ -653,7 +653,7 @@ export default function HomePage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, textAlign: 'left', maxWidth: 440, margin: '0 auto 28px' }}>
           {['Depositantes desorganizados', 'Metas sem controle', 'Prejuízo escondido', 'Operação no feeling', 'Falta de visão real'].map((item, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 10, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.08)' }}>
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item}</span>
             </div>
           ))}

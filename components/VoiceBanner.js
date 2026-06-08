@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 // FASE PREVIEW: só leofritz178 (pra você ver). Pra liberar geral depois:
 // troque a checagem por () => true (ou ajuste BANNER_EMAILS).
 const BANNER_EMAILS = new Set(['leofritz178@gmail.com'])
-const SEEN_KEY = 'nx_voicebanner_v1'
+const SEEN_KEY = 'nx_voicebanner_v2'
 
 export default function VoiceBanner({ userEmail }) {
   const [show, setShow] = useState(false)

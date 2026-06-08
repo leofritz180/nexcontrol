@@ -534,7 +534,7 @@ export default function VoiceCommandPanel({ userEmail }) {
 
   if (!enabled) return null
 
-  const statusColor = speaking ? '#D1FAE5' : status === 'listening' ? '#10B981' : status === 'starting' ? '#F59E0B' : status === 'error' ? '#EF4444' : '#64748B'
+  const statusColor = speaking ? 'var(--profit)' : status === 'listening' ? '#10B981' : status === 'starting' ? '#F59E0B' : status === 'error' ? 'var(--loss)' : '#64748B'
   const statusLabel = speaking ? 'Respondendo' : status === 'listening' ? 'Ouvindo' : status === 'starting' ? 'Iniciando...' : status === 'error' ? 'Erro' : 'Inativo'
 
   return (
@@ -621,12 +621,12 @@ export default function VoiceCommandPanel({ userEmail }) {
                   title="Fechar"
                   style={{
                     background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 6, cursor: 'pointer', color: '#94A3B8',
+                    borderRadius: 6, cursor: 'pointer', color: 'var(--t3)',
                     width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: 0, transition: 'all 0.15s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#F1F5F9'; e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#94A3B8'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--t3)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
                 >
                   <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -640,7 +640,7 @@ export default function VoiceCommandPanel({ userEmail }) {
 
             {/* Erro destacado */}
             {errorMsg && (
-              <div style={{ padding: '12px 16px', background: 'rgba(239,68,68,0.08)', borderBottom: '1px solid rgba(239,68,68,0.2)', fontSize: 11, color: '#EF4444', lineHeight: 1.5 }}>
+              <div style={{ padding: '12px 16px', background: 'rgba(239,68,68,0.08)', borderBottom: '1px solid rgba(239,68,68,0.2)', fontSize: 11, color: 'var(--loss)', lineHeight: 1.5 }}>
                 {errorMsg}
               </div>
             )}
@@ -649,7 +649,7 @@ export default function VoiceCommandPanel({ userEmail }) {
             {(transcript || interim || lastAction) && (
               <div style={{ padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.015)' }}>
                 {interim && (
-                  <div style={{ fontSize: 11, color: '#94A3B8', fontStyle: 'italic', marginBottom: 2 }}>
+                  <div style={{ fontSize: 11, color: 'var(--t3)', fontStyle: 'italic', marginBottom: 2 }}>
                     "{interim}"...
                   </div>
                 )}
@@ -677,7 +677,7 @@ export default function VoiceCommandPanel({ userEmail }) {
               <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Navegacao</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                 {(isAdminLevel ? NAV_COMMANDS : OPERATOR_NAV).map(c => (
-                  <div key={c.label} style={{ fontSize: 12, color: '#94A3B8', display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                  <div key={c.label} style={{ fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'baseline', gap: 6 }}>
                     <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"{c.keys[0]}"</span>
                     <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
                   </div>
@@ -689,7 +689,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                   <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Abas do painel</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                     {TAB_COMMANDS.map(c => (
-                      <div key={c.tab} style={{ fontSize: 12, color: '#94A3B8', display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                      <div key={c.tab} style={{ fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'baseline', gap: 6 }}>
                         <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"{c.keys[0]}"</span>
                         <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
                       </div>
@@ -698,18 +698,18 @@ export default function VoiceCommandPanel({ userEmail }) {
 
                   <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                     Perguntas
-                    <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: 'rgba(209,250,229,0.12)', color: '#D1FAE5' }}>voz responde</span>
+                    <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: 'rgba(209,250,229,0.12)', color: 'var(--profit)' }}>voz responde</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
-                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                    <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei hoje?"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — fala o lucro de hoje</span>
                     </div>
-                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                    <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei essa semana?"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — lucro dos 7 dias</span>
                     </div>
-                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                    <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"qual meu lucro do mês?"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — lucro do mês atual</span>
                     </div>
@@ -721,15 +721,15 @@ export default function VoiceCommandPanel({ userEmail }) {
                 <>
                   <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Acoes rapidas</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                    <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"lucro 150"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — abre Metodos com R$ 150</span>
                     </div>
-                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                    <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"prejuizo 80"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — idem prejuizo</span>
                     </div>
-                    <div style={{ fontSize: 12, color: '#94A3B8' }}>
+                    <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"novo metodo"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — abre form vazio</span>
                     </div>

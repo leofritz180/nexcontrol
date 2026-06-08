@@ -163,7 +163,7 @@ export default function AfiliadosPage() {
           /* Para shimmer text */
           .aff-shimmer {
             animation: none !important;
-            -webkit-text-fill-color: #ef4444 !important;
+            -webkit-text-fill-color: var(--loss) !important;
             background: none !important;
           }
           /* Marquee mais lento OU desabilitado pra evitar repaints constantes */
@@ -220,7 +220,7 @@ function LockedHero() {
   return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-        style={{ maxWidth: 480, borderRadius: 20, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: '64px 36px', textAlign: 'center' }}>
+        style={{ maxWidth: 480, borderRadius: 20, background: 'linear-gradient(180deg, var(--raised), #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: '64px 36px', textAlign: 'center' }}>
         <div style={{ width: 64, height: 64, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
           <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.6" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
         </div>
@@ -338,7 +338,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
             margin: '0 0 28px', maxWidth: 1000,
           }}>
           Indique. <span className="aff-shimmer" style={{
-            background: 'linear-gradient(90deg, #fff 20%, #ef4444 60%, #fff 100%)',
+            background: 'linear-gradient(90deg, #fff 20%, var(--loss) 60%, #fff 100%)',
             backgroundSize: '200% auto',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -364,7 +364,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
           <motion.button onClick={shareLink} whileHover={{ scale: 1.03, boxShadow: '0 16px 48px rgba(229,57,53,0.5)' }} whileTap={{ scale: 0.97 }}
             style={{
               padding: '16px 28px', borderRadius: 12, border: 'none', cursor: 'pointer',
-              background: 'linear-gradient(180deg, #ef4444, #c62828)',
+              background: 'linear-gradient(180deg, var(--loss), #c62828)',
               color: '#fff', fontSize: 14.5, fontWeight: 700, fontFamily: 'inherit',
               display: 'inline-flex', alignItems: 'center', gap: 10,
               boxShadow: '0 8px 32px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
@@ -398,7 +398,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
           <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 12, color: 'rgba(255,255,255,0.78)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link}</span>
           <span style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
           <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.1em', flexShrink: 0 }}>
-            <span style={{ color: '#D1FAE5' }}>{code}</span>
+            <span style={{ color: 'var(--profit)' }}>{code}</span>
           </span>
         </motion.div>
 
@@ -413,8 +413,8 @@ function HeroFullBleed({ rate, totals, link, code }) {
           }}>
           {[
             { l: 'Indicados', v: totals.totalIndicados || 0, prefix: '', suffix: '', dec: 0, c: '#fff' },
-            { l: 'Comissão acumulada', v: totals.totalComissao || 0, prefix: 'R$ ', suffix: '', dec: 2, c: '#D1FAE5' },
-            { l: 'A receber', v: totals.pendente || 0, prefix: 'R$ ', suffix: '', dec: 2, c: '#ef4444' },
+            { l: 'Comissão acumulada', v: totals.totalComissao || 0, prefix: 'R$ ', suffix: '', dec: 2, c: 'var(--profit)' },
+            { l: 'A receber', v: totals.pendente || 0, prefix: 'R$ ', suffix: '', dec: 2, c: 'var(--loss)' },
           ].map((k, i) => (
             <div key={k.l} style={{ background: '#050505', padding: '24px 28px' }}>
               <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 8px' }}>{k.l}</p>
@@ -496,13 +496,13 @@ function HowItWorks({ rate }) {
       n: '01',
       title: 'Compartilhe seu link',
       desc: 'Cola no grupo, posta no Stories, manda no DM. Sem limite, sem aprovação prévia.',
-      accent: '#94A3B8',
+      accent: 'var(--t3)',
     },
     {
       n: '02',
       title: 'Indicado assina o plano',
       desc: 'Quando entra pelo seu link e vira PRO, o sistema te credita automaticamente a comissão.',
-      accent: '#D1FAE5',
+      accent: 'var(--profit)',
     },
     {
       n: '03',
@@ -673,7 +673,7 @@ function WithdrawalCode({ code }) {
                   style={{
                     padding: '10px 12px', borderRadius: 10, cursor: 'pointer',
                     background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                    color: revealed ? '#ef4444' : 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+                    color: revealed ? 'var(--loss)' : 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                   }}>
                   {revealed ? (
@@ -715,7 +715,7 @@ function WithdrawalCode({ code }) {
                 'Pagamento sai em até 24 horas',
               ].map((t, i) => (
                 <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 12.5, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-                  <span style={{ flexShrink: 0, fontFamily: 'var(--mono, monospace)', fontSize: 10.5, fontWeight: 800, color: '#ef4444', minWidth: 18 }}>{i + 1}.</span>
+                  <span style={{ flexShrink: 0, fontFamily: 'var(--mono, monospace)', fontSize: 10.5, fontWeight: 800, color: 'var(--loss)', minWidth: 18 }}>{i + 1}.</span>
                   <span>{t}</span>
                 </li>
               ))}
@@ -783,7 +783,7 @@ function CalculatorMega({ rate }) {
           <div style={{ position: 'relative' }}>
             <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>Sua comissão</p>
 
-            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 64, fontWeight: 800, color: '#D1FAE5', margin: 0, letterSpacing: '-0.035em', lineHeight: 0.95, textShadow: '0 0 60px rgba(209,250,229,0.3)' }}>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 64, fontWeight: 800, color: 'var(--profit)', margin: 0, letterSpacing: '-0.035em', lineHeight: 0.95, textShadow: '0 0 60px rgba(209,250,229,0.3)' }}>
               R$ <CountUp value={earnings} decimals={2} duration={0.6} />
             </p>
 
@@ -794,7 +794,7 @@ function CalculatorMega({ rate }) {
               </div>
               <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: '0 0 4px', letterSpacing: '0.06em' }}>SE INDICAR 100</p>
-                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: '#D1FAE5', margin: 0 }}>R$ {fmt(100 * ticket * rate)}</p>
+                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: 'var(--profit)', margin: 0 }}>R$ {fmt(100 * ticket * rate)}</p>
               </div>
             </div>
 
@@ -813,8 +813,8 @@ function KPISection({ totals }) {
   const items = [
     { l: 'Pessoas indicadas', v: totals.totalIndicados || 0, dec: 0, prefix: '', c: '#fff' },
     { l: 'Faturamento gerado', v: totals.totalFaturado || 0, dec: 2, prefix: 'R$ ', c: 'rgba(255,255,255,0.78)' },
-    { l: 'Comissão paga até hoje', v: totals.pago || 0, dec: 2, prefix: 'R$ ', c: '#D1FAE5' },
-    { l: 'A receber via PIX', v: totals.pendente || 0, dec: 2, prefix: 'R$ ', c: '#ef4444' },
+    { l: 'Comissão paga até hoje', v: totals.pago || 0, dec: 2, prefix: 'R$ ', c: 'var(--profit)' },
+    { l: 'A receber via PIX', v: totals.pendente || 0, dec: 2, prefix: 'R$ ', c: 'var(--loss)' },
   ]
   return (
     <div>
@@ -828,7 +828,7 @@ function KPISection({ totals }) {
             transition={{ duration: 0.4, delay: i * 0.08, ease }}
             style={{
               padding: '26px 24px', borderRadius: 16,
-              background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+              background: 'linear-gradient(180deg, var(--raised), #050505)',
               border: '1px solid rgba(255,255,255,0.06)',
             }}>
             <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 10px' }}>{k.l}</p>
@@ -895,7 +895,7 @@ function ShareKitImersive({ link, userName }) {
         }}>
 
         {/* Tabs + Preview */}
-        <div style={{ borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: 28 }}>
+        <div style={{ borderRadius: 18, background: 'linear-gradient(180deg, var(--raised), #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: 28 }}>
           <div style={{ display: 'flex', gap: 4, marginBottom: 18, padding: 4, background: 'rgba(255,255,255,0.03)', borderRadius: 11, border: '1px solid rgba(255,255,255,0.05)', overflowX: 'auto' }}>
             {Object.entries(TEMPLATES).map(([k, v]) => {
               const active = k === tab
@@ -922,7 +922,7 @@ function ShareKitImersive({ link, userName }) {
           <motion.button onClick={copyTpl} whileTap={{ scale: 0.97 }}
             style={{
               width: '100%', marginTop: 14, padding: '14px 20px', borderRadius: 11, border: 'none', cursor: 'pointer',
-              background: copied ? 'rgba(16,185,129,0.18)' : 'linear-gradient(180deg, #ef4444, #c62828)',
+              background: copied ? 'rgba(16,185,129,0.18)' : 'linear-gradient(180deg, var(--loss), #c62828)',
               color: copied ? '#10B981' : '#fff',
               fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -1039,7 +1039,7 @@ function PixSection({ data, userEmail, onRefresh }) {
         {/* Form */}
         <div style={{
           padding: 32, borderRadius: 18,
-          background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          background: 'linear-gradient(180deg, var(--raised), #050505)',
           border: '1px solid ' + (hasPix ? 'rgba(16,185,129,0.22)' : 'rgba(229,57,53,0.25)'),
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
@@ -1070,7 +1070,7 @@ function PixSection({ data, userEmail, onRefresh }) {
             style={{
               width: '100%', padding: '14px 18px', borderRadius: 11, border: 'none',
               cursor: saving || !pixKey.trim() ? 'not-allowed' : 'pointer',
-              background: savedFlash ? 'rgba(16,185,129,0.18)' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(180deg, #ef4444, #c62828)',
+              background: savedFlash ? 'rgba(16,185,129,0.18)' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(180deg, var(--loss), #c62828)',
               color: savedFlash ? '#10B981' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.35)' : '#fff',
               fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
               boxShadow: (savedFlash || saving || !pixKey.trim()) ? 'none' : '0 4px 16px rgba(229,57,53,0.3)',
@@ -1082,7 +1082,7 @@ function PixSection({ data, userEmail, onRefresh }) {
         {/* Info card */}
         <div style={{
           padding: 28, borderRadius: 18,
-          background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          background: 'linear-gradient(180deg, var(--raised), #050505)',
           border: '1px solid rgba(255,255,255,0.06)',
         }}>
           <h4 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 20, fontWeight: 400, color: '#fff', margin: '0 0 14px', letterSpacing: '-0.015em' }}>Como funciona</h4>
@@ -1094,7 +1094,7 @@ function PixSection({ data, userEmail, onRefresh }) {
               'Chave pode ser alterada a qualquer momento',
             ].map((t, i) => (
               <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
-                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#D1FAE5" strokeWidth="3" strokeLinecap="round" style={{ flexShrink: 0, marginTop: 4 }}><polyline points="20 6 9 17 4 12"/></svg>
+                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="3" strokeLinecap="round" style={{ flexShrink: 0, marginTop: 4 }}><polyline points="20 6 9 17 4 12"/></svg>
                 {t}
               </li>
             ))}
@@ -1130,7 +1130,7 @@ function ReferralsAndTop({ referrals }) {
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
         transition={{ duration: 0.5, ease }}
         style={{
-          borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)',
+          borderRadius: 18, background: 'linear-gradient(180deg, var(--raised), #050505)',
           border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden', marginTop: 28,
         }}>
         <AnimatePresence initial={false}>
@@ -1151,7 +1151,7 @@ function ReferralsAndTop({ referrals }) {
                 </p>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 18, fontWeight: 800, color: '#D1FAE5', margin: 0, letterSpacing: '-0.015em' }}>+R$ {fmt(r.commission)}</p>
+                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 18, fontWeight: 800, color: 'var(--profit)', margin: 0, letterSpacing: '-0.015em' }}>+R$ {fmt(r.commission)}</p>
                 <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>de R$ {fmt(r.generated)}</p>
               </div>
             </motion.div>
@@ -1167,7 +1167,7 @@ function ReferralsAndTop({ referrals }) {
               <div key={r.tenant_id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', borderRadius: 11, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'rgba(255,255,255,0.35)', minWidth: 32 }}>#{i + 1}</span>
                 <p style={{ flex: 1, fontSize: 13.5, fontWeight: 600, color: '#fff', margin: 0 }}>{r.tenant_name}</p>
-                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: '#D1FAE5', margin: 0 }}>R$ {fmt(r.commission)}</p>
+                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: 'var(--profit)', margin: 0 }}>R$ {fmt(r.commission)}</p>
               </div>
             ))}
           </div>
@@ -1179,7 +1179,7 @@ function ReferralsAndTop({ referrals }) {
 
 function StatusBadge({ status }) {
   const map = {
-    active: { l: 'PRO', c: '#D1FAE5', bg: 'rgba(209,250,229,0.08)' },
+    active: { l: 'PRO', c: 'var(--profit)', bg: 'rgba(209,250,229,0.08)' },
     trial: { l: 'TRIAL', c: 'rgba(255,255,255,0.78)', bg: 'rgba(255,255,255,0.06)' },
     expired: { l: 'VENCIDA', c: '#FCA5A5', bg: 'rgba(239,68,68,0.08)' },
   }
@@ -1213,7 +1213,7 @@ function FAQImersive({ rate }) {
       <motion.div
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
         transition={{ duration: 0.5, ease }}
-        style={{ marginTop: 32, borderRadius: 18, background: 'linear-gradient(180deg, #0a0a0a, #050505)', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+        style={{ marginTop: 32, borderRadius: 18, background: 'linear-gradient(180deg, var(--raised), #050505)', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
         {items.map((item, i) => {
           const isOpen = open === i
           return (
@@ -1275,7 +1275,7 @@ function FinalCTA({ link, rate }) {
           color: '#fff', margin: '0 0 24px', letterSpacing: '-0.035em', lineHeight: 0.95,
         }}>
           {Math.round(rate * 100)}% de comissão.<br/>
-          <span style={{ background: 'linear-gradient(90deg, #fff, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'italic' }}>Sua, sem trabalho.</span>
+          <span style={{ background: 'linear-gradient(90deg, #fff, var(--loss))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'italic' }}>Sua, sem trabalho.</span>
         </h2>
         <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', margin: '0 0 36px', lineHeight: 1.55 }}>
           Pega seu link, manda no grupo, espera o pagamento entrar.
@@ -1283,7 +1283,7 @@ function FinalCTA({ link, rate }) {
         <motion.button onClick={copyLink} whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(229,57,53,0.6)' }} whileTap={{ scale: 0.97 }}
           style={{
             padding: '18px 36px', borderRadius: 14, border: 'none', cursor: 'pointer',
-            background: 'linear-gradient(180deg, #ef4444, #c62828)',
+            background: 'linear-gradient(180deg, var(--loss), #c62828)',
             color: '#fff', fontSize: 15, fontWeight: 800, fontFamily: 'inherit',
             display: 'inline-flex', alignItems: 'center', gap: 12,
             boxShadow: '0 12px 40px rgba(229,57,53,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',

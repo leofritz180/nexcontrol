@@ -192,7 +192,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* ── Plan status — minimal ── */}
       <div style={{ padding:'0 12px 12px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 12px' }}>
-          <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'#d1fae5':'#9ca3af' }}/>
+          <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'var(--profit)':'#9ca3af' }}/>
           <span style={{ fontSize:11, color:'var(--t3)', fontWeight:400 }}>
             {subActive?'PRO ativo':'Trial · 3 dias'}
           </span>
@@ -203,7 +203,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {userId && tenantId && pushState !== 'unsupported' && pushState !== 'loading' && (
         <div style={{ padding:'0 12px 12px' }}>
           {pushState === 'granted' ? (
-            <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderRadius:8, fontSize:12, fontWeight:500, color:'#D1FAE5', background:'rgba(209,250,229,0.06)', border:'1px solid rgba(209,250,229,0.18)' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderRadius:8, fontSize:12, fontWeight:500, color:'var(--profit)', background:'rgba(209,250,229,0.06)', border:'1px solid rgba(209,250,229,0.18)' }}>
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M20 6L9 17l-5-5"/></svg>
               Notificações ativadas
             </div>

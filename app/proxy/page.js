@@ -38,7 +38,7 @@ export default function ProxyPage() {
 
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #000000, #000000)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, var(--surface), var(--surface))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
         </motion.div>
@@ -70,7 +70,7 @@ export default function ProxyPage() {
           transition={{ duration: 0.5, delay: 0.1, ease }}
           style={{
             borderRadius: 24, overflow: 'hidden', position: 'relative',
-            background: 'linear-gradient(160deg, #000000, #000000)',
+            background: 'linear-gradient(160deg, var(--surface), var(--surface))',
             border: '1px solid rgba(255,255,255,0.06)',
             boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02), 0 0 80px rgba(255,255,255,0.04)',
           }}
@@ -155,7 +155,7 @@ export default function ProxyPage() {
                   padding: '10px 14px', borderRadius: 10,
                   background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
                 }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#d1fae5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d={f.icon} />
                   </svg>
                   <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>{f.label}</span>

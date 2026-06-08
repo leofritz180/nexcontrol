@@ -185,7 +185,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
             />
 
             <div style={{
-              background: 'linear-gradient(180deg, #0a0a0a 0%, #050505 100%)',
+              background: 'linear-gradient(180deg, var(--raised) 0%, #050505 100%)',
               borderRadius: 15, padding: 18,
               position: 'relative', overflow: 'hidden',
             }}>

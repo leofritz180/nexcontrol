@@ -383,7 +383,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         .sb-rd .sb-label, .sb-rd .logo-text { opacity: 0; white-space: nowrap; transition: opacity .18s; }
         .sb-rd:hover .sb-label, .sb-rd:hover .logo-text { opacity: 1; }
         /* Colapsada: ícones centralizados e maiores (padrão do preview) */
-        .sb-rd:not(:hover) .sb-label, .sb-rd:not(:hover) .logo-text { width: 0; overflow: hidden; }
+        .sb-rd:not(:hover) .sb-label, .sb-rd:not(:hover) .logo-text { display: none; }
         .sb-rd:not(:hover) nav a { justify-content: center; padding-left: 0 !important; padding-right: 0 !important; }
         .sb-rd:not(:hover) nav a > span:not(.sb-label) { display: none; }
         .sb-rd:not(:hover) > div > a:first-child { justify-content: center; padding-left: 0 !important; padding-right: 0 !important; }

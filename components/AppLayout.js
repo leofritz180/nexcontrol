@@ -2,9 +2,11 @@
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
+import { isRedesign } from '../lib/redesign'
 const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false })
 const QuickNotifyPanel = dynamic(() => import('./QuickNotifyPanel'), { ssr: false })
 const VoiceAnnounceCard = dynamic(() => import('./VoiceAnnounceCard'), { ssr: false })
+const RedesignHeader = dynamic(() => import('./RedesignHeader'), { ssr: false })
 
 const pageVariants = {
   initial: { opacity: 0, y: 14 },
@@ -27,6 +29,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
         tenantId={tenantId}
       />
       <div style={{ marginLeft: 248 }} className="app-content">
+        {isRedesign(userEmail) && <RedesignHeader />}
         <AnimatePresence mode="wait">
           <motion.div
             key={pathname}

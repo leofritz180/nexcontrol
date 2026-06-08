@@ -1,13 +1,11 @@
 'use client'
 import { useEffect } from 'react'
 import { supabase } from '../lib/supabase/client'
+import { isRedesign } from '../lib/redesign'
 
-// ── Interruptor do REDESIGN (gated por email) ──
-// Adiciona a classe `nx-redesign` no <html> SÓ pra estes emails. Todo o visual
-// novo fica escopado nessa classe (globals.css + componentes), então nenhum
-// outro usuário é afetado. Pra liberar geral: trocar pra () => true.
-const REDESIGN_EMAILS = new Set(['leofritz180@gmail.com', 'leofritz178@gmail.com'])
-const isRedesign = (email) => !!email && REDESIGN_EMAILS.has(String(email).toLowerCase())
+// ── Interruptor do REDESIGN (gated por email — ver lib/redesign.js) ──
+// Adiciona a classe `nx-redesign` no <html> SÓ pras contas liberadas. Todo o
+// visual novo fica escopado nessa classe; nenhum outro usuário é afetado.
 
 export default function DesignMode() {
   useEffect(() => {

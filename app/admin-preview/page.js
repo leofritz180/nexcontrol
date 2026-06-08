@@ -18,6 +18,7 @@ const MetodosKpiCard = dynamic(() => import('../../components/MetodosKpiCard'), 
 const BETA_EMAILS = new Set(['leofritz180@gmail.com'])
 import TabAwareTour from '../../components/TabAwareTour'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_COSTS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
+import LucroAreaChart from './_components/LucroAreaChart'
 import DemoModeCard from '../../components/DemoModeCard'
 import RankBadge from '../../components/rank/RankBadge'
 import RankShowcase from '../../components/rank/RankShowcase'
@@ -2098,6 +2099,14 @@ export default function AdminPage() {
           {(() => {
             // Compute NET hero value ONCE (bruto - custos do periodo)
             const heroNet = Number((heroLucro.value - heroLucro.custos).toFixed(2))
+            // Série de evolução do lucro (só leitura das metas fechadas — preview)
+            const chartSeries = (() => {
+              const closed = metas.filter(m => m.status_fechamento === 'fechada' && m.fechada_em)
+                .sort((a, b) => new Date(a.fechada_em) - new Date(b.fechada_em))
+              let acc = 0
+              const pts = closed.map(m => { acc += Number(m.lucro_final || 0); return Number(acc.toFixed(2)) })
+              return pts.length >= 2 ? pts : null
+            })()
             return (
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.5fr 1fr', gap:32, marginBottom:40 }}>
 
@@ -2165,7 +2174,12 @@ export default function AdminPage() {
                 </p>
               )}
 
-              <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:32, marginTop:36, paddingTop:24, borderTop:'1px solid var(--b1)' }}>
+              {/* ── Gráfico de evolução do lucro (preview) ── */}
+              <div style={{ marginTop:24 }}>
+                <LucroAreaChart data={chartSeries} color="#D1FAE5" height={130} />
+              </div>
+
+              <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:32, marginTop:24, paddingTop:24, borderTop:'1px solid var(--b1)' }}>
                 <div>
                   <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4, fontWeight:400 }}>Metas fechadas</p>
                   <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:600, color:'var(--t1)', margin:0 }}>{heroLucro.count}</p>

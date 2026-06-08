@@ -219,6 +219,9 @@
   background: var(--fill-2) !important;
 }
 
+/* 6) Texto sobre fundo vermelho fixo (ex: funil) continua branco no claro */
+.nx-light .nx-red-txt { color: #fff !important; }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background: var(--base); }
 a { color: inherit; text-decoration: none; }

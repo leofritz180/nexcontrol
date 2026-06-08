@@ -89,29 +89,37 @@ export default function RedesignFunnel({ items = [] }) {
           const w = WIDTHS[i] ?? WIDTHS[WIDTHS.length - 1]
           const v = Number(it.variation)
           const hasVar = it.variation != null && !Number.isNaN(v)
+          const highlight = i === 0 // bloco principal em destaque
           return (
             <div key={i} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
               {/* bloco da etapa */}
               <motion.div
+                className="nx-on-red"
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.06 * i, ease }}
                 style={{
                   width: `${w}%`,
-                  background: '#111111',
-                  border: '1px solid rgba(229,57,53,0.28)',
+                  background: highlight ? '#e10000' : '#4d0e11',
+                  border: highlight ? '1px solid rgba(255,255,255,0.28)' : '1px solid rgba(229,57,53,0.5)',
+                  boxShadow: highlight ? '0 0 0 3px rgba(225,0,0,0.18)' : 'none',
                   borderRadius: 10,
                   padding: '12px 16px',
                 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                  <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.04em', color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span className="nx-red-txt" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.04em', color: 'rgba(255,255,255,0.78)', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {it.label}
                   </span>
-                  {hasVar && (
+                  {highlight ? (
+                    <span style={{
+                      flexShrink: 0, fontSize: 9, fontWeight: 800, letterSpacing: '0.08em',
+                      color: '#c1121f', background: '#fff', borderRadius: 5, padding: '3px 7px',
+                    }}>DESTAQUE</span>
+                  ) : hasVar && (
                     <span style={{
                       flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 3,
                       fontSize: 10.5, fontWeight: 700, fontFamily: 'var(--mono)',
-                      color: v >= 0 ? '#3fbf7f' : '#ff6b6b',
+                      color: v >= 0 ? '#8ff0b5' : '#ffd0d0',
                     }}>
                       <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{ transform: v >= 0 ? 'none' : 'rotate(180deg)' }}>
                         <polyline points="6 15 12 9 18 15" />
@@ -120,7 +128,7 @@ export default function RedesignFunnel({ items = [] }) {
                     </span>
                   )}
                 </div>
-                <p style={{ margin: '5px 0 0', fontFamily: 'var(--mono)', fontSize: i === 0 ? 23 : 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1, whiteSpace: 'nowrap' }}>
+                <p className="nx-red-txt" style={{ margin: '5px 0 0', fontFamily: 'var(--mono)', fontSize: highlight ? 24 : 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1, whiteSpace: 'nowrap' }}>
                   {it.prefix || ''}<CountUp value={it.value} currency={it.currency} />{it.suffix || ''}
                 </p>
               </motion.div>

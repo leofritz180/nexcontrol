@@ -1633,7 +1633,7 @@ export default function AdminPage() {
                   style={{
                     position:'relative', overflow:'hidden',
                     padding:'22px 24px', borderRadius:18, marginBottom:18,
-                    background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                    background:'linear-gradient(145deg, var(--raised), var(--surface))',
                     backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
                     border:`1px solid ${myLiq>=0?'rgba(209,250,229,0.14)':'rgba(239,68,68,0.14)'}`,
                     boxShadow:`0 8px 28px rgba(0,0,0,0.45), 0 0 40px ${myLiq>=0?'rgba(209,250,229,0.05)':'rgba(239,68,68,0.05)'}, inset 0 1px 0 rgba(255,255,255,0.04)`,
@@ -1702,7 +1702,7 @@ export default function AdminPage() {
                       whileHover={{ y:-3, boxShadow:`0 14px 36px rgba(0,0,0,0.5), 0 0 24px ${c}15`, borderColor:`${c}30`, transition: { duration: 0.2 } }}
                       style={{
                         position:'relative', overflow:'hidden',
-                        background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                        background:'linear-gradient(145deg, var(--raised), var(--surface))',
                         backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
                         border:'1px solid rgba(255,255,255,0.06)',
                         borderRadius:14, padding:'16px 18px',
@@ -1993,7 +1993,7 @@ export default function AdminPage() {
                       transition={{duration:0.4, ease}}
                       style={{
                         borderRadius:18, padding:'48px 32px', textAlign:'center',
-                        background:'linear-gradient(145deg, rgba(14,22,38,0.5), rgba(8,14,26,0.5))',
+                        background:'linear-gradient(145deg, var(--raised), var(--surface))',
                         backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)',
                         border:'1px dashed rgba(229,57,53,0.2)',
                       }}>
@@ -2035,7 +2035,7 @@ export default function AdminPage() {
                         style={{
                           position:'relative', overflow:'hidden', cursor:'pointer',
                           padding:'18px 22px', borderRadius:14,
-                          background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                          background:'linear-gradient(145deg, var(--raised), var(--surface))',
                           backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
                           border:'1px solid rgba(255,255,255,0.06)',
                           boxShadow:'0 4px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
@@ -2750,7 +2750,7 @@ export default function AdminPage() {
                   style={{
                     position:'relative', overflow:'hidden',
                     padding:'18px 22px', borderRadius:16, marginBottom:18,
-                    background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                    background:'linear-gradient(145deg, var(--raised), var(--surface))',
                     backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
                     border:'1px solid rgba(255,255,255,0.18)',
                     boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
@@ -3519,7 +3519,7 @@ export default function AdminPage() {
               style={{
                 position:'relative', overflow:'hidden',
                 padding:'20px 24px', borderRadius:16, marginBottom:22,
-                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                background:'linear-gradient(145deg, var(--raised), var(--surface))',
                 backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
                 border:'1px solid rgba(148,163,184,0.14)',
                 boxShadow:'0 6px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
@@ -3557,7 +3557,7 @@ export default function AdminPage() {
                 transition={{duration:0.4}}
                 style={{
                   borderRadius:18, padding:'56px 32px', textAlign:'center',
-                  background:'linear-gradient(145deg, rgba(14,22,38,0.4), rgba(8,14,26,0.4))',
+                  background:'linear-gradient(145deg, var(--raised), var(--surface))',
                   backdropFilter:'blur(14px)', WebkitBackdropFilter:'blur(14px)',
                   border:'1px dashed rgba(148,163,184,0.18)',
                 }}>
@@ -3582,7 +3582,7 @@ export default function AdminPage() {
                       style={{
                         position:'relative', overflow:'hidden',
                         padding:'16px 20px', borderRadius:14,
-                        background:'linear-gradient(145deg, rgba(14,22,38,0.55), rgba(8,14,26,0.55))',
+                        background:'linear-gradient(145deg, var(--raised), var(--surface))',
                         backdropFilter:'blur(14px) saturate(140%)', WebkitBackdropFilter:'blur(14px) saturate(140%)',
                         border:'1px solid rgba(148,163,184,0.12)',
                         display:'flex', alignItems:'center', gap:14, flexWrap:'wrap',

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 import { SLOTS } from '../lib/slots-data'
+import { calculatePrice } from '../lib/pricing'
 
 // ─────────────────────────────────────────────────────────────────────────
 // BillingProV2 — PREVIEW premium da página Assinatura (teste de conversão).
@@ -59,8 +60,28 @@ const PARTICLES = [
   { x: 6, y: 50, s: 2, d: 2.0, c: '#fff' }, { x: 42, y: 80, s: 3, d: 1.0, c: BRAND },
 ]
 
-export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.9, onStart = () => {} }) {
+export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.9, onStart = () => {}, subActive = false, expiresAt = null, currentOps = 0, currentPrice = 0 }) {
   const [stats, setStats] = useState(null) // { lucro, contas, metas, remessas }
+  const [teamOpen, setTeamOpen] = useState(false)
+  const [teamQty, setTeamQty] = useState(1)
+  const [addExtra, setAddExtra] = useState(0)
+  const teamPrice = calculatePrice(teamQty)
+
+  // Dados da assinatura ativa (topo, igual a pagina antiga)
+  const daysLeft = expiresAt ? Math.max(0, Math.ceil((new Date(expiresAt) - new Date()) / 86400000)) : 0
+  const expiresShort = expiresAt ? new Date(expiresAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
+  const daysColor = daysLeft <= 7 ? BRAND : daysLeft <= 15 ? '#FCD34D' : PROFIT
+  const newTotalOps = currentOps + addExtra
+  const addPrice = calculatePrice(Math.max(1, newTotalOps))
+
+  useEffect(() => {
+    if (!teamOpen) return
+    const onKey = e => { if (e.key === 'Escape') setTeamOpen(false) }
+    window.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev }
+  }, [teamOpen])
 
   useEffect(() => {
     if (!tenantId) return
@@ -106,6 +127,68 @@ export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.
 
   return (
     <div style={{ padding: '4px 0 80px', overflow: 'hidden' }}>
+
+      {/* ═══ 0 · ASSINANTE ATIVO — renovar + adicionar operador (topo) ═══ */}
+      {subActive && (
+        <section style={{ ...SECTION, maxWidth: 720, paddingTop: 44, paddingBottom: 6 }}>
+          {/* Renovar */}
+          <div style={{ position: 'relative', overflow: 'hidden', ...CARD, padding: '28px 28px', marginBottom: 14 }}>
+            <div style={{ position: 'absolute', top: -60, right: -40, width: 240, height: 240, borderRadius: '50%', background: `radial-gradient(circle, ${BRAND}1c, transparent 70%)`, filter: 'blur(50px)', pointerEvents: 'none' }} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '4px 11px', borderRadius: 99, marginBottom: 16, background: `${PROFIT}14`, border: `1px solid ${PROFIT}33`, position: 'relative' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: PROFIT }} />
+              <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 9.5, fontWeight: 800, color: PROFIT, letterSpacing: '0.16em', textTransform: 'uppercase' }}>Assinatura ativa</span>
+            </div>
+            <h3 style={{ fontSize: 26, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.025em', margin: '0 0 8px', position: 'relative' }}>Renove a qualquer momento.</h3>
+            <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '0 0 22px', lineHeight: 1.5, position: 'relative' }}>O tempo restante é somado ao novo período — você nunca perde dias.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--b1)', borderRadius: 13, overflow: 'hidden', border: '1px solid var(--b1)', marginBottom: 20, position: 'relative' }}>
+              <div style={{ background: 'var(--fill-1)', padding: '16px 18px' }}>
+                <p style={{ fontFamily: 'var(--mono,monospace)', fontSize: 9.5, fontWeight: 700, color: 'var(--t4)', margin: '0 0 7px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Tempo restante</p>
+                <p style={{ margin: 0, display: 'flex', alignItems: 'baseline', gap: 7 }}>
+                  <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 40, fontWeight: 900, lineHeight: 0.9, color: daysColor, letterSpacing: '-0.04em' }}>{daysLeft}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t3)' }}>dia{daysLeft !== 1 ? 's' : ''}</span>
+                </p>
+              </div>
+              <div style={{ background: 'var(--fill-1)', padding: '16px 18px' }}>
+                <p style={{ fontFamily: 'var(--mono,monospace)', fontSize: 9.5, fontWeight: 700, color: 'var(--t4)', margin: '0 0 7px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Vence em</p>
+                <p style={{ fontSize: 19, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>{expiresShort}</p>
+              </div>
+            </div>
+            <div style={{ position: 'relative' }}><Btn label={`Renovar · R$ ${fmt(currentPrice)}/mês`} onClick={() => onStart(currentOps, true)} variant="solid" /></div>
+          </div>
+
+          {/* Adicionar operadores */}
+          <div style={{ ...CARD, padding: '22px 24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: `${BRAND}14`, border: `1px solid ${BRAND}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={BRAND} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg>
+              </div>
+              <div>
+                <h3 style={{ fontSize: 15.5, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>Adicionar operadores</h3>
+                <p style={{ fontSize: 11.5, color: 'var(--t3)', margin: '2px 0 0' }}>Atuais: <strong style={{ color: 'var(--t1)' }}>{currentOps}</strong> · com desconto progressivo</p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 13, color: 'var(--t2)' }}>Adicionar <strong style={{ color: BRAND }}>{addExtra}</strong> operador{addExtra !== 1 ? 'es' : ''}</span>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <button type="button" onClick={() => setAddExtra(v => Math.max(0, v - 1))} style={{ width: 40, height: 40, borderRadius: '10px 0 0 10px', border: '1px solid var(--b2)', background: 'var(--raised)', cursor: 'pointer', fontSize: 19, fontWeight: 700, color: 'var(--t1)', fontFamily: 'inherit' }}>−</button>
+                <div style={{ width: 56, height: 40, border: '1px solid var(--b2)', borderLeft: 'none', borderRight: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--fill-1)' }}>
+                  <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 20, fontWeight: 900, color: BRAND }}>{addExtra}</span>
+                </div>
+                <button type="button" onClick={() => setAddExtra(v => v + 1)} style={{ width: 40, height: 40, borderRadius: '0 10px 10px 0', border: '1px solid var(--b2)', background: 'var(--raised)', cursor: 'pointer', fontSize: 19, fontWeight: 700, color: 'var(--t1)', fontFamily: 'inherit' }}>+</button>
+              </div>
+            </div>
+            {addExtra > 0 && (
+              <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--b1)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+                  <span style={{ fontSize: 12.5, color: 'var(--t3)' }}>Novo total mensal ({newTotalOps} op{newTotalOps !== 1 ? 's' : ''}{addPrice.discount > 0 ? `, -${addPrice.discount}%` : ''})</span>
+                  <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 22, fontWeight: 900, color: PROFIT, letterSpacing: '-0.02em' }}>R$ {fmt(addPrice.total)}</span>
+                </div>
+                <Btn label={`Adicionar ${addExtra} operador${addExtra > 1 ? 'es' : ''}`} onClick={() => onStart(newTotalOps, true)} variant="solid" />
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* ═══ 1 · HERO ═══ */}
       <section style={{ position: 'relative', textAlign: 'center', padding: '64px 24px 76px' }}>
@@ -196,7 +279,7 @@ export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 24 }}><Btn label="Montar Equipe" onClick={() => onStart(1)} variant="solid" /></div>
+              <div style={{ marginTop: 24 }}><Btn label="Montar Equipe" onClick={() => { setTeamQty(1); setTeamOpen(true) }} variant="solid" /></div>
             </div>
           </Reveal>
         </div>
@@ -422,6 +505,72 @@ export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.
           </div>
         </Reveal>
       </section>
+
+      {/* ═══ POPUP · MONTAR EQUIPE (quantidade de operadores) ═══ */}
+      {teamOpen && (
+        <div onClick={() => setTeamOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <motion.div initial={{ opacity: 0, scale: 0.96, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.25, ease }}
+            onClick={e => e.stopPropagation()}
+            style={{ position: 'relative', width: '100%', maxWidth: 440, background: 'var(--surface)', border: `1px solid ${BRAND}38`, borderRadius: 20, padding: '30px 28px', boxShadow: `0 30px 80px rgba(0,0,0,0.6), 0 0 60px ${BRAND}14` }}>
+            <button type="button" onClick={() => setTeamOpen(false)} aria-label="Fechar"
+              style={{ position: 'absolute', top: 16, right: 16, width: 30, height: 30, borderRadius: 8, border: '1px solid var(--b1)', background: 'var(--fill-1)', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+
+            <div style={{ textAlign: 'center', marginBottom: 22 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 13, background: `${BRAND}16`, border: `1px solid ${BRAND}38`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+                <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={BRAND} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+              </div>
+              <h3 style={{ fontSize: 22, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.02em', margin: '0 0 6px' }}>Monte sua equipe</h3>
+              <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Quanto mais operadores, maior o desconto por operador.</p>
+            </div>
+
+            {/* Stepper */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
+              <button type="button" onClick={() => setTeamQty(q => Math.max(1, q - 1))}
+                style={{ width: 46, height: 46, borderRadius: '12px 0 0 12px', border: '1px solid var(--b2)', background: 'var(--raised)', cursor: 'pointer', fontSize: 22, fontWeight: 700, color: 'var(--t1)', fontFamily: 'inherit' }}>−</button>
+              <div style={{ width: 80, height: 46, border: '1px solid var(--b2)', borderLeft: 'none', borderRight: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--fill-1)' }}>
+                <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 24, fontWeight: 900, color: BRAND }}>{teamQty}</span>
+              </div>
+              <button type="button" onClick={() => setTeamQty(q => q + 1)}
+                style={{ width: 46, height: 46, borderRadius: '0 12px 12px 0', border: '1px solid var(--b2)', background: 'var(--raised)', cursor: 'pointer', fontSize: 22, fontWeight: 700, color: 'var(--t1)', fontFamily: 'inherit' }}>+</button>
+            </div>
+            <p style={{ textAlign: 'center', fontSize: 11.5, color: 'var(--t4)', margin: '8px 0 18px' }}>operador{teamQty > 1 ? 'es' : ''}</p>
+
+            {/* Breakdown */}
+            <div style={{ borderRadius: 13, border: '1px solid var(--b1)', background: 'var(--fill-1)', padding: '14px 16px', marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
+                <span style={{ color: 'var(--t2)' }}>Plano Admin</span>
+                <span style={{ fontFamily: 'var(--mono,monospace)', fontWeight: 700, color: 'var(--t1)' }}>R$ {fmt(basePrice)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, borderTop: '1px solid var(--b1)' }}>
+                <span style={{ color: 'var(--t2)' }}>{teamQty} operador{teamQty > 1 ? 'es' : ''} {teamPrice.discount > 0 && <span style={{ color: PROFIT, fontSize: 11 }}>(-{teamPrice.discount}%)</span>}</span>
+                <span style={{ fontFamily: 'var(--mono,monospace)', fontWeight: 700, color: 'var(--t1)' }}>R$ {fmt(teamPrice.opTotal)}</span>
+              </div>
+              {teamPrice.savings > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 13, borderTop: '1px solid var(--b1)' }}>
+                  <span style={{ color: PROFIT }}>Economia</span>
+                  <span style={{ fontFamily: 'var(--mono,monospace)', fontWeight: 700, color: PROFIT }}>−R$ {fmt(teamPrice.savings)}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '12px 0 2px', borderTop: '1px solid var(--b2)', marginTop: 4 }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)' }}>Total mensal</span>
+                <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 26, fontWeight: 900, color: PROFIT, letterSpacing: '-0.02em' }}>R$ {fmt(teamPrice.total)}</span>
+              </div>
+            </div>
+
+            {teamPrice.nextTier && teamPrice.nextTierOps && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 13px', borderRadius: 10, background: `${BRAND}0e`, border: `1px solid ${BRAND}26`, marginBottom: 16 }}>
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={BRAND} strokeWidth="2.4" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>
+                <span style={{ fontSize: 12, color: 'var(--t2)' }}>+{teamPrice.nextTierOps - teamQty} operador{teamPrice.nextTierOps - teamQty > 1 ? 'es' : ''} para <strong style={{ color: BRAND }}>{teamPrice.nextTierDiscount}% de desconto</strong></span>
+              </div>
+            )}
+
+            <Btn label={`Continuar · R$ ${fmt(teamPrice.total)}/mês`} onClick={() => onStart(teamQty)} variant="solid" big />
+            <p style={{ fontSize: 11, color: 'var(--t4)', textAlign: 'center', margin: '14px 0 0' }}>PIX · ativação imediata · cancele quando quiser</p>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }

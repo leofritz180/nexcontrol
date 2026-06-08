@@ -60,7 +60,7 @@ const PARTICLES = [
   { x: 6, y: 50, s: 2, d: 2.0, c: '#fff' }, { x: 42, y: 80, s: 3, d: 1.0, c: BRAND },
 ]
 
-export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.9, onStart = () => {}, subActive = false, expiresAt = null, currentOps = 0, currentPrice = 0 }) {
+export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.9, onStart = () => {}, onAddOps = () => {}, subActive = false, expiresAt = null, currentOps = 0, currentPrice = 0 }) {
   const [stats, setStats] = useState(null) // { lucro, contas, metas, remessas }
   const [teamOpen, setTeamOpen] = useState(false)
   const [teamQty, setTeamQty] = useState(1)
@@ -73,6 +73,7 @@ export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.
   const daysColor = daysLeft <= 7 ? BRAND : daysLeft <= 15 ? '#FCD34D' : PROFIT
   const newTotalOps = currentOps + addExtra
   const addPrice = calculatePrice(Math.max(1, newTotalOps))
+  const addCostNow = Number((addExtra * addPrice.opUnitPrice).toFixed(2)) // delta: só os operadores novos
 
   useEffect(() => {
     if (!teamOpen) return
@@ -179,11 +180,12 @@ export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.
             </div>
             {addExtra > 0 && (
               <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--b1)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-                  <span style={{ fontSize: 12.5, color: 'var(--t3)' }}>Novo total mensal ({newTotalOps} op{newTotalOps !== 1 ? 's' : ''}{addPrice.discount > 0 ? `, -${addPrice.discount}%` : ''})</span>
-                  <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 22, fontWeight: 900, color: PROFIT, letterSpacing: '-0.02em' }}>R$ {fmt(addPrice.total)}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+                  <span style={{ fontSize: 12.5, color: 'var(--t3)' }}>Pagar agora ({addExtra} op{addExtra > 1 ? 's' : ''}{addPrice.discount > 0 ? `, -${addPrice.discount}%` : ''})</span>
+                  <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 22, fontWeight: 900, color: PROFIT, letterSpacing: '-0.02em' }}>R$ {fmt(addCostNow)}</span>
                 </div>
-                <Btn label={`Adicionar ${addExtra} operador${addExtra > 1 ? 'es' : ''}`} onClick={() => onStart(newTotalOps, true)} variant="solid" />
+                <p style={{ fontSize: 11, color: 'var(--t4)', margin: '0 0 14px' }}>Soma no seu vencimento atual{expiresAt ? ` (${expiresShort})` : ''} — a data não muda. Próximo mês: R$ {fmt(addPrice.total)}.</p>
+                <Btn label={`Adicionar ${addExtra} operador${addExtra > 1 ? 'es' : ''} · R$ ${fmt(addCostNow)}`} onClick={() => onAddOps(newTotalOps)} variant="solid" />
               </div>
             )}
           </div>

@@ -83,6 +83,7 @@ export default function BillingPage() {
           currentOps={operators.length}
           currentPrice={currentPrice.total}
           onStart={(ops, early)=>router.push('/billing-mp?operators='+(ops||0)+(early?'&early=1':''))}
+          onAddOps={(totalOps)=>{ setOpQty(totalOps); setShowPix(true) }}
         />
       ) : (<>
 
@@ -778,6 +779,11 @@ export default function BillingPage() {
         </div>
       </div>
 
+      {/* Landing sections with iPhone demo, features, social proof */}
+      <BillingLanding/>
+      </>)}
+
+      {/* PixPayment (add-ops delta) — fora do ternario: vale p/ V2 e versao atual */}
       {showPix&&(()=>{
         const extraOps = billing?.subActive ? Math.max(0, opQty - operators.length) : 0
         const isUpgrade = billing?.subActive && extraOps > 0
@@ -796,9 +802,6 @@ export default function BillingPage() {
         />
         )
       })()}
-      {/* Landing sections with iPhone demo, features, social proof */}
-      <BillingLanding/>
-      </>)}
       </AppLayout>
     </main>
   )

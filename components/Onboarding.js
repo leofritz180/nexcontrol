@@ -19,12 +19,21 @@ export default function Onboarding() {
       setStep(4)
       return
     }
-    setStep(0)
-    let t
-    const showTips = () => { t = setTimeout(() => setStep(1), 2000) }
-    // Sequenciador determinístico: dicas só depois do banner de voz fechar.
+    // IMPORTANTE: NAO setar step 0 (loading) antes do banner fechar — o loading
+    // e fullscreen (z alto) e cobriria o banner de voz, impedindo de fecha-lo e
+    // travando o usuario no "Preparando seu painel". Fica em -1 (nao renderiza)
+    // ate o banner fechar; rede de seguranca garante que nunca trava.
+    let t, safety, started = false
+    const showTips = () => {
+      if (started) return
+      started = true
+      clearTimeout(safety)
+      setStep(0)
+      t = setTimeout(() => setStep(1), 1800)
+    }
     const off = afterVoiceBanner(showTips)
-    return () => { off(); clearTimeout(t) }
+    safety = setTimeout(showTips, 9000) // nunca ficar preso esperando o banner
+    return () => { off(); clearTimeout(t); clearTimeout(safety) }
   }, [])
 
   function next() {

@@ -99,9 +99,9 @@ export default function ProfileModal({ open, onClose, userId, userEmail, userNam
             </div>
 
             <div style={{ padding: '0 26px 26px' }}>
-              {/* avatar sobreposto */}
-              <div style={{ marginTop: -44, marginBottom: 16, display: 'flex', alignItems: 'flex-end', gap: 14 }}>
-                <div style={{ position: 'relative' }}>
+              {/* avatar sobreposto à capa; nome/cargo ABAIXO (sem cortar) */}
+              <div style={{ marginTop: -44, marginBottom: 18 }}>
+                <div style={{ position: 'relative', width: 88, height: 88 }}>
                   <div style={{ width: 88, height: 88, borderRadius: '50%', overflow: 'hidden', border: '3px solid var(--surface)', background: 'var(--raised)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(0,0,0,0.4)' }}>
                     {avatar
                       ? <img src={avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -113,12 +113,10 @@ export default function ProfileModal({ open, onClose, userId, userEmail, userNam
                   </button>
                   <input ref={fileRef} type="file" accept="image/*" onChange={pickFile} style={{ display: 'none' }} />
                 </div>
-                <div style={{ paddingBottom: 6, minWidth: 0 }}>
-                  <p style={{ fontSize: 17, fontWeight: 700, color: 'var(--t1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nome || 'Seu nome'}</p>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 5, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.28)', color: BRAND, letterSpacing: '0.04em' }}>{roleLabel(role)}</span>
-                    {memberSince && <span style={{ fontSize: 11, color: 'var(--t4)' }}>desde {memberSince}</span>}
-                  </div>
+                <p style={{ fontSize: 19, fontWeight: 700, color: 'var(--t1)', margin: '12px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nome || 'Seu nome'}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 5, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.28)', color: BRAND, letterSpacing: '0.04em' }}>{roleLabel(role)}</span>
+                  {memberSince && <span style={{ fontSize: 11, color: 'var(--t4)' }}>desde {memberSince}</span>}
                 </div>
               </div>
 

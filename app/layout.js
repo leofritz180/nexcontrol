@@ -9,6 +9,7 @@ const InstallPrompt = dynamic(() => import('../components/InstallPrompt'), { ssr
 const PresencePing = dynamic(() => import('../components/PresencePing'), { ssr: false })
 const UpdatesBell = dynamic(() => import('../components/UpdatesBell'), { ssr: false })
 const VoiceCommandPanel = dynamic(() => import('../components/VoiceCommandPanel'), { ssr: false })
+const DesignMode = dynamic(() => import('../components/DesignMode'), { ssr: false })
 
 export const metadata = {
   title: 'NexControl',
@@ -60,6 +61,7 @@ export default function RootLayout({ children }) {
         <Suspense fallback={null}><PresencePing/></Suspense>
         <Suspense fallback={null}><UpdatesBell/></Suspense>
         <Suspense fallback={null}><VoiceCommandPanel/></Suspense>
+        <Suspense fallback={null}><DesignMode/></Suspense>
       </body>
     </html>
   )

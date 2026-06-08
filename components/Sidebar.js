@@ -141,10 +141,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                 padding:'9px 12px', borderRadius:8, textDecoration:'none',
                 fontSize:13, fontWeight: active?500:400,
                 color: active?'var(--t1)':'var(--t3)',
-                background: active?'#0A0A0A':'transparent',
+                background: active?'var(--raised)':'transparent',
                 transition:'background 0.15s ease, color 0.15s ease',
               }}
-              onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='#0A0A0A';e.currentTarget.style.color='var(--t2)'}}}
+              onMouseEnter={e=>{ if(!active){e.currentTarget.style.background='var(--raised)';e.currentTarget.style.color='var(--t2)'}}}
               onMouseLeave={e=>{ if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'}}}
             >
               <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity:active?0.9:0.45 }}>
@@ -154,14 +154,14 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               {item.pro && !subActive && (
                 <span style={{
                   marginLeft:'auto', fontSize:8, fontWeight:600, padding:'2px 6px', borderRadius:4,
-                  background:'rgba(255,255,255,0.04)', color:'var(--t3)',
+                  background:'var(--fill-2)', color:'var(--t3)',
                   letterSpacing:'0.06em',
                 }}>PRO</span>
               )}
               {item.vip && (
                 <span style={{
                   marginLeft:'auto', fontSize:8, fontWeight:600, padding:'2px 6px', borderRadius:4,
-                  background:'rgba(255,255,255,0.04)', color:'var(--t3)',
+                  background:'var(--fill-2)', color:'var(--t3)',
                   letterSpacing:'0.06em',
                 }}>VIP</span>
               )}
@@ -208,7 +208,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               Notificações ativadas
             </div>
           ) : pushState === 'denied' ? (
-            <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderRadius:8, fontSize:11, color:'var(--t3)', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)', lineHeight:1.4 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8, padding:'9px 12px', borderRadius:8, fontSize:11, color:'var(--t3)', background:'var(--fill-1)', border:'1px solid var(--fill-3)', lineHeight:1.4 }}>
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ flexShrink:0 }}><path d="M18.36 6.64A9 9 0 0 1 20.77 15"/><path d="M6.16 6.16a9 9 0 1 0 12.68 12.68"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
               Notificações bloqueadas — libere nas configurações do navegador
             </div>
@@ -233,9 +233,9 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       )}
 
       {/* ── User + logout ── */}
-      <div style={{ padding:'14px 14px 18px', borderTop:'1px solid rgba(255,255,255,0.04)' }}>
+      <div style={{ padding:'14px 14px 18px', borderTop:'1px solid var(--fill-2)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-          <div style={{ width:28, height:28, borderRadius:'50%', background:'transparent', border:'1px solid rgba(255,255,255,0.08)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+          <div style={{ width:28, height:28, borderRadius:'50%', background:'transparent', border:'1px solid var(--fill-3)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <span style={{ fontSize:11, fontWeight:500, color:'var(--t2)' }}>{initial}</span>
           </div>
           <div style={{ flex:1, minWidth:0 }}>
@@ -247,10 +247,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
           style={{
             width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:6,
             padding:'8px 12px', borderRadius:8, fontSize:11, fontWeight:500,
-            color:'var(--t3)', background:'transparent', border:'1px solid rgba(255,255,255,0.05)',
+            color:'var(--t3)', background:'transparent', border:'1px solid var(--fill-2)',
             cursor:'pointer', transition:'all 0.15s',
           }}
-          onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.04)';e.currentTarget.style.color='var(--t1)'}}
+          onMouseEnter={e=>{e.currentTarget.style.background='var(--fill-2)';e.currentTarget.style.color='var(--t1)'}}
           onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'}}
         >
           <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
@@ -267,8 +267,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* Desktop */}
       <aside className={"sidebar-desktop" + (redesign ? " sb-rd" : "")} style={{
         position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:200,
-        background:'#0D1218',
-        borderRight:'1px solid rgba(255,255,255,0.03)',
+        background:'var(--sb-bg)',
+        borderRight:'1px solid var(--fill-1)',
         overflowY:'auto', overflowX:'hidden',
       }}>
         {content}
@@ -282,7 +282,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         style={{
           position:'fixed', top:14, left:14, zIndex:250,
           width:38, height:38, borderRadius:10, border:'none',
-          background:'rgba(255,255,255,0.06)', cursor:'pointer',
+          background:'var(--fill-3)', cursor:'pointer',
           display:'none', alignItems:'center', justifyContent:'center',
           boxShadow:'0 2px 8px rgba(0,0,0,0.3)',
         }}>
@@ -309,8 +309,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             transition={{ duration:0.25, ease:[0.33,1,0.68,1] }}
             style={{
               position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:245,
-              background:'#000000',
-              borderRight:'1px solid rgba(255,255,255,0.08)',
+              background:'var(--sb-bg)',
+              borderRight:'1px solid var(--fill-3)',
               overflowY:'auto',
             }}>
             {content}
@@ -331,8 +331,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
            (contas do redesign); mobile e demais contas intactos. */
         .sb-rd { width: 76px !important; transition: width .26s cubic-bezier(.4,0,.2,1) !important; }
         .sb-rd:hover { width: 248px !important; }
-        .sb-rd .sb-label { opacity: 0; white-space: nowrap; transition: opacity .18s; }
-        .sb-rd:hover .sb-label { opacity: 1; }
+        .sb-rd .sb-label, .sb-rd .logo-text { opacity: 0; white-space: nowrap; transition: opacity .18s; }
+        .sb-rd:hover .sb-label, .sb-rd:hover .logo-text { opacity: 1; }
         @media (max-width: 768px) {
           .sidebar-desktop { display: none !important; }
           .sidebar-mobile-toggle { display: flex !important; }

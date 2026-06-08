@@ -79,7 +79,7 @@ export default function Logo({
         fontSize,
         fontWeight: 700,
         letterSpacing: '-0.02em',
-        color: '#F1F5F9',
+        color: 'var(--t1)',
         lineHeight: 1,
         transition: 'text-shadow 0.3s ease',
       }}

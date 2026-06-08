@@ -18,6 +18,11 @@
   --raised:  #0A0A0A;
   --overlay: #101010;
   --float:   #181818;
+  /* Tokens tematicos (escuro = valor atual; claro remapeia em .nx-light) */
+  --sb-bg:  #0D1218;
+  --fill-1: rgba(255,255,255,0.03);
+  --fill-2: rgba(255,255,255,0.05);
+  --fill-3: rgba(255,255,255,0.08);
 
   /* Brand — red identity */
   --brand:        #e53935;
@@ -103,6 +108,10 @@
   --b1: rgba(0,0,0,0.08);
   --b2: rgba(0,0,0,0.12);
   --b3: rgba(0,0,0,0.18);
+  --sb-bg: #FFFFFF;
+  --fill-1: rgba(0,0,0,0.03);
+  --fill-2: rgba(0,0,0,0.05);
+  --fill-3: rgba(0,0,0,0.08);
   --warn: rgba(0,0,0,0.7);
   --warn-dim: rgba(0,0,0,0.04);
   --warn-border: rgba(0,0,0,0.12);

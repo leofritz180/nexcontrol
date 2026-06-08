@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { isRedesign } from '../../lib/redesign'
 import RedesignLucroChart from '../../components/RedesignLucroChart'
+import RedesignFunnel from '../../components/RedesignFunnel'
 import TrialBanner, { ConversionModal } from '../../components/TrialBanner'
 import AnimatedNumber from '../../components/ui/AnimatedNumber'
 import { supabase } from '../../lib/supabase/client'
@@ -2245,7 +2246,16 @@ export default function AdminPage() {
               </div>
             </motion.div>
 
-            {/* RIGHT — KPIs em lista clean */}
+            {/* RIGHT — Funil premium (redesign) ou KPIs */}
+            {redesign ? (
+              <RedesignFunnel items={[
+                { label:'Lucro total na plataforma', value: global.lucroFinalTotal - global.custosTotal, prefix:'R$ ', currency:true },
+                { label:'Lucro do dia', value: global.lucroHoje - global.custosHoje, prefix:'R$ ', currency:true },
+                { label:'Contas no sistema', value: metas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0) },
+                { label:'Remessas no sistema', value: global.totalRem },
+                { label:'Metas no sistema', value: global.totalMetas },
+              ]} />
+            ) : (
             <motion.div
               data-tour="kpis-grid"
               initial={{opacity:0,y:8}} animate={{opacity:1,y:0}}
@@ -2279,6 +2289,7 @@ export default function AdminPage() {
                 </div>
               ))}
             </motion.div>
+            )}
           </div>
             )
           })()}

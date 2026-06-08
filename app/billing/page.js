@@ -74,7 +74,7 @@ export default function BillingPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
 
       {isV2 ? (
-        <BillingProV2 tenantId={profile?.tenant_id} basePrice={BASE_PRICE} onStart={()=>router.push('/billing-mp?operators=0')} />
+        <BillingProV2 tenantId={profile?.tenant_id} basePrice={BASE_PRICE} opPrice={OP_BASE_PRICE} onStart={(ops)=>router.push('/billing-mp?operators='+(ops||0))} />
       ) : (<>
 
       <div style={{maxWidth:820,margin:'0 auto',padding:'40px 28px'}}>

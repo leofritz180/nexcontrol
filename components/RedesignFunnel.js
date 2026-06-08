@@ -100,9 +100,9 @@ export default function RedesignFunnel({ items = [] }) {
                 transition={{ duration: 0.35, delay: 0.06 * i, ease }}
                 style={{
                   width: `${w}%`,
-                  background: highlight ? '#e10000' : '#4d0e11',
-                  border: highlight ? '1px solid rgba(255,255,255,0.28)' : '1px solid rgba(229,57,53,0.5)',
-                  boxShadow: highlight ? '0 0 0 3px rgba(225,0,0,0.18)' : 'none',
+                  background: '#e10000',
+                  border: '1px solid rgba(255,255,255,0.28)',
+                  boxShadow: highlight ? '0 0 0 3px rgba(225,0,0,0.20)' : 'none',
                   borderRadius: 10,
                   padding: '12px 16px',
                 }}>

@@ -19,18 +19,18 @@ export default function RedesignHeader() {
         }}
       >
         <div style={{ minWidth: 0 }}>
-          <p style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.01em', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Dashboard Operacional</p>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', margin: '2px 0 0' }}>Central de operações</p>
+          <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--on-brand)', margin: 0, letterSpacing: '-0.01em', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Dashboard Operacional</p>
+          <p style={{ fontSize: 12, color: 'var(--on-brand)', margin: '2px 0 0' }}>Central de operações</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
           <ThemeToggle />
-          <span style={{ fontSize: 11.5, fontWeight: 700, color: '#fff', background: 'rgba(0,0,0,0.22)', border: '1px solid rgba(255,255,255,0.22)', padding: '6px 12px', borderRadius: 9, letterSpacing: '0.03em' }}>PRO</span>
+          <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--on-brand)', background: 'rgba(0,0,0,0.22)', border: '1px solid rgba(255,255,255,0.22)', padding: '6px 12px', borderRadius: 9, letterSpacing: '0.03em' }}>PRO</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.2)', padding: '7px 12px', borderRadius: 9 }}>
             <span style={{ position: 'relative', width: 8, height: 8 }}>
               <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#4ade80' }} />
               <motion.span animate={{ scale: [1, 2.4], opacity: [0.7, 0] }} transition={{ duration: 1.8, repeat: Infinity }} style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#4ade80' }} />
             </span>
-            <span style={{ fontSize: 11.5, fontWeight: 600, color: '#fff' }}>Online</span>
+            <span style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--on-brand)' }}>Online</span>
           </div>
         </div>
       </motion.div>

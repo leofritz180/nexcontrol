@@ -23,6 +23,22 @@
   --fill-1: rgba(255,255,255,0.03);
   --fill-2: rgba(255,255,255,0.05);
   --fill-3: rgba(255,255,255,0.08);
+  --on-brand: #ffffff; /* texto sobre fundo vermelho/marca — branco nos 2 modos */
+
+  /* ===== Sistema unico de tokens (aliases) ===== */
+  --background: var(--base);
+  --foreground: var(--t1);
+  --card: var(--surface);
+  --card-foreground: var(--t1);
+  --muted: var(--fill-2);
+  --muted-foreground: var(--t3);
+  --border-token: var(--b1);
+  --input: var(--fill-2);
+  --primary: var(--brand);
+  --primary-foreground: var(--on-brand);
+  --destructive: var(--loss);
+  --success: var(--profit);
+  --warning: var(--warn);
 
   /* Brand — red identity */
   --brand:        #e53935;
@@ -132,6 +148,47 @@
   color-scheme: light;
 }
 .nx-light body { background: var(--base) !important; color: var(--t1); }
+
+/* ════════════════════════════════════════════════════════════════
+   MODO CLARO — camada global de correção (cobre TODO o sistema:
+   modais, dropdowns, tooltips, tabelas, cards). Sobrescreve cores
+   FIXAS inline. Só ativa em .nx-light (escuro 100% intacto).
+   ════════════════════════════════════════════════════════════════ */
+
+/* 1) Fundos escuros fixos → superfície clara */
+.nx-light [style*="background:#050505"], .nx-light [style*="background: #050505"],
+.nx-light [style*="background:#0d0d0d"], .nx-light [style*="background: #0d0d0d"], .nx-light [style*="background:#0D0D0D"],
+.nx-light [style*="background:#0f0f0f"], .nx-light [style*="background:#0F0F0F"],
+.nx-light [style*="background:#101010"], .nx-light [style*="background: #101010"],
+.nx-light [style*="background:#141414"], .nx-light [style*="background:#1a1a1a"], .nx-light [style*="background:#181818"],
+.nx-light [style*="background:#0c1220"], .nx-light [style*="background:#0C1220"],
+.nx-light [style*="background:#04070e"], .nx-light [style*="background:#04070E"],
+.nx-light [style*="background:#0c1424"], .nx-light [style*="background:#080e1a"], .nx-light [style*="background:#0a0e1a"],
+.nx-light [style*="background:#060606"], .nx-light [style*="background:#0a0a0a"] {
+  background: var(--surface) !important;
+}
+
+/* 2) Texto branco/claro fixo → escuro. EXCEÇÃO: elementos cuja cor de fundo
+      é vermelha/marca ou gradiente (botões/faixas) mantêm o texto branco. */
+.nx-light [style*="color:#fff"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#d10000"]):not([style*="#c62828"]):not([style*="#ff4444"]):not([style*="#FF3131"]):not([style*="#10B981"]):not([style*="#059669"]):not([style*="gradient"]),
+.nx-light [style*="color: #fff"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]),
+.nx-light [style*="color:#ffffff"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]),
+.nx-light [style*="color:#FFFFFF"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]),
+.nx-light [style*="color:white"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]),
+.nx-light [style*="color:#fafafa"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="gradient"]),
+.nx-light [style*="color:#E2E8F0"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="gradient"]),
+.nx-light [style*="color:#CBD5E1"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="gradient"]) {
+  color: var(--t1) !important;
+}
+/* texto branco translúcido (secundário) → cinza escuro */
+.nx-light [style*="color:rgba(255,255,255"]:not([style*="#e53935"]):not([style*="#D10000"]):not([style*="#c62828"]):not([style*="#10B981"]):not([style*="gradient"]) {
+  color: var(--t2) !important;
+}
+
+/* 3) Texto com gradiente clipado (efeito hero) → sólido escuro no claro */
+.nx-light [style*="text-fill-color:transparent"], .nx-light [style*="WebkitTextFillColor"] {
+  -webkit-text-fill-color: var(--t1) !important;
+}
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background: var(--base); }

@@ -24,7 +24,7 @@ export default function ThemeToggle() {
       style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34,
         borderRadius: 9, cursor: 'pointer',
-        background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.22)', color: '#fff',
+        background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.22)', color: 'var(--on-brand)',
       }}
       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.32)' }}
       onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.2)' }}

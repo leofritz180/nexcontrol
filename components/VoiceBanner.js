@@ -48,9 +48,9 @@ export default function VoiceBanner({ userEmail }) {
             <img src="/comando-voz-banner.png" alt="Comando de Voz — Novo recurso" style={{ width: '100%', display: 'block' }} />
 
             {/* Botão TESTAR AGORA — sobreposto exatamente no ponto do banner */}
-            <button type="button" onClick={testar} title="Testar agora" aria-label="Testar comando de voz"
-              style={{ position: 'absolute', left: '3.5%', top: '77%', width: '30%', height: '13%', background: 'transparent', border: 'none', borderRadius: 12, cursor: 'pointer' }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(255,255,255,0.5), 0 0 22px rgba(209,0,0,0.5)' }}
+            <button type="button" onClick={testar} aria-label="Testar comando de voz"
+              style={{ position: 'absolute', left: '16.5%', top: '74.5%', width: '21.5%', height: '11.5%', background: 'transparent', border: 'none', borderRadius: 12, cursor: 'pointer' }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 0 2px rgba(255,255,255,0.45), 0 0 22px rgba(209,0,0,0.5)' }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
             />
 

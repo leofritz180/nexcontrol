@@ -4,39 +4,48 @@ import { motion, useInView } from 'framer-motion'
 
 /**
  * RedesignFunnel — funil premium da operação (vermelho sangue).
- * Cada segmento é um trapézio (clip-path) que estreita de cima pra baixo,
- * com gradiente glossy e contagem animada. Só usado no redesign (gated).
+ * Cada nível é um trapézio ARREDONDADO com extrusão 3D (espessura),
+ * gradiente glossy e brilho superior — desenhado em SVG. Texto em HTML
+ * sobreposto (fonte mono + count-up). Só usado no redesign (gated).
  *
  * props.items: [{ label, value, prefix?, suffix?, currency? }]
- *   value numérico; currency=true formata como R$ pt-BR.
  */
 
 const ease = [0.33, 1, 0.68, 1]
 
-// inset (%) de cada lado no topo/base de cada segmento → forma o funil contínuo
-const SHAPE = [
-  { top: 0,  bot: 6 },
-  { top: 6,  bot: 13 },
-  { top: 13, bot: 21 },
-  { top: 21, bot: 30 },
-  { top: 30, bot: 40 },
+// geometria (unidades do viewBox)
+const VBW = 320
+const CX = VBW / 2
+const UW = 300            // largura útil (deixa margem p/ o stroke arredondar)
+const SEG_H = 54
+const GAP = 13
+const DEPTH = 10
+const PAD_T = 6
+const STROKE = 13         // espessura do stroke = raio dos cantos arredondados
+
+// largura (fração de UW) topo/base de cada nível → funil que estreita
+const FRACS = [
+  { t: 1.00, b: 0.90 },
+  { t: 0.88, b: 0.78 },
+  { t: 0.76, b: 0.66 },
+  { t: 0.63, b: 0.53 },
+  { t: 0.50, b: 0.41 },
 ]
 
-// gradiente fica mais profundo conforme desce (sensação de profundidade)
-const FILLS = [
-  'linear-gradient(180deg, #ff3b3b 0%, #e10000 52%, #c40000 100%)',
-  'linear-gradient(180deg, #f12626 0%, #d10000 52%, #b00000 100%)',
-  'linear-gradient(180deg, #e21414 0%, #bd0000 52%, #9c0000 100%)',
-  'linear-gradient(180deg, #cf0d0d 0%, #a80000 52%, #890000 100%)',
-  'linear-gradient(180deg, #ba0808 0%, #930000 52%, #760000 100%)',
+// gradiente glossy por nível (mais profundo conforme desce) [claro, base]
+const GRADS = [
+  ['#ff5252', '#e60000', '#b00000'],
+  ['#f53b3b', '#d60000', '#a00000'],
+  ['#e82a2a', '#c40000', '#900000'],
+  ['#d61c1c', '#ad0000', '#7e0000'],
+  ['#c41212', '#990000', '#6c0000'],
 ]
+const SIDE = ['#7a0000', '#700000', '#660000', '#5c0000', '#520000'] // espessura 3D
 
 function fmtCurrency(v) {
   return Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
-function fmtInt(v) {
-  return Number(v || 0).toLocaleString('pt-BR')
-}
+function fmtInt(v) { return Number(v || 0).toLocaleString('pt-BR') }
 
 function CountUp({ value, currency, duration = 1.4 }) {
   const [d, setD] = useState(0)
@@ -59,8 +68,26 @@ function CountUp({ value, currency, duration = 1.4 }) {
   return <span ref={ref}>{currency ? fmtCurrency(d) : fmtInt(Math.round(d))}</span>
 }
 
+// trapézio (pontos) centrado em CX
+function trap(topW, botW, yTop, h) {
+  const yBot = yTop + h
+  return `${CX - topW / 2},${yTop} ${CX + topW / 2},${yTop} ${CX + botW / 2},${yBot} ${CX - botW / 2},${yBot}`
+}
+
 export default function RedesignFunnel({ items = [] }) {
   const data = items.slice(0, 5)
+  const N = data.length
+  const VBH = PAD_T + N * SEG_H + (N - 1) * GAP + DEPTH + 4
+
+  const segs = data.map((it, i) => {
+    const f = FRACS[i] || FRACS[FRACS.length - 1]
+    const topW = UW * f.t
+    const botW = UW * f.b
+    const yTop = PAD_T + i * (SEG_H + GAP)
+    const centerPct = ((yTop + SEG_H / 2) / VBH) * 100
+    return { it, i, topW, botW, yTop, centerPct }
+  })
+
   return (
     <div style={{
       position: 'relative', height: '100%',
@@ -71,21 +98,12 @@ export default function RedesignFunnel({ items = [] }) {
       display: 'flex', flexDirection: 'column',
       overflow: 'hidden',
     }}>
-      {/* glow ambiente vermelho */}
-      <div style={{
-        position: 'absolute', top: -60, right: -40, width: 220, height: 220,
-        background: 'radial-gradient(circle, rgba(209,0,0,0.16), transparent 70%)',
-        pointerEvents: 'none',
-      }} />
+      {/* glow ambiente */}
+      <div style={{ position: 'absolute', top: -70, right: -50, width: 240, height: 240, background: 'radial-gradient(circle, rgba(230,0,0,0.18), transparent 70%)', pointerEvents: 'none' }} />
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18, position: 'relative' }}>
-        <div style={{
-          width: 30, height: 30, borderRadius: 9, flexShrink: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'linear-gradient(145deg, #e10000, #a80000)',
-          boxShadow: '0 4px 14px rgba(209,0,0,0.4)',
-        }}>
+        <div style={{ width: 30, height: 30, borderRadius: 9, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, #e10000, #a80000)', boxShadow: '0 4px 14px rgba(209,0,0,0.4)' }}>
           <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
           </svg>
@@ -97,55 +115,62 @@ export default function RedesignFunnel({ items = [] }) {
       </div>
 
       {/* Funil */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5, justifyContent: 'center', position: 'relative' }}>
-        {data.map((it, i) => {
-          const s = SHAPE[i] || SHAPE[SHAPE.length - 1]
-          const fill = FILLS[i] || FILLS[FILLS.length - 1]
-          const clip = `polygon(${s.top}% 0, ${100 - s.top}% 0, ${100 - s.bot}% 100%, ${s.bot}% 100%)`
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.4, delay: 0.06 * i, ease }}
-              style={{ position: 'relative', height: 60 }}
-            >
-              {/* corpo trapézio */}
-              <div style={{
-                position: 'absolute', inset: 0,
-                clipPath: clip, WebkitClipPath: clip,
-                background: fill,
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -10px 18px rgba(0,0,0,0.22)',
-              }} />
-              {/* brilho superior */}
-              <div style={{
-                position: 'absolute', left: 0, right: 0, top: 0, height: '46%',
-                clipPath: clip, WebkitClipPath: clip,
-                background: 'linear-gradient(180deg, rgba(255,255,255,0.22), transparent)',
-                pointerEvents: 'none',
-              }} />
-              {/* conteúdo */}
-              <div style={{
-                position: 'absolute', inset: 0,
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: 360 }}>
+          <svg viewBox={`0 0 ${VBW} ${VBH}`} width="100%" style={{ display: 'block', overflow: 'visible' }}>
+            <defs>
+              {GRADS.map((g, i) => (
+                <linearGradient key={i} id={`fnl-g${i}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={g[0]} />
+                  <stop offset="48%" stopColor={g[1]} />
+                  <stop offset="100%" stopColor={g[2]} />
+                </linearGradient>
+              ))}
+              <linearGradient id="fnl-gloss" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.38)" />
+                <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+              </linearGradient>
+            </defs>
+
+            {segs.map(({ i, topW, botW, yTop }) => {
+              const facePts = trap(topW, botW, yTop, SEG_H)
+              const basePts = trap(topW, botW, yTop + DEPTH, SEG_H)
+              const glossPts = trap(topW, (topW + botW) / 2, yTop, SEG_H * 0.5)
+              return (
+                <motion.g key={i}
+                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: 0.07 * i, ease }}>
+                  {/* espessura 3D (base extrudada) */}
+                  <polygon points={basePts} fill={SIDE[i]}
+                    stroke={SIDE[i]} strokeWidth={STROKE} strokeLinejoin="round" paintOrder="stroke" />
+                  {/* face glossy */}
+                  <polygon points={facePts} fill={`url(#fnl-g${i})`}
+                    stroke={`url(#fnl-g${i})`} strokeWidth={STROKE} strokeLinejoin="round" paintOrder="stroke" />
+                  {/* brilho superior */}
+                  <polygon points={glossPts} fill="url(#fnl-gloss)"
+                    stroke="url(#fnl-gloss)" strokeWidth={STROKE * 0.7} strokeLinejoin="round" paintOrder="stroke" />
+                </motion.g>
+              )
+            })}
+          </svg>
+
+          {/* Texto sobreposto */}
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+            {segs.map(({ it, i, centerPct }) => (
+              <div key={i} style={{
+                position: 'absolute', left: 0, right: 0, top: `${centerPct}%`,
+                transform: 'translateY(-50%)',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                padding: '0 12%',
-                textShadow: '0 1px 3px rgba(0,0,0,0.35)',
+                textShadow: '0 1px 4px rgba(0,0,0,0.45)',
               }}>
-                <span style={{
-                  fontSize: 9.5, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
-                  color: 'rgba(255,255,255,0.82)', marginBottom: 2, whiteSpace: 'nowrap',
-                }}>{it.label}</span>
-                <span style={{
-                  fontFamily: 'var(--mono)', fontWeight: 700, color: '#fff',
-                  fontSize: i === 0 ? 22 : i === 1 ? 20 : 18, lineHeight: 1,
-                  letterSpacing: '-0.02em', whiteSpace: 'nowrap',
-                }}>
+                <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.85)', marginBottom: 2, whiteSpace: 'nowrap' }}>{it.label}</span>
+                <span style={{ fontFamily: 'var(--mono)', fontWeight: 700, color: '#fff', fontSize: i === 0 ? 21 : i === 1 ? 19 : i === 2 ? 18 : 16, lineHeight: 1, letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
                   {it.prefix || ''}<CountUp value={it.value} currency={it.currency} />{it.suffix || ''}
                 </span>
               </div>
-            </motion.div>
-          )
-        })}
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )

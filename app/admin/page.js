@@ -1070,6 +1070,64 @@ export default function AdminPage() {
     ['trash','Lixeira'],
   ]
 
+  // ── Blocos reutilizaveis (posicao muda no redesign: vao ABAIXO do card de lucro) ──
+  const renderOpStatus = () => {
+    const liq = global.lucroFinalTotal - global.custosTotal
+    const remsHoje = remessas.filter(r=>new Date(r.created_at).toDateString()===new Date().toDateString())
+    const negHoje = remsHoje.filter(r=>Number(r.resultado||0)<0).length
+    const posHoje = remsHoje.filter(r=>Number(r.resultado||0)>=0).length
+    let opStatus, opColor, opText
+    if (liq > 0 && negHoje <= posHoje) { opStatus='Saudavel'; opColor='var(--profit)'; opText='Operacao acelerando — resultado consistente' }
+    else if (liq >= 0 && negHoje > posHoje) { opStatus='Oscilando'; opColor='rgba(255,255,255,0.78)'; opText='Oscilacao detectada — resultados variando' }
+    else if (liq < 0) { opStatus='Atencao'; opColor='var(--loss)'; opText='Resultado acumulado negativo — fique atento' }
+    else { opStatus='Estavel'; opColor='rgba(255,255,255,0.78)'; opText='Operacao estavel — aguardando mais dados' }
+    return (
+      <motion.div initial={{ opacity:0, y:-6 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3 }}
+        style={{ padding:'12px 18px', borderRadius:12, marginBottom:16, background:`${opColor}06`, border:`1px solid ${opColor}18`, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <motion.div animate={{ boxShadow:[`0 0 0 0 ${opColor}00`,`0 0 0 6px ${opColor}20`,`0 0 0 0 ${opColor}00`] }} transition={{ duration:2.5, repeat:Infinity, ease:'easeInOut' }}
+            style={{ width:10, height:10, borderRadius:'50%', background:opColor, flexShrink:0 }}/>
+          <div>
+            <p style={{ fontSize:12, fontWeight:700, color:opColor, margin:0 }}>Status: {opStatus}</p>
+            <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{opText}</p>
+          </div>
+        </div>
+        <span style={{ fontSize:9, color:'var(--t4)', fontWeight:500 }}>Atualizado agora</span>
+      </motion.div>
+    )
+  }
+
+  const renderInsights = () => {
+    const tips = []
+    if (abnormalLossAlert) tips.push({ text: `Remessa com prejuizo anormal: R$ ${fmt(abnormalLossAlert.value)} (media: R$ ${fmt(abnormalLossAlert.avg)})`, type: 'loss' })
+    const lucroHojeNet = global.lucroHoje - global.custosHoje
+    const lucroTotalNet = global.lucroFinalTotal - global.custosTotal
+    if (lucroHojeNet > 0) tips.push({ text: `Lucro do dia: +R$ ${fmt(lucroHojeNet)} — operacao no positivo`, type: 'profit' })
+    if (lucroTotalNet > 0) tips.push({ text: `Lucro total acumulado: +R$ ${fmt(lucroTotalNet)}`, type: 'profit' })
+    if (global.lucroPerConta > 0) tips.push({ text: `Media de R$ ${fmt(global.lucroPerConta)}/conta — rentabilidade positiva`, type: 'profit' })
+    if (lucroHojeNet < 0) tips.push({ text: `Resultado do dia negativo: R$ ${fmt(Math.abs(lucroHojeNet))} de prejuizo`, type: 'loss' })
+    if (global.custosHoje > 0) tips.push({ text: `Custos hoje: R$ ${fmt(global.custosHoje)}`, type: 'warn' })
+    tips.push({ text: `${global.ativas} meta${global.ativas!==1?'s':''} ativa${global.ativas!==1?'s':''} e ${global.fechadas} fechada${global.fechadas!==1?'s':''}`, type: 'info' })
+    if (global.ops > 0) tips.push({ text: `${global.ops} operadores na equipe — ${global.totalRem} remessas registradas`, type: 'info' })
+    if (global.breakEvenContas > 0) tips.push({ text: `Break-even: ${global.breakEvenContas} contas com bau por meta pra cobrir custos`, type: 'info' })
+    if (tips.length === 0) return null
+    const cfgT = { profit: { bg:'var(--profit-dim)', border:'var(--profit-border)', color:'var(--profit)' }, loss: { bg:'var(--loss-dim)', border:'var(--loss-border)', color:'var(--loss)' }, warn: { bg:'var(--warn-dim)', border:'var(--warn-border)', color:'var(--warn)' }, info: { bg:'rgba(255,255,255,0.06)', border:'rgba(255,255,255,0.12)', color:'var(--info)' } }
+    const idx = Math.floor(Date.now() / 8000) % tips.length
+    const tip = tips[idx]
+    const c = cfgT[tip.type]
+    return (
+      <motion.div
+        key={tip.text}
+        initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
+        transition={{ duration: 0.3 }}
+        style={{ padding:'12px 18px', borderRadius:12, marginBottom:20, background:c.bg, border:`1px solid ${c.border}`, display:'flex', alignItems:'center', gap:10 }}
+      >
+        <div style={{ width:6, height:6, borderRadius:'50%', background:c.color, flexShrink:0 }} />
+        <p style={{ margin:0, fontSize:13, fontWeight:500, color:c.color }}>{tip.text}</p>
+      </motion.div>
+    )
+  }
+
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
       <AnimatePresence>
@@ -2059,33 +2117,8 @@ export default function AdminPage() {
             />
           ) : (<>
 
-          {/* ── Status global da operacao ── */}
-          {(() => {
-            const liq = global.lucroFinalTotal - global.custosTotal
-            const ativas = global.ativas
-            const remsHoje = remessas.filter(r=>new Date(r.created_at).toDateString()===new Date().toDateString())
-            const negHoje = remsHoje.filter(r=>Number(r.resultado||0)<0).length
-            const posHoje = remsHoje.filter(r=>Number(r.resultado||0)>=0).length
-            let opStatus, opColor, opText
-            if (liq > 0 && negHoje <= posHoje) { opStatus='Saudavel'; opColor='var(--profit)'; opText='Operacao acelerando — resultado consistente' }
-            else if (liq >= 0 && negHoje > posHoje) { opStatus='Oscilando'; opColor='rgba(255,255,255,0.78)'; opText='Oscilacao detectada — resultados variando' }
-            else if (liq < 0) { opStatus='Atencao'; opColor='var(--loss)'; opText='Resultado acumulado negativo — fique atento' }
-            else { opStatus='Estavel'; opColor='rgba(255,255,255,0.78)'; opText='Operacao estavel — aguardando mais dados' }
-            return (
-              <motion.div initial={{ opacity:0, y:-6 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3 }}
-                style={{ padding:'12px 18px', borderRadius:12, marginBottom:16, background:`${opColor}06`, border:`1px solid ${opColor}18`, display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10 }}>
-                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                  <motion.div animate={{ boxShadow:[`0 0 0 0 ${opColor}00`,`0 0 0 6px ${opColor}20`,`0 0 0 0 ${opColor}00`] }} transition={{ duration:2.5, repeat:Infinity, ease:'easeInOut' }}
-                    style={{ width:10, height:10, borderRadius:'50%', background:opColor, flexShrink:0 }}/>
-                  <div>
-                    <p style={{ fontSize:12, fontWeight:700, color:opColor, margin:0 }}>Status: {opStatus}</p>
-                    <p style={{ fontSize:11, color:'var(--t3)', margin:0 }}>{opText}</p>
-                  </div>
-                </div>
-                <span style={{ fontSize:9, color:'var(--t4)', fontWeight:500 }}>Atualizado agora</span>
-              </motion.div>
-            )
-          })()}
+          {/* ── Status global da operacao (no redesign vai ABAIXO do card de lucro) ── */}
+          {!isRedesign(user?.email) && renderOpStatus()}
 
           {/* ── Metodos (beta) — breakdown CPA puro vs Metodos vs Consolidado ── */}
           {isBetaUser && (
@@ -2095,41 +2128,8 @@ export default function AdminPage() {
             />
           )}
 
-          {/* ── Insights rotativos ── */}
-          {(() => {
-            const tips = []
-            // Alerta prejuizo anormal
-            if (abnormalLossAlert) tips.push({ text: `Remessa com prejuizo anormal: R$ ${fmt(abnormalLossAlert.value)} (media: R$ ${fmt(abnormalLossAlert.avg)})`, type: 'loss' })
-            // Positivos
-            const lucroHojeNet = global.lucroHoje - global.custosHoje
-            const lucroTotalNet = global.lucroFinalTotal - global.custosTotal
-            if (lucroHojeNet > 0) tips.push({ text: `Lucro do dia: +R$ ${fmt(lucroHojeNet)} — operacao no positivo`, type: 'profit' })
-            if (lucroTotalNet > 0) tips.push({ text: `Lucro total acumulado: +R$ ${fmt(lucroTotalNet)}`, type: 'profit' })
-            if (global.lucroPerConta > 0) tips.push({ text: `Media de R$ ${fmt(global.lucroPerConta)}/conta — rentabilidade positiva`, type: 'profit' })
-            // Negativos
-            if (lucroHojeNet < 0) tips.push({ text: `Resultado do dia negativo: R$ ${fmt(Math.abs(lucroHojeNet))} de prejuizo`, type: 'loss' })
-            if (global.custosHoje > 0) tips.push({ text: `Custos hoje: R$ ${fmt(global.custosHoje)}`, type: 'warn' })
-            // Dicas
-            tips.push({ text: `${global.ativas} meta${global.ativas!==1?'s':''} ativa${global.ativas!==1?'s':''} e ${global.fechadas} fechada${global.fechadas!==1?'s':''}`, type: 'info' })
-            if (global.ops > 0) tips.push({ text: `${global.ops} operadores na equipe — ${global.totalRem} remessas registradas`, type: 'info' })
-            if (global.breakEvenContas > 0) tips.push({ text: `Break-even: ${global.breakEvenContas} contas com bau por meta pra cobrir custos`, type: 'info' })
-            if (tips.length === 0) return null
-            const cfgT = { profit: { bg:'var(--profit-dim)', border:'var(--profit-border)', color:'var(--profit)' }, loss: { bg:'var(--loss-dim)', border:'var(--loss-border)', color:'var(--loss)' }, warn: { bg:'var(--warn-dim)', border:'var(--warn-border)', color:'var(--warn)' }, info: { bg:'rgba(255,255,255,0.06)', border:'rgba(255,255,255,0.12)', color:'var(--info)' } }
-            const idx = Math.floor(Date.now() / 8000) % tips.length
-            const tip = tips[idx]
-            const c = cfgT[tip.type]
-            return (
-              <motion.div
-                key={tip.text}
-                initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
-                transition={{ duration: 0.3 }}
-                style={{ padding:'12px 18px', borderRadius:12, marginBottom:20, background:c.bg, border:`1px solid ${c.border}`, display:'flex', alignItems:'center', gap:10 }}
-              >
-                <div style={{ width:6, height:6, borderRadius:'50%', background:c.color, flexShrink:0 }} />
-                <p style={{ margin:0, fontSize:13, fontWeight:500, color:c.color }}>{tip.text}</p>
-              </motion.div>
-            )
-          })()}
+          {/* ── Insights rotativos (no redesign vao ABAIXO do card de lucro) ── */}
+          {!isRedesign(user?.email) && renderInsights()}
 
           {/* Seletor de período — acima/fora do card (REDESIGN, gated) */}
           {isRedesign(user?.email) && (
@@ -2293,6 +2293,14 @@ export default function AdminPage() {
           </div>
             )
           })()}
+
+          {/* ── Status + Insights ABAIXO do card de lucro (REDESIGN, gated) ── */}
+          {isRedesign(user?.email) && (
+            <div style={{ marginBottom:8 }}>
+              {renderOpStatus()}
+              {renderInsights()}
+            </div>
+          )}
 
           {/* Resumo estrategico — clean, sem orb e sem badges pesados */}
           {strategicSummary && (strategicSummary.bestRede || strategicSummary.worstRede || strategicSummary.topOp) && (

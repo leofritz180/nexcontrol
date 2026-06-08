@@ -28,7 +28,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
         userId={userId}
         tenantId={tenantId}
       />
-      <div style={{ marginLeft: 248 }} className="app-content">
+      <div style={{ marginLeft: isRedesign(userEmail) ? 76 : 248 }} className="app-content">
         {isRedesign(userEmail) && <RedesignHeader />}
         <AnimatePresence mode="wait">
           <motion.div

@@ -83,7 +83,7 @@
 }
 /* Identidade: ícones neutros (currentColor) viram vermelho. Ícones de status
    (lucro/prejuízo) usam cor explícita, então não são afetados. */
-.nx-redesign svg[stroke="currentColor"] { color: #FF3131; }
+.nx-redesign svg[stroke="currentColor"] { color: #D10000; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background: var(--base); }

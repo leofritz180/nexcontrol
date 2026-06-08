@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import { isRedesign } from '../../lib/redesign'
+import RedesignLucroChart from '../../components/RedesignLucroChart'
 import TrialBanner, { ConversionModal } from '../../components/TrialBanner'
 import AnimatedNumber from '../../components/ui/AnimatedNumber'
 import { supabase } from '../../lib/supabase/client'
@@ -2128,10 +2130,34 @@ export default function AdminPage() {
             )
           })()}
 
+          {/* Seletor de período — acima/fora do card (REDESIGN, gated) */}
+          {isRedesign(user?.email) && (
+            <div style={{ display:'flex', justifyContent:'flex-end', gap:0, marginBottom:14 }}>
+              {[['month','Mes'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d'],['all','Tudo']].map(([k,l])=>(
+                <button key={k} type="button" onClick={()=>setHeroPeriod(k)}
+                  style={{ fontSize:11, fontWeight:500, padding:'6px 12px', cursor:'pointer', border:'none', background:'transparent',
+                    color: heroPeriod===k ? 'var(--t1)' : 'var(--t3)',
+                    borderBottom: heroPeriod===k ? '1px solid var(--t1)' : '1px solid transparent',
+                    transition:'all 0.15s', fontFamily:'inherit' }}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* ── HERO + KPIs — side by side ── */}
           {(() => {
             // Compute NET hero value ONCE (bruto - custos do periodo)
             const heroNet = Number((heroLucro.value - heroLucro.custos).toFixed(2))
+            const redesign = isRedesign(user?.email)
+            // Série de evolução do lucro (só leitura das metas fechadas — redesign)
+            const chartSeries = (() => {
+              const closed = metas.filter(m => m.status_fechamento === 'fechada' && m.fechada_em)
+                .sort((a, b) => new Date(a.fechada_em) - new Date(b.fechada_em))
+              let acc = 0
+              const pts = closed.map(m => { acc += Number(m.lucro_final || 0); return Number(acc.toFixed(2)) })
+              return pts.length >= 2 ? pts : null
+            })()
             return (
           <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.5fr 1fr', gap:32, marginBottom:40 }}>
 
@@ -2161,6 +2187,7 @@ export default function AdminPage() {
                     return 'Lucro · ultimos 30 dias'
                   })()}
                 </p>
+                {!redesign && (
                 <div style={{ display:'flex', gap:0 }}>
                   {[['month','Mes'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d'],['all','Tudo']].map(([k,l])=>(
                     <button key={k} onClick={()=>setHeroPeriod(k)}
@@ -2175,6 +2202,7 @@ export default function AdminPage() {
                     </button>
                   ))}
                 </div>
+                )}
               </div>
 
               <AnimatedNumber
@@ -2184,7 +2212,7 @@ export default function AdminPage() {
                 className="hero-value"
                 style={{
                   fontFamily:'var(--mono)', fontSize:60, fontWeight:700,
-                  color: heroNet>=0 ? 'var(--profit)' : 'var(--loss)',
+                  color: heroNet>=0 ? (redesign ? '#FFFFFF' : 'var(--profit)') : 'var(--loss)',
                   lineHeight:1, letterSpacing:'-0.04em', display:'block',
                 }}
               />
@@ -2199,7 +2227,13 @@ export default function AdminPage() {
                 </p>
               )}
 
-              <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:32, marginTop:36, paddingTop:24, borderTop:'1px solid var(--b1)' }}>
+              {redesign && (
+                <div style={{ marginTop:24 }}>
+                  <RedesignLucroChart data={chartSeries} height={140} />
+                </div>
+              )}
+
+              <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:32, marginTop:redesign?24:36, paddingTop:24, borderTop:'1px solid var(--b1)' }}>
                 <div>
                   <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4, fontWeight:400 }}>Metas fechadas</p>
                   <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:600, color:'var(--t1)', margin:0 }}>{heroLucro.count}</p>

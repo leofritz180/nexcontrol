@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 import Logo from './Logo'
+import { isRedesign } from '../lib/redesign'
 import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription } from '../lib/pushClient'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
@@ -113,6 +114,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
     ] : []),
   ]
 
+  const redesign = isRedesign(userEmail)
+
   // Use own fetch OR parent prop — whichever confirms PRO
   const sub = ownSub || subscription
   const subActive = sub?.status === 'active' && (!sub.expires_at || new Date(sub.expires_at) > new Date())
@@ -147,7 +150,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity:active?0.9:0.45 }}>
                 <path d={item.icon}/>
               </svg>
-              {item.label}
+              <span className="sb-label">{item.label}</span>
               {item.pro && !subActive && (
                 <span style={{
                   marginLeft:'auto', fontSize:8, fontWeight:600, padding:'2px 6px', borderRadius:4,
@@ -262,7 +265,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   return (
     <>
       {/* Desktop */}
-      <aside className="sidebar-desktop" style={{
+      <aside className={"sidebar-desktop" + (redesign ? " sb-rd" : "")} style={{
         position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:200,
         background:'#0D1218',
         borderRight:'1px solid rgba(255,255,255,0.03)',
@@ -324,10 +327,18 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         }
         .sidebar-desktop { display: block !important; }
         .sidebar-mobile-toggle { display: none !important; }
+        /* REDESIGN: sidebar só-ícones (76px) que expande no hover. Só na .sb-rd
+           (contas do redesign); mobile e demais contas intactos. */
+        .sb-rd { width: 76px !important; transition: width .26s cubic-bezier(.4,0,.2,1) !important; }
+        .sb-rd:hover { width: 248px !important; }
+        .sb-rd .sb-label { opacity: 0; white-space: nowrap; transition: opacity .18s; }
+        .sb-rd:hover .sb-label { opacity: 1; }
         @media (max-width: 768px) {
           .sidebar-desktop { display: none !important; }
           .sidebar-mobile-toggle { display: flex !important; }
           .app-content { margin-left: 0 !important; }
+          .sb-rd { width: 248px !important; }
+          .sb-rd .sb-label { opacity: 1; }
         }
       `}</style>
     </>

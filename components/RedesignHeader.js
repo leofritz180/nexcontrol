@@ -10,8 +10,8 @@ export default function RedesignHeader() {
         initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
         style={{
           height: 74, borderRadius: 16, padding: '0 22px',
-          background: '#FF3131',
-          boxShadow: '0 10px 30px rgba(255,49,49,0.22), inset 0 1px 0 rgba(255,255,255,0.14)',
+          background: '#D10000',
+          boxShadow: '0 10px 30px rgba(209,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.14)',
           border: '1px solid rgba(255,255,255,0.12)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
         }}

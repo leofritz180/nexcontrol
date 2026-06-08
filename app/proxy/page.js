@@ -112,50 +112,28 @@ export default function ProxyPage() {
           )}
         </div>
       ) : (
-        /* Demais contas — card de marketing + link externo */
-        <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 20px' }}>
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} style={{ marginBottom: 28 }}>
-            <h1 style={{ fontSize: 28, fontWeight: 600, color: 'var(--t1)', letterSpacing: '-0.03em', margin: '0 0 6px' }}>Loja Proxy</h1>
-            <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, fontWeight: 400 }}>
-              Infraestrutura de proxies residenciais para operacoes em escala · parceiro oficial
-            </p>
-          </motion.div>
+        /* Demais contas — em manutenção / disponível em breve */
+        <div style={{ maxWidth: 560, margin: '0 auto', padding: '64px 20px', textAlign: 'center' }}>
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
+            style={{ position: 'relative', overflow: 'hidden', borderRadius: 24, padding: '52px 36px', background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
+            <div style={{ position: 'absolute', top: -60, left: '50%', marginLeft: -130, width: 260, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.10), transparent 70%)', pointerEvents: 'none' }} />
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1, ease }}
-            style={{ borderRadius: 24, overflow: 'hidden', position: 'relative', background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
-            <div style={{ padding: '48px 40px 40px', textAlign: 'center', borderBottom: '1px solid var(--b1)' }}>
-              <div style={{ width: 64, height: 64, borderRadius: 18, margin: '0 auto 24px', background: 'var(--fill-2)', border: '1px solid var(--b2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-              </div>
-              <h2 style={{ fontSize: 26, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.03em', marginBottom: 12 }}>
-                Proxies Premium de Alta Performance
-              </h2>
-              <p style={{ fontSize: 14, color: 'var(--t3)', maxWidth: 460, margin: '0 auto 28px', lineHeight: 1.6 }}>
-                Parceiro oficial do NexControl para conexoes rapidas, seguras e preparadas para alta demanda operacional.
-              </p>
+            <div style={{ width: 60, height: 60, borderRadius: 16, margin: '0 auto 22px', background: 'rgba(229,57,53,0.10)', border: '1px solid rgba(229,57,53,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+              </svg>
             </div>
 
-            <div style={{ padding: '32px 40px 36px', textAlign: 'center' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 28, maxWidth: 400, margin: '0 auto 28px' }}>
-                {['IPs residenciais de alta qualidade', 'Suporte tecnico especializado', 'Gerenciamento completo de conexoes', 'Condicoes exclusivas NexControl'].map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
-                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12l2 2 4-4" /></svg>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--t2)', textAlign: 'left' }}>{f}</span>
-                  </div>
-                ))}
-              </div>
+            <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.02em', margin: '0 0 10px', position: 'relative' }}>
+              Loja Proxy — disponivel em breve
+            </h1>
+            <p style={{ fontSize: 14, color: 'var(--t3)', lineHeight: 1.6, maxWidth: 380, margin: '0 auto', position: 'relative' }}>
+              Estamos finalizando os ultimos ajustes da loja integrada. Em breve voce vai comprar seus proxies direto por aqui. Obrigado pela paciencia.
+            </p>
 
-              <a href="https://bettifyproxy.com" target="_blank" rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: '15px 40px', borderRadius: 14, fontSize: 15, fontWeight: 700, textDecoration: 'none', background: 'linear-gradient(135deg, rgba(255,255,255,0.78), #2563eb)', color: '#fff', boxShadow: '0 6px 24px rgba(255,255,255,0.25)', transition: 'transform 0.2s, box-shadow 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'none' }}>
-                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-                Acessar Proxy Premium
-              </a>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 22, padding: '8px 14px', borderRadius: 999, background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.22)', position: 'relative' }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#e53935' }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#e53935' }}>Em manutencao</span>
             </div>
           </motion.div>
         </div>

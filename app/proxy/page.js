@@ -78,7 +78,7 @@ export default function ProxyPage() {
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
       {ssoEnabled ? (
         /* Loja Bettify embutida — ocupa toda a area de conteudo, ja logada */
-        <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 92px)', minHeight: 480, background: '#000' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100vh', minHeight: 480, background: '#000' }}>
           {iframeErr ? (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: 'var(--surface)', textAlign: 'center', padding: 24 }}>
               <p style={{ color: 'var(--t2)', fontSize: 14, margin: 0 }}>Nao consegui carregar a loja aqui dentro.</p>

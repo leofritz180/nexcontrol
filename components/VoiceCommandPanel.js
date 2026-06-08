@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase/client'
 
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 // Acoes de Metodos continuam beta so do owner; o resto da voz e pra todo admin.
-const BETA_EMAILS = new Set([OWNER_EMAIL])
+const BETA_EMAILS = new Set([OWNER_EMAIL, 'leofritz178@gmail.com'])
 
 // Comandos de navegacao — slug → rota (e variantes faladas)
 const NAV_COMMANDS = [
@@ -161,6 +161,7 @@ export default function VoiceCommandPanel({ userEmail }) {
     return () => { active = false; sub?.subscription?.unsubscribe?.() }
   }, [])
   const isOwner = String(resolvedEmail || '').toLowerCase() === OWNER_EMAIL
+  const isBeta = BETA_EMAILS.has(String(resolvedEmail || '').toLowerCase())
   const isAdminLevel = isOwner || role === 'admin'
   // Operador tambem tem voz, porem com funcoes LIMITADAS (so navegacao das telas
   // dele) — sem perguntas de lucro, sem abas de admin, sem acoes de Metodos.
@@ -328,8 +329,8 @@ export default function VoiceCommandPanel({ userEmail }) {
         }
       }
 
-      // 1) Acoes de Metodos (lucro 150 / novo metodo) — SO owner (beta)
-      if (isOwner) for (const a of ACTION_COMMANDS) {
+      // 1) Acoes de Metodos (lucro 150 / novo metodo) — usuarios beta
+      if (isBeta) for (const a of ACTION_COMMANDS) {
         const m = norm.match(a.regex)
         if (m) {
           const onAdmin = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')
@@ -717,7 +718,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                 </>
               )}
 
-              {isOwner && (
+              {isBeta && (
                 <>
                   <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Acoes rapidas</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

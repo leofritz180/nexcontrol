@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-const BETA_EMAILS = new Set(['leofritz180@gmail.com'])
+const BETA_EMAILS = new Set(['leofritz180@gmail.com', 'leofritz178@gmail.com'])
 
 // Modalidades aceitas — sincronizar com o frontend
 const MODALIDADES = new Set([

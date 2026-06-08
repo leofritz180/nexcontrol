@@ -18,7 +18,7 @@ const MetodosTab = dynamic(() => import('../../components/MetodosTab'), { ssr: f
 const MetodosKpiCard = dynamic(() => import('../../components/MetodosKpiCard'), { ssr: false })
 
 // Beta flag — features visiveis so pra owner enquanto valida
-const BETA_EMAILS = new Set(['leofritz180@gmail.com'])
+const BETA_EMAILS = new Set(['leofritz180@gmail.com', 'leofritz178@gmail.com'])
 import TabAwareTour from '../../components/TabAwareTour'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
 import DemoModeCard from '../../components/DemoModeCard'

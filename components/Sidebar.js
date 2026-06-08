@@ -7,6 +7,8 @@ import { supabase } from '../lib/supabase/client'
 import Logo from './Logo'
 import { isRedesign } from '../lib/redesign'
 import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription } from '../lib/pushClient'
+import ProfileModal from './ProfileModal'
+import { loadLocalProfile } from '../lib/profileLocal'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
@@ -44,6 +46,17 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const [showAulas, setShowAulas] = useState(false)
   const [pushState, setPushState] = useState('loading') // loading|unsupported|default|prompt|granted|denied|error
   const [pushBusy, setPushBusy] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [localProfile, setLocalProfile] = useState({})
+
+  // Perfil estendido local (foto, nome custom) — reflete no avatar/nome da sidebar
+  useEffect(() => {
+    if (!userId) return
+    const refresh = () => setLocalProfile(loadLocalProfile(userId))
+    refresh()
+    window.addEventListener('profile:updated', refresh)
+    return () => window.removeEventListener('profile:updated', refresh)
+  }, [userId])
 
   // Sidebar fetches subscription independently — never depends on parent passing it
   useEffect(() => {
@@ -92,8 +105,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
     setPushBusy(false)
   }
 
-  const name = userName || userEmail?.split('@')[0] || '?'
+  const name = localProfile.nome || userName || userEmail?.split('@')[0] || '?'
   const initial = name[0].toUpperCase()
+  const avatar = localProfile.avatar
+  const myRole = userEmail === OWNER_EMAIL ? 'owner' : (isAdmin ? 'admin' : 'operator')
   const baseItems = isAdmin ? ADMIN_NAV : OP_NAV
   // Inject Aulas VIP after Tutorial (admin) or after Chaves PIX (operator)
   const items = showAulas
@@ -234,15 +249,22 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
 
       {/* ── User + logout ── */}
       <div style={{ padding:'14px 14px 18px', borderTop:'1px solid var(--fill-2)' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-          <div style={{ width:28, height:28, borderRadius:'50%', background:'transparent', border:'1px solid var(--fill-3)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-            <span style={{ fontSize:11, fontWeight:500, color:'var(--t2)' }}>{initial}</span>
+        <button type="button" onClick={()=>setProfileOpen(true)} aria-label="Meu perfil"
+          style={{ width:'100%', display:'flex', alignItems:'center', gap:10, marginBottom:12, background:'transparent', border:'none', padding:0, cursor:'pointer', textAlign:'left', fontFamily:'inherit', borderRadius:8 }}
+          onMouseEnter={e=>{ e.currentTarget.style.opacity='0.82' }}
+          onMouseLeave={e=>{ e.currentTarget.style.opacity='1' }}>
+          <div style={{ width:32, height:32, borderRadius:'50%', overflow:'hidden', background:'transparent', border:'1px solid var(--fill-3)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            {avatar
+              ? <img src={avatar} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+              : <span style={{ fontSize:11, fontWeight:500, color:'var(--t2)' }}>{initial}</span>}
           </div>
           <div className="sb-label" style={{ flex:1, minWidth:0 }}>
-            <p style={{ fontSize: redesign?13:12, fontWeight:600, color:'var(--t1)', margin:0, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{name}</p>
+            <p style={{ fontSize:8.5, fontWeight:700, color:'var(--t4)', margin:0, letterSpacing:'0.06em', textTransform:'uppercase' }}>Meu perfil</p>
+            <p style={{ fontSize: redesign?13:12, fontWeight:600, color:'var(--t1)', margin:'1px 0 0', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{name}</p>
             <p style={{ fontSize: redesign?11:9, color:'var(--t4)', margin:'1px 0 0', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{userEmail}</p>
           </div>
-        </div>
+          <svg className="sb-label" width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         <button onClick={logout}
           style={{
             width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:6,
@@ -319,6 +341,16 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       </AnimatePresence>
 
       <PushManager userId={userId} tenantId={tenantId}/>
+
+      <ProfileModal
+        open={profileOpen}
+        onClose={()=>setProfileOpen(false)}
+        userId={userId}
+        userEmail={userEmail}
+        userName={userName}
+        role={myRole}
+        onNameSaved={()=>setLocalProfile(loadLocalProfile(userId))}
+      />
 
       <style jsx global>{`
         @keyframes notif-pulse {

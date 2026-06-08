@@ -7,6 +7,10 @@ import AppLayout from '../../components/AppLayout'
 
 const ease = [0.33, 1, 0.68, 1]
 
+// FASE DE TESTE: só esta conta vê o botão SSO; os demais seguem com o link
+// externo atual. Pra liberar geral, deixar SSO_TEST_EMAIL = null.
+const SSO_TEST_EMAIL = 'leofritz178@gmail.com'
+
 export default function ProxyPage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
@@ -14,6 +18,7 @@ export default function ProxyPage() {
   const [tenant, setTenant] = useState(null)
   const [sub, setSub] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [ssoLoading, setSsoLoading] = useState(false)
 
   useEffect(() => { init() }, [])
 
@@ -35,6 +40,27 @@ export default function ProxyPage() {
   }
 
   const getName = p => p?.nome || p?.email?.split('@')[0] || 'Admin'
+
+  // SSO Bettify: pede a URL assinada ao server e abre logado em nova aba
+  async function abrirBettify() {
+    if (ssoLoading) return
+    setSsoLoading(true)
+    try {
+      const { data: s } = await supabase.auth.getSession()
+      const token = s?.session?.access_token
+      const res = await fetch('/api/proxy-sso', { method: 'POST', headers: { Authorization: 'Bearer ' + token } })
+      if (!res.ok) throw new Error('falha')
+      const { url } = await res.json()
+      if (!url) throw new Error('sem url')
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } catch {
+      alert('Nao foi possivel abrir a loja. Tenta de novo.')
+    } finally {
+      setSsoLoading(false)
+    }
+  }
+
+  const ssoEnabled = SSO_TEST_EMAIL ? user?.email?.toLowerCase() === SSO_TEST_EMAIL : true
 
   if (loading || !profile) {
     return (
@@ -163,29 +189,39 @@ export default function ProxyPage() {
               ))}
             </div>
 
-            {/* CTA */}
-            <a
-              href="https://bettifyproxy.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
+            {/* CTA — SSO Bettify (gated na conta teste) ou link externo atual */}
+            {(() => {
+              const ctaStyle = {
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                 padding: '15px 40px', borderRadius: 14,
                 fontSize: 15, fontWeight: 700, textDecoration: 'none',
                 background: 'linear-gradient(135deg, rgba(255,255,255,0.78), #2563eb)', color: '#fff',
                 boxShadow: '0 6px 24px rgba(255,255,255,0.25)',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(255,255,255,0.35)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(255,255,255,0.25)' }}
-            >
-              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-              Acessar Proxy Premium
-            </a>
+                transition: 'transform 0.2s, box-shadow 0.2s', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+              }
+              const hov = e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(255,255,255,0.35)' }
+              const out = e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(255,255,255,0.25)' }
+              const Icon = () => (
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              )
+              return ssoEnabled ? (
+                <button type="button" onClick={abrirBettify} disabled={ssoLoading}
+                  style={{ ...ctaStyle, opacity: ssoLoading ? 0.7 : 1 }} onMouseEnter={hov} onMouseLeave={out}>
+                  <Icon />
+                  {ssoLoading ? 'Abrindo...' : 'Acessar Proxy Premium'}
+                </button>
+              ) : (
+                <a href="https://bettifyproxy.com" target="_blank" rel="noopener noreferrer"
+                  style={ctaStyle} onMouseEnter={hov} onMouseLeave={out}>
+                  <Icon />
+                  Acessar Proxy Premium
+                </a>
+              )
+            })()}
 
             <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 16 }}>
               Acesso externo seguro — plataforma verificada

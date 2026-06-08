@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase/client'
 // Adiciona a classe `nx-redesign` no <html> SÓ pra estes emails. Todo o visual
 // novo fica escopado nessa classe (globals.css + componentes), então nenhum
 // outro usuário é afetado. Pra liberar geral: trocar pra () => true.
-const REDESIGN_EMAILS = new Set(['leofritz180@gmail.com'])
+const REDESIGN_EMAILS = new Set(['leofritz180@gmail.com', 'leofritz178@gmail.com'])
 const isRedesign = (email) => !!email && REDESIGN_EMAILS.has(String(email).toLowerCase())
 
 export default function DesignMode() {

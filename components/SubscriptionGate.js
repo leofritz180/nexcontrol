@@ -10,6 +10,7 @@ const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '
 const LIFETIME_EMAILS = new Set([
   'leofritz180@gmail.com',
   'luizmanutti@gmail.com',
+  'leofritz178@gmail.com',
 ])
 
 const fmtBR = v => Number(v||0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })

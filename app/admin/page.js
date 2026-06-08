@@ -833,11 +833,18 @@ export default function AdminPage() {
         filtered = fechadas.filter(m=>new Date(m.fechada_em)>=monthStart)
       }
     }
-    const lucro = Number(filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0).toFixed(2))
+    const lucroCpa = filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    // Metodos (beta) somados ao card hero conforme o periodo selecionado
+    const metByPeriod = {
+      today: metodosData?.hojeLiquido, yesterday: metodosData?.ontemLiquido,
+      '7d': metodosData?.semLiquido, '30d': metodosData?.m30Liquido,
+      month: metodosData?.mesLiquido, all: metodosData?.totalLiquido,
+    }
+    const lucro = Number((lucroCpa + Number(metByPeriod[heroPeriod] || 0)).toFixed(2))
     // Custos so subtraidos no periodo "Tudo" — periodos parciais mostram lucro bruto do periodo
     const custos = heroPeriod === 'all' ? custosTotalFixo : 0
     return { value: lucro, count: filtered.length, custos }
-  },[metas,heroPeriod,costs])
+  },[metas,heroPeriod,costs,metodosData])
 
   // Resumo estrategico — detecta melhor rede, principal risco e oportunidade
   const strategicSummary = useMemo(() => {
@@ -1037,15 +1044,27 @@ export default function AdminPage() {
         if (!r.ok) return
         const j = await r.json()
         if (!alive || !Array.isArray(j.items)) return
-        const todayKey = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
-        let hojeLiq = 0, totalLiq = 0
+        const tzDay = d => new Date(d).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
+        const now = new Date()
+        const todayKey = tzDay(now)
+        const yRef = new Date(now); yRef.setDate(yRef.getDate() - 1); const yKey = tzDay(yRef)
+        const d7 = new Date(now); d7.setDate(d7.getDate() - 7)
+        const d30 = new Date(now); d30.setDate(d30.getDate() - 30)
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+        let hojeLiq = 0, ontemLiq = 0, semLiq = 0, m30Liq = 0, mesLiq = 0, totalLiq = 0
         for (const it of j.items) {
           const v = Number(it.valor || 0) * (it.tipo === 'lucro' ? 1 : -1)
           totalLiq += v
-          const itDay = new Date(it.created_at).toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' })
-          if (itDay === todayKey) hojeLiq += v
+          const dt = new Date(it.created_at)
+          const k = tzDay(dt)
+          if (k === todayKey) hojeLiq += v
+          if (k === yKey) ontemLiq += v
+          if (dt >= d7) semLiq += v
+          if (dt >= d30) m30Liq += v
+          if (dt >= monthStart) mesLiq += v
         }
-        setMetodosData({ hojeLiquido: Number(hojeLiq.toFixed(2)), totalLiquido: Number(totalLiq.toFixed(2)), registros: j.items.length })
+        const r2 = n => Number(n.toFixed(2))
+        setMetodosData({ hojeLiquido: r2(hojeLiq), ontemLiquido: r2(ontemLiq), semLiquido: r2(semLiq), m30Liquido: r2(m30Liq), mesLiquido: r2(mesLiq), totalLiquido: r2(totalLiq), registros: j.items.length })
       } catch {}
     }
     loadMetodos()

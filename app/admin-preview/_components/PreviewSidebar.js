@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { C } from './mock'
 
-// Mesmos itens da sidebar atual (NAO altera nada) — so o visual e novo.
+// Mesmos itens da sidebar atual — só o visual é novo.
 const NAV = [
   { label: 'Admin',         icon: 'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z' },
   { label: 'Operadores',    icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0' },
@@ -22,59 +22,54 @@ export default function PreviewSidebar() {
   const [active, setActive] = useState('Admin')
   return (
     <aside style={{
-      position: 'fixed', left: 0, top: 0, bottom: 0, width: 212, zIndex: 5,
-      background: 'rgba(6,10,18,0.72)', backdropFilter: 'blur(12px)',
-      borderRight: `1px solid ${C.border}`,
-      display: 'flex', flexDirection: 'column', padding: '20px 12px',
+      position: 'fixed', left: 0, top: 0, bottom: 0, width: 224, zIndex: 5,
+      background: C.panel, borderRight: `1px solid ${C.line}`,
+      display: 'flex', flexDirection: 'column', padding: '24px 14px 18px',
     }}>
       {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '4px 10px 22px' }}>
-        <div style={{ width: 26, height: 26, borderRadius: 8, background: C.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(255,49,49,0.45)' }}>
-          <span style={{ color: '#fff', fontWeight: 800, fontSize: 15, fontFamily: 'var(--mono, monospace)' }}>N</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '2px 8px 26px' }}>
+        <div style={{ width: 34, height: 34, borderRadius: 10, background: C.red, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ color: '#fff', fontWeight: 800, fontSize: 19, fontFamily: 'var(--num, monospace)', lineHeight: 1 }}>N</span>
         </div>
-        <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em', color: C.text }}>Nex<span style={{ color: C.primary }}>Control</span></span>
+        <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: '-0.025em', color: C.text }}>Nex<span style={{ color: C.red }}>Control</span></span>
       </div>
 
-      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
         {NAV.map(item => {
           const on = active === item.label
           return (
-            <motion.button key={item.label} type="button" onClick={() => setActive(item.label)}
-              whileTap={{ scale: 0.98 }}
+            <button key={item.label} type="button" onClick={() => setActive(item.label)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 11, width: '100%',
-                padding: '9px 11px', borderRadius: 9, cursor: 'pointer', textAlign: 'left',
-                fontSize: 12.5, fontWeight: on ? 600 : 400,
+                display: 'flex', alignItems: 'center', gap: 12, width: '100%',
+                padding: '10px 12px', borderRadius: 9, cursor: 'pointer', textAlign: 'left',
+                fontSize: 13, fontWeight: on ? 600 : 450, letterSpacing: '-0.01em',
                 color: on ? C.text : C.sub,
-                background: on ? 'rgba(255,49,49,0.10)' : 'transparent',
-                border: `1px solid ${on ? 'rgba(255,49,49,0.30)' : 'transparent'}`,
-                boxShadow: on ? '0 0 18px rgba(255,49,49,0.12), inset 0 0 0 1px rgba(255,49,49,0.04)' : 'none',
-                transition: 'background 0.18s, color 0.18s, border-color 0.18s',
-                position: 'relative',
+                background: on ? 'rgba(255,255,255,0.035)' : 'transparent',
+                border: 'none', position: 'relative',
+                transition: 'background 0.18s, color 0.18s',
               }}
-              onMouseEnter={e => { if (!on) { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = C.text } }}
+              onMouseEnter={e => { if (!on) { e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; e.currentTarget.style.color = C.text } }}
               onMouseLeave={e => { if (!on) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = C.sub } }}
             >
-              {on && <span style={{ position: 'absolute', left: -12, top: '50%', transform: 'translateY(-50%)', width: 3, height: 18, borderRadius: 3, background: C.primary, boxShadow: '0 0 10px rgba(255,49,49,0.8)' }} />}
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: on ? 1 : 0.6 }}>
+              {on && <motion.span layoutId="navbar" style={{ position: 'absolute', left: -14, top: 8, bottom: 8, width: 3, borderRadius: '0 3px 3px 0', background: C.red }} />}
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: on ? 1 : 0.55 }}>
                 <path d={item.icon} />
               </svg>
               {item.label}
               {item.tag && (
                 <span style={{ marginLeft: 'auto', fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.05)', color: C.faint, letterSpacing: '0.06em' }}>{item.tag}</span>
               )}
-            </motion.button>
+            </button>
           )
         })}
       </nav>
 
-      {/* User */}
-      <div style={{ marginTop: 12, paddingTop: 14, borderTop: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 30, height: 30, borderRadius: '50%', background: 'linear-gradient(135deg,#1a2333,#0b1019)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: C.sub }}>B</span>
+      <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${C.line}`, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 10, background: 'linear-gradient(135deg,#16202f,#0a0f18)', border: `1px solid ${C.line}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: C.sub }}>B</span>
         </div>
         <div style={{ minWidth: 0 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: C.text, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Bruno Oliveira</p>
+          <p style={{ fontSize: 12.5, fontWeight: 600, color: C.text, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Bruno Oliveira</p>
           <p style={{ fontSize: 9.5, color: C.faint, margin: '1px 0 0' }}>PRO · vitalício</p>
         </div>
       </div>

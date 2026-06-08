@@ -2,9 +2,9 @@
 // Nada toca banco, Supabase, APIs, auth ou dados reais.
 
 export const C = {
-  bg: '#04070E',
-  panel: '#070C15',
-  panelHi: '#0A111D',
+  bg: '#000000',
+  panel: '#080A0E',
+  panelHi: '#0C0F14',
   line: 'rgba(255,255,255,0.055)',
   lineHi: 'rgba(255,49,49,0.30)',
   red: '#FF3131',

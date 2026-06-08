@@ -458,7 +458,7 @@ export default function FaturamentoPage() {
             {/* Hero financeiro — cinematografico */}
             <div style={{
               position:'relative', overflow:'hidden', borderRadius:18, padding:'36px 36px 32px',
-              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              background:'linear-gradient(145deg, var(--raised), var(--surface))',
               backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
               border:`1px solid ${stats.lucroFinal>=0?'rgba(209,250,229,0.18)':'rgba(239,68,68,0.18)'}`,
               boxShadow:`0 10px 40px rgba(0,0,0,0.5), 0 0 60px ${stats.lucroFinal>=0?'rgba(209,250,229,0.08)':'rgba(239,68,68,0.08)'}, inset 0 1px 0 rgba(255,255,255,0.05)`,
@@ -546,7 +546,7 @@ export default function FaturamentoPage() {
                   style={{
                     position:'relative', overflow:'hidden',
                     flex:1, padding:'14px 20px 14px 24px', borderRadius:12,
-                    background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                    background:'linear-gradient(145deg, var(--raised), var(--surface))',
                     backdropFilter:'blur(14px) saturate(150%)', WebkitBackdropFilter:'blur(14px) saturate(150%)',
                     border:`1px solid rgba(255,255,255,0.06)`,
                     boxShadow:'0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
@@ -569,7 +569,7 @@ export default function FaturamentoPage() {
             {/* Predictions — executivo */}
             <div className="card a3" style={{
               position:'relative', overflow:'hidden', padding:22,
-              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              background:'linear-gradient(145deg, var(--raised), var(--surface))',
               backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
               border:'1px solid rgba(255,255,255,0.14)',
               boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 36px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
@@ -641,7 +641,7 @@ export default function FaturamentoPage() {
             {/* Goal — meta global premium */}
             <div className="card a4" style={{
               position:'relative', overflow:'hidden', padding:22,
-              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              background:'linear-gradient(145deg, var(--raised), var(--surface))',
               backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
               border:`1px solid ${goalData.pct>=100?'rgba(209,250,229,0.25)':'rgba(209,250,229,0.14)'}`,
               boxShadow:`0 8px 28px rgba(0,0,0,0.4), 0 0 36px rgba(209,250,229,${goalData.pct>=100?'0.1':'0.04'}), inset 0 1px 0 rgba(255,255,255,0.04)`,

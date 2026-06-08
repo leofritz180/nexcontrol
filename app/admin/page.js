@@ -1428,7 +1428,7 @@ export default function AdminPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, ease }}
-          style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:32 }}>
+          style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom: isRedesign(user?.email)?18:32 }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', marginBottom:4 }}>
               <motion.h1
@@ -1462,10 +1462,13 @@ export default function AdminPage() {
                 </motion.div>
               )}
             </div>
-            <p style={{ fontSize:14, color:'var(--t2)', margin:'0 0 8px', fontWeight:500 }}>
-              Central de operacoes
-            </p>
-            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            {/* Subtitulo redundante com o banner vermelho do redesign — some la */}
+            {!isRedesign(user?.email) && (
+              <p style={{ fontSize:14, color:'var(--t2)', margin:'0 0 8px', fontWeight:500 }}>
+                Central de operacoes
+              </p>
+            )}
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginTop: isRedesign(user?.email)?6:0 }}>
               <motion.span
                 style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)' }}
                 animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.6)','0 0 0 5px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}

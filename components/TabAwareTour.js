@@ -37,7 +37,15 @@ export default function TabAwareTour({ activeTab, tabMap, autoDelay = 700 }) {
     if (!newTourId) return
     if (hasSeenTour(newTourId)) return
 
-    const t = setTimeout(() => setOpen(true), autoDelay)
+    let t
+    const start = () => { t = setTimeout(() => setOpen(true), autoDelay) }
+    // Sequenciador de onboarding: tutorial só começa DEPOIS do banner fechar.
+    if (typeof window !== 'undefined' && window.__nxBannerOpen) {
+      const onClosed = () => start()
+      window.addEventListener('nx-banner-closed', onClosed, { once: true })
+      return () => { window.removeEventListener('nx-banner-closed', onClosed); clearTimeout(t) }
+    }
+    start()
     return () => clearTimeout(t)
   }, [activeTab, tabMap])
 

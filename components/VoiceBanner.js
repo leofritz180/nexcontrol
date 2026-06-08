@@ -18,12 +18,15 @@ export default function VoiceBanner({ userEmail }) {
     let seen = false
     try { seen = localStorage.getItem(SEEN_KEY) === '1' } catch {}
     if (seen) return
+    // Sinaliza pro sequenciador: banner é o 1º passo — segura tutorial/checklist
+    try { window.__nxBannerOpen = true } catch {}
     const t = setTimeout(() => setShow(true), 700)
     return () => clearTimeout(t)
   }, [email])
 
   function dismiss() {
     try { localStorage.setItem(SEEN_KEY, '1') } catch {}
+    try { window.__nxBannerOpen = false; window.dispatchEvent(new Event('nx-banner-closed')) } catch {}
     setShow(false)
   }
   function testar() {

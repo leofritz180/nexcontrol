@@ -47,12 +47,14 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
     let seen = false
     try { seen = localStorage.getItem(SEEN_KEY) === '1' } catch {}
     if (seen) return
+    try { window.__nxBannerOpen = true } catch {} // 1º passo do onboarding
     const t = setTimeout(() => setShow(true), 700) // deixa a dashboard montar
     return () => clearTimeout(t)
   }, [email, isOwner, isAdmin])
 
   function dismiss() {
     try { localStorage.setItem(SEEN_KEY, '1') } catch {}
+    try { window.__nxBannerOpen = false; window.dispatchEvent(new Event('nx-banner-closed')) } catch {}
     setShow(false)
   }
 

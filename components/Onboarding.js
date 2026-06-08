@@ -19,7 +19,15 @@ export default function Onboarding() {
       return
     }
     setStep(0)
-    const t = setTimeout(() => setStep(1), 2000)
+    let t
+    const showTips = () => { t = setTimeout(() => setStep(1), 2000) }
+    // Sequenciador: dicas só depois do banner de onboarding fechar.
+    if (typeof window !== 'undefined' && window.__nxBannerOpen) {
+      const onClosed = () => showTips()
+      window.addEventListener('nx-banner-closed', onClosed, { once: true })
+      return () => { window.removeEventListener('nx-banner-closed', onClosed); clearTimeout(t) }
+    }
+    showTips()
     return () => clearTimeout(t)
   }, [])
 

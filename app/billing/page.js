@@ -8,6 +8,8 @@ import { calculatePrice, getAllTiers, BASE_PRICE, OP_BASE_PRICE } from '../../li
 import dynamic from 'next/dynamic'
 const PixPayment = dynamic(() => import('../../components/PixPayment'), { ssr: false })
 const BillingLanding = dynamic(() => import('../../components/BillingLanding'), { ssr: false })
+// TESTE DE CONVERSAO: nova pagina de venda SO p/ leofritz178 (feature flag).
+const BillingProV2 = dynamic(() => import('../../components/BillingProV2'), { ssr: false })
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Op'
@@ -56,6 +58,8 @@ export default function BillingPage() {
   const price = useMemo(()=>calculatePrice(opQty),[opQty])
   const currentPrice = useMemo(()=>calculatePrice(operators.length),[operators])
   const tiers = getAllTiers()
+  // Feature flag — nova versao da pagina Assinatura isolada na conta de teste.
+  const isV2 = (user?.email || '').toLowerCase() === 'leofritz178@gmail.com'
 
   if(loading) return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
@@ -68,6 +72,10 @@ export default function BillingPage() {
   return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
+
+      {isV2 ? (
+        <BillingProV2 tenantId={profile?.tenant_id} basePrice={BASE_PRICE} onStart={()=>router.push('/billing-mp?operators=0')} />
+      ) : (<>
 
       <div style={{maxWidth:820,margin:'0 auto',padding:'40px 28px'}}>
 
@@ -781,6 +789,7 @@ export default function BillingPage() {
       })()}
       {/* Landing sections with iPhone demo, features, social proof */}
       <BillingLanding/>
+      </>)}
       </AppLayout>
     </main>
   )

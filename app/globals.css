@@ -94,33 +94,44 @@
    v1: cobre as áreas que usam as variáveis de tema. Blocos com cor fixa
    (preto/branco-alpha hardcoded) podem precisar de ajuste fino depois. */
 .nx-light {
-  --void: #EDEFF2;
-  --base: #F4F5F7;
+  --void: #E9ECF1;
+  --base: #F3F5F8;
   --sidebar: #FFFFFF;
   --surface: #FFFFFF;
-  --raised: #F7F8FA;
+  --raised: #F1F3F6;
   --overlay: #FFFFFF;
   --float: #FFFFFF;
-  --t1: #18181B;
-  --t2: #3F3F46;
-  --t3: #6B7280;
-  --t4: #9CA3AF;
-  --b1: rgba(0,0,0,0.08);
-  --b2: rgba(0,0,0,0.12);
-  --b3: rgba(0,0,0,0.18);
+  /* Texto — contraste forte no claro */
+  --t1: #0F1115;
+  --t2: #353A42;
+  --t3: #5A616B;
+  --t4: #828A95;
+  --b1: rgba(15,17,21,0.10);
+  --b2: rgba(15,17,21,0.14);
+  --b3: rgba(15,17,21,0.20);
   --sb-bg: #FFFFFF;
-  --fill-1: rgba(0,0,0,0.03);
-  --fill-2: rgba(0,0,0,0.05);
-  --fill-3: rgba(0,0,0,0.08);
-  --warn: rgba(0,0,0,0.7);
-  --warn-dim: rgba(0,0,0,0.04);
-  --warn-border: rgba(0,0,0,0.12);
-  --info: rgba(0,0,0,0.7);
-  --info-dim: rgba(0,0,0,0.04);
-  --info-border: rgba(0,0,0,0.12);
+  --fill-1: rgba(15,17,21,0.035);
+  --fill-2: rgba(15,17,21,0.06);
+  --fill-3: rgba(15,17,21,0.09);
+  /* Lucro/verde — tom escuro visível no claro (o mint some no claro) */
+  --profit: #0E9F6E;
+  --profit-dim: rgba(14,159,110,0.10);
+  --profit-border: rgba(14,159,110,0.30);
+  --profit-glow: rgba(14,159,110,0.12);
+  /* Prejuízo */
+  --loss: #DC2626;
+  --loss-dim: rgba(220,38,38,0.10);
+  --loss-border: rgba(220,38,38,0.28);
+  --loss-glow: rgba(220,38,38,0.12);
+  --warn: #B45309;
+  --warn-dim: rgba(180,83,9,0.10);
+  --warn-border: rgba(180,83,9,0.25);
+  --info: #2563EB;
+  --info-dim: rgba(37,99,235,0.10);
+  --info-border: rgba(37,99,235,0.25);
   color-scheme: light;
 }
-.nx-light body { background: #F4F5F7 !important; color: var(--t1); }
+.nx-light body { background: var(--base) !important; color: var(--t1); }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background: var(--base); }

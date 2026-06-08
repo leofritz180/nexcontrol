@@ -2212,7 +2212,7 @@ export default function AdminPage() {
                 className="hero-value"
                 style={{
                   fontFamily:'var(--mono)', fontSize:60, fontWeight:700,
-                  color: heroNet>=0 ? (redesign ? '#FFFFFF' : 'var(--profit)') : 'var(--loss)',
+                  color: heroNet>=0 ? (redesign ? 'var(--t1)' : 'var(--profit)') : 'var(--loss)',
                   lineHeight:1, letterSpacing:'-0.04em', display:'block',
                 }}
               />

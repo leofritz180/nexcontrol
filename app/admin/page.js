@@ -1668,14 +1668,14 @@ export default function AdminPage() {
               )
 
               const renderHeroV2 = () => {
-                const hc = lucroMes>=0?'34,197,94':'229,57,53'
+                const hc = myLiq>=0?'34,197,94':'229,57,53'
                 const chips = [
-                  {l:'Metas abertas', v:String(ativas.length)},
-                  {l:'Metas fechadas', v:String(fechadas.length)},
+                  {l:'Metas ativas', v:String(ativas.length)},
+                  {l:'Encerradas', v:String(fechadas.length)},
                   {l:'Contas processadas', v:String(contasProc)},
-                  {l:'Lucro médio / meta', v:sg(lucroMedioMeta)+f$(lucroMedioMeta), c:col(lucroMedioMeta)},
-                  {l:'Melhor rede', v: melhorRede?melhorRede[0]:'—'},
+                  {l:'Remessas', v:String(myRem.length)},
                   {l:'Taxa de acerto', v: taxaAcerto+'%'},
+                  {l:'ROI médio', v: sg(roiMedio)+Math.abs(roiMedio).toFixed(0)+'%', c: col(roiMedio)},
                 ]
                 return (
                   <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:0.45,ease}}
@@ -1688,9 +1688,9 @@ export default function AdminPage() {
                           <span style={{width:7,height:7,borderRadius:'50%',background:`rgb(${hc})`,boxShadow:`0 0 10px rgb(${hc})`}}/>
                           <span style={{fontSize:11,fontWeight:800,letterSpacing:'0.14em',color:'var(--t3)',textTransform:'uppercase'}}>Centro de operações · {getName(profile)}</span>
                         </div>
-                        <p style={{fontSize:11.5,fontWeight:700,letterSpacing:'0.1em',color:'var(--t4)',textTransform:'uppercase',margin:'0 0 6px'}}>Resultado do mês</p>
-                        <AnimatedNumber value={Math.abs(lucroMes)} prefix={`${sg(lucroMes)}R$ `} style={{fontFamily:'var(--mono)',fontSize:46,fontWeight:900,letterSpacing:'-0.03em',color:col(lucroMes),lineHeight:1,display:'block'}}/>
-                        <p style={{fontSize:12,color:'var(--t3)',margin:'10px 0 0',fontWeight:500}}>Acumulado · {sg(myLiq)}{f$(myLiq)} líquido total da operação</p>
+                        <p style={{fontSize:11.5,fontWeight:700,letterSpacing:'0.1em',color:'var(--t4)',textTransform:'uppercase',margin:'0 0 8px'}}>Lucro total da operação</p>
+                        <AnimatedNumber value={Math.abs(myLiq)} prefix={`${sg(myLiq)}R$ `} style={{fontFamily:'var(--mono)',fontSize:54,fontWeight:900,letterSpacing:'-0.035em',color:col(myLiq),lineHeight:1,display:'block'}}/>
+                        <p style={{fontSize:12,color:'var(--t3)',margin:'12px 0 0',fontWeight:500}}>{sg(lucroMes)}{f$(lucroMes)} este mês · {sg(lucroSemana)}{f$(lucroSemana)} na semana</p>
                       </div>
                       <motion.button onClick={()=>setMyShowForm(!myShowForm)} whileHover={{scale:1.03}} whileTap={{scale:0.96}}
                         style={{padding:'13px 24px',borderRadius:13,border:'none',cursor:'pointer',fontSize:13.5,fontWeight:800,fontFamily:'inherit',display:'flex',alignItems:'center',gap:8,color:'#fff',background: myShowForm?'rgba(255,255,255,0.06)':'linear-gradient(145deg,#e53935,#c62828)',boxShadow: myShowForm?'none':'0 8px 26px rgba(229,57,53,0.45),inset 0 1px 0 rgba(255,255,255,0.18)'}}>
@@ -1822,8 +1822,6 @@ export default function AdminPage() {
                     title: (piorMeta && piorMeta.liq<0)? piorMeta.m.titulo : 'Nenhum prejuízo', sub: (piorMeta && piorMeta.liq<0)? (piorMeta.m.rede||'—') : 'Operação no azul', val: (piorMeta && piorMeta.liq<0)? sg(piorMeta.liq)+f$(piorMeta.liq):'—', vc:(piorMeta && piorMeta.liq<0)?'var(--loss)':'var(--t4)' },
                   { ic:'M23 6 13.5 15.5 8.5 10.5 1 18M17 6h6v6', tag:'Melhor rede', c:'#e53935',
                     title: melhorRede? melhorRede[0]:'—', sub:'Lucro acumulado na rede', val: melhorRede? sg(melhorRede[1])+f$(melhorRede[1]):'—', vc: melhorRede? col(melhorRede[1]):'var(--t4)' },
-                  { ic:'M12 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 1l2.5 4 4.5.5-3.5 3 1 4.5L12 16l-4.5 2.5 1-4.5L5 10.5 9.5 10z', tag:'Operador destaque', c:'#FCD34D',
-                    title: getName(profile)||'Você', sub:'Resultado líquido total', val: sg(myLiq)+f$(myLiq), vc: col(myLiq) },
                 ]
                 return (<>
                   {ativas.length>0 && (
@@ -1975,8 +1973,7 @@ export default function AdminPage() {
                 </motion.div>
                 )}
 
-                {/* ░░ MYOPS V2 — KPIs premium (somente leofritz178) ░░ */}
-                {isV2 && renderMyKpisV2()}
+                {/* ░░ MYOPS V2: grade de KPIs removida — lucro total unico vive no hero ░░ */}
                 {/* KPIs premium (default) */}
                 {!isV2 && (
                 <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:12,marginBottom:20}}>

@@ -1615,11 +1615,11 @@ export default function AdminPage() {
               const myAmbientRank = getRank(myDeps, { forceApex: apexLocked }).current
 
               // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-              // MINHA OPERAÇÃO — CENTRO DE OPERAÇÕES PREMIUM (SOMENTE leofritz178)
+              // MINHA OPERAÇÃO — CENTRO DE OPERAÇÕES PREMIUM (TODOS OS ADMINS)
               // 100% visual. Reusa myMetas/myRem/handlers. Remover = apagar isV2 +
-              // os 3 blocos {isV2 && render...V2()} abaixo.
+              // os 3 blocos {isV2 && render...V2()} abaixo. Aba so existe p/ admin.
               // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-              const isV2 = (user?.email||'').toLowerCase()==='leofritz178@gmail.com'
+              const isV2 = profile?.role === 'admin'
               const f$ = (n)=> 'R$ '+fmt(Math.abs(Number(n)||0))
               const sg = (n)=> (Number(n)>=0?'+':'−')
               const col = (n)=> Number(n)>=0?'var(--profit)':'var(--loss)'

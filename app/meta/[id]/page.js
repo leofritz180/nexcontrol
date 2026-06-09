@@ -659,9 +659,11 @@ export default function MetaPage() {
     critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: 'var(--loss)', iconPath: 'M18 6L6 18M6 6l12 12' },
   }
 
-  // PREVIEW EXPERIMENTAL (so leofritz178) — central de remessa premium.
-  // Pra remover: apague esta const e o ramo {isV2 ? (...) : (...)} do form.
-  const isV2 = (user?.email || '').toLowerCase() === 'leofritz178@gmail.com'
+  // EXPERIENCIA PREMIUM — central de remessa, slots, modal de finalizacao e
+  // certificado. LIBERADO p/ TODOS OS ADMINS. Operador fica inalterado (e o
+  // modal premium expoe salario/bau/custos, que operador NAO pode ver — por
+  // isso o gate e estrito por role e fica fechado durante o load).
+  const isV2 = profile?.role === 'admin'
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>

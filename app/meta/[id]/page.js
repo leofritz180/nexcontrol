@@ -659,11 +659,14 @@ export default function MetaPage() {
     critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: 'var(--loss)', iconPath: 'M18 6L6 18M6 6l12 12' },
   }
 
-  // EXPERIENCIA PREMIUM — central de remessa, slots, modal de finalizacao e
-  // certificado. LIBERADO p/ TODOS OS ADMINS. Operador fica inalterado (e o
-  // modal premium expoe salario/bau/custos, que operador NAO pode ver — por
-  // isso o gate e estrito por role e fica fechado durante o load).
-  const isV2 = profile?.role === 'admin'
+  // EXPERIENCIA PREMIUM — dois niveis de liberacao:
+  //  • isV2 (central de remessa premium + slots Netflix): TODOS (admin E
+  //    operador). So tem campos de remessa (deposito/saque/contas/slot/
+  //    resultado parcial) — nenhum dado financeiro de admin.
+  //  • isAdminV2 (modal de finalizacao premium + certificado/baixar imagem):
+  //    SO ADMIN — expoe salario/bau/custos, que operador NAO pode ver.
+  const isV2 = true
+  const isAdminV2 = profile?.role === 'admin'
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
@@ -1766,7 +1769,7 @@ export default function MetaPage() {
           bauAcumRemessas={bauAcumRemessas}
           tenantOpModel={tenantOpModel}
           onClose={()=>setShowAdminClose(false)}
-          onSaved={async ()=>{ setShowAdminClose(false); await fetchData(); if (isV2) setShowFinalePopup(true) }}
+          onSaved={async ()=>{ setShowAdminClose(false); await fetchData(); if (isAdminV2) setShowFinalePopup(true) }}
         />
         )
       })()}
@@ -1832,8 +1835,9 @@ export default function MetaPage() {
           const T = { overlay:0, card:0.15, header:0.3, result:0.5, metrics:0.6, insights:0.9, improve:1.1, cta:1.3 }
           const glowColor = liq >= 0 ? '34,197,94' : '239,68,68'
 
-          // ══ PREVIEW PREMIUM (so leofritz178) — modal de resultado + certificado ══
-          if (isV2) {
+          // ══ PREMIUM (SO ADMIN) — modal de resultado + certificado/baixar imagem.
+          //    Operador cai no modal original abaixo (sem salario/bau/custos). ══
+          if (isAdminV2) {
             // Resultado FINAL real: usa meta.lucro_final (inclui salario/bau/custos)
             // quando a meta esta fechada; senao o resultado das remessas.
             const liqFinal = (meta.lucro_final != null && meta.status_fechamento === 'fechada') ? Number(meta.lucro_final) : liq

@@ -1764,7 +1764,7 @@ export default function MetaPage() {
           bauAcumRemessas={bauAcumRemessas}
           tenantOpModel={tenantOpModel}
           onClose={()=>setShowAdminClose(false)}
-          onSaved={()=>{setShowAdminClose(false);fetchData()}}
+          onSaved={async ()=>{ setShowAdminClose(false); await fetchData(); if (isV2) setShowFinalePopup(true) }}
         />
         )
       })()}
@@ -1832,8 +1832,13 @@ export default function MetaPage() {
 
           // ══ PREVIEW PREMIUM (so leofritz178) — modal de resultado + certificado ══
           if (isV2) {
-            const isLucro = liq >= 0
-            const roi = totalDep > 0 ? (liq / totalDep) * 100 : 0
+            // Resultado FINAL real: usa meta.lucro_final (inclui salario/bau/custos)
+            // quando a meta esta fechada; senao o resultado das remessas.
+            const liqFinal = (meta.lucro_final != null && meta.status_fechamento === 'fechada') ? Number(meta.lucro_final) : liq
+            const isLucro = liqFinal >= 0
+            const roi = totalDep > 0 ? (liqFinal / totalDep) * 100 : 0
+            const avgFinal = contasDone > 0 ? liqFinal / contasDone : 0
+            const glowF = isLucro ? '34,197,94' : '229,57,53'
             const dataStr = new Date().toLocaleDateString('pt-BR')
             const salario = Number(meta.salario_plataforma || 0)
             const custos = Number(meta.gastos_operacionais || 0)
@@ -1854,9 +1859,9 @@ export default function MetaPage() {
                 x.fillStyle = '#e53935'; x.font = '800 38px sans-serif'; x.fillText('NEXCONTROL', W / 2, 162)
                 x.fillStyle = 'rgba(255,255,255,0.45)'; x.font = '600 24px sans-serif'; x.fillText('META FINALIZADA', W / 2, 216)
                 x.fillStyle = 'rgba(255,255,255,0.6)'; x.font = '500 32px sans-serif'; x.fillText(isLucro ? 'Lucro líquido' : 'Prejuízo', W / 2, 440)
-                x.fillStyle = isLucro ? '#22C55E' : '#ef4444'; x.font = '900 128px sans-serif'; x.fillText(`${isLucro ? '+' : '−'}R$ ${fmt(Math.abs(liq))}`, W / 2, 570)
+                x.fillStyle = isLucro ? '#22C55E' : '#ef4444'; x.font = '900 128px sans-serif'; x.fillText(`${isLucro ? '+' : '−'}R$ ${fmt(Math.abs(liqFinal))}`, W / 2, 570)
                 x.strokeStyle = 'rgba(255,255,255,0.08)'; x.beginPath(); x.moveTo(140, 690); x.lineTo(W - 140, 690); x.stroke()
-                const cards = [['CONTAS', String(contasDone)], ['REMESSAS', String(remessas.length)], ['LUCRO/CONTA', `${avgPerConta >= 0 ? '+' : '−'}R$ ${fmt(Math.abs(avgPerConta))}`]]
+                const cards = [['CONTAS', String(contasDone)], ['REMESSAS', String(remessas.length)], ['LUCRO/CONTA', `${avgFinal >= 0 ? '+' : '−'}R$ ${fmt(Math.abs(avgFinal))}`]]
                 cards.forEach((s, i) => { const cx = W * (0.25 + i * 0.25); x.fillStyle = '#fff'; x.font = '800 42px sans-serif'; x.fillText(s[1], cx, 815); x.fillStyle = 'rgba(255,255,255,0.4)'; x.font = '600 19px sans-serif'; x.fillText(s[0], cx, 858) })
                 x.strokeStyle = 'rgba(255,255,255,0.08)'; x.beginPath(); x.moveTo(140, 945); x.lineTo(W - 140, 945); x.stroke()
                 x.fillStyle = 'rgba(255,255,255,0.4)'; x.font = '600 22px sans-serif'; x.fillText('DATA', W / 2, 1035)
@@ -1882,12 +1887,12 @@ export default function MetaPage() {
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}
                 style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
                 onClick={e => { if (e.target === e.currentTarget) goPanel() }}>
-                <div style={{ position: 'absolute', top: '28%', left: '50%', transform: 'translateX(-50%)', width: 620, height: 420, borderRadius: '50%', background: `radial-gradient(ellipse, rgba(${glowColor},0.16), transparent 70%)`, filter: 'blur(60px)', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', top: '28%', left: '50%', transform: 'translateX(-50%)', width: 620, height: 420, borderRadius: '50%', background: `radial-gradient(ellipse, rgba(${glowF},0.16), transparent 70%)`, filter: 'blur(60px)', pointerEvents: 'none' }} />
                 <motion.div
                   initial={{ opacity: 0, scale: 0.96, y: 22 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
                   transition={{ duration: 0.5, delay: 0.1, ease: [0.33, 1, 0.68, 1] }}
                   onClick={e => e.stopPropagation()}
-                  style={{ position: 'relative', width: '100%', maxWidth: 480, maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto', borderRadius: 26, background: 'linear-gradient(180deg, var(--raised), var(--surface))', border: `1px solid rgba(${glowColor},0.28)`, boxShadow: `0 50px 120px rgba(0,0,0,0.8), 0 0 70px rgba(${glowColor},0.1)`, padding: '34px 28px 28px', textAlign: 'center' }}>
+                  style={{ position: 'relative', width: '100%', maxWidth: 480, maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto', borderRadius: 26, background: 'linear-gradient(180deg, var(--raised), var(--surface))', border: `1px solid rgba(${glowF},0.28)`, boxShadow: `0 50px 120px rgba(0,0,0,0.8), 0 0 70px rgba(${glowF},0.1)`, padding: '34px 28px 28px', textAlign: 'center' }}>
                   <button type="button" onClick={goPanel} aria-label="Fechar" style={{ position: 'absolute', top: 14, right: 14, width: 30, height: 30, borderRadius: 8, border: '1px solid var(--b1)', background: 'var(--fill-1)', color: 'var(--t3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                   </button>
@@ -1897,8 +1902,8 @@ export default function MetaPage() {
 
                   <p style={{ fontSize: 12, color: 'var(--t3)', margin: '0 0 6px' }}>Resultado líquido da operação</p>
                   <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.25, type: 'spring', stiffness: 200 }}
-                    style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(44px, 13vw, 60px)', fontWeight: 900, color: cFinal, letterSpacing: '-0.04em', margin: 0, lineHeight: 1, textShadow: `0 0 50px rgba(${glowColor},0.35)` }}>
-                    {isLucro ? '+' : '−'}R$ {fmt(Math.abs(liq))}
+                    style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(44px, 13vw, 60px)', fontWeight: 900, color: cFinal, letterSpacing: '-0.04em', margin: 0, lineHeight: 1, textShadow: `0 0 50px rgba(${glowF},0.35)` }}>
+                    {isLucro ? '+' : '−'}R$ {fmt(Math.abs(liqFinal))}
                   </motion.p>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(92px, 1fr))', gap: 1, background: 'var(--b1)', borderRadius: 14, overflow: 'hidden', border: '1px solid var(--b1)', margin: '26px 0 14px' }}>
@@ -1912,7 +1917,7 @@ export default function MetaPage() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 1, background: 'var(--b1)', borderRadius: 14, overflow: 'hidden', border: '1px solid var(--b1)', marginBottom: 18 }}>
                     {[
-                      { l: 'Lucro/conta', v: `${avgPerConta >= 0 ? '+' : '−'}R$ ${fmt(Math.abs(avgPerConta))}`, c: avgPerConta >= 0 ? 'var(--profit)' : 'var(--loss)' },
+                      { l: 'Lucro/conta', v: `${avgFinal >= 0 ? '+' : '−'}R$ ${fmt(Math.abs(avgFinal))}`, c: avgFinal >= 0 ? 'var(--profit)' : 'var(--loss)' },
                       { l: 'ROI', v: `${roi >= 0 ? '+' : '−'}${Math.abs(roi).toFixed(0)}%`, c: roi >= 0 ? 'var(--profit)' : 'var(--loss)' },
                       { l: 'Taxa de acerto', v: `${taxaAcerto}%`, c: taxaAcerto >= 60 ? 'var(--profit)' : taxaAcerto >= 40 ? '#FCD34D' : 'var(--loss)' },
                     ].map((s, i) => (

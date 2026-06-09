@@ -1341,7 +1341,11 @@ export default function MetaPage() {
                       ? <span style={{ fontSize:11, color:'var(--profit)', fontWeight:700 }}>{selectedSlot}</span>
                       : <span style={{ fontSize:10, color:'var(--t4)' }}>opcional · toque para escolher</span>}
                   </div>
-                  <div style={{ display:'flex', gap:10, overflowX:'auto', paddingBottom:6 }}>
+                  <div style={{ position:'relative' }}>
+                    <button type="button" onClick={()=>{const el=document.getElementById('slot-nf');if(el)el.scrollBy({left:-280,behavior:'smooth'})}} style={{ position:'absolute', left:-6, top:'42%', transform:'translateY(-50%)', zIndex:3, width:32, height:32, borderRadius:'50%', border:'1px solid var(--b2)', background:'rgba(0,0,0,0.72)', backdropFilter:'blur(4px)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#e53935' }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+                    <button type="button" onClick={()=>{const el=document.getElementById('slot-nf');if(el)el.scrollBy({left:280,behavior:'smooth'})}} style={{ position:'absolute', right:-6, top:'42%', transform:'translateY(-50%)', zIndex:3, width:32, height:32, borderRadius:'50%', border:'1px solid var(--b2)', background:'rgba(0,0,0,0.72)', backdropFilter:'blur(4px)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#e53935' }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+                  <div id="slot-nf" style={{ display:'flex', gap:10, overflowX:'auto', paddingBottom:6, scrollbarWidth:'none', padding:'0 6px 6px' }}>
+                    <style>{`#slot-nf::-webkit-scrollbar{display:none}`}</style>
                     {slotList.map(s => {
                       const active = selectedSlot === s.name
                       return (
@@ -1363,6 +1367,7 @@ export default function MetaPage() {
                         </div>
                       )
                     })}
+                  </div>
                   </div>
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(215px, 1fr))', gap:1, background:'var(--b1)' }}>
@@ -1824,6 +1829,119 @@ export default function MetaPage() {
           // Timing sequence: 0→150→300→400→700→900→1100→1300ms
           const T = { overlay:0, card:0.15, header:0.3, result:0.5, metrics:0.6, insights:0.9, improve:1.1, cta:1.3 }
           const glowColor = liq >= 0 ? '34,197,94' : '239,68,68'
+
+          // ══ PREVIEW PREMIUM (so leofritz178) — modal de resultado + certificado ══
+          if (isV2) {
+            const isLucro = liq >= 0
+            const roi = totalDep > 0 ? (liq / totalDep) * 100 : 0
+            const dataStr = new Date().toLocaleDateString('pt-BR')
+            const salario = Number(meta.salario_plataforma || 0)
+            const custos = Number(meta.gastos_operacionais || 0)
+            const bauMeta = Number(meta.bau || totais.bau || 0)
+            const goPanel = () => { setShowFinalePopup(false); router.push(profile?.role === 'admin' ? '/admin' : '/operator') }
+
+            const baixarCertificado = () => {
+              try {
+                const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H
+                const x = c.getContext('2d')
+                x.fillStyle = '#05070b'; x.fillRect(0, 0, W, H)
+                const glow = isLucro ? '34,197,94' : '229,57,53'
+                const g = x.createRadialGradient(W / 2, 450, 40, W / 2, 450, 660)
+                g.addColorStop(0, `rgba(${glow},0.20)`); g.addColorStop(1, 'rgba(0,0,0,0)')
+                x.fillStyle = g; x.fillRect(0, 0, W, H)
+                x.strokeStyle = `rgba(${glow},0.4)`; x.lineWidth = 2; x.strokeRect(44, 44, W - 88, H - 88)
+                x.textAlign = 'center'
+                x.fillStyle = '#e53935'; x.font = '800 38px sans-serif'; x.fillText('NEXCONTROL', W / 2, 162)
+                x.fillStyle = 'rgba(255,255,255,0.45)'; x.font = '600 24px sans-serif'; x.fillText('META FINALIZADA', W / 2, 216)
+                x.fillStyle = 'rgba(255,255,255,0.6)'; x.font = '500 32px sans-serif'; x.fillText(isLucro ? 'Lucro líquido' : 'Prejuízo', W / 2, 440)
+                x.fillStyle = isLucro ? '#22C55E' : '#ef4444'; x.font = '900 128px sans-serif'; x.fillText(`${isLucro ? '+' : '−'}R$ ${fmt(Math.abs(liq))}`, W / 2, 570)
+                x.strokeStyle = 'rgba(255,255,255,0.08)'; x.beginPath(); x.moveTo(140, 690); x.lineTo(W - 140, 690); x.stroke()
+                const cards = [['CONTAS', String(contasDone)], ['REMESSAS', String(remessas.length)], ['LUCRO/CONTA', `${avgPerConta >= 0 ? '+' : '−'}R$ ${fmt(Math.abs(avgPerConta))}`]]
+                cards.forEach((s, i) => { const cx = W * (0.25 + i * 0.25); x.fillStyle = '#fff'; x.font = '800 42px sans-serif'; x.fillText(s[1], cx, 815); x.fillStyle = 'rgba(255,255,255,0.4)'; x.font = '600 19px sans-serif'; x.fillText(s[0], cx, 858) })
+                x.strokeStyle = 'rgba(255,255,255,0.08)'; x.beginPath(); x.moveTo(140, 945); x.lineTo(W - 140, 945); x.stroke()
+                x.fillStyle = 'rgba(255,255,255,0.4)'; x.font = '600 22px sans-serif'; x.fillText('DATA', W / 2, 1035)
+                x.fillStyle = '#fff'; x.font = '700 34px sans-serif'; x.fillText(dataStr, W / 2, 1080)
+                x.fillStyle = `rgba(${glow},0.95)`; x.font = '800 27px sans-serif'; x.fillText('Controle. Precisão. Resultado.', W / 2, 1235)
+                c.toBlob(b => { const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `nexcontrol-meta-${dataStr.replace(/\//g, '-')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u) })
+              } catch {}
+            }
+
+            const sumItems = [
+              { l: 'Contas', v: String(contasDone) },
+              { l: 'Remessas', v: String(remessas.length) },
+              { l: 'Depositado', v: `R$ ${fmt(totalDep)}` },
+              { l: 'Sacado', v: `R$ ${fmt(totalSaq)}` },
+              { l: 'Baú', v: `R$ ${fmt(bauMeta)}` },
+              { l: 'Custos', v: `R$ ${fmt(custos)}` },
+              { l: 'Salário', v: `R$ ${fmt(salario)}` },
+            ]
+            const cFinal = isLucro ? 'var(--profit)' : 'var(--loss)'
+
+            return (
+              <motion.div key="finale-v2"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}
+                style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+                onClick={e => { if (e.target === e.currentTarget) goPanel() }}>
+                <div style={{ position: 'absolute', top: '28%', left: '50%', transform: 'translateX(-50%)', width: 620, height: 420, borderRadius: '50%', background: `radial-gradient(ellipse, rgba(${glowColor},0.16), transparent 70%)`, filter: 'blur(60px)', pointerEvents: 'none' }} />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96, y: 22 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.5, delay: 0.1, ease: [0.33, 1, 0.68, 1] }}
+                  onClick={e => e.stopPropagation()}
+                  style={{ position: 'relative', width: '100%', maxWidth: 480, maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto', borderRadius: 26, background: 'linear-gradient(180deg, var(--raised), var(--surface))', border: `1px solid rgba(${glowColor},0.28)`, boxShadow: `0 50px 120px rgba(0,0,0,0.8), 0 0 70px rgba(${glowColor},0.1)`, padding: '34px 28px 28px', textAlign: 'center' }}>
+                  <button type="button" onClick={goPanel} aria-label="Fechar" style={{ position: 'absolute', top: 14, right: 14, width: 30, height: 30, borderRadius: 8, border: '1px solid var(--b1)', background: 'var(--fill-1)', color: 'var(--t3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                  </button>
+
+                  <p style={{ fontFamily: 'var(--mono)', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.22em', color: '#e53935', margin: '0 0 14px', textTransform: 'uppercase' }}>NexControl{meta.rede ? ` · ${meta.rede}` : ''}</p>
+                  <h2 style={{ fontSize: 27, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.03em', margin: '0 0 22px' }}>Operação finalizada</h2>
+
+                  <p style={{ fontSize: 12, color: 'var(--t3)', margin: '0 0 6px' }}>Resultado líquido da operação</p>
+                  <motion.p initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.25, type: 'spring', stiffness: 200 }}
+                    style={{ fontFamily: 'var(--mono)', fontSize: 'clamp(44px, 13vw, 60px)', fontWeight: 900, color: cFinal, letterSpacing: '-0.04em', margin: 0, lineHeight: 1, textShadow: `0 0 50px rgba(${glowColor},0.35)` }}>
+                    {isLucro ? '+' : '−'}R$ {fmt(Math.abs(liq))}
+                  </motion.p>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(92px, 1fr))', gap: 1, background: 'var(--b1)', borderRadius: 14, overflow: 'hidden', border: '1px solid var(--b1)', margin: '26px 0 14px' }}>
+                    {sumItems.map((s, i) => (
+                      <div key={i} style={{ background: 'var(--surface)', padding: '12px 8px' }}>
+                        <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>{s.v}</p>
+                        <p style={{ fontSize: 9, color: 'var(--t4)', margin: '4px 0 0', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>{s.l}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 1, background: 'var(--b1)', borderRadius: 14, overflow: 'hidden', border: '1px solid var(--b1)', marginBottom: 18 }}>
+                    {[
+                      { l: 'Lucro/conta', v: `${avgPerConta >= 0 ? '+' : '−'}R$ ${fmt(Math.abs(avgPerConta))}`, c: avgPerConta >= 0 ? 'var(--profit)' : 'var(--loss)' },
+                      { l: 'ROI', v: `${roi >= 0 ? '+' : '−'}${Math.abs(roi).toFixed(0)}%`, c: roi >= 0 ? 'var(--profit)' : 'var(--loss)' },
+                      { l: 'Taxa de acerto', v: `${taxaAcerto}%`, c: taxaAcerto >= 60 ? 'var(--profit)' : taxaAcerto >= 40 ? '#FCD34D' : 'var(--loss)' },
+                    ].map((s, i) => (
+                      <div key={i} style={{ background: 'var(--surface)', padding: '12px 6px' }}>
+                        <p style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 800, color: s.c, margin: 0 }}>{s.v}</p>
+                        <p style={{ fontSize: 8.5, color: 'var(--t4)', margin: '4px 0 0', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{s.l}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.5, margin: '0 0 24px' }}>
+                    {isLucro ? 'Operação encerrada com lucro. Mais uma meta registrada na NexControl.' : 'Operação encerrada. Todos os dados foram registrados para análise futura.'}
+                  </p>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+                    <button type="button" onClick={baixarCertificado}
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, width: '100%', padding: '14px', borderRadius: 13, border: 'none', cursor: 'pointer', fontSize: 14.5, fontWeight: 800, fontFamily: 'inherit', color: '#fff', background: '#e53935', boxShadow: '0 10px 28px rgba(229,57,53,0.32)' }}>
+                      <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
+                      Baixar imagem
+                    </button>
+                    <div style={{ display: 'flex', gap: 9 }}>
+                      <button type="button" onClick={goPanel} style={{ flex: 1, padding: '12px', borderRadius: 12, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t1)', cursor: 'pointer', fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit' }}>Voltar para metas</button>
+                      <button type="button" onClick={() => { setShowFinalePopup(false); router.push(profile?.role === 'admin' ? '/admin' : '/operator') }} style={{ flex: 1, padding: '12px', borderRadius: 12, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t1)', cursor: 'pointer', fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit' }}>Nova meta</button>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )
+          }
 
           return (
             <motion.div

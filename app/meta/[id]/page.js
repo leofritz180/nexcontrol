@@ -645,6 +645,10 @@ export default function MetaPage() {
     critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: 'var(--loss)', iconPath: 'M18 6L6 18M6 6l12 12' },
   }
 
+  // PREVIEW EXPERIMENTAL (so leofritz178) — central de remessa premium.
+  // Pra remover: apague esta const e o ramo {isV2 ? (...) : (...)} do form.
+  const isV2 = (user?.email || '').toLowerCase() === 'leofritz178@gmail.com'
+
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role==='admin'} userId={user?.id} tenantId={profile?.tenant_id}>
@@ -1280,6 +1284,105 @@ export default function MetaPage() {
 
         <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
           {/* ══ REGISTRAR REMESSA ══ */}
+          {isV2 ? (() => {
+            const colTitle = { fontFamily:'var(--mono)', fontSize:9, fontWeight:800, color:'#e53935', letterSpacing:'0.14em', textTransform:'uppercase', margin:'0 0 12px' }
+            const inp = { fontSize:13, padding:'9px 11px' }
+            const field = (label, children) => (<div style={{ marginBottom:11 }}><label className="t-label" style={{ display:'block', marginBottom:5, fontSize:8.5 }}>{label}</label>{children}</div>)
+            const contasN = Number(contasRemessa||0)
+            const depN = parseVal(dep)
+            const porConta = contasN>0 ? prev.diff/contasN : 0
+            const roi = depN>0 ? (prev.diff/depN)*100 : 0
+            const hasInput = !!(dep || saq || (isApenasBauMeta && bauR))
+            const col = prev.diff>0 ? 'var(--profit)' : prev.diff<0 ? 'var(--loss)' : '#FCD34D'
+            return (
+            <div className="card a2" style={{ padding:0, overflow:'hidden', borderRadius:18, border:'1px solid var(--b2)', background:'linear-gradient(180deg, var(--raised), var(--surface))', boxShadow:'0 24px 60px rgba(0,0,0,0.45)' }}>
+              {/* Header */}
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 20px', borderBottom:'1px solid var(--b1)', background:'linear-gradient(90deg, rgba(229,57,53,0.07), transparent 60%)' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                  <div style={{ width:32, height:32, borderRadius:9, background:'rgba(229,57,53,0.12)', border:'1px solid rgba(229,57,53,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  </div>
+                  <div>
+                    <p style={{ fontSize:13.5, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Central de Remessa</p>
+                    <p style={{ fontFamily:'var(--mono)', fontSize:10, color:'var(--t4)', margin:'1px 0 0', letterSpacing:'0.04em' }}>Remessa #{remessas.length + 1}</p>
+                  </div>
+                </div>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'4px 10px', borderRadius:99, background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.28)' }}>
+                  <motion.span animate={{ opacity:[1,0.3,1] }} transition={{ duration:1.6, repeat:Infinity }} style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}/>
+                  <span style={{ fontFamily:'var(--mono)', fontSize:9, fontWeight:800, color:'#22C55E', letterSpacing:'0.12em' }}>AO VIVO</span>
+                </div>
+              </div>
+
+              <form onSubmit={handleAdd}>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(215px, 1fr))', gap:1, background:'var(--b1)' }}>
+
+                  {/* COL 1 — DADOS */}
+                  <div style={{ background:'var(--surface)', padding:'16px 18px' }}>
+                    <p style={colTitle}>1 · Dados</p>
+                    {field('TITULO', <input className="input" value={tituloR} onChange={e=>setTituloR(e.target.value)} placeholder="1a remessa..." style={inp}/>)}
+                    {field('TIPO', <select className="input" value={tipo} onChange={e=>setTipo(e.target.value)} style={inp}><option value="remessa">Remessa</option><option value="redeposito">Redeposito</option><option value="ajuste">Ajuste</option></select>)}
+                    {field('SALDO INICIAL', <input className="input" type="number" step="0.01" value={saldoIni} onChange={e=>setSaldoIni(e.target.value)} style={inp}/>)}
+                    {field(<>CONTAS {tipo!=='redeposito' && <span style={{color:'var(--loss)'}}>*</span>}</>, <>
+                      <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="5" required={tipo!=='redeposito'} style={inp}/>
+                      <div style={{ display:'flex', gap:4, marginTop:5 }}>
+                        {[3,5,10,15,20].map(n=>(<button key={n} type="button" onClick={()=>setContasRemessa(String(n))} style={{ flex:1, padding:'4px 0', borderRadius:6, fontSize:10, fontWeight:700, cursor:'pointer', background:Number(contasRemessa)===n?'rgba(229,57,53,0.14)':'var(--fill-1)', color:Number(contasRemessa)===n?'#e53935':'var(--t4)', border:`1px solid ${Number(contasRemessa)===n?'rgba(229,57,53,0.3)':'var(--b1)'}` }}>{n}</button>))}
+                      </div>
+                    </>)}
+                  </div>
+
+                  {/* COL 2 — RESULTADOS */}
+                  <div style={{ background:'var(--surface)', padding:'16px 18px' }}>
+                    <p style={colTitle}>2 · Resultados</p>
+                    {field('DEPOSITO *', <input className="input" type="text" inputMode="decimal" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="Ex: 1055" style={{...inp, fontWeight:700}}/>)}
+                    {field('SAQUE *', <input className="input" type="text" inputMode="decimal" value={saq} onChange={e=>setSaq(e.target.value)} required placeholder="Ex: 941" style={{...inp, fontWeight:700}}/>)}
+                    {isApenasBauMeta && field(<span style={{color:'var(--profit)'}}>BAU</span>, <input className="input" type="text" inputMode="decimal" value={bauR} onChange={e=>setBauR(e.target.value)} placeholder="Ex: 50" style={{...inp, borderColor:'rgba(34,197,94,0.3)'}}/>)}
+                    {field('STATUS', <div style={{ display:'flex', gap:2, background:'var(--fill-1)', borderRadius:8, padding:2, border:'1px solid var(--b1)' }}>
+                      {[{k:'normal',l:'Normal',c:'var(--profit)'},{k:'saque_pendente',l:'Pend.',c:'rgba(255,255,255,0.78)'},{k:'conta_bloqueada',l:'Bloq.',c:'var(--loss)'},{k:'banco_analise',l:'Anál.',c:'rgba(255,255,255,0.78)'}].map(s=>(
+                        <button key={s.k} type="button" onClick={()=>setStatusProb(s.k)} style={{ flex:1, padding:'5px 2px', borderRadius:6, fontSize:9, fontWeight:600, cursor:'pointer', background:statusProb===s.k?`${s.c}1f`:'transparent', color:statusProb===s.k?s.c:'var(--t4)', border:'none' }}>{s.l}</button>
+                      ))}
+                    </div>)}
+                    {field('NOTAS', <input className="input" value={obsRemessa} onChange={e=>setObsRemessa(e.target.value)} placeholder="Opcional..." style={inp}/>)}
+                    {tenantSlots.length > 0 && field('SLOT', <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
+                      {tenantSlots.map(name=>{ const slug=name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,'e').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); const active=selectedSlot===name; return (
+                        <div key={name} onClick={()=>setSelectedSlot(active?'':name)} style={{ minWidth:62, maxWidth:62, cursor:'pointer', borderRadius:8, padding:4, textAlign:'center', flexShrink:0, border:active?'2px solid var(--profit)':'1px solid var(--b2)', background:active?'var(--profit-dim)':'var(--raised)' }}>
+                          <img src={`/slots/${slug}.webp`} alt={name} style={{ width:'100%', height:44, objectFit:'cover', borderRadius:6, marginBottom:3 }} onError={e=>{e.currentTarget.style.display='none'}}/>
+                          <p style={{ fontSize:7.5, fontWeight:600, color:active?'var(--profit)':'var(--t4)', margin:0, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{name}</p>
+                        </div>
+                      )})}
+                    </div>)}
+                  </div>
+
+                  {/* COL 3 — RESUMO AO VIVO */}
+                  <div style={{ background:'rgba(0,0,0,0.22)', padding:'16px 18px', display:'flex', flexDirection:'column' }}>
+                    <p style={colTitle}>3 · Resumo ao vivo</p>
+                    <div style={{ textAlign:'center', padding:'14px 0 10px' }}>
+                      <p style={{ fontSize:9, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.1em', margin:'0 0 6px', fontWeight:700 }}>Resultado parcial</p>
+                      <p style={{ fontFamily:'var(--mono)', fontSize:34, fontWeight:900, color: hasInput?col:'var(--t4)', margin:0, letterSpacing:'-0.03em', lineHeight:1 }}>
+                        {hasInput ? `${prev.diff>=0?'+':'−'}R$ ${fmt(Math.abs(prev.diff))}` : '—'}
+                      </p>
+                    </div>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:1, background:'var(--b1)', borderRadius:10, overflow:'hidden', border:'1px solid var(--b1)', marginBottom:12 }}>
+                      {[
+                        { l:'Por conta', v: hasInput&&contasN>0?`${porConta>=0?'+':'−'}${fmt(Math.abs(porConta))}`:'—' },
+                        { l:'ROI', v: hasInput&&depN>0?`${roi>=0?'+':'−'}${Math.abs(roi).toFixed(0)}%`:'—' },
+                        { l:'Contas', v: contasN||'—' },
+                      ].map((s,i)=>(<div key={i} style={{ background:'var(--surface)', padding:'10px 6px', textAlign:'center' }}><p style={{ fontFamily:'var(--mono)', fontSize:13, fontWeight:800, color:'var(--t1)', margin:0 }}>{s.v}</p><p style={{ fontSize:8, color:'var(--t4)', margin:'3px 0 0', textTransform:'uppercase', letterSpacing:'0.05em' }}>{s.l}</p></div>))}
+                    </div>
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, padding:'9px', borderRadius:10, marginBottom:14, background: hasInput?`${col}14`:'var(--fill-1)', border:`1px solid ${hasInput?col+'40':'var(--b1)'}` }}>
+                      <span style={{ width:8, height:8, borderRadius:'50%', background: hasInput?col:'var(--t4)' }}/>
+                      <span style={{ fontSize:11.5, fontWeight:700, color: hasInput?col:'var(--t4)' }}>{!hasInput?'Aguardando dados':prev.diff>0?'Operação positiva':prev.diff<0?'Operação negativa':'Operação neutra'}</span>
+                    </div>
+                    {error && <div className="alert-error" style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, marginBottom:10 }}><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
+                    <button type="submit" className="btn btn-profit" disabled={salvando||!dep||!saq||(tipo!=='redeposito'&&(!contasRemessa||Number(contasRemessa)<=0))} style={{ width:'100%', padding:'13px', fontSize:13.5, fontWeight:800, borderRadius:11, display:'flex', alignItems:'center', justifyContent:'center', gap:7, marginTop:'auto' }}>
+                      {salvando ? (<><div className="spinner" style={{ width:13, height:13, borderTopColor:'#012b1c' }}/> Registrando...</>) : (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Registrar remessa</>)}
+                    </button>
+                  </div>
+
+                </div>
+              </form>
+            </div>
+            )
+          })() : (
           <div className="card a2" style={{ padding:0, overflow:'hidden' }}>
             {/* Header compacto */}
             <div style={{ padding:'12px 20px', borderBottom:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
@@ -1449,6 +1552,7 @@ export default function MetaPage() {
               </div>
             </form>
           </div>
+          )}
 
           {/* Alertas de problemas */}
           {(()=>{

@@ -1613,6 +1613,286 @@ export default function AdminPage() {
               const myDeps = validClosedMetas(myMetas).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
               const apexLocked = isApexLocked(user?.email || profile?.email)
               const myAmbientRank = getRank(myDeps, { forceApex: apexLocked }).current
+
+              // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+              // MINHA OPERAÇÃO — CENTRO DE OPERAÇÕES PREMIUM (SOMENTE leofritz178)
+              // 100% visual. Reusa myMetas/myRem/handlers. Remover = apagar isV2 +
+              // os 3 blocos {isV2 && render...V2()} abaixo.
+              // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+              const isV2 = (user?.email||'').toLowerCase()==='leofritz178@gmail.com'
+              const f$ = (n)=> 'R$ '+fmt(Math.abs(Number(n)||0))
+              const sg = (n)=> (Number(n)>=0?'+':'−')
+              const col = (n)=> Number(n)>=0?'var(--profit)':'var(--loss)'
+              const remRes = (r)=> Number(r.lucro||0)-Number(r.prejuizo||0)
+              const metaLiqV = (m)=>{ if(m.status_fechamento==='fechada') return Number(m.lucro_final||0); return myRem.filter(r=>r.meta_id===m.id).reduce((a,r)=>a+remRes(r),0) }
+              const metaContasDone = (m)=> myRem.filter(r=>r.meta_id===m.id && r.tipo!=='redeposito').reduce((a,r)=>a+Number(r.contas_remessa||0),0)
+              const metaProg = (m)=>{ const t=Number(m.quantidade_contas||0); return t>0?Math.max(0,Math.min(100,Math.round(metaContasDone(m)/t*100))):0 }
+              const ativas = myMetas.filter(m=>m.status_fechamento!=='fechada')
+              const fechadas = myMetas.filter(m=>m.status_fechamento==='fechada')
+              const lucroFechadas = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+              const lucroMedioMeta = fechadas.length>0?lucroFechadas/fechadas.length:0
+              const contasProc = myDeps
+              const porRede = {}; myMetas.forEach(m=>{ const r=(m.rede||'—'); porRede[r]=(porRede[r]||0)+metaLiqV(m) })
+              const redesSorted = Object.entries(porRede).sort((a,b)=>b[1]-a[1])
+              const melhorRede = redesSorted[0]
+              const remPos = myRem.filter(r=>remRes(r)>0).length
+              const taxaAcerto = myRem.length>0?Math.round((remPos/myRem.length)*100):0
+              const _now = new Date()
+              const _today = new Date(_now.getFullYear(),_now.getMonth(),_now.getDate()).getTime()
+              const _week = _today-6*864e5
+              const _month = new Date(_now.getFullYear(),_now.getMonth(),1).getTime()
+              const remT = (r)=>{ const t=new Date(r.created_at||r.criado_em||0).getTime(); return isNaN(t)?0:t }
+              const lucroHoje = myRem.filter(r=>remT(r)>=_today).reduce((a,r)=>a+remRes(r),0)
+              const lucroSemana = myRem.filter(r=>remT(r)>=_week).reduce((a,r)=>a+remRes(r),0)
+              const lucroMes = myRem.filter(r=>remT(r)>=_month).reduce((a,r)=>a+remRes(r),0)
+              const totalDepAll = myRem.reduce((a,r)=>a+Number(r.deposito||0),0)
+              const roiMedio = totalDepAll>0?(myLiq/totalDepAll)*100:0
+              const metasComR = myMetas.map(m=>({ m, liq:metaLiqV(m) }))
+              const melhorMeta = metasComR.slice().sort((a,b)=>b.liq-a.liq)[0]
+              const piorMeta = metasComR.slice().sort((a,b)=>a.liq-b.liq)[0]
+              const eventos = []
+              myRem.forEach(r=>{ const m=myMetas.find(x=>x.id===r.meta_id); eventos.push({ t:remT(r), kind:'remessa', val:remRes(r), meta:m?.titulo||'Meta', rede:m?.rede }) })
+              fechadas.forEach(m=>{ eventos.push({ t:new Date(m.updated_at||m.created_at||0).getTime(), kind:'fechada', val:Number(m.lucro_final||0), meta:m.titulo, rede:m.rede }) })
+              myMetas.forEach(m=>{ eventos.push({ t:new Date(m.created_at||0).getTime(), kind:'criada', val:Number(m.quantidade_contas||0), meta:m.titulo, rede:m.rede }) })
+              eventos.sort((a,b)=>b.t-a.t)
+              const eventosTop = eventos.filter(e=>e.t>0).slice(0,7)
+              const fmtAgo = (t)=>{ if(!t) return ''; const d=Date.now()-t; const min=Math.floor(d/60000); if(min<1) return 'agora'; if(min<60) return min+'min'; const h=Math.floor(min/60); if(h<24) return h+'h'; const dd=Math.floor(h/24); return dd+'d' }
+              const fmtDate = (t)=>{ if(!t) return '—'; try{ return new Date(t).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}) }catch{ return '—' } }
+              const redeAvatar = (rede,c)=> (<div style={{width:42,height:42,borderRadius:11,flexShrink:0,background:`${c}14`,border:`1px solid ${c}30`,display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'var(--mono)',fontSize:11,fontWeight:800,color:c}}>{(rede||'—').toString().slice(0,4)}</div>)
+              const v2head = (title,sub,accent)=> (
+                <div style={{display:'flex',alignItems:'center',gap:10,margin:'0 0 14px'}}>
+                  <div style={{width:4,height:18,borderRadius:2,background:accent,boxShadow:`0 0 10px ${accent}`}}/>
+                  <h3 style={{fontSize:15,fontWeight:800,color:'var(--t1)',margin:0,letterSpacing:'-0.01em'}}>{title}</h3>
+                  {sub!=null && <span style={{fontSize:11,fontWeight:700,color:'var(--t4)',fontFamily:'var(--mono)',padding:'2px 9px',borderRadius:6,background:'rgba(255,255,255,0.04)',border:'1px solid var(--b1)'}}>{sub}</span>}
+                </div>
+              )
+
+              const renderHeroV2 = () => {
+                const hc = lucroMes>=0?'34,197,94':'229,57,53'
+                const chips = [
+                  {l:'Metas abertas', v:String(ativas.length)},
+                  {l:'Metas fechadas', v:String(fechadas.length)},
+                  {l:'Contas processadas', v:String(contasProc)},
+                  {l:'Lucro médio / meta', v:sg(lucroMedioMeta)+f$(lucroMedioMeta), c:col(lucroMedioMeta)},
+                  {l:'Melhor rede', v: melhorRede?melhorRede[0]:'—'},
+                  {l:'Taxa de acerto', v: taxaAcerto+'%'},
+                ]
+                return (
+                  <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:0.45,ease}}
+                    style={{position:'relative',overflow:'hidden',borderRadius:20,marginBottom:18,padding:'26px 28px',background:'linear-gradient(150deg, var(--raised), var(--surface))',border:'1px solid rgba(255,255,255,0.07)',boxShadow:'0 18px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)'}}>
+                    <div style={{position:'absolute',top:0,left:'8%',right:'8%',height:1,background:`linear-gradient(90deg,transparent,rgba(${hc},0.5),transparent)`}}/>
+                    <div style={{position:'absolute',top:-120,right:-100,width:360,height:360,borderRadius:'50%',background:`radial-gradient(circle,rgba(${hc},0.10),transparent 65%)`,filter:'blur(30px)',pointerEvents:'none'}}/>
+                    <div style={{position:'relative',display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:20,flexWrap:'wrap'}}>
+                      <div>
+                        <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:12}}>
+                          <span style={{width:7,height:7,borderRadius:'50%',background:`rgb(${hc})`,boxShadow:`0 0 10px rgb(${hc})`}}/>
+                          <span style={{fontSize:11,fontWeight:800,letterSpacing:'0.14em',color:'var(--t3)',textTransform:'uppercase'}}>Centro de operações · {getName(profile)}</span>
+                        </div>
+                        <p style={{fontSize:11.5,fontWeight:700,letterSpacing:'0.1em',color:'var(--t4)',textTransform:'uppercase',margin:'0 0 6px'}}>Resultado do mês</p>
+                        <AnimatedNumber value={Math.abs(lucroMes)} prefix={`${sg(lucroMes)}R$ `} style={{fontFamily:'var(--mono)',fontSize:46,fontWeight:900,letterSpacing:'-0.03em',color:col(lucroMes),lineHeight:1,display:'block'}}/>
+                        <p style={{fontSize:12,color:'var(--t3)',margin:'10px 0 0',fontWeight:500}}>Acumulado · {sg(myLiq)}{f$(myLiq)} líquido total da operação</p>
+                      </div>
+                      <motion.button onClick={()=>setMyShowForm(!myShowForm)} whileHover={{scale:1.03}} whileTap={{scale:0.96}}
+                        style={{padding:'13px 24px',borderRadius:13,border:'none',cursor:'pointer',fontSize:13.5,fontWeight:800,fontFamily:'inherit',display:'flex',alignItems:'center',gap:8,color:'#fff',background: myShowForm?'rgba(255,255,255,0.06)':'linear-gradient(145deg,#e53935,#c62828)',boxShadow: myShowForm?'none':'0 8px 26px rgba(229,57,53,0.45),inset 0 1px 0 rgba(255,255,255,0.18)'}}>
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round">{myShowForm?<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>:<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>}</svg>
+                        {myShowForm?'Fechar':'Nova meta'}
+                      </motion.button>
+                    </div>
+                    <div style={{position:'relative',display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(135px,1fr))',gap:1,marginTop:22,borderRadius:14,overflow:'hidden',border:'1px solid rgba(255,255,255,0.06)',background:'rgba(255,255,255,0.05)'}}>
+                      {chips.map((s,i)=>(
+                        <div key={i} style={{padding:'13px 16px',background:'var(--surface)'}}>
+                          <p style={{fontSize:9.5,fontWeight:700,letterSpacing:'0.09em',color:'var(--t4)',textTransform:'uppercase',margin:'0 0 5px'}}>{s.l}</p>
+                          <p style={{fontSize:16,fontWeight:800,fontFamily:'var(--mono)',color:s.c||'var(--t1)',margin:0,letterSpacing:'-0.01em',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{s.v}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )
+              }
+
+              const renderMyKpisV2 = () => {
+                const k = [
+                  {l:'Lucro hoje', v:lucroHoje, c:col(lucroHoje), money:true, sign:true},
+                  {l:'Lucro semana', v:lucroSemana, c:col(lucroSemana), money:true, sign:true},
+                  {l:'Lucro mês', v:lucroMes, c:col(lucroMes), money:true, sign:true},
+                  {l:'Lucro médio / meta', v:lucroMedioMeta, c:col(lucroMedioMeta), money:true, sign:true},
+                  {l:'Contas processadas', v:contasProc, c:'#e53935'},
+                  {l:'Remessas', v:myRem.length, c:'rgba(255,255,255,0.8)'},
+                  {l:'Taxa de acerto', v:taxaAcerto, c:'var(--profit)', suffix:'%'},
+                  {l:'ROI médio', v:roiMedio, c:col(roiMedio), suffix:'%', sign:true},
+                ]
+                return (
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(165px,1fr))',gap:12,marginBottom:22}}>
+                    {k.map((it,i)=>(
+                      <motion.div key={it.l} {...fadeUp(i)} whileHover={{y:-3,borderColor:`${it.c}30`,boxShadow:`0 14px 34px rgba(0,0,0,0.5),0 0 22px ${it.c}14`,transition:{duration:0.2}}}
+                        style={{position:'relative',overflow:'hidden',background:'linear-gradient(145deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.06)',borderRadius:14,padding:'15px 17px',boxShadow:'0 4px 18px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.04)'}}>
+                        <div style={{position:'absolute',left:0,top:'22%',bottom:'22%',width:2,borderRadius:'0 2px 2px 0',background:it.c,boxShadow:`0 0 8px ${it.c}`}}/>
+                        <p style={{fontSize:10,fontWeight:700,letterSpacing:'0.08em',color:'var(--t4)',textTransform:'uppercase',margin:'0 0 9px'}}>{it.l}</p>
+                        {it.money?(
+                          <AnimatedNumber value={Math.abs(it.v)} prefix={`${it.sign?sg(it.v):''}R$ `} style={{fontFamily:'var(--mono)',fontSize:21,fontWeight:900,color:it.c,letterSpacing:'-0.02em',display:'block'}}/>
+                        ):(
+                          <AnimatedNumber value={Math.abs(it.v)} decimals={0} prefix={it.sign?sg(it.v):''} suffix={it.suffix||''} style={{fontFamily:'var(--mono)',fontSize:21,fontWeight:900,color:it.c,letterSpacing:'-0.02em',display:'block'}}/>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                )
+              }
+
+              const activeCardV2 = (m,i) => {
+                const liq=metaLiqV(m); const prog=metaProg(m); const nRem=myRem.filter(r=>r.meta_id===m.id).length
+                const done=prog>=100; const near=prog>=75 && prog<100
+                const status = done?{l:'Concluída',c:'var(--profit)'}:near?{l:'Quase lá',c:'#FCD34D'}:{l:'Em andamento',c:'#e53935'}
+                const pc = col(liq)
+                return (
+                  <motion.div key={m.id} {...fadeUp(i)} whileHover={{y:-4,borderColor:`${pc}35`,boxShadow:`0 16px 40px rgba(0,0,0,0.5),0 0 30px ${pc}12`,transition:{duration:0.2}}}
+                    onClick={()=>router.push(`/meta/${m.id}`)}
+                    style={{cursor:'pointer',position:'relative',overflow:'hidden',borderRadius:16,padding:'18px 20px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.06)',boxShadow:'0 6px 22px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)'}}>
+                    <div style={{position:'absolute',left:0,top:0,bottom:0,width:3,background:`linear-gradient(180deg,${pc},${pc}55)`,boxShadow:`0 0 12px ${pc}70`}}/>
+                    <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:15}}>
+                      {redeAvatar(m.rede,pc)}
+                      <div style={{flex:1,minWidth:0}}>
+                        <h4 style={{fontSize:14.5,fontWeight:800,color:'var(--t1)',margin:'0 0 3px',letterSpacing:'-0.01em',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.titulo}</h4>
+                        <p style={{fontSize:11,color:'var(--t3)',margin:0,fontWeight:600,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.plataforma||'—'} · {m.rede||'—'}</p>
+                      </div>
+                      <span style={{fontSize:9,fontWeight:800,padding:'4px 9px',borderRadius:6,background:`${status.c}14`,color:status.c,border:`1px solid ${status.c}30`,letterSpacing:'0.06em',textTransform:'uppercase',whiteSpace:'nowrap'}}>{status.l}</span>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'space-between',gap:8,marginBottom:15}}>
+                      <div><p style={{fontSize:9.5,color:'var(--t4)',fontWeight:700,letterSpacing:'0.07em',textTransform:'uppercase',margin:'0 0 3px'}}>Contas</p><p style={{fontSize:14,fontWeight:800,fontFamily:'var(--mono)',color:'var(--t1)',margin:0}}>{metaContasDone(m)}<span style={{color:'var(--t4)',fontWeight:600}}>/{m.quantidade_contas||'—'}</span></p></div>
+                      <div style={{textAlign:'center'}}><p style={{fontSize:9.5,color:'var(--t4)',fontWeight:700,letterSpacing:'0.07em',textTransform:'uppercase',margin:'0 0 3px'}}>Remessas</p><p style={{fontSize:14,fontWeight:800,fontFamily:'var(--mono)',color:'var(--t1)',margin:0}}>{nRem}</p></div>
+                      <div style={{textAlign:'right'}}><p style={{fontSize:9.5,color:'var(--t4)',fontWeight:700,letterSpacing:'0.07em',textTransform:'uppercase',margin:'0 0 3px'}}>Lucro atual</p><p style={{fontSize:14,fontWeight:900,fontFamily:'var(--mono)',color:pc,margin:0,letterSpacing:'-0.01em'}}>{sg(liq)}{f$(liq)}</p></div>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+                      <span style={{fontSize:9.5,color:'var(--t4)',fontWeight:700,letterSpacing:'0.07em',textTransform:'uppercase'}}>Progresso</span>
+                      <span style={{fontSize:12,fontWeight:800,fontFamily:'var(--mono)',color:status.c}}>{prog}%</span>
+                    </div>
+                    <div style={{height:6,borderRadius:4,background:'rgba(255,255,255,0.06)',overflow:'hidden'}}>
+                      <motion.div initial={{width:0}} animate={{width:`${prog}%`}} transition={{duration:0.8,ease}} style={{height:'100%',borderRadius:4,background:`linear-gradient(90deg,${status.c}99,${status.c})`,boxShadow:`0 0 10px ${status.c}80`}}/>
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:6,marginTop:13,color:pc,fontSize:11.5,fontWeight:800}}>
+                      Abrir operação
+                      <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                  </motion.div>
+                )
+              }
+
+              const closedCardV2 = (m,i) => {
+                const lf=Number(m.lucro_final||0); const pc=col(lf)
+                const dt = m.updated_at||m.created_at
+                return (
+                  <motion.div key={m.id} {...fadeUp(i)} whileHover={{y:-3,borderColor:`${pc}30`,boxShadow:`0 12px 30px rgba(0,0,0,0.45),0 0 22px ${pc}10`,transition:{duration:0.2}}}
+                    onClick={()=>router.push(`/meta/${m.id}`)}
+                    style={{cursor:'pointer',position:'relative',overflow:'hidden',borderRadius:14,padding:'14px 16px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.05)',boxShadow:'0 4px 16px rgba(0,0,0,0.35)',display:'flex',alignItems:'center',gap:12}}>
+                    <div style={{position:'absolute',left:0,top:0,bottom:0,width:2.5,background:`${pc}`,opacity:0.7}}/>
+                    {redeAvatar(m.rede,pc)}
+                    <div style={{flex:1,minWidth:0}}>
+                      <h4 style={{fontSize:13.5,fontWeight:800,color:'var(--t1)',margin:'0 0 3px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{m.titulo}</h4>
+                      <p style={{fontSize:10.5,color:'var(--t4)',margin:0,fontWeight:600}}>{m.rede||'—'} · {m.quantidade_contas||0} contas · {fmtDate(new Date(dt).getTime())}</p>
+                    </div>
+                    <div style={{textAlign:'right',flexShrink:0}}>
+                      <p style={{fontSize:8.5,color:'var(--t4)',fontWeight:700,letterSpacing:'0.08em',textTransform:'uppercase',margin:'0 0 2px'}}>Lucro final</p>
+                      <p style={{fontSize:15,fontWeight:900,fontFamily:'var(--mono)',color:pc,margin:0,letterSpacing:'-0.01em'}}>{sg(lf)}{f$(lf)}</p>
+                    </div>
+                  </motion.div>
+                )
+              }
+
+              const renderMyOpsListV2 = () => {
+                if (myMetas.length===0) return (
+                  <motion.div initial={{opacity:0,scale:0.98}} animate={{opacity:1,scale:1}} transition={{duration:0.4,ease}}
+                    style={{borderRadius:18,padding:'48px 32px',textAlign:'center',background:'linear-gradient(145deg, var(--raised), var(--surface))',border:'1px dashed rgba(229,57,53,0.2)'}}>
+                    <div style={{width:56,height:56,borderRadius:16,margin:'0 auto 16px',background:'rgba(229,57,53,0.08)',border:'1px solid rgba(229,57,53,0.2)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                      <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    </div>
+                    <p style={{color:'var(--t1)',fontSize:16,fontWeight:700,marginBottom:6}}>Sua mesa de operações está pronta</p>
+                    <p style={{color:'var(--t3)',fontSize:13,marginBottom:20}}>Crie sua primeira operação e comece a registrar remessas.</p>
+                    <motion.button onClick={()=>setMyShowForm(true)} whileHover={{scale:1.03,boxShadow:'0 8px 28px rgba(229,57,53,0.5)'}} whileTap={{scale:0.97}}
+                      style={{padding:'12px 26px',borderRadius:12,border:'none',cursor:'pointer',fontSize:14,fontWeight:700,color:'#fff',fontFamily:'inherit',background:'linear-gradient(145deg, #e53935, #c62828)',boxShadow:'0 6px 20px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',display:'inline-flex',alignItems:'center',gap:8}}>
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Criar primeira meta
+                    </motion.button>
+                  </motion.div>
+                )
+                const evMeta = { remessa:{c:'var(--profit)',ic:<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>}, fechada:{c:'#e53935',ic:<><path d="M20 6 9 17l-5-5"/></>}, criada:{c:'rgba(255,255,255,0.6)',ic:<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>} }
+                const insights = [
+                  { ic:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', tag:'Melhor meta', c:'var(--profit)',
+                    title: melhorMeta? melhorMeta.m.titulo : '—', sub: melhorMeta? `${melhorMeta.m.rede||'—'} · ${melhorMeta.m.quantidade_contas||0} contas`:'Sem dados', val: melhorMeta? sg(melhorMeta.liq)+f$(melhorMeta.liq):'—', vc:'var(--profit)' },
+                  { ic:'M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01', tag:'Maior prejuízo', c:'var(--loss)',
+                    title: (piorMeta && piorMeta.liq<0)? piorMeta.m.titulo : 'Nenhum prejuízo', sub: (piorMeta && piorMeta.liq<0)? (piorMeta.m.rede||'—') : 'Operação no azul', val: (piorMeta && piorMeta.liq<0)? sg(piorMeta.liq)+f$(piorMeta.liq):'—', vc:(piorMeta && piorMeta.liq<0)?'var(--loss)':'var(--t4)' },
+                  { ic:'M23 6 13.5 15.5 8.5 10.5 1 18M17 6h6v6', tag:'Melhor rede', c:'#e53935',
+                    title: melhorRede? melhorRede[0]:'—', sub:'Lucro acumulado na rede', val: melhorRede? sg(melhorRede[1])+f$(melhorRede[1]):'—', vc: melhorRede? col(melhorRede[1]):'var(--t4)' },
+                  { ic:'M12 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 1l2.5 4 4.5.5-3.5 3 1 4.5L12 16l-4.5 2.5 1-4.5L5 10.5 9.5 10z', tag:'Operador destaque', c:'#FCD34D',
+                    title: getName(profile)||'Você', sub:'Resultado líquido total', val: sg(myLiq)+f$(myLiq), vc: col(myLiq) },
+                ]
+                return (<>
+                  {ativas.length>0 && (
+                    <section style={{marginBottom:28}}>
+                      {v2head('Operações ativas', ativas.length, '#e53935')}
+                      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:14}}>
+                        {ativas.map((m,i)=>activeCardV2(m,i))}
+                      </div>
+                    </section>
+                  )}
+
+                  {fechadas.length>0 && (
+                    <section style={{marginBottom:28}}>
+                      {v2head('Operações encerradas', fechadas.length, 'var(--profit)')}
+                      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:12}}>
+                        {fechadas.map((m,i)=>closedCardV2(m,i))}
+                      </div>
+                    </section>
+                  )}
+
+                  <section style={{marginBottom:28}}>
+                    {v2head('Insights da operação', null, '#FCD34D')}
+                    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12}}>
+                      {insights.map((it,i)=>(
+                        <motion.div key={i} {...fadeUp(i)}
+                          style={{position:'relative',overflow:'hidden',borderRadius:14,padding:'16px 18px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.06)',boxShadow:'0 6px 22px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)'}}>
+                          <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${it.c},transparent)`}}/>
+                          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+                            <div style={{width:26,height:26,borderRadius:8,background:`${it.c}14`,border:`1px solid ${it.c}28`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={it.c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={it.ic}/></svg>
+                            </div>
+                            <span style={{fontSize:10,fontWeight:800,letterSpacing:'0.08em',color:'var(--t3)',textTransform:'uppercase'}}>{it.tag}</span>
+                          </div>
+                          <p style={{fontSize:15,fontWeight:800,color:'var(--t1)',margin:'0 0 3px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{it.title}</p>
+                          <p style={{fontSize:11,color:'var(--t4)',margin:'0 0 10px',fontWeight:600}}>{it.sub}</p>
+                          <p style={{fontSize:19,fontWeight:900,fontFamily:'var(--mono)',color:it.vc,margin:0,letterSpacing:'-0.02em'}}>{it.val}</p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {eventosTop.length>0 && (
+                    <section style={{marginBottom:8}}>
+                      {v2head('Atividade em tempo real', null, 'var(--profit)')}
+                      <div style={{position:'relative',borderRadius:16,padding:'8px 4px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.06)',boxShadow:'0 6px 22px rgba(0,0,0,0.4)'}}>
+                        {eventosTop.map((e,i)=>{
+                          const meta=evMeta[e.kind]||evMeta.remessa
+                          const label = e.kind==='remessa'?'Remessa registrada':e.kind==='fechada'?'Operação concluída':'Operação criada'
+                          const valTxt = e.kind==='criada'?`${e.val} contas`:`${sg(e.val)}${f$(e.val)}`
+                          const valC = e.kind==='criada'?'var(--t3)':col(e.val)
+                          return (
+                            <div key={i} style={{display:'flex',alignItems:'center',gap:13,padding:'12px 16px',borderBottom: i<eventosTop.length-1?'1px solid rgba(255,255,255,0.04)':'none'}}>
+                              <div style={{width:32,height:32,borderRadius:9,flexShrink:0,background:`${meta.c}14`,border:`1px solid ${meta.c}28`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={meta.c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{meta.ic}</svg>
+                              </div>
+                              <div style={{flex:1,minWidth:0}}>
+                                <p style={{fontSize:13,fontWeight:700,color:'var(--t1)',margin:'0 0 2px',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{label} · <span style={{color:'var(--t3)',fontWeight:600}}>{e.meta}</span></p>
+                                <p style={{fontSize:10.5,color:'var(--t4)',margin:0,fontWeight:600}}>{e.rede||'—'} · há {fmtAgo(e.t)}</p>
+                              </div>
+                              <span style={{fontSize:13.5,fontWeight:900,fontFamily:'var(--mono)',color:valC,letterSpacing:'-0.01em',flexShrink:0}}>{valTxt}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </section>
+                  )}
+                </>)
+              }
+
               return (<>
                 {/* Reveal animado a cada entrada na aba 'Minha operacao'.
                     O componente so monta quando tab==='myops', entao a cada
@@ -1626,7 +1906,10 @@ export default function AdminPage() {
                   forceApex={apexLocked}
                 />
 
-                {/* Hero da aba — header executivo */}
+                {/* ░░ MYOPS V2 — hero premium (somente leofritz178) ░░ */}
+                {isV2 && renderHeroV2()}
+                {/* Hero da aba — header executivo (default) */}
+                {!isV2 && (
                 <motion.div
                   data-tour="myops-header"
                   initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
@@ -1690,8 +1973,12 @@ export default function AdminPage() {
                     </motion.button>
                   </div>
                 </motion.div>
+                )}
 
-                {/* KPIs premium */}
+                {/* ░░ MYOPS V2 — KPIs premium (somente leofritz178) ░░ */}
+                {isV2 && renderMyKpisV2()}
+                {/* KPIs premium (default) */}
+                {!isV2 && (
                 <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:12,marginBottom:20}}>
                   {[
                     {l:'Minhas metas', sub:'Total criadas', v:myMetas.length, c:'#e53935', iconPath:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'},
@@ -1729,6 +2016,7 @@ export default function AdminPage() {
                     </motion.div>
                   ))}
                 </div>
+                )}
 
                 {/* Modal Modo Operacao Admin */}
                 <AnimatePresence>
@@ -1987,6 +2275,10 @@ export default function AdminPage() {
                 )}
                 </AnimatePresence>
 
+                {/* ░░ MYOPS V2 — operações + insights + timeline (somente leofritz178) ░░ */}
+                {isV2 && renderMyOpsListV2()}
+                {/* Lista de metas (default) */}
+                {!isV2 && (
                 <div data-tour="myops-list" style={{display:'flex',flexDirection:'column',gap:10}}>
                   {myMetas.length===0 ? (
                     <motion.div
@@ -2101,6 +2393,7 @@ export default function AdminPage() {
                     )
                   })}
                 </div>
+                )}
 
                 {/* Sistema de Ranks PESSOAL — fica no FINAL da aba pra nao tampar criar nova meta */}
                 <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', marginTop: 32 }}>

@@ -1847,27 +1847,131 @@ export default function MetaPage() {
 
             const baixarCertificado = () => {
               try {
-                const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H
+                const W = 1080, H = 1350
+                const c = document.createElement('canvas'); c.width = W; c.height = H
                 const x = c.getContext('2d')
-                x.fillStyle = '#05070b'; x.fillRect(0, 0, W, H)
-                const glow = isLucro ? '34,197,94' : '229,57,53'
-                const g = x.createRadialGradient(W / 2, 450, 40, W / 2, 450, 660)
-                g.addColorStop(0, `rgba(${glow},0.20)`); g.addColorStop(1, 'rgba(0,0,0,0)')
-                x.fillStyle = g; x.fillRect(0, 0, W, H)
-                x.strokeStyle = `rgba(${glow},0.4)`; x.lineWidth = 2; x.strokeRect(44, 44, W - 88, H - 88)
-                x.textAlign = 'center'
-                x.fillStyle = '#e53935'; x.font = '800 38px sans-serif'; x.fillText('NEXCONTROL', W / 2, 162)
-                x.fillStyle = 'rgba(255,255,255,0.45)'; x.font = '600 24px sans-serif'; x.fillText('META FINALIZADA', W / 2, 216)
-                x.fillStyle = 'rgba(255,255,255,0.6)'; x.font = '500 32px sans-serif'; x.fillText(isLucro ? 'Lucro líquido' : 'Prejuízo', W / 2, 440)
-                x.fillStyle = isLucro ? '#22C55E' : '#ef4444'; x.font = '900 128px sans-serif'; x.fillText(`${isLucro ? '+' : '−'}R$ ${fmt(Math.abs(liqFinal))}`, W / 2, 570)
-                x.strokeStyle = 'rgba(255,255,255,0.08)'; x.beginPath(); x.moveTo(140, 690); x.lineTo(W - 140, 690); x.stroke()
-                const cards = [['CONTAS', String(contasDone)], ['REMESSAS', String(remessas.length)], ['LUCRO/CONTA', `${avgFinal >= 0 ? '+' : '−'}R$ ${fmt(Math.abs(avgFinal))}`]]
-                cards.forEach((s, i) => { const cx = W * (0.25 + i * 0.25); x.fillStyle = '#fff'; x.font = '800 42px sans-serif'; x.fillText(s[1], cx, 815); x.fillStyle = 'rgba(255,255,255,0.4)'; x.font = '600 19px sans-serif'; x.fillText(s[0], cx, 858) })
-                x.strokeStyle = 'rgba(255,255,255,0.08)'; x.beginPath(); x.moveTo(140, 945); x.lineTo(W - 140, 945); x.stroke()
-                x.fillStyle = 'rgba(255,255,255,0.4)'; x.font = '600 22px sans-serif'; x.fillText('DATA', W / 2, 1035)
-                x.fillStyle = '#fff'; x.font = '700 34px sans-serif'; x.fillText(dataStr, W / 2, 1080)
-                x.fillStyle = `rgba(${glow},0.95)`; x.font = '800 27px sans-serif'; x.fillText('Controle. Precisão. Resultado.', W / 2, 1235)
-                c.toBlob(b => { const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `nexcontrol-meta-${dataStr.replace(/\//g, '-')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u) })
+                const RED = '#e53935'
+                const accent = isLucro ? '34,197,94' : '229,57,53'      // verde lucro / vermelho perda
+                const accentHex = isLucro ? '#22C55E' : '#ef4444'
+                const rede = (meta.rede || meta.plataforma || 'OPERAÇÃO').toString().toUpperCase()
+                const money = (n) => `R$ ${fmt(Math.abs(n))}`
+                const signed = (n) => `${n >= 0 ? '+' : '−'}${money(n)}`
+                // helper rounded-rect
+                const rr = (x0, y0, w, h, r) => { x.beginPath(); x.moveTo(x0 + r, y0); x.arcTo(x0 + w, y0, x0 + w, y0 + h, r); x.arcTo(x0 + w, y0 + h, x0, y0 + h, r); x.arcTo(x0, y0 + h, x0, y0, r); x.arcTo(x0, y0, x0 + w, y0, r); x.closePath() }
+
+                const draw = (logo) => {
+                  // ---- fundo profundo NexControl ----
+                  x.fillStyle = '#06080c'; x.fillRect(0, 0, W, H)
+                  // vinheta radial sutil
+                  const vg = x.createRadialGradient(W / 2, 560, 80, W / 2, 560, 820)
+                  vg.addColorStop(0, `rgba(${accent},0.16)`); vg.addColorStop(0.55, `rgba(${accent},0.04)`); vg.addColorStop(1, 'rgba(0,0,0,0)')
+                  x.fillStyle = vg; x.fillRect(0, 0, W, H)
+                  // grão de escurecimento nas bordas
+                  const eg = x.createRadialGradient(W / 2, H / 2, 360, W / 2, H / 2, 820)
+                  eg.addColorStop(0, 'rgba(0,0,0,0)'); eg.addColorStop(1, 'rgba(0,0,0,0.55)')
+                  x.fillStyle = eg; x.fillRect(0, 0, W, H)
+
+                  // ---- moldura premium ----
+                  const M = 48
+                  rr(M, M, W - M * 2, H - M * 2, 34)
+                  const fg = x.createLinearGradient(0, M, 0, H - M)
+                  fg.addColorStop(0, `rgba(${accent},0.45)`); fg.addColorStop(0.5, 'rgba(255,255,255,0.08)'); fg.addColorStop(1, `rgba(${accent},0.18)`)
+                  x.strokeStyle = fg; x.lineWidth = 1.5; x.stroke()
+                  // realce superior interno
+                  x.strokeStyle = 'rgba(255,255,255,0.06)'; x.lineWidth = 1
+                  rr(M + 7, M + 7, W - (M + 7) * 2, H - (M + 7) * 2, 28); x.stroke()
+
+                  x.textAlign = 'center'
+
+                  // ---- logo oficial (icon + wordmark NexControl) ----
+                  const logoY = 150, iconSz = 52, gap = 15
+                  x.font = '800 38px Inter, sans-serif'
+                  const w1 = x.measureText('Nex').width, w2 = x.measureText('Control').width
+                  const hasIcon = !!logo
+                  const groupW = (hasIcon ? iconSz + gap : 0) + w1 + w2
+                  let cur = (W - groupW) / 2
+                  if (hasIcon) { x.drawImage(logo, cur, logoY - iconSz / 2, iconSz, iconSz); cur += iconSz + gap }
+                  x.textAlign = 'left'; x.textBaseline = 'middle'
+                  x.fillStyle = '#fff'; x.fillText('Nex', cur, logoY + 1)
+                  x.fillStyle = RED; x.fillText('Control', cur + w1, logoY + 1)
+                  x.textBaseline = 'alphabetic'; x.textAlign = 'center'
+
+                  // ---- pill META FINALIZADA · REDE ----
+                  x.font = '700 17px Inter, sans-serif'
+                  const tag = `META FINALIZADA · ${rede}`
+                  const tagW = x.measureText(tag).width
+                  const ph = 38, pw = tagW + 60, px = (W - pw) / 2, py = 198
+                  rr(px, py, pw, ph, ph / 2)
+                  x.fillStyle = `rgba(${accent},0.10)`; x.fill()
+                  x.strokeStyle = `rgba(${accent},0.32)`; x.lineWidth = 1; x.stroke()
+                  // dot
+                  x.beginPath(); x.arc(px + 26, py + ph / 2, 4.5, 0, Math.PI * 2); x.fillStyle = accentHex; x.fill()
+                  x.fillStyle = 'rgba(255,255,255,0.82)'; x.fillText(tag, (W / 2) + 11, py + ph / 2 + 6)
+
+                  // ---- HERO: resultado gigante ----
+                  x.fillStyle = 'rgba(255,255,255,0.46)'; x.font = '600 26px Inter, sans-serif'
+                  x.fillText(isLucro ? 'LUCRO LÍQUIDO' : 'PREJUÍZO', W / 2, 372)
+                  // glow do número
+                  x.save()
+                  x.shadowColor = `rgba(${accent},0.55)`; x.shadowBlur = 60
+                  x.fillStyle = accentHex; x.font = '900 132px Inter, sans-serif'
+                  x.fillText(signed(liqFinal), W / 2, 512)
+                  x.restore()
+                  x.fillStyle = 'rgba(255,255,255,0.4)'; x.font = '500 24px Inter, sans-serif'
+                  x.fillText('Resultado líquido da operação', W / 2, 568)
+
+                  // ---- painel de métricas em glass ----
+                  const panX = 96, panY = 640, panW = W - panX * 2, panH = 318
+                  rr(panX, panY, panW, panH, 24)
+                  const pgrad = x.createLinearGradient(0, panY, 0, panY + panH)
+                  pgrad.addColorStop(0, 'rgba(255,255,255,0.045)'); pgrad.addColorStop(1, 'rgba(255,255,255,0.015)')
+                  x.fillStyle = pgrad; x.fill()
+                  x.strokeStyle = 'rgba(255,255,255,0.08)'; x.lineWidth = 1; x.stroke()
+
+                  const cellMetric = (cx, cy, label, value, vcolor) => {
+                    x.fillStyle = vcolor || '#fff'; x.font = '800 40px Inter, sans-serif'; x.fillText(value, cx, cy)
+                    x.fillStyle = 'rgba(255,255,255,0.38)'; x.font = '600 17px Inter, sans-serif'; x.fillText(label, cx, cy + 36)
+                  }
+                  const colX = [panX + panW * 0.1665, panX + panW * 0.5, panX + panW * 0.8335]
+                  // divisores verticais
+                  x.strokeStyle = 'rgba(255,255,255,0.06)'; x.lineWidth = 1
+                  ;[panX + panW / 3, panX + (panW / 3) * 2].forEach(vx => { x.beginPath(); x.moveTo(vx, panY + 36); x.lineTo(vx, panY + panH / 2 - 24); x.stroke() })
+                  // divisor horizontal
+                  x.beginPath(); x.moveTo(panX + 40, panY + panH / 2); x.lineTo(panX + panW - 40, panY + panH / 2); x.stroke()
+                  ;[panX + panW / 3, panX + (panW / 3) * 2].forEach(vx => { x.beginPath(); x.moveTo(vx, panY + panH / 2 + 24); x.lineTo(vx, panY + panH - 36); x.stroke() })
+                  // linha 1
+                  const r1y = panY + 88
+                  cellMetric(colX[0], r1y, 'CONTAS', String(contasDone))
+                  cellMetric(colX[1], r1y, 'REMESSAS', String(remessas.length))
+                  cellMetric(colX[2], r1y, 'LUCRO / CONTA', signed(avgFinal), accentHex)
+                  // linha 2
+                  const r2y = panY + panH / 2 + 88
+                  cellMetric(colX[0], r2y, 'DEPOSITADO', money(totalDep))
+                  cellMetric(colX[1], r2y, 'ROI', `${roi >= 0 ? '+' : '−'}${Math.abs(roi).toFixed(0)}%`, roi >= 0 ? accentHex : '#ef4444')
+                  cellMetric(colX[2], r2y, 'TAXA DE ACERTO', `${Math.round(taxaAcerto)}%`)
+
+                  // ---- data ----
+                  x.fillStyle = 'rgba(255,255,255,0.32)'; x.font = '600 18px Inter, sans-serif'
+                  x.fillText(`EMITIDO EM ${dataStr}`, W / 2, 1040)
+
+                  // ---- assinatura / tagline ----
+                  x.strokeStyle = 'rgba(255,255,255,0.07)'; x.lineWidth = 1
+                  x.beginPath(); x.moveTo(W / 2 - 150, 1098); x.lineTo(W / 2 + 150, 1098); x.stroke()
+                  x.save()
+                  x.shadowColor = `rgba(${accent},0.4)`; x.shadowBlur = 22
+                  x.fillStyle = '#fff'; x.font = '800 30px Inter, sans-serif'
+                  x.fillText('Controle. Precisão. Resultado.', W / 2, 1162)
+                  x.restore()
+                  x.fillStyle = 'rgba(255,255,255,0.3)'; x.font = '600 18px Inter, sans-serif'
+                  x.fillText('nexcpa.com.br', W / 2, 1208)
+
+                  c.toBlob(b => { const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `nexcontrol-${rede.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${dataStr.replace(/\//g, '-')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u) })
+                }
+
+                const img = new Image()
+                img.onload = () => draw(img)
+                img.onerror = () => draw(null)
+                img.src = '/icons/nexcontrol-icon-clean.png'
               } catch {}
             }
 

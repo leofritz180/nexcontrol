@@ -7,9 +7,23 @@ import { supabase } from '../../../lib/supabase/client'
 import { notifyRemessaCreated } from '../../../lib/notify'
 import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
 import { ContaMaeView } from '../../../components/ContaMaeCard'
+import { SLOTS } from '../../../lib/slots-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
+
+// Slug do slot p/ a imagem em /slots/{slug}.webp
+const slotSlug = name => String(name).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,'e').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
+// Jogos preferidos (aparecem primeiro quando o tenant nao tem favoritos)
+const SLOT_PREFERRED = ['Gem Saviour', 'Piggy Gold', 'Fortune Dragon', 'Mr Hallow']
+// Catalogo completo ordenado: preferidos primeiro, depois o resto
+const SLOT_CATALOG = (() => {
+  const byName = {}
+  SLOTS.forEach(s => { byName[s.name] = { name: s.name, image: s.image, provider: s.provider, performance: s.performance } })
+  const names = SLOTS.map(s => s.name)
+  const ordered = [...SLOT_PREFERRED.filter(n => byName[n]), ...names.filter(n => !SLOT_PREFERRED.includes(n))]
+  return ordered.map(n => byName[n]).filter(Boolean)
+})()
 
 function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, bauAcumRemessas = 0, tenantOpModel = 'salario_bau', onClose, onSaved }) {
   // Em metas apenas_bau o BAU ja foi registrado por remessa (entrou em lucro/prejuizo).
@@ -264,7 +278,7 @@ function KPI({ label, value, color, small=false, accent }) {
       whileHover={{ y:-3, boxShadow:`0 10px 28px rgba(0,0,0,0.4), 0 0 20px ${accentC}15`, borderColor:`${accentC}30`, transition:{ duration:0.15 } }}
       style={{
         position:'relative', overflow:'hidden',
-        background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+        background:'linear-gradient(180deg, var(--raised), var(--surface))',
         backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
         border:'1px solid rgba(255,255,255,0.06)',
         borderRadius:14, padding:small?'12px 14px':'18px 20px',
@@ -721,7 +735,7 @@ export default function MetaPage() {
                 style={{
                   position:'relative', overflow:'hidden',
                   padding:'22px 24px', borderRadius:18,
-                  background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+                  background:'linear-gradient(180deg, var(--raised), var(--surface))',
                   backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
                   border:`1px solid ${statusC}22`,
                   boxShadow:`0 10px 40px rgba(0,0,0,0.5), 0 0 48px ${statusC}0f, inset 0 1px 0 rgba(255,255,255,0.05)`,
@@ -1189,7 +1203,7 @@ export default function MetaPage() {
                 position:'relative', overflow:'hidden',
                 marginBottom: 22,
                 padding: '18px 22px', borderRadius: 14,
-                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                background:'linear-gradient(180deg, var(--raised), var(--surface))',
                 backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
                 border:`1px solid ${isDone ? 'rgba(209,250,229,0.22)' : 'rgba(255,255,255,0.06)'}`,
                 boxShadow: isDone
@@ -1294,6 +1308,11 @@ export default function MetaPage() {
             const roi = depN>0 ? (prev.diff/depN)*100 : 0
             const hasInput = !!(dep || saq || (isApenasBauMeta && bauR))
             const col = prev.diff>0 ? 'var(--profit)' : prev.diff<0 ? 'var(--loss)' : '#FCD34D'
+            // Slots: usa os favoritos do tenant (na ordem dele) OU o catalogo completo
+            // (preferidos primeiro) — sempre visivel, sem precisar pre-selecionar.
+            const slotList = (tenantSlots && tenantSlots.length > 0)
+              ? tenantSlots.map(n => SLOT_CATALOG.find(x => x.name === n) || { name:n, image:`/slots/${slotSlug(n)}.webp` })
+              : SLOT_CATALOG
             return (
             <div className="card a2" style={{ padding:0, overflow:'hidden', borderRadius:18, border:'1px solid var(--b2)', background:'linear-gradient(180deg, var(--raised), var(--surface))', boxShadow:'0 24px 60px rgba(0,0,0,0.45)' }}>
               {/* Header */}
@@ -1314,6 +1333,38 @@ export default function MetaPage() {
               </div>
 
               <form onSubmit={handleAdd}>
+                {/* SLOTS — Netflix, sempre visivel (catalogo completo ou favoritos do tenant) */}
+                <div style={{ padding:'14px 20px', borderBottom:'1px solid var(--b1)' }}>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                    <p style={{ ...colTitle, margin:0 }}>Slot utilizado</p>
+                    {selectedSlot
+                      ? <span style={{ fontSize:11, color:'var(--profit)', fontWeight:700 }}>{selectedSlot}</span>
+                      : <span style={{ fontSize:10, color:'var(--t4)' }}>opcional · toque para escolher</span>}
+                  </div>
+                  <div style={{ display:'flex', gap:10, overflowX:'auto', paddingBottom:6 }}>
+                    {slotList.map(s => {
+                      const active = selectedSlot === s.name
+                      return (
+                        <div key={s.name} onClick={()=>setSelectedSlot(active?'':s.name)} style={{
+                          minWidth:112, maxWidth:112, cursor:'pointer', borderRadius:12, overflow:'hidden', flexShrink:0,
+                          border: active ? '2px solid var(--profit)' : '1px solid var(--b2)',
+                          background:'var(--raised)', boxShadow: active ? '0 0 18px rgba(34,197,94,0.25)' : 'none', transition:'all 0.15s',
+                        }}>
+                          <div style={{ position:'relative', height:84 }}>
+                            <img src={s.image} alt={s.name} loading="lazy" style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} onError={e=>{ e.currentTarget.style.opacity=0 }}/>
+                            <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.7))', pointerEvents:'none' }}/>
+                            {s.provider && <span style={{ position:'absolute', top:6, left:6, fontSize:7.5, fontWeight:800, padding:'2px 5px', borderRadius:4, background:'rgba(0,0,0,0.55)', color:'#fff', textTransform:'uppercase', letterSpacing:'0.04em' }}>{s.provider}</span>}
+                            {active && <div style={{ position:'absolute', top:6, right:6, width:20, height:20, borderRadius:'50%', background:'var(--profit)', display:'flex', alignItems:'center', justifyContent:'center' }}><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#012b1c" strokeWidth="3.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>}
+                          </div>
+                          <div style={{ padding:'7px 8px' }}>
+                            <p style={{ fontSize:10.5, fontWeight:700, color:active?'var(--profit)':'var(--t1)', margin:0, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{s.name}</p>
+                            {s.performance && <p style={{ fontSize:8.5, color:'var(--t4)', margin:'2px 0 0', textTransform:'capitalize' }}>{s.performance}</p>}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(215px, 1fr))', gap:1, background:'var(--b1)' }}>
 
                   {/* COL 1 — DADOS */}
@@ -1342,14 +1393,6 @@ export default function MetaPage() {
                       ))}
                     </div>)}
                     {field('NOTAS', <input className="input" value={obsRemessa} onChange={e=>setObsRemessa(e.target.value)} placeholder="Opcional..." style={inp}/>)}
-                    {tenantSlots.length > 0 && field('SLOT', <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
-                      {tenantSlots.map(name=>{ const slug=name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,'e').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); const active=selectedSlot===name; return (
-                        <div key={name} onClick={()=>setSelectedSlot(active?'':name)} style={{ minWidth:62, maxWidth:62, cursor:'pointer', borderRadius:8, padding:4, textAlign:'center', flexShrink:0, border:active?'2px solid var(--profit)':'1px solid var(--b2)', background:active?'var(--profit-dim)':'var(--raised)' }}>
-                          <img src={`/slots/${slug}.webp`} alt={name} style={{ width:'100%', height:44, objectFit:'cover', borderRadius:6, marginBottom:3 }} onError={e=>{e.currentTarget.style.display='none'}}/>
-                          <p style={{ fontSize:7.5, fontWeight:600, color:active?'var(--profit)':'var(--t4)', margin:0, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{name}</p>
-                        </div>
-                      )})}
-                    </div>)}
                   </div>
 
                   {/* COL 3 — RESUMO AO VIVO */}

@@ -6,6 +6,7 @@ import AppLayout from '../../components/AppLayout'
 import { isRedesign } from '../../lib/redesign'
 import RedesignLucroChart from '../../components/RedesignLucroChart'
 import RedesignFunnel from '../../components/RedesignFunnel'
+import TopRedesPerformance from '../../components/TopRedesPerformance'
 import TrialBanner, { ConversionModal } from '../../components/TrialBanner'
 import AnimatedNumber from '../../components/ui/AnimatedNumber'
 import { supabase } from '../../lib/supabase/client'
@@ -2676,6 +2677,15 @@ export default function AdminPage() {
                 )}
               </div>
             </motion.div>
+          )}
+
+          {/* ── Top Redes Performance (EXPERIMENTAL, somente leofritz178) ──
+              Card analitico premium: donut familia vermelha + foguete + ranking.
+              Remover = apagar este bloco e o import. */}
+          {(user?.email||'').toLowerCase()==='leofritz178@gmail.com' && (
+            <div style={{ marginBottom: 32 }}>
+              <TopRedesPerformance metas={metas} />
+            </div>
           )}
 
           {/* ── Metodos (beta) — card MENOR, abaixo (nao prioriza no topo) ── */}

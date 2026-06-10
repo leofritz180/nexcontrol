@@ -3,9 +3,38 @@ import { NextResponse } from 'next/server'
 import { sendPushToTenant, sendPushToUser } from '../../../../lib/push'
 import { getOperatorLimitStatus } from '../../../../lib/operator-limit'
 import { pickEngagementSegment, fillTemplate } from '../../../../lib/engagement-segments'
+import { renderWinbackEmail, sendEmailViaResend } from '../../../../lib/email-templates'
 
 // Call daily via Vercel Cron or external scheduler
 // GET /api/cron/trial-notifications?secret=YOUR_SECRET
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://nexcpa.com.br'
+
+// E-mails de conversao do TRIAL (espelham o push). Disparam junto com o push
+// nos momentos-chave. Sem RESEND_API_KEY o envio e' apenas pulado (sem erro).
+const TRIAL_EMAILS = {
+  '3d': { subject: 'Faltam 3 dias do seu teste NexControl', preheader: 'Garanta R$ 39,90/mes antes de bloquear.', bodyTitle: 'Faltam 3 dias do seu teste', bodyText: 'Seu teste gratis esta acabando. Assine agora e garanta o NexControl por R$ 39,90/mes. Apos o trial o acesso e bloqueado e voce perde a visao da operacao em tempo real.', ctaText: 'Assinar agora' },
+  '1d': { subject: 'Ultimo dia do seu teste gratis', preheader: 'Amanha o acesso e bloqueado.', bodyTitle: 'Ultimo dia do seu teste', bodyText: 'Amanha seu acesso e bloqueado. Assine em 1 clique pra nao perder seus dados, suas metas e o controle da sua equipe.', ctaText: 'Assinar antes de bloquear' },
+  'expired': { subject: 'Seu teste expirou — reative em 1 clique', preheader: 'Recupere seu acesso agora.', bodyTitle: 'Seu teste expirou', bodyText: 'Seu teste gratis acabou e o acesso foi bloqueado. Reative sua conta agora pra recuperar seus dados e voltar a operar sem nenhuma pausa.', ctaText: 'Reativar acesso' },
+}
+
+async function sendTrialEmail(supabase, tenantId, segKey) {
+  try {
+    const seg = TRIAL_EMAILS[segKey]
+    if (!seg) return
+    const { data: admin } = await supabase.from('profiles')
+      .select('email,nome').eq('tenant_id', tenantId).eq('role', 'admin').maybeSingle()
+    if (!admin?.email) return
+    const url = `${APP_URL}/billing-mp?utm_source=trial&utm_medium=email&utm_campaign=trial_${segKey}`
+    const { subject, html } = renderWinbackEmail({
+      segment: { email: seg },
+      vars: { nome: (admin.nome || '').split(' ')[0] || 'Operador', url },
+    })
+    await sendEmailViaResend({ to: admin.email, subject, html })
+  } catch (e) {
+    console.error('[trial-cron] email failed', e?.message)
+  }
+}
 
 export async function GET(req) {
   // Simple auth
@@ -57,6 +86,7 @@ export async function GET(req) {
 
       if (shouldNotify) {
         await sendPushToTenant(supabase, t.id, { title, body, url: '/billing-mp', tag: 'trial-' + daysLeft + 'd' })
+        await sendTrialEmail(supabase, t.id, daysLeft === 3 ? '3d' : '1d')
         await supabase.from('tenants').update({ last_trial_notif_date: today }).eq('id', t.id)
         sent++
       }
@@ -69,6 +99,7 @@ export async function GET(req) {
         url: '/billing-mp',
         tag: 'trial-expired',
       })
+      await sendTrialEmail(supabase, t.id, 'expired')
 
       await supabase.from('tenants').update({
         last_trial_notif_date: today,

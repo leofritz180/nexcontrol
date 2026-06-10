@@ -1,6 +1,7 @@
 import './globals.css'
 import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
+import MotionGate from '../components/MotionGate'
 const DynamicBackground = dynamic(() => import('../components/DynamicBackground'), { ssr: false })
 const SubscriptionGate = dynamic(() => import('../components/SubscriptionGate'), { ssr: false })
 const OperatorLimitGate = dynamic(() => import('../components/OperatorLimitGate'), { ssr: false })
@@ -55,13 +56,15 @@ export default function RootLayout({ children }) {
         `}} />
       </head>
       <body>
-        <Suspense fallback={null}><GlobalLoadingScreen/></Suspense>
-        <Suspense fallback={null}><SubscriptionGate><OperatorLimitGate>{children}</OperatorLimitGate></SubscriptionGate></Suspense>
-        <Suspense fallback={null}><InstallPrompt/></Suspense>
-        <Suspense fallback={null}><PresencePing/></Suspense>
-        <Suspense fallback={null}><UpdatesBell/></Suspense>
-        <Suspense fallback={null}><VoiceCommandPanel/></Suspense>
-        <Suspense fallback={null}><DesignMode/></Suspense>
+        <MotionGate>
+          <Suspense fallback={null}><GlobalLoadingScreen/></Suspense>
+          <Suspense fallback={null}><SubscriptionGate><OperatorLimitGate>{children}</OperatorLimitGate></SubscriptionGate></Suspense>
+          <Suspense fallback={null}><InstallPrompt/></Suspense>
+          <Suspense fallback={null}><PresencePing/></Suspense>
+          <Suspense fallback={null}><UpdatesBell/></Suspense>
+          <Suspense fallback={null}><VoiceCommandPanel/></Suspense>
+          <Suspense fallback={null}><DesignMode/></Suspense>
+        </MotionGate>
       </body>
     </html>
   )

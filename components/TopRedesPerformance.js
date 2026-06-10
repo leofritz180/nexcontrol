@@ -12,8 +12,8 @@ import { motion } from 'framer-motion'
  */
 
 const ease = [0.33, 1, 0.68, 1]
-// familia azul-marinho premium — variacoes sutis do mesmo tom
-const PALETTE = ['#3b5a86', '#314d76', '#284065', '#1f3354', '#172741']
+// familia azul royal premium — variacoes sutis do mesmo tom
+const PALETTE = ['#4f7cf0', '#3f66db', '#3252c4', '#2741a8', '#1d3289']
 const MOCK = [
   { rede: 'WE', lucro: 2540 },
   { rede: 'KF', lucro: 1870 },

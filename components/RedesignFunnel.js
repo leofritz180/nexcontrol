@@ -44,7 +44,7 @@ function CountUp({ value, currency, duration = 1.2 }) {
   return <span ref={ref}>{currency ? fmtCurrency(d) : fmtInt(Math.round(d))}</span>
 }
 
-export default function RedesignFunnel({ items = [] }) {
+export default function RedesignFunnel({ items = [], legacy = false }) {
   const data = items.slice(0, 5)
 
   // taxa de conversão de cada nível em relação ao anterior
@@ -100,9 +100,12 @@ export default function RedesignFunnel({ items = [] }) {
                 transition={{ duration: 0.35, delay: 0.06 * i, ease }}
                 style={{
                   width: `${w}%`,
-                  background: '#e10000',
-                  border: '1px solid rgba(255,255,255,0.28)',
-                  boxShadow: highlight ? '0 0 0 3px rgba(225,0,0,0.20)' : 'none',
+                  // legacy (leofritz178): fundo preto + contorno vermelho (visual antigo)
+                  background: legacy ? '#000' : '#e10000',
+                  border: legacy ? `1px solid ${BRAND}` : '1px solid rgba(255,255,255,0.28)',
+                  boxShadow: highlight
+                    ? (legacy ? `0 0 0 3px rgba(229,57,53,0.18), 0 0 18px rgba(229,57,53,0.20)` : '0 0 0 3px rgba(225,0,0,0.20)')
+                    : 'none',
                   borderRadius: 10,
                   padding: '12px 16px',
                 }}>

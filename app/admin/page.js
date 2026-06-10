@@ -2570,7 +2570,7 @@ export default function AdminPage() {
                   { label:'Remessas no sistema', value: global.totalRem },
                   { label:'Metas no sistema', value: global.totalMetas },
                 ]
-              })()} legacy={(user?.email||'').toLowerCase()==='leofritz178@gmail.com'} />
+              })()} legacy={true} />
             ) : (
             <motion.div
               data-tour="kpis-grid"

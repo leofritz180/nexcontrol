@@ -12,8 +12,8 @@ import { motion } from 'framer-motion'
  */
 
 const ease = [0.33, 1, 0.68, 1]
-// familia vermelha + cinzas premium (mesma identidade)
-const PALETTE = ['#ff2a2a', '#d91c1c', '#a41212', '#4a4a4a', '#2d2d2d']
+// familia azul-marinho premium — variacoes sutis do mesmo tom
+const PALETTE = ['#3b5a86', '#314d76', '#284065', '#1f3354', '#172741']
 const MOCK = [
   { rede: 'WE', lucro: 2540 },
   { rede: 'KF', lucro: 1870 },
@@ -44,8 +44,8 @@ export default function TopRedesPerformance({ metas = [], embedded = false }) {
     return arr.map((x, i) => ({ ...x, pct: (x.lucro / total) * 100, color: PALETTE[i] || PALETTE[PALETTE.length - 1] }))
   }, [metas])
 
-  // geometria do donut
-  const SIZE = 168, STROKE = 16, R = (SIZE - STROKE) / 2, CX = SIZE / 2, C = 2 * Math.PI * R
+  // geometria do donut — anel grosso, centro preto dominante (ref do user)
+  const SIZE = 180, STROKE = 24, R = (SIZE - STROKE) / 2, CX = SIZE / 2, C = 2 * Math.PI * R
   const GAP = 2.5 // graus de respiro entre segmentos (em comprimento de arco)
   let acc = 0
   const segs = data.map((d) => {
@@ -116,18 +116,17 @@ export default function TopRedesPerformance({ metas = [], embedded = false }) {
             ))}
           </svg>
 
-          {/* Centro: foguete glass */}
+          {/* Centro: disco preto dominante + foguete vermelho (inspirado na ref) */}
           <div style={{
             position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-            width: 76, height: 76, borderRadius: '50%',
+            width: SIZE - STROKE * 2 - 6, height: SIZE - STROKE * 2 - 6, borderRadius: '50%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'radial-gradient(circle at 50% 35%, rgba(255,255,255,0.05), rgba(255,255,255,0.015))',
-            border: '1px solid rgba(255,255,255,0.07)',
-            backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 6px 16px rgba(0,0,0,0.5)',
+            background: 'radial-gradient(circle at 50% 38%, #0c0c0c, #000)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)',
           }}>
-            <svg width={30} height={30} viewBox="0 0 24 24" fill="none" stroke="#ff2a2a" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"
-              style={{ filter: 'drop-shadow(0 2px 6px rgba(255,42,42,0.30))' }}>
+            <svg width={42} height={42} viewBox="0 0 24 24" fill="none" stroke="#ff2a2a" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round"
+              style={{ filter: 'drop-shadow(0 2px 8px rgba(255,42,42,0.35))' }}>
               <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
               <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
               <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />

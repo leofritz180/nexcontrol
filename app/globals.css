@@ -1431,10 +1431,18 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 
   /* 8. Cards com box-shadow gigante (>0 12px 32px) causam GPU stress
      Reduz pra metade */
+  *[style*="boxShadow"][style*="28px"],
+  *[style*="boxShadow"][style*="30px"],
+  *[style*="boxShadow"][style*="32px"],
+  *[style*="boxShadow"][style*="34px"],
+  *[style*="boxShadow"][style*="36px"],
   *[style*="boxShadow"][style*="40px"],
+  *[style*="boxShadow"][style*="44px"],
+  *[style*="boxShadow"][style*="50px"],
   *[style*="boxShadow"][style*="60px"],
   *[style*="boxShadow"][style*="80px"],
-  *[style*="boxShadow"][style*="100px"] {
+  *[style*="boxShadow"][style*="100px"],
+  *[style*="boxShadow"][style*="120px"] {
     box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
   }
 

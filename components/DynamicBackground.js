@@ -1,11 +1,15 @@
 'use client'
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 
 export default function DynamicBackground() {
   const canvasRef = useRef(null)
   const mouse = useRef({ x: -1, y: -1 })
   const raf = useRef(null)
   const particles = useRef([])
+  // PERF: o canvas roda a 60fps continuamente. No desktop fica identico;
+  // no mobile/tablet (onde mal aparece e pesa muito) e com "reduzir movimento"
+  // ele e desligado. Sem mudanca visual no desktop.
+  const [enabled, setEnabled] = useState(false)
 
   const init = useCallback(() => {
     const canvas = canvasRef.current
@@ -100,7 +104,22 @@ export default function DynamicBackground() {
     return () => cancelAnimationFrame(raf.current)
   }, [])
 
+  // Decide se o fundo roda: so desktop, ponteiro fino e sem reduce-motion
   useEffect(() => {
+    const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const mqCoarse = window.matchMedia('(pointer: coarse)')
+    const decide = () => setEnabled(window.innerWidth > 768 && !mqReduce.matches && !mqCoarse.matches)
+    decide()
+    mqReduce.addEventListener?.('change', decide)
+    window.addEventListener('resize', decide)
+    return () => {
+      mqReduce.removeEventListener?.('change', decide)
+      window.removeEventListener('resize', decide)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!enabled) return
     const cleanup = init()
 
     function handleResize() {
@@ -127,7 +146,9 @@ export default function DynamicBackground() {
       window.removeEventListener('mousemove', handleMouse)
       window.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [init])
+  }, [init, enabled])
+
+  if (!enabled) return null
 
   return (
     <canvas

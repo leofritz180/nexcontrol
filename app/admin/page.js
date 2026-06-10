@@ -2555,10 +2555,8 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Top Redes Performance — embutido no card de lucro (EXPERIMENTAL, somente leofritz178) */}
-              {(user?.email||'').toLowerCase()==='leofritz178@gmail.com' && (
-                <TopRedesPerformance metas={metas} embedded />
-              )}
+              {/* Top Redes Performance — embutido no card de lucro (TODOS OS ADMINS) */}
+              <TopRedesPerformance metas={metas} embedded />
             </motion.div>
 
             {/* RIGHT — Funil premium (redesign) ou KPIs */}

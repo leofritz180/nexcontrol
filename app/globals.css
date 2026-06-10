@@ -244,8 +244,11 @@ html.nx-aqua:not(.nx-light) {
   background: var(--fill-2) !important;
 }
 
-/* 6) Texto sobre fundo vermelho fixo (ex: funil) continua branco no claro */
-.nx-light .nx-red-txt { color: #fff !important; }
+/* 6) Texto do funil (bloco de fundo escuro fixo) continua CLARO no modo claro.
+      Os :not(#_) elevam a especificidade (id-level) p/ vencer as regras de
+      inversao de texto acima, que usam muitos :not([style]) e ficariam por cima. */
+.nx-light .nx-on-red .nx-red-txt:not(#_):not(#_),
+.nx-light .nx-on-red .nx-red-txt:not(#_):not(#_) * { color: #fff !important; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background: var(--base); }

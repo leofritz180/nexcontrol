@@ -24,7 +24,7 @@ const MOCK = [
 
 const fmt = (v) => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-export default function TopRedesPerformance({ metas = [] }) {
+export default function TopRedesPerformance({ metas = [], embedded = false }) {
   const [hover, setHover] = useState(-1)
 
   const data = useMemo(() => {
@@ -60,7 +60,10 @@ export default function TopRedesPerformance({ metas = [] }) {
     <motion.div
       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease }}
-      style={{
+      style={embedded ? {
+        // dentro de outro card: sem moldura propria, so divisoria no topo
+        marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--b1)',
+      } : {
         background: '#050505',
         border: '1px solid rgba(255,255,255,0.06)',
         borderRadius: 16,

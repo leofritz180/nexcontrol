@@ -2554,6 +2554,11 @@ export default function AdminPage() {
                   <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:600, color:'var(--t1)', margin:0 }}>{global.ops}</p>
                 </div>
               </div>
+
+              {/* Top Redes Performance — embutido no card de lucro (EXPERIMENTAL, somente leofritz178) */}
+              {(user?.email||'').toLowerCase()==='leofritz178@gmail.com' && (
+                <TopRedesPerformance metas={metas} embedded />
+              )}
             </motion.div>
 
             {/* RIGHT — Funil premium (redesign) ou KPIs */}
@@ -2677,15 +2682,6 @@ export default function AdminPage() {
                 )}
               </div>
             </motion.div>
-          )}
-
-          {/* ── Top Redes Performance (EXPERIMENTAL, somente leofritz178) ──
-              Card analitico premium: donut familia vermelha + foguete + ranking.
-              Remover = apagar este bloco e o import. */}
-          {(user?.email||'').toLowerCase()==='leofritz178@gmail.com' && (
-            <div style={{ marginBottom: 32 }}>
-              <TopRedesPerformance metas={metas} />
-            </div>
           )}
 
           {/* ── Metodos (beta) — card MENOR, abaixo (nao prioriza no topo) ── */}

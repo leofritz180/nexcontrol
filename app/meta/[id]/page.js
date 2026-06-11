@@ -610,11 +610,20 @@ export default function MetaPage() {
   async function saveEditRem() {
     if (!editRem||editSaving) return
     setEditSaving(true)
-    const d=Number(editDep),s=Number(editSaq),b=Number(editBau||0),diff=s-d
+    // MESMA logica do cadastro (handleAdd): usa parseVal (numero BR) e, em metas
+    // apenas_bau, SOMA o bau ao resultado. Bug corrigido: antes era diff=s-d e o
+    // bau editado nao entrava no lucro/prejuizo/resultado.
+    const d=Number(parseVal(editDep).toFixed(2)), s=Number(parseVal(editSaq).toFixed(2))
+    const isApenasBau = (meta?.operation_model || tenantOpModel || 'salario_bau') === 'apenas_bau'
+    const bauVal = isApenasBau ? Number(parseVal(editBau || '0').toFixed(2)) : 0
+    const resultadoTotal = Number(((s - d) + bauVal).toFixed(2))
+    const lucroVal = resultadoTotal > 0 ? resultadoTotal : 0
+    const prejVal  = resultadoTotal < 0 ? Math.abs(resultadoTotal) : 0
+    const contas = Number(editRem.contas_remessa||0)
     await supabase.from('remessas').update({
-      deposito:d, saque:s, bau:b,
-      lucro:diff>0?diff:0, prejuizo:diff<0?Math.abs(diff):0, resultado:diff,
-      resultado_por_conta: Number(editRem.contas_remessa||0) > 0 ? Number((diff / Number(editRem.contas_remessa)).toFixed(2)) : 0,
+      deposito:d, saque:s, bau:bauVal,
+      lucro:lucroVal, prejuizo:prejVal, resultado:resultadoTotal,
+      resultado_por_conta: contas > 0 ? Number((resultadoTotal / contas).toFixed(2)) : 0,
     }).eq('id',editRem.id)
     setEditSaving(false)
     setEditRem(null)

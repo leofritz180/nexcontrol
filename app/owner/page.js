@@ -69,6 +69,7 @@ export default function OwnerPage() {
   const [data, setData] = useState(null)
   const [userId, setUserId] = useState(null)
   const [chartRange, setChartRange] = useState(30)
+  const [tab, setTab] = useState('geral')
   const [hoveredBar, setHoveredBar] = useState(null)
   const [adminSearch, setAdminSearch] = useState('')
   const [selectedAdmin, setSelectedAdmin] = useState(null)
@@ -229,27 +230,62 @@ export default function OwnerPage() {
   const dateStr = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--surface)', position: 'relative', zIndex: 1 }}>
-      {/* Ambient */}
-      <div style={{ position: 'fixed', top: '-10%', left: '15%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(209,250,229,0.03), transparent 60%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
+    <main className="nx-owner" style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
+      {/* Ambient dourado */}
+      <div style={{ position: 'fixed', top: '-10%', left: '15%', width: 540, height: 540, borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,175,55,0.06), transparent 62%)', filter: 'blur(90px)', pointerEvents: 'none' }} />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 28px 80px' }}>
 
-        {/* ═══ HEADER ═══ */}
-        <motion.div {...fadeUp(0)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32, flexWrap: 'wrap', gap: 12 }}>
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.03em' }}>
-              Centro de Comando
-            </h1>
-            <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'capitalize' }}>{dateStr}</p>
+        {/* ═══ HEADER COMMAND CENTER (ouro) ═══ */}
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14, marginBottom: 18 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 13 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 13, background: 'rgba(212,175,55,0.10)', border: '1px solid rgba(212,175,55,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 26px rgba(212,175,55,0.2)' }}>
+                <svg width={21} height={21} viewBox="0 0 24 24" fill="none" stroke="#e8c766" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.7 5.8 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+              </div>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <h1 style={{ fontSize: 23, fontWeight: 800, color: '#f7f0df', margin: 0, letterSpacing: '-0.03em' }}>Centro de Comando</h1>
+                  <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', padding: '3px 9px', borderRadius: 5, background: 'rgba(212,175,55,0.12)', color: '#e8c766', border: '1px solid rgba(212,175,55,0.32)' }}>OWNER</span>
+                </div>
+                <p style={{ fontSize: 11.5, color: '#998b6a', margin: '3px 0 0', textTransform: 'capitalize' }}>{dateStr}</p>
+              </div>
+            </div>
+            <button onClick={() => router.push('/admin')}
+              style={{ fontSize: 12, fontWeight: 700, padding: '9px 20px', borderRadius: 10, cursor: 'pointer', border: '1px solid rgba(212,175,55,0.25)', background: 'rgba(212,175,55,0.06)', color: '#e8c766', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.12)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.06)' }}
+            >Voltar ao painel</button>
           </div>
-          <button onClick={() => router.push('/admin')}
-            style={{ fontSize: 12, fontWeight: 600, padding: '8px 20px', borderRadius: 8, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: 'var(--t3)', transition: 'all 0.2s' }}
-            onMouseEnter={e => { e.target.style.background = 'rgba(255,255,255,0.08)'; e.target.style.color = '#F1F5F9' }}
-            onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.04)'; e.target.style.color = 'var(--t3)' }}
-          >Voltar ao painel</button>
+
+          {/* KPIs ao vivo */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 1, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(212,175,55,0.18)', background: 'rgba(212,175,55,0.14)' }}>
+            {[
+              { l: 'MRR', v: <CountUp value={kpis.mrr} prefix="R$ " />, gold: true },
+              { l: 'Receita hoje', v: <CountUp value={kpis.revenueToday} prefix="R$ " /> },
+              { l: 'Pagantes ativos', v: <CountUpInt value={kpis.activeSubs} /> },
+              { l: 'Receita total', v: <CountUp value={kpis.totalRevenue} prefix="R$ " /> },
+            ].map((k, i) => (
+              <div key={i} style={{ padding: '15px 18px', background: '#14110b' }}>
+                <p style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#998b6a', margin: '0 0 6px' }}>{k.l}</p>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: k.gold ? '#e8c766' : '#f7f0df', margin: 0, letterSpacing: '-0.01em' }}>{k.v}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Abas */}
+          <div style={{ display: 'flex', gap: 4, marginTop: 20, borderBottom: '1px solid rgba(212,175,55,0.16)', flexWrap: 'wrap' }}>
+            {[['geral', 'Visão geral'], ['receita', 'Receita'], ['operacao', 'Operação & Saúde'], ['clientes', 'Clientes']].map(([k, l]) => (
+              <button key={k} onClick={() => setTab(k)} style={{
+                padding: '11px 18px', fontSize: 13, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer',
+                background: 'transparent', border: 'none', borderBottom: tab === k ? '2px solid #e8c766' : '2px solid transparent',
+                color: tab === k ? '#f7f0df' : '#998b6a', marginBottom: -1, transition: 'all 0.15s',
+              }}>{l}</button>
+            ))}
+          </div>
         </motion.div>
 
+        {tab === 'geral' && (<>
         {/* ═══ OPERATION HEALTH STATUS ═══ */}
         <motion.div {...fadeUp(1)} style={{ marginBottom: 20 }}>
           <div style={{ ...card, padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, borderColor: opHealth.border, background: opHealth.bg }}>
@@ -476,6 +512,9 @@ export default function OwnerPage() {
           </div>
         </div>
 
+        </>)}
+
+        {tab === 'receita' && (<>
         {/* ═══ CHART ═══ */}
         <motion.div {...fadeUp(0, 0.3)} style={{ ...card, padding: 24, marginBottom: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -1054,6 +1093,9 @@ export default function OwnerPage() {
           )}
         </div>
 
+        </>)}
+
+        {tab === 'operacao' && (<>
         {/* ═══ ISSUES DETECTADOS — Painel de problemas operacionais ═══ */}
         {issues && issues.totalCount > 0 && (
           <motion.div {...fadeUp(0, 0.3)} style={{ ...card, padding: 24, marginBottom: 28, border: '1px solid rgba(239,68,68,0.25)' }}>
@@ -1247,6 +1289,9 @@ export default function OwnerPage() {
           </motion.div>
         )}
 
+        </>)}
+
+        {tab === 'clientes' && (<>
         {/* ═══ LEVEL 3: RANKING ═══ */}
         <motion.div {...fadeUp(0, 0.4)} style={{ ...card, padding: 24, marginBottom: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
@@ -1409,6 +1454,7 @@ export default function OwnerPage() {
           </div>
         </motion.div>
 
+        </>)}
       </div>
 
       {/* ═══ ADMIN DETAIL MODAL ═══ */}

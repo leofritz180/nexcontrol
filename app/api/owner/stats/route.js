@@ -84,6 +84,33 @@ export async function POST(req) {
     const activeSubs = allSubs.filter(s => s.status === 'active')
     const cancelledSubs = allSubs.filter(s => s.status === 'cancelled')
 
+    // PAGANTES REAIS: tenants ÚNICOS com assinatura active e NÃO vencida.
+    // (Bug antigo: contava LINHAS de assinatura — cada renovação/add-on inflava
+    //  o número, ex: 187 linhas para ~82 clientes reais.)
+    const _nowMs = Date.now()
+    const activePayingTenantIds = new Set(
+      activeSubs
+        .filter(s => !s.expires_at || new Date(s.expires_at).getTime() > _nowMs)
+        .map(s => s.tenant_id)
+    )
+    const activePayingCount = activePayingTenantIds.size
+    // MRR REAL: soma do valor MENSAL de cada tenant pagante — pega a assinatura de
+    // ciclo mais recente (plan_months>=1) e normaliza pra mensal. Antes era
+    // count*avgTicket (duplamente errado: linhas x ticket por transação).
+    const _cycleByTenant = {}
+    for (const s of activeSubs) {
+      if (Number(s.plan_months || 0) < 1) continue
+      if (!activePayingTenantIds.has(s.tenant_id)) continue
+      ;(_cycleByTenant[s.tenant_id] = _cycleByTenant[s.tenant_id] || []).push(s)
+    }
+    let mrrReal = 0
+    for (const tid of Object.keys(_cycleByTenant)) {
+      const arr = _cycleByTenant[tid].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      const s = arr[0]
+      mrrReal += Number(s.total_amount || 0) / Math.max(Number(s.plan_months || 1), 1)
+    }
+    mrrReal = Number(mrrReal.toFixed(2))
+
     // Revenue calculations — incluir status de ambos gateways
     const PAID_STATUSES = new Set([
       // Asaas
@@ -120,7 +147,7 @@ export async function POST(req) {
 
     // MRR estimate
     const avgTicket = paidPayments.length > 0 ? totalRevenue / paidPayments.length : 39.9
-    const mrr = activeSubs.length * avgTicket
+    const mrr = mrrReal
 
     // New clients
     const new7 = admins.filter(a => new Date(a.created_at) >= d7).length
@@ -138,7 +165,7 @@ export async function POST(req) {
       const meta = allMetas.find(m => m.id === r.meta_id)
       return meta?.operator_id || meta?.tenant_id
     }).filter(Boolean)).size
-    const withSub = activeSubs.length
+    const withSub = activePayingCount
 
     // Activity
     const activeToday = new Set(allRem.filter(r => brDateKey(r.created_at) === today).map(r => {
@@ -542,7 +569,7 @@ export async function POST(req) {
     return NextResponse.json({
       kpis: {
         totalAdmins: admins.length, totalOperators: operators.length,
-        activeSubs: activeSubs.length, cancelledSubs: cancelledSubs.length,
+        activeSubs: activePayingCount, cancelledSubs: cancelledSubs.length,
         mrr, totalRevenue, revenueToday, revenueMonth, rev30, rev7,
         prevRevenue7d, revenueVariation,
         new7, new30, avgTicket, arpu, churnRate, ltv,

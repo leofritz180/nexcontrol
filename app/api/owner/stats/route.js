@@ -110,6 +110,9 @@ export async function POST(req) {
       mrrReal += Number(s.total_amount || 0) / Math.max(Number(s.plan_months || 1), 1)
     }
     mrrReal = Number(mrrReal.toFixed(2))
+    // Total de PESSOAS pagantes = admins pagantes + operadores das contas pagantes
+    const payingOperators = operators.filter(o => o.tenant_id && activePayingTenantIds.has(o.tenant_id)).length
+    const payingPeople = activePayingCount + payingOperators
 
     // Revenue calculations — incluir status de ambos gateways
     const PAID_STATUSES = new Set([
@@ -570,6 +573,7 @@ export async function POST(req) {
       kpis: {
         totalAdmins: admins.length, totalOperators: operators.length,
         activeSubs: activePayingCount, cancelledSubs: cancelledSubs.length,
+        payingPeople, payingOperators,
         mrr, totalRevenue, revenueToday, revenueMonth, rev30, rev7,
         prevRevenue7d, revenueVariation,
         new7, new30, avgTicket, arpu, churnRate, ltv,

@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { VOICE_BANNER_SEEN_KEY as SEEN_KEY, VOICE_BANNER_UNTIL as BANNER_UNTIL } from '../lib/onboardingSeq'
+import { VOICE_BANNER_SEEN_KEY as SEEN_KEY, VOICE_BANNER_UNTIL as BANNER_UNTIL, bannerToday } from '../lib/onboardingSeq'
 
 // Banner do NOVO INSTAGRAM (@nexcontrol_ofc). Substitui o banner de voz.
 // Perdemos o Instagram antigo — este banner avisa todos e pede pra seguir +
@@ -17,8 +17,10 @@ export default function VoiceBanner({ userEmail }) {
   useEffect(() => {
     if (!email) return
     if (new Date() > BANNER_UNTIL) return // janela de 7 dias encerrada
+    // 1x por dia: "já vi" = data salva é hoje. (O login limpa a marca, então
+    // reaparece ao logar de novo.)
     let seen = false
-    try { seen = sessionStorage.getItem(SEEN_KEY) === '1' } catch {}
+    try { seen = localStorage.getItem(SEEN_KEY) === bannerToday() } catch {}
     if (seen) return
     // Sinaliza pro sequenciador: banner é o 1º passo — segura tutorial/checklist
     try { window.__nxBannerOpen = true } catch {}
@@ -27,7 +29,7 @@ export default function VoiceBanner({ userEmail }) {
   }, [email])
 
   function dismiss() {
-    try { sessionStorage.setItem(SEEN_KEY, '1') } catch {}
+    try { localStorage.setItem(SEEN_KEY, bannerToday()) } catch {}
     try { window.__nxBannerOpen = false; window.dispatchEvent(new Event('nx-banner-closed')) } catch {}
     setShow(false)
   }

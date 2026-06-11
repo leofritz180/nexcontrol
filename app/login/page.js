@@ -55,6 +55,8 @@ export default function LoginPage() {
       if (!r.timeout) role = r.value?.data?.role || null
     } catch {}
     const target = role === 'operator' ? '/operator' : '/admin'
+    // Banner do novo Instagram reaparece a cada login (limpa a marca do dia)
+    try { localStorage.removeItem('nx_instabanner_v3') } catch {}
     if (typeof window !== 'undefined') window.location.assign(target)
     else router.push(target)
   }

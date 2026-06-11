@@ -452,7 +452,7 @@ function ActivityMarquee({ referrals }) {
   const mockItems = [
     { name: '@davir', action: 'recebeu R$ 28,02 em comissão', when: 'há 2h' },
     { name: '@rodrigo', action: 'indicou novo cliente', when: 'há 5h' },
-    { name: '@sergio_g', action: 'solicitou pagamento via @nexcpa', when: 'há 1d' },
+    { name: '@sergio_g', action: 'solicitou pagamento via @nexcontrol_ofc', when: 'há 1d' },
     { name: '@cpalflux', action: 'tornou-se afiliado', when: 'há 1d' },
     { name: '@thiago', action: 'compartilhou link no WhatsApp', when: 'há 2d' },
   ]
@@ -570,7 +570,7 @@ function HowItWorks({ rate }) {
             {/* Step 3: cards de contato */}
             {s.contact && (
               <div style={{ display: 'flex', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
-                <a href="https://instagram.com/nexcpa" target="_blank" rel="noopener noreferrer"
+                <a href="https://instagram.com/nexcontrol_ofc" target="_blank" rel="noopener noreferrer"
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 10,
                     padding: '12px 16px', borderRadius: 11,
@@ -583,7 +583,7 @@ function HowItWorks({ rate }) {
                   <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                   <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.15 }}>
                     <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.1em' }}>INSTAGRAM</span>
-                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, color: '#fff' }}>@nexcpa</span>
+                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, color: '#fff' }}>@nexcontrol_ofc</span>
                   </span>
                 </a>
                 <a href="https://wa.me/5532998348889" target="_blank" rel="noopener noreferrer"
@@ -709,7 +709,7 @@ function WithdrawalCode({ code }) {
             </p>
             <ol style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 11 }}>
               {[
-                'Chama no @nexcpa (Instagram) ou WhatsApp',
+                'Chama no @nexcontrol_ofc (Instagram) ou WhatsApp',
                 'Envie seu código de recebimento',
                 'Confirme dados pra receber via PIX, banco ou outro meio',
                 'Pagamento sai em até 24 horas',
@@ -1193,7 +1193,7 @@ function StatusBadge({ status }) {
 function FAQImersive({ rate }) {
   const [open, setOpen] = useState(0)
   const items = [
-    { q: 'Como recebo minha comissão?', a: `Quando algum indicado seu paga, automaticamente gera ${Math.round(rate * 100)}% de comissão pra você. Pra solicitar o pagamento, chama o @nexcpa no Instagram ou WhatsApp (32) 99834-8889 com seu código de afiliado.` },
+    { q: 'Como recebo minha comissão?', a: `Quando algum indicado seu paga, automaticamente gera ${Math.round(rate * 100)}% de comissão pra você. Pra solicitar o pagamento, chama o @nexcontrol_ofc no Instagram ou WhatsApp (32) 99834-8889 com seu código de afiliado.` },
     { q: 'Pra que serve o código de afiliado?', a: 'É a sua chave de identificação. Sem ele, ninguém consegue resgatar suas comissões — nem alguém se passando por você. É a forma da gente confirmar que é VOCÊ quem está pedindo.' },
     { q: 'E se eu perder meu código?', a: 'Você consegue ver ele aqui mesmo no painel, é só clicar em "Revelar". Recomenda salvar num gerenciador de senhas.' },
     { q: 'Quanto custa pra começar?', a: 'Nada. Programa é grátis pra todo cliente PRO. Seu link e código já estão prontos pra usar.' },

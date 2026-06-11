@@ -394,75 +394,60 @@ export default function MetaPage() {
       return { type: 'warn', title: 'Banco em analise', text: 'Informe o ADMIN. Aguarde confirmacao antes de prosseguir.', icon: 'alert' }
     }
 
-    // Faixas por conta (valor absoluto do prejuizo):
-    // Lucro ou prejuizo ate 3/conta: BOM
-    // Prejuizo 4-8/conta: dentro do esperado
-    // Prejuizo 9-12/conta: comecou ficar ruim
-    // Prejuizo 13-16/conta: muito ruim
-    // Prejuizo >16/conta: pessimo, alerta critico
-
+    // Faixas por RESULTADO POR CONTA (definidas pelo dono):
+    //   lucro            -> muito bom, parabens
+    //   preju ate 2/c    -> mandou bem, prejuizo baixo
+    //   preju 2-4/c      -> leve oscilada, dentro do esperado
+    //   preju 4-6/c      -> comecando a oscilar demais, analisar
+    //   preju 6-8/c      -> oscilando demais, atencao redobrada
+    //   preju 8-10/c     -> ruim, ja comeca a levar pro prejuizo
+    //   preju > 10/c     -> ja e prejuizo
     const absPer = Math.abs(perConta)
+    const rnd = a => a[Math.floor(Math.random() * a.length)]
+    const tag = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`
 
-    if (diff < 0 && absPer > 16) {
-      const msgs = [
-        'Prejuizo critico. Pare e consulte o ADMIN imediatamente.',
-        'Resultado pessimo — considere pausar a operacao agora.',
-        'Alerta maximo. Nao continue sem alinhar com o ADMIN.',
-      ]
-      return { type: 'critical', title: `Prejuizo critico: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: msgs[Math.floor(Math.random() * msgs.length)], icon: 'x' }
-    }
-
-    if (diff < 0 && absPer > 12) {
-      return { type: 'critical', title: `Prejuizo alto: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: 'Situacao muito ruim. Avise o ADMIN e avalie trocar de slot.', icon: 'x' }
-    }
-
-    if (diff < 0 && absPer > 8) {
-      return { type: 'warn', title: `Atencao: R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`, text: 'Prejuizo acima do ideal. Fique atento nas proximas remessas.', icon: 'alert' }
-    }
-
-    if (diff < 0 && absPer > 3) {
-      const titles = ['+1 remessa registrada!', 'Remessa salva!', 'Registrado!']
-      const msgs = [
-        'Dentro do esperado. Segue operando normalmente.',
-        'Prejuizo aceitavel, faz parte. Bora pra proxima!',
-        'Normal na operacao. Continua firme.',
-      ]
-      return { type: 'good', title: titles[Math.floor(Math.random()*titles.length)], text: `-R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta) — ${msgs[Math.floor(Math.random() * msgs.length)]}`, icon: 'check' }
-    }
-
-    if (diff < 0 && absPer <= 3) {
-      const titles = ['Boa! +1 remessa!', 'Registrado!', 'Salvo!']
-      const msgs = [
-        'Prejuizo minimo, ta de boa! Segue firme.',
-        'Resultado controlado. Faz parte, bora pra proxima!',
-        'Leve prejuizo, nada preocupante. Continua.',
-      ]
-      return { type: 'good', title: titles[Math.floor(Math.random()*titles.length)], text: `-R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta) — ${msgs[Math.floor(Math.random() * msgs.length)]}`, icon: 'check' }
-    }
-
-    // Lucro (qualquer valor)
+    // LUCRO
     if (diff >= 0) {
-      const titles = [
-        'Boaa! +1 remessa registrada!',
-        'Mais uma! Bora!',
-        'Registrado! Ta voando!',
-        'Boa! +1 no historico!',
-        'Show! Remessa no sistema!',
-        'Firme! Mais uma pra conta!',
-      ]
-      const msgs = [
-        'Mandou bem, continua assim!',
-        'Ai sim, bora pra cima!',
-        'Boa! Mantem esse ritmo.',
-        'Ta no controle, segue firme!',
-        'Show! Operacao no caminho certo.',
-        'Excelente! Segue nesse flow!',
-        'Lucro registrado, bora pra proxima!',
-      ]
-      return { type: 'good', title: titles[Math.floor(Math.random() * titles.length)], text: `+R$ ${fmt(diff)}${nContasRemessa > 0 ? ` (R$ ${fmt(perConta)}/conta)` : ''} — ${msgs[Math.floor(Math.random() * msgs.length)]}`, icon: 'check' }
+      const titles = ['Muito bom! +1 remessa!', 'Show! Lucro registrado!', 'Parabéns! Remessa no lucro!', 'Boaa! Mais uma no positivo!', 'Excelente! Bora pra cima!']
+      const msgs = ['Muito bom, parabéns! Continua assim!', 'Ai sim! Lucro na remessa, mandou bem demais!', 'Show de bola, mantém esse ritmo!', 'Excelente resultado, operação voando!', 'Lucro garantido, bora pra próxima!']
+      return { type: 'good', title: rnd(titles), text: `+R$ ${fmt(diff)}${nContasRemessa > 0 ? ` (R$ ${fmt(perConta)}/conta)` : ''} — ${rnd(msgs)}`, icon: 'check' }
     }
 
-    return null
+    // PREJUIZO ate 2/conta — baixo, tranquilo
+    if (absPer <= 2) {
+      const titles = ['Boa! Prejuízo baixo', 'Mandou bem!', 'Tranquilo, +1 remessa']
+      const msgs = ['Prejuízo baixo, mandou bem! O salário compensa fácil.', 'Resultado controlado, tá de boa. Segue firme!', 'Prejuízo mínimo, nada preocupante. Bora pra próxima!']
+      return { type: 'good', title: rnd(titles), text: `-${tag} — ${rnd(msgs)}`, icon: 'check' }
+    }
+
+    // 2-4/conta — leve oscilada, dentro do esperado
+    if (absPer <= 4) {
+      const titles = ['Registrado!', 'Dentro do esperado', '+1 remessa salva']
+      const msgs = ['Leve oscilada, mas dentro do esperado. Segue normal.', 'Oscilou um pouco, faz parte da operação. Continua!', 'Nada fora do comum, tá no esperado. Bora!']
+      return { type: 'good', title: rnd(titles), text: `-${tag} — ${rnd(msgs)}`, icon: 'check' }
+    }
+
+    // 4-6/conta — comecando a oscilar demais, analisar
+    if (absPer <= 6) {
+      const msgs = ['Começando a oscilar demais — vale analisar o que pode ser.', 'Tá oscilando além do normal. Observa o slot e as contas.', 'Oscilação subindo. Dá uma olhada no que pode estar pesando.']
+      return { type: 'warn', title: `Atenção: ${tag}`, text: rnd(msgs), icon: 'alert' }
+    }
+
+    // 6-8/conta — oscilando demais, atencao redobrada
+    if (absPer <= 8) {
+      const msgs = ['Oscilando bastante. Fique atento e avalie trocar de slot.', 'Prejuízo subindo — acompanha de perto as próximas remessas.', 'Tá oscilando demais. Vale revisar a estratégia da meta.']
+      return { type: 'warn', title: `Atenção redobrada: ${tag}`, text: rnd(msgs), icon: 'alert' }
+    }
+
+    // 8-10/conta — ruim, ja leva pro prejuizo
+    if (absPer <= 10) {
+      const msgs = ['Resultado ruim — já começa a levar pro prejuízo. Avise o ADMIN.', 'Tá pesado. Nesse ritmo o salário pode não compensar. Reavalie.', 'Prejuízo alto. Considere pausar e alinhar com o ADMIN.']
+      return { type: 'critical', title: `Ruim: ${tag}`, text: rnd(msgs), icon: 'x' }
+    }
+
+    // > 10/conta — ja e prejuizo
+    const msgsC = ['Já é prejuízo de verdade. Pare e consulte o ADMIN imediatamente.', 'Resultado muito ruim — não continue sem alinhar com o ADMIN.', 'Prejuízo crítico. Pausa a operação e reavalia agora.']
+    return { type: 'critical', title: `Prejuízo: ${tag}`, text: rnd(msgsC), icon: 'x' }
   }
 
   function showFeedback(diff, statusProblema, nContasRem, slotUsed) {
@@ -492,20 +477,29 @@ export default function MetaPage() {
     // Push pro operador em toda remessa
     const perConta = nContasRem > 0 ? Math.abs(diff) / nContasRem : Math.abs(diff)
     let pushTitle, pushBody
+    const perTag = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta)`
     if (diff >= 0) {
-      const msgs = ['Mandou bem! Continua nesse ritmo.', 'Boa remessa! Segue firme.', 'Ai sim! Bora pra cima.', 'Show! Mantem o foco.', 'Ta voando!']
-      pushTitle = 'Remessa registrada!'
+      const msgs = ['Muito bom, parabéns! Continua assim.', 'Lucro na remessa, mandou bem demais!', 'Show! Mantém esse ritmo.', 'Ai sim! Operação voando.']
+      pushTitle = 'Remessa no lucro!'
       pushBody = `+R$ ${fmt(diff)} — ${msgs[Math.floor(Math.random() * msgs.length)]}`
+    } else if (perConta <= 2) {
+      pushTitle = 'Remessa registrada'
+      pushBody = `${perTag} — Prejuízo baixo, mandou bem! Salário compensa.`
+    } else if (perConta <= 4) {
+      pushTitle = 'Remessa registrada'
+      pushBody = `${perTag} — Leve oscilada, dentro do esperado. Segue firme.`
+    } else if (perConta <= 6) {
+      pushTitle = 'Atenção na operação'
+      pushBody = `${perTag} — Começando a oscilar demais. Analisa o que pode ser.`
     } else if (perConta <= 8) {
-      const msgs = ['Faz parte da operacao. Segue firme.', 'Prejuizo controlado. Continua.', 'Normal, bora pra proxima!']
-      pushTitle = 'Remessa registrada'
-      pushBody = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta) — ${msgs[Math.floor(Math.random() * msgs.length)]}`
-    } else if (perConta <= 14) {
-      pushTitle = 'Remessa registrada'
-      pushBody = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta) — Fique atento nas proximas.`
+      pushTitle = 'Atenção redobrada'
+      pushBody = `${perTag} — Oscilando bastante. Fique atento e avalie o slot.`
+    } else if (perConta <= 10) {
+      pushTitle = 'Resultado ruim'
+      pushBody = `${perTag} — Já começa a levar pro prejuízo. Avise o admin.`
     } else {
-      pushTitle = 'Atencao na operacao'
-      pushBody = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta) — Prejuizo alto. Avalie com o admin.`
+      pushTitle = 'Prejuízo alto'
+      pushBody = `${perTag} — Já é prejuízo. Pare e alinhe com o admin.`
     }
     fetch('/api/push/send', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },

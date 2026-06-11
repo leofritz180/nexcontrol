@@ -405,6 +405,8 @@ export default function MetaPage() {
     const absPer = Math.abs(perConta)
     const rnd = a => a[Math.floor(Math.random() * a.length)]
     const tag = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`
+    // Admin que opera nao deve ler "avise o ADMIN" — recebe versao auto-dirigida.
+    const isAdmin = profile?.role === 'admin'
 
     // LUCRO
     if (diff >= 0) {
@@ -427,26 +429,30 @@ export default function MetaPage() {
       return { type: 'good', title: rnd(titles), text: `-${tag} — ${rnd(msgs)}`, icon: 'check' }
     }
 
-    // 4-6/conta — comecando a oscilar demais, analisar
+    // 4-6/conta — comecando a oscilar, fique de olho
     if (absPer <= 6) {
-      const msgs = ['Começando a oscilar demais — vale analisar o que pode ser.', 'Tá oscilando além do normal. Observa o slot e as contas.', 'Oscilação subindo. Dá uma olhada no que pode estar pesando.']
+      const msgs = ['Começando a oscilar, fique de olho!', 'Tá oscilando um pouco — fica de olho nas próximas.', 'Leve oscilação subindo. Fica esperto!']
       return { type: 'warn', title: `Atenção: ${tag}`, text: rnd(msgs), icon: 'alert' }
     }
 
-    // 6-8/conta — oscilando demais, atencao redobrada
+    // 6-8/conta — oscilada maior, avalie o slot
     if (absPer <= 8) {
-      const msgs = ['Oscilando bastante. Fique atento e avalie trocar de slot.', 'Prejuízo subindo — acompanha de perto as próximas remessas.', 'Tá oscilando demais. Vale revisar a estratégia da meta.']
+      const msgs = ['Oscilada maior. Fique atento nas próximas remessas e avalie trocar o slot.', 'Oscilação aumentando — acompanha de perto e pensa em trocar o slot.', 'Tá oscilando mais forte. Atenção nas próximas e considere outro slot.']
       return { type: 'warn', title: `Atenção redobrada: ${tag}`, text: rnd(msgs), icon: 'alert' }
     }
 
-    // 8-10/conta — ruim, ja leva pro prejuizo
+    // 8-10/conta — ruim. Operador consulta o ADMIN; admin reavalia sozinho.
     if (absPer <= 10) {
-      const msgs = ['Resultado ruim — já começa a levar pro prejuízo. Avise o ADMIN.', 'Tá pesado. Nesse ritmo o salário pode não compensar. Reavalie.', 'Prejuízo alto. Considere pausar e alinhar com o ADMIN.']
+      const msgs = isAdmin
+        ? ['Resultado ruim — já começa a levar pro prejuízo. Reavalie a estratégia da meta.', 'Tá pesado. Considere pausar e revisar o slot e as contas.', 'Prejuízo subindo. Vale repensar essa operação.']
+        : ['Resultado ruim — já começa a levar pro prejuízo. Pense em consultar o ADMIN.', 'Tá pesado. Vale conversar com o ADMIN sobre essa meta.', 'Prejuízo subindo. Considere alinhar com o ADMIN.']
       return { type: 'critical', title: `Ruim: ${tag}`, text: rnd(msgs), icon: 'x' }
     }
 
-    // > 10/conta — ja e prejuizo
-    const msgsC = ['Já é prejuízo de verdade. Pare e consulte o ADMIN imediatamente.', 'Resultado muito ruim — não continue sem alinhar com o ADMIN.', 'Prejuízo crítico. Pausa a operação e reavalia agora.']
+    // > 10/conta — resultado negativo, procure outros caminhos
+    const msgsC = isAdmin
+      ? ['Resultado negativo. Procure outros caminhos.', 'Já é prejuízo — hora de buscar outra estratégia.', 'No vermelho. Pausa e procura um caminho diferente.']
+      : ['Resultado negativo. Procure outros caminhos.', 'Já é prejuízo — vale buscar outra estratégia com o ADMIN.', 'No vermelho. Mude o caminho e alinhe com o ADMIN.']
     return { type: 'critical', title: `Prejuízo: ${tag}`, text: rnd(msgsC), icon: 'x' }
   }
 
@@ -478,6 +484,8 @@ export default function MetaPage() {
     const perConta = nContasRem > 0 ? Math.abs(diff) / nContasRem : Math.abs(diff)
     let pushTitle, pushBody
     const perTag = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta)`
+    const isAdmin = profile?.role === 'admin'
+    const pick = a => a[Math.floor(Math.random() * a.length)]
     if (diff >= 0) {
       const msgs = ['Muito bom, parabéns! Continua assim.', 'Lucro na remessa, mandou bem demais!', 'Show! Mantém esse ritmo.', 'Ai sim! Operação voando.']
       pushTitle = 'Remessa no lucro!'
@@ -490,16 +498,16 @@ export default function MetaPage() {
       pushBody = `${perTag} — Leve oscilada, dentro do esperado. Segue firme.`
     } else if (perConta <= 6) {
       pushTitle = 'Atenção na operação'
-      pushBody = `${perTag} — Começando a oscilar demais. Analisa o que pode ser.`
+      pushBody = `${perTag} — ${pick(['Começando a oscilar, fique de olho!', 'Tá oscilando um pouco, fica de olho nas próximas.', 'Leve oscilação subindo, fica esperto!'])}`
     } else if (perConta <= 8) {
       pushTitle = 'Atenção redobrada'
-      pushBody = `${perTag} — Oscilando bastante. Fique atento e avalie o slot.`
+      pushBody = `${perTag} — ${pick(['Oscilada maior. Avalie trocar o slot.', 'Oscilação aumentando, pensa em trocar o slot.', 'Tá oscilando mais forte, considere outro slot.'])}`
     } else if (perConta <= 10) {
       pushTitle = 'Resultado ruim'
-      pushBody = `${perTag} — Já começa a levar pro prejuízo. Avise o admin.`
+      pushBody = `${perTag} — ${pick(isAdmin ? ['Já leva pro prejuízo. Reavalie a estratégia.', 'Tá pesado, considere pausar e revisar.', 'Prejuízo subindo, repense a operação.'] : ['Já leva pro prejuízo. Pense em consultar o ADMIN.', 'Tá pesado, vale falar com o ADMIN.', 'Prejuízo subindo, alinhe com o ADMIN.'])}`
     } else {
-      pushTitle = 'Prejuízo alto'
-      pushBody = `${perTag} — Já é prejuízo. Pare e alinhe com o admin.`
+      pushTitle = 'Resultado negativo'
+      pushBody = `${perTag} — ${pick(isAdmin ? ['Resultado negativo. Procure outros caminhos.', 'Já é prejuízo, busque outra estratégia.', 'No vermelho, mude o caminho.'] : ['Resultado negativo. Procure outros caminhos.', 'Já é prejuízo, alinhe com o ADMIN.', 'No vermelho, fale com o ADMIN.'])}`
     }
     fetch('/api/push/send', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },

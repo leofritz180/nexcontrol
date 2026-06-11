@@ -48,7 +48,7 @@ export default function VoiceBanner({ userEmail }) {
             initial={{ opacity: 0, y: 18, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             onClick={e => e.stopPropagation()}
-            style={{ position: 'relative', width: '94%', maxWidth: 540, borderRadius: 18, overflow: 'hidden', background: '#0a0a0a', boxShadow: '0 30px 80px rgba(0,0,0,0.75), 0 0 50px rgba(225,0,0,0.12)' }}
+            style={{ position: 'relative', width: '96%', maxWidth: 780, borderRadius: 18, overflow: 'hidden', background: '#0a0a0a', boxShadow: '0 30px 80px rgba(0,0,0,0.75), 0 0 50px rgba(225,0,0,0.12)' }}
           >
             {/* Imagem do banner — clicável (abre o Instagram) */}
             <img

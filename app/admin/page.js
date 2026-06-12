@@ -1213,8 +1213,8 @@ export default function AdminPage() {
                     )}
                   </div>
                   <div style={{display:'flex',alignItems:'center',gap:6}}>
-                    {!fechada && (
-                      <motion.button whileHover={{ scale:1.08 }} whileTap={{ scale:0.92 }} onClick={()=>router.push(`/meta/${m.id}`)} title="Editar meta"
+                    {(
+                      <motion.button whileHover={{ scale:1.08 }} whileTap={{ scale:0.92 }} onClick={()=>router.push(`/meta/${m.id}`)} title="Editar meta (nome / contas)"
                         style={{width:36,height:36,borderRadius:10,border:'1px solid rgba(255,255,255,0.22)',background:'rgba(255,255,255,0.08)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'all 0.15s'}}
                         onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.15)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.08)'}>
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>

@@ -15,9 +15,9 @@ export async function POST(req) {
 
     const { data: meta, error: metaErr } = await sb.from('metas').select('*').eq('id', meta_id).single()
     if (metaErr || !meta) return NextResponse.json({ error: 'Meta not found' }, { status: 404 })
-    if (meta.status_fechamento === 'fechada') {
-      return NextResponse.json({ error: 'Meta fechada nao pode ser editada. Reative ou ajuste via fechamento.' }, { status: 400 })
-    }
+    // Meta FECHADA pode editar titulo/contas/rede/plataforma/obs — NENHUM desses
+    // entra na formula do lucro_final, entao nao recalcula nada nem quebra soma.
+    // (Campos financeiros de fechamento continuam so via update-costs/update_lucro_only.)
 
     // Permissao: operador dono da meta OU admin do mesmo tenant
     if (user_id) {
@@ -60,6 +60,16 @@ export async function POST(req) {
 
     if (Object.keys(update).length === 0) {
       return NextResponse.json({ ok: true, noop: true })
+    }
+
+    // VALIDACAO AUTOMATICA: numero de contas nunca pode ficar abaixo das ja
+    // processadas nas remessas (senao a meta ficaria com soma inconsistente).
+    if (update.quantidade_contas !== undefined) {
+      const { data: rems } = await sb.from('remessas').select('contas_remessa,tipo').eq('meta_id', meta_id)
+      const processadas = (rems || []).filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+      if (update.quantidade_contas < processadas) {
+        return NextResponse.json({ error: `Ja existem ${processadas} contas processadas nas remessas — nao da pra reduzir abaixo disso.` }, { status: 400 })
+      }
     }
 
     const { data: updated, error } = await sb.from('metas').update(update).eq('id', meta_id).select().single()

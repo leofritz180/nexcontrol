@@ -345,6 +345,7 @@ export default function MetaPage() {
   const [editDep, setEditDep] = useState('')
   const [editSaq, setEditSaq] = useState('')
   const [editBau, setEditBau] = useState('')
+  const [editContas, setEditContas] = useState('')
   const [editSaving, setEditSaving] = useState(false)
   const [contasRemessa, setContasRemessa] = useState('')
   const [obsRemessa, setObsRemessa] = useState('')
@@ -640,19 +641,22 @@ export default function MetaPage() {
 
   async function saveEditRem() {
     if (!editRem||editSaving) return
+    // Contas editaveis (redeposito sempre 0). VALIDACAO automatica: minimo 1 na
+    // remessa normal — nao deixa salvar contagem invalida.
+    const isRedep = editRem.tipo === 'redeposito'
+    const contas = isRedep ? 0 : Math.floor(Number(editContas || 0))
+    if (!isRedep && (!Number.isFinite(contas) || contas < 1)) return
     setEditSaving(true)
     // MESMA logica do cadastro (handleAdd): usa parseVal (numero BR) e, em metas
-    // apenas_bau, SOMA o bau ao resultado. Bug corrigido: antes era diff=s-d e o
-    // bau editado nao entrava no lucro/prejuizo/resultado.
+    // apenas_bau, SOMA o bau ao resultado.
     const d=Number(parseVal(editDep).toFixed(2)), s=Number(parseVal(editSaq).toFixed(2))
     const isApenasBau = (meta?.operation_model || tenantOpModel || 'salario_bau') === 'apenas_bau'
     const bauVal = isApenasBau ? Number(parseVal(editBau || '0').toFixed(2)) : 0
     const resultadoTotal = Number(((s - d) + bauVal).toFixed(2))
     const lucroVal = resultadoTotal > 0 ? resultadoTotal : 0
     const prejVal  = resultadoTotal < 0 ? Math.abs(resultadoTotal) : 0
-    const contas = Number(editRem.contas_remessa||0)
     await supabase.from('remessas').update({
-      deposito:d, saque:s, bau:bauVal,
+      deposito:d, saque:s, bau:bauVal, contas_remessa: contas,
       lucro:lucroVal, prejuizo:prejVal, resultado:resultadoTotal,
       resultado_por_conta: contas > 0 ? Number((resultadoTotal / contas).toFixed(2)) : 0,
     }).eq('id',editRem.id)
@@ -1725,7 +1729,7 @@ export default function MetaPage() {
                             </p>
                             <p className="t-small">R$ {fmt(r.resultado_por_conta)} / conta</p>
                           </div>
-                          <button onClick={()=>{setEditRem(r);setEditDep(String(r.deposito||''));setEditSaq(String(r.saque||''));setEditBau(String(r.bau||''))}} style={{width:28,height:28,borderRadius:7,border:'1px solid var(--b2)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',opacity:0.4,transition:'opacity 0.15s',flexShrink:0}}
+                          <button onClick={()=>{setEditRem(r);setEditDep(String(r.deposito||''));setEditSaq(String(r.saque||''));setEditBau(String(r.bau||''));setEditContas(String(r.contas_remessa||''))}} style={{width:28,height:28,borderRadius:7,border:'1px solid var(--b2)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',opacity:0.4,transition:'opacity 0.15s',flexShrink:0}}
                             onMouseEnter={e=>e.currentTarget.style.opacity='1'} onMouseLeave={e=>e.currentTarget.style.opacity='0.4'}>
                             <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                           </button>
@@ -1774,9 +1778,17 @@ export default function MetaPage() {
                 <input className="input" type="number" step="0.01" value={editSaq} onChange={e=>setEditSaq(e.target.value)} placeholder="0,00"/>
               </div>
             </div>
-            <div style={{marginBottom:16}}>
-              <label className="t-label" style={{display:'block',marginBottom:6}}>BAU</label>
-              <input className="input" type="number" step="0.01" value={editBau} onChange={e=>setEditBau(e.target.value)} placeholder="0,00"/>
+            <div style={{display:'grid',gridTemplateColumns: editRem.tipo === 'redeposito' ? '1fr' : '1fr 1fr',gap:12,marginBottom:16}}>
+              <div>
+                <label className="t-label" style={{display:'block',marginBottom:6}}>BAU</label>
+                <input className="input" type="number" step="0.01" value={editBau} onChange={e=>setEditBau(e.target.value)} placeholder="0,00"/>
+              </div>
+              {editRem.tipo !== 'redeposito' && (
+                <div>
+                  <label className="t-label" style={{display:'block',marginBottom:6}}>Contas *</label>
+                  <input className="input" type="number" min="1" step="1" value={editContas} onChange={e=>setEditContas(e.target.value)} placeholder="Ex: 5"/>
+                </div>
+              )}
             </div>
             {(editDep||editSaq) && (()=>{
               const d=Number(editDep||0),s=Number(editSaq||0),diff=s-d
@@ -1789,7 +1801,7 @@ export default function MetaPage() {
             })()}
             <div style={{display:'flex',gap:10}}>
               <button onClick={()=>setEditRem(null)} className="btn btn-ghost" style={{flex:1}}>Cancelar</button>
-              <button onClick={saveEditRem} disabled={editSaving||!editDep||!editSaq} className="btn btn-brand" style={{flex:2}}>
+              <button onClick={saveEditRem} disabled={editSaving||!editDep||!editSaq||(editRem.tipo!=='redeposito'&&(!editContas||Number(editContas)<1))} className="btn btn-brand" style={{flex:2}}>
                 {editSaving?'Salvando...':'Salvar alteracao'}
               </button>
             </div>

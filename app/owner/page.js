@@ -263,6 +263,7 @@ export default function OwnerPage() {
             {[
               { l: 'MRR', v: <CountUp value={kpis.mrr} prefix="R$ " />, gold: true },
               { l: 'Receita hoje', v: <CountUp value={kpis.revenueToday} prefix="R$ " /> },
+              { l: 'Receita ontem', v: <CountUp value={kpis.revenueYesterday || 0} prefix="R$ " /> },
               { l: 'Pagantes (clientes)', v: <CountUpInt value={kpis.activeSubs} /> },
               { l: 'Pagantes (admin+op)', v: <CountUpInt value={kpis.payingPeople != null ? kpis.payingPeople : kpis.activeSubs} /> },
               { l: 'Receita total', v: <CountUp value={kpis.totalRevenue} prefix="R$ " /> },

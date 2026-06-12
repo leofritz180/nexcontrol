@@ -138,6 +138,8 @@ export async function POST(req) {
 
     const today = brDateKey(now)
     const revenueToday = paidPayments.filter(p => brDateKey(p.created_at) === today).reduce((a, p) => a + Number(p.amount || 0), 0)
+    const yesterday = brDateKey(new Date(now.getTime() - 86400000))
+    const revenueYesterday = paidPayments.filter(p => brDateKey(p.created_at) === yesterday).reduce((a, p) => a + Number(p.amount || 0), 0)
 
     const monthPrefix = today.slice(0, 7) // YYYY-MM no horario BR
     const revenueMonth = paidPayments.filter(p => brDateKey(p.created_at).startsWith(monthPrefix)).reduce((a, p) => a + Number(p.amount || 0), 0)
@@ -574,7 +576,7 @@ export async function POST(req) {
         totalAdmins: admins.length, totalOperators: operators.length,
         activeSubs: activePayingCount, cancelledSubs: cancelledSubs.length,
         payingPeople, payingOperators,
-        mrr, totalRevenue, revenueToday, revenueMonth, rev30, rev7,
+        mrr, totalRevenue, revenueToday, revenueYesterday, revenueMonth, rev30, rev7,
         prevRevenue7d, revenueVariation,
         new7, new30, avgTicket, arpu, churnRate, ltv,
         totalMetas: allMetas.length, totalRemessas: allRem.length,

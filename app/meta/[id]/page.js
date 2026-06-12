@@ -162,6 +162,20 @@ function EditMetaModal({ meta, userId, onClose, onSaved, contasMinimo }) {
   const [obs, setObs] = useState(meta.observacoes || '')
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
+  const [confirming, setConfirming] = useState(false)
+
+  // Valida e pede confirmacao antes de gravar (deseja confirmar essa operacao?)
+  function requestSave() {
+    const nContas = Math.floor(Number(contas || 0))
+    if (!titulo.trim()) { setErr('Titulo obrigatorio'); return }
+    if (!rede.trim()) { setErr('Rede obrigatoria'); return }
+    if (!Number.isFinite(nContas) || nContas < 1) { setErr('Quantidade de contas invalida'); return }
+    if (contasMinimo != null && nContas < contasMinimo) {
+      setErr(`Ja existem ${contasMinimo} contas processadas — nao e possivel reduzir abaixo disso`)
+      return
+    }
+    setErr(''); setConfirming(true)
+  }
 
   async function save() {
     if (saving) return
@@ -254,14 +268,29 @@ function EditMetaModal({ meta, userId, onClose, onSaved, contasMinimo }) {
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-            <button onClick={onClose} className="btn btn-ghost" style={{ flex: 1 }}>Cancelar</button>
-            <motion.button
-              whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.97 }}
-              onClick={save} disabled={saving} className="btn btn-profit" style={{ flex: 2 }}>
-              {saving ? <><div className="spinner" style={{ width: 14, height: 14, borderTopColor: '#012b1c' }}/> Salvando...</> : (<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Salvar alteracoes</>)}
-            </motion.button>
-          </div>
+          {!confirming ? (
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <button onClick={onClose} className="btn btn-ghost" style={{ flex: 1 }}>Cancelar</button>
+              <motion.button
+                whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.97 }}
+                onClick={requestSave} className="btn btn-profit" style={{ flex: 2 }}>
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Salvar alteracoes
+              </motion.button>
+            </div>
+          ) : (
+            <div style={{ marginTop: 4, padding: '14px 16px', borderRadius: 12, background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.28)' }}>
+              <p style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px' }}>Deseja confirmar essa operacao?</p>
+              <p style={{ fontSize: 11.5, color: 'var(--t3)', margin: '0 0 12px', lineHeight: 1.5 }}>As alteracoes de <b style={{ color: 'var(--t2)' }}>titulo</b> e <b style={{ color: 'var(--t2)' }}>numero de contas</b> entram em todos os calculos e no historico da meta.</p>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={() => setConfirming(false)} disabled={saving} className="btn btn-ghost" style={{ flex: 1 }}>Voltar</button>
+                <motion.button
+                  whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.97 }}
+                  onClick={save} disabled={saving} className="btn btn-profit" style={{ flex: 2 }}>
+                  {saving ? <><div className="spinner" style={{ width: 14, height: 14, borderTopColor: '#012b1c' }}/> Salvando...</> : (<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Confirmar operacao</>)}
+                </motion.button>
+              </div>
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.div>

@@ -20,6 +20,13 @@ const MetodosKpiCard = dynamic(() => import('../../components/MetodosKpiCard'), 
 
 // Beta flag — features visiveis so pra owner enquanto valida
 const BETA_EMAILS = new Set(['leofritz180@gmail.com', 'leofritz178@gmail.com'])
+
+// Contas com PRO VITALICIO — nunca veem o paywall "desbloquear PRO"
+const PRO_EMAILS = new Set([
+  'leofritz180@gmail.com', 'luizmanutti@gmail.com', 'leofritz178@gmail.com',
+  'vlopes00@hotmail.com', 'darkzinmg7@gmail.com',
+])
+const isProEmail = email => PRO_EMAILS.has(String(email || '').toLowerCase())
 import TabAwareTour from '../../components/TabAwareTour'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
 import DemoModeCard from '../../components/DemoModeCard'
@@ -1440,7 +1447,7 @@ export default function AdminPage() {
           onActionTab={(t) => setTab(t)}
         />
       )}
-      {!(sub?.status === 'active' && new Date(sub.expires_at) > new Date()) && <ProBanner blockedCount={6}/>}
+      {!((sub?.status === 'active' && new Date(sub.expires_at) > new Date()) || isProEmail(user?.email)) && <ProBanner blockedCount={6}/>}
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
@@ -2948,7 +2955,7 @@ export default function AdminPage() {
           })()}
 
           {/* PRO locked cards — only show if NOT PRO active */}
-          {!(sub?.status === 'active' && new Date(sub.expires_at) > new Date()) && <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginTop:24 }}>
+          {!((sub?.status === 'active' && new Date(sub.expires_at) > new Date()) || isProEmail(user?.email)) && <div className="g-4" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14, marginTop:24 }}>
             <ProLockedCard title="Previsao inteligente" description="Previsoes que aumentam seu lucro. Pare de operar no escuro — saiba quanto voce vai faturar nos proximos 30 dias." icon="M13 2L3 14h9l-1 8 10-12h-9l1-8z">
               <div><div style={{height:14,width:'60%',background:'rgba(209,250,229,0.1)',borderRadius:3,marginBottom:6}}/><div style={{height:20,width:'45%',background:'rgba(209,250,229,0.08)',borderRadius:3}}/></div>
             </ProLockedCard>

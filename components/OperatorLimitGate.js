@@ -10,6 +10,8 @@ import { getOperatorLimitStatus } from '../lib/operator-limit'
 const ALLOWED_PATHS = ['/operadores', '/billing', '/billing-mp', '/login', '/logout', '/owner', '/reset-password']
 
 const OWNER_EMAILS = new Set(['leofritz180@gmail.com'])
+// Contas com OPERADORES ILIMITADOS (nunca bloqueia por excesso)
+const UNLIMITED_OPERATOR_EMAILS = new Set(['darkzinmg7@gmail.com'])
 
 /**
  * Gate que bloqueia rotas admin quando o tenant tem mais operadores
@@ -46,6 +48,7 @@ export default function OperatorLimitGate({ children }) {
       const u = s?.session?.user
       if (!u) { setBlocked(false); return }
       if (OWNER_EMAILS.has((u.email || '').toLowerCase())) { setBlocked(false); return }
+      if (UNLIMITED_OPERATOR_EMAILS.has((u.email || '').toLowerCase())) { setBlocked(false); return }
       const { data: prof } = await supabase.from('profiles').select('role,tenant_id').eq('id', u.id).maybeSingle()
       if (!prof || prof.role !== 'admin' || !prof.tenant_id) { setBlocked(false); return }
       const st = await getOperatorLimitStatus(supabase, prof.tenant_id)

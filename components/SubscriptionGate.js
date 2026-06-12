@@ -12,6 +12,7 @@ const LIFETIME_EMAILS = new Set([
   'luizmanutti@gmail.com',
   'leofritz178@gmail.com',
   'vlopes00@hotmail.com',
+  'darkzinmg7@gmail.com', // conta secundaria do dono — vitalicio + operadores ilimitados
 ])
 
 const fmtBR = v => Number(v||0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })

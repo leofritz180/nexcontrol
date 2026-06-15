@@ -7,6 +7,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
   const [step, setStep] = useState('intro') // intro | loading | pix | paid | error
   const [pixData, setPixData] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [errMsg, setErrMsg] = useState('')
   const pollRef = useRef(null)
 
   useEffect(() => {
@@ -14,7 +15,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
   }, [])
 
   async function createPayment() {
-    setStep('loading')
+    setStep('loading'); setErrMsg('')
     try {
       const res = await fetch('/api/mercadopago/create-payment', {
         method: 'POST',
@@ -30,8 +31,11 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
           description: planName ? `NexControl — ${planName}` : 'NexControl',
         }),
       })
-      const data = await res.json()
-      if (!res.ok || data.error || !data.payment_id) throw new Error('fail')
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || data.error || !data.payment_id) {
+        setErrMsg(data?.error || `Falha na cobrança (HTTP ${res.status})`)
+        throw new Error('fail')
+      }
 
       setPixData(data)
       setStep('pix')
@@ -312,7 +316,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                   Erro ao gerar pagamento
                 </p>
                 <p style={{ fontSize: 13, color: 'var(--t3)', margin: '0 0 22px' }}>
-                  Tente novamente em alguns segundos.
+                  {errMsg || 'Tente novamente em alguns segundos.'}
                 </p>
                 <button
                   onClick={createPayment}

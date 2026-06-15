@@ -18,6 +18,8 @@ const COST_TYPES = [
   { id: 'outros', label: 'Outros' },
 ]
 const costLabel = id => (COST_TYPES.find(t => t.id === id)?.label || 'Outros')
+// Parser de número BR (igual ao resto do app): "1.050,50" => 1050.5
+const parseVal = v => { const s = String(v || '0'); if (s.includes(',')) return Number(s.replace(/\./g, '').replace(',', '.')) || 0; return Number(s) || 0 }
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -138,12 +140,13 @@ function CostModal({ leaderId, onClose, onSaved }) {
 
   async function submit(e) {
     e.preventDefault()
-    if (!amount || Number(amount) <= 0) { setError('Informe um valor válido'); return }
+    const amt = parseVal(amount)
+    if (!amt || amt <= 0) { setError('Informe um valor válido'); return }
     setSaving(true); setError('')
     try {
       const res = await fetch('/api/team/cost', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ leader_id: leaderId, action: 'add', type, amount: Number(amount), date, note }),
+        body: JSON.stringify({ leader_id: leaderId, action: 'add', type, amount: amt, date, note }),
       })
       const json = await res.json()
       if (!res.ok) { setError(json.error || 'Erro ao salvar'); setSaving(false); return }

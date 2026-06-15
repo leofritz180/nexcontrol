@@ -19,13 +19,20 @@ export async function POST(req) {
     // entra na formula do lucro_final, entao nao recalcula nada nem quebra soma.
     // (Campos financeiros de fechamento continuam so via update-costs/update_lucro_only.)
 
-    // Permissao: operador dono da meta OU admin do mesmo tenant
+    // Permissao: operador dono da meta OU admin do mesmo tenant OU
+    // operador líder (DS MENTORIA) sobre meta de um operador da SUA equipe.
+    const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
     if (user_id) {
-      const { data: prof } = await sb.from('profiles').select('id,role,tenant_id').eq('id', user_id).maybeSingle()
+      const { data: prof } = await sb.from('profiles').select('id,role,tenant_id,is_team_leader,team').eq('id', user_id).maybeSingle()
       if (!prof) return NextResponse.json({ error: 'Profile not found' }, { status: 403 })
       const isOwner = meta.operator_id === prof.id
       const isAdminSameTenant = prof.role === 'admin' && prof.tenant_id === meta.tenant_id
-      if (!isOwner && !isAdminSameTenant) return NextResponse.json({ error: 'Sem permissao' }, { status: 403 })
+      let isTeamLeader = false
+      if (!isOwner && !isAdminSameTenant && prof.is_team_leader && prof.tenant_id === DS_MENTORIA_TENANT && prof.team && meta.tenant_id === prof.tenant_id) {
+        const { data: opProf } = await sb.from('profiles').select('team').eq('id', meta.operator_id).maybeSingle()
+        isTeamLeader = !!opProf && opProf.team === prof.team
+      }
+      if (!isOwner && !isAdminSameTenant && !isTeamLeader) return NextResponse.json({ error: 'Sem permissao' }, { status: 403 })
     }
 
     // Monta patch apenas com campos enviados e validados

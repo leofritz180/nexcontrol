@@ -735,6 +735,9 @@ export default function MetaPage() {
   //    SO ADMIN — expoe salario/bau/custos, que operador NAO pode ver.
   const isV2 = true
   const isAdminV2 = profile?.role === 'admin' || leaderAllowed
+  // Líder GERENCIANDO a meta de um operador da equipe (não a própria): vê como
+  // admin (gestão), sem o formulário de operar — quem opera é o operador dono.
+  const isLeaderManaging = leaderAllowed && !!meta && !!user && meta.operator_id !== user.id
   // Para onde o botão "voltar" leva conforme o tipo de conta
   const homePath = profile?.role === 'admin' ? '/admin' : ((profile?.is_team_leader && profile?.tenant_id === DS_MENTORIA_TENANT) ? '/equipe' : '/operator')
 
@@ -1372,8 +1375,8 @@ export default function MetaPage() {
         })()}
 
         <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
-          {/* ══ REGISTRAR REMESSA ══ */}
-          {isV2 ? (() => {
+          {/* ══ REGISTRAR REMESSA ══ (escondido p/ líder gerenciando meta de operador) */}
+          {isLeaderManaging ? null : isV2 ? (() => {
             const colTitle = { fontFamily:'var(--mono)', fontSize:9, fontWeight:800, color:'#e53935', letterSpacing:'0.14em', textTransform:'uppercase', margin:'0 0 12px' }
             const inp = { fontSize:13, padding:'9px 11px' }
             const field = (label, children) => (<div style={{ marginBottom:11 }}><label className="t-label" style={{ display:'block', marginBottom:5, fontSize:8.5 }}>{label}</label>{children}</div>)

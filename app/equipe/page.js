@@ -1,13 +1,23 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
 import { validClosedMetas } from '../../lib/operator-stats'
 import RankBadge from '../../components/rank/RankBadge'
 
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
+const REDES = ['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
+const COST_TYPES = [
+  { id: 'proxy', label: 'Proxy' },
+  { id: 'sms', label: 'SMS' },
+  { id: 'instagram', label: 'Postagem Instagram' },
+  { id: 'bot', label: 'Bot / Automação' },
+  { id: 'vps', label: 'VPS / Servidor' },
+  { id: 'outros', label: 'Outros' },
+]
+const costLabel = id => (COST_TYPES.find(t => t.id === id)?.label || 'Outros')
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -21,6 +31,167 @@ function statusInfo(m) {
   return { label: 'Ativa', color: 'rgba(255,255,255,0.8)', bg: 'rgba(255,255,255,0.06)', bd: 'rgba(255,255,255,0.14)' }
 }
 
+/* ── Modal: criar meta (operar) ── */
+function CreateMetaModal({ leaderId, operators, onClose, onCreated }) {
+  const [operatorId, setOperatorId] = useState(leaderId)
+  const [titulo, setTitulo] = useState('')
+  const [plataforma, setPlataforma] = useState('')
+  const [rede, setRede] = useState('')
+  const [contas, setContas] = useState('10')
+  const [obs, setObs] = useState('')
+  const [link, setLink] = useState('')
+  const [login, setLogin] = useState('')
+  const [senha, setSenha] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  async function submit(e) {
+    e.preventDefault()
+    if (!titulo.trim() || !plataforma.trim() || !rede) {
+      setError(!rede ? 'Selecione a rede' : !plataforma.trim() ? 'Preencha a plataforma' : 'Preencha o título')
+      return
+    }
+    setSaving(true); setError('')
+    try {
+      const res = await fetch('/api/team/create-meta', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leader_id: leaderId, operator_id: operatorId,
+          titulo, plataforma, rede, quantidade_contas: contas, observacoes: obs,
+          conta_link: link, conta_login: login, conta_senha: senha,
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setError(json.error || 'Erro ao criar'); setSaving(false); return }
+      onCreated(json.meta)
+    } catch (e) { setError(e.message); setSaving(false) }
+  }
+
+  const inp = {
+    width: '100%', padding: '10px 12px', borderRadius: 10, fontSize: 13, fontFamily: 'inherit',
+    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.14)', color: '#fff',
+  }
+  const lbl = { display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--t3)', margin: '0 0 6px' }
+
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+      <motion.div onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
+        style={{ width: '100%', maxWidth: 460, maxHeight: '90vh', overflowY: 'auto', background: 'linear-gradient(180deg, #11161f, #0a0d13)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 18, padding: 24 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Nova meta</h3>
+        <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 18px' }}>Crie e opere uma meta da equipe</p>
+        <form onSubmit={submit}>
+          <div style={{ marginBottom: 12 }}>
+            <label style={lbl}>Operador</label>
+            <select value={operatorId} onChange={e => setOperatorId(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+              <option value={leaderId} style={{ background: '#0c1322' }}>Eu (líder)</option>
+              {operators.filter(o => o.id !== leaderId).map(o => (
+                <option key={o.id} value={o.id} style={{ background: '#0c1322' }}>{o.nome || o.email?.split('@')[0]}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <label style={lbl}>Título</label>
+            <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Ex.: Meta OKOK Junho" style={inp} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+            <div>
+              <label style={lbl}>Plataforma</label>
+              <input value={plataforma} onChange={e => setPlataforma(e.target.value)} placeholder="Plataforma" style={inp} />
+            </div>
+            <div>
+              <label style={lbl}>Rede</label>
+              <select value={rede} onChange={e => setRede(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+                <option value="" style={{ background: '#0c1322' }}>Selecione</option>
+                {REDES.map(r => <option key={r} value={r} style={{ background: '#0c1322' }}>{r}</option>)}
+              </select>
+            </div>
+          </div>
+          <div style={{ marginBottom: 12 }}>
+            <label style={lbl}>Quantidade de contas</label>
+            <input value={contas} onChange={e => setContas(e.target.value.replace(/\D/g, ''))} inputMode="numeric" placeholder="10" style={inp} />
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={lbl}>Observações (opcional)</label>
+            <input value={obs} onChange={e => setObs(e.target.value)} placeholder="Notas" style={inp} />
+          </div>
+
+          {error && <div style={{ padding: '9px 12px', marginBottom: 12, borderRadius: 9, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ff9d9d', fontSize: 12.5 }}>{error}</div>}
+
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button type="button" onClick={onClose} style={{ flex: 1, padding: '12px', borderRadius: 11, border: '1px solid rgba(255,255,255,0.14)', background: 'transparent', color: 'var(--t2)', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Cancelar</button>
+            <button type="submit" disabled={saving} style={{ flex: 1.6, padding: '12px', borderRadius: 11, border: 'none', background: 'linear-gradient(180deg, #ef4444, #c62828)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}>{saving ? 'Criando...' : 'Criar e operar'}</button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  )
+}
+
+/* ── Modal: adicionar custo ── */
+function CostModal({ leaderId, onClose, onSaved }) {
+  const [type, setType] = useState('proxy')
+  const [amount, setAmount] = useState('')
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
+  const [note, setNote] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  async function submit(e) {
+    e.preventDefault()
+    if (!amount || Number(amount) <= 0) { setError('Informe um valor válido'); return }
+    setSaving(true); setError('')
+    try {
+      const res = await fetch('/api/team/cost', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leader_id: leaderId, action: 'add', type, amount: Number(amount), date, note }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setError(json.error || 'Erro ao salvar'); setSaving(false); return }
+      onSaved()
+    } catch (e) { setError(e.message); setSaving(false) }
+  }
+
+  const inp = { width: '100%', padding: '10px 12px', borderRadius: 10, fontSize: 13, fontFamily: 'inherit', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.14)', color: '#fff' }
+  const lbl = { display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--t3)', margin: '0 0 6px' }
+
+  return (
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+      <motion.div onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
+        style={{ width: '100%', maxWidth: 420, background: 'linear-gradient(180deg, #11161f, #0a0d13)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 18, padding: 24 }}>
+        <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Novo custo</h3>
+        <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 18px' }}>Custo da equipe (entra no cálculo do lucro)</p>
+        <form onSubmit={submit}>
+          <div style={{ marginBottom: 12 }}>
+            <label style={lbl}>Tipo</label>
+            <select value={type} onChange={e => setType(e.target.value)} style={{ ...inp, cursor: 'pointer' }}>
+              {COST_TYPES.map(t => <option key={t.id} value={t.id} style={{ background: '#0c1322' }}>{t.label}</option>)}
+            </select>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+            <div>
+              <label style={lbl}>Valor (R$)</label>
+              <input value={amount} onChange={e => setAmount(e.target.value.replace(/[^\d.,]/g, ''))} inputMode="decimal" placeholder="0,00" style={inp} />
+            </div>
+            <div>
+              <label style={lbl}>Data</label>
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} style={inp} />
+            </div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={lbl}>Observação (opcional)</label>
+            <input value={note} onChange={e => setNote(e.target.value)} placeholder="Notas" style={inp} />
+          </div>
+          {error && <div style={{ padding: '9px 12px', marginBottom: 12, borderRadius: 9, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ff9d9d', fontSize: 12.5 }}>{error}</div>}
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button type="button" onClick={onClose} style={{ flex: 1, padding: '12px', borderRadius: 11, border: '1px solid rgba(255,255,255,0.14)', background: 'transparent', color: 'var(--t2)', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Cancelar</button>
+            <button type="submit" disabled={saving} style={{ flex: 1.4, padding: '12px', borderRadius: 11, border: 'none', background: 'linear-gradient(180deg, #ef4444, #c62828)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}>{saving ? 'Salvando...' : 'Adicionar custo'}</button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  )
+}
+
 export default function EquipePage() {
   const router = useRouter()
   const [user, setUser] = useState(null)
@@ -28,6 +199,8 @@ export default function EquipePage() {
   const [data, setData] = useState(null) // { leader, operators, metas, remessas }
   const [loading, setLoading] = useState(true)
   const [denied, setDenied] = useState(false)
+  const [showCreate, setShowCreate] = useState(false)
+  const [showCost, setShowCost] = useState(false)
 
   useEffect(() => { boot() }, [])
 
@@ -58,6 +231,16 @@ export default function EquipePage() {
     setLoading(false)
   }
 
+  async function deleteCost(costId) {
+    try {
+      await fetch('/api/team/cost', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leader_id: profile?.id, action: 'delete', cost_id: costId }),
+      })
+      await load(profile?.id)
+    } catch {}
+  }
+
   const operators = data?.operators || []
   const metas = data?.metas || []
   const remessas = data?.remessas || []
@@ -76,8 +259,11 @@ export default function EquipePage() {
     })
   }, [operators, metas, closedMetas])
 
+  const costs = data?.costs || []
+  const custosTotal = useMemo(() => costs.reduce((a, c) => a + Number(c.amount || 0), 0), [costs])
   const ranking = useMemo(() => [...operatorStats].sort((a, b) => b.lucroFinal - a.lucroFinal), [operatorStats])
-  const teamLucro = useMemo(() => closedMetas.reduce((a, m) => a + Number(m.lucro_final || 0), 0), [closedMetas])
+  const lucroBruto = useMemo(() => closedMetas.reduce((a, m) => a + Number(m.lucro_final || 0), 0), [closedMetas])
+  const teamLucro = useMemo(() => lucroBruto - custosTotal, [lucroBruto, custosTotal])
   const teamDeps = useMemo(() => operatorStats.reduce((a, o) => a + o.totalDeposit, 0), [operatorStats])
   const openMetas = useMemo(() => metas.filter(m => m.status_fechamento !== 'fechada'), [metas])
   const toClose = useMemo(() => metas.filter(m => m.status === 'finalizada' && m.status_fechamento !== 'fechada'), [metas])
@@ -114,14 +300,21 @@ export default function EquipePage() {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
 
         {/* Header */}
-        <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 20, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', marginBottom: 12 }}>
-            <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: '#ffb3b3', textTransform: 'uppercase' }}>Painel do líder</span>
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 24, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 12px', borderRadius: 20, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', marginBottom: 12 }}>
+              <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: '#ffb3b3', textTransform: 'uppercase' }}>Painel do líder</span>
+            </div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--t1)', letterSpacing: '-0.03em', margin: '0 0 6px' }}>Equipe {team}</h1>
+            <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>
+              Você gerencia {operators.length} operador{operators.length !== 1 ? 'es' : ''} — opere, acompanhe e feche as metas da equipe.
+            </p>
           </div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--t1)', letterSpacing: '-0.03em', margin: '0 0 6px' }}>Equipe {team}</h1>
-          <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>
-            Você gerencia {operators.length} operador{operators.length !== 1 ? 'es' : ''} — acompanhe resultados e feche as metas da equipe.
-          </p>
+          <button type="button" onClick={() => setShowCreate(true)}
+            style={{ padding: '12px 20px', borderRadius: 12, border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(180deg, #ef4444, #c62828)', color: '#fff', fontSize: 13.5, fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 6px 20px rgba(239,68,68,0.35)' }}>
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova meta
+          </button>
         </motion.div>
 
         {denied && (
@@ -136,7 +329,8 @@ export default function EquipePage() {
           <Kpi label="Metas abertas" value={openMetas.length} />
           <Kpi label="A fechar" value={toClose.length} color={toClose.length > 0 ? '#ffd166' : undefined} />
           <Kpi label="Depositantes" value={teamDeps} />
-          <Kpi label="Lucro da equipe" value={teamLucro} isCurrency color={teamLucro >= 0 ? 'var(--profit, #10b981)' : 'var(--loss, #ef4444)'} />
+          <Kpi label="Custos" value={custosTotal} isCurrency color={custosTotal > 0 ? 'var(--loss, #ef4444)' : undefined} />
+          <Kpi label="Lucro líquido" value={teamLucro} isCurrency color={teamLucro >= 0 ? 'var(--profit, #10b981)' : 'var(--loss, #ef4444)'} />
         </motion.div>
 
         {/* Ranking dos operadores */}
@@ -221,7 +415,62 @@ export default function EquipePage() {
           )}
         </motion.div>
 
+        {/* Custos da equipe */}
+        <motion.div {...fadeUp(4)} style={{ marginTop: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, gap: 10, flexWrap: 'wrap' }}>
+            <div>
+              <h2 style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Custos da equipe</h2>
+              <p style={{ fontSize: 11.5, color: 'var(--t4)', margin: '3px 0 0' }}>Proxy, SMS, postagens — descontados do lucro líquido</p>
+            </div>
+            <button type="button" onClick={() => setShowCost(true)}
+              style={{ padding: '9px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 12.5, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo custo
+            </button>
+          </div>
+          {costs.length === 0 ? (
+            <div style={{ padding: '28px 20px', textAlign: 'center', borderRadius: 14, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--b1)' }}>
+              <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Nenhum custo lançado.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {costs.map(c => (
+                <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.025)', border: '1px solid var(--b1)' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>{costLabel(c.type)}</span>
+                    {c.note && <span style={{ fontSize: 11.5, color: 'var(--t4)' }}> · {c.note}</span>}
+                    <div style={{ fontSize: 11, color: 'var(--t4)', marginTop: 2 }}>{c.date ? new Date(c.date + 'T00:00:00').toLocaleDateString('pt-BR') : ''}</div>
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--loss, #ef4444)', fontFamily: 'var(--mono, monospace)' }}>− R$ {fmt(c.amount)}</span>
+                  <button type="button" onClick={() => deleteCost(c.id)} title="Remover"
+                    style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'var(--t4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+
       </div>
+
+      <AnimatePresence>
+        {showCreate && (
+          <CreateMetaModal
+            leaderId={profile?.id}
+            operators={operators}
+            onClose={() => setShowCreate(false)}
+            onCreated={(meta) => { setShowCreate(false); if (meta?.id) router.push(`/meta/${meta.id}`) }}
+          />
+        )}
+        {showCost && (
+          <CostModal
+            leaderId={profile?.id}
+            onClose={() => setShowCost(false)}
+            onSaved={async () => { setShowCost(false); await load(profile?.id) }}
+          />
+        )}
+      </AnimatePresence>
     </AppLayout>
   )
 }

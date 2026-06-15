@@ -9,6 +9,8 @@ import { NextResponse } from 'next/server'
 // ─────────────────────────────────────────────────────────────
 
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
+// Corte: líder só vê metas criadas A PARTIR daqui (não o histórico antigo dos operadores)
+const TEAM_METAS_SINCE = '2026-06-15T11:54:00Z'
 
 export async function POST(req) {
   try {
@@ -45,6 +47,7 @@ export async function POST(req) {
       .select('*')
       .eq('tenant_id', DS_MENTORIA_TENANT)
       .in('operator_id', opIds)
+      .gte('created_at', TEAM_METAS_SINCE)
       .order('created_at', { ascending: false })
     const metas = (ms || []).filter(m => !m.deleted_at)
     const metaIds = metas.map(m => m.id)
@@ -59,11 +62,24 @@ export async function POST(req) {
       remessas = rs || []
     }
 
+    // 5. Custos da equipe (coluna `costs.team`). Resiliente: se a coluna ainda
+    //    não existir, retorna [] e o painel segue funcionando.
+    let costs = []
+    try {
+      const { data: cs, error: cErr } = await sb.from('costs')
+        .select('*')
+        .eq('tenant_id', DS_MENTORIA_TENANT)
+        .eq('team', leader.team)
+        .order('date', { ascending: false })
+      if (!cErr) costs = cs || []
+    } catch {}
+
     return NextResponse.json({
       leader: { id: leader.id, nome: leader.nome, email: leader.email, team: leader.team },
       operators: teamOps,
       metas,
       remessas,
+      costs,
     })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })

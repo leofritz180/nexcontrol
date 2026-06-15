@@ -201,6 +201,7 @@ export default function EquipePage() {
   const [denied, setDenied] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
   const [showCost, setShowCost] = useState(false)
+  const [metaStatus, setMetaStatus] = useState('ativa') // ativa | finalizada | fechada
 
   useEffect(() => { boot() }, [])
 
@@ -265,14 +266,14 @@ export default function EquipePage() {
   const lucroBruto = useMemo(() => closedMetas.reduce((a, m) => a + Number(m.lucro_final || 0), 0), [closedMetas])
   const teamLucro = useMemo(() => lucroBruto - custosTotal, [lucroBruto, custosTotal])
   const teamDeps = useMemo(() => operatorStats.reduce((a, o) => a + o.totalDeposit, 0), [operatorStats])
+  // Mesma classificação do /admin
+  const metasAtivas = useMemo(() => metas.filter(m => (m.status || 'ativa') === 'ativa' && m.status_fechamento !== 'fechada'), [metas])
+  const metasFinalizadas = useMemo(() => metas.filter(m => m.status === 'finalizada' && m.status_fechamento !== 'fechada'), [metas])
+  const metasFechadas = useMemo(() => metas.filter(m => m.status_fechamento === 'fechada'), [metas])
   const openMetas = useMemo(() => metas.filter(m => m.status_fechamento !== 'fechada'), [metas])
-  const toClose = useMemo(() => metas.filter(m => m.status === 'finalizada' && m.status_fechamento !== 'fechada'), [metas])
+  const toClose = metasFinalizadas
 
-  // Metas ordenadas: primeiro as que precisam fechar, depois ativas, depois fechadas
-  const metasSorted = useMemo(() => {
-    const rank = m => (m.status === 'finalizada' && m.status_fechamento !== 'fechada') ? 0 : (m.status_fechamento === 'fechada' ? 2 : 1)
-    return [...metas].sort((a, b) => rank(a) - rank(b))
-  }, [metas])
+  const filteredMetas = metaStatus === 'ativa' ? metasAtivas : metaStatus === 'finalizada' ? metasFinalizadas : metasFechadas
 
   if (loading || !profile) {
     return (
@@ -382,13 +383,38 @@ export default function EquipePage() {
               </span>
             )}
           </div>
-          {metasSorted.length === 0 ? (
+
+          {/* Filtro de status — igual ao admin */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+            {[
+              { k: 'ativa', label: 'Ativas', n: metasAtivas.length },
+              { k: 'finalizada', label: 'Finalizadas', n: metasFinalizadas.length },
+              { k: 'fechada', label: 'Fechadas', n: metasFechadas.length },
+            ].map(s => {
+              const active = metaStatus === s.k
+              return (
+                <button key={s.k} type="button" onClick={() => setMetaStatus(s.k)}
+                  style={{
+                    padding: '8px 14px', borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5, fontWeight: 700,
+                    border: `1px solid ${active ? 'rgba(239,68,68,0.4)' : 'var(--b1)'}`,
+                    background: active ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.03)',
+                    color: active ? '#ffb3b3' : 'var(--t3)',
+                    display: 'inline-flex', alignItems: 'center', gap: 7,
+                  }}>
+                  {s.label}
+                  <span style={{ fontSize: 11, fontWeight: 800, padding: '1px 7px', borderRadius: 20, background: active ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)', color: active ? '#ffd6d6' : 'var(--t4)' }}>{s.n}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {filteredMetas.length === 0 ? (
             <div style={{ padding: '36px 20px', textAlign: 'center', borderRadius: 14, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--b1)' }}>
-              <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Nenhuma meta na equipe ainda.</p>
+              <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Nenhuma meta {metaStatus === 'ativa' ? 'ativa' : metaStatus === 'finalizada' ? 'finalizada' : 'fechada'}.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {metasSorted.map((m, idx) => {
+              {filteredMetas.map((m, idx) => {
                 const op = operators.find(o => o.id === m.operator_id)
                 const st = statusInfo(m)
                 return (

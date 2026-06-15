@@ -683,6 +683,7 @@ export default function OperadoresPage() {
   const [invMsg, setInvMsg] = useState('')
   const [folhaPeriod, setFolhaPeriod] = useState('30')
   const [costs, setCosts] = useState([])
+  const [teamFilter, setTeamFilter] = useState('all') // filtro de equipe (só DS MENTORIA)
   // Remoção de operador
   const [removeConfirmOp, setRemoveConfirmOp] = useState(null)
   const [removing, setRemoving] = useState(false)
@@ -864,6 +865,18 @@ export default function OperadoresPage() {
     [operatorStats]
   )
 
+  // Equipes existentes (p/ o seletor do admin principal — só DS MENTORIA)
+  const teamList = useMemo(() => {
+    const set = new Set()
+    activeOperators.forEach(o => { if (o.team) set.add(o.team) })
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'))
+  }, [activeOperators])
+  // Ranking filtrado pela equipe selecionada (padrão = todas)
+  const rankingShown = useMemo(
+    () => (teamFilter === 'all') ? ranking : ranking.filter(o => o.team === teamFilter),
+    [ranking, teamFilter]
+  )
+
   const maxLucro = useMemo(() => ranking.length > 0 ? Math.max(...ranking.map(o => Math.abs(o.lucroFinal)), 1) : 1, [ranking])
   const totalActive = useMemo(() => operatorStats.filter(o => o.activeMetas > 0).length, [operatorStats])
   const totalDeps = useMemo(() => operatorStats.reduce((a, o) => a + o.totalDeposit, 0), [operatorStats])
@@ -1025,6 +1038,30 @@ export default function OperadoresPage() {
               <KpiCard label="Lucro equipe" value={isDemo && !totalLucro ? 829.70 : totalLucro} i={4} isCurrency dynamicColor />
             </div>
 
+            {/* Seletor de equipe — só DS MENTORIA. KPIs acima continuam totais (tudo) */}
+            {teamsEnabled && teamList.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t3)', marginRight: 2 }}>Equipe:</span>
+                {[{ k: 'all', label: 'Todas' }, ...teamList.map(t => ({ k: t, label: t }))].map(opt => {
+                  const active = teamFilter === opt.k
+                  return (
+                    <button key={opt.k} type="button" onClick={() => setTeamFilter(opt.k)}
+                      style={{
+                        padding: '7px 14px', borderRadius: 9, cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5, fontWeight: 700,
+                        border: `1px solid ${active ? 'var(--t1)' : 'var(--b1)'}`,
+                        background: active ? 'var(--t1)' : 'rgba(255,255,255,0.03)',
+                        color: active ? 'var(--surface)' : 'var(--t3)',
+                      }}>
+                      {opt.label}
+                    </button>
+                  )
+                })}
+                <span style={{ fontSize: 11, color: 'var(--t4)', marginLeft: 4 }}>
+                  {teamFilter === 'all' ? 'mostrando todas as equipes' : `filtrando o ranking pela equipe ${teamFilter}`}
+                </span>
+              </div>
+            )}
+
             {/* Ranking list */}
             {ranking.length === 0 && !isDemo ? (
               <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)', marginBottom: 28 }}>
@@ -1137,9 +1174,14 @@ export default function OperadoresPage() {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 32 }}>
-                {ranking.map((op, idx) => (
+                {rankingShown.map((op, idx) => (
                   <RankingCard key={op.id} op={op} idx={idx} maxLucro={maxLucro} onClick={() => setSelectedOp(op)} />
                 ))}
+                {teamsEnabled && teamFilter !== 'all' && rankingShown.length === 0 && (
+                  <div style={{ padding: '36px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid var(--b1)' }}>
+                    <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Nenhum operador com meta fechada na equipe {teamFilter}.</p>
+                  </div>
+                )}
               </div>
             )}
 

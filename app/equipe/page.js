@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
 import { validClosedMetas } from '../../lib/operator-stats'
 import RankBadge from '../../components/rank/RankBadge'
+import MetaDetailModal from '../../components/MetaDetailModal'
 
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
 const REDES = ['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
@@ -205,6 +206,9 @@ export default function EquipePage() {
   const [showCreate, setShowCreate] = useState(false)
   const [showCost, setShowCost] = useState(false)
   const [metaStatus, setMetaStatus] = useState('ativa') // ativa | finalizada | fechada
+  const [detailMeta, setDetailMeta] = useState(null)
+  const [detailData, setDetailData] = useState(null) // { meta, remessas, logs }
+  const [detailLoading, setDetailLoading] = useState(false)
 
   useEffect(() => { boot() }, [])
 
@@ -233,6 +237,24 @@ export default function EquipePage() {
       setData(json)
     } catch { setDenied(true) }
     setLoading(false)
+  }
+
+  async function openDetail(m) {
+    setDetailMeta(m); setDetailData(null); setDetailLoading(true)
+    try {
+      const res = await fetch('/api/team/meta-detail', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leader_id: profile?.id, meta_id: m.id }),
+      })
+      const json = await res.json()
+      if (res.ok) setDetailData(json)
+    } catch {}
+    setDetailLoading(false)
+  }
+  async function refreshDetail() {
+    if (!detailMeta) return
+    await openDetail(detailMeta)
+    await load(profile?.id)
   }
 
   async function deleteCost(costId) {
@@ -421,7 +443,7 @@ export default function EquipePage() {
                 const op = operators.find(o => o.id === m.operator_id)
                 const st = statusInfo(m)
                 return (
-                  <button key={m.id} type="button" onClick={() => router.push(`/meta/${m.id}`)}
+                  <button key={m.id} type="button" onClick={() => openDetail(m)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 13, width: '100%', textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit',
                       background: 'rgba(255,255,255,0.025)', border: '1px solid var(--b1)',
@@ -497,6 +519,21 @@ export default function EquipePage() {
             leaderId={profile?.id}
             onClose={() => setShowCost(false)}
             onSaved={async () => { setShowCost(false); await load(profile?.id) }}
+          />
+        )}
+        {detailMeta && (
+          <MetaDetailModal
+            meta={detailData?.meta || detailMeta}
+            remessas={detailData?.remessas || []}
+            logs={detailData?.logs || []}
+            operators={operators}
+            leaderId={profile?.id}
+            loading={detailLoading}
+            isOwnMeta={detailMeta.operator_id === profile?.id}
+            onClose={() => { setDetailMeta(null); setDetailData(null) }}
+            onRefresh={refreshDetail}
+            onDeleted={async () => { setDetailMeta(null); setDetailData(null); await load(profile?.id) }}
+            onOperate={() => router.push(`/meta/${detailMeta.id}`)}
           />
         )}
       </AnimatePresence>

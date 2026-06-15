@@ -531,9 +531,11 @@ export default function HomePage() {
       const u = data?.session?.user
       if (!u) { setChecking(false); return }
       try {
-        const { data: p } = await supabase.from('profiles').select('role').eq('id', u.id).maybeSingle()
+        const { data: p } = await supabase.from('profiles').select('role,is_team_leader,tenant_id,team').eq('id', u.id).maybeSingle()
         const role = p?.role || 'operator'
-        router.push(role === 'admin' ? '/admin' : '/operator')
+        // EQUIPES (DS MENTORIA): líder vai pro painel da equipe
+        const isLeader = p?.is_team_leader && p?.tenant_id === '78da0085-9308-41b1-98b1-1e4c44063c51' && p?.team
+        router.push(role === 'admin' ? '/admin' : (isLeader ? '/equipe' : '/operator'))
       } catch {
         router.push('/operator')
       }

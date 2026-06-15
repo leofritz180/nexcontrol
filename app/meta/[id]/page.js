@@ -12,6 +12,9 @@ import { SLOTS } from '../../../lib/slots-data'
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 
+// EQUIPES / OPERADOR LÍDER — exclusivo DS MENTORIA 2.0
+const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
+
 // Slug do slot p/ a imagem em /slots/{slug}.webp
 const slotSlug = name => String(name).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,'e').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
 // Jogos preferidos (aparecem primeiro quando o tenant nao tem favoritos)
@@ -338,6 +341,8 @@ export default function MetaPage() {
   const [dep,     setDep]     = useState('')
   const [bauR,    setBauR]    = useState('')
   const [showAdminClose, setShowAdminClose] = useState(false)
+  // EQUIPES: líder da DS MENTORIA agindo como admin nas metas da SUA equipe
+  const [leaderAllowed, setLeaderAllowed] = useState(false)
   const [showFinalePopup, setShowFinalePopup] = useState(false)
   const [saq,     setSaq]     = useState('')
   const [statusProb, setStatusProb] = useState('normal')
@@ -371,8 +376,24 @@ export default function MetaPage() {
       supabase.from('remessas').select('*').eq('meta_id',id).order('created_at',{ascending:true}),
       tid ? supabase.from('tenants').select('*').eq('id', tid).maybeSingle() : Promise.resolve({ data: null }),
     ])
-    // Admin can view all metas in their tenant; operator only their own
-    if (m && m.operator_id !== u.id && p?.role !== 'admin') { router.push('/operator'); return }
+    // EQUIPES (DS MENTORIA): líder pode agir como admin nas metas dos operadores
+    // da SUA equipe (ou nas próprias). Gate triplo: flag líder + tenant DS + mesma equipe.
+    let leaderOk = false
+    if (p?.is_team_leader === true && p?.tenant_id === DS_MENTORIA_TENANT && p?.team && m && m.tenant_id === p.tenant_id) {
+      if (m.operator_id === u.id) {
+        leaderOk = true
+      } else {
+        const { data: opProf } = await supabase.from('profiles').select('team').eq('id', m.operator_id).maybeSingle()
+        leaderOk = !!opProf && opProf.team === p.team
+      }
+    }
+    setLeaderAllowed(leaderOk)
+
+    // Admin vê todas as metas do tenant; operador só as próprias; líder só as da equipe
+    if (m && m.operator_id !== u.id && p?.role !== 'admin' && !leaderOk) {
+      const home = (p?.is_team_leader && p?.tenant_id === DS_MENTORIA_TENANT) ? '/equipe' : '/operator'
+      router.push(home); return
+    }
     setMeta(m||null); setRemessas(r||[])
     const slots = tenantData?.favorite_slots
     setTenantSlots(Array.isArray(slots) ? slots : [])
@@ -436,7 +457,7 @@ export default function MetaPage() {
     const rnd = a => a[Math.floor(Math.random() * a.length)]
     const tag = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(absPer)}/conta)`
     // Admin que opera nao deve ler "avise o ADMIN" — recebe versao auto-dirigida.
-    const isAdmin = profile?.role === 'admin'
+    const isAdmin = profile?.role === 'admin' || leaderAllowed
 
     // LUCRO
     if (diff >= 0) {
@@ -514,7 +535,7 @@ export default function MetaPage() {
     const perConta = nContasRem > 0 ? Math.abs(diff) / nContasRem : Math.abs(diff)
     let pushTitle, pushBody
     const perTag = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta)`
-    const isAdmin = profile?.role === 'admin'
+    const isAdmin = profile?.role === 'admin' || leaderAllowed
     const pick = a => a[Math.floor(Math.random() * a.length)]
     if (diff >= 0) {
       const msgs = ['Muito bom, parabéns! Continua assim.', 'Lucro na remessa, mandou bem demais!', 'Show! Mantém esse ritmo.', 'Ai sim! Operação voando.']
@@ -603,7 +624,7 @@ export default function MetaPage() {
 
   async function toggleStatus() {
     if (!meta) return
-    const isAdmin = profile?.role === 'admin'
+    const isAdmin = profile?.role === 'admin' || leaderAllowed
     const isClosed = meta.status_fechamento === 'fechada'
     const isFinalize = meta.status !== 'finalizada' && !isClosed
 
@@ -633,8 +654,8 @@ export default function MetaPage() {
       })}).catch(()=>{})
     } catch(e) { /* silent */ }
     await fetchData()
-    // Popup de finalizacao — apenas operador
-    if (action === 'finalize' && profile?.role !== 'admin') {
+    // Popup de finalizacao — apenas operador (líder age como admin)
+    if (action === 'finalize' && profile?.role !== 'admin' && !leaderAllowed) {
       setShowFinalePopup(true)
     }
   }
@@ -710,7 +731,9 @@ export default function MetaPage() {
   //  • isAdminV2 (modal de finalizacao premium + certificado/baixar imagem):
   //    SO ADMIN — expoe salario/bau/custos, que operador NAO pode ver.
   const isV2 = true
-  const isAdminV2 = profile?.role === 'admin'
+  const isAdminV2 = profile?.role === 'admin' || leaderAllowed
+  // Para onde o botão "voltar" leva conforme o tipo de conta
+  const homePath = profile?.role === 'admin' ? '/admin' : ((profile?.is_team_leader && profile?.tenant_id === DS_MENTORIA_TENANT) ? '/equipe' : '/operator')
 
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1 }}>
@@ -765,7 +788,7 @@ export default function MetaPage() {
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
         {/* Header — cabine de controle */}
         <div className="a1" style={{ marginBottom:24 }}>
-          <button onClick={()=>router.push(profile?.role==='admin'?'/admin':'/operator')} className="btn btn-ghost btn-sm" style={{ display:'inline-flex', alignItems:'center', gap:6, marginBottom:14 }}>
+          <button onClick={()=>router.push(homePath)} className="btn btn-ghost btn-sm" style={{ display:'inline-flex', alignItems:'center', gap:6, marginBottom:14 }}>
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
             Voltar ao painel
           </button>
@@ -774,7 +797,7 @@ export default function MetaPage() {
             const isFinalizada = meta?.status==='finalizada' && !isFechada
             // canReactivate: tanto meta finalizada quanto fechada podem ser reabertas
             const canReactivate = isFinalizada || isFechada
-            const isAdminUser = profile?.role === 'admin'
+            const isAdminUser = profile?.role === 'admin' || leaderAllowed
             const statusC = isFechada ? 'var(--profit)' : isFinalizada ? 'rgba(255,255,255,0.78)' : '#e53935'
             const statusL = isFechada ? 'FECHADA' : isFinalizada ? 'FINALIZADA' : 'AO VIVO'
             return (
@@ -1901,7 +1924,7 @@ export default function MetaPage() {
             const salario = Number(meta.salario_plataforma || 0)
             const custos = Number(meta.gastos_operacionais || 0)
             const bauMeta = Number(meta.bau || totais.bau || 0)
-            const goPanel = () => { setShowFinalePopup(false); router.push(profile?.role === 'admin' ? '/admin' : '/operator') }
+            const goPanel = () => { setShowFinalePopup(false); router.push(homePath) }
 
             const baixarCertificado = () => {
               try {
@@ -2102,7 +2125,7 @@ export default function MetaPage() {
                     </button>
                     <div style={{ display: 'flex', gap: 9 }}>
                       <button type="button" onClick={goPanel} style={{ flex: 1, padding: '12px', borderRadius: 12, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t1)', cursor: 'pointer', fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit' }}>Voltar para metas</button>
-                      <button type="button" onClick={() => { setShowFinalePopup(false); router.push(profile?.role === 'admin' ? '/admin' : '/operator') }} style={{ flex: 1, padding: '12px', borderRadius: 12, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t1)', cursor: 'pointer', fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit' }}>Nova meta</button>
+                      <button type="button" onClick={() => { setShowFinalePopup(false); router.push(homePath) }} style={{ flex: 1, padding: '12px', borderRadius: 12, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t1)', cursor: 'pointer', fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit' }}>Nova meta</button>
                     </div>
                   </div>
                 </motion.div>

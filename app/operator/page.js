@@ -608,6 +608,10 @@ export default function OperatorPage() {
     if (!u) { router.push('/login'); return }
     setUser(u)
     const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
+    // EQUIPES (DS MENTORIA): operador líder vai pro painel da equipe
+    if (p?.is_team_leader && p?.tenant_id === '78da0085-9308-41b1-98b1-1e4c44063c51' && p?.team) {
+      router.push('/equipe'); return
+    }
     setProfile(p)
     // Busca operation_model do tenant pra novas metas herdarem (modo apenas_bau)
     if (p?.tenant_id) {

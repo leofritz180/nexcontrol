@@ -10,6 +10,10 @@ import { SLOTS } from '../../lib/slots-data'
 import { DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_METAS, DEMO_REMESSAS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
 import { validClosedMetas } from '../../lib/operator-stats'
 import RankBadge from '../../components/rank/RankBadge'
+import TeamManager from '../../components/TeamManager'
+
+// EQUIPES / OPERADOR LÍDER — feature exclusiva DS MENTORIA 2.0
+const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
@@ -963,9 +967,13 @@ export default function OperadoresPage() {
     )
   }
 
+  // Equipes/operador líder: SÓ aparece para a conta DS MENTORIA 2.0
+  const teamsEnabled = profile?.tenant_id === DS_MENTORIA_TENANT
+
   const tabs = [
     { key: 'ranking', label: 'Ranking' },
     { key: 'equipe', label: 'Equipe' },
+    ...(teamsEnabled ? [{ key: 'equipes', label: 'Equipes' }] : []),
     { key: 'folha', label: 'Folha de pagamento' },
     { key: 'config', label: 'Configuracoes' },
   ]
@@ -1513,6 +1521,17 @@ export default function OperadoresPage() {
 
         {/* ═══════════ TAB 3: CONFIGURACOES ═══════════ */}
         {/* FOLHA DE PAGAMENTO */}
+        {/* ═══════════ TAB: EQUIPES (DS MENTORIA 2.0) ═══════════ */}
+        {tab === 'equipes' && teamsEnabled && (
+          <motion.div key="equipes" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
+            <TeamManager
+              operators={activeOperators}
+              adminId={profile?.id}
+              onChanged={() => loadAll(profile?.tenant_id)}
+            />
+          </motion.div>
+        )}
+
         {tab === 'folha' && (
           <motion.div key="folha" data-tour="ops-folha" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
             {/* Period filter */}

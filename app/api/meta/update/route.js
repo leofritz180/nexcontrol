@@ -23,12 +23,13 @@ export async function POST(req) {
     // operador líder (DS MENTORIA) sobre meta de um operador da SUA equipe.
     const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
     if (user_id) {
-      const { data: prof } = await sb.from('profiles').select('id,role,tenant_id,is_team_leader,team').eq('id', user_id).maybeSingle()
+      const { data: prof } = await sb.from('profiles').select('id,role,tenant_id,is_team_leader,team,created_at').eq('id', user_id).maybeSingle()
       if (!prof) return NextResponse.json({ error: 'Profile not found' }, { status: 403 })
       const isOwner = meta.operator_id === prof.id
       const isAdminSameTenant = prof.role === 'admin' && prof.tenant_id === meta.tenant_id
       let isTeamLeader = false
-      if (!isOwner && !isAdminSameTenant && prof.is_team_leader && prof.tenant_id === DS_MENTORIA_TENANT && prof.team && meta.tenant_id === prof.tenant_id) {
+      const metaAfterLeader = meta.created_at && prof.created_at && new Date(meta.created_at) >= new Date(prof.created_at)
+      if (!isOwner && !isAdminSameTenant && prof.is_team_leader && prof.tenant_id === DS_MENTORIA_TENANT && prof.team && meta.tenant_id === prof.tenant_id && metaAfterLeader) {
         const { data: opProf } = await sb.from('profiles').select('team').eq('id', meta.operator_id).maybeSingle()
         isTeamLeader = !!opProf && opProf.team === prof.team
       }

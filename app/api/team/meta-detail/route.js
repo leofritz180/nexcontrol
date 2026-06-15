@@ -7,7 +7,6 @@ import { NextResponse } from 'next/server'
 // ─────────────────────────────────────────────────────────────
 
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
-const TEAM_METAS_SINCE = '2026-06-15T11:54:00Z'
 
 export async function POST(req) {
   try {
@@ -17,14 +16,14 @@ export async function POST(req) {
     const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
 
     const { data: leader } = await sb.from('profiles')
-      .select('id,team,is_team_leader,tenant_id').eq('id', leader_id).maybeSingle()
+      .select('id,team,is_team_leader,tenant_id,created_at').eq('id', leader_id).maybeSingle()
     if (!leader || !leader.is_team_leader || leader.tenant_id !== DS_MENTORIA_TENANT || !leader.team) {
       return NextResponse.json({ error: 'Sem permissao' }, { status: 403 })
     }
 
     const { data: meta } = await sb.from('metas').select('*').eq('id', meta_id).maybeSingle()
     if (!meta || meta.tenant_id !== DS_MENTORIA_TENANT) return NextResponse.json({ error: 'Meta nao encontrada' }, { status: 404 })
-    if (meta.created_at && new Date(meta.created_at) < new Date(TEAM_METAS_SINCE)) {
+    if (meta.created_at && new Date(meta.created_at) < new Date(leader.created_at)) {
       return NextResponse.json({ error: 'Meta fora do periodo' }, { status: 403 })
     }
     // Operador da meta tem que ser da equipe do líder (ou o próprio líder)

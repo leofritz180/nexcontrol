@@ -14,8 +14,7 @@ const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 
 // EQUIPES / OPERADOR LÍDER — exclusivo DS MENTORIA 2.0
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
-// Líder só gerencia metas criadas A PARTIR daqui (não o histórico antigo)
-const TEAM_METAS_SINCE = '2026-06-15T11:54:00Z'
+// Líder só gerencia metas criadas a partir da CRIAÇÃO DA CONTA dele (por líder)
 
 // Slug do slot p/ a imagem em /slots/{slug}.webp
 const slotSlug = name => String(name).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/&/g,'e').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')
@@ -381,7 +380,7 @@ export default function MetaPage() {
     // EQUIPES (DS MENTORIA): líder pode agir como admin nas metas dos operadores
     // da SUA equipe (ou nas próprias). Gate triplo: flag líder + tenant DS + mesma equipe.
     let leaderOk = false
-    const metaRecente = m && m.created_at && new Date(m.created_at) >= new Date(TEAM_METAS_SINCE)
+    const metaRecente = m && m.created_at && p?.created_at && new Date(m.created_at) >= new Date(p.created_at)
     if (p?.is_team_leader === true && p?.tenant_id === DS_MENTORIA_TENANT && p?.team && m && m.tenant_id === p.tenant_id && metaRecente) {
       if (m.operator_id === u.id) {
         leaderOk = true

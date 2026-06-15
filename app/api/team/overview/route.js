@@ -9,8 +9,8 @@ import { NextResponse } from 'next/server'
 // ─────────────────────────────────────────────────────────────
 
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
-// Corte: líder só vê metas criadas A PARTIR daqui (não o histórico antigo dos operadores)
-const TEAM_METAS_SINCE = '2026-06-15T11:54:00Z'
+// Corte: líder só vê metas criadas a partir da CRIAÇÃO DA CONTA DELE
+// (cada líder tem seu próprio corte = profiles.created_at)
 
 export async function POST(req) {
   try {
@@ -24,7 +24,7 @@ export async function POST(req) {
 
     // 1. Confirmar que é líder da DS MENTORIA com equipe
     const { data: leader } = await sb.from('profiles')
-      .select('id,nome,email,team,is_team_leader,tenant_id,role')
+      .select('id,nome,email,team,is_team_leader,tenant_id,role,created_at')
       .eq('id', leader_id).maybeSingle()
     if (!leader || !leader.is_team_leader || leader.tenant_id !== DS_MENTORIA_TENANT || !leader.team) {
       return NextResponse.json({ error: 'Sem permissao' }, { status: 403 })
@@ -47,7 +47,7 @@ export async function POST(req) {
       .select('*')
       .eq('tenant_id', DS_MENTORIA_TENANT)
       .in('operator_id', opIds)
-      .gte('created_at', TEAM_METAS_SINCE)
+      .gte('created_at', leader.created_at)
       .order('created_at', { ascending: false })
     const metas = (ms || []).filter(m => !m.deleted_at)
     const metaIds = metas.map(m => m.id)

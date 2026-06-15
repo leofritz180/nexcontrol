@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ─────────────────────────────────────────────────────────────
@@ -16,6 +16,8 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
   const [extraTeams, setExtraTeams] = useState([]) // equipes criadas ainda sem membros
   const [saving, setSaving] = useState(null) // operator_id em saving
   const [error, setError] = useState('')
+  const [okMsg, setOkMsg] = useState('')
+  const inputRef = useRef(null)
 
   // Equipes existentes = nomes distintos vindos dos operadores + as recém-criadas
   const teams = useMemo(() => {
@@ -52,11 +54,22 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
   }
 
   function addTeam() {
+    setError(''); setOkMsg('')
     const name = newTeam.trim()
-    if (!name) return
-    if (teams.some(t => t.toLowerCase() === name.toLowerCase())) { setNewTeam(''); return }
+    if (!name) {
+      setError('Digite um nome para a equipe (ex.: Shark).')
+      if (inputRef.current) inputRef.current.focus()
+      return
+    }
+    if (teams.some(t => t.toLowerCase() === name.toLowerCase())) {
+      setError(`A equipe "${name}" já existe.`)
+      setNewTeam('')
+      return
+    }
     setExtraTeams(prev => [...prev, name])
     setNewTeam('')
+    setOkMsg(`Equipe "${name}" criada. Agora adicione os operadores e defina o líder.`)
+    setTimeout(() => setOkMsg(''), 5000)
   }
 
   const card = {
@@ -117,6 +130,7 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
         <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 10px' }}>Nova equipe</p>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <input
+            ref={inputRef}
             value={newTeam}
             onChange={e => setNewTeam(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTeam() } }}
@@ -139,6 +153,11 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
       {error && (
         <div style={{ padding: '10px 14px', marginBottom: 14, borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ff9d9d', fontSize: 12.5, fontWeight: 600 }}>
           {error}
+        </div>
+      )}
+      {okMsg && (
+        <div style={{ padding: '10px 14px', marginBottom: 14, borderRadius: 10, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#7ee2b8', fontSize: 12.5, fontWeight: 600 }}>
+          {okMsg}
         </div>
       )}
 
@@ -212,6 +231,23 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
                           </div>
                         )
                       })}
+                    </div>
+                  )}
+
+                  {/* Adicionar operador direto nesta equipe */}
+                  {unassigned.length > 0 && (
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t3)' }}>Adicionar operador:</span>
+                      <select
+                        value=""
+                        onChange={e => { if (e.target.value) apply(e.target.value, team, false) }}
+                        style={{
+                          padding: '8px 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, fontFamily: 'inherit',
+                          background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.14)', color: '#fff', cursor: 'pointer',
+                        }}>
+                        <option value="" style={{ background: '#0c1322' }}>Selecione um operador...</option>
+                        {unassigned.map(o => <option key={o.id} value={o.id} style={{ background: '#0c1322' }}>{getName(o)}</option>)}
+                      </select>
                     </div>
                   )}
                 </motion.div>

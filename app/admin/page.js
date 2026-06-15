@@ -3115,7 +3115,10 @@ export default function AdminPage() {
               const emLucro = metaStats.filter(v => v > 0).length
               const neutras = metaStats.filter(v => v === 0).length
               const fechadas = filteredMetas.filter(m => m.status_fechamento === 'fechada').length
+              // Total de contas das metas no filtro atual (acompanha período hoje/ontem/tudo)
+              const totalContas = filteredMetas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
               const items = [
+                { label:'contas no total', count:totalContas, unit:'conta', c:'#fafafa', bg:'rgba(255,255,255,0.06)', border:'rgba(255,255,255,0.18)' },
                 emLucro > 0 && { label:'em lucro', count:emLucro, c:'var(--profit)', bg:'rgba(209,250,229,0.08)', border:'rgba(209,250,229,0.22)' },
                 emPrej > 0 && { label:'em prejuizo', count:emPrej, c:'var(--loss)', bg:'rgba(239,68,68,0.08)', border:'rgba(239,68,68,0.24)', pulse:true },
                 neutras > 0 && { label:'neutras', count:neutras, c:'rgba(255,255,255,0.78)', bg:'rgba(255,255,255,0.08)', border:'rgba(255,255,255,0.22)' },
@@ -3143,7 +3146,7 @@ export default function AdminPage() {
                       <div style={{ flex:1 }}>
                         <div style={{ display:'flex', alignItems:'baseline', gap:4 }}>
                           <span style={{ fontSize:22, fontWeight:900, color:it.c, fontFamily:'var(--mono)', letterSpacing:'-0.02em', lineHeight:1 }}>{it.count}</span>
-                          <span style={{ fontSize:10, color:it.c, fontWeight:700, letterSpacing:'0.04em' }}>meta{it.count>1?'s':''}</span>
+                          <span style={{ fontSize:10, color:it.c, fontWeight:700, letterSpacing:'0.04em' }}>{(it.unit||'meta')}{it.count!==1?'s':''}</span>
                         </div>
                         <p style={{ fontSize:10, color:'var(--t3)', margin:'4px 0 0', fontWeight:600, letterSpacing:'0.06em', textTransform:'uppercase' }}>{it.label}</p>
                       </div>

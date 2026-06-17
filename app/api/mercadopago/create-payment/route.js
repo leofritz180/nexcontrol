@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { calculatePrice, getPlan } from '../../../../lib/plans'
+import { getPlan } from '../../../../lib/plans'
+import { calculatePrice as calcOpTier } from '../../../../lib/pricing'
 
 // Cria cobranca PIX via Mercado Pago.
 // Aceita amount variavel (plano base, upgrade de operador, etc).
@@ -37,9 +38,14 @@ export async function POST(req) {
     //   nada                  → default 39.9 / 1 mes (fallback)
     let transactionAmount, planMonths
     if (plan_period) {
-      planMonths = getPlan(plan_period).months
-      const opsForCalc = Math.max(1, Number(operatorCountIn) || 1)
-      const expected = calculatePrice(plan_period, opsForCalc).total
+      const plan = getPlan(plan_period)
+      planMonths = plan.months
+      // Preço REAL (idêntico ao front /billing-mp): admin R$39,90 + operadores
+      // R$19,90 com desconto por volume (lib/pricing) × meses × desconto do período.
+      // Antes usava lib/plans (flat R$39,90/operador) e bloqueava renovação de quem tinha 2+ operadores.
+      const opsForCalc = Math.max(0, Number(operatorCountIn) || 0)
+      const monthlyTier = calcOpTier(opsForCalc).total
+      const expected = Number((monthlyTier * plan.months * (1 - plan.discount)).toFixed(2))
       if (Number(amount) > 0) {
         // Aceita amount enviado SE estiver dentro de 5% do valor esperado (margem de
         // arredondamento ou desconto promocional). Adulteracao via devtools (ex: 0,01

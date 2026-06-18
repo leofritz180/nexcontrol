@@ -190,7 +190,8 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                     const pos = Number(r.resultado||0) >= 0
                     const isLatest = i === 0
                     return (
-                      <div key={r.id} style={{ padding: '12px 14px', borderRadius: 12, background: isLatest?(pos?'rgba(16,185,129,0.06)':'rgba(239,68,68,0.06)'):'rgba(255,255,255,0.03)', border: `1px solid ${isLatest?(pos?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.12)'):'var(--b1)'}`, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div key={r.id} style={{ padding: '12px 14px', borderRadius: 12, background: isLatest?(pos?'rgba(16,185,129,0.06)':'rgba(239,68,68,0.06)'):'rgba(255,255,255,0.03)', border: `1px solid ${isLatest?(pos?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.12)'):'var(--b1)'}`, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <div style={{ width: 30, height: 30, borderRadius: 8, background: pos?'rgba(16,185,129,0.12)':'rgba(239,68,68,0.12)', border: `1px solid ${pos?'rgba(16,185,129,0.3)':'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={pos?'var(--profit, #10b981)':'var(--loss, #ef4444)'} strokeWidth="3" strokeLinecap="round"><polyline points={pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>
                         </div>
@@ -206,6 +207,20 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                         <button type="button" onClick={() => delRemessa(r.id)} title="Excluir remessa" style={{ width: 26, height: 26, borderRadius: 6, border: '1px solid rgba(239,68,68,0.3)', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, opacity: 0.6 }}>
                           <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--loss, #ef4444)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
                         </button>
+                        </div>
+                        {(() => {
+                          const fotos = (Array.isArray(r.comprovantes) && r.comprovantes.length) ? r.comprovantes : (r.comprovante_url ? [r.comprovante_url] : [])
+                          if (!fotos.length) return null
+                          return (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingLeft: 40 }}>
+                              {fotos.map((url, fi) => (
+                                <a key={fi} href={url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`}>
+                                  <img src={url} alt={`comprovante ${fi+1}`} style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--b2, rgba(255,255,255,0.14))', display: 'block' }}/>
+                                </a>
+                              ))}
+                            </div>
+                          )
+                        })()}
                       </div>
                     )
                   })}

@@ -360,8 +360,8 @@ export default function MetaPage() {
   const [tenantOpModel, setTenantOpModel] = useState('salario_bau')
   const [selectedSlot, setSelectedSlot] = useState('')
   const [showEdit, setShowEdit] = useState(false)
-  // Comprovante (foto dos saques) da remessa
-  const [comprovanteUrl, setComprovanteUrl] = useState('')
+  // Comprovantes (fotos dos saques) da remessa — VÁRIOS por remessa
+  const [comprovantes, setComprovantes] = useState([])
   const [comprovanteUp, setComprovanteUp] = useState(false)
   const [comprovanteErr, setComprovanteErr] = useState('')
 
@@ -376,17 +376,17 @@ export default function MetaPage() {
       const res = await fetch('/api/remessa/upload-comprovante', { method: 'POST', body: fd })
       const json = await res.json()
       if (!res.ok || !json.url) { setComprovanteErr(json.error || 'Falha no upload'); setComprovanteUp(false); return }
-      setComprovanteUrl(json.url)
+      setComprovantes(prev => [...prev, json.url]) // ANEXA (permite vários)
     } catch (e) { setComprovanteErr(e.message) }
     setComprovanteUp(false)
   }
-  // Colar (Ctrl+V) imagem da área de transferência
+  // Colar (Ctrl+V) — anexa cada imagem colada
   function onPasteComprovante(e) {
     const items = e.clipboardData?.items || []
     for (const it of items) {
       if (it.type && it.type.startsWith('image/')) {
         const f = it.getAsFile()
-        if (f) { e.preventDefault(); uploadComprovante(f); break }
+        if (f) { e.preventDefault(); uploadComprovante(f) }
       }
     }
   }
@@ -628,16 +628,18 @@ export default function MetaPage() {
       observacoes: obsRemessa.trim() || null,
     }).select('id')
     if (err) { setSalvando(false); setError(err.message); return }
-    // Comprovante (foto): salva em coluna separada de forma resiliente
-    // (se a coluna comprovante_url ainda não existir, ignora sem quebrar a remessa)
-    const savedComprovante = comprovanteUrl
+    // Comprovantes (fotos): salva de forma resiliente. comprovante_url (1ª foto)
+    // já existe; comprovantes (lista) entra após o SQL — cada update é
+    // independente, então não quebra a remessa se a coluna ainda não existir.
+    const savedComprovantes = comprovantes
     const newRemId = insRows?.[0]?.id
-    if (savedComprovante && newRemId) {
-      supabase.from('remessas').update({ comprovante_url: savedComprovante }).eq('id', newRemId).then(()=>{}, ()=>{})
+    if (savedComprovantes.length && newRemId) {
+      supabase.from('remessas').update({ comprovante_url: savedComprovantes[0] }).eq('id', newRemId).then(()=>{}, ()=>{})
+      supabase.from('remessas').update({ comprovantes: savedComprovantes }).eq('id', newRemId).then(()=>{}, ()=>{})
     }
     // Limpar form e desbloquear IMEDIATAMENTE
     const formContas = Number(contasRemessa||0)
-    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setBauR(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot(''); setObsRemessa(''); setComprovanteUrl(''); setComprovanteErr('')
+    setTituloR(''); setTipo('remessa'); setSaldoIni('1500'); setDep(''); setSaq(''); setBauR(''); setStatusProb('normal'); setContasRemessa(''); setSelectedSlot(''); setObsRemessa(''); setComprovantes([]); setComprovanteErr('')
     const formSlot = selectedSlot || ''
     setSalvando(false)
     showFeedback(diff, statusProb, formContas, formSlot)
@@ -649,7 +651,8 @@ export default function MetaPage() {
       contas_remessa: tipo === 'redeposito' ? 0 : formContas,
       slot_name: selectedSlot || null, status_problema: statusProb,
       observacoes: obsRemessa.trim() || null,
-      comprovante_url: savedComprovante || null,
+      comprovante_url: savedComprovantes[0] || null,
+      comprovantes: savedComprovantes,
       created_at: new Date().toISOString(),
     }
     setRemessas(prev => [...prev, optimistic])
@@ -1512,23 +1515,26 @@ export default function MetaPage() {
                     <p style={colTitle}>2 · Resultados</p>
                     {tipo!=='bonus' && field('DEPOSITO *', <input className="input" type="text" inputMode="decimal" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="Ex: 1055" style={{...inp, fontWeight:700}}/>)}
                     {field(tipo==='bonus'?<span style={{color:'var(--profit)'}}>VALOR DO BÔNUS (SAQUE) *</span>:'SAQUE *', <input className="input" type="text" inputMode="decimal" value={saq} onChange={e=>setSaq(e.target.value)} required placeholder={tipo==='bonus'?'Ex: 200':'Ex: 941'} style={{...inp, fontWeight:700}}/>)}
-                    {field(<>COMPROVANTE <span style={{ color:'var(--t4)', fontWeight:400, textTransform:'none' }}>(foto dos saques)</span></>, (
+                    {field(<>COMPROVANTES <span style={{ color:'var(--t4)', fontWeight:400, textTransform:'none' }}>(fotos dos saques — pode vários)</span></>, (
                       <div onPaste={onPasteComprovante}>
-                        {comprovanteUrl ? (
-                          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                            <a href={comprovanteUrl} target="_blank" rel="noreferrer"><img src={comprovanteUrl} alt="comprovante" style={{ width:38, height:38, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)' }}/></a>
-                            <span style={{ fontSize:11, color:'var(--profit)', fontWeight:700 }}>Anexado</span>
-                            <button type="button" onClick={()=>{ setComprovanteUrl(''); setComprovanteErr('') }} style={{ fontSize:10, color:'var(--loss)', background:'none', border:'none', cursor:'pointer', textDecoration:'underline', padding:0 }}>remover</button>
+                        {comprovantes.length > 0 && (
+                          <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:7 }}>
+                            {comprovantes.map((url, ci) => (
+                              <div key={ci} style={{ position:'relative' }}>
+                                <a href={url} target="_blank" rel="noreferrer"><img src={url} alt={`comprovante ${ci+1}`} style={{ width:42, height:42, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/></a>
+                                <button type="button" onClick={()=>setComprovantes(prev=>prev.filter((_,i)=>i!==ci))} title="Remover"
+                                  style={{ position:'absolute', top:-6, right:-6, width:18, height:18, borderRadius:'50%', border:'1px solid var(--b2)', background:'#1a1a1a', color:'var(--loss)', cursor:'pointer', fontSize:11, lineHeight:'1', display:'flex', alignItems:'center', justifyContent:'center', padding:0 }}>×</button>
+                              </div>
+                            ))}
                           </div>
-                        ) : (
-                          <label style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:7, padding:'9px 11px', borderRadius:8, border:'1px dashed var(--b2)', background:'var(--fill-1)', cursor: comprovanteUp?'wait':'pointer', fontSize:11.5, fontWeight:600, color:'var(--t3)' }}>
-                            {comprovanteUp ? (<><div className="spinner" style={{ width:12, height:12 }}/> Enviando...</>) : (<>
-                              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                              Anexar ou colar foto
-                            </>)}
-                            <input type="file" accept="image/*" onChange={e=>uploadComprovante(e.target.files?.[0])} style={{ display:'none' }}/>
-                          </label>
                         )}
+                        <label style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:7, padding:'9px 11px', borderRadius:8, border:'1px dashed var(--b2)', background:'var(--fill-1)', cursor: comprovanteUp?'wait':'pointer', fontSize:11.5, fontWeight:600, color:'var(--t3)' }}>
+                          {comprovanteUp ? (<><div className="spinner" style={{ width:12, height:12 }}/> Enviando...</>) : (<>
+                            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            {comprovantes.length > 0 ? 'Adicionar outra foto' : 'Anexar ou colar foto'}
+                          </>)}
+                          <input type="file" accept="image/*" multiple onChange={e=>{ const fs=Array.from(e.target.files||[]); fs.forEach(f=>uploadComprovante(f)) }} style={{ display:'none' }}/>
+                        </label>
                         {comprovanteErr && <span style={{ display:'block', fontSize:10, color:'var(--loss)', marginTop:4 }}>{comprovanteErr}</span>}
                       </div>
                     ))}
@@ -1845,12 +1851,22 @@ export default function MetaPage() {
                           </div>
                         ))}
                       </div>
-                      {r.comprovante_url && (
-                        <a href={r.comprovante_url} target="_blank" rel="noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:8, marginTop:10, padding:'6px 10px', borderRadius:8, border:'1px solid var(--b1)', background:'var(--void)', textDecoration:'none' }}>
-                          <img src={r.comprovante_url} alt="comprovante" style={{ width:30, height:30, objectFit:'cover', borderRadius:5, border:'1px solid var(--b2)' }}/>
-                          <span style={{ fontSize:11, fontWeight:600, color:'var(--t2)' }}>Ver comprovante dos saques</span>
-                        </a>
-                      )}
+                      {(() => {
+                        const fotos = (Array.isArray(r.comprovantes) && r.comprovantes.length) ? r.comprovantes : (r.comprovante_url ? [r.comprovante_url] : [])
+                        if (!fotos.length) return null
+                        return (
+                          <div style={{ marginTop:10 }}>
+                            <p style={{ fontSize:9, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.06em', fontWeight:700, margin:'0 0 5px' }}>Comprovante{fotos.length>1?`s (${fotos.length})`:''} dos saques</p>
+                            <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                              {fotos.map((url, fi) => (
+                                <a key={fi} href={url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`}>
+                                  <img src={url} alt={`comprovante ${fi+1}`} style={{ width:44, height:44, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })()}
                     </div>
                   </motion.div>
                 )

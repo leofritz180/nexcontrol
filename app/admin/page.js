@@ -2568,16 +2568,6 @@ export default function AdminPage() {
                 @media (max-width: 480px) { .hero-value { font-size: 36px !important; } }
               `}</style>
 
-              {/* Card pequeno: LUCRO APÓS CUSTOS (proxy/SMS) do período selecionado */}
-              <div style={{ display:'inline-flex', alignItems:'center', gap:10, flexWrap:'wrap', marginTop:14, padding:'9px 14px', borderRadius:10, background:'var(--fill-1)', border:'1px solid var(--b1)' }}>
-                <span style={{ fontSize:11, color:'var(--t3)', fontWeight:600 }}>Lucro após custos (proxy/SMS)</span>
-                <span style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:800, color: heroAposCustos>=0 ? 'var(--profit)' : 'var(--loss)' }}>
-                  {heroAposCustos>=0?'+':'-'}R$ {fmt(Math.abs(heroAposCustos))}
-                </span>
-                <span style={{ fontSize:10.5, color:'var(--t4)', fontFamily:'var(--mono)' }}>
-                  {heroLucro.custos>0 ? `− R$ ${fmt(heroLucro.custos)} em custos` : 'sem custos no período'}
-                </span>
-              </div>
 
               {redesign && (
                 <div style={{ marginTop:24 }}>
@@ -2593,6 +2583,11 @@ export default function AdminPage() {
                 <div>
                   <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4, fontWeight:400 }}>Operadores</p>
                   <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:600, color:'var(--t1)', margin:0 }}>{global.ops}</p>
+                </div>
+                <div>
+                  <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4, fontWeight:400 }}>Lucro após custos</p>
+                  <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:600, color: heroAposCustos>=0?'var(--profit)':'var(--loss)', margin:0 }}>{heroAposCustos>=0?'+':'-'}R$ {fmt(Math.abs(heroAposCustos))}</p>
+                  <p style={{ fontSize:9.5, color:'var(--t4)', margin:'2px 0 0', fontFamily:'var(--mono)' }}>{heroLucro.custos>0 ? `− R$ ${fmt(heroLucro.custos)} proxy/SMS` : 'sem custos'}</p>
                 </div>
               </div>
 

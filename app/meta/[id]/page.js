@@ -14,6 +14,10 @@ const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 
 // EQUIPES / OPERADOR LÍDER — exclusivo DS MENTORIA 2.0
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
+
+// Comprovante: normaliza (string antiga OU objeto {url,ts}) e formata data/hora BRT
+const normFoto = it => (typeof it === 'string' ? { url: it, ts: null } : (it || {}))
+const fmtFotoTs = ts => { try { return new Date(ts).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) } catch { return '' } }
 // Líder só gerencia metas criadas a partir da CRIAÇÃO DA CONTA dele (por líder)
 
 // Slug do slot p/ a imagem em /slots/{slug}.webp
@@ -376,7 +380,7 @@ export default function MetaPage() {
       const res = await fetch('/api/remessa/upload-comprovante', { method: 'POST', body: fd })
       const json = await res.json()
       if (!res.ok || !json.url) { setComprovanteErr(json.error || 'Falha no upload'); setComprovanteUp(false); return }
-      setComprovantes(prev => [...prev, json.url]) // ANEXA (permite vários)
+      setComprovantes(prev => [...prev, { url: json.url, ts: json.ts || new Date().toISOString() }]) // ANEXA (permite vários) c/ horário
     } catch (e) { setComprovanteErr(e.message) }
     setComprovanteUp(false)
   }
@@ -631,10 +635,11 @@ export default function MetaPage() {
     // Comprovantes (fotos): salva de forma resiliente. comprovante_url (1ª foto)
     // já existe; comprovantes (lista) entra após o SQL — cada update é
     // independente, então não quebra a remessa se a coluna ainda não existir.
-    const savedComprovantes = comprovantes
+    const savedComprovantes = comprovantes // [{url, ts}, ...]
+    const firstUrl = savedComprovantes[0]?.url || null
     const newRemId = insRows?.[0]?.id
     if (savedComprovantes.length && newRemId) {
-      supabase.from('remessas').update({ comprovante_url: savedComprovantes[0] }).eq('id', newRemId).then(()=>{}, ()=>{})
+      supabase.from('remessas').update({ comprovante_url: firstUrl }).eq('id', newRemId).then(()=>{}, ()=>{})
       supabase.from('remessas').update({ comprovantes: savedComprovantes }).eq('id', newRemId).then(()=>{}, ()=>{})
     }
     // Limpar form e desbloquear IMEDIATAMENTE
@@ -651,7 +656,7 @@ export default function MetaPage() {
       contas_remessa: tipo === 'redeposito' ? 0 : formContas,
       slot_name: selectedSlot || null, status_problema: statusProb,
       observacoes: obsRemessa.trim() || null,
-      comprovante_url: savedComprovantes[0] || null,
+      comprovante_url: firstUrl,
       comprovantes: savedComprovantes,
       created_at: new Date().toISOString(),
     }
@@ -1519,13 +1524,14 @@ export default function MetaPage() {
                       <div onPaste={onPasteComprovante}>
                         {comprovantes.length > 0 && (
                           <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:7 }}>
-                            {comprovantes.map((url, ci) => (
+                            {comprovantes.map((item, ci) => { const f = normFoto(item); return (
                               <div key={ci} style={{ position:'relative' }}>
-                                <a href={url} target="_blank" rel="noreferrer"><img src={url} alt={`comprovante ${ci+1}`} style={{ width:42, height:42, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/></a>
+                                <a href={f.url} target="_blank" rel="noreferrer"><img src={f.url} alt={`comprovante ${ci+1}`} style={{ width:64, height:64, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/></a>
+                                {f.ts && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:7.5, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2, letterSpacing:'-0.02em' }}>{fmtFotoTs(f.ts)}</span>}
                                 <button type="button" onClick={()=>setComprovantes(prev=>prev.filter((_,i)=>i!==ci))} title="Remover"
                                   style={{ position:'absolute', top:-6, right:-6, width:18, height:18, borderRadius:'50%', border:'1px solid var(--b2)', background:'#1a1a1a', color:'var(--loss)', cursor:'pointer', fontSize:11, lineHeight:'1', display:'flex', alignItems:'center', justifyContent:'center', padding:0 }}>×</button>
                               </div>
-                            ))}
+                            )})}
                           </div>
                         )}
                         <label style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:7, padding:'9px 11px', borderRadius:8, border:'1px dashed var(--b2)', background:'var(--fill-1)', cursor: comprovanteUp?'wait':'pointer', fontSize:11.5, fontWeight:600, color:'var(--t3)' }}>
@@ -1858,11 +1864,12 @@ export default function MetaPage() {
                           <div style={{ marginTop:10 }}>
                             <p style={{ fontSize:9, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.06em', fontWeight:700, margin:'0 0 5px' }}>Comprovante{fotos.length>1?`s (${fotos.length})`:''} dos saques</p>
                             <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
-                              {fotos.map((url, fi) => (
-                                <a key={fi} href={url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`}>
-                                  <img src={url} alt={`comprovante ${fi+1}`} style={{ width:44, height:44, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/>
+                              {fotos.map((item, fi) => { const f = normFoto(item); const ts = f.ts || r.created_at; return (
+                                <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{ position:'relative', display:'block' }}>
+                                  <img src={f.url} alt={`comprovante ${fi+1}`} style={{ width:72, height:72, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/>
+                                  {ts && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fmtFotoTs(ts)}</span>}
                                 </a>
-                              ))}
+                              )})}
                             </div>
                           </div>
                         )

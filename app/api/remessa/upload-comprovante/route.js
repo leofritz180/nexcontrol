@@ -27,7 +27,8 @@ export async function POST(req) {
     const filename = `comprovantes/${metaId}-${Date.now()}-${rand}.${ext}`
 
     const blob = await put(filename, file, { access: 'public', contentType: type })
-    return NextResponse.json({ url: blob.url })
+    // ts = horário do servidor (correto/UTC) — exibido no fuso de Brasília no carimbo da foto
+    return NextResponse.json({ url: blob.url, ts: new Date().toISOString() })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }

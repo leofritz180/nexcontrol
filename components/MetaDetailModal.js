@@ -211,13 +211,16 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                         {(() => {
                           const fotos = (Array.isArray(r.comprovantes) && r.comprovantes.length) ? r.comprovantes : (r.comprovante_url ? [r.comprovante_url] : [])
                           if (!fotos.length) return null
+                          const nF = it => (typeof it === 'string' ? { url: it, ts: null } : (it || {}))
+                          const fTs = ts => { try { return new Date(ts).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) } catch { return '' } }
                           return (
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingLeft: 40 }}>
-                              {fotos.map((url, fi) => (
-                                <a key={fi} href={url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`}>
-                                  <img src={url} alt={`comprovante ${fi+1}`} style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--b2, rgba(255,255,255,0.14))', display: 'block' }}/>
+                              {fotos.map((item, fi) => { const f = nF(item); const ts = f.ts || r.created_at; return (
+                                <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{ position:'relative', display:'block' }}>
+                                  <img src={f.url} alt={`comprovante ${fi+1}`} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--b2, rgba(255,255,255,0.14))', display: 'block' }}/>
+                                  {ts && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fTs(ts)}</span>}
                                 </a>
-                              ))}
+                              )})}
                             </div>
                           )
                         })()}

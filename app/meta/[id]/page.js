@@ -380,7 +380,7 @@ export default function MetaPage() {
       const res = await fetch('/api/remessa/upload-comprovante', { method: 'POST', body: fd })
       const json = await res.json()
       if (!res.ok || !json.url) { setComprovanteErr(json.error || 'Falha no upload'); setComprovanteUp(false); return }
-      setComprovantes(prev => [...prev, { url: json.url, ts: json.ts || new Date().toISOString() }]) // ANEXA (permite vários) c/ horário
+      setComprovantes(prev => [...prev, { url: json.url, ts: json.ts || new Date().toISOString(), burned: !!json.burned }]) // ANEXA (vários) c/ horário gravado na imagem
     } catch (e) { setComprovanteErr(e.message) }
     setComprovanteUp(false)
   }
@@ -1527,7 +1527,7 @@ export default function MetaPage() {
                             {comprovantes.map((item, ci) => { const f = normFoto(item); return (
                               <div key={ci} style={{ position:'relative' }}>
                                 <a href={f.url} target="_blank" rel="noreferrer"><img src={f.url} alt={`comprovante ${ci+1}`} style={{ width:64, height:64, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/></a>
-                                {f.ts && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:7.5, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2, letterSpacing:'-0.02em' }}>{fmtFotoTs(f.ts)}</span>}
+                                {f.ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:7.5, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2, letterSpacing:'-0.02em' }}>{fmtFotoTs(f.ts)}</span>}
                                 <button type="button" onClick={()=>setComprovantes(prev=>prev.filter((_,i)=>i!==ci))} title="Remover"
                                   style={{ position:'absolute', top:-6, right:-6, width:18, height:18, borderRadius:'50%', border:'1px solid var(--b2)', background:'#1a1a1a', color:'var(--loss)', cursor:'pointer', fontSize:11, lineHeight:'1', display:'flex', alignItems:'center', justifyContent:'center', padding:0 }}>×</button>
                               </div>
@@ -1867,7 +1867,7 @@ export default function MetaPage() {
                               {fotos.map((item, fi) => { const f = normFoto(item); const ts = f.ts || r.created_at; return (
                                 <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{ position:'relative', display:'block' }}>
                                   <img src={f.url} alt={`comprovante ${fi+1}`} style={{ width:72, height:72, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/>
-                                  {ts && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fmtFotoTs(ts)}</span>}
+                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fmtFotoTs(ts)}</span>}
                                 </a>
                               )})}
                             </div>

@@ -218,7 +218,7 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                               {fotos.map((item, fi) => { const f = nF(item); const ts = f.ts || r.created_at; return (
                                 <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{ position:'relative', display:'block' }}>
                                   <img src={f.url} alt={`comprovante ${fi+1}`} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--b2, rgba(255,255,255,0.14))', display: 'block' }}/>
-                                  {ts && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fTs(ts)}</span>}
+                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fTs(ts)}</span>}
                                 </a>
                               )})}
                             </div>

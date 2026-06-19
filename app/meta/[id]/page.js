@@ -15,9 +15,52 @@ const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 // EQUIPES / OPERADOR LÍDER — exclusivo DS MENTORIA 2.0
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
 
-// Comprovante: normaliza (string antiga OU objeto {url,ts}) e formata data/hora BRT
+// Comprovante: normaliza (string antiga OU objeto {url,ts,burned}) e formata data/hora BRT
 const normFoto = it => (typeof it === 'string' ? { url: it, ts: null } : (it || {}))
 const fmtFotoTs = ts => { try { return new Date(ts).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) } catch { return '' } }
+
+// Desenha a data/hora (vermelho, canto inferior esquerdo) DENTRO da imagem,
+// no NAVEGADOR (canvas) — fonte sempre disponível, tamanho controlado.
+// Retorna { file, ts, burned }. Em falha, devolve o arquivo original.
+function rRect(ctx, x, y, w, h, r) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.arcTo(x + w, y, x + w, y + h, r)
+  ctx.arcTo(x + w, y + h, x, y + h, r)
+  ctx.arcTo(x, y + h, x, y, r)
+  ctx.arcTo(x, y, x + w, y, r)
+  ctx.closePath()
+}
+async function burnTimestamp(file) {
+  const tsIso = new Date().toISOString()
+  try {
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file) })
+    const maxDim = 1600
+    const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight))
+    const w = Math.max(1, Math.round(img.naturalWidth * scale))
+    const h = Math.max(1, Math.round(img.naturalHeight * scale))
+    const canvas = document.createElement('canvas')
+    canvas.width = w; canvas.height = h
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0, w, h)
+    URL.revokeObjectURL(img.src)
+    const label = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' })
+    const fs = Math.max(13, Math.round(Math.min(w, h) * 0.04))
+    ctx.font = `700 ${fs}px Arial, sans-serif`
+    const tw = ctx.measureText(label).width
+    const padX = Math.round(fs * 0.5), padY = Math.round(fs * 0.4)
+    const bw = Math.round(tw + padX * 2), bh = Math.round(fs + padY * 2)
+    const margin = Math.max(8, Math.round(w * 0.015))
+    const bx = margin, by = h - bh - margin
+    ctx.fillStyle = 'rgba(229,57,53,0.92)'
+    rRect(ctx, bx, by, bw, bh, Math.round(fs * 0.3)); ctx.fill()
+    ctx.fillStyle = '#ffffff'; ctx.textBaseline = 'middle'
+    ctx.fillText(label, bx + padX, by + bh / 2 + 1)
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9))
+    if (!blob) return { file, ts: tsIso, burned: false }
+    return { file: new File([blob], 'comprovante.jpg', { type: 'image/jpeg' }), ts: tsIso, burned: true }
+  } catch { return { file, ts: tsIso, burned: false } }
+}
 // Líder só gerencia metas criadas a partir da CRIAÇÃO DA CONTA dele (por líder)
 
 // Slug do slot p/ a imagem em /slots/{slug}.webp
@@ -374,13 +417,14 @@ export default function MetaPage() {
     if (!file.type || !file.type.startsWith('image/')) { setComprovanteErr('Selecione uma imagem.'); return }
     setComprovanteUp(true); setComprovanteErr('')
     try {
+      const stamped = await burnTimestamp(file) // grava data/hora dentro da imagem (canvas)
       const fd = new FormData()
-      fd.append('foto', file)
+      fd.append('foto', stamped.file)
       fd.append('meta_id', String(id))
       const res = await fetch('/api/remessa/upload-comprovante', { method: 'POST', body: fd })
       const json = await res.json()
       if (!res.ok || !json.url) { setComprovanteErr(json.error || 'Falha no upload'); setComprovanteUp(false); return }
-      setComprovantes(prev => [...prev, { url: json.url, ts: json.ts || new Date().toISOString(), burned: !!json.burned }]) // ANEXA (vários) c/ horário gravado na imagem
+      setComprovantes(prev => [...prev, { url: json.url, ts: stamped.ts, burned: stamped.burned }]) // ANEXA (vários); carimbo já está na imagem
     } catch (e) { setComprovanteErr(e.message) }
     setComprovanteUp(false)
   }

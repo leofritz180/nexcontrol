@@ -1309,10 +1309,11 @@ export default function AdminPage() {
                               padding:'12px 14px',borderRadius:12,
                               background:isLatest?(pos?'rgba(209,250,229,0.06)':'rgba(239,68,68,0.06)'):'var(--raised)',
                               border:`1px solid ${isLatest?(pos?'rgba(209,250,229,0.15)':'rgba(239,68,68,0.12)'):'var(--b1)'}`,
-                              display:'flex',alignItems:'center',gap:10,
+                              display:'flex',flexDirection:'column',gap:8,
                               transition:'background 0.2s, border-color 0.2s',
                               boxShadow:isLatest?`0 0 15px ${pos?'rgba(209,250,229,0.06)':'rgba(239,68,68,0.04)'}`:'none',
                             }}>
+                              <div style={{display:'flex',alignItems:'center',gap:10}}>
                               <div style={{width:30,height:30,borderRadius:8,background:pos?'var(--profit-dim)':'var(--loss-dim)',border:`1px solid ${pos?'var(--profit-border)':'var(--loss-border)'}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
                                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={pos?'var(--profit)':'var(--loss)'} strokeWidth="3" strokeLinecap="round"><polyline points={pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>
                               </div>
@@ -1341,6 +1342,16 @@ export default function AdminPage() {
                                 onMouseEnter={e=>e.currentTarget.style.opacity='1'} onMouseLeave={e=>e.currentTarget.style.opacity='0.5'}>
                                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
                               </motion.button>
+                              </div>
+                              {(() => {
+                                const fotos = (Array.isArray(r.comprovantes) && r.comprovantes.length) ? r.comprovantes : (r.comprovante_url ? [r.comprovante_url] : [])
+                                if (!fotos.length) return null
+                                return (
+                                  <div style={{display:'flex',flexWrap:'wrap',gap:6,paddingLeft:40}}>
+                                    {fotos.map((url,fi)=>(<a key={fi} href={url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`}><img src={url} alt={`comprovante ${fi+1}`} style={{width:42,height:42,objectFit:'cover',borderRadius:6,border:'1px solid var(--b2)',display:'block'}}/></a>))}
+                                  </div>
+                                )
+                              })()}
                             </motion.div>
                           )
                         })}

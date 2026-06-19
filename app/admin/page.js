@@ -804,8 +804,12 @@ export default function AdminPage() {
     const avgCustoPorMeta = fechadas.length>0 ? totalCustosFechadas/fechadas.length : 0
     const avgPrejPerConta = totalContasFechadas>0 ? prej/totalContasFechadas : 0
     const breakEvenContas = avgBauPerConta>avgPrejPerConta ? Math.ceil(avgCustoPorMeta/(avgBauPerConta-avgPrejPerConta)) : 0
-    // Costs — stored separately, subtracted ONCE at display time
-    const todayISO = new Date().toISOString().slice(0,10)
+    // Costs — stored separately, subtracted ONCE at display time.
+    // Usa data LOCAL (mesma base de "today" das metas). Com toISOString (UTC) o
+    // "custos de hoje" zerava à noite no BRT (quando o dia UTC vira antes do local),
+    // dessincronizando do lucro do dia. Por isso usa data local aqui.
+    const _now = new Date()
+    const todayISO = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`
     const custosHoje = Number(costs.filter(c=>c.date===todayISO).reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
     const custosTotal = Number(costs.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
     // Metodos (beta): somados a lucroHoje e lucroFinalTotal pra refletir em

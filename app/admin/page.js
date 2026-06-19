@@ -653,6 +653,8 @@ export default function AdminPage() {
   const [heroPeriod, setHeroPeriod] = useState('month')
   const [costs, setCosts] = useState([])
   const tabRef = useRef(null)
+  const tenantRef = useRef(null)   // tenant atual estável (o polling de 30s não pode perder)
+  const adminIdRef = useRef(null)
   const [tabLine, setTabLine] = useState({ left: 0, width: 0 })
 
   useEffect(()=>{ checkAndLoad() },[])
@@ -679,21 +681,28 @@ export default function AdminPage() {
     const { data:p } = await supabase.from('profiles').select('*').eq('id',u.id).maybeSingle()
     if (!p||p.role!=='admin') { router.push('/operator'); return }
     setProfile(p)
+    tenantRef.current = p.tenant_id
+    adminIdRef.current = u.id
     loadAll(u.id, p.tenant_id)
   }
 
   async function loadAll(forceUserId, forceTenantId) {
     setLoading(true)
+    // tenant estável: o polling de 30s usa um loadAll capturado no 1º render (profile=null).
+    // Sem o ref, a query de custos ia com tenant=undefined e ZERAVA os custos a cada 30s.
+    const tid = forceTenantId || tenantRef.current || profile?.tenant_id
+    if (tid) tenantRef.current = tid
     const [{ data:ops },{ data:ms },{ data:rs },{ data:inv },{ data:t },{ data:s2 },{ data:costsData }] = await Promise.all([
       supabase.from('profiles').select('*').eq('role','operator').order('created_at',{ascending:false}),
       supabase.from('metas').select('*').order('created_at',{ascending:false}),
       supabase.from('remessas').select('*').order('created_at',{ascending:false}),
       supabase.from('invites').select('*').order('created_at',{ascending:false}),
-      supabase.from('tenants').select('*').eq('id',forceTenantId||profile?.tenant_id).maybeSingle(),
-      supabase.from('subscriptions').select('*').eq('tenant_id',forceTenantId||profile?.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
-      supabase.from('costs').select('amount,date').eq('tenant_id',forceTenantId||profile?.tenant_id),
+      supabase.from('tenants').select('*').eq('id',tid).maybeSingle(),
+      supabase.from('subscriptions').select('*').eq('tenant_id',tid).order('created_at',{ascending:false}).limit(1).maybeSingle(),
+      supabase.from('costs').select('amount,date').eq('tenant_id',tid),
     ])
-    setCosts(costsData||[])
+    // Só atualiza custos se a query trouxe algo válido (não apaga por falha de rede/tenant)
+    if (Array.isArray(costsData)) setCosts(costsData)
     // Detect new remessas for notification
     const newRs = rs||[]
     if (prevRemCount.current > 0 && newRs.length > prevRemCount.current) {
@@ -719,7 +728,7 @@ export default function AdminPage() {
     setOperators(ops||[]); setMetas(activeMetas); setTrashMetas((ms||[]).filter(m=>!!m.deleted_at)); setRemessas(activeRems); setInvites(inv||[])
     if(t) setTenant(t); if(s2) setSub(s2)
     // Load admin own metas
-    const adminId = forceUserId || profile?.id || user?.id
+    const adminId = forceUserId || adminIdRef.current || profile?.id || user?.id
     if(adminId) {
       const [{data:mm},{data:mr}]=await Promise.all([
         supabase.from('metas').select('*').eq('operator_id',adminId).order('created_at',{ascending:false}),

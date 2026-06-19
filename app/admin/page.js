@@ -849,8 +849,18 @@ export default function AdminPage() {
       month: metodosData?.mesLiquido, all: metodosData?.totalLiquido,
     }
     const lucro = Number((lucroCpa + Number(metByPeriod[heroPeriod] || 0)).toFixed(2))
-    // Custos so subtraidos no periodo "Tudo" — periodos parciais mostram lucro bruto do periodo
-    const custos = heroPeriod === 'all' ? custosTotalFixo : 0
+    // Custos GERAIS (proxy/SMS/etc) do MESMO periodo selecionado — pro card "apos custos"
+    const dISO = d => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}` }
+    let custos = custosTotalFixo
+    if (heroPeriod !== 'all') {
+      const now = new Date(); let start = dISO(now), end = dISO(now)
+      if (heroPeriod === 'today') { start = dISO(now) }
+      else if (heroPeriod === 'yesterday') { const y = new Date(now); y.setDate(y.getDate()-1); start = dISO(y); end = dISO(y) }
+      else if (heroPeriod === '7d') { const d = new Date(now); d.setDate(d.getDate()-7); start = dISO(d) }
+      else if (heroPeriod === '30d') { const d = new Date(now); d.setDate(d.getDate()-30); start = dISO(d) }
+      else if (heroPeriod === 'month') { start = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01` }
+      custos = Number(costs.filter(c => c.date && c.date >= start && c.date <= end).reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
+    }
     return { value: lucro, count: filtered.length, custos }
   },[metas,heroPeriod,costs,metodosData])
 
@@ -2483,8 +2493,9 @@ export default function AdminPage() {
 
           {/* ── HERO + KPIs — side by side ── */}
           {(() => {
-            // Compute NET hero value ONCE (bruto - custos do periodo)
-            const heroNet = Number((heroLucro.value - heroLucro.custos).toFixed(2))
+            // Número grande = BRUTO do período; o líquido vai no card "após custos"
+            const heroNet = heroLucro.value
+            const heroAposCustos = Number((heroLucro.value - heroLucro.custos).toFixed(2))
             const redesign = isRedesign(user?.email)
             // Série de evolução do lucro (só leitura das metas fechadas — redesign)
             const chartSeries = (() => {
@@ -2557,11 +2568,16 @@ export default function AdminPage() {
                 @media (max-width: 480px) { .hero-value { font-size: 36px !important; } }
               `}</style>
 
-              {heroLucro.custos > 0 && (
-                <p style={{ fontSize:12, color:'var(--t3)', margin:'10px 0 0', fontFamily:'var(--mono)', fontWeight:400 }}>
-                  apos R$ {fmt(heroLucro.custos)} em custos
-                </p>
-              )}
+              {/* Card pequeno: LUCRO APÓS CUSTOS (proxy/SMS) do período selecionado */}
+              <div style={{ display:'inline-flex', alignItems:'center', gap:10, flexWrap:'wrap', marginTop:14, padding:'9px 14px', borderRadius:10, background:'var(--fill-1)', border:'1px solid var(--b1)' }}>
+                <span style={{ fontSize:11, color:'var(--t3)', fontWeight:600 }}>Lucro após custos (proxy/SMS)</span>
+                <span style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:800, color: heroAposCustos>=0 ? 'var(--profit)' : 'var(--loss)' }}>
+                  {heroAposCustos>=0?'+':'-'}R$ {fmt(Math.abs(heroAposCustos))}
+                </span>
+                <span style={{ fontSize:10.5, color:'var(--t4)', fontFamily:'var(--mono)' }}>
+                  {heroLucro.custos>0 ? `− R$ ${fmt(heroLucro.custos)} em custos` : 'sem custos no período'}
+                </span>
+              </div>
 
               {redesign && (
                 <div style={{ marginTop:24 }}>

@@ -2495,7 +2495,9 @@ export default function AdminPage() {
           {(() => {
             // Número grande = BRUTO do período; o líquido vai no card "após custos"
             const heroNet = heroLucro.value
-            const heroAposCustos = Number((heroLucro.value - heroLucro.custos).toFixed(2))
+            // Custos do período: hoje/tudo reusam os valores já provados do painel; demais usam o filtro do heroLucro
+            const custosPeriodo = heroPeriod === 'today' ? global.custosHoje : heroPeriod === 'all' ? global.custosTotal : heroLucro.custos
+            const heroAposCustos = Number((heroLucro.value - custosPeriodo).toFixed(2))
             const redesign = isRedesign(user?.email)
             // Série de evolução do lucro (só leitura das metas fechadas — redesign)
             const chartSeries = (() => {
@@ -2587,7 +2589,7 @@ export default function AdminPage() {
                 <div>
                   <p style={{ fontSize:11, color:'var(--t3)', marginBottom:4, fontWeight:400 }}>Lucro após custos</p>
                   <p style={{ fontFamily:'var(--mono)', fontSize:18, fontWeight:600, color: heroAposCustos>=0?'var(--profit)':'var(--loss)', margin:0 }}>{heroAposCustos>=0?'+':'-'}R$ {fmt(Math.abs(heroAposCustos))}</p>
-                  <p style={{ fontSize:9.5, color:'var(--t4)', margin:'2px 0 0', fontFamily:'var(--mono)' }}>{heroLucro.custos>0 ? `− R$ ${fmt(heroLucro.custos)} proxy/SMS` : 'sem custos'}</p>
+                  <p style={{ fontSize:9.5, color:'var(--t4)', margin:'2px 0 0', fontFamily:'var(--mono)' }}>{custosPeriodo>0 ? `− R$ ${fmt(custosPeriodo)} proxy/SMS` : 'sem custos'}</p>
                 </div>
               </div>
 

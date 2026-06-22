@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../../lib/supabase/client'
 import AppLayout from '../../../components/AppLayout'
+import { aulasEnabled } from '../../../lib/aulas-tenants'
 
 const ADMIN_EMAIL = 'leofritz180@gmail.com'
 const AMBER = 'rgba(255,255,255,0.78)'
@@ -224,11 +225,12 @@ export default function AulasAdminPage() {
     const { data: s } = await supabase.auth.getSession()
     const u = s?.session?.user
     if (!u) { router.push('/login'); return }
-    if (u.email !== ADMIN_EMAIL) { router.push('/admin'); return }
     setUser(u)
 
     const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
     if (!p) { router.push('/login'); return }
+    // Gate: somente admin de um tenant com aulas habilitadas pode gerenciar.
+    if (p.role !== 'admin' || !aulasEnabled(p.tenant_id)) { router.push('/admin'); return }
     setProfile(p)
 
     const { data: t } = await supabase.from('tenants').select('*').eq('id', p.tenant_id).maybeSingle()
@@ -236,16 +238,23 @@ export default function AulasAdminPage() {
     const { data: su } = await supabase.from('subscriptions').select('*').eq('tenant_id', p.tenant_id).order('created_at', { ascending: false }).limit(1).maybeSingle()
     setSub(su)
 
-    // Load courses
+    // Load courses (escopado ao tenant pela API)
     const res = await fetch(`/api/aulas/courses?tenant_id=${p.tenant_id}`)
     const json = await res.json()
-    setCourses(json.courses || [])
+    const cs = json.courses || []
+    setCourses(cs)
 
-    // Load all modules and lessons
-    const { data: mods } = await supabase.from('course_modules').select('*').order('sort_order', { ascending: true })
-    setModules(mods || [])
-    const { data: lsns } = await supabase.from('course_lessons').select('*').order('sort_order', { ascending: true })
-    setLessons(lsns || [])
+    // Load modules e lessons SOMENTE dos cursos deste tenant (evita misturar contas)
+    const courseIds = cs.map(c => c.id)
+    if (courseIds.length) {
+      const { data: mods } = await supabase.from('course_modules').select('*').in('course_id', courseIds).order('sort_order', { ascending: true })
+      setModules(mods || [])
+      const modIds = (mods || []).map(m => m.id)
+      if (modIds.length) {
+        const { data: lsns } = await supabase.from('course_lessons').select('*').in('module_id', modIds).order('sort_order', { ascending: true })
+        setLessons(lsns || [])
+      } else { setLessons([]) }
+    } else { setModules([]); setLessons([]) }
 
     setLoading(false)
   }, [router])

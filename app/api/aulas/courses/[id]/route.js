@@ -1,19 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-
-const OWNER_EMAIL = 'leofritz180@gmail.com'
+import { aulasEnabled } from 'lib/aulas-tenants'
 
 function sb() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
-}
-
-async function getOwnerTenantId() {
-  const { data } = await sb()
-    .from('profiles')
-    .select('tenant_id')
-    .eq('email', OWNER_EMAIL)
-    .maybeSingle()
-  return data?.tenant_id || null
 }
 
 async function getProfile(userId) {
@@ -31,15 +21,19 @@ export async function GET(req, { params }) {
     const { id } = await params
     const userId = req.nextUrl.searchParams.get('user_id')
 
-    const ownerTenantId = await getOwnerTenantId()
-    if (!ownerTenantId) return NextResponse.json({ error: 'Owner not found' }, { status: 500 })
+    if (!userId) return NextResponse.json({ error: 'user_id required' }, { status: 400 })
+    const reqProfile = await getProfile(userId)
+    if (!reqProfile || !aulasEnabled(reqProfile.tenant_id)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    }
+    const scopeTenantId = reqProfile.tenant_id
 
     // Fetch course
     const { data: course, error: cErr } = await sb()
       .from('courses')
       .select('*')
       .eq('id', id)
-      .eq('tenant_id', ownerTenantId)
+      .eq('tenant_id', scopeTenantId)
       .maybeSingle()
 
     if (cErr) return NextResponse.json({ error: cErr.message }, { status: 500 })
@@ -121,9 +115,7 @@ export async function PUT(req, { params }) {
     const profile = await getProfile(user_id)
     if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    const ownerTenantId = await getOwnerTenantId()
-    if (!ownerTenantId) return NextResponse.json({ error: 'Owner not found' }, { status: 500 })
-    if (profile.tenant_id !== ownerTenantId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    if (!aulasEnabled(profile.tenant_id)) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     if (profile.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 })
 
     // Only allow known fields
@@ -137,7 +129,7 @@ export async function PUT(req, { params }) {
       .from('courses')
       .update(payload)
       .eq('id', id)
-      .eq('tenant_id', ownerTenantId)
+      .eq('tenant_id', profile.tenant_id)
       .select()
       .maybeSingle()
 
@@ -162,16 +154,14 @@ export async function DELETE(req, { params }) {
     const profile = await getProfile(user_id)
     if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    const ownerTenantId = await getOwnerTenantId()
-    if (!ownerTenantId) return NextResponse.json({ error: 'Owner not found' }, { status: 500 })
-    if (profile.tenant_id !== ownerTenantId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    if (!aulasEnabled(profile.tenant_id)) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     if (profile.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 })
 
     const { error } = await sb()
       .from('courses')
       .delete()
       .eq('id', id)
-      .eq('tenant_id', ownerTenantId)
+      .eq('tenant_id', profile.tenant_id)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ ok: true })

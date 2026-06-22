@@ -1,19 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-
-const OWNER_EMAIL = 'leofritz180@gmail.com'
+import { aulasEnabled } from 'lib/aulas-tenants'
 
 function sb() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
-}
-
-async function getOwnerTenantId() {
-  const { data } = await sb()
-    .from('profiles')
-    .select('tenant_id')
-    .eq('email', OWNER_EMAIL)
-    .maybeSingle()
-  return data?.tenant_id || null
 }
 
 async function getProfile(userId) {
@@ -31,18 +21,15 @@ export async function GET(req) {
     const tenantId = req.nextUrl.searchParams.get('tenant_id')
     const userId = req.nextUrl.searchParams.get('user_id')
 
-    const ownerTenantId = await getOwnerTenantId()
-    if (!ownerTenantId) return NextResponse.json({ error: 'Owner not found' }, { status: 500 })
-
-    // Validate access
-    if (tenantId && tenantId !== ownerTenantId) {
+    // Cada tenant habilitado vê SOMENTE os próprios cursos.
+    if (!aulasEnabled(tenantId)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     let query = sb()
       .from('courses')
       .select('*')
-      .eq('tenant_id', ownerTenantId)
+      .eq('tenant_id', tenantId)
       .order('sort_order', { ascending: true })
 
     const { data: courses, error } = await query
@@ -111,13 +98,11 @@ export async function POST(req) {
     const profile = await getProfile(user_id)
     if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    const ownerTenantId = await getOwnerTenantId()
-    if (!ownerTenantId) return NextResponse.json({ error: 'Owner not found' }, { status: 500 })
-    if (profile.tenant_id !== ownerTenantId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    if (!aulasEnabled(profile.tenant_id)) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     if (profile.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 })
 
     const payload = {
-      tenant_id: ownerTenantId,
+      tenant_id: profile.tenant_id,
       title: title || '',
       description: description || '',
       thumb_url: thumb_url || null,

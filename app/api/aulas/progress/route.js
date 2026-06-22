@@ -1,19 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-
-const OWNER_EMAIL = 'leofritz180@gmail.com'
+import { aulasEnabled } from 'lib/aulas-tenants'
 
 function sb() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
-}
-
-async function getOwnerTenantId() {
-  const { data } = await sb()
-    .from('profiles')
-    .select('tenant_id')
-    .eq('email', OWNER_EMAIL)
-    .maybeSingle()
-  return data?.tenant_id || null
 }
 
 async function getProfile(userId) {
@@ -36,9 +26,7 @@ export async function GET(req) {
     const profile = await getProfile(userId)
     if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    const ownerTenantId = await getOwnerTenantId()
-    if (!ownerTenantId) return NextResponse.json({ error: 'Owner not found' }, { status: 500 })
-    if (profile.tenant_id !== ownerTenantId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    if (!aulasEnabled(profile.tenant_id)) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
 
     // If course_id provided, get progress only for that course's lessons
     if (courseId) {
@@ -93,9 +81,7 @@ export async function POST(req) {
     const profile = await getProfile(user_id)
     if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    const ownerTenantId = await getOwnerTenantId()
-    if (!ownerTenantId) return NextResponse.json({ error: 'Owner not found' }, { status: 500 })
-    if (profile.tenant_id !== ownerTenantId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    if (!aulasEnabled(profile.tenant_id)) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
 
     // Both admin and operator can update their own progress
     const isCompleted = completed !== false

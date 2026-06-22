@@ -9,6 +9,7 @@ import { isRedesign } from '../lib/redesign'
 import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription } from '../lib/pushClient'
 import ProfileModal from './ProfileModal'
 import { loadLocalProfile } from '../lib/profileLocal'
+import { aulasEnabled } from '../lib/aulas-tenants'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
@@ -67,14 +68,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       .then(({ data }) => { if (data) setOwnSub(data) })
   }, [tenantId])
 
-  // Check if current user belongs to the owner's tenant (for Aulas VIP access)
+  // Aulas VIP aparece para tenants com a função habilitada (ver lib/aulas-tenants)
   useEffect(() => {
-    if (!tenantId) return
-    if (userEmail === OWNER_EMAIL) { setShowAulas(true); return }
-    // Check if owner's tenant_id matches current user's tenant_id
-    supabase.from('profiles').select('tenant_id').eq('email', OWNER_EMAIL).maybeSingle()
-      .then(({ data }) => { if (data && data.tenant_id === tenantId) setShowAulas(true) })
-  }, [tenantId, userEmail])
+    setShowAulas(aulasEnabled(tenantId))
+  }, [tenantId])
 
   async function logout() { await supabase.auth.signOut(); router.push('/login') }
 

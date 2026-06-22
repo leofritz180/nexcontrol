@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
+import { aulasEnabled } from '../../lib/aulas-tenants'
 
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 const ease = [0.33, 1, 0.68, 1]
@@ -244,8 +245,7 @@ export default function AulasVipPage() {
       const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
       if (!p) { router.push('/login'); return }
       setProfile(p)
-      const { data: ownerProfile } = await supabase.from('profiles').select('tenant_id').eq('email', OWNER_EMAIL).maybeSingle()
-      if (!ownerProfile || ownerProfile.tenant_id !== p.tenant_id) { router.push(p.role === 'admin' ? '/admin' : '/operator'); return }
+      if (!aulasEnabled(p.tenant_id)) { router.push(p.role === 'admin' ? '/admin' : '/operator'); return }
       setAuthorized(true)
       const [{ data: t }, { data: s2 }] = await Promise.all([
         supabase.from('tenants').select('*').eq('id', p.tenant_id).maybeSingle(),
@@ -282,22 +282,8 @@ export default function AulasVipPage() {
 
   if (!authorized) return null
 
-  // Operators: locked
-  if (profile?.role === 'operator') return (
-    <AppLayout userName={profile?.name} userEmail={user?.email} isAdmin={false} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
-      <div style={{ minHeight: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} style={{ textAlign: 'center', maxWidth: 400 }}>
-          <div style={{ width: 72, height: 72, borderRadius: 20, background: `${RED}10`, border: `1px solid ${RED}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-            <svg width={32} height={32} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-          </div>
-          <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--t1)', margin: '0 0 8px' }}>AULAS VIP DARKZIN</h2>
-          <p style={{ fontSize: 18, fontWeight: 700, color: RED, margin: '0 0 8px' }}>Em breve</p>
-          <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, lineHeight: 1.6 }}>A area de aulas exclusivas esta sendo preparada.</p>
-        </motion.div>
-      </div>
-    </AppLayout>
-  )
-
+  // Operadores e admins do tenant habilitado veem as aulas normalmente.
+  // (Gerenciar/criar conteúdo continua restrito a admin — ver botão "Gerenciar".)
   const isAdmin = profile?.role === 'admin'
   const filtered = courses.filter(c => !search || c.title?.toLowerCase().includes(search.toLowerCase()) || c.category?.toLowerCase().includes(search.toLowerCase()) || c.tags?.some(t => t.toLowerCase().includes(search.toLowerCase())))
   const continueWatching = filtered.filter(c => { const p = progress[c.id]; return p && p > 0 && p < 100 })
@@ -327,7 +313,7 @@ export default function AulasVipPage() {
                   style={{ width: 200, padding: '8px 12px 8px 32px', borderRadius: 7, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', color: 'var(--t1)', fontSize: 12, outline: 'none' }}
                   onFocus={e => e.target.style.borderColor = `${RED}30`} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.06)'} />
               </div>
-              {isAdmin && user?.email === OWNER_EMAIL && (
+              {isAdmin && (
                 <button onClick={() => router.push('/aulas/admin')} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 14px', borderRadius: 7, fontSize: 11, fontWeight: 600, background: `${RED}10`, border: `1px solid ${RED}20`, color: RED, cursor: 'pointer' }}>
                   <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z" /></svg>
                   Gerenciar
@@ -354,7 +340,7 @@ export default function AulasVipPage() {
               </div>
               <p style={{ fontSize: 20, fontWeight: 700, color: 'var(--t1)', margin: '0 0 8px' }}>Nenhum curso disponivel</p>
               <p style={{ fontSize: 13, color: 'var(--t4)', margin: '0 0 24px' }}>Os cursos aparecerao aqui quando forem publicados.</p>
-              {isAdmin && user?.email === OWNER_EMAIL && (
+              {isAdmin && (
                 <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => router.push('/aulas/admin')}
                   style={{ padding: '12px 28px', borderRadius: 8, background: RED, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700, color: '#fff', boxShadow: `0 4px 20px ${RED}30` }}>
                   Criar primeiro curso

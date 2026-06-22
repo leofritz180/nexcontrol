@@ -1,19 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-
-const OWNER_EMAIL = 'leofritz180@gmail.com'
+import { aulasEnabled } from 'lib/aulas-tenants'
 
 function sb() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
-}
-
-async function getOwnerTenantId() {
-  const { data } = await sb()
-    .from('profiles')
-    .select('tenant_id')
-    .eq('email', OWNER_EMAIL)
-    .maybeSingle()
-  return data?.tenant_id || null
 }
 
 async function getProfile(userId) {
@@ -57,12 +47,10 @@ export async function POST(req) {
     const profile = await getProfile(user_id)
     if (!profile) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    const ownerTenantId = await getOwnerTenantId()
-    if (!ownerTenantId) return NextResponse.json({ error: 'Owner not found' }, { status: 500 })
-    if (profile.tenant_id !== ownerTenantId) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    if (!aulasEnabled(profile.tenant_id)) return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     if (profile.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 })
 
-    const belongs = await verifyModuleBelongsToTenant(module_id, ownerTenantId)
+    const belongs = await verifyModuleBelongsToTenant(module_id, profile.tenant_id)
     if (!belongs) return NextResponse.json({ error: 'Module not found' }, { status: 404 })
 
     const payload = {

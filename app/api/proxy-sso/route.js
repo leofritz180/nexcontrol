@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 // FASE DE TESTE: só leofritz178 gera a URL. Pra liberar geral, basta esvaziar
 // SSO_TEST_EMAILS ou trocar a checagem por "todos logados".
-const SSO_TEST_EMAILS = new Set(['leofritz178@gmail.com'])
+const SSO_TEST_EMAILS = new Set(['leofritz178@gmail.com', 'darkzinmg7@gmail.com'])
 
 // Auth padrão do NexControl: Bearer token no header (igual /api/metodos).
 async function authUser(req) {

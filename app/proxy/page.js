@@ -7,9 +7,9 @@ import AppLayout from '../../components/AppLayout'
 
 const ease = [0.33, 1, 0.68, 1]
 
-// FASE DE TESTE: só esta conta vê a loja embutida (SSO). Demais seguem com o
-// card + link externo. Pra liberar geral, deixar SSO_TEST_EMAIL = null.
-const SSO_TEST_EMAIL = 'leofritz178@gmail.com'
+// FASE DE TESTE: só estas contas veem a loja embutida (SSO). Demais seguem com
+// o card + link externo. Pra liberar geral, deixar SSO_TEST_EMAILS = [].
+const SSO_TEST_EMAILS = ['leofritz178@gmail.com', 'darkzinmg7@gmail.com']
 
 export default function ProxyPage() {
   const router = useRouter()
@@ -43,7 +43,7 @@ export default function ProxyPage() {
 
   const getName = p => p?.nome || p?.email?.split('@')[0] || 'Admin'
 
-  const ssoEnabled = SSO_TEST_EMAIL ? user?.email?.toLowerCase() === SSO_TEST_EMAIL : true
+  const ssoEnabled = SSO_TEST_EMAILS.length ? SSO_TEST_EMAILS.includes(user?.email?.toLowerCase()) : true
 
   // Gera a URL SSO (token fresco, server-side) assim que entra — loja embutida.
   useEffect(() => {

@@ -688,6 +688,33 @@ export default function OperadoresPage() {
   const [removeConfirmOp, setRemoveConfirmOp] = useState(null)
   const [removing, setRemoving] = useState(false)
   const [removeError, setRemoveError] = useState('')
+  // Reativação de operador removido (opcional — verifica vaga paga)
+  const [reactivatingId, setReactivatingId] = useState(null)
+  const [reactivateMsg, setReactivateMsg] = useState('')
+
+  async function reactivateOperator(op) {
+    if (!op || reactivatingId) return
+    setReactivatingId(op.id); setReactivateMsg('')
+    try {
+      const res = await fetch('/api/admin/reactivate-operator', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operator_id: op.id, admin_id: profile?.id }),
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        setReactivateMsg(json.error || 'Erro ao reativar')
+        setTimeout(() => setReactivateMsg(''), 9000)
+        setReactivatingId(null)
+        return
+      }
+      await loadAll(profile?.tenant_id)
+    } catch (e) {
+      setReactivateMsg(e.message)
+      setTimeout(() => setReactivateMsg(''), 9000)
+    } finally {
+      setReactivatingId(null)
+    }
+  }
 
   async function removeOperator(op) {
     if (!op || removing) return
@@ -1550,11 +1577,34 @@ export default function OperadoresPage() {
                         </p>
                         <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.28)', margin: 0 }}>{op.closedCount} metas · preservado</p>
                       </div>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); reactivateOperator(op) }}
+                        disabled={reactivatingId === op.id}
+                        style={{
+                          flexShrink: 0, padding: '7px 14px', borderRadius: 8,
+                          fontSize: 11, fontWeight: 700, letterSpacing: '0.02em',
+                          color: reactivatingId === op.id ? 'rgba(255,255,255,0.4)' : 'rgba(209,250,229,0.85)',
+                          background: 'rgba(16,185,129,0.08)',
+                          border: '1px solid rgba(16,185,129,0.25)',
+                          cursor: reactivatingId === op.id ? 'default' : 'pointer',
+                          whiteSpace: 'nowrap', transition: 'all 0.2s',
+                        }}
+                        onMouseEnter={e => { if (reactivatingId !== op.id) e.currentTarget.style.background = 'rgba(16,185,129,0.16)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.08)' }}
+                      >
+                        {reactivatingId === op.id ? 'Reativando…' : 'Reativar'}
+                      </button>
                     </motion.div>
                   ))}
                 </div>
+                {reactivateMsg && (
+                  <p style={{ fontSize: 11, color: 'rgba(239,68,68,0.8)', marginTop: 10, lineHeight: 1.5 }}>
+                    {reactivateMsg}
+                  </p>
+                )}
                 <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 10, fontStyle: 'italic', lineHeight: 1.5 }}>
-                  Lucros e metas desses operadores continuam computados no total da plataforma. O histórico fica preservado.
+                  Lucros e metas desses operadores continuam computados no total da plataforma. O histórico fica preservado. Reativar exige uma vaga paga livre no seu plano.
                 </p>
               </div>
             )}

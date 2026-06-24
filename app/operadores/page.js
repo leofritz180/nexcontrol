@@ -291,6 +291,19 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
   )
 }
 
+// Janela da semana operacional: segunda 05:00 -> proxima segunda 04:59:59 (horario local/BRT).
+// Retorna { start, end } com end EXCLUSIVO (proxima segunda 05:00).
+function weekWindowBR(now) {
+  const start = new Date(now)
+  start.setHours(5, 0, 0, 0)
+  const diffToMonday = (start.getDay() + 6) % 7 // 0=seg, 1=ter, ... 6=dom
+  start.setDate(start.getDate() - diffToMonday)
+  if (now < start) start.setDate(start.getDate() - 7) // antes de seg 05:00 ainda conta a semana anterior
+  const end = new Date(start)
+  end.setDate(start.getDate() + 7)
+  return { start, end }
+}
+
 /* ── Ranking Card — Leaderboard Premium ── */
 function RankingCard({ op, idx, maxLucro, onClick }) {
   const [h, setH] = useState(false)
@@ -905,6 +918,31 @@ export default function OperadoresPage() {
   )
 
   const maxLucro = useMemo(() => ranking.length > 0 ? Math.max(...ranking.map(o => Math.abs(o.lucroFinal)), 1) : 1, [ranking])
+
+  // ── RANKING SEMANAL ── (segunda 05:00 -> proxima segunda 04:59, horario BRT)
+  // Mesma base do ranking geral, mas conta SO metas fechadas dentro da semana atual.
+  const weekWindow = useMemo(() => weekWindowBR(new Date()), [])
+  const weeklyRanking = useMemo(() => {
+    const { start, end } = weekWindow
+    return operatorStats.map(op => {
+      const wk = closedMetas.filter(m => {
+        if (m.operator_id !== op.id || !m.fechada_em) return false
+        const d = new Date(m.fechada_em)
+        return d >= start && d < end
+      })
+      if (!wk.length) return null
+      const lucroFinal = wk.reduce((a, m) => a + Number(m.lucro_final || 0), 0)
+      const totalDeposit = wk.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+      // herda os campos do op (pro modal) mas sobrescreve as metricas da semana;
+      // trend/badge zerados pra nao confundir com numeros all-time.
+      return { ...op, closedCount: wk.length, totalDeposit, lucroFinal, trend: 'stable', badge: null }
+    }).filter(Boolean).sort((a, b) => b.lucroFinal - a.lucroFinal)
+  }, [operatorStats, closedMetas, weekWindow])
+  const weeklyRankingShown = useMemo(
+    () => (teamFilter === 'all') ? weeklyRanking : weeklyRanking.filter(o => o.team === teamFilter),
+    [weeklyRanking, teamFilter]
+  )
+  const weeklyMaxLucro = useMemo(() => weeklyRanking.length > 0 ? Math.max(...weeklyRanking.map(o => Math.abs(o.lucroFinal)), 1) : 1, [weeklyRanking])
   const totalActive = useMemo(() => operatorStats.filter(o => o.activeMetas > 0).length, [operatorStats])
   const totalDeps = useMemo(() => operatorStats.reduce((a, o) => a + o.totalDeposit, 0), [operatorStats])
   const custosTotal = useMemo(() => costs.reduce((a, c) => a + Number(c.amount || 0), 0), [costs])
@@ -1207,6 +1245,39 @@ export default function OperadoresPage() {
                 {teamsEnabled && teamFilter !== 'all' && rankingShown.length === 0 && (
                   <div style={{ padding: '36px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid var(--b1)' }}>
                     <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Nenhum operador com meta fechada na equipe {teamFilter}.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ═══════════ RANKING SEMANAL ═══════════ */}
+            {!isDemo && (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, margin: '4px 0 16px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+                    <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(209,250,229,0.08)', border: '1px solid rgba(209,250,229,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM5 9H4a2 2 0 0 1 0-4h1M19 9h1a2 2 0 0 0 0-4h-1"/></svg>
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>Ranking semanal</p>
+                      <p style={{ fontSize: 10.5, color: 'var(--t4)', margin: '2px 0 0', fontFamily: 'var(--mono, monospace)' }}>
+                        seg {weekWindow.start.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} 05:00 → seg {weekWindow.end.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} 04:59
+                      </p>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--t4)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                    {weeklyRankingShown.length} ativo{weeklyRankingShown.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                {weeklyRankingShown.length === 0 ? (
+                  <div style={{ padding: '32px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid var(--b1)' }}>
+                    <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Nenhuma meta fechada nesta semana ainda.</p>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {weeklyRankingShown.map((op, idx) => (
+                      <RankingCard key={'wk-' + op.id} op={op} idx={idx} maxLucro={weeklyMaxLucro} onClick={() => setSelectedOp(op)} />
+                    ))}
                   </div>
                 )}
               </div>

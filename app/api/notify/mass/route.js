@@ -68,8 +68,16 @@ export async function POST(req) {
   const spNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
   const monthStartSP = new Date(spNow.getFullYear(), spNow.getMonth(), 1, 0, 0, 0).getTime() + 3 * 3600000
 
+  // Dia operacional do "hoje": vira 5h BRT (= 8h UTC), igual ao card do dashboard.
+  const TZ = 3 * 3600000
+  const _brt = new Date(now.getTime() - TZ)
+  const _opStart = new Date(_brt); _opStart.setUTCHours(5, 0, 0, 0)
+  if (_brt.getUTCHours() < 5) _opStart.setUTCDate(_opStart.getUTCDate() - 1)
+  const opHojeStart = _opStart.getTime() + TZ
+  const opHojeEnd = opHojeStart + 86400000
+
   let windowStart, windowEnd = null, label = ''
-  if (type === 'lucro_hoje') { windowStart = today00; windowEnd = tomorrow; label = 'Lucro de hoje' }
+  if (type === 'lucro_hoje') { windowStart = opHojeStart; windowEnd = opHojeEnd; label = 'Lucro de hoje' }
   if (type === 'lucro_semana') { windowStart = day7; label = 'Lucro da semana' }
   if (type === 'lucro_mes') { windowStart = day30; label = 'Lucro do mes (ultimos 30d)' }
   if (type === 'lucro_mes_atual') { windowStart = monthStartSP; label = 'Lucro do mes atual' }

@@ -67,8 +67,15 @@ async function buildPayload(sb, tenantId, type) {
   const tomorrow = today00 + 86400000
 
   if (type === 'lucro_hoje') {
-    const cpa = fechadasIn(today00, tomorrow).reduce((a, m) => a + Number(m.lucro_final || 0), 0)
-    const met = metodosLiquido(metodosIn(today00, tomorrow))
+    // Dia operacional: vira as 5h BRT (= 8h UTC), igual ao card "Lucro de hoje" do dashboard.
+    // Antes usava meia-noite UTC (= 21h BRT de ontem), puxando metas de ontem a noite e inflando o valor.
+    const TZ = 3 * 3600000
+    const brt = new Date(now.getTime() - TZ)
+    const opStart = new Date(brt); opStart.setUTCHours(5, 0, 0, 0)
+    if (brt.getUTCHours() < 5) opStart.setUTCDate(opStart.getUTCDate() - 1)
+    const opS = opStart.getTime() + TZ, opE = opS + 86400000
+    const cpa = fechadasIn(opS, opE).reduce((a, m) => a + Number(m.lucro_final || 0), 0)
+    const met = metodosLiquido(metodosIn(opS, opE))
     const total = cpa + met
     const sign = total >= 0 ? '+' : '-'
     return {

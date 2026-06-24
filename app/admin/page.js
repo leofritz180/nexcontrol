@@ -951,7 +951,11 @@ export default function AdminPage() {
         return d>=start && d<end
       })
       const depositantesFinalizados = opMetas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
-      return { ...op, metasFechadas:opMetas.length, lucroFinal:opMetas.reduce((a,m)=>a+Number(m.lucro_final||0),0), depositantesFinalizados }
+      // patente = depositantes de CARREIRA (todas metas fechadas), nao so da semana
+      const careerDepositantes = metas
+        .filter(m=>m.operator_id===op.id && m.status_fechamento==='fechada' && !m.deleted_at)
+        .reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+      return { ...op, metasFechadas:opMetas.length, lucroFinal:opMetas.reduce((a,m)=>a+Number(m.lucro_final||0),0), depositantesFinalizados, careerDepositantes }
     }).filter(o=>o.metasFechadas>0).sort((a,b)=>b.lucroFinal-a.lucroFinal)
   },[operators,metas,weekWindow])
 
@@ -3542,6 +3546,7 @@ export default function AdminPage() {
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
                               <p style={{ fontSize:16, fontWeight:800, color:isTop?medal:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>{getName(op)}</p>
+                              <RankBadge contas={op.careerDepositantes} size="xs" />
                               {i===0 && <span className="badge badge-warn">Lider</span>}
                             </div>
                             <p className="t-small" style={{ marginBottom:12 }}>{op.email}</p>
@@ -3554,13 +3559,18 @@ export default function AdminPage() {
                           </div>
                           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, flexShrink:0 }}>
                             {[
-                              { l:'Metas fechadas', v:op.metasFechadas, c:'var(--info)' },
-                              { l:'Depositantes', v:op.depositantesFinalizados, c:'var(--warn)' },
-                              { l:'Lucro final',    v:`R$ ${fmt(op.lucroFinal)}`, c:isTop?medal:'var(--profit)' },
-                            ].map(({l,v,c})=>(
+                              { l:'Metas fechadas', raw:op.metasFechadas, dec:0, c:'var(--info)' },
+                              { l:'Depositantes', raw:op.depositantesFinalizados, dec:0, c:'var(--warn)' },
+                              { l:'Lucro final', raw:op.lucroFinal, dec:2, money:true, c:isTop?medal:'var(--profit)' },
+                            ].map(({l,raw,dec,money,c})=>(
                               <div key={l} style={{ background:'var(--raised)', border:'1px solid var(--b1)', borderRadius:10, padding:'11px 16px', textAlign:'center', minWidth:110 }}>
                                 <p className="t-label" style={{ fontSize:9, marginBottom:5 }}>{l}</p>
-                                <p className="t-num" style={{ fontSize:14, fontWeight:700, color:c }}>{v}</p>
+                                <AnimatedNumber
+                                  value={Math.abs(raw)}
+                                  decimals={dec}
+                                  prefix={money ? `${raw<0?'-':''}R$ ` : ''}
+                                  style={{ fontFamily:'var(--mono)', fontSize:14, fontWeight:700, color:c, display:'block' }}
+                                />
                               </div>
                             ))}
                           </div>

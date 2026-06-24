@@ -840,7 +840,7 @@ export default function AdminPage() {
     // "custos de hoje" zerava à noite no BRT (quando o dia UTC vira antes do local),
     // dessincronizando do lucro do dia. Por isso usa data local aqui.
     const _now = new Date()
-    const todayISO = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`
+    const todayISO = opDayISO(_now)
     const custosHoje = Number(costs.filter(c=>c.date===todayISO).reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
     const custosTotal = Number(costs.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
     // Metodos (beta): somados a lucroHoje e lucroFinalTotal pra refletir em
@@ -889,8 +889,8 @@ export default function AdminPage() {
     let custos = custosTotalFixo
     if (heroPeriod !== 'all') {
       const now = new Date(); let start = dISO(now), end = dISO(now)
-      if (heroPeriod === 'today') { start = dISO(now) }
-      else if (heroPeriod === 'yesterday') { const y = new Date(now); y.setDate(y.getDate()-1); start = dISO(y); end = dISO(y) }
+      if (heroPeriod === 'today') { start = opDayISO(now); end = opDayISO(now) }
+      else if (heroPeriod === 'yesterday') { const y = opDayISO(new Date(now.getTime() - 24*3600*1000)); start = y; end = y }
       else if (heroPeriod === '7d') { const d = new Date(now); d.setDate(d.getDate()-7); start = dISO(d) }
       else if (heroPeriod === '30d') { const d = new Date(now); d.setDate(d.getDate()-30); start = dISO(d) }
       else if (heroPeriod === 'month') { start = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01` }

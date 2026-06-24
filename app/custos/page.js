@@ -10,6 +10,14 @@ import { DEMO_COSTS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-dat
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || '?'
 
+// Dia operacional (vira as 5h, horario local/BRT) em 'YYYY-MM-DD'. Subtrai 5h e usa
+// a data local — assim um custo lancado de madrugada (ate 4:59) cai no dia anterior,
+// igual a regra das metas no /admin. Corrige tambem o bug antigo de salvar em UTC.
+const opDayISO = (d = new Date()) => {
+  const x = new Date(new Date(d).getTime() - 5 * 3600 * 1000)
+  return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`
+}
+
 const COST_TYPES = [
   { id: 'proxy', label: 'Proxy', icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', color: 'rgba(255,255,255,0.78)' },
   { id: 'sms', label: 'SMS', icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: 'var(--profit)' },
@@ -31,7 +39,7 @@ export default function CustosPage() {
   const [showModal, setShowModal] = useState(false)
   const [formType, setFormType] = useState('proxy')
   const [formAmount, setFormAmount] = useState('')
-  const [formDate, setFormDate] = useState(new Date().toISOString().slice(0, 10))
+  const [formDate, setFormDate] = useState(opDayISO())
   const [formNote, setFormNote] = useState('')
   const [saving, setSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
@@ -86,7 +94,7 @@ export default function CustosPage() {
       setShowModal(false)
       setFormType('proxy')
       setFormAmount('')
-      setFormDate(new Date().toISOString().slice(0, 10))
+      setFormDate(opDayISO())
       setFormNote('')
     }, 800)
     loadData()
@@ -101,7 +109,7 @@ export default function CustosPage() {
   const isDemo = !loading && shouldShowDemo(metas, user?.id)
   const displayCosts = isDemo ? DEMO_COSTS : costs
 
-  const today = new Date().toISOString().slice(0, 10)
+  const today = opDayISO()
   const currentMonth = new Date().toISOString().slice(0, 7)
   const daysElapsed = new Date().getDate()
 
@@ -110,7 +118,7 @@ export default function CustosPage() {
     const custoMes = displayCosts.filter(c => (c.date || '').slice(0, 7) === currentMonth).reduce((a, c) => a + Number(c.amount || 0), 0)
 
     const lucroHoje = metas
-      .filter(m => (m.fechada_em || '').slice(0, 10) === today)
+      .filter(m => m.fechada_em && opDayISO(m.fechada_em) === today)
       .reduce((a, m) => a + Number(m.lucro_final || 0), 0)
     const lucroTotal = metas.reduce((a, m) => a + Number(m.lucro_final || 0), 0)
 

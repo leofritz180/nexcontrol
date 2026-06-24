@@ -28,6 +28,15 @@ const PRO_EMAILS = new Set([
 ])
 const isProEmail = email => PRO_EMAILS.has(String(email || '').toLowerCase())
 
+// Dia operacional: vira as 5h da manha (horario local/BRT). Um fechamento pertence
+// ao dia D se ocorreu em [D 05:00, D+1 05:00). Subtraindo 5h, a data calendario
+// resultante JA e o dia operacional. Retorna 'YYYY-MM-DD'.
+// Ex.: fechada 24/06 00:00 BRT -> -5h -> 23/06 -> conta no dia 23 (e nao 24).
+function opDayISO(d) {
+  const x = new Date(new Date(d).getTime() - 5 * 3600 * 1000)
+  return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`
+}
+
 // Janela da semana operacional: segunda 05:00 -> proxima segunda 04:59:59 (BRT).
 // end EXCLUSIVO (proxima segunda 05:00).
 function weekWindowBR(now) {
@@ -811,8 +820,8 @@ export default function AdminPage() {
     const prej  = remessas.reduce((a,r)=>a+Number(r.prejuizo||0),0)
     const totalDep = remessas.reduce((a,r)=>a+Number(r.deposito||0),0)
     const totalSaq = remessas.reduce((a,r)=>a+Number(r.saque||0),0)
-    const today = new Date().toDateString()
-    const lucroHojeCpa = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&new Date(m.fechada_em).toDateString()===today).reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    const today = opDayISO(new Date())
+    const lucroHojeCpa = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&opDayISO(m.fechada_em)===today).reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const fechadas  = metas.filter(m=>m.status_fechamento==='fechada')
     const lucroFinalTotalCpa = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const totalContasFechadas = fechadas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
@@ -850,11 +859,11 @@ export default function AdminPage() {
     if(heroPeriod!=='all') {
       const now = new Date()
       if(heroPeriod==='today') {
-        const t = now.toDateString()
-        filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===t)
+        const t = opDayISO(now)
+        filtered = fechadas.filter(m=>opDayISO(m.fechada_em)===t)
       } else if(heroPeriod==='yesterday') {
-        const y = new Date(now); y.setDate(y.getDate()-1)
-        filtered = fechadas.filter(m=>new Date(m.fechada_em).toDateString()===y.toDateString())
+        const y = opDayISO(new Date(now.getTime() - 24*3600*1000))
+        filtered = fechadas.filter(m=>opDayISO(m.fechada_em)===y)
       } else if(heroPeriod==='7d') {
         const d = new Date(now); d.setDate(d.getDate()-7)
         filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)

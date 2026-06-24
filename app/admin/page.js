@@ -27,6 +27,19 @@ const PRO_EMAILS = new Set([
   'vlopes00@hotmail.com', 'darkzinmg7@gmail.com',
 ])
 const isProEmail = email => PRO_EMAILS.has(String(email || '').toLowerCase())
+
+// Janela da semana operacional: segunda 05:00 -> proxima segunda 04:59:59 (BRT).
+// end EXCLUSIVO (proxima segunda 05:00).
+function weekWindowBR(now) {
+  const start = new Date(now)
+  start.setHours(5, 0, 0, 0)
+  const diffToMonday = (start.getDay() + 6) % 7 // 0=seg ... 6=dom
+  start.setDate(start.getDate() - diffToMonday)
+  if (now < start) start.setDate(start.getDate() - 7)
+  const end = new Date(start)
+  end.setDate(start.getDate() + 7)
+  return { start, end }
+}
 import TabAwareTour from '../../components/TabAwareTour'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
 import DemoModeCard from '../../components/DemoModeCard'
@@ -925,6 +938,22 @@ export default function AdminPage() {
       return { ...op, metasFechadas:opMetas.length, lucroFinal:opMetas.reduce((a,m)=>a+Number(m.lucro_final||0),0), totalRem:opRem.length, depositantesFinalizados, sparkData }
     }).sort((a,b)=>b.lucroFinal-a.lucroFinal)
   ,[operators,metas,remessas])
+
+  // RANKING SEMANAL (segunda 05:00 -> proxima segunda 04:59, BRT).
+  // Mesma logica do ranking, mas conta so metas fechadas DENTRO da semana (por fechada_em).
+  const weekWindow = useMemo(()=>weekWindowBR(new Date()),[])
+  const weeklyRanking = useMemo(()=>{
+    const { start, end } = weekWindow
+    return operators.map(op=>{
+      const opMetas = metas.filter(m=>{
+        if(m.operator_id!==op.id || m.status_fechamento!=='fechada' || m.deleted_at || !m.fechada_em) return false
+        const d=new Date(m.fechada_em)
+        return d>=start && d<end
+      })
+      const depositantesFinalizados = opMetas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+      return { ...op, metasFechadas:opMetas.length, lucroFinal:opMetas.reduce((a,m)=>a+Number(m.lucro_final||0),0), depositantesFinalizados }
+    }).filter(o=>o.metasFechadas>0).sort((a,b)=>b.lucroFinal-a.lucroFinal)
+  },[operators,metas,weekWindow])
 
   const filteredMetas = useMemo(()=>{
     let list = metas
@@ -3474,6 +3503,74 @@ export default function AdminPage() {
                 })}
               </div>
             )}
+
+            {/* ─── RANKING SEMANAL (segunda 05:00 → próxima segunda 04:59, BRT) ─── */}
+            <div style={{ marginTop:40, paddingTop:32, borderTop:'1px solid var(--b1)' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:20 }}>
+                <div style={{ width:44, height:44, borderRadius:12, background:'var(--profit-dim)', border:'1px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+                </div>
+                <div>
+                  <h2 className="t-h2" style={{ margin:'0 0 3px' }}>Ranking semanal</h2>
+                  <p className="t-small" style={{ fontFamily:'var(--mono)' }}>seg {weekWindow.start.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} 05:00 → seg {weekWindow.end.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} 04:59</p>
+                </div>
+              </div>
+              {weeklyRanking.length===0 ? (
+                <div style={{ border:'1px dashed var(--b2)', borderRadius:16, padding:48, textAlign:'center' }}>
+                  <p style={{ color:'var(--t2)', fontSize:14, fontWeight:600, marginBottom:4 }}>Nenhuma meta fechada nesta semana</p>
+                  <p className="t-small">O ranking semanal zera toda segunda às 05:00.</p>
+                </div>
+              ) : (
+                <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+                  {weeklyRanking.map((op,i)=>{
+                    const medals=['#FFD700','#C0C0C0','#CD7F32']
+                    const medal=medals[i]
+                    const isTop=i<3
+                    const maxL=weeklyRanking[0]?.lucroFinal||1
+                    const barW=Math.max(3,(op.lucroFinal/maxL)*100)
+                    return (
+                      <motion.div key={'wk-'+op.id} className="card" style={{ padding:'22px 26px', border:isTop?`1px solid ${medal}22`:'1px solid var(--b1)', background:isTop?`rgba(${i===0?'255,215,0':i===1?'192,192,192':'205,127,50'},0.03)`:'var(--surface)' }}
+                        {...fadeUp(i)}
+                        whileHover={{ x: 4, borderColor: isTop ? `${medal}44` : 'var(--b2)', transition: { duration: 0.15 } }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:20 }}>
+                          <div style={{ width:54, height:54, borderRadius:15, background:isTop?`${medal}15`:'var(--raised)', border:`2px solid ${isTop?medal:' var(--b2)'}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                            {isTop
+                              ? <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={medal} strokeWidth="1.5" strokeLinecap="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2.34"/><path d="M14 14.66V17a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2.34"/><path d="M6 4v10"/><path d="M18 4v10"/></svg>
+                              : <span style={{ fontFamily:'Inter,sans-serif', fontWeight:800, fontSize:20, color:'var(--t4)' }}>#{i+1}</span>
+                            }
+                          </div>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
+                              <p style={{ fontSize:16, fontWeight:800, color:isTop?medal:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>{getName(op)}</p>
+                              {i===0 && <span className="badge badge-warn">Lider</span>}
+                            </div>
+                            <p className="t-small" style={{ marginBottom:12 }}>{op.email}</p>
+                            <div className="progress" style={{ height:4 }}>
+                              <motion.div className="progress-bar"
+                                initial={{ width: 0 }} animate={{ width: `${barW}%` }}
+                                transition={{ duration: 1, delay: i * 0.1, ease: [0.4,0,0.2,1] }}
+                                style={{ background:isTop?`linear-gradient(90deg,${medal},${medal}88)`:'linear-gradient(90deg,var(--brand),var(--brand-bright))' }}/>
+                            </div>
+                          </div>
+                          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, flexShrink:0 }}>
+                            {[
+                              { l:'Metas fechadas', v:op.metasFechadas, c:'var(--info)' },
+                              { l:'Depositantes', v:op.depositantesFinalizados, c:'var(--warn)' },
+                              { l:'Lucro final',    v:`R$ ${fmt(op.lucroFinal)}`, c:isTop?medal:'var(--profit)' },
+                            ].map(({l,v,c})=>(
+                              <div key={l} style={{ background:'var(--raised)', border:'1px solid var(--b1)', borderRadius:10, padding:'11px 16px', textAlign:'center', minWidth:110 }}>
+                                <p className="t-label" style={{ fontSize:9, marginBottom:5 }}>{l}</p>
+                                <p className="t-num" style={{ fontSize:14, fontWeight:700, color:c }}>{v}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
 

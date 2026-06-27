@@ -706,7 +706,7 @@ export default function MetaPage() {
     }
     setRemessas(prev => [...prev, optimistic])
     // Notificacao e refresh em paralelo (nao bloqueia)
-    notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff)
+    notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff, tipo)
     evaluateAfterRemessa({
       remessas: [...remessas, optimistic], meta,
       novaRemessa: { resultado: diff, contas_remessa: formContas },

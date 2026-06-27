@@ -585,6 +585,7 @@ export default function OperatorPage() {
   const redeRef = useRef(null)
 
   const REDES = ['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
+  const MULTI_REDE = 'MÚLTIPLAS' // opção especial: meta rodando em várias redes
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -1022,7 +1023,7 @@ export default function OperatorPage() {
                             boxSizing: 'border-box',
                           }}
                         >
-                          <span>{rede || 'Selecione a rede'}</span>
+                          <span style={rede === MULTI_REDE ? { color: '#34d399', fontWeight: 700 } : undefined}>{rede === MULTI_REDE ? 'Múltiplas redes' : (rede || 'Selecione a rede')}</span>
                           <IconDown open={redeOpen} />
                         </button>
                         {redeOpen && (
@@ -1032,6 +1033,24 @@ export default function OperatorPage() {
                             boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
                             maxHeight: 260, overflowY: 'auto', padding: 6,
                           }}>
+                            {/* Opção especial: Múltiplas redes (primeira, cor mint) */}
+                            <button
+                              key="__multi" type="button"
+                              onClick={() => { setRede(MULTI_REDE); setRedeOpen(false) }}
+                              onMouseEnter={e => { if (rede !== MULTI_REDE) e.currentTarget.style.background = 'rgba(16,185,129,0.12)' }}
+                              onMouseLeave={e => { e.currentTarget.style.background = rede === MULTI_REDE ? 'rgba(16,185,129,0.18)' : 'transparent' }}
+                              style={{
+                                width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px',
+                                border: 'none', borderRadius: 9, textAlign: 'left', cursor: 'pointer',
+                                fontSize: 13, fontWeight: 700, color: '#34d399',
+                                background: rede === MULTI_REDE ? 'rgba(16,185,129,0.18)' : 'transparent',
+                                marginBottom: 4, transition: 'background 0.12s',
+                              }}
+                            >
+                              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                              Múltiplas redes
+                            </button>
+                            <div style={{ height: 1, background: 'var(--b1)', margin: '0 6px 4px' }} />
                             {REDES.map(r => (
                               <button
                                 key={r} type="button"

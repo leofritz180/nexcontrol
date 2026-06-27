@@ -669,6 +669,7 @@ export default function AdminPage() {
   const [myMostrarSenha,setMyMostrarSenha]=useState(false)
   const [mySaving,setMySaving]=useState(false)
   const REDES=['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
+  const MULTI_REDE='MÚLTIPLAS' // opção especial: meta rodando em várias redes
   const [focusLoad, setFocusLoad] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [trashMetas, setTrashMetas] = useState([])
@@ -2167,9 +2168,10 @@ export default function AdminPage() {
                         </div>
                         <div>
                           <label className="t-label" style={{display:'block',marginBottom:6}}>Rede *</label>
-                          <select className="input" value={myRede} onChange={e=>setMyRede(e.target.value)} required>
+                          <select className="input" value={myRede} onChange={e=>setMyRede(e.target.value)} required style={myRede===MULTI_REDE?{color:'#34d399',fontWeight:700}:undefined}>
                             <option value="">Selecione</option>
-                            {REDES.map(r=><option key={r} value={r}>{r}</option>)}
+                            <option value={MULTI_REDE} style={{color:'#34d399',fontWeight:700}}>★ Múltiplas redes</option>
+                            {REDES.map(r=><option key={r} value={r} style={{color:'var(--t1)'}}>{r}</option>)}
                           </select>
                         </div>
                       </div>

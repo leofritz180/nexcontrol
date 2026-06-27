@@ -670,6 +670,8 @@ export default function AdminPage() {
   const [mySaving,setMySaving]=useState(false)
   const REDES=['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
   const MULTI_REDE='MÚLTIPLAS' // opção especial: meta rodando em várias redes
+  const [myRedeOpen,setMyRedeOpen]=useState(false)
+  const myRedeRef=useRef(null)
   const [focusLoad, setFocusLoad] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [trashMetas, setTrashMetas] = useState([])
@@ -678,6 +680,14 @@ export default function AdminPage() {
   const tabRef = useRef(null)
   const tenantRef = useRef(null)   // tenant atual estável (o polling de 30s não pode perder)
   const adminIdRef = useRef(null)
+
+  // fecha o dropdown de rede ao clicar fora
+  useEffect(() => {
+    if (!myRedeOpen) return
+    const onDown = e => { if (myRedeRef.current && !myRedeRef.current.contains(e.target)) setMyRedeOpen(false) }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [myRedeOpen])
   const [tabLine, setTabLine] = useState({ left: 0, width: 0 })
 
   useEffect(()=>{ checkAndLoad() },[])
@@ -2168,11 +2178,34 @@ export default function AdminPage() {
                         </div>
                         <div>
                           <label className="t-label" style={{display:'block',marginBottom:6}}>Rede *</label>
-                          <select className="input" value={myRede} onChange={e=>setMyRede(e.target.value)} required style={myRede===MULTI_REDE?{color:'#34d399',fontWeight:700}:undefined}>
-                            <option value="">Selecione</option>
-                            <option value={MULTI_REDE} style={{color:'#34d399',fontWeight:700}}>★ Múltiplas redes</option>
-                            {REDES.map(r=><option key={r} value={r} style={{color:'var(--t1)'}}>{r}</option>)}
-                          </select>
+                          <div ref={myRedeRef} style={{position:'relative'}}>
+                            <button type="button" className="input" onClick={()=>setMyRedeOpen(o=>!o)}
+                              style={{width:'100%',textAlign:'left',display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer',
+                                color:myRede===MULTI_REDE?'#34d399':(myRede?'var(--t1)':'var(--t4)'),fontWeight:myRede===MULTI_REDE?700:500}}>
+                              <span>{myRede===MULTI_REDE?'Múltiplas redes':(myRede||'Selecione')}</span>
+                              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform:myRedeOpen?'rotate(180deg)':'none',transition:'transform 0.2s',opacity:0.55}}><polyline points="6 9 12 15 18 9"/></svg>
+                            </button>
+                            {myRedeOpen && (
+                              <div style={{position:'absolute',top:'calc(100% + 6px)',left:0,right:0,zIndex:100,background:'var(--surface)',border:'1px solid var(--b2)',borderRadius:14,boxShadow:'0 20px 60px rgba(0,0,0,0.6)',maxHeight:260,overflowY:'auto',padding:6}}>
+                                <button type="button" onClick={()=>{setMyRede(MULTI_REDE);setMyRedeOpen(false)}}
+                                  onMouseEnter={e=>{if(myRede!==MULTI_REDE)e.currentTarget.style.background='rgba(16,185,129,0.12)'}}
+                                  onMouseLeave={e=>{e.currentTarget.style.background=myRede===MULTI_REDE?'rgba(16,185,129,0.18)':'transparent'}}
+                                  style={{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'9px 14px',border:'none',borderRadius:9,textAlign:'left',cursor:'pointer',fontSize:13,fontWeight:700,color:'#34d399',background:myRede===MULTI_REDE?'rgba(16,185,129,0.18)':'transparent',marginBottom:4}}>
+                                  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                                  Múltiplas redes
+                                </button>
+                                <div style={{height:1,background:'var(--b1)',margin:'0 6px 4px'}}/>
+                                {REDES.map(r=>(
+                                  <button key={r} type="button" onClick={()=>{setMyRede(r);setMyRedeOpen(false)}}
+                                    onMouseEnter={e=>{if(myRede!==r)e.currentTarget.style.background='var(--raised)'}}
+                                    onMouseLeave={e=>{if(myRede!==r)e.currentTarget.style.background='transparent'}}
+                                    style={{width:'100%',display:'block',padding:'9px 14px',border:'none',borderRadius:9,textAlign:'left',cursor:'pointer',fontSize:13,fontWeight:myRede===r?700:500,color:myRede===r?'white':'var(--t2)',background:myRede===r?'rgba(229,57,53,0.2)':'transparent'}}>
+                                    {r}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
 

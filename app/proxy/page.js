@@ -95,9 +95,9 @@ export default function ProxyPage() {
               {iframeUrl && (
                 <iframe src={iframeUrl} title="Loja Bettify Proxy" onLoad={() => setIframeLoading(false)}
                   style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: '#000' }}
-                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation-by-user-activation"
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads allow-top-navigation-by-user-activation"
                   referrerPolicy="origin-when-cross-origin"
-                  allow="payment; clipboard-write" />
+                  allow="payment; clipboard-write; clipboard-read; fullscreen" />
               )}
               {iframeUrl && (
                 <a href={iframeUrl} target="_blank" rel="noopener noreferrer" title="Abrir em nova aba"

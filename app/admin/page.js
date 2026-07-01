@@ -832,7 +832,7 @@ export default function AdminPage() {
     const totalDep = remessas.reduce((a,r)=>a+Number(r.deposito||0),0)
     const totalSaq = remessas.reduce((a,r)=>a+Number(r.saque||0),0)
     const today = opDayISO(new Date())
-    const lucroHojeCpa = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em&&opDayISO(m.fechada_em)===today).reduce((a,m)=>a+Number(m.lucro_final||0),0)
+    const lucroHojeCpa = metas.filter(m=>m.status_fechamento==='fechada'&&m.created_at&&opDayISO(m.created_at)===today).reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const fechadas  = metas.filter(m=>m.status_fechamento==='fechada')
     const lucroFinalTotalCpa = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
     const totalContasFechadas = fechadas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
@@ -864,27 +864,29 @@ export default function AdminPage() {
 
   // Hero card: lucro final por periodo — BRUTO por periodo, custos TOTAIS fixos
   const heroLucro = useMemo(()=>{
-    const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.fechada_em)
+    // Lucro atribuido ao dia/mes em que a meta foi CRIADA (created_at), nao ao fechamento.
+    // Ex: meta criada 29/06 mas fechada 01/07 conta em junho, nao em julho.
+    const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.created_at)
     const custosTotalFixo = Number(costs.reduce((a,c)=>a+Number(c.amount||0),0).toFixed(2))
     let filtered = fechadas
     if(heroPeriod!=='all') {
       const now = new Date()
       if(heroPeriod==='today') {
         const t = opDayISO(now)
-        filtered = fechadas.filter(m=>opDayISO(m.fechada_em)===t)
+        filtered = fechadas.filter(m=>opDayISO(m.created_at)===t)
       } else if(heroPeriod==='yesterday') {
         const y = opDayISO(new Date(now.getTime() - 24*3600*1000))
-        filtered = fechadas.filter(m=>opDayISO(m.fechada_em)===y)
+        filtered = fechadas.filter(m=>opDayISO(m.created_at)===y)
       } else if(heroPeriod==='7d') {
         const d = new Date(now); d.setDate(d.getDate()-7)
-        filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
+        filtered = fechadas.filter(m=>new Date(m.created_at)>=d)
       } else if(heroPeriod==='30d') {
         const d = new Date(now); d.setDate(d.getDate()-30)
-        filtered = fechadas.filter(m=>new Date(m.fechada_em)>=d)
+        filtered = fechadas.filter(m=>new Date(m.created_at)>=d)
       } else if(heroPeriod==='month') {
-        // Mes atual: do dia 1 do mes corrente ate agora
+        // Mes atual: metas CRIADAS do dia 1 do mes corrente ate agora
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-        filtered = fechadas.filter(m=>new Date(m.fechada_em)>=monthStart)
+        filtered = fechadas.filter(m=>new Date(m.created_at)>=monthStart)
       }
     }
     const lucroCpa = filtered.reduce((a,m)=>a+Number(m.lucro_final||0),0)

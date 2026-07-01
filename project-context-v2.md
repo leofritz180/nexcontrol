@@ -306,8 +306,8 @@ Onde `resultado_remessas = sum(lucro) - sum(prejuizo)` de todas as remessas da m
 ### Modelo
 - Trial de 3 dias (automatico no signup)
 - Assinatura mensal via PIX (Asaas)
-- Base: R$ 39,90/mes (admin solo)
-- Operadores adicionais: preco escalonado
+- Base: R$ 59,90/mes (admin solo)
+- Operadores adicionais: R$ 29,90/operador (preco escalonado com desconto por volume)
 
 ### Features PRO
 - Slots Premium (catalogo de jogos com favoritos)

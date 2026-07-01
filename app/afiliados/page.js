@@ -730,7 +730,7 @@ function WithdrawalCode({ code }) {
 /* ── CALCULATOR MEGA ── */
 function CalculatorMega({ rate }) {
   const [n, setN] = useState(15)
-  const ticket = 39.90
+  const ticket = 59.90
   const earnings = n * ticket * rate
   const annual = earnings * 12 / 3 // simulando renovação 3x
 

@@ -60,7 +60,7 @@ const PARTICLES = [
   { x: 6, y: 50, s: 2, d: 2.0, c: '#fff' }, { x: 42, y: 80, s: 3, d: 1.0, c: BRAND },
 ]
 
-export default function BillingProV2({ tenantId, basePrice = 39.9, opPrice = 19.9, onStart = () => {}, onAddOps = () => {}, subActive = false, expiresAt = null, currentOps = 0, currentPrice = 0 }) {
+export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.9, onStart = () => {}, onAddOps = () => {}, subActive = false, expiresAt = null, currentOps = 0, currentPrice = 0 }) {
   const [stats, setStats] = useState(null) // { lucro, contas, metas, remessas }
   const [teamOpen, setTeamOpen] = useState(false)
   const [teamQty, setTeamQty] = useState(1)

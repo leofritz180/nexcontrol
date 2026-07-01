@@ -250,8 +250,8 @@ export default function SubscriptionGate({ children }) {
 
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.42)', marginTop: 14, letterSpacing: '0.01em' }}>
             {isExpired
-              ? <>PIX instantâneo · a partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 39,90/mês</strong></>
-              : <>A partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 39,90/mês</strong></>}
+              ? <>PIX instantâneo · a partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 59,90/mês</strong></>
+              : <>A partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 59,90/mês</strong></>}
           </p>
 
           <button

@@ -13,7 +13,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://nexcpa.com.br'
 // E-mails de conversao do TRIAL (espelham o push). Disparam junto com o push
 // nos momentos-chave. Sem RESEND_API_KEY o envio e' apenas pulado (sem erro).
 const TRIAL_EMAILS = {
-  '3d': { subject: 'Faltam 3 dias do seu teste NexControl', preheader: 'Garanta R$ 39,90/mes antes de bloquear.', bodyTitle: 'Faltam 3 dias do seu teste', bodyText: 'Seu teste gratis esta acabando. Assine agora e garanta o NexControl por R$ 39,90/mes. Apos o trial o acesso e bloqueado e voce perde a visao da operacao em tempo real.', ctaText: 'Assinar agora' },
+  '3d': { subject: 'Faltam 3 dias do seu teste NexControl', preheader: 'Garanta R$ 59,90/mes antes de bloquear.', bodyTitle: 'Faltam 3 dias do seu teste', bodyText: 'Seu teste gratis esta acabando. Assine agora e garanta o NexControl por R$ 59,90/mes. Apos o trial o acesso e bloqueado e voce perde a visao da operacao em tempo real.', ctaText: 'Assinar agora' },
   '1d': { subject: 'Ultimo dia do seu teste gratis', preheader: 'Amanha o acesso e bloqueado.', bodyTitle: 'Ultimo dia do seu teste', bodyText: 'Amanha seu acesso e bloqueado. Assine em 1 clique pra nao perder seus dados, suas metas e o controle da sua equipe.', ctaText: 'Assinar antes de bloquear' },
   'expired': { subject: 'Seu teste expirou — reative em 1 clique', preheader: 'Recupere seu acesso agora.', bodyTitle: 'Seu teste expirou', bodyText: 'Seu teste gratis acabou e o acesso foi bloqueado. Reative sua conta agora pra recuperar seus dados e voltar a operar sem nenhuma pausa.', ctaText: 'Reativar acesso' },
 }
@@ -75,7 +75,7 @@ export async function GET(req) {
 
       if (daysLeft === 3) {
         title = 'Faltam 3 dias do seu teste'
-        body = 'Assine agora e garanta R$ 39,90/mes. Apos o trial o acesso e bloqueado.'
+        body = 'Assine agora e garanta R$ 59,90/mes. Apos o trial o acesso e bloqueado.'
         shouldNotify = true
       } else if (daysLeft === 1) {
         title = 'Ultimo dia do seu teste gratis'

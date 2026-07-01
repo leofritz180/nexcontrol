@@ -27,7 +27,7 @@ export default function TrialChip({ tenant, sub, user, profile }) {
     critical: { fg: '#ff4444', bg: 'rgba(255,68,68,0.14)',    border: 'rgba(255,68,68,0.55)' },
   }
   const c = colors[urgency] || colors.medium
-  const { monthly } = formatPriceAnchor(39.90)
+  const { monthly } = formatPriceAnchor(59.90)
 
   const label = isExpired ? 'EXPIRADO' : daysLeft === 1 ? '1 DIA' : `${daysLeft} DIAS`
   const showPulse = urgency === 'critical' || urgency === 'high'
@@ -69,7 +69,7 @@ export default function TrialChip({ tenant, sub, user, profile }) {
           userId={user?.id}
           userName={profile?.nome}
           userEmail={user?.email}
-          amount={39.90}
+          amount={59.90}
           operatorCount={0}
           planName="Admin Solo"
           onSuccess={() => { setShowPix(false); window.location.reload() }}

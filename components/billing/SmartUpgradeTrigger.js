@@ -59,7 +59,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
     },
   }
   const msg = messages[trigger] || messages.first_meta
-  const { monthly, daily } = formatPriceAnchor(39.90)
+  const { monthly, daily } = formatPriceAnchor(59.90)
 
   return (
     <>
@@ -250,7 +250,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
           userId={user?.id}
           userName={profile?.nome}
           userEmail={user?.email}
-          amount={39.90}
+          amount={59.90}
           operatorCount={0}
           planName="Admin Solo"
           onSuccess={() => { setShowPix(false); window.location.reload() }}

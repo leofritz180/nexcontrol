@@ -29,7 +29,7 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
   if (!isTrial && !isExpired) return null
   if (dismissed && !isExpired) return null // expired sempre forca
 
-  const { monthly, daily } = formatPriceAnchor(39.90)
+  const { monthly, daily } = formatPriceAnchor(59.90)
   const urgencyColor = urgency === 'critical' || urgency === 'high' ? '#ff4444' : urgency === 'medium' ? '#ff8a47' : '#e53935'
 
   function handleDismiss() {
@@ -176,7 +176,7 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
           userId={user?.id}
           userName={profile?.nome}
           userEmail={user?.email}
-          amount={39.90}
+          amount={59.90}
           operatorCount={0}
           planName="Admin Solo"
           onSuccess={() => { setShowPix(false); window.location.reload() }}

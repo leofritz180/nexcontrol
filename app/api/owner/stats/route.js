@@ -151,7 +151,7 @@ export async function POST(req) {
     const prevRevenue7d = paidPayments.filter(p => new Date(p.created_at) >= prevD7 && new Date(p.created_at) < d7).reduce((a, p) => a + Number(p.amount || 0), 0)
 
     // MRR estimate
-    const avgTicket = paidPayments.length > 0 ? totalRevenue / paidPayments.length : 39.9
+    const avgTicket = paidPayments.length > 0 ? totalRevenue / paidPayments.length : 59.9
     const mrr = mrrReal
 
     // New clients

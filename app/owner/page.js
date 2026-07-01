@@ -201,7 +201,7 @@ export default function OwnerPage() {
   if (metaConvPct < 50 && funnel.registered > 5) happeningNow.push({ label: 'Principal problema', text: `Baixa conversao de contas para metas (${metaConvPct}%)`, type: 'warn', icon: 'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z' })
   // Maior oportunidade
   if (inactiveAdmins > 0) {
-    const potentialRev = Math.round(inactiveAdmins * (kpis.avgTicket || 39.9) * 0.3)
+    const potentialRev = Math.round(inactiveAdmins * (kpis.avgTicket || 59.9) * 0.3)
     happeningNow.push({ label: 'Maior oportunidade', text: `Reativar ${inactiveAdmins} admins pode gerar +R$ ${fmt(potentialRev)}/mes`, type: 'profit', icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z' })
   }
   // Tendencia

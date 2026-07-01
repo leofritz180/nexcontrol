@@ -35,13 +35,13 @@ export async function POST(req) {
     //                           cliente nao pode mandar amount adulterado via devtools)
     //   plan_period sozinho   → calcula via lib/plans
     //   amount sozinho        → upgrade parcial (add-ops). planMonths=0. Minimo R$ 1,00.
-    //   nada                  → default 39.9 / 1 mes (fallback)
+    //   nada                  → default 59.9 / 1 mes (fallback)
     let transactionAmount, planMonths
     if (plan_period) {
       const plan = getPlan(plan_period)
       planMonths = plan.months
-      // Preço REAL (idêntico ao front /billing-mp): admin R$39,90 + operadores
-      // R$19,90 com desconto por volume (lib/pricing) × meses × desconto do período.
+      // Preço REAL (idêntico ao front /billing-mp): admin R$59,90 + operadores
+      // R$29,90 com desconto por volume (lib/pricing) × meses × desconto do período.
       // Antes usava lib/plans (flat R$39,90/operador) e bloqueava renovação de quem tinha 2+ operadores.
       const opsForCalc = Math.max(0, Number(operatorCountIn) || 0)
       const monthlyTier = calcOpTier(opsForCalc).total
@@ -72,7 +72,7 @@ export async function POST(req) {
       transactionAmount = Number(amount)
       planMonths = 0
     } else {
-      transactionAmount = 39.9
+      transactionAmount = 59.9
       planMonths = 1
     }
 

@@ -192,7 +192,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
                 <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>Menos que 1 operação perdida por dia</p>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: 'var(--profit)', letterSpacing: '-0.02em' }}>R$ 39,90</span>
+                <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: 'var(--profit)', letterSpacing: '-0.02em' }}>R$ 59,90</span>
                 <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4, fontWeight: 600 }}>/mês</span>
               </div>
             </div>

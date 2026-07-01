@@ -9,7 +9,16 @@ export default function PushManager({ userId, tenantId }) {
 
   useEffect(() => {
     if (!isPushSupported()) { setState('unsupported'); return }
-    setState(getPermissionState())
+    const st = getPermissionState()
+    setState(st)
+    // Aparece só 1x AO INICIAR (por sessão). Antes reaparecia em toda navegação
+    // porque o Sidebar remonta o PushManager e o "dismiss" era só estado local.
+    if (st === 'default' || st === 'prompt' || st === 'denied') {
+      try {
+        if (sessionStorage.getItem('nx_push_prompt_shown')) setDismissed(true)
+        else sessionStorage.setItem('nx_push_prompt_shown', '1')
+      } catch {}
+    }
   }, [])
 
   async function enable() {

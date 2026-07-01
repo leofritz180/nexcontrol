@@ -54,7 +54,7 @@ export async function POST(req) {
 
   const { type, dryRun } = await req.json().catch(() => ({}))
   if (!type) return NextResponse.json({ error: 'type obrigatorio' }, { status: 400 })
-  if (!['lucro_hoje', 'lucro_semana', 'lucro_mes', 'lucro_mes_atual'].includes(type)) {
+  if (!['lucro_hoje', 'lucro_semana', 'lucro_mes', 'lucro_mes_atual', 'lucro_junho'].includes(type)) {
     return NextResponse.json({ error: 'type invalido' }, { status: 400 })
   }
 
@@ -81,16 +81,20 @@ export async function POST(req) {
   if (type === 'lucro_semana') { windowStart = day7; label = 'Lucro da semana' }
   if (type === 'lucro_mes') { windowStart = day30; label = 'Lucro do mes (ultimos 30d)' }
   if (type === 'lucro_mes_atual') { windowStart = monthStartSP; label = 'Lucro do mes atual' }
+  // Junho fechado: janela 01/06 00:00 BRT -> 01/07 00:00 BRT, atribuido por created_at (igual ao dashboard)
+  if (type === 'lucro_junho') { windowStart = Date.parse('2026-06-01T03:00:00Z'); windowEnd = Date.parse('2026-07-01T03:00:00Z'); label = 'Lucro de junho' }
+  const useCreated = type === 'lucro_junho'
 
-  const allMetas = await fetchAll(sb, 'metas', 'id,tenant_id,status_fechamento,fechada_em,lucro_final,deleted_at')
+  const allMetas = await fetchAll(sb, 'metas', 'id,tenant_id,status_fechamento,fechada_em,created_at,lucro_final,deleted_at')
   const allMetodos = await fetchAll(sb, 'metodos_registros', 'tenant_id,valor,tipo,created_at,deleted_at').catch(() => [])
   const admins = (await fetchAll(sb, 'profiles', 'id,nome,tenant_id,role')).filter(p => p.role === 'admin')
 
   // Agrega lucro por tenant na janela
   const byTenant = new Map()
   for (const m of allMetas) {
-    if (m.deleted_at || m.status_fechamento !== 'fechada' || !m.fechada_em) continue
-    const t = new Date(m.fechada_em).getTime()
+    const attr = useCreated ? m.created_at : m.fechada_em
+    if (m.deleted_at || m.status_fechamento !== 'fechada' || !attr) continue
+    const t = new Date(attr).getTime()
     if (t < windowStart || (windowEnd && t >= windowEnd)) continue
     byTenant.set(m.tenant_id, (byTenant.get(m.tenant_id) || 0) + Number(m.lucro_final || 0))
   }

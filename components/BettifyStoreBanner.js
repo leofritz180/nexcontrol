@@ -2,14 +2,13 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BETTIFY_BANNER_SEEN_KEY as SEEN_KEY, BETTIFY_BANNER_UNTIL as UNTIL, bannerToday, voiceBannerPending } from '../lib/onboardingSeq'
 
 // Pop-up de divulgacao da Loja Bettify integrada. Mostra a arte (1536x1024) com
 // areas clicaveis invisiveis EXATAMENTE sobre os botoes "ACESSAR BETTIFY PROXY" e
 // "VER PRECOS" + um X de fechar. Aparece 1x por dia por dispositivo, dentro da
-// janela de campanha. Nao reaparece em toda navegacao (localStorage por data).
-const SEEN_KEY = 'nx_bettify_banner_seen'
-const UNTIL = new Date('2026-07-12T23:59:59') // campanha de 10 dias
-const today = () => new Date().toISOString().slice(0, 10)
+// janela de campanha. INTEGRADO ao sequenciador de onboarding: e o 1o overlay
+// (segura tutorial/checklist ate fechar) via __nxBannerOpen + evento nx-banner-closed.
 
 export default function BettifyStoreBanner({ userEmail }) {
   const router = useRouter()
@@ -19,15 +18,19 @@ export default function BettifyStoreBanner({ userEmail }) {
   useEffect(() => {
     if (!email) return
     if (new Date() > UNTIL) return
+    if (voiceBannerPending()) return // se houver banner de voz/insta pendente, ele vai primeiro
     let seen = false
-    try { seen = localStorage.getItem(SEEN_KEY) === today() } catch {}
+    try { seen = localStorage.getItem(SEEN_KEY) === bannerToday() } catch {}
     if (seen) return
+    // Sinaliza pro sequenciador: banner e o 1o passo — segura tutorial/checklist
+    try { window.__nxBannerOpen = true } catch {}
     const t = setTimeout(() => setShow(true), 800)
     return () => clearTimeout(t)
   }, [email])
 
   function dismiss() {
-    try { localStorage.setItem(SEEN_KEY, today()) } catch {}
+    try { localStorage.setItem(SEEN_KEY, bannerToday()) } catch {}
+    try { window.__nxBannerOpen = false; window.dispatchEvent(new Event('nx-banner-closed')) } catch {}
     setShow(false)
   }
   function goStore() { dismiss(); router.push('/proxy') }

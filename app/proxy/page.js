@@ -7,9 +7,9 @@ import AppLayout from '../../components/AppLayout'
 
 const ease = [0.33, 1, 0.68, 1]
 
-// FASE DE TESTE: só estas contas veem a loja embutida (SSO). Demais seguem com
-// o card + link externo. Pra liberar geral, deixar SSO_TEST_EMAILS = [].
-const SSO_TEST_EMAILS = ['leofritz178@gmail.com', 'darkzinmg7@gmail.com']
+// LIBERADO GERAL: loja embutida (SSO) para todas as contas logadas.
+// (Pra voltar a restringir por conta, listar emails aqui.)
+const SSO_TEST_EMAILS = []
 
 export default function ProxyPage() {
   const router = useRouter()

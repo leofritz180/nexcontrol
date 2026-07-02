@@ -28,6 +28,7 @@ const ADMIN_NAV = [
   { href:'/billing', label:'Assinatura', icon:'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
   { href:'/slots', label:'Slots Premium', icon:'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z', pro: true },
   { href:'/proxy', label:'Loja Proxy', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', bettify: true },
+  { href:'/minhas-proxies', label:'Minhas Proxies', icon:'M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 20V4' },
   { href:'/tutorial', label:'Tutorial', icon:'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
 ]
 
@@ -36,6 +37,7 @@ const OP_NAV = [
   { href:'/performance', label:'Performance', icon:'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
   { href:'/slots', label:'Slots Premium', icon:'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z', pro: true },
   { href:'/proxy', label:'Loja Proxy', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', bettify: true },
+  { href:'/minhas-proxies', label:'Minhas Proxies', icon:'M2 20h.01M7 20v-4M12 20v-8M17 20V8M22 20V4' },
   { href:'/pix', label:'Chaves PIX', icon:'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
 ]
 

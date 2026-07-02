@@ -8,6 +8,7 @@ const QuickNotifyPanel = dynamic(() => import('./QuickNotifyPanel'), { ssr: fals
 const VoiceAnnounceCard = dynamic(() => import('./VoiceAnnounceCard'), { ssr: false })
 const RedesignHeader = dynamic(() => import('./RedesignHeader'), { ssr: false })
 const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
+const BettifyStoreBanner = dynamic(() => import('./BettifyStoreBanner'), { ssr: false })
 
 const pageVariants = {
   initial: { opacity: 0, y: 14 },
@@ -47,6 +48,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       <QuickNotifyPanel userEmail={userEmail} />
       <VoiceAnnounceCard userEmail={userEmail} isAdmin={isAdmin} />
       <VoiceBanner userEmail={userEmail} />
+      <BettifyStoreBanner userEmail={userEmail} />
       <style jsx global>{`
         @media (max-width: 768px) {
           .app-content { margin-left: 0 !important; }

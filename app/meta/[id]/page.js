@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useParams, useRouter } from 'next/navigation'
 import AppLayout from '../../../components/AppLayout'
+import BettifySponsor from '../../../components/BettifySponsor'
 import { supabase } from '../../../lib/supabase/client'
 import { notifyRemessaCreated } from '../../../lib/notify'
 import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
@@ -1823,6 +1824,8 @@ export default function MetaPage() {
               </div>
             )
           })()}
+
+          <BettifySponsor pitch="Proxy acabando trava a operação — garanta GB na Bettify." style={{ marginBottom: 18 }} />
 
           {/* Histórico */}
           <div>

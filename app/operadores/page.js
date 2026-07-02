@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
+import BettifySponsor from '../../components/BettifySponsor'
 import OperatorLimitBanner from '../../components/OperatorLimitBanner'
 import TabAwareTour from '../../components/TabAwareTour'
 import { SLOTS } from '../../lib/slots-data'
@@ -1282,6 +1283,8 @@ export default function OperadoresPage() {
                 )}
               </div>
             )}
+
+            <div style={{ marginBottom: 18 }}><BettifySponsor pitch="Menos bloqueio, mais faturamento — proxies BR da Bettify." /></div>
 
             {/* Insights — Radar da equipe (inteligencia de gestao) */}
             <motion.div {...fadeUp(3)} style={{

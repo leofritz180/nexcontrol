@@ -52,6 +52,7 @@ function weekWindowBR(now) {
 import TabAwareTour from '../../components/TabAwareTour'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
 import DemoModeCard from '../../components/DemoModeCard'
+import BettifySponsor from '../../components/BettifySponsor'
 import RankBadge from '../../components/rank/RankBadge'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
@@ -3627,6 +3628,7 @@ export default function AdminPage() {
                 </div>
               )}
             </div>
+            <div style={{ marginTop: 20 }}><BettifySponsor pitch="Equipe que não trava vende mais — proxies BR da Bettify." /></div>
           </motion.div>
         )}
 

@@ -15,6 +15,10 @@
     {
       "path": "/api/cron/reconcile-payments?secret=${CRON_SECRET}",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/proxy-usage?secret=${CRON_SECRET}",
+      "schedule": "0 * * * *"
     }
   ]
 }

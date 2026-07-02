@@ -21,6 +21,23 @@ function milestoneFor(remaining) {
 function milestoneLabel(m) {
   return m >= 1 ? `${m} GB` : `${Math.round(m * 1000)} MB`
 }
+
+// Copy por limiar — tom crescente (tranquilo -> atencao -> urgente).
+const ALERT_COPY = {
+  40:  { title: '🟢 Proxy · 40 GB restantes', body: 'Tá tranquilo! Sua proxy ainda tem 40 GB. Bora operar. 🚀' },
+  30:  { title: '🟢 Proxy · 30 GB restantes', body: 'Sua proxy tá voando: restam 30 GB. Segue o baile!' },
+  20:  { title: '🟢 Proxy · 20 GB restantes', body: 'Restam 20 GB na sua proxy — ainda tem bastante gás. 💪' },
+  10:  { title: '🔵 Proxy · 10 GB restantes', body: 'Chegou a 10 GB. Fica de olho pra não zerar no meio da operação.' },
+  5:   { title: '🟡 Proxy · 5 GB restantes', body: 'Atenção: restam 5 GB. Já vale planejar a recarga. ⏳' },
+  2:   { title: '🟠 Proxy · 2 GB restantes', body: 'Restam só 2 GB! Recarrega logo pra não parar a operação.' },
+  1:   { title: '🟠 Proxy · 1 GB restante', body: '1 GB restante! Sua proxy tá quase no fim — recarrega antes de acabar.' },
+  0.5: { title: '🔴 Proxy · 500 MB restantes', body: 'Só 500 MB! Corre e recarrega antes que pare. 🏃' },
+  0.3: { title: '🔴 Proxy · 300 MB restantes', body: '300 MB! Sua proxy tá no vermelho — recarrega já.' },
+  0.1: { title: '⚠️ Proxy ACABANDO · 100 MB', body: 'Só 100 MB restantes! Recarregue AGORA pra não perder o acesso. 🚨' },
+}
+function alertCopy(m) {
+  return ALERT_COPY[m] || { title: 'Aviso de consumo — proxy', body: `Sua proxy: restam ${milestoneLabel(m)}.` }
+}
 function bettifyBase() {
   return (process.env.BETTIFY_URL || 'https://www.bettifyproxy.com')
     .replace(/\/+$/, '')
@@ -103,12 +120,9 @@ export async function GET(req) {
 
     const uid = prof?.id || row.user_id
     if (notify && uid && !isFirstRun) {
-      const acabando = m <= 0.1
+      const copy = alertCopy(m)
       await sendPushToUser(sb, uid, {
-        title: acabando ? '⚠️ Proxy acabando!' : 'Aviso de consumo — proxy',
-        body: acabando
-          ? `Sua proxy está acabando: restam ${milestoneLabel(m)}. Recarregue pra não parar a operação.`
-          : `Sua proxy: restam ${milestoneLabel(m)}.`,
+        title: copy.title, body: copy.body,
         url: '/minhas-proxies', tag: 'proxy_thr_' + pid + '_' + m,
       }).catch(() => {})
       alerts++

@@ -18,7 +18,7 @@
     },
     {
       "path": "/api/cron/proxy-usage?secret=${CRON_SECRET}",
-      "schedule": "0 * * * *"
+      "schedule": "*/5 * * * *"
     }
   ]
 }

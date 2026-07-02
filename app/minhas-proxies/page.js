@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import BettifyTips from '../../components/BettifyTips'
 import { supabase } from '../../lib/supabase/client'
 
 const ease = [0.33, 1, 0.68, 1]
@@ -99,6 +100,8 @@ export default function MinhasProxiesPage() {
             <button type="button" onClick={() => router.push('/proxy')} style={{ padding: '9px 14px', borderRadius: 9, fontSize: 12, fontWeight: 700, background: 'rgba(255,107,0,0.12)', border: '1px solid rgba(255,107,0,0.3)', color: '#FF6B00', cursor: 'pointer' }}>Comprar proxy</button>
           </div>
         </div>
+
+        <div style={{ marginBottom: 20 }}><BettifyTips /></div>
 
         {loading ? (
           <div style={{ padding: 60, textAlign: 'center' }}><div className="spinner" style={{ width: 26, height: 26, margin: '0 auto' }} /></div>

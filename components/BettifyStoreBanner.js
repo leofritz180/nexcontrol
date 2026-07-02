@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 // "VER PRECOS" + um X de fechar. Aparece 1x por dia por dispositivo, dentro da
 // janela de campanha. Nao reaparece em toda navegacao (localStorage por data).
 const SEEN_KEY = 'nx_bettify_banner_seen'
-const UNTIL = new Date('2026-07-20T23:59:59') // fim da campanha
+const UNTIL = new Date('2026-07-12T23:59:59') // campanha de 10 dias
 const today = () => new Date().toISOString().slice(0, 10)
 
 export default function BettifyStoreBanner({ userEmail }) {

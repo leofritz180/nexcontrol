@@ -111,6 +111,10 @@ export async function GET(req) {
     if (m === null) newLast = null
     else if (last === null || m < last) { notify = true; newLast = m }
     else if (m > last) newLast = m
+    // TRAVA: nunca avisa num limiar >= ao total do plano. Assim quem compra 10GB
+    // nao recebe aviso de 10/20/40 (a proxy "cheia" no tamanho dela nao gera alerta).
+    // Ex: 10GB -> so avisa a partir de 5GB; 3GB -> a partir de 2GB; 1GB -> a partir de 500MB.
+    if (total != null && m != null && m >= total) notify = false
 
     await sb.from('bettify_proxies').update({
       gb_total: total, gb_remaining: rem, status: px.status || null,

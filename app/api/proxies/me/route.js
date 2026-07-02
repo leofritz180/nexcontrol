@@ -23,7 +23,11 @@ export async function GET(req) {
   const user = await authUser(req)
   if (!user?.email) return NextResponse.json({ error: 'Nao autenticado' }, { status: 401 })
 
-  const base = (process.env.BETTIFY_URL || 'https://bettifyproxy.com').replace(/\/+$/, '')
+  // Forca www: o apex (bettifyproxy.com) redireciona 308 -> www, e o redirect
+  // DESCARTA o header Authorization num fetch server-to-server. Chamando www direto, a auth passa.
+  const base = (process.env.BETTIFY_URL || 'https://www.bettifyproxy.com')
+    .replace(/\/+$/, '')
+    .replace('://bettifyproxy.com', '://www.bettifyproxy.com')
   const secret = process.env.BETTIFY_SSO_SECRET
   if (!secret) return NextResponse.json({ proxies: [], error: 'not_configured' })
 

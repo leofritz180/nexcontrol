@@ -21,6 +21,26 @@ export default function PushManager({ userId, tenantId }) {
     }
   }, [])
 
+  // AUTO-CURA: se a permissao ja foi concedida, re-inscreve silenciosamente a cada
+  // abertura e reconcilia o servidor com a inscricao ATUAL do navegador. Corrige o
+  // caso "notificacoes pararam de chegar" (inscricao rotacionada/apagada) SEM precisar
+  // reinstalar o app. subscribe() e idempotente: devolve a inscricao vigente.
+  useEffect(() => {
+    if (!userId || !tenantId) return
+    if (!isPushSupported() || getPermissionState() !== 'granted') return
+    let cancelled = false
+    ;(async () => {
+      try {
+        const reg = await registerSW()
+        if (!reg || cancelled) return
+        const sub = await subscribePush(reg)
+        if (cancelled || !sub) return
+        await savePushSubscription(sub, userId, tenantId)
+      } catch { /* silencioso */ }
+    })()
+    return () => { cancelled = true }
+  }, [userId, tenantId])
+
   async function enable() {
     if (saving) return
     setSaving(true)

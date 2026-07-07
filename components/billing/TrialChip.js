@@ -36,7 +36,7 @@ export default function TrialChip({ tenant, sub, user, profile }) {
     <>
       <motion.button
         type="button"
-        onClick={() => setShowPix(true)}
+        onClick={() => { window.location.href = '/billing-mp?renewal=1' }}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.96 }}
         title={wasPaying

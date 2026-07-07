@@ -24,7 +24,10 @@ function combinedPrice(monthlyTier, planId) {
 export default function BillingMpPage() {
   const router = useRouter()
   const sp = useSearchParams()
-  const opQty = Math.max(0, Number(sp.get('operators')) || 0)
+  // opQty = operadores cobrados na renovacao. Inicia pelo param da URL mas é
+  // SOBRESCRITO pela contagem REAL de operadores ativos do tenant (o servidor cobra
+  // por todos eles — renovar por menos é bloqueado). Pra pagar menos, remover operador.
+  const [opQty, setOpQty] = useState(Math.max(0, Number(sp.get('operators')) || 0))
   const isRenewal = sp.get('renewal') === '1' || sp.get('early') === '1'
 
   const [user, setUser] = useState(null)
@@ -65,6 +68,13 @@ export default function BillingMpPage() {
         .order('expires_at', { ascending: false })
         .limit(1).maybeSingle()
       setSubscription(sub)
+      // Contagem REAL de operadores ativos (nao removidos): a renovacao cobre todos.
+      // Trava opQty nesse piso — o servidor bloqueia renovar por menos.
+      const { count: realOps } = await supabase.from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .eq('tenant_id', p.tenant_id).eq('role', 'operator')
+        .is('removed_from_tenant_id', null)
+      if (Number.isFinite(realOps)) setOpQty(prev => Math.max(prev, Number(realOps) || 0))
     })
   }, [])
 

@@ -30,58 +30,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'email e name sao obrigatorios' }, { status: 400 })
     }
 
-    // Resolucao do valor + duracao do plano:
-    //   plan_period + amount  → valida amount contra calculatePrice (anti-fraude:
-    //                           cliente nao pode mandar amount adulterado via devtools)
-    //   plan_period sozinho   → calcula via lib/plans
-    //   amount sozinho        → upgrade parcial (add-ops). planMonths=0. Minimo R$ 1,00.
-    //   nada                  → default 59.9 / 1 mes (fallback)
-    let transactionAmount, planMonths
-    if (plan_period) {
-      const plan = getPlan(plan_period)
-      planMonths = plan.months
-      // Preço REAL (idêntico ao front /billing-mp): admin R$59,90 + operadores
-      // R$29,90 com desconto por volume (lib/pricing) × meses × desconto do período.
-      // Antes usava lib/plans (flat R$39,90/operador) e bloqueava renovação de quem tinha 2+ operadores.
-      const opsForCalc = Math.max(0, Number(operatorCountIn) || 0)
-      const monthlyTier = calcOpTier(opsForCalc).total
-      const expected = Number((monthlyTier * plan.months * (1 - plan.discount)).toFixed(2))
-      if (Number(amount) > 0) {
-        // Aceita amount enviado SE estiver dentro de 5% do valor esperado (margem de
-        // arredondamento ou desconto promocional). Adulteracao via devtools (ex: 0,01
-        // em vez de 359,10) sera bloqueada.
-        const minAllowed = expected * 0.95
-        if (Number(amount) < minAllowed) {
-          console.warn('[MP create-payment] BLOQUEADO: amount adulterado', {
-            email, plan_period, opsForCalc, expected, sent: Number(amount),
-          })
-          return NextResponse.json({
-            error: 'Valor invalido para o plano selecionado.',
-          }, { status: 400 })
-        }
-        transactionAmount = Number(amount)
-      } else {
-        transactionAmount = expected
-      }
-    } else if (Number(amount) > 0) {
-      // Upgrade parcial (add-ops) — frontend manda so o amount, sem periodo
-      if (Number(amount) < 1) {
-        console.warn('[MP create-payment] BLOQUEADO: amount <R$1 sem plan_period', { email, sent: Number(amount) })
-        return NextResponse.json({ error: 'Valor minimo de R$ 1,00.' }, { status: 400 })
-      }
-      transactionAmount = Number(amount)
-      planMonths = 0
-    } else {
-      transactionAmount = 59.9
-      planMonths = 1
-    }
-
-    // Safety net global: NUNCA aceitar pagamento abaixo de R$ 1,00 (alem das validacoes acima)
-    if (transactionAmount < 1) {
-      console.warn('[MP create-payment] BLOQUEADO: transactionAmount final <R$1', { email, transactionAmount })
-      return NextResponse.json({ error: 'Valor invalido.' }, { status: 400 })
-    }
-
     const sb = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -97,6 +45,92 @@ export async function POST(req) {
       if (!profile) return NextResponse.json({ error: 'Usuario nao encontrado' }, { status: 404 })
       tenantId = tenantId || profile.tenant_id
       userId = userId || profile.id
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // AUTORIDADE DO SERVIDOR sobre a quantidade de operadores.
+    // Antes o preco era calculado com o operator_count enviado pelo CLIENTE (URL
+    // ?operators=N / body) — furo que deixava renovar 10 operadores pagando so a base.
+    // Agora o servidor conta os operadores ATIVOS reais no banco e a renovacao SEMPRE
+    // cobre todos eles. Pra pagar menos, o admin tem que REMOVER operador (o count cai
+    // aqui). So conta operadores nao removidos do tenant.
+    let realOps = 0
+    try {
+      const { count } = await sb.from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .eq('tenant_id', tenantId).eq('role', 'operator')
+        .is('removed_from_tenant_id', null)
+      realOps = Number(count) || 0
+    } catch (e) { console.error('[MP create-payment] contagem de operadores falhou', e?.message) }
+
+    // Ha ciclo ativo NAO vencido? Distingue renovacao (cria/estende ciclo) de add-op
+    // (upgrade parcial dentro de um ciclo vigente).
+    let hasActiveCycle = false
+    try {
+      const { data: activeSub } = await sb.from('subscriptions')
+        .select('expires_at').eq('tenant_id', tenantId).eq('status', 'active')
+        .order('expires_at', { ascending: false }).limit(1).maybeSingle()
+      hasActiveCycle = !!(activeSub?.expires_at && new Date(activeSub.expires_at) > new Date())
+    } catch {}
+
+    // Preco mensal correto pra TODOS os operadores ativos (piso de qualquer renovacao).
+    const fullMonthly = Number(calcOpTier(realOps).total)
+
+    // Resolucao do valor + duracao do plano:
+    //   plan_period          → renovacao. opsForCalc = MAX(cliente, operadores reais).
+    //                          amount validado contra o preco de TODOS os operadores.
+    //   amount sozinho        → add-op se ha ciclo ativo (pro-rata, min R$1);
+    //                          se NAO ha ciclo (viraria renovacao no fallback), exige
+    //                          o preco cheio de todos os operadores.
+    //   nada                  → default = preco cheio mensal / 1 mes.
+    let transactionAmount, planMonths, resolvedOps
+    if (plan_period) {
+      const plan = getPlan(plan_period)
+      planMonths = plan.months
+      const opsForCalc = Math.max(Number(operatorCountIn) || 0, realOps)
+      resolvedOps = opsForCalc
+      const monthlyTier = calcOpTier(opsForCalc).total
+      const expected = Number((monthlyTier * plan.months * (1 - plan.discount)).toFixed(2))
+      const minAllowed = expected * 0.95
+      if (Number(amount) > 0) {
+        if (Number(amount) < minAllowed) {
+          console.warn('[MP create-payment] BLOQUEADO: amount abaixo do preco de', opsForCalc, 'operadores', { email, plan_period, opsForCalc, expected, sent: Number(amount) })
+          return NextResponse.json({
+            error: `Valor invalido: a renovacao precisa cobrir seus ${opsForCalc} operador(es) ativos. Remova operadores no painel se quiser pagar menos.`,
+          }, { status: 400 })
+        }
+        // Nunca cobra menos que o esperado, mesmo aceitando o amount do cliente.
+        transactionAmount = Math.max(Number(amount), expected)
+      } else {
+        transactionAmount = expected
+      }
+    } else if (Number(amount) > 0) {
+      const amt = Number(amount)
+      if (amt < 1) {
+        console.warn('[MP create-payment] BLOQUEADO: amount <R$1 sem plan_period', { email, sent: amt })
+        return NextResponse.json({ error: 'Valor minimo de R$ 1,00.' }, { status: 400 })
+      }
+      if (!hasActiveCycle && amt < fullMonthly * 0.95) {
+        // Sem ciclo ativo, esse pagamento viraria uma RENOVACAO (fallback 30d no webhook).
+        // Entao tem que cobrir todos os operadores — senao e o furo do valor avulso.
+        console.warn('[MP create-payment] BLOQUEADO: renovacao avulsa abaixo do preco de', realOps, 'operadores', { email, realOps, fullMonthly, sent: amt })
+        return NextResponse.json({
+          error: `Seu plano venceu. A renovacao precisa cobrir seus ${realOps} operador(es) ativos (R$ ${fullMonthly.toFixed(2).replace('.', ',')}). Remova operadores no painel se quiser pagar menos.`,
+        }, { status: 400 })
+      }
+      transactionAmount = amt
+      planMonths = 0
+      resolvedOps = realOps
+    } else {
+      transactionAmount = fullMonthly
+      planMonths = 1
+      resolvedOps = realOps
+    }
+
+    // Safety net global: NUNCA aceitar pagamento abaixo de R$ 1,00 (alem das validacoes acima)
+    if (transactionAmount < 1) {
+      console.warn('[MP create-payment] BLOQUEADO: transactionAmount final <R$1', { email, transactionAmount })
+      return NextResponse.json({ error: 'Valor invalido.' }, { status: 400 })
     }
 
     // Anti-duplicacao: se ja existe PIX pending dos ultimos 10min pro mesmo user
@@ -165,8 +199,8 @@ export async function POST(req) {
     const qrCode = payment?.point_of_interaction?.transaction_data?.qr_code || ''
     const qrBase64 = payment?.point_of_interaction?.transaction_data?.qr_code_base64 || ''
 
-    // Persiste operator_count desejado (total apos a compra) para o webhook ler
-    const operatorCount = Number(operatorCountIn)
+    // Persiste o operator_count REAL cobrado (autoridade do servidor) pro webhook ler.
+    const operatorCount = Number(resolvedOps)
     await sb.from('mp_payments').insert({
       tenant_id: tenantId,
       user_id: userId,

@@ -114,7 +114,7 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
               {/* CTA */}
               <motion.button
                 type="button"
-                onClick={() => setShowPix(true)}
+                onClick={() => { window.location.href = '/billing-mp?renewal=1' }}
                 whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(229,57,53,0.6), 0 0 40px rgba(229,57,53,0.3)' }}
                 whileTap={{ scale: 0.97 }}
                 style={{

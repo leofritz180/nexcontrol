@@ -25,7 +25,7 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
 
   if (!mounted) return null
 
-  const { isTrial, isExpired, daysLeft, urgency } = getTrialStatus(tenant, sub)
+  const { isTrial, isExpired, daysLeft, urgency, wasPaying } = getTrialStatus(tenant, sub)
   if (!isTrial && !isExpired) return null
   if (dismissed && !isExpired) return null // expired sempre forca
 
@@ -91,11 +91,11 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
                     letterSpacing: '0.18em', textTransform: 'uppercase',
                     fontFamily: 'var(--mono)', margin: 0, lineHeight: 1.2,
                   }}>
-                    {isExpired ? 'Trial expirado' : daysLeft === 1 ? 'Ultimo dia de trial' : `${daysLeft} dias de trial`}
+                    {isExpired ? (wasPaying ? 'Assinatura expirada' : 'Trial expirado') : daysLeft === 1 ? 'Ultimo dia de trial' : `${daysLeft} dias de trial`}
                   </p>
                   <p style={{ fontSize: 13, color: 'var(--t1)', margin: '3px 0 0', fontWeight: 600, lineHeight: 1.3 }}>
                     {isExpired
-                      ? 'Acesso bloqueado — assine pra continuar operando'
+                      ? (wasPaying ? 'Sua assinatura venceu — renove pra continuar operando' : 'Acesso bloqueado — assine pra continuar operando')
                       : 'Garanta seu acesso antes de expirar e nao perca nenhuma operacao'}
                   </p>
                 </div>

@@ -17,7 +17,7 @@ export default function TrialChip({ tenant, sub, user, profile }) {
   useEffect(() => { setMounted(true) }, [])
   if (!mounted) return null
 
-  const { isTrial, isExpired, daysLeft, urgency } = getTrialStatus(tenant, sub)
+  const { isTrial, isExpired, daysLeft, urgency, wasPaying } = getTrialStatus(tenant, sub)
   if (!isTrial && !isExpired) return null
 
   const colors = {
@@ -39,7 +39,9 @@ export default function TrialChip({ tenant, sub, user, profile }) {
         onClick={() => setShowPix(true)}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.96 }}
-        title={`Trial: ${label}. Clique pra assinar (${monthly}/mes)`}
+        title={wasPaying
+          ? `Assinatura: ${label}. Clique pra renovar (${monthly}/mes)`
+          : `Trial: ${label}. Clique pra assinar (${monthly}/mes)`}
         animate={showPulse
           ? { boxShadow: [`0 0 0 0 ${c.fg}30`, `0 0 14px ${c.fg}80`, `0 0 0 0 ${c.fg}30`] }
           : {}
@@ -60,7 +62,7 @@ export default function TrialChip({ tenant, sub, user, profile }) {
         <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
         </svg>
-        TRIAL · {label}
+        {wasPaying && isExpired ? 'PLANO' : 'TRIAL'} · {label}
       </motion.button>
 
       {showPix && (

@@ -34,17 +34,22 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       <div style={{ marginLeft: isRedesign(userEmail) ? 76 : 248 }} className="app-content">
         {/* Loja Proxy e Network: sem cabeçalho vermelho — imersão total (chat/loja) */}
         {isRedesign(userEmail) && pathname !== '/proxy' && pathname !== '/network' && <RedesignHeader />}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={pathname}
-            variants={pageVariants}
-            initial="initial"
-            animate="enter"
-            exit="exit"
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        {/* /network: sem wrapper animado (o transform quebraria o position:fixed do chat mobile) */}
+        {pathname === '/network' ? (
+          children
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              variants={pageVariants}
+              initial="initial"
+              animate="enter"
+              exit="exit"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        )}
       </div>
       <QuickNotifyPanel userEmail={userEmail} />
       <VoiceAnnounceCard userEmail={userEmail} isAdmin={isAdmin} />

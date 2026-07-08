@@ -578,6 +578,9 @@ export default function NetworkPage() {
   return (
     <Shell profile={profile} user={user} tenant={tenant} sub={sub} bare={isMobile}>
       <div style={isMobile ? {
+        // Preso à viewport visível (acompanha teclado/barra do navegador). z abaixo do
+        // hambúrguer (250) pra ele seguir clicável. Isso garante composer sempre visível.
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 40,
         display: 'flex', width: '100%', overflow: 'hidden',
         height: vpH ? vpH + 'px' : '100dvh',
         background: 'rgba(4,7,14,0.96)',
@@ -597,7 +600,7 @@ export default function NetworkPage() {
         {/* ── COL 2: chat ── */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, background: 'rgba(4,7,14,0.35)' }}>
           {/* header (mobile: left padding p/ nao colar no hamburguer do app; nome troca canal) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: isMobile ? '11px 12px 11px 56px' : '13px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, background: isMobile ? 'rgba(8,12,22,0.6)' : 'transparent' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: isMobile ? 'calc(11px + env(safe-area-inset-top)) 12px 11px 56px' : '13px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, background: isMobile ? 'rgba(8,12,22,0.6)' : 'transparent' }}>
             <button type="button" onClick={() => { if (isMobile) setMobilePanel('channels') }} disabled={!isMobile}
               style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', padding: 0, cursor: isMobile ? 'pointer' : 'default', textAlign: 'left' }}>
               <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>{channelEmoji(channel)}</div>

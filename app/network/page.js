@@ -214,7 +214,8 @@ export default function NetworkPage() {
       await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'edit', id: editing.id, text: t }) })
       setEditing(null)
     } else {
-      if (rule?.requireImage && !img) { alert('Neste canal a mensagem precisa ter uma foto.'); return }
+      const needsImg = rule?.requireImage && !isOwnerUser
+      if (needsImg && !img) { alert('Neste canal a mensagem precisa ter uma foto.'); return }
       if (!t && !img) return
       setSending(true)
       atBottomRef.current = true
@@ -354,7 +355,7 @@ export default function NetworkPage() {
           {/* composer */}
           <Composer
             text={text} setText={setText} onSend={send} sending={sending}
-            img={img} setImg={setImg} rule={rule} canPost={canPostHere}
+            img={img} setImg={setImg} rule={rule} canPost={canPostHere} isOwner={isOwnerUser}
             editing={editing} cancelEdit={() => { setEditing(null); setText('') }}
           />
         </div>
@@ -564,7 +565,8 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
 }
 
 // ═══════════════ Composer ═══════════════
-function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, editing, cancelEdit }) {
+function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, isOwner, editing, cancelEdit }) {
+  const requireImg = rule?.requireImage && !isOwner
   const fileRef = useRef(null)
   const [imgBusy, setImgBusy] = useState(false)
   function onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend() } }
@@ -587,7 +589,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
     )
   }
 
-  const canSend = !sending && (rule?.requireImage ? !!img : (!!text.trim() || !!img))
+  const canSend = !sending && (requireImg ? !!img : (!!text.trim() || !!img))
   return (
     <div style={{ padding: '12px 14px 14px', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
       {editing && (
@@ -606,7 +608,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
           </button>
         </div>
       )}
-      {rule?.requireImage && !img && (
+      {requireImg && !img && (
         <div style={{ fontSize: 11, color: '#ff9e6b', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 6 }}>
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M21 15l-5-5L5 21" /><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /></svg>
           Neste canal a foto é obrigatória — anexe uma imagem.
@@ -627,7 +629,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
         </button>
         <div style={{ flex: 1, position: 'relative' }}>
           <textarea value={text} onChange={e => setText(e.target.value)} onKeyDown={onKey}
-            rows={1} placeholder={rule?.requireImage ? 'Legenda da foto (opcional)...' : 'Escreva uma mensagem para a comunidade...'}
+            rows={1} placeholder={requireImg ? 'Legenda da foto (opcional)...' : 'Escreva uma mensagem para a comunidade...'}
             style={{
               width: '100%', resize: 'none', maxHeight: 120, minHeight: 44, padding: '12px 14px',
               borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',

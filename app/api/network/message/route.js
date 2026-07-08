@@ -49,7 +49,8 @@ export async function POST(req) {
       if (up.error) return NextResponse.json({ error: up.error }, { status: 400 })
       imageUrl = up.url
     }
-    if (rule?.requireImage && !imageUrl) return NextResponse.json({ error: 'Neste canal a mensagem precisa ter uma foto.' }, { status: 400 })
+    // Foto obrigatoria pra todos, MENOS o owner (pra postar/fixar regras em texto).
+    if (rule?.requireImage && !imageUrl && !isOwner) return NextResponse.json({ error: 'Neste canal a mensagem precisa ter uma foto.' }, { status: 400 })
     if (!imageUrl && !text) return NextResponse.json({ error: 'Mensagem vazia' }, { status: 400 })
 
     const { data, error } = await sb.from('network_messages')

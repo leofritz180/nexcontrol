@@ -216,6 +216,7 @@ export default function NetworkPage() {
   const atBottomRef = useRef(true)
   const rtRef = useRef(null)          // canal realtime (broadcast)
   const activeChanRef = useRef(channel)
+  const channelRef = useRef(channel)  // canal atual (guarda contra resposta de fetch de canal antigo)
   const loadingOlderRef = useRef(false)   // guarda contra loads concorrentes de histórico
   const olderLoadedRef = useRef(false)    // já paginou histórico neste canal?
   const lastMsgIdRef = useRef(null)       // último id no fim (p/ contar não-vistas)
@@ -265,10 +266,12 @@ export default function NetworkPage() {
       const res = await api(`/api/network/feed?channel=${encodeURIComponent(chan)}`)
       if (res.ok) {
         const d = await res.json()
-        setData(d)
+        // Descarta resposta de canal ANTIGO (o usuário já trocou de canal): sem isso,
+        // uma resposta atrasada do Geral sobrescrevia o Resultados (feed bugado após idle).
+        if (chan === channelRef.current) setData(d)
       }
     } catch {}
-    if (showLoading) setLoading(false)
+    if (showLoading && chan === channelRef.current) setLoading(false)
   }, [api])
 
   const fetchStatus = useCallback(async () => {
@@ -278,11 +281,12 @@ export default function NetworkPage() {
   // primeiro load + troca de canal
   useEffect(() => {
     if (access !== 'ok') return
+    channelRef.current = channel   // sincroniza ANTES do fetch (guarda contra resposta velha)
     fetchFeed(channel, true)
   }, [access, channel, fetchFeed])
 
   // canal ativo num ref (pro realtime nao re-subscrever a cada troca)
-  useEffect(() => { activeChanRef.current = channel }, [channel])
+  useEffect(() => { activeChanRef.current = channel; channelRef.current = channel }, [channel])
 
   // meu nome num ref (pro callback do realtime nunca me exibir digitando)
   useEffect(() => { meNameRef.current = data.me?.name || null }, [data.me])
@@ -431,7 +435,7 @@ export default function NetworkPage() {
     const feed = data.socialBeta && channel === 'resultados' // feed: antigos entram embaixo, sem compensar scroll
     try {
       const res = await api(`/api/network/feed?channel=${encodeURIComponent(channel)}&before=${encodeURIComponent(before)}`)
-      if (res.ok) {
+      if (res.ok && channel === channelRef.current) {
         const d = await res.json()
         const older = d.messages || []
         if (older.length) {
@@ -570,6 +574,8 @@ export default function NetworkPage() {
   const canVerify = user && VERIFIER_EMAILS.has((user.email || '').toLowerCase())
   const social = !!data.socialBeta                               // nova experiencia (conta de teste)
   const isResultadosFeed = social && channel === 'resultados'    // Resultados vira feed estilo Instagram
+  // Os dados carregados pertencem ao canal selecionado? (evita mostrar dados de canal antigo)
+  const dataMatchesChannel = !data.channel || data.channel.key === channel
   const canPostHere = !(rule?.ownerOnly && !isOwnerUser)
   // canais com mensagem nova nao lida (exceto o ativo, que estou lendo)
   const unread = {}
@@ -623,7 +629,7 @@ export default function NetworkPage() {
           </div>
 
           {/* pinned */}
-          {data.pinned && (
+          {data.pinned && dataMatchesChannel && (
             <PinnedBar msg={data.pinned} isOwner={data.isOwner} onUnpin={() => pin(data.pinned.id, false)} />
           )}
 
@@ -638,7 +644,7 @@ export default function NetworkPage() {
                   </span>
                 </div>
               )}
-              {loading ? (
+              {loading || !dataMatchesChannel ? (
                 <CenterMsg text={isResultadosFeed ? 'Carregando feed...' : 'Carregando conversa...'} spin />
               ) : data.messages.length === 0 ? (
                 <EmptyChat name={activeChan?.name} />

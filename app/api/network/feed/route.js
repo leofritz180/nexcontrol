@@ -43,7 +43,7 @@ export async function GET(req) {
   // So mensagens + hasMore. Pula online/top/members/pinned (nao muda ao paginar).
   if (before) {
     const { data: rawOlder } = await sb.from('network_messages')
-      .select('id,author_id,text,image_url,pinned,edited_at,created_at,reply_to')
+      .select('id,author_id,text,image_url,pinned,edited_at,created_at,reply_to,fake_name')
       .eq('channel_id', channel.id).is('deleted_at', null).lt('created_at', before)
       .order('created_at', { ascending: false }).limit(40)
     const older = (rawOlder || []).slice().reverse()
@@ -62,14 +62,14 @@ export async function GET(req) {
 
   // mensagens do canal (mais recentes primeiro no banco, invertidas na UI)
   const { data: rawMsgs } = await sb.from('network_messages')
-    .select('id,author_id,text,image_url,pinned,edited_at,created_at,reply_to')
+    .select('id,author_id,text,image_url,pinned,edited_at,created_at,reply_to,fake_name')
     .eq('channel_id', channel.id).is('deleted_at', null)
     .order('created_at', { ascending: false }).limit(100)
   const msgs = (rawMsgs || []).slice().reverse()
 
   // fixada (busca dedicada — nao depende das ultimas 100 mensagens)
   const { data: pinnedRows } = await sb.from('network_messages')
-    .select('id,author_id,text,image_url,pinned,edited_at,created_at,reply_to')
+    .select('id,author_id,text,image_url,pinned,edited_at,created_at,reply_to,fake_name')
     .eq('channel_id', channel.id).eq('pinned', true).is('deleted_at', null)
     .order('created_at', { ascending: false }).limit(1)
   const pinnedMsg = (pinnedRows || [])[0] || null
@@ -181,7 +181,10 @@ function makeShape({ authorMap, reactByMsg, replyMap, userId }) {
     edited_at: m.edited_at || null,
     reply_to: m.reply_to || null,
     reply: m.reply_to ? (replyMap[m.reply_to] || null) : null,
-    author: authorMap[m.author_id] || (m.author_id ? { id: m.author_id, name: 'admin', color: colorFromId(m.author_id) } : { id: null, name: 'NexControl', system: true, color: '#e53935' }),
+    // fake_name = mensagem "semente" (owner simula um admin comentando)
+    author: m.fake_name
+      ? { id: null, name: m.fake_name, color: colorFromId(m.fake_name), avatar: null }
+      : (authorMap[m.author_id] || (m.author_id ? { id: m.author_id, name: 'admin', color: colorFromId(m.author_id) } : { id: null, name: 'NexControl', system: true, color: '#e53935' })),
     mine: m.author_id === userId,
     reactions: Object.entries(reactByMsg[m.id] || {}).map(([emoji, v]) => ({ emoji, count: v.count, mine: v.mine })),
   })

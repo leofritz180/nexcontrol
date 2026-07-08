@@ -3,6 +3,22 @@ import { authNetwork, buildAuthorMap, touchPresence, publicName, displayName, co
 
 export const dynamic = 'force-dynamic'
 
+// "Online agora" com piso alto por faixa horaria (BRT) — prova social do lancamento.
+// Varia suave (drift + ruido leve), estavel entre polls. O real por cima disso.
+function fakeOnlineFloor() {
+  const now = Date.now()
+  const brtHour = ((new Date(now).getUTCHours() - 3) + 24) % 24
+  let lo, hi
+  if (brtHour >= 2 && brtHour < 6) { lo = 40; hi = 80 }         // madrugada
+  else if (brtHour >= 20 || brtHour < 2) { lo = 80; hi = 150 }  // 20h–02h
+  else { lo = 70; hi = 150 }                                    // dia
+  const t = now / 60000, mid = (lo + hi) / 2, amp = (hi - lo) / 2
+  const drift = Math.sin((t / 43) * Math.PI * 2) * amp * 0.72
+  const bucket = Math.floor(t / 3)
+  const noise = ((Math.abs(Math.sin(bucket * 12.9898) * 43758.5453) % 1) - 0.5) * amp * 0.5
+  return Math.round(Math.max(lo, Math.min(hi, mid + drift + noise)))
+}
+
 // GET /api/network/feed?channel=geral
 // Retorna: canais, mensagens do canal (com autor + reacoes), fixada, online,
 // top contribuidores e meu mini-perfil. E o endpoint do carregamento + polling.
@@ -108,6 +124,7 @@ export async function GET(req) {
     messages: msgs.map(shape),
     pinned: pinnedMsg ? shape(pinnedMsg) : null,
     online,
+    onlineCount: Math.max((online || []).length, fakeOnlineFloor()),
     top,
     members,
     me,

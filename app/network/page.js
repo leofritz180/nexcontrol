@@ -552,7 +552,7 @@ export default function NetworkPage() {
       }}>
         {/* ── COL 1: canais (desktop) ── */}
         {!isMobile && (
-          <ChannelList channels={channels} active={channel} onSelect={setChannel} online={data.online} unread={unread} />
+          <ChannelList channels={channels} active={channel} onSelect={setChannel} online={data.online} onlineCount={data.onlineCount} unread={unread} />
         )}
 
         {/* ── COL 2: chat ── */}
@@ -569,7 +569,7 @@ export default function NetworkPage() {
                 </p>
                 <p style={{ margin: '1px 0 0', fontSize: 11, color: 'var(--t3)', display: 'flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: MINT, boxShadow: `0 0 8px ${MINT}` }} />
-                  {data.online.length} online agora
+                  {data.onlineCount ?? data.online.length} online agora
                 </p>
               </div>
             </button>
@@ -668,7 +668,7 @@ export default function NetworkPage() {
       <AnimatePresence>
         {isMobile && mobilePanel === 'channels' && (
           <MobileSheet onClose={() => setMobilePanel(null)} side="left" title="Canais">
-            <ChannelList channels={channels} active={channel} online={data.online} unread={unread}
+            <ChannelList channels={channels} active={channel} online={data.online} onlineCount={data.onlineCount} unread={unread}
               onSelect={(k) => { setChannel(k); setMobilePanel(null) }} embedded />
           </MobileSheet>
         )}
@@ -745,7 +745,7 @@ function Shell({ children, profile, user, tenant, sub, bare }) {
 }
 
 // ═══════════════ Lista de canais ═══════════════
-function ChannelList({ channels, active, onSelect, online = [], embedded, unread = {} }) {
+function ChannelList({ channels, active, onSelect, online = [], onlineCount, embedded, unread = {} }) {
   return (
     <div style={{ width: embedded ? '100%' : 216, flexShrink: 0, borderRight: embedded ? 'none' : '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', background: embedded ? 'transparent' : 'rgba(4,7,14,0.4)' }}>
       {!embedded && <div style={{ padding: '15px 16px 10px', fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', color: 'var(--t4)', textTransform: 'uppercase' }}>Canais</div>}
@@ -771,7 +771,7 @@ function ChannelList({ channels, active, onSelect, online = [], embedded, unread
       {!embedded && (
         <div style={{ padding: '10px 14px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 7 }}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: MINT, boxShadow: `0 0 8px ${MINT}` }} />
-          <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>{online.length} online</span>
+          <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>{onlineCount ?? online.length} online</span>
         </div>
       )}
     </div>
@@ -1060,7 +1060,7 @@ function RightPanel({ data, onOpenProfile, meId, embedded, onShowMembers, onShow
       )}
 
       {/* online */}
-      <SectionTitle icon="online" label={`Online agora · ${data.online.length}`} />
+      <SectionTitle icon="online" label={`Online agora · ${data.onlineCount ?? data.online.length}`} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 18 }}>
         {data.online.length === 0 && <p style={{ fontSize: 11.5, color: 'var(--t4)', padding: '6px 4px' }}>Ninguém online agora.</p>}
         {data.online.map(o => (

@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
 import { authNetwork } from '../../../../lib/network-server'
+import { ALLOWED_REACTIONS } from '../../../../lib/network-access'
 
 export const dynamic = 'force-dynamic'
 
-const ALLOWED = new Set(['🔥', '✅', '👀', '🚀', '💰'])
+const ALLOWED = new Set(ALLOWED_REACTIONS)
 
 // POST /api/network/react  body: { message_id, emoji }
 // Toggle: se ja reagiu com aquele emoji, remove; senao adiciona (1 por emoji/user/msg).

@@ -26,9 +26,9 @@ export async function GET(req) {
   if (userId.startsWith('fake:')) {
     return NextResponse.json({ profile: computeFakeProfile(userId.slice(5)), isMe: false })
   }
-  const profile = await computePublicProfile(sb, userId)
+  const profile = await computePublicProfile(sb, userId, { full: !!a.socialBeta })
   if (!profile) return NextResponse.json({ error: 'Perfil não encontrado' }, { status: 404 })
-  return NextResponse.json({ profile, isMe: userId === a.user.id })
+  return NextResponse.json({ profile, isMe: userId === a.user.id, socialBeta: !!a.socialBeta })
 }
 
 export async function POST(req) {

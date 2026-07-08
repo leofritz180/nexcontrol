@@ -50,7 +50,8 @@ export async function GET(req) {
     const authorMap = await buildAuthorMap(sb, older.map(m => m.author_id))
     const reactByMsg = await loadReactions(sb, older.map(m => m.id), user.id)
     const replyMap = await buildReplyMap(sb, older)
-    const shape = makeShape({ authorMap, reactByMsg, replyMap, userId: user.id })
+    const commentCounts = a.socialBeta ? await loadCommentCounts(sb, older.map(m => m.id)) : {}
+    const shape = makeShape({ authorMap, reactByMsg, replyMap, userId: user.id, commentCounts })
     let hasMore = false
     if (older.length) {
       const { count } = await sb.from('network_messages').select('id', { count: 'exact', head: true })
@@ -84,7 +85,10 @@ export async function GET(req) {
   // citacoes (reply): resolve as mensagens citadas (msgs + fixada) numa unica busca
   const replyMap = await buildReplyMap(sb, pinnedMsg ? msgs.concat([pinnedMsg]) : msgs)
 
-  const shape = makeShape({ authorMap, reactByMsg, replyMap, userId: user.id })
+  // contagem de comentarios (so no modo social) pros posts exibidos
+  const commentCounts = a.socialBeta ? await loadCommentCounts(sb, ids) : {}
+
+  const shape = makeShape({ authorMap, reactByMsg, replyMap, userId: user.id, commentCounts })
 
   // ha mensagens mais antigas que a mais velha exibida? (pro botao "carregar mais")
   let hasMore = false
@@ -131,6 +135,7 @@ export async function GET(req) {
     me,
     hasMore,
     isOwner: a.isOwner,
+    socialBeta: !!a.socialBeta,
   })
 }
 
@@ -172,8 +177,17 @@ async function buildReplyMap(sb, msgs) {
   return map
 }
 
+// Conta comentarios (nao deletados) por mensagem -> { [message_id]: count }.
+async function loadCommentCounts(sb, ids) {
+  const out = {}
+  if (!ids.length) return out
+  const { data: rows } = await sb.from('network_comments').select('message_id').in('message_id', ids).is('deleted_at', null)
+  for (const r of (rows || [])) out[r.message_id] = (out[r.message_id] || 0) + 1
+  return out
+}
+
 // Fabrica o shaper de mensagem (autor + reacoes + citacao) reutilizado no feed e na paginacao.
-function makeShape({ authorMap, reactByMsg, replyMap, userId }) {
+function makeShape({ authorMap, reactByMsg, replyMap, userId, commentCounts = {} }) {
   return m => ({
     id: m.id,
     text: m.text,
@@ -182,6 +196,7 @@ function makeShape({ authorMap, reactByMsg, replyMap, userId }) {
     edited_at: m.edited_at || null,
     reply_to: m.reply_to || null,
     reply: m.reply_to ? (replyMap[m.reply_to] || null) : null,
+    commentCount: commentCounts[m.id] || 0,
     // fake_name = mensagem "semente" (owner simula um admin comentando)
     author: m.fake_name
       ? { id: 'fake:' + m.fake_name, name: m.fake_name, color: colorFromId('fake:' + m.fake_name), avatar: null }

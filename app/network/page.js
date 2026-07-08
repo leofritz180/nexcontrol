@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
-import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_EMAIL, NETWORK_GA } from '../../lib/network-access'
+import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_EMAIL, NETWORK_GA, POST_REACTIONS } from '../../lib/network-access'
 
 const CHANNEL_KEYS = new Set(NETWORK_CHANNELS.map(c => c.key))
 
@@ -70,6 +70,23 @@ function fmtRel(iso) {
   const h = Math.floor(m / 60); if (h < 24) return `há ${h}h`
   const d = Math.floor(h / 24); if (d < 30) return `há ${d}d`
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
+}
+
+// Tier visual do rank (glow do perfil social): Bronze/Prata/Ouro/Diamante/Apex.
+function rankTier(rank) {
+  const map = {
+    'Iniciante': { key: 'bronze',   label: 'Bronze',   color: '#cd7f32' },
+    'Avançado':  { key: 'prata',    label: 'Prata',    color: '#c4cdd6' },
+    'Mestre':    { key: 'ouro',     label: 'Ouro',     color: '#f5b83c' },
+    'Elite':     { key: 'diamante', label: 'Diamante', color: '#5ac8fa' },
+    'APEX':      { key: 'apex',     label: 'Apex',     color: '#ff4d4f' },
+  }
+  return map[rank] || map['Iniciante']
+}
+function fmtMoney(n) {
+  const v = Number(n || 0)
+  if (v >= 1000) return 'R$ ' + (v / 1000).toFixed(v >= 10000 ? 0 : 1).replace('.', ',') + 'k'
+  return 'R$ ' + v.toLocaleString('pt-BR')
 }
 
 // ── Selo (mapeado pra paleta NexControl: vermelho/verde/branco/muted) ──
@@ -191,6 +208,8 @@ export default function NetworkPage() {
   const [unreadBoundaryId, setUnreadBoundaryId] = useState(null) // divisor "mensagens novas"
   const [showMembers, setShowMembers] = useState(false)
   const [showModLog, setShowModLog] = useState(false)
+  const [commentsPost, setCommentsPost] = useState(null) // post aberto p/ comentarios (feed social)
+  const [lightbox, setLightbox] = useState(null)         // {image} em tela cheia
 
   const scrollRef = useRef(null)
   const tokenRef = useRef(null)
@@ -364,7 +383,9 @@ export default function NetworkPage() {
   }, [isMobile])
 
   // auto-scroll pro fim quando chegam msgs novas (se estava no fim)
+  // No feed social de Resultados o mais novo fica no TOPO — nao auto-desce.
   useEffect(() => {
+    if (data.socialBeta && channel === 'resultados') return
     if (atBottomRef.current && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
@@ -382,6 +403,13 @@ export default function NetworkPage() {
   function onScroll() {
     const el = scrollRef.current
     if (!el) return
+    // Feed social (Resultados): mais novo no topo -> carrega antigos ao chegar embaixo.
+    if (data.socialBeta && channel === 'resultados') {
+      const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 500
+      if (nearBottom && data.hasMore && !loadingOlderRef.current) loadOlder()
+      if (showJump) setShowJump(false)
+      return
+    }
     const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120
     atBottomRef.current = atBottom
     setShowJump(!atBottom)
@@ -400,6 +428,7 @@ export default function NetworkPage() {
     const before = msgs[0].created_at
     const el = scrollRef.current
     const oldHeight = el ? el.scrollHeight : 0
+    const feed = data.socialBeta && channel === 'resultados' // feed: antigos entram embaixo, sem compensar scroll
     try {
       const res = await api(`/api/network/feed?channel=${encodeURIComponent(channel)}&before=${encodeURIComponent(before)}`)
       if (res.ok) {
@@ -412,7 +441,7 @@ export default function NetworkPage() {
             const merged = older.filter(m => !seen.has(m.id)).concat(prev.messages)
             return { ...prev, messages: merged, hasMore: d.hasMore }
           })
-          requestAnimationFrame(() => { const e2 = scrollRef.current; if (e2) e2.scrollTop = e2.scrollHeight - oldHeight })
+          if (!feed) requestAnimationFrame(() => { const e2 = scrollRef.current; if (e2) e2.scrollTop = e2.scrollHeight - oldHeight })
         } else {
           setData(prev => ({ ...prev, hasMore: d.hasMore }))
         }
@@ -539,6 +568,8 @@ export default function NetworkPage() {
   const rule = channelRule(channel)
   const isOwnerUser = !!data.isOwner || (user && (user.email || '').toLowerCase() === OWNER_EMAIL)
   const canVerify = user && VERIFIER_EMAILS.has((user.email || '').toLowerCase())
+  const social = !!data.socialBeta                               // nova experiencia (conta de teste)
+  const isResultadosFeed = social && channel === 'resultados'    // Resultados vira feed estilo Instagram
   const canPostHere = !(rule?.ownerOnly && !isOwnerUser)
   // canais com mensagem nova nao lida (exceto o ativo, que estou lendo)
   const unread = {}
@@ -605,9 +636,18 @@ export default function NetworkPage() {
                 </div>
               )}
               {loading ? (
-                <CenterMsg text="Carregando conversa..." spin />
+                <CenterMsg text={isResultadosFeed ? 'Carregando feed...' : 'Carregando conversa...'} spin />
               ) : data.messages.length === 0 ? (
                 <EmptyChat name={activeChan?.name} />
+              ) : isResultadosFeed ? (
+                <div style={{ maxWidth: 560, margin: '0 auto', width: '100%', padding: isMobile ? '4px 6px 12px' : '8px 6px 16px' }}>
+                  {data.messages.filter(m => !m.author?.system).slice().reverse().map(m => (
+                    <ResultadoPost key={m.id} m={m} meId={user?.id} isOwner={isOwnerUser}
+                      onReact={react} onOpenProfile={openProfile}
+                      onOpenComments={() => setCommentsPost(m)} onOpenImage={() => m.image && setLightbox({ image: m.image })}
+                      onDelete={() => del(m.id)} />
+                  ))}
+                </div>
               ) : (
                 data.messages.map((m, i) => (
                   <Fragment key={m.id}>
@@ -694,8 +734,35 @@ export default function NetworkPage() {
         {profileView && (
           <ProfileDrawer view={profileView} isMobile={isMobile} onClose={() => setProfileView(null)}
             onSaved={() => openProfile(profileView.data?.id)} api={api}
-            isOwnerUser={isOwnerUser} canVerify={canVerify}
+            isOwnerUser={isOwnerUser} canVerify={canVerify} social={social}
+            onOpenImage={(image) => setLightbox({ image })}
             onModerated={() => { openProfile(profileView.data?.id); fetchFeed(channel, false) }} />
+        )}
+      </AnimatePresence>
+
+      {/* ── Comentários do post (feed social) ── */}
+      <AnimatePresence>
+        {commentsPost && (
+          <CommentsSheet post={commentsPost} isMobile={isMobile} api={api} meId={user?.id} isOwner={isOwnerUser}
+            onOpenProfile={openProfile}
+            onClose={() => setCommentsPost(null)}
+            onChanged={() => fetchFeed(channel, false)} />
+        )}
+      </AnimatePresence>
+
+      {/* ── Lightbox (foto em tela cheia) ── */}
+      <AnimatePresence>
+        {lightbox && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={() => setLightbox(null)}
+            style={{ position: 'fixed', inset: 0, zIndex: 11000, background: 'rgba(0,0,0,0.94)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+            <motion.img initial={{ scale: 0.94 }} animate={{ scale: 1 }} exit={{ scale: 0.96 }} src={lightbox.image} alt=""
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: '100%', maxHeight: '92vh', borderRadius: 12, objectFit: 'contain', boxShadow: '0 20px 80px rgba(0,0,0,0.7)' }} />
+            <button onClick={() => setLightbox(null)} aria-label="Fechar" style={{ position: 'fixed', top: 16, right: 16, width: 40, height: 40, borderRadius: 11, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -1206,8 +1273,338 @@ function SectionTitle({ label }) {
   return <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase', marginBottom: 8, paddingLeft: 2 }}>{label}</div>
 }
 
+// ═══════════════ Feed social: post de Resultado (estilo Instagram) ═══════════════
+function ResultadoPost({ m, meId, isOwner, onReact, onOpenProfile, onOpenComments, onOpenImage, onDelete }) {
+  const a = m.author || {}
+  const likeR = (m.reactions || []).find(r => r.emoji === '❤️') || { count: 0, mine: false }
+  const tier = rankTier(a.rank)
+  const canDelete = m.mine || isOwner
+  return (
+    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease }}
+      style={{ background: 'rgba(12,18,32,0.55)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, overflow: 'hidden', marginBottom: 18, boxShadow: '0 8px 30px rgba(0,0,0,0.35)' }}>
+      {/* header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '12px 14px' }}>
+        <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0, borderRadius: '50%', boxShadow: `0 0 0 2px ${tier.color}55, 0 0 14px ${tier.color}44` }}>
+          <Avatar name={a.name} color={a.color} src={a.avatar} size={42} />
+        </button>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, maxWidth: '100%' }}>
+            <span style={{ fontSize: 14, fontWeight: 800, color: '#F1F5F9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
+            {a.verified && <VerifiedBadge size={14} />}
+            {a.tag && <TagPill tag={a.tag} color={a.tagColor} />}
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 1 }}>
+            <span style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '0.04em', color: tier.color }}>{tier.label}</span>
+            <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--t4)' }} />
+            <span style={{ fontSize: 11, color: 'var(--t4)' }}>{fmtRel(m.created_at)}</span>
+          </div>
+        </div>
+        {canDelete && (
+          <button onClick={onDelete} title="Excluir" style={{ ...iconBtn, width: 30, height: 30 }}>
+            <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+          </button>
+        )}
+      </div>
+      {/* imagem */}
+      {m.image && (
+        <button onClick={onOpenImage} style={{ display: 'block', width: '100%', border: 'none', padding: 0, background: '#05070c', cursor: 'zoom-in' }}>
+          <img src={m.image} alt="" style={{ width: '100%', maxHeight: 560, objectFit: 'cover', display: 'block' }} />
+        </button>
+      )}
+      {/* ações */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 12px 4px' }}>
+        <button onClick={() => onReact(m.id, '❤️')} style={actBtn(likeR.mine)}>
+          <svg width={22} height={22} viewBox="0 0 24 24" fill={likeR.mine ? RED : 'none'} stroke={likeR.mine ? RED : 'var(--t2)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg>
+        </button>
+        <button onClick={onOpenComments} style={actBtn(false)}>
+          <svg width={21} height={21} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
+        </button>
+        <button onClick={onOpenComments} style={actBtn(false)} title="Compartilhar">
+          <svg width={21} height={21} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+        </button>
+      </div>
+      {/* curtidas */}
+      {likeR.count > 0 && <div style={{ padding: '0 14px', fontSize: 13, fontWeight: 800, color: '#F1F5F9' }}>{fmtNum(likeR.count)} {likeR.count === 1 ? 'curtida' : 'curtidas'}</div>}
+      {/* legenda */}
+      {m.text && (
+        <div style={{ padding: '4px 14px 2px', fontSize: 13.5, color: 'var(--t1)', lineHeight: 1.5 }}>
+          <span style={{ fontWeight: 800, marginRight: 6 }}>{a.name}</span>{m.text}
+        </div>
+      )}
+      {/* reações rápidas */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '8px 12px 4px' }}>
+        {POST_REACTIONS.map(emoji => {
+          const r = (m.reactions || []).find(x => x.emoji === emoji)
+          const mine = !!r?.mine
+          return (
+            <button key={emoji} onClick={() => onReact(m.id, emoji)} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 9px', borderRadius: 20, cursor: 'pointer',
+              background: mine ? 'rgba(229,57,53,0.16)' : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${mine ? 'rgba(229,57,53,0.4)' : 'rgba(255,255,255,0.09)'}`,
+              fontSize: 13, color: 'var(--t2)', fontWeight: 700,
+            }}>
+              <span style={{ fontSize: 14 }}>{emoji}</span>
+              {r?.count ? <span style={{ fontSize: 11.5 }}>{r.count}</span> : null}
+            </button>
+          )
+        })}
+      </div>
+      {/* ver comentários */}
+      <button onClick={onOpenComments} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '6px 14px 13px', background: 'none', border: 'none', color: 'var(--t3)', fontSize: 12.5, cursor: 'pointer' }}>
+        {m.commentCount > 0 ? `Ver todos os ${m.commentCount} comentários` : 'Comentar…'}
+      </button>
+    </motion.div>
+  )
+}
+function actBtn(active) {
+  return { width: 40, height: 40, borderRadius: 12, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }
+}
+
+// ═══════════════ Comentários (bottom sheet / drawer) ═══════════════
+function CommentsSheet({ post, isMobile, api, meId, isOwner, onOpenProfile, onClose, onChanged }) {
+  const [comments, setComments] = useState(null) // null = carregando
+  const [text, setText] = useState('')
+  const [replyTo, setReplyTo] = useState(null)    // {id, name}
+  const [busy, setBusy] = useState(false)
+  const inputRef = useRef(null)
+
+  const load = useCallback(async () => {
+    try {
+      const r = await api(`/api/network/comments?message_id=${encodeURIComponent(post.id)}`)
+      if (r.ok) { const d = await r.json(); setComments(d.comments || []) }
+      else setComments([])
+    } catch { setComments([]) }
+  }, [api, post.id])
+  useEffect(() => { load() }, [load])
+
+  async function submit() {
+    const t = text.trim()
+    if (!t || busy) return
+    setBusy(true)
+    const r = await api('/api/network/comments', { method: 'POST', body: JSON.stringify({ action: 'add', message_id: post.id, text: t, parent_id: replyTo?.id }) })
+    setBusy(false)
+    if (!r.ok) { const e = await r.json().catch(() => ({})); alert(e.error || 'Falha ao comentar'); return }
+    setText(''); setReplyTo(null)
+    await load(); onChanged && onChanged()
+  }
+  async function likeComment(c) {
+    // otimista
+    setComments(prev => (prev || []).map(x => x.id === c.id ? { ...x, liked: !x.liked, likes: x.likes + (x.liked ? -1 : 1) } : x))
+    await api('/api/network/comments', { method: 'POST', body: JSON.stringify({ action: 'like', id: c.id }) })
+  }
+  async function delComment(c) {
+    if (!confirm('Excluir este comentário?')) return
+    await api('/api/network/comments', { method: 'POST', body: JSON.stringify({ action: 'delete', id: c.id }) })
+    await load(); onChanged && onChanged()
+  }
+  function startReply(c) { setReplyTo({ id: c.id, name: c.author?.name || 'admin' }); inputRef.current?.focus() }
+
+  const roots = (comments || []).filter(c => !c.parent_id)
+  const childrenOf = pid => (comments || []).filter(c => c.parent_id === pid)
+
+  const body = (
+    <>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '4px 4px 8px', WebkitOverflowScrolling: 'touch' }}>
+        {comments === null ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: 30 }}><span style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)', borderTopColor: RED, animation: 'spin 0.8s linear infinite' }} /></div>
+        ) : roots.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--t4)', fontSize: 13 }}>Nenhum comentário ainda.<br />Seja o primeiro a comentar.</div>
+        ) : roots.map(c => (
+          <div key={c.id}>
+            <CommentRow c={c} meId={meId} isOwner={isOwner} onLike={() => likeComment(c)} onReply={() => startReply(c)} onDelete={() => delComment(c)} onOpenProfile={onOpenProfile} />
+            {childrenOf(c.id).map(cc => (
+              <div key={cc.id} style={{ marginLeft: 42 }}>
+                <CommentRow c={cc} meId={meId} isOwner={isOwner} onLike={() => likeComment(cc)} onReply={() => startReply(c)} onDelete={() => delComment(cc)} onOpenProfile={onOpenProfile} />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      {replyTo && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 14px', fontSize: 12, color: 'var(--t3)', background: 'rgba(255,255,255,0.03)' }}>
+          <span>Respondendo a <strong style={{ color: '#ff8a8a' }}>{replyTo.name}</strong></span>
+          <button onClick={() => setReplyTo(null)} style={{ background: 'none', border: 'none', color: 'var(--t4)', cursor: 'pointer', fontSize: 12 }}>cancelar</button>
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 9, alignItems: 'flex-end', padding: '10px 12px calc(10px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+        <textarea ref={inputRef} value={text} onChange={e => setText(e.target.value.slice(0, 600))} rows={1}
+          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit() } }}
+          placeholder="Adicione um comentário…"
+          style={{ flex: 1, resize: 'none', maxHeight: 110, minHeight: 42, padding: '11px 13px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--t1)', fontSize: 13.5, fontFamily: 'inherit', lineHeight: 1.45, outline: 'none' }} />
+        <button onClick={submit} disabled={!text.trim() || busy} style={{ width: 42, height: 42, borderRadius: 12, flexShrink: 0, border: 'none', background: text.trim() && !busy ? RED : 'rgba(255,255,255,0.08)', cursor: text.trim() && !busy ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={text.trim() && !busy ? '#fff' : 'var(--t4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+        </button>
+      </div>
+    </>
+  )
+
+  if (isMobile) {
+    return (
+      <>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
+          style={{ position: 'fixed', inset: 0, zIndex: 10600, background: 'rgba(0,0,0,0.6)' }} />
+        <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ duration: 0.28, ease }}
+          style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 10601, height: '78vh', background: 'linear-gradient(180deg, #0b1120, #060a12)', borderRadius: '18px 18px 0 0', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderBottom: '1px solid rgba(255,255,255,0.06)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 6, left: '50%', transform: 'translateX(-50%)', width: 38, height: 4, borderRadius: 3, background: 'rgba(255,255,255,0.18)' }} />
+            <span style={{ fontSize: 13.5, fontWeight: 800, color: '#F1F5F9', marginTop: 4 }}>Comentários</span>
+            <button onClick={onClose} style={{ position: 'absolute', right: 10, top: 8, ...iconBtn, width: 30, height: 30 }}>
+              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+          </div>
+          {body}
+        </motion.div>
+      </>
+    )
+  }
+  return (
+    <>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
+        style={{ position: 'fixed', inset: 0, zIndex: 10600, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)' }} />
+      <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.26, ease }}
+        style={{ position: 'fixed', top: 0, bottom: 0, right: 0, width: 420, maxWidth: '90vw', zIndex: 10601, background: 'linear-gradient(180deg, #0b1120, #060a12)', borderLeft: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <span style={{ fontSize: 14, fontWeight: 800, color: '#F1F5F9' }}>Comentários</span>
+          <button onClick={onClose} style={{ ...iconBtn, width: 30, height: 30 }}>
+            <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+          </button>
+        </div>
+        {body}
+      </motion.div>
+    </>
+  )
+}
+function CommentRow({ c, meId, isOwner, onLike, onReply, onDelete, onOpenProfile }) {
+  const a = c.author || {}
+  return (
+    <div style={{ display: 'flex', gap: 10, padding: '9px 12px' }}>
+      <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0 }}>
+        <Avatar name={a.name} color={a.color} src={a.avatar} size={32} />
+      </button>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, color: 'var(--t1)', lineHeight: 1.45 }}>
+          <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 800, color: '#F1F5F9', marginRight: 6 }}>{a.name}</button>
+          {a.verified && <span style={{ display: 'inline-flex', verticalAlign: 'middle', marginRight: 4 }}><VerifiedBadge size={12} /></span>}
+          {c.text}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 4, fontSize: 11, color: 'var(--t4)' }}>
+          <span>{fmtRel(c.created_at)}</span>
+          {c.likes > 0 && <span>{c.likes} {c.likes === 1 ? 'curtida' : 'curtidas'}</span>}
+          <button onClick={onReply} style={{ background: 'none', border: 'none', color: 'var(--t3)', cursor: 'pointer', fontWeight: 700, fontSize: 11 }}>Responder</button>
+          {(c.mine || isOwner) && <button onClick={onDelete} style={{ background: 'none', border: 'none', color: 'var(--t4)', cursor: 'pointer', fontSize: 11 }}>Excluir</button>}
+        </div>
+      </div>
+      <button onClick={onLike} style={{ background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0, padding: 4, alignSelf: 'flex-start' }}>
+        <svg width={15} height={15} viewBox="0 0 24 24" fill={c.liked ? RED : 'none'} stroke={c.liked ? RED : 'var(--t4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg>
+      </button>
+    </div>
+  )
+}
+
+// ═══════════════ Perfil social premium (topo do drawer, modo beta) ═══════════════
+function fmtDuration(since) {
+  if (!since) return '—'
+  const months = Math.max(0, Math.floor((Date.now() - new Date(since).getTime()) / (30 * 86400000)))
+  if (months < 1) return 'menos de 1 mês'
+  if (months < 12) return `${months} ${months === 1 ? 'mês' : 'meses'}`
+  const y = Math.floor(months / 12), m = months % 12
+  return `${y} ${y === 1 ? 'ano' : 'anos'}${m ? ` ${m} ${m === 1 ? 'mês' : 'meses'}` : ''}`
+}
+function SocialProfileTop({ p, onOpenImage }) {
+  const tier = rankTier(p.rank)
+  const stats = [
+    { label: 'Operadores', value: fmtNum(p.operadores) },
+    { label: 'Depositantes', value: fmtNum(p.depositantes) },
+    { label: 'Maior meta', value: fmtNum(p.maiorMeta || 0) },
+    { label: 'Maior lucro', value: fmtMoney(p.maiorLucro || 0), accent: true },
+    { label: 'Tempo na Nex', value: fmtDuration(p.since) },
+    { label: 'Network score', value: fmtNum(p.networkScore), accent: true },
+  ]
+  const achievements = p.achievements || []
+  const gallery = p.gallery || []
+  return (
+    <div style={{ marginBottom: 8 }}>
+      {/* header com glow do rank */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: 16 }}>
+        <div style={{ position: 'relative', padding: 4, borderRadius: '50%', background: `conic-gradient(from 210deg, ${tier.color}, ${tier.color}44, ${tier.color})`, boxShadow: `0 0 34px ${tier.color}55` }}>
+          <div style={{ borderRadius: '50%', border: '3px solid #0d1424' }}>
+            <Avatar name={p.name} color={p.color} src={p.avatar} size={92} />
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 14 }}>
+          <h2 style={{ margin: 0, fontSize: 21, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{p.name}</h2>
+          {p.verified && <VerifiedBadge size={20} />}
+        </div>
+        {p.instagram && <div style={{ fontSize: 12.5, color: 'var(--t3)', marginTop: 2 }}>@{p.instagram}</div>}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: 9 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 11px', borderRadius: 20, background: `${tier.color}1f`, border: `1px solid ${tier.color}66`, fontSize: 11, fontWeight: 800, color: tier.color }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: tier.color, boxShadow: `0 0 8px ${tier.color}` }} />
+            {tier.label} · {p.rank}
+          </span>
+          {p.founder && <VeteranoBadge />}
+          {p.tag && <TagPill tag={p.tag} color={p.tagColor} small={false} />}
+        </div>
+        <p style={{ fontSize: 11, color: 'var(--t4)', marginTop: 9 }}>Na NexControl desde <strong style={{ color: 'var(--t2)' }}>{fmtSince(p.since)}</strong></p>
+        {p.bio && <p style={{ margin: '10px 0 0', fontSize: 13, color: 'var(--t2)', lineHeight: 1.55, maxWidth: 320 }}>{p.bio}</p>}
+        {p.instagram && (
+          <a href={`https://instagram.com/${p.instagram}`} target="_blank" rel="noreferrer"
+            style={{ marginTop: 14, width: '100%', maxWidth: 320, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '11px', borderRadius: 12, textDecoration: 'none', fontWeight: 800, fontSize: 13.5, color: '#fff', background: 'linear-gradient(90deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)', boxShadow: '0 6px 22px rgba(220,39,67,0.35)' }}>
+            <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2}><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><line x1="17.5" y1="6.5" x2="17.5" y2="6.5" /></svg>
+            Seguir no Instagram
+          </a>
+        )}
+      </div>
+
+      {/* estatísticas premium */}
+      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase', margin: '2px 0 8px' }}>Estatísticas</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
+        {stats.map(s => (
+          <div key={s.label} style={{ padding: '12px 8px', borderRadius: 12, textAlign: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <div style={{ fontSize: 15, fontWeight: 900, color: s.accent ? '#ff8a8a' : '#F1F5F9', fontFamily: 'var(--mono)', letterSpacing: '-0.02em' }}>{s.value}</div>
+            <div style={{ fontSize: 8.5, fontWeight: 800, letterSpacing: '0.06em', color: 'var(--t4)', textTransform: 'uppercase', marginTop: 4 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* conquistas */}
+      {achievements.length > 0 && (
+        <>
+          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase', margin: '4px 0 8px' }}>Conquistas</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 16 }}>
+            {achievements.map(ac => (
+              <div key={ac.key} title={ac.desc} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 11px', borderRadius: 20,
+                background: ac.unlocked ? 'rgba(245,180,60,0.1)' : 'rgba(255,255,255,0.03)',
+                border: `1px solid ${ac.unlocked ? 'rgba(245,180,60,0.32)' : 'rgba(255,255,255,0.07)'}`,
+                opacity: ac.unlocked ? 1 : 0.4, filter: ac.unlocked ? 'none' : 'grayscale(1)',
+              }}>
+                <span style={{ fontSize: 14 }}>{ac.icon}</span>
+                <span style={{ fontSize: 11, fontWeight: 800, color: ac.unlocked ? '#f6c968' : 'var(--t4)' }}>{ac.label}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* galeria */}
+      {gallery.length > 0 && (
+        <>
+          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase', margin: '4px 0 8px' }}>Resultados</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 3, marginBottom: 4, borderRadius: 12, overflow: 'hidden' }}>
+            {gallery.map(g => (
+              <button key={g.id} onClick={() => onOpenImage && onOpenImage(g.image)} style={{ padding: 0, border: 'none', cursor: 'zoom-in', aspectRatio: '1', background: '#05070c', overflow: 'hidden' }}>
+                <img src={g.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 // ═══════════════ Perfil (drawer) ═══════════════
-function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, canVerify, onModerated }) {
+function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, canVerify, onModerated, social, onOpenImage }) {
   const p = view.data
   const [bio, setBio] = useState(p?.bio || '')
   const [insta, setInsta] = useState(p?.instagram || '')
@@ -1302,31 +1699,37 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 6 }}>
             <button onClick={onClose} style={iconBtn}><svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: 18 }}>
-            <Avatar name={p.name} color={p.color} src={p.avatar} size={78} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 12 }}>
-              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{p.name}</h2>
-              {p.verified && <VerifiedBadge size={20} />}
-            </div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: 7 }}>
-              {p.founder && <VeteranoBadge />}
-              {p.tag && <TagPill tag={p.tag} color={p.tagColor} />}
-            </div>
-            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
-              {p.badges.filter(b => b.key !== 'verificado' && b.key !== 'pioneiro').map(b => <Badge key={b.key} label={b.label} tone={b.tone} />)}
-            </div>
-            {p.instagram && <a href={`https://instagram.com/${p.instagram}`} target="_blank" rel="noreferrer" style={{ marginTop: 10, fontSize: 12, color: '#ff8a8a', textDecoration: 'none', fontWeight: 600 }}>@{p.instagram}</a>}
-            {p.bio && <p style={{ margin: '10px 0 0', fontSize: 12.5, color: 'var(--t3)', lineHeight: 1.5, maxWidth: 300 }}>{p.bio}</p>}
-          </div>
+          {social && !p.fake ? (
+            <SocialProfileTop p={p} onOpenImage={onOpenImage} />
+          ) : (
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: 18 }}>
+                <Avatar name={p.name} color={p.color} src={p.avatar} size={78} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 12 }}>
+                  <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{p.name}</h2>
+                  {p.verified && <VerifiedBadge size={20} />}
+                </div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: 7 }}>
+                  {p.founder && <VeteranoBadge />}
+                  {p.tag && <TagPill tag={p.tag} color={p.tagColor} />}
+                </div>
+                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
+                  {p.badges.filter(b => b.key !== 'verificado' && b.key !== 'pioneiro').map(b => <Badge key={b.key} label={b.label} tone={b.tone} />)}
+                </div>
+                {p.instagram && <a href={`https://instagram.com/${p.instagram}`} target="_blank" rel="noreferrer" style={{ marginTop: 10, fontSize: 12, color: '#ff8a8a', textDecoration: 'none', fontWeight: 600 }}>@{p.instagram}</a>}
+                {p.bio && <p style={{ margin: '10px 0 0', fontSize: 12.5, color: 'var(--t3)', lineHeight: 1.5, maxWidth: 300 }}>{p.bio}</p>}
+              </div>
 
-          {/* stats grid (sem metas fechadas / redes — dados operacionais nao expostos) */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
-            <Stat label="Rank" value={p.rank} accent />
-            <Stat label="Operadores" value={fmtNum(p.operadores)} />
-            <Stat label="Depositantes" value={fmtNum(p.depositantes)} />
-            <Stat label="Network score" value={fmtNum(p.networkScore)} accent />
-          </div>
-          <p style={{ fontSize: 11, color: 'var(--t4)', textAlign: 'center', marginTop: 4 }}>Na NexControl desde <strong style={{ color: 'var(--t2)' }}>{fmtSince(p.since)}</strong></p>
+              {/* stats grid (sem metas fechadas / redes — dados operacionais nao expostos) */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+                <Stat label="Rank" value={p.rank} accent />
+                <Stat label="Operadores" value={fmtNum(p.operadores)} />
+                <Stat label="Depositantes" value={fmtNum(p.depositantes)} />
+                <Stat label="Network score" value={fmtNum(p.networkScore)} accent />
+              </div>
+              <p style={{ fontSize: 11, color: 'var(--t4)', textAlign: 'center', marginTop: 4 }}>Na NexControl desde <strong style={{ color: 'var(--t2)' }}>{fmtSince(p.since)}</strong></p>
+            </>
+          )}
 
           {/* moderação (owner define tag; owner/darkzin dão verificado) — nunca no owner */}
           {!view.isMe && !isOwnerTarget && !p.fake && (canVerify || isOwnerUser) && (

@@ -24,14 +24,14 @@ export async function GET(req) {
 
   // mensagens do canal (mais recentes primeiro no banco, invertidas na UI)
   const { data: rawMsgs } = await sb.from('network_messages')
-    .select('id,author_id,text,pinned,edited_at,created_at')
+    .select('id,author_id,text,image_url,pinned,edited_at,created_at')
     .eq('channel_id', channel.id).is('deleted_at', null)
     .order('created_at', { ascending: false }).limit(100)
   const msgs = (rawMsgs || []).slice().reverse()
 
   // fixada (busca dedicada — nao depende das ultimas 100 mensagens)
   const { data: pinnedRows } = await sb.from('network_messages')
-    .select('id,author_id,text,pinned,edited_at,created_at')
+    .select('id,author_id,text,image_url,pinned,edited_at,created_at')
     .eq('channel_id', channel.id).eq('pinned', true).is('deleted_at', null)
     .order('created_at', { ascending: false }).limit(1)
   const pinnedMsg = (pinnedRows || [])[0] || null
@@ -55,6 +55,7 @@ export async function GET(req) {
   const shape = m => ({
     id: m.id,
     text: m.text,
+    image: m.image_url || null,
     created_at: m.created_at,
     edited_at: m.edited_at || null,
     author: authorMap[m.author_id] || (m.author_id ? { id: m.author_id, name: 'admin', color: colorFromId(m.author_id) } : { id: null, name: 'NexControl', system: true, color: '#e53935' }),

@@ -4,7 +4,41 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
-import { networkEnabled, NETWORK_CHANNELS } from '../../lib/network-access'
+import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_EMAIL } from '../../lib/network-access'
+
+const CHANNEL_KEYS = new Set(NETWORK_CHANNELS.map(c => c.key))
+
+// Comprime a imagem no cliente (max 1280px, jpeg) -> data URL pequeno.
+function compressImage(file, max = 1280, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      let { width, height } = img
+      if (width > max || height > max) {
+        if (width >= height) { height = Math.round(height * max / width); width = max }
+        else { width = Math.round(width * max / height); height = max }
+      }
+      const c = document.createElement('canvas')
+      c.width = width; c.height = height
+      c.getContext('2d').drawImage(img, 0, 0, width, height)
+      resolve(c.toDataURL('image/jpeg', quality))
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('img')) }
+    img.src = url
+  })
+}
+
+// Selo verificado estilo Instagram (rosácea azul + check).
+function VerifiedBadge({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" style={{ flexShrink: 0 }} aria-label="Verificado">
+      <path fill="#3897F0" d="M12 1l2.4 2.2 3.2-.5 1 3.1 2.9 1.5-1 3.1 1 3.1-2.9 1.5-1 3.1-3.2-.5L12 23l-2.4-2.2-3.2.5-1-3.1L2.5 15l1-3.1-1-3.1 2.9-1.5 1-3.1 3.2.5z" />
+      <path fill="#fff" d="M10.4 15.2l-2.9-2.9 1.3-1.3 1.6 1.6 4-4 1.3 1.3z" />
+    </svg>
+  )
+}
 
 const ease = [0.33, 1, 0.68, 1]
 const RED = '#e53935'
@@ -88,6 +122,7 @@ export default function NetworkPage() {
   const [data, setData] = useState({ channels: [], messages: [], pinned: null, online: [], top: [], me: null, isOwner: false })
   const [loading, setLoading] = useState(true)
   const [text, setText] = useState('')
+  const [img, setImg] = useState(null) // data URL da foto anexada
   const [sending, setSending] = useState(false)
   const [editing, setEditing] = useState(null) // {id, text}
   const [profileView, setProfileView] = useState(null) // {loading, data}
@@ -171,16 +206,22 @@ export default function NetworkPage() {
 
   async function send() {
     const t = text.trim()
-    if (!t || sending) return
-    setSending(true)
+    const rule = channelRule(channel)
+    if (sending) return
     if (editing) {
+      if (!t) return
+      setSending(true)
       await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'edit', id: editing.id, text: t }) })
       setEditing(null)
     } else {
+      if (rule?.requireImage && !img) { alert('Neste canal a mensagem precisa ter uma foto.'); return }
+      if (!t && !img) return
+      setSending(true)
       atBottomRef.current = true
-      await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'send', channel, text: t }) })
+      const res = await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'send', channel, text: t, image: img }) })
+      if (!res.ok) { const e = await res.json().catch(() => ({})); alert(e.error || 'Falha ao enviar'); setSending(false); return }
     }
-    setText('')
+    setText(''); setImg(null)
     await fetchFeed(channel, false)
     setSending(false)
   }
@@ -241,8 +282,13 @@ export default function NetworkPage() {
     )
   }
 
-  const channels = (data.channels?.length ? data.channels : NETWORK_CHANNELS.map((c, i) => ({ key: c.key, name: c.name, sort: i })))
+  // So os canais conhecidos (defende contra canais antigos ainda no banco)
+  const channels = (data.channels?.length ? data.channels.filter(c => CHANNEL_KEYS.has(c.key)) : NETWORK_CHANNELS.map((c, i) => ({ key: c.key, name: c.name, sort: i })))
   const activeChan = channels.find(c => c.key === channel) || channels[0]
+  const rule = channelRule(channel)
+  const isOwnerUser = !!data.isOwner || (user && (user.email || '').toLowerCase() === OWNER_EMAIL)
+  const canVerify = user && VERIFIER_EMAILS.has((user.email || '').toLowerCase())
+  const canPostHere = !(rule?.ownerOnly && !isOwnerUser)
 
   return (
     <Shell profile={profile} user={user} tenant={tenant} sub={sub}>
@@ -308,6 +354,7 @@ export default function NetworkPage() {
           {/* composer */}
           <Composer
             text={text} setText={setText} onSend={send} sending={sending}
+            img={img} setImg={setImg} rule={rule} canPost={canPostHere}
             editing={editing} cancelEdit={() => { setEditing(null); setText('') }}
           />
         </div>
@@ -337,7 +384,9 @@ export default function NetworkPage() {
       <AnimatePresence>
         {profileView && (
           <ProfileDrawer view={profileView} isMobile={isMobile} onClose={() => setProfileView(null)}
-            onSaved={() => openProfile(profileView.data?.id)} api={api} />
+            onSaved={() => openProfile(profileView.data?.id)} api={api}
+            isOwnerUser={isOwnerUser} canVerify={canVerify}
+            onModerated={() => { openProfile(profileView.data?.id); fetchFeed(channel, false) }} />
         )}
       </AnimatePresence>
     </Shell>
@@ -414,13 +463,18 @@ function PinnedBar({ msg, isOwner, onUnpin }) {
   )
 }
 
-// ═══════════════ Mensagem ═══════════════
+// ═══════════════ Mensagem (bolha estilo WhatsApp) ═══════════════
+function TagPill({ tag }) {
+  const owner = tag === 'OWNER'
+  return <Badge label={tag} tone={owner ? 'red' : 'gold'} small />
+}
 function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, onDelete, onPin }) {
   const [hover, setHover] = useState(false)
   const [picker, setPicker] = useState(false)
   const a = m.author || {}
-  const grouped = prev && prev.author?.id === a.id && (new Date(m.created_at) - new Date(prev.created_at) < 5 * 60000)
+  const mine = m.mine
   const system = a.system
+  const grouped = prev && prev.author?.id === a.id && !prev.author?.system && prev.mine === mine && (new Date(m.created_at) - new Date(prev.created_at) < 5 * 60000)
 
   if (system) {
     return (
@@ -430,49 +484,66 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
     )
   }
 
+  const bubbleBg = mine ? 'rgba(229,57,53,0.15)' : 'rgba(255,255,255,0.05)'
+  const bubbleBd = mine ? 'rgba(229,57,53,0.3)' : 'rgba(255,255,255,0.08)'
+  const radius = mine ? '15px 15px 5px 15px' : '15px 15px 15px 5px'
+
   return (
     <div onMouseEnter={() => setHover(true)} onMouseLeave={() => { setHover(false); setPicker(false) }}
-      style={{ display: 'flex', gap: 11, padding: grouped ? '1px 16px 1px' : '7px 16px 2px', position: 'relative', borderRadius: 8, background: hover ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
-      <div style={{ width: 38, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
-        {!grouped
-          ? <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}><Avatar name={a.name} color={a.color} size={38} /></button>
-          : <span style={{ fontSize: 9, color: 'var(--t4)', opacity: hover ? 1 : 0, alignSelf: 'center', fontFamily: 'var(--mono)' }}>{new Date(m.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        {!grouped && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap', marginBottom: 2 }}>
-            <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13.5, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em' }}>{a.name}</button>
-            {a.rank && <Badge label={a.rank} tone="red" small />}
-            {a.verified && <Badge label="✓ Verificado" tone="blue" small />}
-            {a.founder && <Badge label="Fundador" tone="gold" small />}
-            {a.veterano && !a.founder && <Badge label="Antigo na Dash" tone="purple" small />}
-            <span style={{ fontSize: 10.5, color: 'var(--t4)', fontFamily: 'var(--mono)' }}>{fmtTime(m.created_at)}</span>
+      style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start', gap: 9, padding: grouped ? '1px 14px' : '5px 14px 2px', position: 'relative' }}>
+      {/* avatar (só dos outros) */}
+      {!mine && (
+        <div style={{ width: 34, flexShrink: 0, display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
+          {!grouped && <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}><Avatar name={a.name} color={a.color} size={34} /></button>}
+        </div>
+      )}
+      <div style={{ maxWidth: '76%', display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start', minWidth: 0 }}>
+        {/* header (nome/tag/verificado) — só dos outros e no início do grupo */}
+        {!grouped && !mine && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 3, paddingLeft: 4 }}>
+            <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em' }}>{a.name}</button>
+            {a.verified && <VerifiedBadge size={13} />}
+            {a.tag && <TagPill tag={a.tag} />}
+            {!a.tag && a.rank && <Badge label={a.rank} tone="red" small />}
           </div>
         )}
-        <div style={{ fontSize: 13.5, color: 'var(--t1)', lineHeight: 1.5, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
-          {m.text}
-          {m.edited_at && <span style={{ fontSize: 10, color: 'var(--t4)', marginLeft: 6 }}>(editado)</span>}
+        {/* bolha */}
+        <div style={{ background: bubbleBg, border: `1px solid ${bubbleBd}`, borderRadius: radius, padding: m.image ? 4 : '8px 12px', overflow: 'hidden' }}>
+          {m.image && (
+            <a href={m.image} target="_blank" rel="noreferrer" style={{ display: 'block' }}>
+              <img src={m.image} alt="" style={{ maxWidth: '100%', maxHeight: 320, borderRadius: 11, display: 'block', objectFit: 'cover' }} />
+            </a>
+          )}
+          {m.text && (
+            <div style={{ fontSize: 13.5, color: 'var(--t1)', lineHeight: 1.45, wordBreak: 'break-word', whiteSpace: 'pre-wrap', padding: m.image ? '7px 8px 3px' : 0 }}>
+              {m.text}
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end', marginTop: 3, padding: m.image ? '0 8px 4px' : 0 }}>
+            {m.edited_at && <span style={{ fontSize: 9.5, color: 'var(--t4)' }}>editado</span>}
+            <span style={{ fontSize: 9.5, color: mine ? 'rgba(255,255,255,0.5)' : 'var(--t4)', fontFamily: 'var(--mono)' }}>{new Date(m.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+          </div>
         </div>
+        {/* reações */}
         {m.reactions.length > 0 && (
-          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginTop: 5 }}>
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginTop: 4 }}>
             {m.reactions.map(r => (
               <button key={r.emoji} onClick={() => onReact(m.id, r.emoji)} style={{
-                display: 'flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 20,
-                fontSize: 12, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
                 background: r.mine ? 'rgba(229,57,53,0.16)' : 'rgba(255,255,255,0.05)',
                 border: `1px solid ${r.mine ? 'rgba(229,57,53,0.4)' : 'rgba(255,255,255,0.08)'}`,
-                color: r.mine ? '#ff8a8a' : 'var(--t2)', fontWeight: 700, transition: 'all 0.12s',
+                color: r.mine ? '#ff8a8a' : 'var(--t2)', fontWeight: 700,
               }}>{r.emoji} {r.count}</button>
             ))}
           </div>
         )}
       </div>
 
-      {/* actions on hover */}
+      {/* toolbar hover */}
       {hover && (
-        <div style={{ position: 'absolute', top: -6, right: 12, display: 'flex', gap: 2, background: '#0d1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 3, boxShadow: '0 6px 18px rgba(0,0,0,0.5)' }}>
+        <div style={{ position: 'absolute', top: -4, [mine ? 'left' : 'right']: 46, display: 'flex', gap: 2, background: '#0d1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 3, boxShadow: '0 6px 18px rgba(0,0,0,0.5)', zIndex: 6 }}>
           <button onClick={() => setPicker(p => !p)} style={miniBtn} title="Reagir">😀</button>
-          {m.mine && <button onClick={onEdit} style={miniBtn} title="Editar">
+          {m.mine && m.text && <button onClick={onEdit} style={miniBtn} title="Editar">
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
           </button>}
           {isOwner && <button onClick={onPin} style={miniBtn} title="Fixar">
@@ -484,7 +555,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
         </div>
       )}
       {picker && (
-        <div style={{ position: 'absolute', top: 24, right: 12, display: 'flex', gap: 3, background: '#0d1220', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: 5, boxShadow: '0 8px 22px rgba(0,0,0,0.55)', zIndex: 5 }}>
+        <div style={{ position: 'absolute', top: 26, [mine ? 'left' : 'right']: 46, display: 'flex', gap: 3, background: '#0d1220', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: 5, boxShadow: '0 8px 22px rgba(0,0,0,0.55)', zIndex: 7 }}>
           {REACTIONS.map(e => <button key={e} onClick={() => { onReact(m.id, e); setPicker(false) }} style={{ ...miniBtn, fontSize: 17 }}>{e}</button>)}
         </div>
       )}
@@ -493,9 +564,30 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
 }
 
 // ═══════════════ Composer ═══════════════
-function Composer({ text, setText, onSend, sending, editing, cancelEdit }) {
-  const ref = useRef(null)
+function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, editing, cancelEdit }) {
+  const fileRef = useRef(null)
+  const [imgBusy, setImgBusy] = useState(false)
   function onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend() } }
+  async function onFile(e) {
+    const file = e.target.files?.[0]; e.target.value = ''
+    if (!file) return
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { alert('Envie uma imagem JPG, PNG ou WEBP.'); return }
+    setImgBusy(true)
+    try { setImg(await compressImage(file)) } catch { alert('Não consegui processar a imagem.') }
+    setImgBusy(false)
+  }
+
+  // Avisos (só owner): quem não pode postar vê aviso read-only
+  if (!canPost) {
+    return (
+      <div style={{ padding: '16px 16px', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--t3)', fontSize: 12.5 }}>
+        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+        Somente o admin master pode enviar avisos.
+      </div>
+    )
+  }
+
+  const canSend = !sending && (rule?.requireImage ? !!img : (!!text.trim() || !!img))
   return (
     <div style={{ padding: '12px 14px 14px', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
       {editing && (
@@ -505,10 +597,37 @@ function Composer({ text, setText, onSend, sending, editing, cancelEdit }) {
           <button onClick={cancelEdit} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>cancelar</button>
         </div>
       )}
+      {/* preview da foto */}
+      {img && (
+        <div style={{ display: 'inline-block', position: 'relative', marginBottom: 8 }}>
+          <img src={img} alt="" style={{ height: 76, borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', display: 'block' }} />
+          <button onClick={() => setImg(null)} style={{ position: 'absolute', top: -7, right: -7, width: 22, height: 22, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', background: '#0d1220', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+          </button>
+        </div>
+      )}
+      {rule?.requireImage && !img && (
+        <div style={{ fontSize: 11, color: '#ff9e6b', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M21 15l-5-5L5 21" /><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /></svg>
+          Neste canal a foto é obrigatória — anexe uma imagem.
+        </div>
+      )}
       <div style={{ display: 'flex', gap: 9, alignItems: 'flex-end' }}>
+        {/* anexar foto */}
+        <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={onFile} style={{ display: 'none' }} />
+        <button onClick={() => fileRef.current?.click()} disabled={imgBusy} title="Anexar foto" style={{
+          width: 44, height: 44, borderRadius: 12, flexShrink: 0, cursor: 'pointer',
+          background: img ? 'rgba(229,57,53,0.14)' : 'rgba(255,255,255,0.05)',
+          border: `1px solid ${img ? 'rgba(229,57,53,0.3)' : 'rgba(255,255,255,0.1)'}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {imgBusy
+            ? <span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', borderTopColor: RED, animation: 'nx-spin 0.8s linear infinite' }} />
+            : <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke={img ? '#ff8a8a' : 'var(--t3)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15l-5-5L5 21" /><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /></svg>}
+        </button>
         <div style={{ flex: 1, position: 'relative' }}>
-          <textarea ref={ref} value={text} onChange={e => setText(e.target.value)} onKeyDown={onKey}
-            rows={1} placeholder="Escreva uma mensagem para a comunidade..."
+          <textarea value={text} onChange={e => setText(e.target.value)} onKeyDown={onKey}
+            rows={1} placeholder={rule?.requireImage ? 'Legenda da foto (opcional)...' : 'Escreva uma mensagem para a comunidade...'}
             style={{
               width: '100%', resize: 'none', maxHeight: 120, minHeight: 44, padding: '12px 14px',
               borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
@@ -517,14 +636,14 @@ function Composer({ text, setText, onSend, sending, editing, cancelEdit }) {
             onInput={e => { e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px' }}
           />
         </div>
-        <button onClick={onSend} disabled={sending || !text.trim()} style={{
+        <button onClick={onSend} disabled={!canSend} style={{
           width: 44, height: 44, borderRadius: 12, flexShrink: 0, border: 'none',
-          background: text.trim() ? RED : 'rgba(255,255,255,0.08)',
-          cursor: text.trim() && !sending ? 'pointer' : 'default',
+          background: canSend ? RED : 'rgba(255,255,255,0.08)',
+          cursor: canSend ? 'pointer' : 'default',
           display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s',
-          boxShadow: text.trim() ? '0 4px 16px rgba(229,57,53,0.4)' : 'none',
+          boxShadow: canSend ? '0 4px 16px rgba(229,57,53,0.4)' : 'none',
         }}>
-          <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke={text.trim() ? '#fff' : 'var(--t4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+          <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke={canSend ? '#fff' : 'var(--t4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
         </button>
       </div>
     </div>
@@ -583,18 +702,31 @@ function SectionTitle({ label }) {
 }
 
 // ═══════════════ Perfil (drawer) ═══════════════
-function ProfileDrawer({ view, isMobile, onClose, onSaved, api }) {
+function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, canVerify, onModerated }) {
   const p = view.data
   const [bio, setBio] = useState(p?.bio || '')
   const [insta, setInsta] = useState(p?.instagram || '')
+  const [tagInput, setTagInput] = useState(p?.tag || '')
   const [saving, setSaving] = useState(false)
+  const [modBusy, setModBusy] = useState(false)
   const [edit, setEdit] = useState(false)
-  useEffect(() => { setBio(p?.bio || ''); setInsta(p?.instagram || '') }, [p])
+  useEffect(() => { setBio(p?.bio || ''); setInsta(p?.instagram || ''); setTagInput(p?.tag || '') }, [p])
 
   async function save() {
     setSaving(true)
     await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ bio, instagram: insta }) })
     setSaving(false); setEdit(false); onSaved && onSaved()
+  }
+  const isOwnerTarget = (p?.tag === 'OWNER')
+  async function setVerified(v) {
+    setModBusy(true)
+    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'set-verified', target_user_id: p.id, verified: v }) })
+    setModBusy(false); onModerated && onModerated()
+  }
+  async function saveTag() {
+    setModBusy(true)
+    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'set-tag', target_user_id: p.id, tag: tagInput.trim() }) })
+    setModBusy(false); onModerated && onModerated()
   }
 
   const panel = (
@@ -620,9 +752,13 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: 18 }}>
             <Avatar name={p.name} color={p.color} size={78} />
-            <h2 style={{ margin: '12px 0 0', fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{p.name}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 12 }}>
+              <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{p.name}</h2>
+              {p.verified && <VerifiedBadge size={20} />}
+            </div>
+            {p.tag && <div style={{ marginTop: 7 }}><TagPill tag={p.tag} /></div>}
             <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
-              {p.badges.map(b => <Badge key={b.key} label={b.label} tone={b.tone} />)}
+              {p.badges.filter(b => b.key !== 'verificado').map(b => <Badge key={b.key} label={b.label} tone={b.tone} />)}
             </div>
             {p.instagram && <a href={`https://instagram.com/${p.instagram}`} target="_blank" rel="noreferrer" style={{ marginTop: 10, fontSize: 12, color: '#ff8a8a', textDecoration: 'none', fontWeight: 600 }}>@{p.instagram}</a>}
             {p.bio && <p style={{ margin: '10px 0 0', fontSize: 12.5, color: 'var(--t3)', lineHeight: 1.5, maxWidth: 300 }}>{p.bio}</p>}
@@ -646,6 +782,29 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api }) {
             </div>
           )}
           <p style={{ fontSize: 11, color: 'var(--t4)', textAlign: 'center', marginTop: 4 }}>Na NexControl desde <strong style={{ color: 'var(--t2)' }}>{fmtSince(p.since)}</strong></p>
+
+          {/* moderação (owner define tag; owner/darkzin dão verificado) — nunca no owner */}
+          {!view.isMe && !isOwnerTarget && (canVerify || isOwnerUser) && (
+            <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase' }}>Moderação</div>
+              {canVerify && (
+                <button onClick={() => setVerified(!p.verified)} disabled={modBusy} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px', borderRadius: 10, cursor: 'pointer', fontWeight: 700, fontSize: 13, border: `1px solid ${p.verified ? 'rgba(255,107,107,0.35)' : 'rgba(56,151,240,0.4)'}`, background: p.verified ? 'rgba(255,107,107,0.1)' : 'rgba(56,151,240,0.12)', color: p.verified ? '#ff8a8a' : '#5aa9f5' }}>
+                  {!p.verified && <VerifiedBadge size={15} />}
+                  {p.verified ? 'Remover verificado' : 'Dar verificado'}
+                </button>
+              )}
+              {isOwnerUser && (
+                <div>
+                  <label style={lbl}>Tag do usuário (aparece no chat)</label>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input value={tagInput} onChange={e => setTagInput(e.target.value.slice(0, 24))} placeholder="ex: MENTOR, VIP, PARCEIRO" style={inp} />
+                    <button onClick={saveTag} disabled={modBusy} style={{ padding: '0 16px', borderRadius: 9, border: 'none', background: RED, color: '#fff', fontWeight: 800, fontSize: 12.5, cursor: 'pointer', flexShrink: 0 }}>Salvar</button>
+                  </div>
+                  {p.tag && <button onClick={() => { setTagInput(''); saveTag() }} disabled={modBusy} style={{ marginTop: 6, background: 'none', border: 'none', color: 'var(--t4)', fontSize: 11, cursor: 'pointer' }}>remover tag</button>}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* editar (so o proprio) */}
           {view.isMe && (

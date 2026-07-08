@@ -52,6 +52,19 @@ export async function POST(req) {
     return NextResponse.json({ ok: true })
   }
 
+  // ── OWNER concede/remove o selo VETERANO (founder) ──
+  if (action === 'set-founder') {
+    if (!isOwner) return NextResponse.json({ error: 'Só o admin master define o selo Veterano.' }, { status: 403 })
+    const target = body.target_user_id
+    if (!target) return NextResponse.json({ error: 'Usuário inválido' }, { status: 400 })
+    const grant = !!body.founder
+    // Ao remover, trava (founder_revoked) pra não ser reconcedido no próximo feed.
+    const { error } = await sb.from('network_profiles').upsert({ user_id: target, founder: grant, founder_revoked: !grant }, { onConflict: 'user_id' })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await logMod(sb, { action: grant ? 'grant_veterano' : 'remove_veterano', targetId: target, targetName: await nameOf(sb, target), actorId: user.id, actorName: await nameOf(sb, user.id) })
+    return NextResponse.json({ ok: true })
+  }
+
   // ── OWNER silencia (castigo de fala) ──
   if (action === 'mute') {
     if (!isOwner) return NextResponse.json({ error: 'Só o admin master pode silenciar.' }, { status: 403 })

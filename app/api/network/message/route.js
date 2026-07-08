@@ -49,6 +49,17 @@ export async function POST(req) {
     if (rule?.ownerOnly && !isOwner) return NextResponse.json({ error: 'Somente o admin master envia avisos.' }, { status: 403 })
     if (text.length > 2000) return NextResponse.json({ error: 'Mensagem muito longa (máx 2000)' }, { status: 400 })
 
+    // SILENCIADO? (castigo de fala) — owner isento
+    if (!isOwner) {
+      const { data: myNp } = await sb.from('network_profiles').select('muted_until,mute_reason').eq('user_id', user.id).maybeSingle()
+      const until = myNp?.muted_until ? new Date(myNp.muted_until) : null
+      if (until && until > new Date()) {
+        const perm = until.getFullYear() >= 2099
+        const quando = perm ? 'permanentemente' : `até ${until.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}`
+        return NextResponse.json({ error: `Você está silenciado ${quando}.${myNp.mute_reason ? ' Motivo: ' + myNp.mute_reason : ''}`, muted: true }, { status: 403 })
+      }
+    }
+
     // RATE LIMIT anti-spam (owner isento)
     if (!isOwner) {
       const since = new Date(Date.now() - RATE_WINDOW).toISOString()

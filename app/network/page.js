@@ -455,7 +455,7 @@ export default function NetworkPage() {
           <Composer
             text={text} setText={setText} onSend={send} sending={sending}
             img={img} setImg={setImg} rule={rule} canPost={canPostHere} isOwner={isOwnerUser}
-            members={data.members || []} mentions={mentions} setMentions={setMentions}
+            members={data.members || []} mentions={mentions} setMentions={setMentions} muted={data.me?.mute}
             editing={editing} cancelEdit={() => { setEditing(null); setText('') }}
           />
         </div>
@@ -667,7 +667,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
 }
 
 // ═══════════════ Composer ═══════════════
-function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, isOwner, members = [], mentions, setMentions, editing, cancelEdit }) {
+function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, isOwner, members = [], mentions, setMentions, muted, editing, cancelEdit }) {
   const requireImg = rule?.requireImage && !isOwner
   const fileRef = useRef(null)
   const taRef = useRef(null)
@@ -702,6 +702,17 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
     setImgBusy(true)
     try { setImg(await compressImage(file)) } catch { alert('Não consegui processar a imagem.') }
     setImgBusy(false)
+  }
+
+  // Silenciado (castigo de fala): read-only com motivo/prazo
+  if (muted?.muted) {
+    const untilStr = muted.permanent ? 'permanentemente' : ('até ' + new Date(muted.until).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }))
+    return (
+      <div style={{ padding: '14px 16px calc(14px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(229,57,53,0.25)', flexShrink: 0, background: 'rgba(229,57,53,0.07)', display: 'flex', alignItems: 'center', gap: 10, color: '#ff9a9a', fontSize: 12.5, lineHeight: 1.4 }}>
+        <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M18.36 6.64A9 9 0 0 1 20.77 15" /><path d="M6.16 6.16a9 9 0 1 0 12.68 12.68" /><line x1="2" y1="2" x2="22" y2="22" /></svg>
+        <div>Você está silenciado {untilStr}.{muted.reason ? <><br /><span style={{ color: 'var(--t3)' }}>Motivo: {muted.reason}</span></> : null}</div>
+      </div>
+    )
   }
 
   // Avisos (só owner): quem não pode postar vê aviso read-only
@@ -847,6 +858,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
   const [bio, setBio] = useState(p?.bio || '')
   const [insta, setInsta] = useState(p?.instagram || '')
   const [tagInput, setTagInput] = useState(p?.tag || '')
+  const [muteReason, setMuteReason] = useState('')
   const [avatarData, setAvatarData] = useState(undefined) // undefined=inalterado | null=remover | dataURL=nova
   const [avatarBusy, setAvatarBusy] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -881,6 +893,16 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
   async function saveTag() {
     setModBusy(true)
     await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'set-tag', target_user_id: p.id, tag: tagInput.trim() }) })
+    setModBusy(false); onModerated && onModerated()
+  }
+  async function doMute(opts) {
+    setModBusy(true)
+    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'mute', target_user_id: p.id, reason: muteReason.trim() || undefined, ...opts }) })
+    setModBusy(false); setMuteReason(''); onModerated && onModerated()
+  }
+  async function doUnmute() {
+    setModBusy(true)
+    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'unmute', target_user_id: p.id }) })
     setModBusy(false); onModerated && onModerated()
   }
 
@@ -956,6 +978,30 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                     <button onClick={saveTag} disabled={modBusy} style={{ padding: '0 16px', borderRadius: 9, border: 'none', background: RED, color: '#fff', fontWeight: 800, fontSize: 12.5, cursor: 'pointer', flexShrink: 0 }}>Salvar</button>
                   </div>
                   {p.tag && <button onClick={() => { setTagInput(''); saveTag() }} disabled={modBusy} style={{ marginTop: 6, background: 'none', border: 'none', color: 'var(--t4)', fontSize: 11, cursor: 'pointer' }}>remover tag</button>}
+                </div>
+              )}
+              {isOwnerUser && (
+                <div>
+                  <label style={lbl}>Silenciar (castigo de fala)</label>
+                  {p.mute?.muted ? (
+                    <div style={{ padding: '10px 12px', borderRadius: 9, background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.25)' }}>
+                      <div style={{ fontSize: 12, color: '#ff9a9a', fontWeight: 700 }}>
+                        Silenciado {p.mute.permanent ? 'permanentemente' : ('até ' + new Date(p.mute.until).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }))}
+                      </div>
+                      {p.mute.reason && <div style={{ fontSize: 11, color: 'var(--t3)', marginTop: 3 }}>Motivo: {p.mute.reason}</div>}
+                      <button onClick={doUnmute} disabled={modBusy} style={{ marginTop: 8, padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Remover silêncio</button>
+                    </div>
+                  ) : (
+                    <>
+                      <input value={muteReason} onChange={e => setMuteReason(e.target.value.slice(0, 120))} placeholder="Motivo (spam, divulgação, regras...)" style={{ ...inp, marginBottom: 8 }} />
+                      <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
+                        {[{ l: '1h', m: 60 }, { l: '6h', m: 360 }, { l: '24h', m: 1440 }, { l: '7 dias', m: 10080 }].map(d => (
+                          <button key={d.l} onClick={() => doMute({ minutes: d.m })} disabled={modBusy} style={muteBtn}>{d.l}</button>
+                        ))}
+                        <button onClick={() => doMute({ permanent: true })} disabled={modBusy} style={{ ...muteBtn, borderColor: 'rgba(229,57,53,0.4)', color: '#ff8a8a' }}>Permanente</button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -1068,4 +1114,5 @@ const iconBtn = { width: 32, height: 32, borderRadius: 9, border: '1px solid rgb
 const miniBtn = { width: 28, height: 28, borderRadius: 7, border: 'none', background: 'transparent', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }
 const rowBtn = { display: 'flex', alignItems: 'center', gap: 9, padding: '6px 8px', borderRadius: 9, background: 'transparent', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }
 const lbl = { display: 'block', fontSize: 10.5, fontWeight: 700, color: 'var(--t3)', marginBottom: 4, letterSpacing: '0.04em' }
+const muteBtn = { padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }
 const inp = { width: '100%', padding: '9px 11px', borderRadius: 9, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'inherit', outline: 'none', resize: 'none' }

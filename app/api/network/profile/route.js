@@ -35,6 +35,29 @@ export async function POST(req) {
     return NextResponse.json({ ok: true })
   }
 
+  // ── OWNER silencia (castigo de fala) ──
+  if (action === 'mute') {
+    if (!isOwner) return NextResponse.json({ error: 'Só o admin master pode silenciar.' }, { status: 403 })
+    const target = body.target_user_id
+    if (!target) return NextResponse.json({ error: 'Usuário inválido' }, { status: 400 })
+    if (target === user.id) return NextResponse.json({ error: 'Você não pode se silenciar.' }, { status: 400 })
+    let until
+    if (body.permanent) until = '2099-01-01T00:00:00Z'
+    else { const min = Number(body.minutes); if (!(min > 0)) return NextResponse.json({ error: 'Duração inválida' }, { status: 400 }); until = new Date(Date.now() + min * 60000).toISOString() }
+    const reason = body.reason ? String(body.reason).slice(0, 120) : null
+    const { error } = await sb.from('network_profiles').upsert({ user_id: target, muted_until: until, mute_reason: reason }, { onConflict: 'user_id' })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+  if (action === 'unmute') {
+    if (!isOwner) return NextResponse.json({ error: 'Sem permissão' }, { status: 403 })
+    const target = body.target_user_id
+    if (!target) return NextResponse.json({ error: 'Usuário inválido' }, { status: 400 })
+    const { error } = await sb.from('network_profiles').upsert({ user_id: target, muted_until: null, mute_reason: null }, { onConflict: 'user_id' })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
   // ── OWNER ou darkzin dao VERIFICADO ──
   if (action === 'set-verified') {
     if (!VERIFIER_EMAILS.has(email)) return NextResponse.json({ error: 'Sem permissão para verificar.' }, { status: 403 })

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { authNetwork, buildAuthorMap, touchPresence, publicName, displayName, colorFromId, getMembers } from '../../../../lib/network-server'
+import { authNetwork, buildAuthorMap, touchPresence, publicName, displayName, colorFromId, getMembers, muteInfo } from '../../../../lib/network-server'
 
 export const dynamic = 'force-dynamic'
 
@@ -81,6 +81,9 @@ export async function GET(req) {
   const members = await getMembers(sb)
 
   const me = authorMap[user.id] || { id: user.id, name: publicName(a.profile), color: colorFromId(user.id) }
+  // status de silenciamento do proprio usuario (pro banner no composer)
+  const { data: myNp } = await sb.from('network_profiles').select('muted_until,mute_reason').eq('user_id', user.id).maybeSingle()
+  me.mute = muteInfo(myNp)
 
   return NextResponse.json({
     channels: channels || [],

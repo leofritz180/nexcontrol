@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
-import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_EMAIL } from '../../lib/network-access'
+import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_EMAIL, NETWORK_GA } from '../../lib/network-access'
 
 const CHANNEL_KEYS = new Set(NETWORK_CHANNELS.map(c => c.key))
 
@@ -217,7 +217,10 @@ export default function NetworkPage() {
         supabase.from('subscriptions').select('*').eq('tenant_id', p.tenant_id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
       ])
       if (t) setTenant(t); if (sb2) setSub(sb2)
-      const allowed = networkEnabled(u.email) && (p.role === 'admin' || u.email === 'leofritz180@gmail.com')
+      const isAdmin = p.role === 'admin' || (u.email || '').toLowerCase() === OWNER_EMAIL
+      const subActive = (sb2 && sb2.status === 'active' && (!sb2.expires_at || new Date(sb2.expires_at) > new Date())) || t?.subscription_status === 'active'
+      // Acesso: allowlist OU (GA e PRO ativo). Sempre admin.
+      const allowed = isAdmin && (networkEnabled(u.email) || (NETWORK_GA && subActive))
       setAccess(allowed ? 'ok' : 'denied')
     })()
   }, [])
@@ -497,11 +500,14 @@ export default function NetworkPage() {
   if (access === 'denied') {
     return (
       <Shell profile={profile} user={user} tenant={tenant} sub={sub}>
-        <CenterMsg
-          title="Network em breve"
-          text="O Network está em rollout controlado e ainda não foi liberado para a sua conta."
-          icon="lock"
-        />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 320, textAlign: 'center', padding: 30 }}>
+          <div style={{ width: 60, height: 60, borderRadius: 17, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+            <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
+          </div>
+          <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 900, color: '#F1F5F9' }}>O Network é exclusivo do PRO</h2>
+          <p style={{ margin: '0 0 20px', fontSize: 13.5, color: 'var(--t3)', maxWidth: 340, lineHeight: 1.5 }}>A comunidade dos admins da NexControl — troque experiência, dúvidas e oportunidades com quem também opera. Assine o PRO pra entrar.</p>
+          <button onClick={() => router.push('/billing-mp?renewal=1')} className="btn btn-brand btn-lg" style={{ padding: '13px 28px', fontWeight: 800 }}>Assinar PRO e entrar</button>
+        </div>
       </Shell>
     )
   }

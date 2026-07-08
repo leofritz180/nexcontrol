@@ -10,7 +10,7 @@ import { isPushSupported, getPermissionState, registerSW, subscribePush, savePus
 import ProfileModal from './ProfileModal'
 import { loadLocalProfile } from '../lib/profileLocal'
 import { aulasEnabled } from '../lib/aulas-tenants'
-import { networkEnabled, NETWORK_GA } from '../lib/network-access'
+import { networkEnabled, NETWORK_GA, NETWORK_NEW_UNTIL } from '../lib/network-access'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
@@ -80,7 +80,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
 
   // Network: dot de "tem mensagem nova" (compara ultima msg com o "visto" salvo)
   useEffect(() => {
-    if (!isAdmin || !networkEnabled(userEmail)) return
+    const s = ownSub || subscription
+    const subActive = (s?.status === 'active' && (!s.expires_at || new Date(s.expires_at) > new Date())) || tenant?.subscription_status === 'active'
+    const eligible = isAdmin && (networkEnabled(userEmail) || (NETWORK_GA && subActive))
+    if (!eligible) return
     let stop = false
     async function check() {
       try {
@@ -98,7 +101,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
     const onFocus = () => check()
     window.addEventListener('focus', onFocus)
     return () => { stop = true; clearInterval(id); window.removeEventListener('focus', onFocus) }
-  }, [isAdmin, userEmail])
+  }, [isAdmin, userEmail, ownSub, subscription, tenant])
 
   async function logout() { await supabase.auth.signOut(); router.push('/login') }
 
@@ -232,12 +235,13 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                   animation:'notif-pulse 1.8s ease-in-out infinite',
                 }} title="Mensagens novas"/>
               )}
-              {item.network && !netUnread && (
+              {item.network && !netUnread && new Date() < new Date(NETWORK_NEW_UNTIL) && (
                 <span className="sb-label" style={{
                   marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
-                  background:'rgba(229,57,53,0.16)', color:'#ff7a7a', border:'1px solid rgba(229,57,53,0.4)',
-                  letterSpacing:'0.06em',
-                }}>BETA</span>
+                  background:'#e53935', color:'#fff', border:'1px solid rgba(255,255,255,0.25)',
+                  letterSpacing:'0.08em', boxShadow:'0 0 10px rgba(229,57,53,0.5)',
+                  animation:'notif-pulse 2s ease-in-out infinite',
+                }}>NOVO</span>
               )}
             </Link>
           )

@@ -487,9 +487,11 @@ export default function NetworkPage() {
       if (!t && !img) return
       setSending(true)
       atBottomRef.current = true
-      // so envia as mencoes cujo @nome ainda esta no texto
-      const activeMentions = mentions.filter(id => { const mem = (data.members || []).find(m => m.id === id); if (!mem) return false; const token = mem.name.startsWith('@') ? mem.name : '@' + mem.name; return t.includes(token) })
-      const res = await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'send', channel, text: t, image: img, mentions: activeMentions, reply_to: replyTo?.id }) })
+      // @todos: só conta se o token ainda está no texto (e o servidor revalida a permissão)
+      const mentionAll = mentions.includes('__all__') && /(^|\s)@todos(\s|$)/i.test(t)
+      // so envia as mencoes cujo @nome ainda esta no texto (ignora o pseudo-id __all__)
+      const activeMentions = mentions.filter(id => { if (id === '__all__') return false; const mem = (data.members || []).find(m => m.id === id); if (!mem) return false; const token = mem.name.startsWith('@') ? mem.name : '@' + mem.name; return t.includes(token) })
+      const res = await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'send', channel, text: t, image: img, mentions: activeMentions, mentionAll, reply_to: replyTo?.id }) })
       if (!res.ok) { const e = await res.json().catch(() => ({})); alert(e.error || 'Falha ao enviar'); setSending(false); return }
       // avisa os outros em tempo real
       try { rtRef.current?.send({ type: 'broadcast', event: 'msg', payload: { channel } }) } catch {}
@@ -710,7 +712,7 @@ export default function NetworkPage() {
             img={img} setImg={setImg} rule={rule} canPost={canPostHere} isOwner={isOwnerUser}
             members={data.members || []} mentions={mentions} setMentions={setMentions} muted={data.me?.mute}
             editing={editing} cancelEdit={() => { setEditing(null); setText('') }}
-            onTyping={broadcastTyping}
+            onTyping={broadcastTyping} canMentionAll={!!data.canMentionAll}
           />
         </div>
 
@@ -1067,14 +1069,19 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
 }
 
 // ═══════════════ Composer ═══════════════
-function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, isOwner, members = [], mentions, setMentions, muted, editing, cancelEdit, onTyping }) {
+function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, isOwner, members = [], mentions, setMentions, muted, editing, cancelEdit, onTyping, canMentionAll }) {
   const requireImg = rule?.requireImage && !isOwner
   const fileRef = useRef(null)
   const taRef = useRef(null)
   const [imgBusy, setImgBusy] = useState(false)
   const [mq, setMq] = useState(null) // query da @mencao (ou null)
   const MENTION_RE = /(^|\s)@([\p{L}\p{N}_]{0,24})$/u
-  const mentionList = mq === null ? [] : members.filter(m => m.name.toLowerCase().replace(/\s/g, '').includes(mq)).slice(0, 6)
+  const mentionList = mq === null ? [] : (() => {
+    const list = members.filter(m => m.name.toLowerCase().replace(/\s/g, '').includes(mq)).slice(0, 6)
+    // @todos no topo (só quem tem permissão) — notifica todo mundo
+    if (canMentionAll && 'todos'.includes(mq)) return [{ id: '__all__', name: 'todos', all: true }, ...list]
+    return list
+  })()
   function onKey(e) {
     if (mq !== null && mentionList.length) { if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); pickMention(mentionList[0]); return } if (e.key === 'Escape') { setMq(null); return } }
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend() }
@@ -1187,8 +1194,22 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
               {mentionList.map(m => (
                 <button key={m.id} onMouseDown={e => { e.preventDefault(); pickMention(m) }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '7px 8px', borderRadius: 8, background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                  <Avatar name={m.name} color={m.color} src={m.avatar} size={26} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)' }}>{m.name}</span>
+                  {m.all ? (
+                    <>
+                      <span style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: 'rgba(229,57,53,0.18)', border: '1px solid rgba(229,57,53,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ff8a8a" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /></svg>
+                      </span>
+                      <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#ff8a8a' }}>@todos</span>
+                        <span style={{ fontSize: 10.5, color: 'var(--t4)' }}>notifica todo mundo</span>
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Avatar name={m.name} color={m.color} src={m.avatar} size={26} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)' }}>{m.name}</span>
+                    </>
+                  )}
                 </button>
               ))}
             </div>

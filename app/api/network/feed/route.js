@@ -136,6 +136,7 @@ export async function GET(req) {
     hasMore,
     isOwner: a.isOwner,
     socialBeta: !!a.socialBeta,
+    canMentionAll: !!a.canMentionAll,
   })
 }
 

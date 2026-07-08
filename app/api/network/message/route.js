@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { authNetwork, getMembers, publicName, buildAuthorMap } from '../../../../lib/network-server'
-import { channelRule } from '../../../../lib/network-access'
+import { channelRule, canMentionAll } from '../../../../lib/network-access'
 import { sendPushToUser } from '../../../../lib/push'
 
 export const dynamic = 'force-dynamic'
@@ -114,7 +114,16 @@ export async function POST(req) {
         const authorName = publicName(a.profile)
         const preview = text ? (text.length > 80 ? text.slice(0, 80) + '…' : text) : '📷 Foto'
         const notified = new Set([user.id])
-        // Mencoes: avisa cada usuario marcado
+        // @TODOS: marca todo mundo (só quem tem permissão — validado no servidor).
+        if (body.mentionAll && canMentionAll(a.email)) {
+          const members = await getMembers(sb)
+          for (const m of members) {
+            if (notified.has(m.id)) continue
+            notified.add(m.id)
+            await sendPushToUser(sb, m.id, { title: `${authorName} marcou todos no Network`, body: preview, url: `/network?c=${channelKey}`, tag: 'network-all' })
+          }
+        }
+        // Mencoes individuais: avisa cada usuario marcado
         const mentions = Array.isArray(body.mentions) ? body.mentions.filter(id => id && id !== user.id) : []
         for (const mid of mentions) {
           if (notified.has(mid)) continue

@@ -44,7 +44,9 @@ export async function POST(req) {
     const target = body.target_user_id
     if (!target) return NextResponse.json({ error: 'Usuário inválido' }, { status: 400 })
     const tag = body.tag != null ? String(body.tag).trim().slice(0, 24) : null
-    const { error } = await sb.from('network_profiles').upsert({ user_id: target, tag: tag || null }, { onConflict: 'user_id' })
+    const patch = { user_id: target, tag: tag || null }
+    if ('color' in body) patch.tag_color = (body.color && /^#[0-9a-fA-F]{6}$/.test(body.color)) ? body.color : null
+    const { error } = await sb.from('network_profiles').upsert(patch, { onConflict: 'user_id' })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     await logMod(sb, { action: 'set_tag', targetId: target, targetName: await nameOf(sb, target), actorId: user.id, actorName: await nameOf(sb, user.id), reason: tag || 'removida' })
     return NextResponse.json({ ok: true })

@@ -859,9 +859,30 @@ function PinnedBar({ msg, isOwner, onUnpin }) {
 }
 
 // ═══════════════ Mensagem (bolha estilo WhatsApp) ═══════════════
-function TagPill({ tag }) {
+function TagPill({ tag, color, small = true }) {
+  if (color) {
+    return (
+      <span style={{
+        display: 'inline-flex', alignItems: 'center', fontSize: small ? 8.5 : 9.5, fontWeight: 800, letterSpacing: '0.04em',
+        padding: small ? '1px 6px' : '2px 8px', borderRadius: 5,
+        background: color + '26', border: `1px solid ${color}66`, color, whiteSpace: 'nowrap', lineHeight: 1.4,
+      }}>{tag}</span>
+    )
+  }
   const owner = tag === 'OWNER'
-  return <Badge label={tag} tone={owner ? 'red' : 'gold'} small />
+  return <Badge label={tag} tone={owner ? 'red' : 'gold'} small={small} />
+}
+// Paleta de cores pras tags (owner escolhe)
+const TAG_COLORS = ['#e53935', '#22C55E', '#3b82f6', '#a855f7', '#f5b83c', '#f97316', '#14b8a6', '#f5f5f5']
+function ColorSwatches({ value, onChange }) {
+  return (
+    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
+      <button type="button" onClick={() => onChange(null)} title="Padrão" style={{ width: 24, height: 24, borderRadius: 6, border: `2px solid ${!value ? '#fff' : 'rgba(255,255,255,0.2)'}`, background: 'rgba(255,255,255,0.08)', cursor: 'pointer', fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>—</button>
+      {TAG_COLORS.map(c => (
+        <button key={c} type="button" onClick={() => onChange(c)} style={{ width: 24, height: 24, borderRadius: 6, border: `2px solid ${value === c ? '#fff' : 'transparent'}`, background: c, cursor: 'pointer', padding: 0 }} />
+      ))}
+    </div>
+  )
 }
 function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, onEdit, onDelete, onPin }) {
   const [hover, setHover] = useState(false)
@@ -895,7 +916,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
             <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em' }}>{a.name}</button>
             {a.verified && <VerifiedBadge size={13} />}
             {a.founder && <VeteranoBadge small />}
-            {a.tag && <TagPill tag={a.tag} />}
+            {a.tag && <TagPill tag={a.tag} color={a.tagColor} />}
             {!a.tag && a.rank && <Badge label={a.rank} tone="red" small />}
           </div>
         )}
@@ -999,13 +1020,28 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
     setMentions(ids => ids.includes(mem.id) ? ids : [...ids, mem.id])
     setTimeout(() => taRef.current?.focus(), 0)
   }
-  async function onFile(e) {
-    const file = e.target.files?.[0]; e.target.value = ''
+  async function handleImageFile(file) {
     if (!file) return
-    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { alert('Envie uma imagem JPG, PNG ou WEBP.'); return }
+    // Colado da area de transferencia costuma vir como image/png; aceita os formatos suportados.
+    if (!/^image\/(jpeg|png|webp|gif)$/.test(file.type)) { alert('Envie uma imagem JPG, PNG ou WEBP.'); return }
     setImgBusy(true)
     try { setImg(await compressImage(file)) } catch { alert('Não consegui processar a imagem.') }
     setImgBusy(false)
+  }
+  async function onFile(e) {
+    const file = e.target.files?.[0]; e.target.value = ''
+    await handleImageFile(file)
+  }
+  // Colar imagem (Ctrl+V) direto no chat — anexa como se tivesse escolhido da galeria
+  async function onPaste(e) {
+    const items = e.clipboardData?.items
+    if (!items) return
+    for (const it of items) {
+      if (it.kind === 'file' && it.type.startsWith('image/')) {
+        const file = it.getAsFile()
+        if (file) { e.preventDefault(); await handleImageFile(file); return }
+      }
+    }
   }
 
   // Silenciado (castigo de fala): read-only com motivo/prazo
@@ -1081,7 +1117,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
               ))}
             </div>
           )}
-          <textarea ref={taRef} value={text} onChange={onChange} onKeyDown={onKey}
+          <textarea ref={taRef} value={text} onChange={onChange} onKeyDown={onKey} onPaste={onPaste}
             rows={1} placeholder={requireImg ? 'Legenda da foto (opcional)...' : 'Escreva uma mensagem... use @ para mencionar'}
             style={{
               width: '100%', resize: 'none', maxHeight: 120, minHeight: 44, padding: '12px 14px',
@@ -1176,6 +1212,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
   const [bio, setBio] = useState(p?.bio || '')
   const [insta, setInsta] = useState(p?.instagram || '')
   const [tagInput, setTagInput] = useState(p?.tag || '')
+  const [tagColor, setTagColor] = useState(p?.tagColor || null)
   const [muteReason, setMuteReason] = useState('')
   const [avatarData, setAvatarData] = useState(undefined) // undefined=inalterado | null=remover | dataURL=nova
   const [avatarBusy, setAvatarBusy] = useState(false)
@@ -1183,7 +1220,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
   const [modBusy, setModBusy] = useState(false)
   const [edit, setEdit] = useState(false)
   const avatarRef = useRef(null)
-  useEffect(() => { setBio(p?.bio || ''); setInsta(p?.instagram || ''); setTagInput(p?.tag || ''); setAvatarData(undefined) }, [p])
+  useEffect(() => { setBio(p?.bio || ''); setInsta(p?.instagram || ''); setTagInput(p?.tag || ''); setTagColor(p?.tagColor || null); setAvatarData(undefined) }, [p])
 
   async function onAvatarFile(e) {
     const file = e.target.files?.[0]; e.target.value = ''
@@ -1198,6 +1235,10 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
     const payload = { bio, instagram: insta }
     if (avatarData !== undefined) payload.avatar = avatarData // dataURL ou null
     await api('/api/network/profile', { method: 'POST', body: JSON.stringify(payload) })
+    // Owner tambem salva a PROPRIA tag + cor (via set-tag no proprio id)
+    if (isOwnerUser && view.isMe) {
+      await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'set-tag', target_user_id: p.id, tag: tagInput.trim(), color: tagColor }) })
+    }
     setSaving(false); setEdit(false); setAvatarData(undefined); onSaved && onSaved()
   }
   // foto mostrada no editor: nova > atual > (removida->inicial)
@@ -1210,7 +1251,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
   }
   async function saveTag() {
     setModBusy(true)
-    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'set-tag', target_user_id: p.id, tag: tagInput.trim() }) })
+    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'set-tag', target_user_id: p.id, tag: tagInput.trim(), color: tagColor }) })
     setModBusy(false); onModerated && onModerated()
   }
   async function doMute(opts) {
@@ -1264,7 +1305,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: 7 }}>
               {p.founder && <VeteranoBadge />}
-              {p.tag && <TagPill tag={p.tag} />}
+              {p.tag && <TagPill tag={p.tag} color={p.tagColor} />}
             </div>
             <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
               {p.badges.filter(b => b.key !== 'verificado' && b.key !== 'pioneiro').map(b => <Badge key={b.key} label={b.label} tone={b.tone} />)}
@@ -1299,7 +1340,9 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                     <input value={tagInput} onChange={e => setTagInput(e.target.value.slice(0, 24))} placeholder="ex: MENTOR, VIP, PARCEIRO" style={inp} />
                     <button onClick={saveTag} disabled={modBusy} style={{ padding: '0 16px', borderRadius: 9, border: 'none', background: RED, color: '#fff', fontWeight: 800, fontSize: 12.5, cursor: 'pointer', flexShrink: 0 }}>Salvar</button>
                   </div>
-                  {p.tag && <button onClick={() => { setTagInput(''); saveTag() }} disabled={modBusy} style={{ marginTop: 6, background: 'none', border: 'none', color: 'var(--t4)', fontSize: 11, cursor: 'pointer' }}>remover tag</button>}
+                  <ColorSwatches value={tagColor} onChange={setTagColor} />
+                  {tagInput.trim() && <div style={{ marginTop: 8 }}>Prévia: <TagPill tag={tagInput.trim()} color={tagColor} /></div>}
+                  {p.tag && <button onClick={() => { setTagInput(''); setTagColor(null); saveTag() }} disabled={modBusy} style={{ marginTop: 8, background: 'none', border: 'none', color: 'var(--t4)', fontSize: 11, cursor: 'pointer' }}>remover tag</button>}
                 </div>
               )}
               {isOwnerUser && (
@@ -1377,6 +1420,15 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                     <label style={lbl}>Instagram</label>
                     <input value={insta} onChange={e => setInsta(e.target.value.replace(/^@/, ''))} placeholder="seu_usuario" style={inp} />
                   </div>
+                  {/* OWNER: personaliza a propria tag (texto + cor) */}
+                  {isOwnerUser && (
+                    <div style={{ paddingTop: 4, borderTop: '1px dashed rgba(255,255,255,0.1)' }}>
+                      <label style={lbl}>Minha tag (aparece ao lado do meu nome)</label>
+                      <input value={tagInput} onChange={e => setTagInput(e.target.value.slice(0, 24))} placeholder="ex: OWNER, FUNDADOR, MENTOR" style={inp} />
+                      <ColorSwatches value={tagColor} onChange={setTagColor} />
+                      <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--t4)' }}>Prévia: {tagInput.trim() ? <TagPill tag={tagInput.trim()} color={tagColor} /> : <span style={{ fontStyle: 'italic' }}>sem tag</span>}</div>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button onClick={save} disabled={saving} style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: RED, color: '#fff', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>{saving ? 'Salvando...' : 'Salvar'}</button>
                     <button onClick={() => setEdit(false)} style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'var(--t3)', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>Cancelar</button>

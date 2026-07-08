@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { networkEnabled, NETWORK_GA } from '../lib/network-access'
+import { anyBannerPending } from '../lib/onboardingSeq'
 
 // Pop-up de LANCAMENTO do Network (1x por conta). So pra ADMIN. Se ja e PRO/allowlist
 // -> "Entrar na comunidade". Se nao -> "Assinar PRO e entrar" (upsell). Coordena com
@@ -18,18 +19,20 @@ export default function NetworkLaunchBanner({ userEmail, isAdmin, subscription, 
   const canEnter = networkEnabled(email) || subActive
 
   useEffect(() => {
-    if (!NETWORK_GA || !isAdmin || !email) return
+    // SO pra quem PODE entrar (PRO/allowlist). Trial/novo NAO ve o pop-up — eles
+    // estao no onboarding (tutorial/checklist); o Network aparece pra eles no menu.
+    if (!NETWORK_GA || !isAdmin || !email || !canEnter) return
     let seen = false
     try { seen = localStorage.getItem(SEEN_KEY) === '1' } catch {}
     if (seen) return
     const t = setTimeout(() => {
-      // se outro banner (Bettify/tutorial) esta aberto, tenta na proxima carga
-      if (typeof window !== 'undefined' && window.__nxBannerOpen) return
+      // nao sobrepor outro banner/onboarding — tenta de novo na proxima carga
+      if (anyBannerPending()) return
       try { window.__nxBannerOpen = true } catch {}
       setShow(true)
-    }, 1400)
+    }, 1600)
     return () => clearTimeout(t)
-  }, [email, isAdmin])
+  }, [email, isAdmin, canEnter])
 
   function dismiss() {
     try { localStorage.setItem(SEEN_KEY, '1') } catch {}

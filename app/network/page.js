@@ -234,7 +234,8 @@ export default function NetworkPage() {
       const subActive = (sb2 && sb2.status === 'active' && (!sb2.expires_at || new Date(sb2.expires_at) > new Date())) || t?.subscription_status === 'active'
       // Acesso: allowlist OU (GA e PRO ativo). Sempre admin.
       const allowed = isAdmin && (networkEnabled(u.email) || (NETWORK_GA && subActive))
-      setAccess(allowed ? 'ok' : 'denied')
+      // Admin sem PRO -> "teaser" (previa borrada com trava). Nao-admin -> denied.
+      setAccess(allowed ? 'ok' : (isAdmin && NETWORK_GA ? 'teaser' : 'denied'))
     })()
   }, [])
 
@@ -510,6 +511,13 @@ export default function NetworkPage() {
   if (access === 'checking') {
     return <Shell profile={profile} user={user} tenant={tenant} sub={sub}><CenterMsg text="Carregando Network..." spin /></Shell>
   }
+  if (access === 'teaser') {
+    return (
+      <Shell profile={profile} user={user} tenant={tenant} sub={sub} bare={isMobile}>
+        <TeaserView isMobile={isMobile} vpH={vpH} onSubscribe={() => router.push('/billing-mp?renewal=1')} />
+      </Shell>
+    )
+  }
   if (access === 'denied') {
     return (
       <Shell profile={profile} user={user} tenant={tenant} sub={sub}>
@@ -741,6 +749,63 @@ function Shell({ children, profile, user, tenant, sub, bare }) {
         </div>
       )}
     </AppLayout>
+  )
+}
+
+// ═══════════════ Teaser (admin sem PRO) — previa borrada + trava ═══════════════
+function clientFakeOnline() {
+  const now = Date.now()
+  const brtHour = ((new Date().getUTCHours() - 3) + 24) % 24
+  let lo, hi
+  if (brtHour >= 2 && brtHour < 6) { lo = 40; hi = 80 } else if (brtHour >= 20 || brtHour < 2) { lo = 80; hi = 150 } else { lo = 70; hi = 150 }
+  const t = now / 60000, mid = (lo + hi) / 2, amp = (hi - lo) / 2
+  const drift = Math.sin((t / 43) * Math.PI * 2) * amp * 0.72
+  const bucket = Math.floor(t / 3)
+  const noise = ((Math.abs(Math.sin(bucket * 12.9898) * 43758.5453) % 1) - 0.5) * amp * 0.5
+  return Math.round(Math.max(lo, Math.min(hi, mid + drift + noise)))
+}
+const TEASER_MSGS = [
+  { name: 'Rafael Torres', text: 'alguém operando WE hoje? tá com boa retenção?', mine: false, color: '#3b82f6' },
+  { name: 'João PH', text: 'bom dia comunidade 🔥 semana começando forte demais', mine: false, color: '#22C55E' },
+  { name: 'Você', text: 'salve galera, cheguei agora', mine: true, color: '#e53935' },
+  { name: 'Marcos Lima', text: 'fechei 14 metas essa semana, tmj 🚀', mine: false, color: '#f59e0b' },
+  { name: 'Bruno CPA', text: 'alguém usando as proxy da bettify? tá voando aqui', mine: false, color: '#a855f7' },
+  { name: 'Pedro Alves', text: 'quem tá on agora?', mine: false, color: '#14b8a6' },
+]
+function TeaserView({ isMobile, vpH, onSubscribe }) {
+  const [online] = useState(() => clientFakeOnline())
+  const boxStyle = isMobile
+    ? { height: vpH ? vpH + 'px' : '100dvh', width: '100%' }
+    : { height: 'calc(100vh - 96px)', minHeight: 480, borderRadius: 18, border: '1px solid rgba(255,255,255,0.07)' }
+  return (
+    <div style={{ position: 'relative', overflow: 'hidden', background: 'rgba(4,7,14,0.6)', ...boxStyle }}>
+      <div style={{ filter: 'blur(5px)', opacity: 0.5, padding: '20px 14px', pointerEvents: 'none', userSelect: 'none' }}>
+        {TEASER_MSGS.map((m, i) => (
+          <div key={i} style={{ display: 'flex', justifyContent: m.mine ? 'flex-end' : 'flex-start', padding: '6px 4px' }}>
+            <div style={{ maxWidth: '78%', display: 'flex', flexDirection: 'column', alignItems: m.mine ? 'flex-end' : 'flex-start' }}>
+              {!m.mine && <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff' }}>{m.name[0]}</div>
+                <span style={{ fontSize: 12.5, fontWeight: 800, color: '#F1F5F9' }}>{m.name}</span>
+              </div>}
+              <div style={{ marginLeft: m.mine ? 0 : 36, background: m.mine ? 'rgba(229,57,53,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${m.mine ? 'rgba(229,57,53,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: m.mine ? '15px 15px 5px 15px' : '15px 15px 15px 5px', padding: '9px 13px', fontSize: 13.5, color: 'var(--t1)' }}>{m.text}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 28, background: 'radial-gradient(circle at center, rgba(4,7,14,0.5), rgba(4,7,14,0.9))' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '6px 13px', borderRadius: 99, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', marginBottom: 18 }}>
+          <span style={{ width: 7, height: 7, borderRadius: '50%', background: MINT, boxShadow: `0 0 8px ${MINT}` }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#4ade80' }}>{online} admins online agora</span>
+        </div>
+        <div style={{ width: 60, height: 60, borderRadius: 17, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+          <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+        </div>
+        <h2 style={{ margin: '0 0 8px', fontSize: 21, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>A comunidade tá acontecendo 🔥</h2>
+        <p style={{ margin: '0 0 22px', fontSize: 13.5, color: 'rgba(255,255,255,0.7)', maxWidth: 330, lineHeight: 1.55 }}>Os admins da NexControl estão trocando experiência, dúvidas e oportunidades em tempo real. <strong style={{ color: '#fff' }}>Assine o PRO</strong> pra desbloquear e entrar.</p>
+        <button onClick={onSubscribe} className="btn btn-brand btn-lg" style={{ padding: '14px 30px', fontWeight: 800, fontSize: 14.5 }}>Assinar PRO e entrar →</button>
+        <p style={{ marginTop: 12, fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>👑 os primeiros 100 a entrar ganham o selo Veterano</p>
+      </div>
+    </div>
   )
 }
 

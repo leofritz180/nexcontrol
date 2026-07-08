@@ -119,10 +119,25 @@ function useIsMobile() {
   }, [])
   return m
 }
+// Altura util REAL (acompanha o teclado no mobile via visualViewport).
+// Sem isso, o composer some atras do teclado. Retorna px (ou null antes de medir).
+function useViewportH() {
+  const [h, setH] = useState(null)
+  useEffect(() => {
+    const vv = window.visualViewport
+    const upd = () => setH(Math.round(vv ? vv.height : window.innerHeight))
+    upd()
+    if (vv) { vv.addEventListener('resize', upd); vv.addEventListener('scroll', upd) }
+    window.addEventListener('resize', upd)
+    return () => { if (vv) { vv.removeEventListener('resize', upd); vv.removeEventListener('scroll', upd) } window.removeEventListener('resize', upd) }
+  }, [])
+  return h
+}
 
 export default function NetworkPage() {
   const router = useRouter()
   const isMobile = useIsMobile()
+  const vpH = useViewportH()
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [tenant, setTenant] = useState(null)
@@ -254,6 +269,14 @@ export default function NetworkPage() {
     try { if (status.latest) localStorage.setItem('nx_net_seen', status.latest) } catch {}
   }, [access, channel, data.messages, status])
 
+  // mobile: trava o scroll do body — o chat ocupa a tela toda (sem bounce)
+  useEffect(() => {
+    if (!isMobile) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [isMobile])
+
   // auto-scroll pro fim quando chegam msgs novas (se estava no fim)
   useEffect(() => {
     if (atBottomRef.current && scrollRef.current) {
@@ -283,7 +306,7 @@ export default function NetworkPage() {
       setSending(true)
       atBottomRef.current = true
       // so envia as mencoes cujo @nome ainda esta no texto
-      const activeMentions = mentions.filter(id => { const mem = (data.members || []).find(m => m.id === id); return mem && t.includes('@' + mem.name) })
+      const activeMentions = mentions.filter(id => { const mem = (data.members || []).find(m => m.id === id); if (!mem) return false; const token = mem.name.startsWith('@') ? mem.name : '@' + mem.name; return t.includes(token) })
       const res = await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'send', channel, text: t, image: img, mentions: activeMentions }) })
       if (!res.ok) { const e = await res.json().catch(() => ({})); alert(e.error || 'Falha ao enviar'); setSending(false); return }
       // avisa os outros em tempo real
@@ -363,8 +386,12 @@ export default function NetworkPage() {
   channels.forEach(c => { const lat = status.byChannel[c.key]; if (lat && c.key !== channel && (!reads[c.key] || reads[c.key] < lat)) unread[c.key] = true })
 
   return (
-    <Shell profile={profile} user={user} tenant={tenant} sub={sub}>
-      <div style={{
+    <Shell profile={profile} user={user} tenant={tenant} sub={sub} bare={isMobile}>
+      <div style={isMobile ? {
+        display: 'flex', width: '100%', overflow: 'hidden',
+        height: vpH ? vpH + 'px' : '100dvh',
+        background: 'rgba(4,7,14,0.96)',
+      } : {
         display: 'flex', gap: 0,
         height: 'calc(100vh - 96px)', minHeight: 480,
         borderRadius: 18, overflow: 'hidden',
@@ -379,21 +406,22 @@ export default function NetworkPage() {
 
         {/* ── COL 2: chat ── */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, background: 'rgba(4,7,14,0.35)' }}>
-          {/* header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
-            {isMobile && (
-              <button onClick={() => setMobilePanel('channels')} style={iconBtn}>
-                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></svg>
-              </button>
-            )}
-            <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>{channelEmoji(channel)}</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ margin: 0, fontSize: 14.5, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em' }}>{activeChan?.name || 'Network'}</p>
-              <p style={{ margin: '1px 0 0', fontSize: 11, color: 'var(--t3)', display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: MINT, boxShadow: `0 0 8px ${MINT}` }} />
-                {data.online.length} online agora
-              </p>
-            </div>
+          {/* header (mobile: left padding p/ nao colar no hamburguer do app; nome troca canal) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: isMobile ? '11px 12px 11px 56px' : '13px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, background: isMobile ? 'rgba(8,12,22,0.6)' : 'transparent' }}>
+            <button type="button" onClick={() => { if (isMobile) setMobilePanel('channels') }} disabled={!isMobile}
+              style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', padding: 0, cursor: isMobile ? 'pointer' : 'default', textAlign: 'left' }}>
+              <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>{channelEmoji(channel)}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ margin: 0, fontSize: 14.5, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {activeChan?.name || 'Network'}
+                  {isMobile && <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth={2.4} strokeLinecap="round" style={{ flexShrink: 0 }}><polyline points="6 9 12 15 18 9" /></svg>}
+                </p>
+                <p style={{ margin: '1px 0 0', fontSize: 11, color: 'var(--t3)', display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: MINT, boxShadow: `0 0 8px ${MINT}` }} />
+                  {data.online.length} online agora
+                </p>
+              </div>
+            </button>
             {isMobile && (
               <button onClick={() => setMobilePanel('side')} style={iconBtn}>
                 <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
@@ -407,7 +435,7 @@ export default function NetworkPage() {
           )}
 
           {/* mensagens */}
-          <div ref={scrollRef} onScroll={onScroll} style={{ flex: 1, overflowY: 'auto', padding: '14px 4px 8px' }}>
+          <div ref={scrollRef} onScroll={onScroll} style={{ flex: 1, overflowY: 'auto', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', padding: isMobile ? '10px 2px 6px' : '14px 4px 8px' }}>
             {loading ? (
               <CenterMsg text="Carregando conversa..." spin />
             ) : data.messages.length === 0 ? (
@@ -467,23 +495,26 @@ export default function NetworkPage() {
 }
 
 // ═══════════════ Shell (AppLayout + título) ═══════════════
-function Shell({ children, profile, user, tenant, sub }) {
+// bare=true (mobile): sem título/padding — o chat ocupa a tela toda (estilo WhatsApp).
+function Shell({ children, profile, user, tenant, sub, bare }) {
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'}
       tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
-      <div style={{ padding: '18px 20px 20px', maxWidth: 1400, margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, rgba(229,57,53,0.2), rgba(229,57,53,0.05))', border: '1px solid rgba(229,57,53,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
+      {bare ? children : (
+        <div style={{ padding: '18px 20px 20px', maxWidth: 1400, margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, rgba(229,57,53,0.2), rgba(229,57,53,0.05))', border: '1px solid rgba(229,57,53,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
+            </div>
+            <div>
+              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#F1F5F9', letterSpacing: '-0.03em' }}>Network</h1>
+              <p style={{ margin: '1px 0 0', fontSize: 12, color: 'var(--t3)' }}>Comunidade dos admins da NexControl</p>
+            </div>
+            <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: '#ff7a7a', padding: '3px 8px', borderRadius: 5, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.3)' }}>BETA</span>
           </div>
-          <div>
-            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#F1F5F9', letterSpacing: '-0.03em' }}>Network</h1>
-            <p style={{ margin: '1px 0 0', fontSize: 12, color: 'var(--t3)' }}>Comunidade dos admins da NexControl</p>
-          </div>
-          <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: '#ff7a7a', padding: '3px 8px', borderRadius: 5, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.3)' }}>BETA</span>
+          {children}
         </div>
-        {children}
-      </div>
+      )}
     </AppLayout>
   )
 }
@@ -658,7 +689,8 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
     const ta = taRef.current
     const pos = ta ? ta.selectionStart : text.length
     const before = text.slice(0, pos), after = text.slice(pos)
-    const nb = before.replace(MENTION_RE, (m, p1) => `${p1}@${mem.name} `)
+    const token = mem.name.startsWith('@') ? mem.name : '@' + mem.name
+    const nb = before.replace(MENTION_RE, (m, p1) => `${p1}${token} `)
     setText(nb + after); setMq(null)
     setMentions(ids => ids.includes(mem.id) ? ids : [...ids, mem.id])
     setTimeout(() => taRef.current?.focus(), 0)
@@ -675,7 +707,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
   // Avisos (só owner): quem não pode postar vê aviso read-only
   if (!canPost) {
     return (
-      <div style={{ padding: '16px 16px', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--t3)', fontSize: 12.5 }}>
+      <div style={{ padding: '16px 16px calc(16px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--t3)', fontSize: 12.5 }}>
         <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
         Somente o admin master pode enviar avisos.
       </div>
@@ -684,7 +716,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
 
   const canSend = !sending && (requireImg ? !!img : (!!text.trim() || !!img))
   return (
-    <div style={{ padding: '12px 14px 14px', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+    <div style={{ padding: '12px 14px calc(14px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
       {editing && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7, fontSize: 11, color: 'var(--t3)' }}>
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>

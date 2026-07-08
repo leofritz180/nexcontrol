@@ -31,8 +31,8 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
         tenantId={tenantId}
       />
       <div style={{ marginLeft: isRedesign(userEmail) ? 76 : 248 }} className="app-content">
-        {/* Loja Proxy: sem cabeçalho vermelho — imersão total na Bettify */}
-        {isRedesign(userEmail) && pathname !== '/proxy' && <RedesignHeader />}
+        {/* Loja Proxy e Network: sem cabeçalho vermelho — imersão total (chat/loja) */}
+        {isRedesign(userEmail) && pathname !== '/proxy' && pathname !== '/network' && <RedesignHeader />}
         <AnimatePresence mode="wait">
           <motion.div
             key={pathname}

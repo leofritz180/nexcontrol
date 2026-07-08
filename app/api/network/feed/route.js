@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { authNetwork, buildAuthorMap, touchPresence, publicName, colorFromId, getMembers } from '../../../../lib/network-server'
+import { authNetwork, buildAuthorMap, touchPresence, publicName, displayName, colorFromId, getMembers } from '../../../../lib/network-server'
 
 export const dynamic = 'force-dynamic'
 
@@ -65,13 +65,13 @@ export async function GET(req) {
 
   // ONLINE agora (presenca < 3 min) + nomes
   const cutoff = new Date(Date.now() - 3 * 60 * 1000).toISOString()
-  const { data: activeNps } = await sb.from('network_profiles').select('user_id,last_active,avatar_url').gte('last_active', cutoff)
+  const { data: activeNps } = await sb.from('network_profiles').select('user_id,last_active,avatar_url,instagram').gte('last_active', cutoff)
   const onlineIds = (activeNps || []).map(n => n.user_id)
-  const avatarById = {}; (activeNps || []).forEach(n => { avatarById[n.user_id] = n.avatar_url || null })
+  const npOnlineById = {}; (activeNps || []).forEach(n => { npOnlineById[n.user_id] = n })
   let online = []
   if (onlineIds.length) {
     const { data: onlineProfs } = await sb.from('profiles').select('id,nome,email').in('id', onlineIds)
-    online = (onlineProfs || []).map(p => ({ id: p.id, name: publicName(p), avatar: avatarById[p.id] || null, color: colorFromId(p.id), you: p.id === user.id }))
+    online = (onlineProfs || []).map(p => ({ id: p.id, name: displayName(p, npOnlineById[p.id]), avatar: npOnlineById[p.id]?.avatar_url || null, color: colorFromId(p.id), you: p.id === user.id }))
   }
 
   // TOP contribuidores (network_score = msgs enviadas + reacoes recebidas)
@@ -120,12 +120,12 @@ async function topContributors(sb) {
   if (!authorIds.length) return []
   const [{ data: profs }, { data: nps }] = await Promise.all([
     sb.from('profiles').select('id,nome,email').in('id', authorIds),
-    sb.from('network_profiles').select('user_id,avatar_url').in('user_id', authorIds),
+    sb.from('network_profiles').select('user_id,avatar_url,instagram').in('user_id', authorIds),
   ])
-  const nameById = {}; (profs || []).forEach(p => { nameById[p.id] = publicName(p) })
-  const avById = {}; (nps || []).forEach(n => { avById[n.user_id] = n.avatar_url || null })
+  const npById = {}; (nps || []).forEach(n => { npById[n.user_id] = n })
+  const profById = {}; (profs || []).forEach(p => { profById[p.id] = p })
   return authorIds
-    .map(id => ({ id, name: nameById[id] || 'admin', avatar: avById[id] || null, color: colorFromId(id), score: (msgCount[id] || 0) + (reactCount[id] || 0), msgs: msgCount[id] || 0 }))
+    .map(id => ({ id, name: displayName(profById[id], npById[id]) || 'admin', avatar: npById[id]?.avatar_url || null, color: colorFromId(id), score: (msgCount[id] || 0) + (reactCount[id] || 0), msgs: msgCount[id] || 0 }))
     .sort((x, y) => y.score - x.score)
     .slice(0, 10)
 }

@@ -10,6 +10,7 @@ const RedesignHeader = dynamic(() => import('./RedesignHeader'), { ssr: false })
 const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
 const BettifyStoreBanner = dynamic(() => import('./BettifyStoreBanner'), { ssr: false })
 const NetworkLaunchBanner = dynamic(() => import('./NetworkLaunchBanner'), { ssr: false })
+const NetworkDock = dynamic(() => import('./NetworkDock'), { ssr: false })
 
 const pageVariants = {
   initial: { opacity: 0, y: 14 },
@@ -56,6 +57,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       <VoiceBanner userEmail={userEmail} />
       <BettifyStoreBanner userEmail={userEmail} />
       {pathname !== '/network' && <NetworkLaunchBanner userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />}
+      <NetworkDock userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />
       <style jsx global>{`
         @media (max-width: 768px) {
           .app-content { margin-left: 0 !important; }

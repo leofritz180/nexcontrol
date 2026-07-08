@@ -393,6 +393,7 @@ export default function MetaPage() {
   // EQUIPES: líder da DS MENTORIA agindo como admin nas metas da SUA equipe
   const [leaderAllowed, setLeaderAllowed] = useState(false)
   const [showFinalePopup, setShowFinalePopup] = useState(false)
+  const [netShareState, setNetShareState] = useState('idle') // idle | sharing | done — compartilhar resultado no Network
   const [saq,     setSaq]     = useState('')
   const [statusProb, setStatusProb] = useState('normal')
   const [editRem, setEditRem] = useState(null)
@@ -1991,7 +1992,7 @@ export default function MetaPage() {
           bauAcumRemessas={bauAcumRemessas}
           tenantOpModel={tenantOpModel}
           onClose={()=>setShowAdminClose(false)}
-          onSaved={async ()=>{ setShowAdminClose(false); await fetchData(); if (isAdminV2) setShowFinalePopup(true) }}
+          onSaved={async ()=>{ setShowAdminClose(false); setNetShareState('idle'); await fetchData(); if (isAdminV2) setShowFinalePopup(true) }}
         />
         )
       })()}
@@ -2072,8 +2073,11 @@ export default function MetaPage() {
             const custos = Number(meta.gastos_operacionais || 0)
             const bauMeta = Number(meta.bau || totais.bau || 0)
             const goPanel = () => { setShowFinalePopup(false); router.push(homePath) }
+            const redeStr = (meta.rede || meta.plataforma || 'OPERAÇÃO').toString()
 
-            const baixarCertificado = () => {
+            // Gera o certificado (canvas) e devolve via callback — reusado pelo "Baixar imagem"
+            // e pelo "Compartilhar no Network" (posta a imagem no canal Resultados).
+            const renderCert = (done) => {
               try {
                 const W = 1080, H = 1350
                 const c = document.createElement('canvas'); c.width = W; c.height = H
@@ -2081,7 +2085,7 @@ export default function MetaPage() {
                 const RED = '#e53935'
                 const accent = isLucro ? '34,197,94' : '229,57,53'      // verde lucro / vermelho perda
                 const accentHex = isLucro ? '#22C55E' : '#ef4444'
-                const rede = (meta.rede || meta.plataforma || 'OPERAÇÃO').toString().toUpperCase()
+                const rede = redeStr.toUpperCase()
                 const money = (n) => `R$ ${fmt(Math.abs(n))}`
                 const signed = (n) => `${n >= 0 ? '+' : '−'}${money(n)}`
                 // helper rounded-rect
@@ -2193,7 +2197,7 @@ export default function MetaPage() {
                   x.fillStyle = 'rgba(255,255,255,0.3)'; x.font = '600 18px Inter, sans-serif'
                   x.fillText('nexcpa.com.br', W / 2, 1208)
 
-                  c.toBlob(b => { const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `nexcontrol-${rede.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${dataStr.replace(/\//g, '-')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u) })
+                  done(c)
                 }
 
                 const img = new Image()
@@ -2201,6 +2205,32 @@ export default function MetaPage() {
                 img.onerror = () => draw(null)
                 img.src = '/icons/nexcontrol-icon-clean.png'
               } catch {}
+            }
+
+            const baixarCertificado = () => renderCert(c => {
+              c.toBlob(b => { const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `nexcontrol-${redeStr.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${dataStr.replace(/\//g, '-')}.png`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(u) })
+            })
+
+            // Compartilha o card do resultado no canal Resultados do Network (imagem + legenda).
+            const compartilharNoNetwork = () => {
+              if (netShareState !== 'idle') return
+              setNetShareState('sharing')
+              renderCert(c => {
+                let dataUrl
+                try { dataUrl = c.toDataURL('image/jpeg', 0.9) } catch { setNetShareState('idle'); return }
+                ;(async () => {
+                  try {
+                    const { data: s } = await supabase.auth.getSession()
+                    const token = s?.session?.access_token
+                    if (!token) { setNetShareState('idle'); return }
+                    const caption = `${isLucro ? '🚀 Fechei mais uma' : '📊 Operação encerrada'}${meta.rede ? ' · ' + meta.rede : ''} — ${isLucro ? '+' : '−'}R$ ${fmt(Math.abs(liqFinal))}`
+                    const res = await fetch('/api/network/message', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ action: 'send', channel: 'resultados', text: caption, image: dataUrl }) })
+                    if (res.ok) { setNetShareState('done') }
+                    else if (res.status === 403) { setNetShareState('idle'); if (confirm('Compartilhar resultados é um recurso do Network (PRO). Assinar agora?')) router.push('/billing-mp?renewal=1') }
+                    else { const e = await res.json().catch(() => ({})); alert(e.error || 'Não consegui compartilhar agora.'); setNetShareState('idle') }
+                  } catch { setNetShareState('idle') }
+                })()
+              })
             }
 
             const sumItems = [
@@ -2269,6 +2299,17 @@ export default function MetaPage() {
                       style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, width: '100%', padding: '14px', borderRadius: 13, border: 'none', cursor: 'pointer', fontSize: 14.5, fontWeight: 800, fontFamily: 'inherit', color: '#fff', background: '#e53935', boxShadow: '0 10px 28px rgba(229,57,53,0.32)' }}>
                       <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
                       Baixar imagem
+                    </button>
+                    {/* Compartilhar o resultado no Network (posta o card no canal Resultados) */}
+                    <button type="button" onClick={netShareState === 'idle' ? compartilharNoNetwork : (netShareState === 'done' ? () => { setShowFinalePopup(false); router.push('/network?c=resultados') } : undefined)} disabled={netShareState === 'sharing'}
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, width: '100%', padding: '13px', borderRadius: 13, cursor: netShareState === 'sharing' ? 'default' : 'pointer', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', color: netShareState === 'done' ? '#4ade80' : '#fff', background: netShareState === 'done' ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.06)', border: `1px solid ${netShareState === 'done' ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.14)'}` }}>
+                      {netShareState === 'sharing' ? (
+                        <><span style={{ width: 15, height: 15, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.25)', borderTopColor: '#fff', animation: 'spin 0.8s linear infinite' }} /> Compartilhando…</>
+                      ) : netShareState === 'done' ? (
+                        <><svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Compartilhado — ver no Network</>
+                      ) : (
+                        <><svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg> Compartilhar no Network</>
+                      )}
                     </button>
                     <div style={{ display: 'flex', gap: 9 }}>
                       <button type="button" onClick={goPanel} style={{ flex: 1, padding: '12px', borderRadius: 12, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t1)', cursor: 'pointer', fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit' }}>Voltar para metas</button>

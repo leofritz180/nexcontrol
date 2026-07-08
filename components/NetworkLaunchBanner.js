@@ -76,10 +76,10 @@ export default function NetworkLaunchBanner({ userEmail, isAdmin, subscription, 
               A comunidade fechada dos <strong style={{ color: '#fff' }}>admins da NexControl</strong>. Troque experiência, dúvidas e oportunidades com quem também opera de verdade.
             </p>
 
-            {/* hook pioneiro */}
+            {/* hook veterano */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderRadius: 10, background: 'rgba(245,180,60,0.1)', border: '1px solid rgba(245,180,60,0.3)', marginBottom: 22 }}>
               <span style={{ fontSize: 15 }}>👑</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#f6c968' }}>Os primeiros 100 a entrar ganham o selo <strong style={{ color: '#fff' }}>Pioneiro</strong></span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#f6c968' }}>Os primeiros 100 a entrar ganham o selo <strong style={{ color: '#fff' }}>Veterano</strong></span>
             </div>
 
             <button type="button" onClick={go} style={{

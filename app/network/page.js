@@ -113,8 +113,8 @@ function Avatar({ name, color, size = 38, online, src }) {
     </div>
   )
 }
-// Selo Pioneiro (primeiros a entrar na comunidade) — coroa + destaque premium.
-function PioneiroBadge({ small }) {
+// Selo Veterano (primeiros a entrar na comunidade) — coroa + destaque premium.
+function VeteranoBadge({ small }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 3,
@@ -122,7 +122,7 @@ function PioneiroBadge({ small }) {
       padding: small ? '1px 6px' : '2px 8px', borderRadius: 5,
       background: 'linear-gradient(135deg, rgba(245,180,60,0.2), rgba(245,180,60,0.05))',
       border: '1px solid rgba(245,180,60,0.45)', color: '#f6c968', whiteSpace: 'nowrap', lineHeight: 1.4,
-    }}>👑 Pioneiro</span>
+    }}>👑 Veterano</span>
   )
 }
 
@@ -829,7 +829,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
             <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 0 }}><Avatar name={a.name} color={a.color} src={a.avatar} size={30} /></button>
             <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em' }}>{a.name}</button>
             {a.verified && <VerifiedBadge size={13} />}
-            {a.founder && <PioneiroBadge small />}
+            {a.founder && <VeteranoBadge small />}
             {a.tag && <TagPill tag={a.tag} />}
             {!a.tag && a.rank && <Badge label={a.rank} tone="red" small />}
           </div>
@@ -1198,7 +1198,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
               {p.verified && <VerifiedBadge size={20} />}
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: 7 }}>
-              {p.founder && <PioneiroBadge />}
+              {p.founder && <VeteranoBadge />}
               {p.tag && <TagPill tag={p.tag} />}
             </div>
             <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>

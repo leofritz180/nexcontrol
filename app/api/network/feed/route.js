@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { authNetwork, buildAuthorMap, touchPresence, publicName, colorFromId } from '../../../../lib/network-server'
+import { authNetwork, buildAuthorMap, touchPresence, publicName, colorFromId, getMembers } from '../../../../lib/network-server'
 
 export const dynamic = 'force-dynamic'
 
@@ -77,6 +77,9 @@ export async function GET(req) {
   // TOP contribuidores (network_score = msgs enviadas + reacoes recebidas)
   const top = await topContributors(sb)
 
+  // membros mencionaveis
+  const members = await getMembers(sb)
+
   const me = authorMap[user.id] || { id: user.id, name: publicName(a.profile), color: colorFromId(user.id) }
 
   return NextResponse.json({
@@ -86,6 +89,7 @@ export async function GET(req) {
     pinned: pinnedMsg ? shape(pinnedMsg) : null,
     online,
     top,
+    members,
     me,
     isOwner: a.isOwner,
   })

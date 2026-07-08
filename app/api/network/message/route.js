@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { authNetwork } from '../../../../lib/network-server'
+import { authNetwork, getMembers, publicName } from '../../../../lib/network-server'
 import { channelRule } from '../../../../lib/network-access'
+import { sendPushToUser } from '../../../../lib/push'
 
 export const dynamic = 'force-dynamic'
+
+const RATE_MAX = 15        // mensagens
+const RATE_WINDOW = 60000  // por minuto
+
+// Extrai o path do storage a partir da URL publica (pra apagar a imagem).
+function storagePathFromUrl(url) {
+  const m = /\/storage\/v1\/object\/public\/network\/([^?]+)/.exec(url || '')
+  return m ? decodeURIComponent(m[1]) : null
+}
 
 // Decodifica um data URL de imagem e sobe pro Storage; devolve a URL publica.
 async function uploadImage(sb, channelKey, dataUrl) {
@@ -39,6 +49,14 @@ export async function POST(req) {
     if (rule?.ownerOnly && !isOwner) return NextResponse.json({ error: 'Somente o admin master envia avisos.' }, { status: 403 })
     if (text.length > 2000) return NextResponse.json({ error: 'Mensagem muito longa (máx 2000)' }, { status: 400 })
 
+    // RATE LIMIT anti-spam (owner isento)
+    if (!isOwner) {
+      const since = new Date(Date.now() - RATE_WINDOW).toISOString()
+      const { count } = await sb.from('network_messages').select('id', { count: 'exact', head: true })
+        .eq('author_id', user.id).gte('created_at', since)
+      if ((count || 0) >= RATE_MAX) return NextResponse.json({ error: 'Você está enviando rápido demais. Espere um pouco.' }, { status: 429 })
+    }
+
     const { data: ch } = await sb.from('network_channels').select('id,key').eq('key', channelKey).maybeSingle()
     if (!ch) return NextResponse.json({ error: 'Canal inválido' }, { status: 400 })
 
@@ -57,6 +75,32 @@ export async function POST(req) {
       .insert({ channel_id: ch.id, author_id: user.id, text, image_url: imageUrl })
       .select('id,created_at').maybeSingle()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // ── Notificacoes (push) — await pra garantir envio no serverless ──
+    await (async () => {
+      try {
+        const authorName = publicName(a.profile)
+        const preview = text ? (text.length > 80 ? text.slice(0, 80) + '…' : text) : '📷 Foto'
+        const notified = new Set([user.id])
+        // Mencoes: avisa cada usuario marcado
+        const mentions = Array.isArray(body.mentions) ? body.mentions.filter(id => id && id !== user.id) : []
+        for (const mid of mentions) {
+          if (notified.has(mid)) continue
+          notified.add(mid)
+          await sendPushToUser(sb, mid, { title: `${authorName} te mencionou no Network`, body: preview, url: `/network?c=${channelKey}`, tag: 'network-mention' })
+        }
+        // Avisos: comunicado oficial -> notifica todos os membros
+        if (rule?.ownerOnly) {
+          const members = await getMembers(sb)
+          for (const m of members) {
+            if (notified.has(m.id)) continue
+            notified.add(m.id)
+            await sendPushToUser(sb, m.id, { title: '📢 Novo aviso no Network', body: preview, url: '/network?c=avisos', tag: 'network-aviso' })
+          }
+        }
+      } catch (e) { console.error('[network] push falhou', e?.message) }
+    })()
+
     return NextResponse.json({ ok: true, id: data?.id, created_at: data?.created_at })
   }
 
@@ -77,11 +121,14 @@ export async function POST(req) {
   if (action === 'delete') {
     const id = body.id
     if (!id) return NextResponse.json({ error: 'id obrigatório' }, { status: 400 })
-    const { data: msg } = await sb.from('network_messages').select('author_id').eq('id', id).maybeSingle()
+    const { data: msg } = await sb.from('network_messages').select('author_id,image_url').eq('id', id).maybeSingle()
     if (!msg) return NextResponse.json({ error: 'Mensagem não encontrada' }, { status: 404 })
     if (msg.author_id !== user.id && !isOwner) return NextResponse.json({ error: 'Sem permissão' }, { status: 403 })
     const { error } = await sb.from('network_messages').update({ deleted_at: new Date().toISOString() }).eq('id', id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    // limpa a imagem do storage (evita orfaos)
+    const spath = storagePathFromUrl(msg.image_url)
+    if (spath) { try { await sb.storage.from('network').remove([spath]) } catch {} }
     return NextResponse.json({ ok: true })
   }
 

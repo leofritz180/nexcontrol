@@ -103,6 +103,13 @@ function Avatar({ name, color, size = 38, online, src }) {
     </div>
   )
 }
+// Destaca @mencoes no texto (cosmetico).
+function renderMentions(text) {
+  return String(text || '').split(/(@[\p{L}\p{N}_]+)/u).map((p, i) =>
+    (p.startsWith('@') && p.length > 1)
+      ? <strong key={i} style={{ color: '#ff8a8a', fontWeight: 700 }}>{p}</strong>
+      : p)
+}
 function useIsMobile() {
   const [m, setM] = useState(false)
   useEffect(() => {
@@ -122,7 +129,11 @@ export default function NetworkPage() {
   const [sub, setSub] = useState(null)
   const [access, setAccess] = useState('checking') // checking | ok | denied
 
-  const [channel, setChannel] = useState('geral')
+  const [channel, setChannel] = useState(() => {
+    if (typeof window === 'undefined') return 'geral'
+    const c = new URLSearchParams(window.location.search).get('c')
+    return CHANNEL_KEYS.has(c) ? c : 'geral'
+  })
   const [data, setData] = useState({ channels: [], messages: [], pinned: null, online: [], top: [], me: null, isOwner: false })
   const [loading, setLoading] = useState(true)
   const [text, setText] = useState('')
@@ -131,10 +142,15 @@ export default function NetworkPage() {
   const [editing, setEditing] = useState(null) // {id, text}
   const [profileView, setProfileView] = useState(null) // {loading, data}
   const [mobilePanel, setMobilePanel] = useState(null) // 'channels' | 'side' | null
+  const [mentions, setMentions] = useState([]) // ids mencionados na msg em digitacao
+  const [status, setStatus] = useState({ latest: null, byChannel: {} }) // p/ nao-lidas
+  const [reads, setReads] = useState({}) // {channelKey: ISO lido} (localStorage)
 
   const scrollRef = useRef(null)
   const tokenRef = useRef(null)
   const atBottomRef = useRef(true)
+  const rtRef = useRef(null)          // canal realtime (broadcast)
+  const activeChanRef = useRef(channel)
 
   const api = useCallback(async (path, opts = {}) => {
     const token = tokenRef.current
@@ -180,20 +196,63 @@ export default function NetworkPage() {
     if (showLoading) setLoading(false)
   }, [api])
 
+  const fetchStatus = useCallback(async () => {
+    try { const r = await api('/api/network/status'); if (r.ok) setStatus(await r.json()) } catch {}
+  }, [api])
+
   // primeiro load + troca de canal
   useEffect(() => {
     if (access !== 'ok') return
     fetchFeed(channel, true)
   }, [access, channel, fetchFeed])
 
-  // polling 5s (so quando aba visivel)
+  // canal ativo num ref (pro realtime nao re-subscrever a cada troca)
+  useEffect(() => { activeChanRef.current = channel }, [channel])
+
+  // carrega marcadores de leitura
+  useEffect(() => { try { setReads(JSON.parse(localStorage.getItem('nx_net_reads') || '{}')) } catch {} }, [])
+
+  // TEMPO REAL: broadcast (nao depende de RLS). Ao receber msg nova, refetch.
   useEffect(() => {
     if (access !== 'ok') return
-    const id = setInterval(() => {
-      if (document.visibilityState === 'visible') fetchFeed(channel, false)
-    }, 5000)
+    const ch = supabase.channel('network-room', { config: { broadcast: { self: false } } })
+    ch.on('broadcast', { event: 'msg' }, (msg) => {
+      const chan = msg?.payload?.channel
+      if (chan && chan === activeChanRef.current) fetchFeed(activeChanRef.current, false)
+      fetchStatus()
+    })
+    ch.subscribe()
+    rtRef.current = ch
+    return () => { try { supabase.removeChannel(ch) } catch {}; rtRef.current = null }
+  }, [access, fetchFeed, fetchStatus])
+
+  // status (nao-lidas) — inicial + fallback 20s
+  useEffect(() => {
+    if (access !== 'ok') return
+    fetchStatus()
+    const id = setInterval(() => { if (document.visibilityState === 'visible') fetchStatus() }, 20000)
+    return () => clearInterval(id)
+  }, [access, fetchStatus])
+
+  // polling FALLBACK de mensagens (15s — o realtime cobre o instantaneo)
+  useEffect(() => {
+    if (access !== 'ok') return
+    const id = setInterval(() => { if (document.visibilityState === 'visible') fetchFeed(channel, false) }, 15000)
     return () => clearInterval(id)
   }, [access, channel, fetchFeed])
+
+  // marca o canal ATIVO como lido + "visto geral" (dot do menu)
+  useEffect(() => {
+    if (access !== 'ok') return
+    const latest = data.messages.length ? data.messages[data.messages.length - 1].created_at : status.byChannel[channel]
+    setReads(prev => {
+      if (!latest || (prev[channel] && prev[channel] >= latest)) return prev
+      const next = { ...prev, [channel]: latest }
+      try { localStorage.setItem('nx_net_reads', JSON.stringify(next)) } catch {}
+      return next
+    })
+    try { if (status.latest) localStorage.setItem('nx_net_seen', status.latest) } catch {}
+  }, [access, channel, data.messages, status])
 
   // auto-scroll pro fim quando chegam msgs novas (se estava no fim)
   useEffect(() => {
@@ -223,11 +282,16 @@ export default function NetworkPage() {
       if (!t && !img) return
       setSending(true)
       atBottomRef.current = true
-      const res = await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'send', channel, text: t, image: img }) })
+      // so envia as mencoes cujo @nome ainda esta no texto
+      const activeMentions = mentions.filter(id => { const mem = (data.members || []).find(m => m.id === id); return mem && t.includes('@' + mem.name) })
+      const res = await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'send', channel, text: t, image: img, mentions: activeMentions }) })
       if (!res.ok) { const e = await res.json().catch(() => ({})); alert(e.error || 'Falha ao enviar'); setSending(false); return }
+      // avisa os outros em tempo real
+      try { rtRef.current?.send({ type: 'broadcast', event: 'msg', payload: { channel } }) } catch {}
     }
-    setText(''); setImg(null)
+    setText(''); setImg(null); setMentions([])
     await fetchFeed(channel, false)
+    fetchStatus()
     setSending(false)
   }
 
@@ -294,6 +358,9 @@ export default function NetworkPage() {
   const isOwnerUser = !!data.isOwner || (user && (user.email || '').toLowerCase() === OWNER_EMAIL)
   const canVerify = user && VERIFIER_EMAILS.has((user.email || '').toLowerCase())
   const canPostHere = !(rule?.ownerOnly && !isOwnerUser)
+  // canais com mensagem nova nao lida (exceto o ativo, que estou lendo)
+  const unread = {}
+  channels.forEach(c => { const lat = status.byChannel[c.key]; if (lat && c.key !== channel && (!reads[c.key] || reads[c.key] < lat)) unread[c.key] = true })
 
   return (
     <Shell profile={profile} user={user} tenant={tenant} sub={sub}>
@@ -307,7 +374,7 @@ export default function NetworkPage() {
       }}>
         {/* ── COL 1: canais (desktop) ── */}
         {!isMobile && (
-          <ChannelList channels={channels} active={channel} onSelect={setChannel} online={data.online} />
+          <ChannelList channels={channels} active={channel} onSelect={setChannel} online={data.online} unread={unread} />
         )}
 
         {/* ── COL 2: chat ── */}
@@ -360,6 +427,7 @@ export default function NetworkPage() {
           <Composer
             text={text} setText={setText} onSend={send} sending={sending}
             img={img} setImg={setImg} rule={rule} canPost={canPostHere} isOwner={isOwnerUser}
+            members={data.members || []} mentions={mentions} setMentions={setMentions}
             editing={editing} cancelEdit={() => { setEditing(null); setText('') }}
           />
         </div>
@@ -374,7 +442,7 @@ export default function NetworkPage() {
       <AnimatePresence>
         {isMobile && mobilePanel === 'channels' && (
           <MobileSheet onClose={() => setMobilePanel(null)} side="left" title="Canais">
-            <ChannelList channels={channels} active={channel} online={data.online}
+            <ChannelList channels={channels} active={channel} online={data.online} unread={unread}
               onSelect={(k) => { setChannel(k); setMobilePanel(null) }} embedded />
           </MobileSheet>
         )}
@@ -421,7 +489,7 @@ function Shell({ children, profile, user, tenant, sub }) {
 }
 
 // ═══════════════ Lista de canais ═══════════════
-function ChannelList({ channels, active, onSelect, online = [], embedded }) {
+function ChannelList({ channels, active, onSelect, online = [], embedded, unread = {} }) {
   return (
     <div style={{ width: embedded ? '100%' : 216, flexShrink: 0, borderRight: embedded ? 'none' : '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', background: embedded ? 'transparent' : 'rgba(4,7,14,0.4)' }}>
       {!embedded && <div style={{ padding: '15px 16px 10px', fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', color: 'var(--t4)', textTransform: 'uppercase' }}>Canais</div>}
@@ -438,7 +506,8 @@ function ChannelList({ channels, active, onSelect, online = [], embedded }) {
               onMouseEnter={e => { if (!on) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
               onMouseLeave={e => { if (!on) e.currentTarget.style.background = 'transparent' }}>
               <span style={{ fontSize: 15, width: 20, textAlign: 'center', flexShrink: 0 }}>{channelEmoji(c.key)}</span>
-              <span style={{ fontSize: 13, fontWeight: on ? 700 : 500, color: on ? '#F1F5F9' : 'var(--t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
+              <span style={{ flex: 1, fontSize: 13, fontWeight: (on || unread[c.key]) ? 700 : 500, color: (on || unread[c.key]) ? '#F1F5F9' : 'var(--t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
+              {unread[c.key] && <span style={{ width: 8, height: 8, borderRadius: '50%', background: RED, flexShrink: 0, boxShadow: `0 0 8px ${RED}` }} />}
             </button>
           )
         })}
@@ -518,7 +587,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
           )}
           {m.text && (
             <div style={{ fontSize: 13.5, color: 'var(--t1)', lineHeight: 1.45, wordBreak: 'break-word', whiteSpace: 'pre-wrap', padding: m.image ? '7px 8px 3px' : 0 }}>
-              {m.text}
+              {renderMentions(m.text)}
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end', marginTop: 3, padding: m.image ? '0 8px 4px' : 0 }}>
@@ -567,11 +636,33 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
 }
 
 // ═══════════════ Composer ═══════════════
-function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, isOwner, editing, cancelEdit }) {
+function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, isOwner, members = [], mentions, setMentions, editing, cancelEdit }) {
   const requireImg = rule?.requireImage && !isOwner
   const fileRef = useRef(null)
+  const taRef = useRef(null)
   const [imgBusy, setImgBusy] = useState(false)
-  function onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend() } }
+  const [mq, setMq] = useState(null) // query da @mencao (ou null)
+  const MENTION_RE = /(^|\s)@([\p{L}\p{N}_]{0,24})$/u
+  const mentionList = mq === null ? [] : members.filter(m => m.name.toLowerCase().replace(/\s/g, '').includes(mq)).slice(0, 6)
+  function onKey(e) {
+    if (mq !== null && mentionList.length) { if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); pickMention(mentionList[0]); return } if (e.key === 'Escape') { setMq(null); return } }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend() }
+  }
+  function onChange(e) {
+    const val = e.target.value; setText(val)
+    const pos = e.target.selectionStart || val.length
+    const mm = MENTION_RE.exec(val.slice(0, pos))
+    setMq(mm ? mm[2].toLowerCase() : null)
+  }
+  function pickMention(mem) {
+    const ta = taRef.current
+    const pos = ta ? ta.selectionStart : text.length
+    const before = text.slice(0, pos), after = text.slice(pos)
+    const nb = before.replace(MENTION_RE, (m, p1) => `${p1}@${mem.name} `)
+    setText(nb + after); setMq(null)
+    setMentions(ids => ids.includes(mem.id) ? ids : [...ids, mem.id])
+    setTimeout(() => taRef.current?.focus(), 0)
+  }
   async function onFile(e) {
     const file = e.target.files?.[0]; e.target.value = ''
     if (!file) return
@@ -630,8 +721,21 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
             : <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke={img ? '#ff8a8a' : 'var(--t3)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15l-5-5L5 21" /><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /></svg>}
         </button>
         <div style={{ flex: 1, position: 'relative' }}>
-          <textarea value={text} onChange={e => setText(e.target.value)} onKeyDown={onKey}
-            rows={1} placeholder={requireImg ? 'Legenda da foto (opcional)...' : 'Escreva uma mensagem para a comunidade...'}
+          {/* dropdown de @mencao */}
+          {mentionList.length > 0 && (
+            <div style={{ position: 'absolute', bottom: 'calc(100% + 6px)', left: 0, right: 0, background: '#0d1220', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: 5, boxShadow: '0 8px 24px rgba(0,0,0,0.55)', zIndex: 8, maxHeight: 200, overflowY: 'auto' }}>
+              <div style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--t4)', textTransform: 'uppercase', padding: '4px 8px 6px' }}>Mencionar</div>
+              {mentionList.map(m => (
+                <button key={m.id} onMouseDown={e => { e.preventDefault(); pickMention(m) }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '7px 8px', borderRadius: 8, background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  <Avatar name={m.name} color={m.color} src={m.avatar} size={26} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)' }}>{m.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          <textarea ref={taRef} value={text} onChange={onChange} onKeyDown={onKey}
+            rows={1} placeholder={requireImg ? 'Legenda da foto (opcional)...' : 'Escreva uma mensagem... use @ para mencionar'}
             style={{
               width: '100%', resize: 'none', maxHeight: 120, minHeight: 44, padding: '12px 14px',
               borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',

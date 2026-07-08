@@ -53,6 +53,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const [pushBusy, setPushBusy] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [localProfile, setLocalProfile] = useState({})
+  const [netUnread, setNetUnread] = useState(false)
 
   // Perfil estendido local (foto, nome custom) — reflete no avatar/nome da sidebar
   useEffect(() => {
@@ -76,6 +77,28 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   useEffect(() => {
     setShowAulas(aulasEnabled(tenantId))
   }, [tenantId])
+
+  // Network: dot de "tem mensagem nova" (compara ultima msg com o "visto" salvo)
+  useEffect(() => {
+    if (!isAdmin || !networkEnabled(userEmail)) return
+    let stop = false
+    async function check() {
+      try {
+        const { data: s } = await supabase.auth.getSession()
+        const tok = s?.session?.access_token; if (!tok) return
+        const r = await fetch('/api/network/status', { headers: { Authorization: 'Bearer ' + tok }, cache: 'no-store' })
+        if (!r.ok) return
+        const d = await r.json()
+        let seen = null; try { seen = localStorage.getItem('nx_net_seen') } catch {}
+        if (!stop) setNetUnread(!!d.latest && (!seen || d.latest > seen))
+      } catch {}
+    }
+    check()
+    const id = setInterval(() => { if (document.visibilityState === 'visible') check() }, 30000)
+    const onFocus = () => check()
+    window.addEventListener('focus', onFocus)
+    return () => { stop = true; clearInterval(id); window.removeEventListener('focus', onFocus) }
+  }, [isAdmin, userEmail])
 
   async function logout() { await supabase.auth.signOut(); router.push('/login') }
 
@@ -200,7 +223,14 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                   letterSpacing:'0.06em',
                 }}>VIP</span>
               )}
-              {item.network && (
+              {item.network && netUnread && (
+                <span style={{
+                  marginLeft:'auto', width:8, height:8, borderRadius:'50%', flexShrink:0,
+                  background:'#e53935', boxShadow:'0 0 8px #e53935',
+                  animation:'notif-pulse 1.8s ease-in-out infinite',
+                }} title="Mensagens novas"/>
+              )}
+              {item.network && !netUnread && (
                 <span className="sb-label" style={{
                   marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
                   background:'rgba(229,57,53,0.16)', color:'#ff7a7a', border:'1px solid rgba(229,57,53,0.4)',

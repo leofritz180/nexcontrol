@@ -34,10 +34,14 @@ export async function GET(req) {
   // marca presenca (nao bloqueia resposta se falhar)
   await touchPresence(sb, user.id)
 
+  // marca leitura do canal (recibo "visto por") — nao bloqueia nem quebra a resposta
+  const markRead = async (chId) => { try { await sb.from('network_channel_reads').upsert({ user_id: user.id, channel_id: chId, last_read_at: new Date().toISOString() }, { onConflict: 'user_id,channel_id' }) } catch {} }
+
   // canais
   const { data: channels } = await sb.from('network_channels').select('id,key,name,description,sort').order('sort', { ascending: true })
   const channel = (channels || []).find(c => c.key === channelKey) || (channels || [])[0]
   if (!channel) return NextResponse.json({ channels: channels || [], messages: [], pinned: null, online: [], top: [], me: null, hasMore: false })
+  if (!before) await markRead(channel.id)  // marca leitura só na carga principal (nao na paginacao de historico)
 
   // ── CARREGAR MAIS ANTIGAS (paginacao) ──
   // So mensagens + hasMore. Pula online/top/members/pinned (nao muda ao paginar).

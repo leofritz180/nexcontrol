@@ -210,6 +210,7 @@ export default function NetworkPage() {
   const [showModLog, setShowModLog] = useState(false)
   const [commentsPost, setCommentsPost] = useState(null) // post aberto p/ comentarios (feed social)
   const [lightbox, setLightbox] = useState(null)         // {image} em tela cheia
+  const [seenFor, setSeenFor] = useState(null)           // mensagem p/ ver "quem visualizou" (owner)
 
   const scrollRef = useRef(null)
   const tokenRef = useRef(null)
@@ -668,7 +669,7 @@ export default function NetworkPage() {
                       onReact={react} onOpenProfile={openProfile}
                       onReply={() => setReplyTo({ id: m.id, name: (m.author || {}).name, text: m.text ? m.text : (m.image ? '📷 Foto' : '') })}
                       onEdit={() => { setEditing({ id: m.id, text: m.text }); setText(m.text) }}
-                      onDelete={() => del(m.id)} onPin={() => pin(m.id, true)} />
+                      onDelete={() => del(m.id)} onPin={() => pin(m.id, true)} onSeen={() => setSeenFor(m)} />
                   </Fragment>
                 ))
               )}
@@ -758,6 +759,13 @@ export default function NetworkPage() {
             onOpenProfile={openProfile}
             onClose={() => setCommentsPost(null)}
             onChanged={() => fetchFeed(channel, false)} />
+        )}
+      </AnimatePresence>
+
+      {/* ── Quem visualizou (owner) ── */}
+      <AnimatePresence>
+        {seenFor && (
+          <SeenModal msg={seenFor} isMobile={isMobile} api={api} onOpenProfile={openProfile} onClose={() => setSeenFor(null)} />
         )}
       </AnimatePresence>
 
@@ -962,7 +970,7 @@ function ColorSwatches({ value, onChange }) {
     </div>
   )
 }
-function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, onEdit, onDelete, onPin }) {
+function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, onEdit, onDelete, onPin, onSeen }) {
   const [hover, setHover] = useState(false)
   const [picker, setPicker] = useState(false)
   const a = m.author || {}
@@ -1053,6 +1061,9 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
           </button>}
           {isOwner && <button onClick={onPin} style={miniBtn} title="Fixar">
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" /></svg>
+          </button>}
+          {isOwner && !m.author?.system && <button onClick={onSeen} style={miniBtn} title="Quem visualizou">
+            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" /><circle cx="12" cy="12" r="3" /></svg>
           </button>}
           {(m.mine || isOwner) && <button onClick={onDelete} style={{ ...miniBtn, color: '#ff6b6b' }} title="Apagar">
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
@@ -1974,6 +1985,43 @@ function UnreadDivider() {
 }
 
 // ═══════════════ Modal genérico (centro no desktop / bottom-sheet no mobile) ═══════════════
+// ═══════════════ Quem visualizou (owner) ═══════════════
+function SeenModal({ msg, isMobile, api, onOpenProfile, onClose }) {
+  const [data, setData] = useState(null)
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      try {
+        const r = await api(`/api/network/seen?message_id=${encodeURIComponent(msg.id)}`)
+        const d = r.ok ? await r.json() : { count: 0, seen: [] }
+        if (alive) setData(d)
+      } catch { if (alive) setData({ count: 0, seen: [] }) }
+    })()
+    return () => { alive = false }
+  }, [msg.id, api])
+  const preview = msg.text ? (msg.text.length > 60 ? msg.text.slice(0, 60) + '…' : msg.text) : (msg.image ? '📷 Foto' : '')
+  return (
+    <Modal title={data ? `Visualizado por ${data.count}` : 'Visualizações'} isMobile={isMobile} onClose={onClose}>
+      {preview && <div style={{ fontSize: 12, color: 'var(--t3)', padding: '2px 2px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 10 }}>“{preview}”</div>}
+      {data === null ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><span style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)', borderTopColor: RED, animation: 'spin 0.8s linear infinite' }} /></div>
+      ) : data.seen.length === 0 ? (
+        <p style={{ fontSize: 12.5, color: 'var(--t4)', padding: '18px 4px', textAlign: 'center' }}>Ninguém visualizou ainda.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {data.seen.map(s => (
+            <button key={s.id} onClick={() => { onClose(); onOpenProfile(s.id) }} style={rowBtn}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <Avatar name={s.name} color={s.color} src={s.avatar} size={30} />
+              <span style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 600, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
+              <span style={{ fontSize: 10.5, color: 'var(--t4)', flexShrink: 0 }}>{fmtRel(s.at)}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </Modal>
+  )
+}
 function Modal({ title, onClose, isMobile, children }) {
   return (
     <>

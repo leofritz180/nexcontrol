@@ -171,17 +171,16 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
   if (mobile) {
     if (!canEnter) return null // no mobile o upsell já aparece no menu/teaser
     return (
-      <button onClick={() => router.push('/network')} aria-label="Abrir Network" style={bubbleStyle}>
-        <ChatIcon />
-        {unread && <Dot />}
-      </button>
+      <div style={{ position: 'fixed', right: 16, bottom: 84, zIndex: 900 }}>
+        <Bubble open={false} unread={unread} label="Abrir Network" onClick={() => router.push('/network')} />
+      </div>
     )
   }
 
   // ── Desktop admin SEM PRO: bolha travada (isca de conversão) ──
   if (!canEnter) {
     return (
-      <div style={{ position: 'fixed', right: 20, bottom: 20, zIndex: 900 }}>
+      <div style={{ position: 'fixed', right: 20, bottom: 84, zIndex: 900 }}>
         <AnimatePresence>
           {open && (
             <motion.div initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }}
@@ -210,14 +209,14 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
             </motion.div>
           )}
         </AnimatePresence>
-        <button onClick={() => toggle(!open)} aria-label="Network" style={bubbleStyle}><ChatIcon /></button>
+        <Bubble open={open} unread={false} label="Network" onClick={() => toggle(!open)} />
       </div>
     )
   }
 
   // ── Desktop PRO: dock completo ──
   return (
-    <div style={{ position: 'fixed', right: 20, bottom: 20, zIndex: 900 }}>
+    <div style={{ position: 'fixed', right: 20, bottom: 84, zIndex: 900 }}>
       <AnimatePresence>
         {open && (
           <motion.div initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }}
@@ -272,10 +271,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
         )}
       </AnimatePresence>
       {/* bolha */}
-      <button onClick={() => toggle(!open)} aria-label="Abrir chat do Network" style={bubbleStyle}>
-        {open ? <ChevronDown /> : <ChatIcon />}
-        {!open && unread && <Dot />}
-      </button>
+      <Bubble open={open} unread={unread} label="Abrir chat do Network" onClick={() => toggle(!open)} />
     </div>
   )
 }
@@ -285,10 +281,31 @@ const bubbleStyle = { position: 'relative', width: 56, height: 56, borderRadius:
 const panelStyle = { width: 340, height: 460, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 120px)', borderRadius: 18, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg, #0f1626, #080b13)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 24px 70px rgba(0,0,0,0.6)' }
 const dockHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(229,57,53,0.06)', flexShrink: 0 }
 const iconBtn = { width: 28, height: 28, borderRadius: 8, border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }
-function Dot() { return <span style={{ position: 'absolute', top: 2, right: 2, width: 15, height: 15, borderRadius: '50%', background: MINT, border: '2px solid #0b0e16', boxShadow: `0 0 8px ${MINT}` }} /> }
-function ChatIcon({ size = 24 }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg> }
+function Dot() { return <span style={{ position: 'absolute', top: 0, right: 0, width: 16, height: 16, borderRadius: '50%', background: MINT, border: '2px solid #0b0e16', boxShadow: `0 0 8px ${MINT}`, zIndex: 2 }} /> }
+function ChatIcon({ size = 24, color = '#fff' }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg> }
 function CloseIcon() { return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg> }
 function MinIcon() { return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12" /></svg> }
 function ExpandIcon() { return <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><polyline points="15 3 21 3 21 9" /><polyline points="9 21 3 21 3 15" /><line x1="21" y1="3" x2="14" y2="10" /><line x1="3" y1="21" x2="10" y2="14" /></svg> }
-function ChevronDown() { return <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><polyline points="6 9 12 15 18 9" /></svg> }
+function ChevronDown({ color = '#fff' }) { return <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.4} strokeLinecap="round"><polyline points="6 9 12 15 18 9" /></svg> }
 function LockIcon() { return <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg> }
+
+// Bolha com pulso/anel pra chamar atenção (para de pulsar quando o painel está aberto).
+function Bubble({ onClick, open, unread, label }) {
+  return (
+    <div style={{ position: 'relative', width: 56, height: 56 }}>
+      {!open && (
+        <motion.span aria-hidden
+          style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: RED, zIndex: 0 }}
+          animate={{ scale: [1, 1.75], opacity: [0.5, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }} />
+      )}
+      <motion.button onClick={onClick} aria-label={label} style={{ ...bubbleStyle, position: 'relative', zIndex: 1 }}
+        whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.94 }}
+        animate={open ? { scale: 1 } : { scale: [1, 1.07, 1] }}
+        transition={open ? { duration: 0.2 } : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}>
+        {open ? <ChevronDown color="#fff" /> : <ChatIcon color="#fff" />}
+        {!open && unread && <Dot />}
+      </motion.button>
+    </div>
+  )
+}

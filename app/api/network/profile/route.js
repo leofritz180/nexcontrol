@@ -1,8 +1,18 @@
 import { NextResponse } from 'next/server'
-import { authNetwork, computePublicProfile, uploadImage } from '../../../../lib/network-server'
-import { VERIFIER_EMAILS } from '../../../../lib/network-access'
+import { authNetwork, computePublicProfile, uploadImage, logMod, displayName } from '../../../../lib/network-server'
+import { VERIFIER_EMAILS, OWNER_EMAIL } from '../../../../lib/network-access'
 
 export const dynamic = 'force-dynamic'
+
+// Nome exibido de um usuario (pra registrar no log de moderacao). Fetch minimo.
+async function nameOf(sb, userId) {
+  if (!userId) return null
+  const [{ data: p }, { data: np }] = await Promise.all([
+    sb.from('profiles').select('nome,email').eq('id', userId).maybeSingle(),
+    sb.from('network_profiles').select('instagram').eq('user_id', userId).maybeSingle(),
+  ])
+  return displayName(p, np)
+}
 
 // GET  /api/network/profile?user_id=<uuid>   -> perfil publico + stats + badges
 // POST /api/network/profile  { bio, instagram }  -> edita o PROPRIO perfil publico
@@ -32,6 +42,7 @@ export async function POST(req) {
     const tag = body.tag != null ? String(body.tag).trim().slice(0, 24) : null
     const { error } = await sb.from('network_profiles').upsert({ user_id: target, tag: tag || null }, { onConflict: 'user_id' })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await logMod(sb, { action: 'set_tag', targetId: target, targetName: await nameOf(sb, target), actorId: user.id, actorName: await nameOf(sb, user.id), reason: tag || 'removida' })
     return NextResponse.json({ ok: true })
   }
 
@@ -47,6 +58,7 @@ export async function POST(req) {
     const reason = body.reason ? String(body.reason).slice(0, 120) : null
     const { error } = await sb.from('network_profiles').upsert({ user_id: target, muted_until: until, mute_reason: reason }, { onConflict: 'user_id' })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await logMod(sb, { action: 'mute', targetId: target, targetName: await nameOf(sb, target), actorId: user.id, actorName: await nameOf(sb, user.id), reason })
     return NextResponse.json({ ok: true })
   }
   if (action === 'unmute') {
@@ -55,6 +67,7 @@ export async function POST(req) {
     if (!target) return NextResponse.json({ error: 'Usuário inválido' }, { status: 400 })
     const { error } = await sb.from('network_profiles').upsert({ user_id: target, muted_until: null, mute_reason: null }, { onConflict: 'user_id' })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await logMod(sb, { action: 'unmute', targetId: target, targetName: await nameOf(sb, target), actorId: user.id, actorName: await nameOf(sb, user.id) })
     return NextResponse.json({ ok: true })
   }
 
@@ -63,8 +76,35 @@ export async function POST(req) {
     if (!VERIFIER_EMAILS.has(email)) return NextResponse.json({ error: 'Sem permissão para verificar.' }, { status: 403 })
     const target = body.target_user_id
     if (!target) return NextResponse.json({ error: 'Usuário inválido' }, { status: 400 })
-    const { error } = await sb.from('network_profiles').upsert({ user_id: target, verified: !!body.verified }, { onConflict: 'user_id' })
+    const verified = !!body.verified
+    const { error } = await sb.from('network_profiles').upsert({ user_id: target, verified }, { onConflict: 'user_id' })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await logMod(sb, { action: verified ? 'verify' : 'unverify', targetId: target, targetName: await nameOf(sb, target), actorId: user.id, actorName: await nameOf(sb, user.id) })
+    return NextResponse.json({ ok: true })
+  }
+
+  // ── OWNER bane / desbane (remove do Network) ──
+  if (action === 'ban') {
+    if (!isOwner) return NextResponse.json({ error: 'Só o admin master pode remover.' }, { status: 403 })
+    const target = body.target_user_id
+    if (!target) return NextResponse.json({ error: 'Usuário inválido' }, { status: 400 })
+    if (target === user.id) return NextResponse.json({ error: 'Você não pode se remover.' }, { status: 400 })
+    // Nunca banir a conta do owner.
+    const { data: tp } = await sb.from('profiles').select('email').eq('id', target).maybeSingle()
+    if ((tp?.email || '').toLowerCase() === OWNER_EMAIL) return NextResponse.json({ error: 'Não é possível remover o dono.' }, { status: 400 })
+    const reason = body.reason ? String(body.reason).slice(0, 120) : null
+    const { error } = await sb.from('network_profiles').upsert({ user_id: target, banned: true }, { onConflict: 'user_id' })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await logMod(sb, { action: 'ban', targetId: target, targetName: await nameOf(sb, target), actorId: user.id, actorName: await nameOf(sb, user.id), reason })
+    return NextResponse.json({ ok: true })
+  }
+  if (action === 'unban') {
+    if (!isOwner) return NextResponse.json({ error: 'Só o admin master pode reverter.' }, { status: 403 })
+    const target = body.target_user_id
+    if (!target) return NextResponse.json({ error: 'Usuário inválido' }, { status: 400 })
+    const { error } = await sb.from('network_profiles').upsert({ user_id: target, banned: false }, { onConflict: 'user_id' })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await logMod(sb, { action: 'unban', targetId: target, targetName: await nameOf(sb, target), actorId: user.id, actorName: await nameOf(sb, user.id) })
     return NextResponse.json({ ok: true })
   }
 

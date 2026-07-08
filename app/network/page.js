@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
@@ -61,6 +61,16 @@ function fmtSince(iso) {
   return `${meses[d.getMonth()]}/${d.getFullYear()}`
 }
 function fmtNum(n) { return Number(n || 0).toLocaleString('pt-BR') }
+function fmtRel(iso) {
+  if (!iso) return ''
+  const diff = Date.now() - new Date(iso).getTime()
+  const s = Math.floor(diff / 1000)
+  if (s < 60) return 'agora'
+  const m = Math.floor(s / 60); if (m < 60) return `há ${m}min`
+  const h = Math.floor(m / 60); if (h < 24) return `há ${h}h`
+  const d = Math.floor(h / 24); if (d < 30) return `há ${d}d`
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
+}
 
 // ── Selo (mapeado pra paleta NexControl: vermelho/verde/branco/muted) ──
 function badgeStyle(tone) {
@@ -160,12 +170,26 @@ export default function NetworkPage() {
   const [mentions, setMentions] = useState([]) // ids mencionados na msg em digitacao
   const [status, setStatus] = useState({ latest: null, byChannel: {} }) // p/ nao-lidas
   const [reads, setReads] = useState({}) // {channelKey: ISO lido} (localStorage)
+  const [replyTo, setReplyTo] = useState(null)       // {id, name, text} — resposta em preparo
+  const [typing, setTyping] = useState({})           // {name: expiryTs} — quem digita no canal ativo
+  const [showJump, setShowJump] = useState(false)    // botão flutuante "descer"
+  const [unseenCount, setUnseenCount] = useState(0)  // msgs novas enquanto scrollado p/ cima
+  const [loadingOlder, setLoadingOlder] = useState(false)
+  const [unreadBoundaryId, setUnreadBoundaryId] = useState(null) // divisor "mensagens novas"
+  const [showMembers, setShowMembers] = useState(false)
+  const [showModLog, setShowModLog] = useState(false)
 
   const scrollRef = useRef(null)
   const tokenRef = useRef(null)
   const atBottomRef = useRef(true)
   const rtRef = useRef(null)          // canal realtime (broadcast)
   const activeChanRef = useRef(channel)
+  const loadingOlderRef = useRef(false)   // guarda contra loads concorrentes de histórico
+  const olderLoadedRef = useRef(false)    // já paginou histórico neste canal?
+  const lastMsgIdRef = useRef(null)       // último id no fim (p/ contar não-vistas)
+  const typingSentRef = useRef(0)         // throttle do broadcast de "digitando"
+  const boundaryComputedRef = useRef(null)// canal p/ o qual o divisor já foi calculado
+  const meNameRef = useRef(null)          // meu nome (pro callback do realtime não ver a si mesmo)
 
   const api = useCallback(async (path, opts = {}) => {
     const token = tokenRef.current
@@ -224,6 +248,45 @@ export default function NetworkPage() {
   // canal ativo num ref (pro realtime nao re-subscrever a cada troca)
   useEffect(() => { activeChanRef.current = channel }, [channel])
 
+  // meu nome num ref (pro callback do realtime nunca me exibir digitando)
+  useEffect(() => { meNameRef.current = data.me?.name || null }, [data.me])
+
+  // reset de estado por-canal ao trocar de canal
+  useEffect(() => {
+    atBottomRef.current = true
+    olderLoadedRef.current = false
+    loadingOlderRef.current = false
+    lastMsgIdRef.current = null
+    boundaryComputedRef.current = null
+    setShowJump(false); setUnseenCount(0); setLoadingOlder(false)
+    setUnreadBoundaryId(null); setReplyTo(null); setTyping({})
+  }, [channel])
+
+  // divisor "mensagens novas": calcula UMA vez por canal usando o marcador de leitura
+  // capturado na entrada (roda antes do read-marking abaixo atualizar reads p/ o topo)
+  useEffect(() => {
+    if (access !== 'ok' || loading) return
+    if (boundaryComputedRef.current === channel) return
+    boundaryComputedRef.current = channel
+    const msgs = data.messages
+    const mark = reads[channel]
+    if (!mark || !msgs.length) return
+    const idx = msgs.findIndex(m => !m.author?.system && m.created_at > mark)
+    if (idx > 0) setUnreadBoundaryId(msgs[idx].id)
+  }, [access, channel, loading, data.messages, reads])
+
+  // expira quem parou de digitar (~4s)
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTyping(prev => {
+        const now = Date.now(); let changed = false; const next = {}
+        for (const k in prev) { if (prev[k] > now) next[k] = prev[k]; else changed = true }
+        return changed ? next : prev
+      })
+    }, 1000)
+    return () => clearInterval(id)
+  }, [])
+
   // carrega marcadores de leitura
   useEffect(() => { try { setReads(JSON.parse(localStorage.getItem('nx_net_reads') || '{}')) } catch {} }, [])
 
@@ -233,8 +296,14 @@ export default function NetworkPage() {
     const ch = supabase.channel('network-room', { config: { broadcast: { self: false } } })
     ch.on('broadcast', { event: 'msg' }, (msg) => {
       const chan = msg?.payload?.channel
-      if (chan && chan === activeChanRef.current) fetchFeed(activeChanRef.current, false)
+      // não recarrega (perderia a posição) se o admin subiu no histórico paginado
+      if (chan && chan === activeChanRef.current && (atBottomRef.current || !olderLoadedRef.current)) fetchFeed(activeChanRef.current, false)
       fetchStatus()
+    })
+    ch.on('broadcast', { event: 'typing' }, (msg) => {
+      const { name, channel: chan } = msg?.payload || {}
+      if (!name || chan !== activeChanRef.current || name === meNameRef.current) return
+      setTyping(prev => ({ ...prev, [name]: Date.now() + 4000 }))
     })
     ch.subscribe()
     rtRef.current = ch
@@ -252,7 +321,7 @@ export default function NetworkPage() {
   // polling FALLBACK de mensagens (15s — o realtime cobre o instantaneo)
   useEffect(() => {
     if (access !== 'ok') return
-    const id = setInterval(() => { if (document.visibilityState === 'visible') fetchFeed(channel, false) }, 15000)
+    const id = setInterval(() => { if (document.visibilityState === 'visible' && (atBottomRef.current || !olderLoadedRef.current)) fetchFeed(channel, false) }, 15000)
     return () => clearInterval(id)
   }, [access, channel, fetchFeed])
 
@@ -284,10 +353,73 @@ export default function NetworkPage() {
     }
   }, [data.messages])
 
+  // conta msgs novas que chegam enquanto o admin está scrollado p/ cima
+  useEffect(() => {
+    const msgs = data.messages
+    const lastId = msgs.length ? msgs[msgs.length - 1].id : null
+    if (atBottomRef.current) setUnseenCount(0)
+    else if (lastId && lastMsgIdRef.current && lastId !== lastMsgIdRef.current) setUnseenCount(c => c + 1)
+    lastMsgIdRef.current = lastId
+  }, [data.messages])
+
   function onScroll() {
     const el = scrollRef.current
     if (!el) return
-    atBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 120
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120
+    atBottomRef.current = atBottom
+    setShowJump(!atBottom)
+    if (atBottom) setUnseenCount(0)
+    // carrega histórico ao chegar perto do topo
+    if (el.scrollTop < 80 && data.hasMore && !loadingOlderRef.current) loadOlder()
+  }
+
+  // carrega mensagens mais antigas (scroll infinito p/ cima) preservando a posição
+  async function loadOlder() {
+    if (loadingOlderRef.current || !data.hasMore) return
+    const msgs = data.messages
+    if (!msgs.length) return
+    loadingOlderRef.current = true
+    setLoadingOlder(true)
+    const before = msgs[0].created_at
+    const el = scrollRef.current
+    const oldHeight = el ? el.scrollHeight : 0
+    try {
+      const res = await api(`/api/network/feed?channel=${encodeURIComponent(channel)}&before=${encodeURIComponent(before)}`)
+      if (res.ok) {
+        const d = await res.json()
+        const older = d.messages || []
+        if (older.length) {
+          olderLoadedRef.current = true
+          setData(prev => {
+            const seen = new Set(prev.messages.map(m => m.id))
+            const merged = older.filter(m => !seen.has(m.id)).concat(prev.messages)
+            return { ...prev, messages: merged, hasMore: d.hasMore }
+          })
+          requestAnimationFrame(() => { const e2 = scrollRef.current; if (e2) e2.scrollTop = e2.scrollHeight - oldHeight })
+        } else {
+          setData(prev => ({ ...prev, hasMore: d.hasMore }))
+        }
+      }
+    } catch {}
+    loadingOlderRef.current = false
+    setLoadingOlder(false)
+  }
+
+  function jumpToBottom() {
+    const el = scrollRef.current
+    atBottomRef.current = true
+    setShowJump(false); setUnseenCount(0)
+    if (el) el.scrollTop = el.scrollHeight
+    // se paginou histórico, recarrega o rodapé mais recente
+    if (olderLoadedRef.current) { olderLoadedRef.current = false; fetchFeed(channel, false) }
+  }
+
+  // avisa (throttled) que estou digitando
+  function broadcastTyping() {
+    const now = Date.now()
+    if (now - typingSentRef.current < 2000) return
+    typingSentRef.current = now
+    try { rtRef.current?.send({ type: 'broadcast', event: 'typing', payload: { name: data.me?.name, channel } }) } catch {}
   }
 
   async function send() {
@@ -307,12 +439,12 @@ export default function NetworkPage() {
       atBottomRef.current = true
       // so envia as mencoes cujo @nome ainda esta no texto
       const activeMentions = mentions.filter(id => { const mem = (data.members || []).find(m => m.id === id); if (!mem) return false; const token = mem.name.startsWith('@') ? mem.name : '@' + mem.name; return t.includes(token) })
-      const res = await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'send', channel, text: t, image: img, mentions: activeMentions }) })
+      const res = await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'send', channel, text: t, image: img, mentions: activeMentions, reply_to: replyTo?.id }) })
       if (!res.ok) { const e = await res.json().catch(() => ({})); alert(e.error || 'Falha ao enviar'); setSending(false); return }
       // avisa os outros em tempo real
       try { rtRef.current?.send({ type: 'broadcast', event: 'msg', payload: { channel } }) } catch {}
     }
-    setText(''); setImg(null); setMentions([])
+    setText(''); setImg(null); setMentions([]); setReplyTo(null)
     await fetchFeed(channel, false)
     fetchStatus()
     setSending(false)
@@ -435,21 +567,66 @@ export default function NetworkPage() {
           )}
 
           {/* mensagens */}
-          <div ref={scrollRef} onScroll={onScroll} style={{ flex: 1, overflowY: 'auto', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', padding: isMobile ? '10px 2px 6px' : '14px 4px 8px' }}>
-            {loading ? (
-              <CenterMsg text="Carregando conversa..." spin />
-            ) : data.messages.length === 0 ? (
-              <EmptyChat name={activeChan?.name} />
-            ) : (
-              data.messages.map((m, i) => (
-                <MessageRow key={m.id} m={m} prev={data.messages[i - 1]}
-                  meId={user?.id} isOwner={data.isOwner}
-                  onReact={react} onOpenProfile={openProfile}
-                  onEdit={() => { setEditing({ id: m.id, text: m.text }); setText(m.text) }}
-                  onDelete={() => del(m.id)} onPin={() => pin(m.id, true)} />
-              ))
+          <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <div ref={scrollRef} onScroll={onScroll} style={{ flex: 1, overflowY: 'auto', overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch', padding: isMobile ? '10px 2px 6px' : '14px 4px 8px' }}>
+              {loadingOlder && (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, color: 'var(--t3)' }}>
+                    <span style={{ width: 13, height: 13, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)', borderTopColor: RED, animation: 'spin 0.8s linear infinite' }} />
+                    carregando…
+                  </span>
+                </div>
+              )}
+              {loading ? (
+                <CenterMsg text="Carregando conversa..." spin />
+              ) : data.messages.length === 0 ? (
+                <EmptyChat name={activeChan?.name} />
+              ) : (
+                data.messages.map((m, i) => (
+                  <Fragment key={m.id}>
+                    {unreadBoundaryId === m.id && <UnreadDivider />}
+                    <MessageRow m={m} prev={data.messages[i - 1]}
+                      meId={user?.id} isOwner={data.isOwner}
+                      onReact={react} onOpenProfile={openProfile}
+                      onReply={() => setReplyTo({ id: m.id, name: (m.author || {}).name, text: m.text ? m.text : (m.image ? '📷 Foto' : '') })}
+                      onEdit={() => { setEditing({ id: m.id, text: m.text }); setText(m.text) }}
+                      onDelete={() => del(m.id)} onPin={() => pin(m.id, true)} />
+                  </Fragment>
+                ))
+              )}
+            </div>
+            {showJump && (
+              <button onClick={jumpToBottom} title="Ir para o fim" style={{
+                position: 'absolute', bottom: 14, right: 16, width: 42, height: 42, borderRadius: '50%',
+                background: '#0d1220', border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(0,0,0,0.55)', zIndex: 5,
+              }}>
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--t1)" strokeWidth={2} strokeLinecap="round"><polyline points="6 9 12 15 18 9" /></svg>
+                {unseenCount > 0 && (
+                  <span style={{ position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, padding: '0 5px', borderRadius: 9, background: RED, color: '#fff', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #0d1220' }}>{unseenCount > 9 ? '9+' : unseenCount}</span>
+                )}
+              </button>
             )}
           </div>
+
+          {/* linha de "digitando" */}
+          {Object.keys(typing).length > 0 && (
+            <div style={{ padding: '4px 16px 2px', fontSize: 11.5, color: 'var(--t3)', fontStyle: 'italic', flexShrink: 0 }}>
+              {Object.keys(typing).length === 1 ? `${Object.keys(typing)[0]} está digitando…` : 'Várias pessoas estão digitando…'}
+            </div>
+          )}
+          {/* barra de resposta */}
+          {replyTo && canPostHere && !data.me?.mute?.muted && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px 8px 14px', margin: '0 12px', borderLeft: `3px solid ${RED}`, background: 'rgba(229,57,53,0.06)', borderRadius: '0 8px 8px 0', flexShrink: 0 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#ff8a8a' }}>Respondendo a {replyTo.name}</div>
+                <div style={{ fontSize: 12, color: 'var(--t3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{replyTo.text}</div>
+              </div>
+              <button onClick={() => setReplyTo(null)} title="Cancelar resposta" style={{ ...iconBtn, width: 26, height: 26 }}>
+                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+            </div>
+          )}
 
           {/* composer */}
           <Composer
@@ -457,12 +634,14 @@ export default function NetworkPage() {
             img={img} setImg={setImg} rule={rule} canPost={canPostHere} isOwner={isOwnerUser}
             members={data.members || []} mentions={mentions} setMentions={setMentions} muted={data.me?.mute}
             editing={editing} cancelEdit={() => { setEditing(null); setText('') }}
+            onTyping={broadcastTyping}
           />
         </div>
 
         {/* ── COL 3: perfil/ranking (desktop) ── */}
         {!isMobile && (
-          <RightPanel data={data} onOpenProfile={openProfile} meId={user?.id} />
+          <RightPanel data={data} onOpenProfile={openProfile} meId={user?.id}
+            onShowMembers={() => setShowMembers(true)} onShowModLog={() => setShowModLog(true)} />
         )}
       </div>
 
@@ -476,7 +655,9 @@ export default function NetworkPage() {
         )}
         {isMobile && mobilePanel === 'side' && (
           <MobileSheet onClose={() => setMobilePanel(null)} side="right" title="Comunidade">
-            <RightPanel data={data} onOpenProfile={openProfile} meId={user?.id} embedded />
+            <RightPanel data={data} onOpenProfile={openProfile} meId={user?.id} embedded
+              onShowMembers={() => { setMobilePanel(null); setShowMembers(true) }}
+              onShowModLog={() => { setMobilePanel(null); setShowModLog(true) }} />
           </MobileSheet>
         )}
       </AnimatePresence>
@@ -488,6 +669,31 @@ export default function NetworkPage() {
             onSaved={() => openProfile(profileView.data?.id)} api={api}
             isOwnerUser={isOwnerUser} canVerify={canVerify}
             onModerated={() => { openProfile(profileView.data?.id); fetchFeed(channel, false) }} />
+        )}
+      </AnimatePresence>
+
+      {/* ── Diretório de membros ── */}
+      <AnimatePresence>
+        {showMembers && (
+          <Modal title={`Membros · ${(data.members || []).length}`} isMobile={isMobile} onClose={() => setShowMembers(false)}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {(data.members || []).length === 0 && <p style={{ fontSize: 12, color: 'var(--t4)', padding: '10px 4px' }}>Nenhum membro ainda.</p>}
+              {(data.members || []).map(mm => (
+                <button key={mm.id} onClick={() => { setShowMembers(false); openProfile(mm.id) }} style={rowBtn}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                  <Avatar name={mm.name} color={mm.color} src={mm.avatar} size={30} />
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mm.name}</span>
+                </button>
+              ))}
+            </div>
+          </Modal>
+        )}
+      </AnimatePresence>
+
+      {/* ── Log de moderação (owner) ── */}
+      <AnimatePresence>
+        {showModLog && (
+          <ModLogModal isMobile={isMobile} api={api} onClose={() => setShowModLog(false)} />
         )}
       </AnimatePresence>
     </Shell>
@@ -573,7 +779,7 @@ function TagPill({ tag }) {
   const owner = tag === 'OWNER'
   return <Badge label={tag} tone={owner ? 'red' : 'gold'} small />
 }
-function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, onDelete, onPin }) {
+function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, onEdit, onDelete, onPin }) {
   const [hover, setHover] = useState(false)
   const [picker, setPicker] = useState(false)
   const a = m.author || {}
@@ -611,6 +817,15 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
         {/* bolha (indentada sob o nome nos outros) */}
         <div style={{ paddingLeft: mine ? 0 : INDENT, width: '100%', display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start' }}>
         <div style={{ background: bubbleBg, border: `1px solid ${bubbleBd}`, borderRadius: radius, padding: m.image ? 4 : '8px 12px', overflow: 'hidden', maxWidth: '100%' }}>
+          {m.reply && (
+            <div style={{ borderLeft: '3px solid #ff8a8a', background: 'rgba(255,255,255,0.05)', borderRadius: '0 7px 7px 0', padding: '4px 8px', margin: m.image ? '4px 4px 2px' : '0 0 6px', maxWidth: '100%' }}>
+              <div style={{ fontSize: 10.5, fontWeight: 800, color: '#ff8a8a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.reply.name}</div>
+              <div style={{ fontSize: 11.5, color: 'var(--t3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}>
+                {m.reply.hasImage && <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M21 15l-5-5L5 21" /><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /></svg>}
+                {m.reply.text || (m.reply.hasImage ? 'Foto' : '')}
+              </div>
+            </div>
+          )}
           {m.image && (
             <a href={m.image} target="_blank" rel="noreferrer" style={{ display: 'block' }}>
               <img src={m.image} alt="" style={{ maxWidth: '100%', maxHeight: 320, borderRadius: 11, display: 'block', objectFit: 'cover' }} />
@@ -646,6 +861,9 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
       {hover && (
         <div style={{ position: 'absolute', top: -4, [mine ? 'left' : 'right']: 46, display: 'flex', gap: 2, background: '#0d1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 3, boxShadow: '0 6px 18px rgba(0,0,0,0.5)', zIndex: 6 }}>
           <button onClick={() => setPicker(p => !p)} style={miniBtn} title="Reagir">😀</button>
+          <button onClick={onReply} style={miniBtn} title="Responder">
+            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" /></svg>
+          </button>
           {m.mine && m.text && <button onClick={onEdit} style={miniBtn} title="Editar">
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
           </button>}
@@ -667,7 +885,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
 }
 
 // ═══════════════ Composer ═══════════════
-function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, isOwner, members = [], mentions, setMentions, muted, editing, cancelEdit }) {
+function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, isOwner, members = [], mentions, setMentions, muted, editing, cancelEdit, onTyping }) {
   const requireImg = rule?.requireImage && !isOwner
   const fileRef = useRef(null)
   const taRef = useRef(null)
@@ -681,6 +899,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
   }
   function onChange(e) {
     const val = e.target.value; setText(val)
+    if (val.trim()) onTyping?.()
     const pos = e.target.selectionStart || val.length
     const mm = MENTION_RE.exec(val.slice(0, pos))
     setMq(mm ? mm[2].toLowerCase() : null)
@@ -802,7 +1021,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
 }
 
 // ═══════════════ Painel direito ═══════════════
-function RightPanel({ data, onOpenProfile, meId, embedded }) {
+function RightPanel({ data, onOpenProfile, meId, embedded, onShowMembers, onShowModLog }) {
   return (
     <div style={{ width: embedded ? '100%' : 280, flexShrink: 0, borderLeft: embedded ? 'none' : '1px solid rgba(255,255,255,0.06)', overflowY: 'auto', background: embedded ? 'transparent' : 'rgba(4,7,14,0.4)', padding: '16px 14px' }}>
       {/* meu perfil */}
@@ -844,6 +1063,20 @@ function RightPanel({ data, onOpenProfile, meId, embedded }) {
             <span style={{ fontSize: 11, fontWeight: 800, color: '#ff8a8a', fontFamily: 'var(--mono)' }}>{t.score}</span>
           </button>
         ))}
+      </div>
+
+      {/* ações */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 18, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <button onClick={onShowMembers} style={panelBtn}>
+          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+          Ver todos os membros
+        </button>
+        {data.isOwner && (
+          <button onClick={onShowModLog} style={panelBtn}>
+            <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
+            Log de moderação
+          </button>
+        )}
       </div>
     </div>
   )
@@ -903,6 +1136,17 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
   async function doUnmute() {
     setModBusy(true)
     await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'unmute', target_user_id: p.id }) })
+    setModBusy(false); onModerated && onModerated()
+  }
+  async function doBan() {
+    if (!confirm('Remover este usuário do Network? Ele perde o acesso à comunidade.')) return
+    setModBusy(true)
+    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'ban', target_user_id: p.id }) })
+    setModBusy(false); onModerated && onModerated()
+  }
+  async function doUnban() {
+    setModBusy(true)
+    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'unban', target_user_id: p.id }) })
     setModBusy(false); onModerated && onModerated()
   }
 
@@ -1002,6 +1246,30 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                       </div>
                     </>
                   )}
+                </div>
+              )}
+              {isOwnerUser && (
+                <div>
+                  <label style={lbl}>Acesso ao Network</label>
+                  {p.banned && <div style={{ fontSize: 12, color: '#ff9a9a', fontWeight: 700, marginBottom: 8 }}>Este usuário está banido do Network.</div>}
+                  <button onClick={p.banned ? doUnban : doBan} disabled={modBusy} style={{
+                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px', borderRadius: 10, cursor: 'pointer', fontWeight: 700, fontSize: 13,
+                    border: p.banned ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(229,57,53,0.4)',
+                    background: p.banned ? 'rgba(34,197,94,0.1)' : 'rgba(229,57,53,0.1)',
+                    color: p.banned ? '#4ade80' : '#ff6b6b',
+                  }}>
+                    {p.banned ? (
+                      <>
+                        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="20" y1="8" x2="20" y2="14" /><line x1="23" y1="11" x2="17" y2="11" /></svg>
+                        Readmitir no Network
+                      </>
+                    ) : (
+                      <>
+                        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" /></svg>
+                        Remover do Network
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
             </div>
@@ -1109,10 +1377,90 @@ function EmptyChat({ name }) {
   )
 }
 
+// ═══════════════ Divisor "mensagens novas" ═══════════════
+function UnreadDivider() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 18px', margin: '2px 0' }}>
+      <span style={{ flex: 1, height: 1, background: 'rgba(229,57,53,0.35)' }} />
+      <span style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.1em', color: '#ff8a8a', textTransform: 'uppercase' }}>Mensagens novas</span>
+      <span style={{ flex: 1, height: 1, background: 'rgba(229,57,53,0.35)' }} />
+    </div>
+  )
+}
+
+// ═══════════════ Modal genérico (centro no desktop / bottom-sheet no mobile) ═══════════════
+function Modal({ title, onClose, isMobile, children }) {
+  return (
+    <>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
+        style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)' }} />
+      <motion.div
+        initial={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.96 }} animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }} exit={isMobile ? { y: '100%' } : { opacity: 0, scale: 0.96 }}
+        transition={{ duration: 0.26, ease }} onClick={e => e.stopPropagation()}
+        style={{
+          position: 'fixed', zIndex: 10001, display: 'flex', flexDirection: 'column',
+          background: 'linear-gradient(180deg, #0d1424, #060a12)', boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+          ...(isMobile
+            ? { left: 0, right: 0, bottom: 0, maxHeight: '80vh', borderRadius: '20px 20px 0 0', border: '1px solid rgba(255,255,255,0.1)' }
+            : { top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 420, maxWidth: '92vw', maxHeight: '80vh', borderRadius: 16, border: '1px solid rgba(255,255,255,0.1)' }),
+        }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+          <span style={{ fontSize: 14, fontWeight: 800, color: '#F1F5F9' }}>{title}</span>
+          <button onClick={onClose} style={iconBtn}><svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px 18px' }}>{children}</div>
+      </motion.div>
+    </>
+  )
+}
+
+// ═══════════════ Log de moderação (owner) ═══════════════
+function ModLogModal({ isMobile, api, onClose }) {
+  const [state, setState] = useState({ loading: true, log: [] })
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      try {
+        const res = await api('/api/network/mod-log')
+        if (!alive) return
+        if (res.ok) { const d = await res.json(); setState({ loading: false, log: d.log || [] }) }
+        else setState({ loading: false, log: [] })
+      } catch { if (alive) setState({ loading: false, log: [] }) }
+    })()
+    return () => { alive = false }
+  }, [api])
+  const actionLabel = a => ({ mute: 'Silenciou', unmute: 'Removeu silêncio', ban: 'Baniu', unban: 'Readmitiu', 'set-tag': 'Definiu tag', 'set-verified': 'Alterou verificado' }[a] || a)
+  return (
+    <Modal title="Log de moderação" isMobile={isMobile} onClose={onClose}>
+      {state.loading ? (
+        <CenterMsg text="Carregando log..." spin />
+      ) : state.log.length === 0 ? (
+        <p style={{ fontSize: 12.5, color: 'var(--t4)', textAlign: 'center', padding: '20px 4px' }}>Nenhuma ação de moderação registrada.</p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {state.log.map((r, i) => (
+            <div key={i} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#F1F5F9' }}>
+                  <span style={{ color: '#ff8a8a' }}>{actionLabel(r.action)}</span> {r.target_name || '—'}
+                </span>
+                <span style={{ fontSize: 10.5, color: 'var(--t4)', flexShrink: 0 }}>{fmtRel(r.created_at)}</span>
+              </div>
+              {r.reason && <div style={{ fontSize: 11.5, color: 'var(--t3)', marginTop: 3 }}>Motivo: {r.reason}</div>}
+              <div style={{ fontSize: 10.5, color: 'var(--t4)', marginTop: 3 }}>por {r.actor_name || '—'}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Modal>
+  )
+}
+
 // ═══════════════ estilos compartilhados ═══════════════
 const iconBtn = { width: 32, height: 32, borderRadius: 9, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }
 const miniBtn = { width: 28, height: 28, borderRadius: 7, border: 'none', background: 'transparent', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }
 const rowBtn = { display: 'flex', alignItems: 'center', gap: 9, padding: '6px 8px', borderRadius: 9, background: 'transparent', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }
+const panelBtn = { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--t2)', cursor: 'pointer', width: '100%', fontSize: 12.5, fontWeight: 700 }
 const lbl = { display: 'block', fontSize: 10.5, fontWeight: 700, color: 'var(--t3)', marginBottom: 4, letterSpacing: '0.04em' }
 const muteBtn = { padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }
 const inp = { width: '100%', padding: '9px 11px', borderRadius: 9, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'inherit', outline: 'none', resize: 'none' }

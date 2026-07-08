@@ -10,7 +10,7 @@ import { isPushSupported, getPermissionState, registerSW, subscribePush, savePus
 import ProfileModal from './ProfileModal'
 import { loadLocalProfile } from '../lib/profileLocal'
 import { aulasEnabled } from '../lib/aulas-tenants'
-import { networkEnabled } from '../lib/network-access'
+import { networkEnabled, NETWORK_GA } from '../lib/network-access'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
@@ -145,10 +145,16 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         return arr
       })()
     : baseItems
+
+  // Use own fetch OR parent prop — whichever confirms PRO
+  const sub = ownSub || subscription
+  const subActive = sub?.status === 'active' && (!sub.expires_at || new Date(sub.expires_at) > new Date())
+
   const allItems = [
     ...items,
-    // Network — comunidade entre admins (rollout gated: so allowlist por enquanto)
-    ...(isAdmin && networkEnabled(userEmail) ? [NETWORK_ITEM] : []),
+    // Network — comunidade entre admins. Allowlist (fase teste) OU, no rollout
+    // geral (NETWORK_GA), qualquer admin PRO ativo.
+    ...(isAdmin && (networkEnabled(userEmail) || (NETWORK_GA && subActive)) ? [NETWORK_ITEM] : []),
     ...(isAdmin && userEmail === OWNER_EMAIL ? [
       { href:'/planejamento', label:'Controle Op.', icon:'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
       { href:'/owner', label:'Owner', icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
@@ -156,10 +162,6 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   ]
 
   const redesign = isRedesign(userEmail)
-
-  // Use own fetch OR parent prop — whichever confirms PRO
-  const sub = ownSub || subscription
-  const subActive = sub?.status === 'active' && (!sub.expires_at || new Date(sub.expires_at) > new Date())
 
   const content = (
     <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>

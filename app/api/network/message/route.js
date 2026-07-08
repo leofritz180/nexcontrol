@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { authNetwork, getMembers, publicName } from '../../../../lib/network-server'
+import { authNetwork, getMembers, publicName, buildAuthorMap } from '../../../../lib/network-server'
 import { channelRule } from '../../../../lib/network-access'
 import { sendPushToUser } from '../../../../lib/push'
 
@@ -82,10 +82,31 @@ export async function POST(req) {
     if (rule?.requireImage && !imageUrl && !isOwner) return NextResponse.json({ error: 'Neste canal a mensagem precisa ter uma foto.' }, { status: 400 })
     if (!imageUrl && !text) return NextResponse.json({ error: 'Mensagem vazia' }, { status: 400 })
 
+    // RESPOSTA/CITACAO: so aceita reply_to que aponte pra uma mensagem NAO deletada
+    // do MESMO canal; se invalido, ignora (nao da erro).
+    let replyTo = null
+    if (body.reply_to) {
+      const { data: rt } = await sb.from('network_messages').select('id,channel_id,deleted_at').eq('id', body.reply_to).maybeSingle()
+      if (rt && !rt.deleted_at && rt.channel_id === ch.id) replyTo = rt.id
+    }
+
     const { data, error } = await sb.from('network_messages')
-      .insert({ channel_id: ch.id, author_id: user.id, text, image_url: imageUrl })
+      .insert({ channel_id: ch.id, author_id: user.id, text, image_url: imageUrl, reply_to: replyTo })
       .select('id,created_at').maybeSingle()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // ── BROADCAST server-side (realtime confiavel) — nunca falha o envio ──
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/realtime/v1/api/broadcast`, {
+        method: 'POST',
+        headers: {
+          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: 'Bearer ' + process.env.SUPABASE_SERVICE_ROLE_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ messages: [{ topic: 'network-room', event: 'msg', payload: { channel: channelKey } }] }),
+      })
+    } catch (e) { console.error('[network] broadcast falhou', e?.message) }
 
     // ── Notificacoes (push) — await pra garantir envio no serverless ──
     await (async () => {
@@ -137,6 +158,18 @@ export async function POST(req) {
     if (msg.author_id !== user.id && !isOwner) return NextResponse.json({ error: 'Sem permissão' }, { status: 403 })
     const { error } = await sb.from('network_messages').update({ deleted_at: new Date().toISOString() }).eq('id', id)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    // registra no mod-log (moderacao) — nunca quebra o delete
+    try {
+      const nameMap = await buildAuthorMap(sb, [msg.author_id, user.id])
+      await sb.from('network_mod_log').insert({
+        action: 'delete_msg',
+        target_id: msg.author_id,
+        target_name: nameMap[msg.author_id]?.name || 'admin',
+        actor_id: user.id,
+        actor_name: nameMap[user.id]?.name || publicName(a.profile),
+        reason: null,
+      })
+    } catch (e) { console.error('[network] mod-log falhou', e?.message) }
     // limpa a imagem do storage (evita orfaos)
     const spath = storagePathFromUrl(msg.image_url)
     if (spath) { try { await sb.storage.from('network').remove([spath]) } catch {} }

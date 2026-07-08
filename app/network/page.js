@@ -113,6 +113,19 @@ function Avatar({ name, color, size = 38, online, src }) {
     </div>
   )
 }
+// Selo Pioneiro (primeiros a entrar na comunidade) — coroa + destaque premium.
+function PioneiroBadge({ small }) {
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 3,
+      fontSize: small ? 8.5 : 9.5, fontWeight: 800, letterSpacing: '0.04em',
+      padding: small ? '1px 6px' : '2px 8px', borderRadius: 5,
+      background: 'linear-gradient(135deg, rgba(245,180,60,0.2), rgba(245,180,60,0.05))',
+      border: '1px solid rgba(245,180,60,0.45)', color: '#f6c968', whiteSpace: 'nowrap', lineHeight: 1.4,
+    }}>👑 Pioneiro</span>
+  )
+}
+
 // Destaca @mencoes no texto (cosmetico).
 function renderMentions(text) {
   return String(text || '').split(/(@[\p{L}\p{N}_]+)/u).map((p, i) =>
@@ -816,6 +829,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
             <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 0 }}><Avatar name={a.name} color={a.color} src={a.avatar} size={30} /></button>
             <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em' }}>{a.name}</button>
             {a.verified && <VerifiedBadge size={13} />}
+            {a.founder && <PioneiroBadge small />}
             {a.tag && <TagPill tag={a.tag} />}
             {!a.tag && a.rank && <Badge label={a.rank} tone="red" small />}
           </div>
@@ -1183,9 +1197,12 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
               <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{p.name}</h2>
               {p.verified && <VerifiedBadge size={20} />}
             </div>
-            {p.tag && <div style={{ marginTop: 7 }}><TagPill tag={p.tag} /></div>}
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: 7 }}>
+              {p.founder && <PioneiroBadge />}
+              {p.tag && <TagPill tag={p.tag} />}
+            </div>
             <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
-              {p.badges.filter(b => b.key !== 'verificado').map(b => <Badge key={b.key} label={b.label} tone={b.tone} />)}
+              {p.badges.filter(b => b.key !== 'verificado' && b.key !== 'pioneiro').map(b => <Badge key={b.key} label={b.label} tone={b.tone} />)}
             </div>
             {p.instagram && <a href={`https://instagram.com/${p.instagram}`} target="_blank" rel="noreferrer" style={{ marginTop: 10, fontSize: 12, color: '#ff8a8a', textDecoration: 'none', fontWeight: 600 }}>@{p.instagram}</a>}
             {p.bio && <p style={{ margin: '10px 0 0', fontSize: 12.5, color: 'var(--t3)', lineHeight: 1.5, maxWidth: 300 }}>{p.bio}</p>}

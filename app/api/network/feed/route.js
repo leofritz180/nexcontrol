@@ -116,7 +116,7 @@ export async function GET(req) {
   const { data: myNp } = await sb.from('network_profiles').select('muted_until,mute_reason,founder').eq('user_id', user.id).maybeSingle()
   me.mute = muteInfo(myNp)
   // Selo FUNDADOR pros primeiros a entrar (nao bloqueia a resposta se falhar)
-  await maybeGrantFounder(sb, user.id, !!myNp?.founder)
+  await maybeGrantFounder(sb, user.id, !!myNp?.founder || a.isOwner)
 
   return NextResponse.json({
     channels: channels || [],

@@ -84,17 +84,21 @@ function Badge({ label, tone, small }) {
     }}>{label}</span>
   )
 }
-function Avatar({ name, color, size = 38, online }) {
+function Avatar({ name, color, size = 38, online, src }) {
   const initial = (name || '?')[0].toUpperCase()
   return (
-    <div style={{ position: 'relative', flexShrink: 0 }}>
-      <div style={{
-        width: size, height: size, borderRadius: '50%',
-        background: `linear-gradient(135deg, ${color}, ${color}bb)`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: size * 0.42, fontWeight: 800, color: '#fff',
-        boxShadow: `0 2px 10px ${color}44`, border: '1px solid rgba(255,255,255,0.14)',
-      }}>{initial}</div>
+    <div style={{ position: 'relative', flexShrink: 0, width: size, height: size }}>
+      {src ? (
+        <img src={src} alt="" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', display: 'block', border: '1px solid rgba(255,255,255,0.14)', boxShadow: '0 2px 10px rgba(0,0,0,0.4)' }} />
+      ) : (
+        <div style={{
+          width: size, height: size, borderRadius: '50%',
+          background: `linear-gradient(135deg, ${color}, ${color}bb)`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: size * 0.42, fontWeight: 800, color: '#fff',
+          boxShadow: `0 2px 10px ${color}44`, border: '1px solid rgba(255,255,255,0.14)',
+        }}>{initial}</div>
+      )}
       {online && <span style={{ position: 'absolute', bottom: 0, right: 0, width: size * 0.28, height: size * 0.28, borderRadius: '50%', background: MINT, border: '2px solid #0a0a0a' }} />}
     </div>
   )
@@ -488,28 +492,25 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
   const bubbleBg = mine ? 'rgba(229,57,53,0.15)' : 'rgba(255,255,255,0.05)'
   const bubbleBd = mine ? 'rgba(229,57,53,0.3)' : 'rgba(255,255,255,0.08)'
   const radius = mine ? '15px 15px 5px 15px' : '15px 15px 15px 5px'
+  const INDENT = 38 // avatar(30) + gap(8): alinha a bolha sob o nome
 
   return (
     <div onMouseEnter={() => setHover(true)} onMouseLeave={() => { setHover(false); setPicker(false) }}
-      style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start', gap: 9, padding: grouped ? '1px 14px' : '5px 14px 2px', position: 'relative' }}>
-      {/* avatar (só dos outros) */}
-      {!mine && (
-        <div style={{ width: 34, flexShrink: 0, display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
-          {!grouped && <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}><Avatar name={a.name} color={a.color} size={34} /></button>}
-        </div>
-      )}
-      <div style={{ maxWidth: '76%', display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start', minWidth: 0 }}>
-        {/* header (nome/tag/verificado) — só dos outros e no início do grupo */}
+      style={{ display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start', padding: grouped ? '1px 14px' : '6px 14px 2px', position: 'relative' }}>
+      <div style={{ maxWidth: '82%', display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start', minWidth: 0 }}>
+        {/* header (avatar + nome + selos) — só dos outros e no início do grupo */}
         {!grouped && !mine && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 3, paddingLeft: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 5 }}>
+            <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 0 }}><Avatar name={a.name} color={a.color} src={a.avatar} size={30} /></button>
             <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em' }}>{a.name}</button>
             {a.verified && <VerifiedBadge size={13} />}
             {a.tag && <TagPill tag={a.tag} />}
             {!a.tag && a.rank && <Badge label={a.rank} tone="red" small />}
           </div>
         )}
-        {/* bolha */}
-        <div style={{ background: bubbleBg, border: `1px solid ${bubbleBd}`, borderRadius: radius, padding: m.image ? 4 : '8px 12px', overflow: 'hidden' }}>
+        {/* bolha (indentada sob o nome nos outros) */}
+        <div style={{ paddingLeft: mine ? 0 : INDENT, width: '100%', display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start' }}>
+        <div style={{ background: bubbleBg, border: `1px solid ${bubbleBd}`, borderRadius: radius, padding: m.image ? 4 : '8px 12px', overflow: 'hidden', maxWidth: '100%' }}>
           {m.image && (
             <a href={m.image} target="_blank" rel="noreferrer" style={{ display: 'block' }}>
               <img src={m.image} alt="" style={{ maxWidth: '100%', maxHeight: 320, borderRadius: 11, display: 'block', objectFit: 'cover' }} />
@@ -538,6 +539,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onEdit, on
             ))}
           </div>
         )}
+        </div>
       </div>
 
       {/* toolbar hover */}
@@ -662,7 +664,7 @@ function RightPanel({ data, onOpenProfile, meId, embedded }) {
           width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 12px', marginBottom: 16,
           borderRadius: 12, background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.22)', cursor: 'pointer', textAlign: 'left',
         }}>
-          <Avatar name={data.me.name} color={data.me.color} size={38} />
+          <Avatar name={data.me.name} color={data.me.color} src={data.me.avatar} size={38} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ margin: 0, fontSize: 8.5, fontWeight: 800, color: 'var(--t4)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Meu perfil público</p>
             <p style={{ margin: '2px 0 0', fontSize: 13, fontWeight: 700, color: '#F1F5F9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{data.me.name}</p>
@@ -677,7 +679,7 @@ function RightPanel({ data, onOpenProfile, meId, embedded }) {
         {data.online.length === 0 && <p style={{ fontSize: 11.5, color: 'var(--t4)', padding: '6px 4px' }}>Ninguém online agora.</p>}
         {data.online.map(o => (
           <button key={o.id} onClick={() => onOpenProfile(o.id)} style={rowBtn}>
-            <Avatar name={o.name} color={o.color} size={28} online />
+            <Avatar name={o.name} color={o.color} src={o.avatar} size={28} online />
             <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.name}{o.you ? ' (você)' : ''}</span>
           </button>
         ))}
@@ -690,7 +692,7 @@ function RightPanel({ data, onOpenProfile, meId, embedded }) {
         {data.top.map((t, i) => (
           <button key={t.id} onClick={() => onOpenProfile(t.id)} style={rowBtn}>
             <span style={{ width: 20, textAlign: 'center', fontSize: 11, fontWeight: 800, fontFamily: 'var(--mono)', color: i === 0 ? '#ffd24a' : i === 1 ? '#cbd5e1' : i === 2 ? '#e08a5b' : 'var(--t4)' }}>{i + 1}</span>
-            <Avatar name={t.name} color={t.color} size={26} />
+            <Avatar name={t.name} color={t.color} src={t.avatar} size={26} />
             <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: 'var(--t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>{t.name}</span>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#ff8a8a', fontFamily: 'var(--mono)' }}>{t.score}</span>
           </button>
@@ -709,16 +711,31 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
   const [bio, setBio] = useState(p?.bio || '')
   const [insta, setInsta] = useState(p?.instagram || '')
   const [tagInput, setTagInput] = useState(p?.tag || '')
+  const [avatarData, setAvatarData] = useState(undefined) // undefined=inalterado | null=remover | dataURL=nova
+  const [avatarBusy, setAvatarBusy] = useState(false)
   const [saving, setSaving] = useState(false)
   const [modBusy, setModBusy] = useState(false)
   const [edit, setEdit] = useState(false)
-  useEffect(() => { setBio(p?.bio || ''); setInsta(p?.instagram || ''); setTagInput(p?.tag || '') }, [p])
+  const avatarRef = useRef(null)
+  useEffect(() => { setBio(p?.bio || ''); setInsta(p?.instagram || ''); setTagInput(p?.tag || ''); setAvatarData(undefined) }, [p])
 
+  async function onAvatarFile(e) {
+    const file = e.target.files?.[0]; e.target.value = ''
+    if (!file) return
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) { alert('Envie uma imagem JPG, PNG ou WEBP.'); return }
+    setAvatarBusy(true)
+    try { setAvatarData(await compressImage(file, 512, 0.85)) } catch { alert('Não consegui processar a imagem.') }
+    setAvatarBusy(false)
+  }
   async function save() {
     setSaving(true)
-    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ bio, instagram: insta }) })
-    setSaving(false); setEdit(false); onSaved && onSaved()
+    const payload = { bio, instagram: insta }
+    if (avatarData !== undefined) payload.avatar = avatarData // dataURL ou null
+    await api('/api/network/profile', { method: 'POST', body: JSON.stringify(payload) })
+    setSaving(false); setEdit(false); setAvatarData(undefined); onSaved && onSaved()
   }
+  // foto mostrada no editor: nova > atual > (removida->inicial)
+  const editAvatar = avatarData === null ? null : (avatarData || p?.avatar || null)
   const isOwnerTarget = (p?.tag === 'OWNER')
   async function setVerified(v) {
     setModBusy(true)
@@ -753,7 +770,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
             <button onClick={onClose} style={iconBtn}><svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: 18 }}>
-            <Avatar name={p.name} color={p.color} size={78} />
+            <Avatar name={p.name} color={p.color} src={p.avatar} size={78} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 12 }}>
               <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{p.name}</h2>
               {p.verified && <VerifiedBadge size={20} />}
@@ -814,7 +831,16 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
               {!edit ? (
                 <button onClick={() => setEdit(true)} className="btn" style={{ width: '100%', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--t1)', fontWeight: 700, padding: '11px', borderRadius: 10, fontSize: 13 }}>Editar meu perfil</button>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {/* Foto de perfil */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <Avatar name={p.name} color={p.color} src={editAvatar} size={56} />
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      <input ref={avatarRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={onAvatarFile} style={{ display: 'none' }} />
+                      <button onClick={() => avatarRef.current?.click()} disabled={avatarBusy} style={{ padding: '8px 14px', borderRadius: 9, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.06)', color: 'var(--t1)', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}>{avatarBusy ? 'Processando...' : (editAvatar ? 'Trocar foto' : 'Adicionar foto')}</button>
+                      {editAvatar && <button onClick={() => setAvatarData(null)} style={{ padding: '8px 12px', borderRadius: 9, border: 'none', background: 'none', color: '#ff8a8a', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}>Remover</button>}
+                    </div>
+                  </div>
                   <div>
                     <label style={lbl}>Bio</label>
                     <textarea value={bio} onChange={e => setBio(e.target.value.slice(0, 240))} rows={2} placeholder="Uma linha sobre você e sua operação" style={inp} />

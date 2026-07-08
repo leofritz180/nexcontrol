@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { authNetwork, computePublicProfile } from '../../../../lib/network-server'
+import { authNetwork, computePublicProfile, uploadImage } from '../../../../lib/network-server'
 import { VERIFIER_EMAILS } from '../../../../lib/network-access'
 
 export const dynamic = 'force-dynamic'
@@ -45,12 +45,21 @@ export async function POST(req) {
     return NextResponse.json({ ok: true })
   }
 
-  // ── EDITAR o proprio perfil (bio/instagram) ──
+  // ── EDITAR o proprio perfil (foto/bio/instagram) ──
   const bio = body.bio != null ? String(body.bio).slice(0, 240) : undefined
   let instagram = body.instagram != null ? String(body.instagram).trim().replace(/^@/, '').slice(0, 60) : undefined
   const patch = { user_id: user.id }
   if (bio !== undefined) patch.bio = bio
   if (instagram !== undefined) patch.instagram = instagram || null
+  // Foto de perfil: nova (data URL) faz upload; null remove; undefined mantem.
+  if (body.avatar === null) {
+    patch.avatar_url = null
+  } else if (typeof body.avatar === 'string' && body.avatar.startsWith('data:')) {
+    const up = await uploadImage(sb, 'avatars', body.avatar, { fixedName: user.id, upsert: true })
+    if (up.error) return NextResponse.json({ error: up.error }, { status: 400 })
+    // cache-bust pra a foto nova aparecer na hora (mesmo path sobrescrito)
+    patch.avatar_url = up.url + '?v=' + Date.now()
+  }
   const { error } = await sb.from('network_profiles').upsert(patch, { onConflict: 'user_id' })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true })

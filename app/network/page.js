@@ -1218,7 +1218,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
           <p style={{ fontSize: 11, color: 'var(--t4)', textAlign: 'center', marginTop: 4 }}>Na NexControl desde <strong style={{ color: 'var(--t2)' }}>{fmtSince(p.since)}</strong></p>
 
           {/* moderação (owner define tag; owner/darkzin dão verificado) — nunca no owner */}
-          {!view.isMe && !isOwnerTarget && (canVerify || isOwnerUser) && (
+          {!view.isMe && !isOwnerTarget && !p.fake && (canVerify || isOwnerUser) && (
             <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase' }}>Moderação</div>
               {canVerify && (

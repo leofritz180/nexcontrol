@@ -183,7 +183,7 @@ function makeShape({ authorMap, reactByMsg, replyMap, userId }) {
     reply: m.reply_to ? (replyMap[m.reply_to] || null) : null,
     // fake_name = mensagem "semente" (owner simula um admin comentando)
     author: m.fake_name
-      ? { id: null, name: m.fake_name, color: colorFromId(m.fake_name), avatar: null }
+      ? { id: 'fake:' + m.fake_name, name: m.fake_name, color: colorFromId('fake:' + m.fake_name), avatar: null }
       : (authorMap[m.author_id] || (m.author_id ? { id: m.author_id, name: 'admin', color: colorFromId(m.author_id) } : { id: null, name: 'NexControl', system: true, color: '#e53935' })),
     mine: m.author_id === userId,
     reactions: Object.entries(reactByMsg[m.id] || {}).map(([emoji, v]) => ({ emoji, count: v.count, mine: v.mine })),

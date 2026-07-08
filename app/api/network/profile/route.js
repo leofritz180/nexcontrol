@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { authNetwork, computePublicProfile, uploadImage, logMod, displayName } from '../../../../lib/network-server'
+import { authNetwork, computePublicProfile, computeFakeProfile, uploadImage, logMod, displayName } from '../../../../lib/network-server'
 import { VERIFIER_EMAILS, OWNER_EMAIL } from '../../../../lib/network-access'
 
 export const dynamic = 'force-dynamic'
@@ -22,6 +22,10 @@ export async function GET(req) {
   const { sb } = a
   const { searchParams } = new URL(req.url)
   const userId = searchParams.get('user_id') || a.user.id
+  // Perfil de mensagem semente (fake) -> perfil simulado
+  if (userId.startsWith('fake:')) {
+    return NextResponse.json({ profile: computeFakeProfile(userId.slice(5)), isMe: false })
+  }
   const profile = await computePublicProfile(sb, userId)
   if (!profile) return NextResponse.json({ error: 'Perfil não encontrado' }, { status: 404 })
   return NextResponse.json({ profile, isMe: userId === a.user.id })

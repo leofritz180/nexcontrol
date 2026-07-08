@@ -65,6 +65,18 @@ export async function POST(req) {
     return NextResponse.json({ ok: true })
   }
 
+  // ── OWNER libera/remove o uso do @todos pra um usuario ──
+  if (action === 'set-mention-all') {
+    if (!isOwner) return NextResponse.json({ error: 'Só o admin master libera o @todos.' }, { status: 403 })
+    const target = body.target_user_id
+    if (!target) return NextResponse.json({ error: 'Usuário inválido' }, { status: 400 })
+    const allow = !!body.allow
+    const { error } = await sb.from('network_profiles').upsert({ user_id: target, can_mention_all: allow }, { onConflict: 'user_id' })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await logMod(sb, { action: allow ? 'grant_mention_all' : 'revoke_mention_all', targetId: target, targetName: await nameOf(sb, target), actorId: user.id, actorName: await nameOf(sb, user.id) })
+    return NextResponse.json({ ok: true })
+  }
+
   // ── OWNER silencia (castigo de fala) ──
   if (action === 'mute') {
     if (!isOwner) return NextResponse.json({ error: 'Só o admin master pode silenciar.' }, { status: 403 })

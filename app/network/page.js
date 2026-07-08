@@ -1686,6 +1686,11 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
     await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'set-founder', target_user_id: p.id, founder: v }) })
     setModBusy(false); onModerated && onModerated()
   }
+  async function setMentionAll(v) {
+    setModBusy(true)
+    await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'set-mention-all', target_user_id: p.id, allow: v }) })
+    setModBusy(false); onModerated && onModerated()
+  }
   async function doMute(opts) {
     setModBusy(true)
     await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'mute', target_user_id: p.id, reason: muteReason.trim() || undefined, ...opts }) })
@@ -1775,6 +1780,12 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                 <button onClick={() => setFounder(!p.founder)} disabled={modBusy} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px', borderRadius: 10, cursor: 'pointer', fontWeight: 700, fontSize: 13, border: `1px solid ${p.founder ? 'rgba(255,107,107,0.35)' : 'rgba(245,180,60,0.4)'}`, background: p.founder ? 'rgba(255,107,107,0.1)' : 'rgba(245,180,60,0.12)', color: p.founder ? '#ff8a8a' : '#f6c968' }}>
                   <span style={{ fontSize: 14 }}>👑</span>
                   {p.founder ? 'Remover Veterano' : 'Dar Veterano'}
+                </button>
+              )}
+              {isOwnerUser && (
+                <button onClick={() => setMentionAll(!p.canMentionAll)} disabled={modBusy} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px', borderRadius: 10, cursor: 'pointer', fontWeight: 700, fontSize: 13, border: `1px solid ${p.canMentionAll ? 'rgba(255,107,107,0.35)' : 'rgba(56,151,240,0.4)'}`, background: p.canMentionAll ? 'rgba(255,107,107,0.1)' : 'rgba(56,151,240,0.12)', color: p.canMentionAll ? '#ff8a8a' : '#5aa9f5' }}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /></svg>
+                  {p.canMentionAll ? 'Remover uso do @todos' : 'Liberar uso do @todos'}
                 </button>
               )}
               {isOwnerUser && (

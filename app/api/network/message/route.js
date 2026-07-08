@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { authNetwork, getMembers, publicName, buildAuthorMap } from '../../../../lib/network-server'
-import { channelRule, canMentionAll } from '../../../../lib/network-access'
+import { channelRule } from '../../../../lib/network-access'
 import { sendPushToUser } from '../../../../lib/push'
 
 export const dynamic = 'force-dynamic'
@@ -115,7 +115,9 @@ export async function POST(req) {
         const preview = text ? (text.length > 80 ? text.slice(0, 80) + '…' : text) : '📷 Foto'
         const notified = new Set([user.id])
         // @TODOS: marca todo mundo (só quem tem permissão — validado no servidor).
-        if (body.mentionAll && canMentionAll(a.email)) {
+        // Dispara pela flag do seletor OU detectando o texto "@todos" (digitado / dock).
+        const wantsAll = (body.mentionAll || /(^|\s)@todos(\s|$)/i.test(text)) && a.canMentionAll
+        if (wantsAll) {
           const members = await getMembers(sb)
           for (const m of members) {
             if (notified.has(m.id)) continue

@@ -10,12 +10,14 @@ import { isPushSupported, getPermissionState, registerSW, subscribePush, savePus
 import ProfileModal from './ProfileModal'
 import { loadLocalProfile } from '../lib/profileLocal'
 import { aulasEnabled } from '../lib/aulas-tenants'
+import { networkEnabled } from '../lib/network-access'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 
 const AULAS_VIP_ITEM = { href:'/aulas', label:'Aulas VIP', icon:'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z', vip: true }
+const NETWORK_ITEM = { href:'/network', label:'Network', icon:'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z', network: true }
 
 const ADMIN_NAV = [
   { href:'/admin', label:'Admin', icon:'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z' },
@@ -122,6 +124,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
     : baseItems
   const allItems = [
     ...items,
+    // Network — comunidade entre admins (rollout gated: so allowlist por enquanto)
+    ...(isAdmin && networkEnabled(userEmail) ? [NETWORK_ITEM] : []),
     ...(isAdmin && userEmail === OWNER_EMAIL ? [
       { href:'/planejamento', label:'Controle Op.', icon:'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
       { href:'/owner', label:'Owner', icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
@@ -195,6 +199,13 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                   background:'var(--fill-2)', color:'var(--t3)',
                   letterSpacing:'0.06em',
                 }}>VIP</span>
+              )}
+              {item.network && (
+                <span className="sb-label" style={{
+                  marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
+                  background:'rgba(229,57,53,0.16)', color:'#ff7a7a', border:'1px solid rgba(229,57,53,0.4)',
+                  letterSpacing:'0.06em',
+                }}>BETA</span>
               )}
             </Link>
           )

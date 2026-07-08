@@ -1185,23 +1185,13 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
             {p.bio && <p style={{ margin: '10px 0 0', fontSize: 12.5, color: 'var(--t3)', lineHeight: 1.5, maxWidth: 300 }}>{p.bio}</p>}
           </div>
 
-          {/* stats grid */}
+          {/* stats grid (sem metas fechadas / redes — dados operacionais nao expostos) */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
             <Stat label="Rank" value={p.rank} accent />
             <Stat label="Operadores" value={fmtNum(p.operadores)} />
-            <Stat label="Metas fechadas" value={fmtNum(p.metasFechadas)} />
             <Stat label="Depositantes" value={fmtNum(p.depositantes)} />
-            <Stat label="Melhor rede" value={p.melhorRede || '—'} />
             <Stat label="Network score" value={fmtNum(p.networkScore)} accent />
           </div>
-          {p.redes.length > 0 && (
-            <div style={{ marginBottom: 14 }}>
-              <SectionTitle label="Redes mais usadas" />
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {p.redes.map(r => <span key={r} style={{ fontSize: 11.5, fontWeight: 700, padding: '4px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--t2)' }}>{r}</span>)}
-              </div>
-            </div>
-          )}
           <p style={{ fontSize: 11, color: 'var(--t4)', textAlign: 'center', marginTop: 4 }}>Na NexControl desde <strong style={{ color: 'var(--t2)' }}>{fmtSince(p.since)}</strong></p>
 
           {/* moderação (owner define tag; owner/darkzin dão verificado) — nunca no owner */}

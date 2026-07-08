@@ -83,24 +83,50 @@ export default function BillingMpPage() {
   const selectedCalc = useMemo(() => combinedPrice(monthlyTier, selectedPlan), [monthlyTier, selectedPlan])
   const isV2 = true // seletor de periodo novo liberado p/ todos os admins
 
+  // UPGRADE vs RENOVACAO:
+  // Se ha ciclo ativo (daysRemaining>0) e o admin tem mais operadores do que o ciclo
+  // ja cobre (operator_count da sub), NAO e uma renovacao — e um UPGRADE. A base ja
+  // esta paga; cobra so o DELTA de operadores, mantendo o vencimento. Evita recobrar
+  // a base (bug que cobrava o plano cheio de novo).
+  const currentPaidOps = Number(subscription?.operator_count || 0)
+  const isUpgrade = daysRemaining > 0 && opQty > currentPaidOps
+  const upgradeAmount = useMemo(
+    () => Number((calcOpTier(opQty).total - calcOpTier(currentPaidOps).total).toFixed(2)),
+    [opQty, currentPaidOps]
+  )
+  const payAmount = isUpgrade ? upgradeAmount : selectedCalc.total
+
   async function handleStart() {
     if (!user || !profile) return
     setStage('loading'); setError('')
     try {
       const planLabel = opQty > 0 ? `Admin + ${opQty} op${opQty > 1 ? 's' : ''}` : 'Admin Solo'
+      // UPGRADE: valor avulso (sem plan_period) = delta de operadores, mantem o ciclo.
+      // RENOVACAO: plano cheio × periodo, estende o ciclo.
+      const payload = isUpgrade
+        ? {
+            email: user.email,
+            name: profile.nome || user.email.split('@')[0],
+            tenant_id: profile.tenant_id,
+            user_id: user.id,
+            amount: upgradeAmount,
+            operator_count: opQty,
+            description: `NexControl PRO - Upgrade p/ ${opQty} operador${opQty > 1 ? 'es' : ''} (ciclo atual)`,
+          }
+        : {
+            email: user.email,
+            name: profile.nome || user.email.split('@')[0],
+            tenant_id: profile.tenant_id,
+            user_id: user.id,
+            amount: selectedCalc.total,
+            operator_count: opQty,
+            plan_period: selectedPlan,
+            description: `NexControl PRO - ${planLabel} - ${selectedCalc.plan.label}`,
+          }
       const res = await fetch('/api/mercadopago/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: user.email,
-          name: profile.nome || user.email.split('@')[0],
-          tenant_id: profile.tenant_id,
-          user_id: user.id,
-          amount: selectedCalc.total,
-          operator_count: opQty,
-          plan_period: selectedPlan,
-          description: `NexControl PRO - ${planLabel} - ${selectedCalc.plan.label}`,
-        }),
+        body: JSON.stringify(payload),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -152,7 +178,19 @@ export default function BillingMpPage() {
 
       <div style={{ width: '100%', maxWidth: 620, position: 'relative', zIndex: 2 }}>
         <AnimatePresence mode="wait">
-          {stage === 'period' && (
+          {stage === 'period' && isUpgrade && (
+            <motion.div key="upgrade" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
+              <UpgradeCard
+                opQty={opQty}
+                currentPaidOps={currentPaidOps}
+                upgradeAmount={upgradeAmount}
+                currentExpires={subscription?.expires_at}
+                onConfirm={handleStart}
+                onBack={() => router.push('/operadores')}
+              />
+            </motion.div>
+          )}
+          {stage === 'period' && !isUpgrade && (
             <motion.div key="period" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
               <PeriodCard
                 v2={isV2}
@@ -179,7 +217,7 @@ export default function BillingMpPage() {
 
           {stage === 'pix' && payment && (
             <motion.div key="pix" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
-              <PixCard payment={payment} copied={copied} onCopy={copyPix} amount={selectedCalc.total} planLabel={selectedCalc.plan.label} />
+              <PixCard payment={payment} copied={copied} onCopy={copyPix} amount={payAmount} planLabel={isUpgrade ? `Upgrade p/ ${opQty} operadores` : selectedCalc.plan.label} />
             </motion.div>
           )}
 
@@ -201,6 +239,57 @@ export default function BillingMpPage() {
 }
 
 /* ── Cards ── */
+
+// Card de UPGRADE — adicionar operadores a um ciclo ativo. Cobra so o delta
+// (base ja paga), mantendo o vencimento. Diferente da renovacao (plano cheio).
+function UpgradeCard({ opQty, currentPaidOps, upgradeAmount, currentExpires, onConfirm, onBack }) {
+  const added = Math.max(0, opQty - currentPaidOps)
+  return (
+    <div style={cardStyleV2}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+        <button type="button" onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--t3)', fontSize: 12, fontWeight: 600, padding: 0 }}>
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </button>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 12px', borderRadius: 99, background: 'rgba(209,250,229,0.08)', border: '1px solid rgba(209,250,229,0.22)', fontSize: 10, fontWeight: 800, color: 'var(--profit)', letterSpacing: '0.08em' }}>
+          <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--profit)' }}/>
+          ADICIONAR OPERADORES
+        </div>
+      </div>
+
+      <div style={{ textAlign: 'center', marginBottom: 22 }}>
+        <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(209,250,229,0.08)', border: '1px solid rgba(209,250,229,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        </div>
+        <h1 style={{ fontSize: 24, fontWeight: 900, color: '#F1F5F9', margin: '0 0 6px', letterSpacing: '-0.025em' }}>
+          Adicionar {added} operador{added !== 1 ? 'es' : ''}
+        </h1>
+        <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: 0, lineHeight: 1.5 }}>
+          Você tem <strong style={{ color: '#CBD5E1' }}>{opQty}</strong> operador{opQty !== 1 ? 'es' : ''} e seu plano cobre <strong style={{ color: '#CBD5E1' }}>{currentPaidOps}</strong>.<br/>
+          Sua base já está paga — cobramos só a diferença.
+        </p>
+      </div>
+
+      <div style={{ padding: '14px 18px', borderRadius: 12, background: 'rgba(209,250,229,0.04)', border: '1px solid rgba(209,250,229,0.12)', marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <span style={{ fontSize: 12, color: 'var(--t3)' }}>Vencimento (mantido)</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#F1F5F9' }}>{fmtDate(currentExpires)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10 }}>
+          <span style={{ fontSize: 13, fontWeight: 800, color: '#F1F5F9' }}>Total a pagar</span>
+          <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: 'var(--profit)', letterSpacing: '-0.02em' }}>R$ {fmt(upgradeAmount)}</span>
+        </div>
+      </div>
+
+      <button type="button" onClick={onConfirm} className="btn btn-profit btn-lg" style={{ width: '100%', justifyContent: 'center', fontSize: 15, fontWeight: 800, padding: '15px' }}>
+        Pagar R$ {fmt(upgradeAmount)}
+      </button>
+      <p style={{ fontSize: 10.5, color: 'var(--t4)', margin: '12px 0 0', textAlign: 'center', lineHeight: 1.5 }}>
+        Quer pagar menos? Remova operadores em <strong style={{ color: 'var(--t3)' }}>Operadores</strong> antes.
+      </p>
+    </div>
+  )
+}
 
 function PeriodCard({ v2, opQty, monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
   const planLabel = opQty > 0 ? `Admin + ${opQty} operador${opQty > 1 ? 'es' : ''}` : 'Admin Solo'

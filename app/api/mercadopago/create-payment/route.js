@@ -63,14 +63,21 @@ export async function POST(req) {
       realOps = Number(count) || 0
     } catch (e) { console.error('[MP create-payment] contagem de operadores falhou', e?.message) }
 
-    // Ha ciclo ativo NAO vencido? Distingue renovacao (cria/estende ciclo) de add-op
-    // (upgrade parcial dentro de um ciclo vigente).
+    // Ha ciclo ativo NAO vencido? Distingue renovacao (cria/estende ciclo) de UPGRADE
+    // (adicionar operadores dentro de um ciclo vigente). currentPaidOps = quantos
+    // operadores o ciclo atual JA cobre (MAX operator_count das subs ativas nao vencidas).
     let hasActiveCycle = false
+    let currentPaidOps = 0
     try {
-      const { data: activeSub } = await sb.from('subscriptions')
-        .select('expires_at').eq('tenant_id', tenantId).eq('status', 'active')
-        .order('expires_at', { ascending: false }).limit(1).maybeSingle()
-      hasActiveCycle = !!(activeSub?.expires_at && new Date(activeSub.expires_at) > new Date())
+      const nowD = new Date()
+      const { data: actSubs } = await sb.from('subscriptions')
+        .select('expires_at, operator_count').eq('tenant_id', tenantId).eq('status', 'active')
+      for (const s of (actSubs || [])) {
+        if (s.expires_at && new Date(s.expires_at) > nowD) {
+          hasActiveCycle = true
+          currentPaidOps = Math.max(currentPaidOps, Number(s.operator_count || 0))
+        }
+      }
     } catch {}
 
     // Preco mensal correto pra TODOS os operadores ativos (piso de qualquer renovacao).
@@ -110,17 +117,34 @@ export async function POST(req) {
         console.warn('[MP create-payment] BLOQUEADO: amount <R$1 sem plan_period', { email, sent: amt })
         return NextResponse.json({ error: 'Valor minimo de R$ 1,00.' }, { status: 400 })
       }
-      if (!hasActiveCycle && amt < fullMonthly * 0.95) {
+      planMonths = 0
+      if (!hasActiveCycle) {
         // Sem ciclo ativo, esse pagamento viraria uma RENOVACAO (fallback 30d no webhook).
         // Entao tem que cobrir todos os operadores — senao e o furo do valor avulso.
-        console.warn('[MP create-payment] BLOQUEADO: renovacao avulsa abaixo do preco de', realOps, 'operadores', { email, realOps, fullMonthly, sent: amt })
-        return NextResponse.json({
-          error: `Seu plano venceu. A renovacao precisa cobrir seus ${realOps} operador(es) ativos (R$ ${fullMonthly.toFixed(2).replace('.', ',')}). Remova operadores no painel se quiser pagar menos.`,
-        }, { status: 400 })
+        if (amt < fullMonthly * 0.95) {
+          console.warn('[MP create-payment] BLOQUEADO: renovacao avulsa abaixo do preco de', realOps, 'operadores', { email, realOps, fullMonthly, sent: amt })
+          return NextResponse.json({
+            error: `Seu plano venceu. A renovacao precisa cobrir seus ${realOps} operador(es) ativos (R$ ${fullMonthly.toFixed(2).replace('.', ',')}). Remova operadores no painel se quiser pagar menos.`,
+          }, { status: 400 })
+        }
+        resolvedOps = realOps
+      } else if (realOps > currentPaidOps) {
+        // UPGRADE dentro do ciclo: adicionar operadores acima do que ja foi pago.
+        // A base do ciclo ja esta paga — cobra so o DELTA de operadores (senao seria
+        // furo: pagar R$1 e liberar todos os operadores). Nao recobra a base.
+        const requiredDelta = Number((calcOpTier(realOps).total - calcOpTier(currentPaidOps).total).toFixed(2))
+        if (amt < requiredDelta * 0.95) {
+          console.warn('[MP create-payment] BLOQUEADO: upgrade abaixo do delta de operadores', { email, currentPaidOps, realOps, requiredDelta, sent: amt })
+          return NextResponse.json({
+            error: `Pra cobrir seus ${realOps} operadores neste ciclo faltam R$ ${requiredDelta.toFixed(2).replace('.', ',')}. Remova operadores no painel se quiser pagar menos.`,
+          }, { status: 400 })
+        }
+        resolvedOps = realOps
+      } else {
+        // Dentro do limite ja pago — add-op pequeno / ajuste legit. Nao reduz o limite.
+        resolvedOps = Math.max(currentPaidOps, realOps)
       }
       transactionAmount = amt
-      planMonths = 0
-      resolvedOps = realOps
     } else {
       transactionAmount = fullMonthly
       planMonths = 1

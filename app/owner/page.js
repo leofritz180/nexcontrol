@@ -277,7 +277,7 @@ export default function OwnerPage() {
 
           {/* Abas */}
           <div style={{ display: 'flex', gap: 4, marginTop: 20, borderBottom: '1px solid rgba(212,175,55,0.16)', flexWrap: 'wrap' }}>
-            {[['geral', 'Visão geral'], ['receita', 'Receita'], ['operacao', 'Operação & Saúde'], ['clientes', 'Clientes']].map(([k, l]) => (
+            {[['geral', 'Visão geral'], ['receita', 'Receita'], ['operacao', 'Operação & Saúde'], ['clientes', 'Clientes'], ['network', 'Network']].map(([k, l]) => (
               <button key={k} onClick={() => setTab(k)} style={{
                 padding: '11px 18px', fontSize: 13, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer',
                 background: 'transparent', border: 'none', borderBottom: tab === k ? '2px solid #e8c766' : '2px solid transparent',
@@ -1541,8 +1541,114 @@ export default function OwnerPage() {
             </motion.div>
           </motion.div>
         )}
+        {tab === 'network' && <NetworkMetricsPanel />}
       </AnimatePresence>
       <QuickNotifyPanel userEmail={emailRef.current || ''} />
     </main>
+  )
+}
+
+// ═══════════════ Painel de métricas do Network (owner) ═══════════════
+function NetworkMetricsPanel() {
+  const [m, setM] = useState(null)
+  const [state, setState] = useState('loading') // loading | ok | error
+
+  async function load() {
+    setState('loading')
+    try {
+      const { data: s } = await supabase.auth.getSession()
+      const token = s?.session?.access_token
+      const res = await fetch('/api/network/metrics', { headers: { Authorization: 'Bearer ' + token }, cache: 'no-store' })
+      if (!res.ok) { setState('error'); return }
+      setM(await res.json()); setState('ok')
+    } catch { setState('error') }
+  }
+  useEffect(() => { load() }, [])
+
+  const gold = '#e8c766', ink = '#14110b', line = 'rgba(212,175,55,0.16)'
+  const cardS = { background: ink, border: `1px solid ${line}`, borderRadius: 14 }
+
+  if (state === 'loading') return <motion.div {...fadeUp(1)} style={{ ...cardS, padding: 40, textAlign: 'center', color: '#998b6a', fontSize: 13 }}>Carregando métricas do Network…</motion.div>
+  if (state === 'error' || !m) return <motion.div {...fadeUp(1)} style={{ ...cardS, padding: 40, textAlign: 'center', color: '#c98a8a', fontSize: 13 }}>Não consegui carregar as métricas. <button onClick={load} style={{ marginLeft: 8, background: 'none', border: 'none', color: gold, cursor: 'pointer', textDecoration: 'underline' }}>tentar de novo</button></motion.div>
+
+  const adoption = m.eligible ? Math.round((m.accessed7d / m.eligible) * 100) : 0
+  const participation = m.eligible ? Math.round((m.postedAdmins / m.eligible) * 100) : 0
+  const maxDay = Math.max(1, ...m.perDay.map(d => d.messages))
+  const kpis = [
+    { l: 'Membros elegíveis', v: m.eligible },
+    { l: 'Acessaram (7 dias)', v: m.accessed7d, sub: adoption + '% de adoção', gold: true },
+    { l: 'Acessaram (24h)', v: m.accessed24h },
+    { l: 'Já acessaram (total)', v: m.accessedEver },
+    { l: 'Já postaram', v: m.postedAdmins, sub: participation + '% participam' },
+    { l: 'Mensagens (total)', v: m.messagesTotal },
+    { l: 'Mensagens (24h)', v: m.messages24h, gold: true },
+    { l: 'Reações', v: m.reactions },
+    { l: 'Comentários', v: m.comments },
+    { l: 'Leituras registradas', v: m.reads },
+  ]
+
+  return (
+    <motion.div {...fadeUp(1)}>
+      {/* KPIs */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 18 }}>
+        {kpis.map((k, i) => (
+          <div key={i} style={{ ...cardS, padding: '15px 16px' }}>
+            <p style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#998b6a', margin: '0 0 6px' }}>{k.l}</p>
+            <p style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 800, color: k.gold ? gold : '#f7f0df', margin: 0, letterSpacing: '-0.02em' }}><CountUpInt value={k.v} /></p>
+            {k.sub && <p style={{ fontSize: 10.5, color: '#8f8468', margin: '4px 0 0' }}>{k.sub}</p>}
+          </div>
+        ))}
+      </div>
+
+      {/* Mensagens por dia (14 dias) */}
+      <div style={{ ...cardS, padding: '18px 20px', marginBottom: 18 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
+          <p style={{ fontSize: 13, fontWeight: 800, color: '#f7f0df', margin: 0 }}>Mensagens por dia</p>
+          <p style={{ fontSize: 10.5, color: '#8f8468', margin: 0 }}>últimos 14 dias · {m.messages7d} nos últimos 7</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 120 }}>
+          {m.perDay.map((d, i) => {
+            const h = Math.round((d.messages / maxDay) * 100)
+            const dd = d.date.slice(8) + '/' + d.date.slice(5, 7)
+            return (
+              <div key={i} title={`${dd}: ${d.messages} msgs`} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, minWidth: 0 }}>
+                <div style={{ fontSize: 9, color: '#8f8468', fontFamily: 'var(--mono)' }}>{d.messages || ''}</div>
+                <div style={{ width: '100%', maxWidth: 26, height: `${Math.max(h, d.messages ? 6 : 2)}%`, minHeight: 2, borderRadius: 5, background: d.messages ? `linear-gradient(180deg, ${gold}, #a5842f)` : 'rgba(255,255,255,0.05)', transition: 'height 0.5s' }} />
+                <div style={{ fontSize: 8.5, color: '#6f684f', fontFamily: 'var(--mono)' }}>{dd}</div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Top contribuidores */}
+      {m.top?.length > 0 && (
+        <div style={{ ...cardS, padding: '18px 20px' }}>
+          <p style={{ fontSize: 13, fontWeight: 800, color: '#f7f0df', margin: '0 0 14px' }}>Quem mais participa</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {m.top.map((t, i) => {
+              const maxMsgs = m.top[0].msgs || 1
+              return (
+                <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 800, color: i < 3 ? gold : '#8f8468', width: 20 }}>{i + 1}º</span>
+                  {t.avatar
+                    ? <img src={t.avatar} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                    : <span style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: t.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff' }}>{(t.name || '?')[0].toUpperCase()}</span>}
+                  <span style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 600, color: '#f7f0df', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
+                  <div style={{ width: 120, height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', flexShrink: 0 }}>
+                    <div style={{ width: `${(t.msgs / maxMsgs) * 100}%`, height: '100%', background: gold }} />
+                  </div>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 800, color: '#f7f0df', width: 44, textAlign: 'right' }}>{t.msgs}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      <p style={{ fontSize: 10.5, color: '#6f684f', margin: '14px 2px 0', textAlign: 'center' }}>
+        Acesso = abriu o Network (presença). Adoção = acessaram nos últimos 7 dias ÷ membros elegíveis. Atualizado {relativeTime(m.generatedAt)}.
+      </p>
+    </motion.div>
   )
 }

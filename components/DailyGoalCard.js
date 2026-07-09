@@ -18,8 +18,8 @@ const PAL = {
   near: { b1: '#4a3207', b2: '#191104', a1: 'rgba(255,193,66,0.55)', a2: 'rgba(245,150,30,0.42)', ring: '#ffb020', accent: '#ffcf6b', border: 'rgba(255,193,66,0.5)',  shadow: 'rgba(245,160,40,0.45)' },
   hit:  { b1: '#0a3d23', b2: '#04160d', a1: 'rgba(52,230,140,0.55)', a2: 'rgba(34,197,94,0.42)', ring: '#2fe08a', accent: '#7ff0ae', border: 'rgba(52,220,140,0.5)',  shadow: 'rgba(34,197,94,0.5)' },
 }
-// Paleta VERDE premium (variante exclusiva do owner)
-const G = { b1: '#0b3d24', b2: '#03130b', a1: 'rgba(48,224,138,0.5)', a2: 'rgba(16,150,96,0.42)', accent: '#34e08a', bright: '#8ff5b9', border: 'rgba(52,220,140,0.42)', shadow: 'rgba(34,197,94,0.4)' }
+// Paleta AZUL premium (variante exclusiva do owner) — mesmo tom do ícone de mensagem (#2563eb)
+const B = { b1: '#102a5e', b2: '#050c1c', a1: 'rgba(59,130,246,0.5)', a2: 'rgba(37,99,235,0.42)', accent: '#2f6bff', bright: '#8fbaff', border: 'rgba(59,130,246,0.45)', shadow: 'rgba(37,99,235,0.42)' }
 
 function meshBg(p) {
   return `radial-gradient(130% 130% at 0% 0%, ${p.a1} 0%, transparent 42%),`
@@ -102,7 +102,7 @@ export default function DailyGoalCard({ data, onSave, premium }) {
 
   // ── Sem meta definida ──
   if (!target) {
-    const p = premium ? G : PAL.low
+    const p = premium ? B : PAL.low
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
         style={{ position: 'relative', overflow: 'hidden', borderRadius: 18, padding: '24px 26px', marginBottom: 24, background: meshBg(p), border: `1px solid ${p.border}`, boxShadow: `0 18px 50px rgba(0,0,0,0.5), 0 0 60px ${p.shadow}` }}>
@@ -122,55 +122,58 @@ export default function DailyGoalCard({ data, onSave, premium }) {
     )
   }
 
-  // ── VARIANTE PREMIUM VERDE (exclusiva do owner) — faixa FINA, uma linha só,
-  //    com barra animada e glow. Compacta mas destacada. ──
+  // ── VARIANTE PREMIUM AZUL (exclusiva do owner) — meio-termo: compacta mas com
+  //    presença; mesmo tom do ícone de mensagem. ──
   if (premium) {
-    const glow = hit ? 'rgba(52,230,140,0.5)' : G.shadow
+    const glow = hit ? 'rgba(59,130,246,0.5)' : B.shadow
     return (
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
-        style={{ position: 'relative', overflow: 'hidden', borderRadius: 13, padding: '12px 18px', marginBottom: 20, background: meshBg(G), border: `1px solid ${G.border}`, boxShadow: `0 10px 30px rgba(0,0,0,0.4), 0 0 40px ${glow}` }}>
-        <div style={{ position: 'absolute', top: 0, left: '6%', right: '6%', height: 1, background: `linear-gradient(90deg, transparent, ${G.bright}, transparent)` }} />
+        style={{ position: 'relative', overflow: 'hidden', borderRadius: 15, padding: '16px 22px', marginBottom: 22, background: meshBg(B), border: `1px solid ${B.border}`, boxShadow: `0 14px 38px rgba(0,0,0,0.45), 0 0 52px ${glow}` }}>
+        <motion.div aria-hidden animate={{ x: [0, 26, 0], opacity: [0.4, 0.7, 0.4] }} transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ position: 'absolute', top: -70, right: -30, width: 210, height: 210, borderRadius: '50%', background: `radial-gradient(circle, ${B.a1}, transparent 70%)`, filter: 'blur(34px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 0, left: '6%', right: '6%', height: 1.5, background: `linear-gradient(90deg, transparent, ${B.bright}, transparent)` }} />
         {editing ? (
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.2em', color: G.bright, textTransform: 'uppercase', flexShrink: 0 }}>Meta do dia</span>
+            <span style={{ fontSize: 10.5, fontWeight: 900, letterSpacing: '0.2em', color: B.bright, textTransform: 'uppercase', flexShrink: 0 }}>Meta do dia</span>
             <GoalEditor initial={target} onSave={save} onCancel={() => setEditing(false)} />
           </div>
         ) : (
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
-            {/* números */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 11, flexShrink: 0 }}>
-              <motion.span animate={{ opacity: [0.7, 1, 0.7], boxShadow: [`0 0 6px ${G.accent}`, `0 0 14px ${G.accent}`, `0 0 6px ${G.accent}`] }} transition={{ duration: 2, repeat: Infinity }} style={{ width: 9, height: 9, borderRadius: '50%', background: G.accent, flexShrink: 0 }} />
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+            {/* ícone + números */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 13, flexShrink: 0 }}>
+              <motion.div animate={{ boxShadow: [`0 0 14px ${B.accent}55`, `0 0 26px ${B.accent}88`, `0 0 14px ${B.accent}55`] }} transition={{ duration: 2.4, repeat: Infinity }}
+                style={{ width: 44, height: 44, borderRadius: 13, flexShrink: 0, background: `linear-gradient(135deg, ${B.accent}, #1d4ed8)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🎯</motion.div>
               <div>
-                <div style={{ fontSize: 9, fontWeight: 900, letterSpacing: '0.2em', color: G.bright, textTransform: 'uppercase', marginBottom: 1 }}>Meta do dia</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                  <span style={{ fontSize: 25, fontWeight: 900, color: '#fff', fontFamily: 'var(--mono)', letterSpacing: '-0.02em', lineHeight: 1 }}>{fmt(today)}</span>
-                  <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', fontFamily: 'var(--mono)', fontWeight: 700 }}>/ {fmt(target)}</span>
+                <div style={{ fontSize: 9.5, fontWeight: 900, letterSpacing: '0.2em', color: B.bright, textTransform: 'uppercase', marginBottom: 3 }}>Meta do dia</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 7 }}>
+                  <span style={{ fontSize: 31, fontWeight: 900, color: '#fff', fontFamily: 'var(--mono)', letterSpacing: '-0.02em', lineHeight: 1, textShadow: '0 2px 12px rgba(0,0,0,0.4)' }}>{fmt(today)}</span>
+                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.62)', fontFamily: 'var(--mono)', fontWeight: 700 }}>/ {fmt(target)}</span>
                 </div>
               </div>
             </div>
 
-            {/* barra fina + status */}
-            <div style={{ flex: 1, minWidth: 170 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 5, gap: 8 }}>
-                <span style={{ fontSize: 11.5, fontWeight: 600, color: hit ? G.bright : 'rgba(255,255,255,0.85)' }}>
-                  {hit ? <>🎉 Meta batida{over > 0 ? <> · +{fmt(over)}</> : ''}</> : <>faltam <strong style={{ color: '#fff', fontFamily: 'var(--mono)' }}>{fmt(remaining)}</strong></>}
+            {/* barra + status */}
+            <div style={{ flex: 1, minWidth: 180 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6, gap: 8 }}>
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: hit ? B.bright : 'rgba(255,255,255,0.88)' }}>
+                  {hit ? <>🎉 <strong>Meta batida!</strong>{over > 0 ? <> · +{fmt(over)}</> : ''}</> : <>faltam <strong style={{ color: '#fff', fontFamily: 'var(--mono)' }}>{fmt(remaining)}</strong> pra bater hoje</>}
                 </span>
-                {best > 0 && <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', flexShrink: 0 }}>🏆 {fmt(best)}</span>}
+                {best > 0 && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', flexShrink: 0, whiteSpace: 'nowrap' }}>🏆 {fmt(best)}</span>}
               </div>
-              <div style={{ position: 'relative', height: 7, borderRadius: 4, background: 'rgba(0,0,0,0.3)', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, pct)}%` }} transition={{ duration: 1.1, ease: [0.33, 1, 0.68, 1] }}
-                  style={{ position: 'relative', height: '100%', borderRadius: 4, background: `linear-gradient(90deg, ${G.accent}, ${G.bright})`, boxShadow: `0 0 12px ${G.accent}` }}>
-                  <motion.span aria-hidden animate={{ x: ['-130%', '340%'] }} transition={{ duration: 2.2, repeat: Infinity, ease: 'linear', delay: 1.1 }} style={{ position: 'absolute', top: 0, left: 0, width: '40%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)' }} />
+              <div style={{ position: 'relative', height: 9, borderRadius: 5, background: 'rgba(0,0,0,0.32)', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, pct)}%` }} transition={{ duration: 1.2, ease: [0.33, 1, 0.68, 1] }}
+                  style={{ position: 'relative', height: '100%', borderRadius: 5, background: `linear-gradient(90deg, ${B.accent}, ${B.bright})`, boxShadow: `0 0 14px ${B.accent}` }}>
+                  <motion.span aria-hidden animate={{ x: ['-130%', '340%'] }} transition={{ duration: 2.3, repeat: Infinity, ease: 'linear', delay: 1.2 }} style={{ position: 'absolute', top: 0, left: 0, width: '40%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)' }} />
                 </motion.div>
               </div>
             </div>
 
             {/* streak + alterar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexShrink: 0 }}>
-              {streak > 1 && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '3px 9px', borderRadius: 20, background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.22)', fontSize: 11, fontWeight: 800, color: '#ffd0a0', whiteSpace: 'nowrap' }}>🔥 {streak}</span>}
-              {savedFlash && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontSize: 11, color: G.bright, fontWeight: 700 }}>✓</motion.span>}
-              <button onClick={() => setEditing(true)} title="Alterar meta" style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.8)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+              {streak > 1 && <motion.span animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 1.6, repeat: Infinity }} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '4px 10px', borderRadius: 20, background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.22)', fontSize: 11.5, fontWeight: 800, color: '#ffd0a0', whiteSpace: 'nowrap' }}>🔥 {streak}</motion.span>}
+              {savedFlash && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontSize: 11.5, color: B.bright, fontWeight: 700 }}>✓</motion.span>}
+              <button onClick={() => setEditing(true)} title="Alterar meta" style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.82)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
               </button>
             </div>
           </div>

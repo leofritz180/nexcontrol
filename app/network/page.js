@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_EMAIL, NETWORK_GA, POST_REACTIONS } from '../../lib/network-access'
+import RankProgress from '../../components/rank/RankProgress'
+import { getRank, rankColor } from '../../lib/rank-system'
 
 const CHANNEL_KEYS = new Set(NETWORK_CHANNELS.map(c => c.key))
 
@@ -1552,7 +1554,9 @@ function fmtDuration(since) {
   return `${y} ${y === 1 ? 'ano' : 'anos'}${m ? ` ${m} ${m === 1 ? 'mês' : 'meses'}` : ''}`
 }
 function SocialProfileTop({ p, onOpenImage }) {
-  const tier = rankTier(p.rank)
+  // Ranking REAL do sistema (15 tiers por depositantes processados) — mesmo do dashboard
+  const rk = getRank(p.depositantes || 0, { forceApex: !!p.apexLocked })
+  const rc = rankColor(rk.current)
   const stats = [
     { label: 'Operadores', value: fmtNum(p.operadores) },
     { label: 'Depositantes', value: fmtNum(p.depositantes) },
@@ -1567,7 +1571,7 @@ function SocialProfileTop({ p, onOpenImage }) {
     <div style={{ marginBottom: 8 }}>
       {/* header com glow do rank */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: 16 }}>
-        <div style={{ position: 'relative', padding: 4, borderRadius: '50%', background: `conic-gradient(from 210deg, ${tier.color}, ${tier.color}44, ${tier.color})`, boxShadow: `0 0 34px ${tier.color}55` }}>
+        <div style={{ position: 'relative', padding: 4, borderRadius: '50%', background: `conic-gradient(from 210deg, ${rc}, ${rc}44, ${rc})`, boxShadow: `0 0 34px ${rc}55` }}>
           <div style={{ borderRadius: '50%', border: '3px solid #0d1424' }}>
             <Avatar name={p.name} color={p.color} src={p.avatar} size={92} />
           </div>
@@ -1578,10 +1582,6 @@ function SocialProfileTop({ p, onOpenImage }) {
         </div>
         {p.instagram && <div style={{ fontSize: 12.5, color: 'var(--t3)', marginTop: 2 }}>@{p.instagram}</div>}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: 9 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 11px', borderRadius: 20, background: `${tier.color}1f`, border: `1px solid ${tier.color}66`, fontSize: 11, fontWeight: 800, color: tier.color }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: tier.color, boxShadow: `0 0 8px ${tier.color}` }} />
-            {tier.label} · {p.rank}
-          </span>
           {p.founder && <VeteranoBadge />}
           {p.tag && <TagPill tag={p.tag} color={p.tagColor} small={false} />}
         </div>
@@ -1595,6 +1595,15 @@ function SocialProfileTop({ p, onOpenImage }) {
           </a>
         )}
       </div>
+
+      {/* RANKING ATUAL — mesmo sistema animado do dashboard (15 tiers por depositantes) */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '2px 0 10px' }}>
+        <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--t4)', textTransform: 'uppercase' }}>Ranking atual</span>
+        <span style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(255,255,255,0.12), transparent)' }} />
+      </div>
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} style={{ marginBottom: 18 }}>
+        <RankProgress contas={p.depositantes || 0} name={p.name} compact forceApex={!!p.apexLocked} />
+      </motion.div>
 
       {/* estatísticas premium */}
       <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase', margin: '2px 0 8px' }}>Estatísticas</div>

@@ -54,6 +54,7 @@ import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS
 import DemoModeCard from '../../components/DemoModeCard'
 import BettifySponsor from '../../components/BettifySponsor'
 import RankBadge from '../../components/rank/RankBadge'
+import DailyGoalCard from '../../components/DailyGoalCard'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
 import RankAmbient from '../../components/rank/RankAmbient'
@@ -981,6 +982,39 @@ export default function AdminPage() {
       return { ...op, metasFechadas:opMetas.length, lucroFinal:opMetas.reduce((a,m)=>a+Number(m.lucro_final||0),0), depositantesFinalizados, careerDepositantes }
     }).filter(o=>o.metasFechadas>0).sort((a,b)=>b.lucroFinal-a.lucroFinal)
   },[operators,metas,weekWindow])
+
+  // META DO DIA — progresso de depositantes do DIA OPERACIONAL (vira 5h) + sequência
+  const dailyGoal = useMemo(()=>{
+    const target = Number(tenant?.daily_goal || 0)
+    const byDay = {}
+    for(const r of remessas){
+      if(!r.created_at) continue
+      const day = opDayISO(new Date(r.created_at))
+      byDay[day] = (byDay[day]||0) + Number(r.contas_remessa||0)
+    }
+    const todayKey = opDayISO(new Date())
+    const today = byDay[todayKey] || 0
+    const vals = Object.values(byDay)
+    const best = vals.length ? Math.max(...vals) : 0
+    let streak = 0
+    if(target>0){
+      // conta hoje se já bateu; senão começa de ontem (não quebra a sequência durante o dia)
+      let cursor = (today>=target) ? new Date() : new Date(Date.now()-86400000)
+      for(let i=0;i<120;i++){
+        const k = opDayISO(cursor)
+        if((byDay[k]||0)>=target){ streak++; cursor = new Date(cursor.getTime()-86400000) }
+        else break
+      }
+    }
+    return { target, today, streak, best, hit: target>0 && today>=target }
+  },[remessas, tenant?.daily_goal])
+
+  async function saveDailyGoal(val){
+    try{
+      await supabase.from('tenants').update({ daily_goal: val }).eq('id', profile.tenant_id)
+      setTenant(t=> t ? { ...t, daily_goal: val } : t)
+    }catch{}
+  }
 
   const filteredMetas = useMemo(()=>{
     let list = metas
@@ -2559,6 +2593,9 @@ export default function AdminPage() {
               onExitDemo={() => { exitDemoMode(user?.id); init() }}
             />
           ) : (<>
+          {/* ── META DO DIA (card gamificado) ── */}
+          <DailyGoalCard data={dailyGoal} onSave={saveDailyGoal} />
+
 
           {/* ── Status global da operacao (no redesign vai ABAIXO do card de lucro) ── */}
           {!isRedesign(user?.email) && renderOpStatus()}

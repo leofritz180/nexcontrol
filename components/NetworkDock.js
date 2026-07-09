@@ -116,12 +116,12 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
     try { setOpen(localStorage.getItem(OPEN_KEY) === '1') } catch {}
   }, [active])
 
-  // FECHADO: só um poll leve de não-lidas (30s). Sem realtime — pra não manter
-  // conexão aberta em toda tela de todo admin (limite de conexões do Realtime).
+  // FECHADO: poll leve de não-lidas (90s — espaçado pra pegar leve no banco; ver
+  // incidente 08/07). Sem realtime — pra não manter conexão aberta em toda tela.
   useEffect(() => {
     if (!active || !meId) return
     checkUnread()
-    const id = setInterval(() => { if (document.visibilityState === 'visible') checkUnread() }, 30000)
+    const id = setInterval(() => { if (document.visibilityState === 'visible') checkUnread() }, 90000)
     return () => clearInterval(id)
   }, [active, meId, checkUnread])
 

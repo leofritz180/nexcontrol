@@ -57,8 +57,8 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       <VoiceBanner userEmail={userEmail} />
       <BettifyStoreBanner userEmail={userEmail} />
       {pathname !== '/network' && <NetworkLaunchBanner userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />}
-      {/* NetworkDock desativado temporariamente (incidente de banco 08/07) — reativar após diagnóstico */}
-      {/* <NetworkDock userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} /> */}
+      {/* Reativado após upgrade Nano->Micro (08/07) com polling espaçado (90s) pra pegar leve no banco */}
+      <NetworkDock userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />
       <style jsx global>{`
         @media (max-width: 768px) {
           .app-content { margin-left: 0 !important; }

@@ -983,14 +983,15 @@ export default function AdminPage() {
     }).filter(o=>o.metasFechadas>0).sort((a,b)=>b.lucroFinal-a.lucroFinal)
   },[operators,metas,weekWindow])
 
-  // META DO DIA — progresso de depositantes do DIA OPERACIONAL (vira 5h) + sequência
+  // META DO DIA — LUCRO (R$) do DIA OPERACIONAL (vira 5h) + sequência de dias.
+  // Lucro atribuído ao dia em que a meta foi CRIADA (mesma regra do card hero).
   const dailyGoal = useMemo(()=>{
     const target = Number(tenant?.daily_goal || 0)
     const byDay = {}
-    for(const r of remessas){
-      if(!r.created_at) continue
-      const day = opDayISO(new Date(r.created_at))
-      byDay[day] = (byDay[day]||0) + Number(r.contas_remessa||0)
+    for(const m of metas){
+      if(m.status_fechamento!=='fechada' || !m.created_at) continue
+      const day = opDayISO(new Date(m.created_at))
+      byDay[day] = (byDay[day]||0) + Number(m.lucro_final||0)
     }
     const todayKey = opDayISO(new Date())
     const today = byDay[todayKey] || 0
@@ -1007,7 +1008,7 @@ export default function AdminPage() {
       }
     }
     return { target, today, streak, best, hit: target>0 && today>=target }
-  },[remessas, tenant?.daily_goal])
+  },[metas, tenant?.daily_goal])
 
   async function saveDailyGoal(val){
     try{

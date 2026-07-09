@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { networkEnabled, NETWORK_GA } from '../lib/network-access'
 import { anyBannerPending } from '../lib/onboardingSeq'
+import { useOverlaySlot } from '../lib/overlayCoordinator'
 
 // Pop-up de LANCAMENTO do Network (1x por conta). So pra ADMIN. Se ja e PRO/allowlist
 // -> "Entrar na comunidade". Se nao -> "Assinar PRO e entrar" (upsell). Coordena com
@@ -17,6 +18,8 @@ export default function NetworkLaunchBanner({ userEmail, isAdmin, subscription, 
 
   const subActive = (subscription?.status === 'active' && (!subscription.expires_at || new Date(subscription.expires_at) > new Date())) || tenant?.subscription_status === 'active'
   const canEnter = networkEnabled(email) || subActive
+  // Coordenador: só aparece quando nenhum outro overlay (tutorial etc.) está aberto
+  const granted = useOverlaySlot('network', 2, show)
 
   useEffect(() => {
     // SO pra quem PODE entrar (PRO/allowlist). Trial/novo NAO ve o pop-up — eles
@@ -43,7 +46,7 @@ export default function NetworkLaunchBanner({ userEmail, isAdmin, subscription, 
 
   return (
     <AnimatePresence>
-      {show && (
+      {show && granted && (
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
           onClick={dismiss}

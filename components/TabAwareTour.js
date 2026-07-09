@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import ProductTour, { hasSeenTour } from './ProductTour'
 import { getTour } from '../lib/tour-config'
 import { afterVoiceBanner } from '../lib/onboardingSeq'
+import { useOverlaySlot } from '../lib/overlayCoordinator'
 
 /**
  * TabAwareTour — dispara tour conforme a tab ativa muda.
@@ -45,6 +46,8 @@ export default function TabAwareTour({ activeTab, tabMap, autoDelay = 700 }) {
     return () => { off(); clearTimeout(t) }
   }, [activeTab, tabMap])
 
+  // Coordenador: tutorial tem prioridade máxima — aparece antes dos outros overlays
+  const granted = useOverlaySlot('tour', 1, open)
   const steps = tourId ? getTour(tourId) : []
   if (!tourId || steps.length === 0) return null
 
@@ -53,7 +56,7 @@ export default function TabAwareTour({ activeTab, tabMap, autoDelay = 700 }) {
       <ProductTour
         steps={steps}
         tourId={tourId}
-        open={open}
+        open={open && granted}
         onClose={() => setOpen(false)}
       />
 

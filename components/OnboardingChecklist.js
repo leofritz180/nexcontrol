@@ -7,6 +7,7 @@ import {
   isDismissed, dismiss, markCompletedNow, getCompletedAt,
 } from '../lib/onboarding-steps'
 import { afterVoiceBanner } from '../lib/onboardingSeq'
+import { useOverlaySlot } from '../lib/overlayCoordinator'
 
 /* ───────────────────────────────────────────
    Icones SVG por step
@@ -60,12 +61,15 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
     }
   }, [progress.isComplete, userId, mounted])
 
-  if (!mounted || dismissed || !ready) return null
   // Esconde 5 dias depois de concluir
-  if (userId) {
-    const completedAt = getCompletedAt(userId)
-    if (completedAt && Date.now() - completedAt > 5 * 86400000) return null
-  }
+  const oldComplete = (() => {
+    if (!userId) return false
+    const c = getCompletedAt(userId)
+    return !!(c && Date.now() - c > 5 * 86400000)
+  })()
+  const shouldShow = mounted && !dismissed && ready && !oldComplete
+  // Coordenador: o cartão expandido cede a modais (tutorial/Network); o pill recolhido não ocupa slot
+  const grantedCard = useOverlaySlot('checklist', 3, shouldShow && !collapsed, { yieldable: true })
 
   function handleDismiss() {
     if (!userId) return
@@ -133,7 +137,8 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
         )}
       </AnimatePresence>
 
-      {/* Card flutuante */}
+      {/* Card flutuante — só renderiza quando o coordenador libera (ou recolhido) */}
+      {shouldShow && (collapsed || grantedCard) && (
       <motion.div
         initial={{ x: 380, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -359,6 +364,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
           </div>
         )}
       </motion.div>
+      )}
 
       <style>{`
         .onboarding-steps::-webkit-scrollbar { width: 4px; }

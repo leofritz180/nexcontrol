@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription } from '../lib/pushClient'
+import { useOverlaySlot } from '../lib/overlayCoordinator'
 
 export default function PushManager({ userId, tenantId }) {
   const [state, setState] = useState('loading') // loading | unsupported | default | prompt | granted | denied | error
@@ -40,6 +41,10 @@ export default function PushManager({ userId, tenantId }) {
     })()
     return () => { cancelled = true }
   }, [userId, tenantId])
+
+  // Coordenador: o banner de push é o último da fila — cede pra tutorial/Network/checklist
+  const wouldRender = !!userId && !!tenantId && !dismissed && !(state === 'granted' || state === 'unsupported' || state === 'loading')
+  const granted = useOverlaySlot('push', 4, wouldRender, { yieldable: true })
 
   async function enable() {
     if (saving) return
@@ -84,6 +89,7 @@ export default function PushManager({ userId, tenantId }) {
   if (!userId || !tenantId) return null
   if (dismissed) return null
   if (state === 'granted' || state === 'unsupported' || state === 'loading') return null
+  if (!granted) return null   // coordenador: espera os outros overlays fecharem
 
   const closeBtn = (
     <button onClick={dismiss} style={{

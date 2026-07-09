@@ -3,13 +3,11 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ─────────────────────────────────────────────────────────────────────────
-// META DO DIA — card gamificado com FUNDO PREENCHIDO (mesh gradient vibrante)
-// que muda de cor conforme o progresso: vermelho → âmbar (reta final) → verde
-// (batida). Progresso do DIA OPERACIONAL (vira 5h). data = { target, today,
-// streak, best, hit }
+// META DO DIA — card gamificado com FUNDO PREENCHIDO (mesh gradient) que muda
+// de cor conforme o progresso: vermelho → âmbar (reta final) → verde (batida).
+// LUCRO (R$) do DIA OPERACIONAL (vira 5h). Gráfico = barra horizontal (sem %).
+// data = { target, today, streak, best, hit }
 // ─────────────────────────────────────────────────────────────────────────
-const RED = '#e53935'
-// Meta do dia = LUCRO em R$
 const fmt = n => 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
 
 // Paletas por estado (fundo cheio + acentos)
@@ -26,34 +24,7 @@ function meshBg(p) {
     + `linear-gradient(135deg, ${p.b1} 0%, ${p.b2} 100%)`
 }
 
-function Ring({ pct, hit, color }) {
-  const size = 138, sw = 12, r = (size - sw) / 2, c = 2 * Math.PI * r
-  const p = Math.min(100, pct)
-  return (
-    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
-      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth={sw} />
-        <motion.circle
-          cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round"
-          strokeDasharray={c}
-          initial={{ strokeDashoffset: c }}
-          animate={{ strokeDashoffset: c - (c * p) / 100 }}
-          transition={{ duration: 1.3, ease: [0.33, 1, 0.68, 1] }}
-          style={{ filter: `drop-shadow(0 0 10px ${color})` }}
-        />
-      </svg>
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        {hit ? (
-          <motion.div initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', damping: 10, stiffness: 200 }} style={{ fontSize: 38, filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.4))' }}>🎯</motion.div>
-        ) : (
-          <span style={{ fontSize: 28, fontWeight: 900, color: '#fff', fontFamily: 'var(--mono)', letterSpacing: '-0.03em', lineHeight: 1, textShadow: '0 2px 10px rgba(0,0,0,0.4)' }}>{Math.floor(p)}<span style={{ fontSize: 15 }}>%</span></span>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function GoalEditor({ initial, onSave, onCancel, dark }) {
+function GoalEditor({ initial, onSave, onCancel }) {
   const [v, setV] = useState(initial ? String(initial) : '')
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 340 }}>
@@ -74,8 +45,8 @@ function GoalEditor({ initial, onSave, onCancel, dark }) {
   )
 }
 
-export default function DailyGoalCard({ data, onSave, premium }) {
-  const { target = 0, today = 0, streak = 0, best = 0, hit = false, history = [] } = data || {}
+export default function DailyGoalCard({ data, onSave }) {
+  const { target = 0, today = 0, streak = 0, best = 0, hit = false } = data || {}
   const [editing, setEditing] = useState(false)
   const [savedFlash, setSavedFlash] = useState(false)
   const pct = target > 0 ? (today / target) * 100 : 0
@@ -90,31 +61,12 @@ export default function DailyGoalCard({ data, onSave, premium }) {
     if (val) { setSavedFlash(true); setTimeout(() => setSavedFlash(false), 1500) }
   }
 
-  // Blob de luz animado (dá vida ao fundo cheio)
   const blob = (
     <motion.div aria-hidden
       animate={{ x: [0, 34, 0], y: [0, -16, 0], opacity: [0.55, 0.85, 0.55] }}
       transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
       style={{ position: 'absolute', top: -50, right: -10, width: 240, height: 240, borderRadius: '50%', background: `radial-gradient(circle, ${st.a1}, transparent 70%)`, filter: 'blur(34px)', pointerEvents: 'none' }} />
   )
-
-  // ── Sem meta definida (owner: azul sólido) ──
-  if (!target && premium) {
-    return (
-      <div style={{ borderRadius: 16, padding: '22px 28px', marginBottom: 22, background: '#2563eb' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{ width: 52, height: 52, borderRadius: 14, background: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, flexShrink: 0 }}>🎯</div>
-          <div style={{ flex: 1, minWidth: 200 }}>
-            <p style={{ margin: 0, fontSize: 18, fontWeight: 900, color: '#fff' }}>Defina sua meta de lucro do dia</p>
-            <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.82)', lineHeight: 1.5 }}>Qual o lucro que o time deve bater por dia?</p>
-          </div>
-          {editing
-            ? <GoalEditor onSave={save} onCancel={() => setEditing(false)} />
-            : <button onClick={() => setEditing(true)} style={{ padding: '13px 24px', borderRadius: 12, border: 'none', background: '#fff', color: '#1d4ed8', fontWeight: 900, fontSize: 14, cursor: 'pointer', flexShrink: 0 }}>Definir meta →</button>}
-        </div>
-      </div>
-    )
-  }
 
   // ── Sem meta definida ──
   if (!target) {
@@ -138,124 +90,62 @@ export default function DailyGoalCard({ data, onSave, premium }) {
     )
   }
 
-  // ── VARIANTE PREMIUM (owner) — fundo AZUL SÓLIDO (chapado), sem sombra/efeitos,
-  //    um pouco maior. ──
-  if (premium) {
-    const BLUE = '#2563eb'
-    return (
-      <div style={{ borderRadius: 16, padding: '22px 28px', marginBottom: 22, background: BLUE }}>
-        {editing ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: '0.2em', color: '#fff', textTransform: 'uppercase', flexShrink: 0 }}>Meta do dia</span>
-            <GoalEditor initial={target} onSave={save} onCancel={() => setEditing(false)} />
-          </div>
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-            {/* ícone + números */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
-              <div style={{ width: 50, height: 50, borderRadius: 14, flexShrink: 0, background: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>🎯</div>
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.85)', textTransform: 'uppercase', marginBottom: 4 }}>Meta do dia</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                  <span style={{ fontSize: 36, fontWeight: 900, color: '#fff', fontFamily: 'var(--mono)', letterSpacing: '-0.02em', lineHeight: 1 }}>{fmt(today)}</span>
-                  <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.72)', fontFamily: 'var(--mono)', fontWeight: 700 }}>/ {fmt(target)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* barra + status */}
-            <div style={{ flex: 1, minWidth: 190 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 7, gap: 8 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>
-                  {hit ? <>🎉 <strong>Meta batida!</strong>{over > 0 ? <> · +{fmt(over)}</> : ''}</> : <>faltam <strong style={{ fontFamily: 'var(--mono)' }}>{fmt(remaining)}</strong> pra bater hoje</>}
-                </span>
-                {best > 0 && <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.65)', flexShrink: 0, whiteSpace: 'nowrap' }}>🏆 {fmt(best)}</span>}
-              </div>
-              <div style={{ position: 'relative', height: 11, borderRadius: 6, background: 'rgba(0,0,0,0.22)', overflow: 'hidden' }}>
-                <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, pct)}%` }} transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }}
-                  style={{ height: '100%', borderRadius: 6, background: '#fff' }} />
-              </div>
-            </div>
-
-            {/* streak + alterar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-              {streak > 1 && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '5px 11px', borderRadius: 20, background: 'rgba(0,0,0,0.22)', fontSize: 12, fontWeight: 800, color: '#fff', whiteSpace: 'nowrap' }}>🔥 {streak}</span>}
-              {savedFlash && <span style={{ fontSize: 12, color: '#fff', fontWeight: 700 }}>✓</span>}
-              <button onClick={() => setEditing(true)} title="Alterar meta" style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,0.2)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    )
-  }
-
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-      style={{ position: 'relative', overflow: 'hidden', borderRadius: 18, padding: '24px 28px', marginBottom: 24, background: meshBg(st), border: `1px solid ${st.border}`, boxShadow: `0 20px 55px rgba(0,0,0,0.55), 0 0 70px ${st.shadow}` }}>
+      style={{ position: 'relative', overflow: 'hidden', borderRadius: 18, padding: '22px 26px', marginBottom: 24, background: meshBg(st), border: `1px solid ${st.border}`, boxShadow: `0 20px 55px rgba(0,0,0,0.55), 0 0 70px ${st.shadow}` }}>
       {blob}
-      {/* linha de luz no topo */}
       <div style={{ position: 'absolute', top: 0, left: '8%', right: '8%', height: 1.5, background: `linear-gradient(90deg, transparent, ${st.accent}, transparent)` }} />
-
-      {/* sparkles ao bater */}
       <AnimatePresence>
         {hit && [...Array(7)].map((_, i) => (
-          <motion.span key={i} aria-hidden
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: [0, 1, 0], scale: [0, 1, 0.5], y: [0, -22 - i * 4] }}
-            transition={{ duration: 1.9, repeat: Infinity, delay: i * 0.26, ease: 'easeOut' }}
-            style={{ position: 'absolute', top: 18, left: `${14 + i * 11}%`, fontSize: 14 }}>✨</motion.span>
+          <motion.span key={i} aria-hidden initial={{ opacity: 0, scale: 0 }} animate={{ opacity: [0, 1, 0], scale: [0, 1, 0.5], y: [0, -22 - i * 4] }} transition={{ duration: 1.9, repeat: Infinity, delay: i * 0.26, ease: 'easeOut' }} style={{ position: 'absolute', top: 16, left: `${14 + i * 11}%`, fontSize: 14 }}>✨</motion.span>
         ))}
       </AnimatePresence>
 
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
-        <Ring pct={pct} hit={hit} color={st.ring} />
-
-        <div style={{ flex: 1, minWidth: 230 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-            <span style={{ fontSize: 10.5, fontWeight: 900, letterSpacing: '0.2em', color: '#fff', textTransform: 'uppercase', textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}>Meta do dia</span>
-            {streak > 1 && (
-              <motion.span animate={{ scale: [1, 1.12, 1] }} transition={{ duration: 1.6, repeat: Infinity }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px', borderRadius: 20, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.3)', fontSize: 11.5, fontWeight: 800, color: '#ffd0a0' }}>
-                🔥 {streak} dias seguidos
-              </motion.span>
-            )}
+      {editing ? (
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 10.5, fontWeight: 900, letterSpacing: '0.2em', color: st.accent, textTransform: 'uppercase', flexShrink: 0 }}>Meta do dia</span>
+          <GoalEditor initial={target} onSave={save} onCancel={() => setEditing(false)} />
+        </div>
+      ) : (
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+          {/* ícone + números */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
+            <div style={{ width: 52, height: 52, borderRadius: 15, flexShrink: 0, background: 'rgba(0,0,0,0.25)', border: `1px solid ${st.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 25 }}>🎯</div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.2em', color: st.accent, textTransform: 'uppercase', marginBottom: 4 }}>Meta do dia</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                <span style={{ fontSize: 35, fontWeight: 900, color: '#fff', fontFamily: 'var(--mono)', letterSpacing: '-0.02em', lineHeight: 1, textShadow: '0 2px 12px rgba(0,0,0,0.4)' }}>{fmt(today)}</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.68)', fontFamily: 'var(--mono)', fontWeight: 700 }}>/ {fmt(target)}</span>
+              </div>
+            </div>
           </div>
 
-          {editing ? (
-            <div style={{ marginTop: 8 }}><GoalEditor initial={target} onSave={save} onCancel={() => setEditing(false)} /></div>
-          ) : (
-            <>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 9, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 40, fontWeight: 900, color: '#fff', fontFamily: 'var(--mono)', letterSpacing: '-0.03em', lineHeight: 1, textShadow: '0 2px 14px rgba(0,0,0,0.45)' }}>{fmt(today)}</span>
-                <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.72)', fontFamily: 'var(--mono)', fontWeight: 700 }}>/ {fmt(target)} de lucro</span>
-              </div>
-
-              <p style={{ margin: '9px 0 0', fontSize: 14, color: '#fff', fontWeight: 600, lineHeight: 1.45 }}>
+          {/* barra + legenda */}
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 7, gap: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>
                 {hit
-                  ? <>🎉 <strong>Meta batida!</strong> {over > 0 && <>Já são <strong style={{ color: st.accent }}>{fmt(over)}</strong> acima — bora esticar?</>}</>
-                  : <>Faltam <strong style={{ color: st.accent, fontFamily: 'var(--mono)' }}>{fmt(remaining)}</strong> pra bater a meta de hoje.</>}
-              </p>
+                  ? <>🎉 <strong>Meta batida!</strong>{over > 0 ? <> <span style={{ color: st.accent }}>+{fmt(over)}</span> acima</> : ''}</>
+                  : <>faltam <strong style={{ color: st.accent, fontFamily: 'var(--mono)' }}>{fmt(remaining)}</strong> pra bater hoje</>}
+              </span>
+              {best > 0 && <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.62)', flexShrink: 0, whiteSpace: 'nowrap' }}>🏆 recorde {fmt(best)}</span>}
+            </div>
+            <div style={{ position: 'relative', height: 11, borderRadius: 6, background: 'rgba(0,0,0,0.3)', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, pct)}%` }} transition={{ duration: 1.1, ease: [0.33, 1, 0.68, 1] }}
+                style={{ height: '100%', borderRadius: 6, background: `linear-gradient(90deg, #fff, ${st.ring})`, boxShadow: `0 0 12px ${st.ring}` }} />
+            </div>
+          </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 13, flexWrap: 'wrap' }}>
-                {best > 0 && <span style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.8)' }}>🏆 Recorde: <strong style={{ color: '#fff', fontFamily: 'var(--mono)' }}>{fmt(best)}</strong>/dia</span>}
-                <button onClick={() => setEditing(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.65)', fontSize: 11.5, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, padding: 0 }}>
-                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                  alterar meta
-                </button>
-                {savedFlash && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ fontSize: 11.5, color: '#fff', fontWeight: 700 }}>✓ salvo</motion.span>}
-              </div>
-
-              {/* barra de progresso preenchida */}
-              <div style={{ marginTop: 15, height: 8, borderRadius: 4, background: 'rgba(0,0,0,0.3)', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.12)' }}>
-                <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, pct)}%` }} transition={{ duration: 1.3, ease: [0.33, 1, 0.68, 1] }}
-                  style={{ height: '100%', borderRadius: 4, background: `linear-gradient(90deg, #fff, ${st.ring})`, boxShadow: `0 0 14px ${st.ring}` }} />
-              </div>
-            </>
-          )}
+          {/* streak + alterar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            {streak > 1 && <motion.span animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 1.6, repeat: Infinity }} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 11px', borderRadius: 20, background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.22)', fontSize: 12, fontWeight: 800, color: '#ffd0a0', whiteSpace: 'nowrap' }}>🔥 {streak} dias</motion.span>}
+            {savedFlash && <span style={{ fontSize: 12, color: '#fff', fontWeight: 700 }}>✓</span>}
+            <button onClick={() => setEditing(true)} title="Alterar meta" style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,0.22)', border: '1px solid rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.85)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </motion.div>
   )
 }

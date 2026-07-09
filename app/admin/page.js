@@ -2597,8 +2597,8 @@ export default function AdminPage() {
               onExitDemo={() => { exitDemoMode(user?.id); init() }}
             />
           ) : (<>
-          {/* ── META DO DIA (card gamificado; variante premium verde só p/ o owner) ── */}
-          <DailyGoalCard data={dailyGoal} onSave={saveDailyGoal} premium={(user?.email || profile?.email || '').toLowerCase() === 'leofritz180@gmail.com'} />
+          {/* ── META DO DIA (card gamificado, igual pra todos) ── */}
+          <DailyGoalCard data={dailyGoal} onSave={saveDailyGoal} />
 
 
           {/* ── Status global da operacao (no redesign vai ABAIXO do card de lucro) ── */}

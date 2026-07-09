@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '../lib/supabase/client'
 
-const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '/', '/owner', '/slots', '/proxy', '/minhas-proxies', '/performance', '/aulas', '/demo', '/reset-password', '/network']
+const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '/', '/owner', '/slots', '/proxy', '/minhas-proxies', '/performance', '/aulas', '/demo', '/reset-password', '/network', '/premiacoes']
 
 // Emails com acesso VITALICIO em qualquer rota, independente de
 // assinatura/trial/operadores (owner + admins liberados manualmente).

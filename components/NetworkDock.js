@@ -18,6 +18,8 @@ import { networkEnabled, OWNER_EMAIL } from '../lib/network-access'
 
 const RED = '#e53935'
 const MINT = '#22C55E'
+const BUBBLE = '#2563eb'      // cor da bolha flutuante (azul — teste de destaque)
+const BUBBLE_DARK = '#1d4ed8'
 const SEEN_KEY = 'nx_dock_seen_v1'
 const OPEN_KEY = 'nx_dock_open_v1'
 // Telas onde o dock NÃO aparece (imersivas / redundantes).
@@ -277,7 +279,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
 }
 
 // ── estilos/ícones ──
-const bubbleStyle = { position: 'relative', width: 56, height: 56, borderRadius: '50%', border: 'none', cursor: 'pointer', background: `linear-gradient(135deg, ${RED}, #b71c1c)`, boxShadow: '0 8px 26px rgba(229,57,53,0.45), inset 0 1px 0 rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }
+const bubbleStyle = { position: 'relative', width: 56, height: 56, borderRadius: '50%', border: 'none', cursor: 'pointer', background: `linear-gradient(135deg, ${BUBBLE}, ${BUBBLE_DARK})`, boxShadow: '0 8px 26px rgba(37,99,235,0.5), inset 0 1px 0 rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }
 const panelStyle = { width: 340, height: 460, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 120px)', borderRadius: 18, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'linear-gradient(180deg, #0f1626, #080b13)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 24px 70px rgba(0,0,0,0.6)' }
 const dockHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(229,57,53,0.06)', flexShrink: 0 }
 const iconBtn = { width: 28, height: 28, borderRadius: 8, border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }
@@ -295,7 +297,7 @@ function Bubble({ onClick, open, unread, label }) {
     <div style={{ position: 'relative', width: 56, height: 56 }}>
       {!open && (
         <motion.span aria-hidden
-          style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: RED, zIndex: 0 }}
+          style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: BUBBLE, zIndex: 0 }}
           animate={{ scale: [1, 1.75], opacity: [0.5, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }} />
       )}

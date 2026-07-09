@@ -1007,7 +1007,10 @@ export default function AdminPage() {
         else break
       }
     }
-    return { target, today, streak, best, hit: target>0 && today>=target }
+    // histórico dos últimos 7 dias (pro mini-gráfico da variante premium)
+    const history = []
+    for(let i=6;i>=0;i--){ const k = opDayISO(new Date(Date.now()-i*86400000)); history.push({ day:k, value: byDay[k]||0 }) }
+    return { target, today, streak, best, hit: target>0 && today>=target, history }
   },[metas, tenant?.daily_goal])
 
   async function saveDailyGoal(val){
@@ -2594,8 +2597,8 @@ export default function AdminPage() {
               onExitDemo={() => { exitDemoMode(user?.id); init() }}
             />
           ) : (<>
-          {/* ── META DO DIA (card gamificado) ── */}
-          <DailyGoalCard data={dailyGoal} onSave={saveDailyGoal} />
+          {/* ── META DO DIA (card gamificado; variante premium verde só p/ o owner) ── */}
+          <DailyGoalCard data={dailyGoal} onSave={saveDailyGoal} premium={(user?.email || profile?.email || '').toLowerCase() === 'leofritz180@gmail.com'} />
 
 
           {/* ── Status global da operacao (no redesign vai ABAIXO do card de lucro) ── */}

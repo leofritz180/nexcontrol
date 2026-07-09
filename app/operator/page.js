@@ -412,7 +412,7 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
                         {r.titulo} {r.slot_name ? `— ${r.slot_name}` : ''}
                       </p>
                       <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>
-                        {r.contas_remessa > 0 ? `${r.contas_remessa} contas` : r.tipo} — D: R$ {fmt(r.deposito)} / S: R$ {fmt(r.saque)}
+                        {r.contas_remessa > 0 ? `${r.contas_remessa} contas` : (r.tipo==='conta_mae'?'Conta Mãe':r.tipo==='redeposito'?'Redepósito':r.tipo==='bonus'?'Bônus':r.tipo)} — D: R$ {fmt(r.deposito)} / S: R$ {fmt(r.saque)}
                       </p>
                     </div>
                     <span style={{

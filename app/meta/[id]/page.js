@@ -652,8 +652,10 @@ export default function MetaPage() {
     e.preventDefault()
     // BONUS: só registra o saque (valor do bônus), NÃO mexe nas contas nem exige depósito
     const isBonus = tipo === 'bonus'
+    // CONTA MÃE: registra depósito+saque (lucro/prejuízo), NÃO exige nem afeta contas
+    const semContasTipo = tipo === 'redeposito' || tipo === 'conta_mae'
     if ((!dep && !isBonus)||!saq||salvando) return
-    if (tipo !== 'redeposito' && !isBonus && (!contasRemessa || Number(contasRemessa) <= 0)) { setError('Informe o numero de contas nesta remessa.'); return }
+    if (!semContasTipo && !isBonus && (!contasRemessa || Number(contasRemessa) <= 0)) { setError('Informe o numero de contas nesta remessa.'); return }
     if (meta?.status==='finalizada'||meta?.status_fechamento==='fechada') { setError('Meta finalizada. Nao e possivel registrar.'); return }
     setSalvando(true); setError('')
     const d=isBonus?0:Number(parseVal(dep).toFixed(2)),s=Number(parseVal(saq).toFixed(2)),si=Number(parseVal(saldoIni).toFixed(2))
@@ -667,13 +669,13 @@ export default function MetaPage() {
     const diff = resultadoTotal  // pra showFeedback continuar funcionando igual
     const { data:insRows, error:err } = await supabase.from('remessas').insert({
       meta_id:Number(id),
-      titulo:tituloR.trim()||`${tipo==='redeposito'?'Redepósito':tipo==='bonus'?'Bônus':tipo==='ajuste'?'Ajuste':'Remessa'} ${remessas.length+1}`,
+      titulo:tituloR.trim()||`${tipo==='redeposito'?'Redepósito':tipo==='bonus'?'Bônus':tipo==='conta_mae'?'Conta Mãe':tipo==='ajuste'?'Ajuste':'Remessa'} ${remessas.length+1}`,
       tipo, saldo_inicial:si, deposito:d, saque:s, bau:bauVal,
       lucro:lucroVal, prejuizo:prejVal, resultado:resultadoTotal,
       resultado_por_conta: Number(contasRemessa||0) > 0 ? Number((resultadoTotal / Number(contasRemessa)).toFixed(2)) : 0,
       tenant_id:profile?.tenant_id,
       status_problema:statusProb,
-      contas_remessa: (tipo === 'redeposito' || tipo === 'bonus') ? 0 : Number(contasRemessa||0),
+      contas_remessa: (tipo === 'redeposito' || tipo === 'bonus' || tipo === 'conta_mae') ? 0 : Number(contasRemessa||0),
       slot_name: selectedSlot || null,
       observacoes: obsRemessa.trim() || null,
     }).select('id')
@@ -697,9 +699,9 @@ export default function MetaPage() {
     // Adicionar remessa otimisticamente no state local (aparece instantaneo no historico)
     const optimistic = {
       id: `temp-${Date.now()}`, meta_id: Number(id),
-      titulo: tituloR.trim() || `${tipo==='redeposito'?'Redepósito':'Remessa'} ${remessas.length+1}`,
+      titulo: tituloR.trim() || `${tipo==='redeposito'?'Redepósito':tipo==='bonus'?'Bônus':tipo==='conta_mae'?'Conta Mãe':'Remessa'} ${remessas.length+1}`,
       tipo, deposito: d, saque: s, bau: bauVal, lucro: lucroVal, prejuizo: prejVal, resultado: resultadoTotal,
-      contas_remessa: tipo === 'redeposito' ? 0 : formContas,
+      contas_remessa: (tipo === 'redeposito' || tipo === 'bonus' || tipo === 'conta_mae') ? 0 : formContas,
       slot_name: selectedSlot || null, status_problema: statusProb,
       observacoes: obsRemessa.trim() || null,
       comprovante_url: firstUrl,
@@ -762,7 +764,8 @@ export default function MetaPage() {
     // remessa normal — nao deixa salvar contagem invalida.
     const isRedep = editRem.tipo === 'redeposito'
     const isBonus = editRem.tipo === 'bonus'
-    const semContas = isRedep || isBonus
+    const isContaMae = editRem.tipo === 'conta_mae'
+    const semContas = isRedep || isBonus || isContaMae
     const contas = semContas ? 0 : Math.floor(Number(editContas || 0))
     if (!semContas && (!Number.isFinite(contas) || contas < 1)) return
     setEditSaving(true)
@@ -1549,10 +1552,10 @@ export default function MetaPage() {
                   <div style={{ background:'var(--surface)', padding:'16px 18px' }}>
                     <p style={colTitle}>1 · Dados</p>
                     {field('TITULO', <input className="input" value={tituloR} onChange={e=>setTituloR(e.target.value)} placeholder="1a remessa..." style={inp}/>)}
-                    {field('TIPO', <select className="input" value={tipo} onChange={e=>setTipo(e.target.value)} style={inp}><option value="remessa">Remessa</option><option value="redeposito">Redeposito</option><option value="bonus">Bônus</option><option value="ajuste">Ajuste</option></select>)}
+                    {field('TIPO', <select className="input" value={tipo} onChange={e=>setTipo(e.target.value)} style={inp}><option value="remessa">Remessa</option><option value="redeposito">Redeposito</option><option value="bonus">Bônus</option><option value="conta_mae">Conta Mãe</option><option value="ajuste">Ajuste</option></select>)}
                     {field('SALDO INICIAL', <input className="input" type="number" step="0.01" value={saldoIni} onChange={e=>setSaldoIni(e.target.value)} style={inp}/>)}
-                    {tipo==='bonus'
-                      ? <p style={{ fontSize:10.5, color:'var(--t4)', margin:'2px 0 0', lineHeight:1.4 }}>Bônus não altera o número de contas — registre só o valor do saque.</p>
+                    {(tipo==='bonus' || tipo==='conta_mae')
+                      ? <p style={{ fontSize:10.5, color:'var(--t4)', margin:'2px 0 0', lineHeight:1.4 }}>{tipo==='bonus' ? 'Bônus não altera o número de contas — registre só o valor do saque.' : 'Conta mãe registra só depósito e saque (lucro/prejuízo) — não altera o número de contas.'}</p>
                       : field(<>CONTAS {tipo!=='redeposito' && <span style={{color:'var(--loss)'}}>*</span>}</>, <>
                       <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="5" required={tipo!=='redeposito'} style={inp}/>
                       <div style={{ display:'flex', gap:4, marginTop:5 }}>
@@ -1620,7 +1623,7 @@ export default function MetaPage() {
                       <span style={{ fontSize:11.5, fontWeight:700, color: hasInput?col:'var(--t4)' }}>{!hasInput?'Aguardando dados':prev.diff>0?'Operação positiva':prev.diff<0?'Operação negativa':'Operação neutra'}</span>
                     </div>
                     {error && <div className="alert-error" style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, marginBottom:10 }}><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
-                    <button type="submit" className="btn btn-profit" disabled={salvando||!saq||(tipo!=='bonus'&&!dep)||(tipo!=='redeposito'&&tipo!=='bonus'&&(!contasRemessa||Number(contasRemessa)<=0))} style={{ width:'100%', padding:'13px', fontSize:13.5, fontWeight:800, borderRadius:11, display:'flex', alignItems:'center', justifyContent:'center', gap:7, marginTop:'auto' }}>
+                    <button type="submit" className="btn btn-profit" disabled={salvando||!saq||(tipo!=='bonus'&&!dep)||(tipo!=='redeposito'&&tipo!=='bonus'&&tipo!=='conta_mae'&&(!contasRemessa||Number(contasRemessa)<=0))} style={{ width:'100%', padding:'13px', fontSize:13.5, fontWeight:800, borderRadius:11, display:'flex', alignItems:'center', justifyContent:'center', gap:7, marginTop:'auto' }}>
                       {salvando ? (<><div className="spinner" style={{ width:13, height:13, borderTopColor:'#012b1c' }}/> Registrando...</>) : (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> {tipo==='bonus'?'Registrar bônus':'Registrar remessa'}</>)}
                     </button>
                   </div>
@@ -1653,6 +1656,7 @@ export default function MetaPage() {
                     <select className="input" value={tipo} onChange={e=>setTipo(e.target.value)} style={{ fontSize:12, padding:'8px 10px' }}>
                       <option value="remessa">Remessa</option>
                       <option value="redeposito">Redeposito</option>
+                      <option value="conta_mae">Conta Mãe</option>
                       <option value="ajuste">Ajuste</option>
                     </select>
                   </div>
@@ -1661,8 +1665,8 @@ export default function MetaPage() {
                     <input className="input" type="number" step="0.01" value={saldoIni} onChange={e=>setSaldoIni(e.target.value)} style={{ fontSize:12, padding:'8px 10px' }}/>
                   </div>
                   <div>
-                    <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>CONTAS {tipo !== 'redeposito' && <span style={{color:'var(--loss)'}}>*</span>}</label>
-                    <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="5" required={tipo !== 'redeposito'} style={{ fontSize:12, padding:'8px 10px' }}/>
+                    <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>CONTAS {tipo !== 'redeposito' && tipo !== 'conta_mae' && <span style={{color:'var(--loss)'}}>*</span>}</label>
+                    <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder={tipo==='conta_mae'?'—':'5'} required={tipo !== 'redeposito' && tipo !== 'conta_mae'} style={{ fontSize:12, padding:'8px 10px' }}/>
                     <div style={{ display:'flex', gap:3, marginTop:4 }}>
                       {[3,5,10,15,20].map(n=>(
                         <button key={n} type="button" onClick={()=>setContasRemessa(String(n))} style={{
@@ -1787,7 +1791,7 @@ export default function MetaPage() {
                   {error && <div className="alert-error" style={{display:'flex',alignItems:'center',gap:6,fontSize:11}}><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
 
                   {/* Botao registrar */}
-                  <button type="submit" className="btn btn-profit" disabled={salvando||!dep||!saq||(tipo!=='redeposito'&&(!contasRemessa||Number(contasRemessa)<=0))}
+                  <button type="submit" className="btn btn-profit" disabled={salvando||!dep||!saq||(tipo!=='redeposito'&&tipo!=='conta_mae'&&(!contasRemessa||Number(contasRemessa)<=0))}
                     style={{ width:'100%',padding:'12px',fontSize:13,fontWeight:700,borderRadius:10,display:'flex',alignItems:'center',justifyContent:'center',gap:6 }}>
                     {salvando ? (
                       <><div className="spinner" style={{width:12,height:12,borderTopColor:'#012b1c'}}/> Registrando...</>
@@ -1870,7 +1874,7 @@ export default function MetaPage() {
                               </span>
                             )}
                           </div>
-                          <p className="t-small">{r.tipo} · {new Date(r.created_at).toLocaleString('pt-BR')}</p>
+                          <p className="t-small">{r.tipo==='conta_mae'?'Conta Mãe':r.tipo==='redeposito'?'Redepósito':r.tipo==='bonus'?'Bônus':r.tipo} · {new Date(r.created_at).toLocaleString('pt-BR')}</p>
                           {r.slot_name && <span style={{ display:'inline-block', marginTop:3, padding:'2px 8px', borderRadius:6, fontSize:9, fontWeight:600, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'var(--info)' }}>{r.slot_name}</span>}
                           {r.observacoes && <p style={{ fontSize:11, color:'var(--t4)', margin:'4px 0 0', fontStyle:'italic' }}>{r.observacoes}</p>}
                         </div>
@@ -1949,12 +1953,12 @@ export default function MetaPage() {
                 <input className="input" type="number" step="0.01" value={editSaq} onChange={e=>setEditSaq(e.target.value)} placeholder="0,00"/>
               </div>
             </div>
-            <div style={{display:'grid',gridTemplateColumns: (editRem.tipo === 'redeposito' || editRem.tipo === 'bonus') ? '1fr' : '1fr 1fr',gap:12,marginBottom:16}}>
+            <div style={{display:'grid',gridTemplateColumns: (editRem.tipo === 'redeposito' || editRem.tipo === 'bonus' || editRem.tipo === 'conta_mae') ? '1fr' : '1fr 1fr',gap:12,marginBottom:16}}>
               <div>
                 <label className="t-label" style={{display:'block',marginBottom:6}}>BAU</label>
                 <input className="input" type="number" step="0.01" value={editBau} onChange={e=>setEditBau(e.target.value)} placeholder="0,00"/>
               </div>
-              {editRem.tipo !== 'redeposito' && editRem.tipo !== 'bonus' && (
+              {editRem.tipo !== 'redeposito' && editRem.tipo !== 'bonus' && editRem.tipo !== 'conta_mae' && (
                 <div>
                   <label className="t-label" style={{display:'block',marginBottom:6}}>Contas *</label>
                   <input className="input" type="number" min="1" step="1" value={editContas} onChange={e=>setEditContas(e.target.value)} placeholder="Ex: 5"/>
@@ -1972,7 +1976,7 @@ export default function MetaPage() {
             })()}
             <div style={{display:'flex',gap:10}}>
               <button onClick={()=>setEditRem(null)} className="btn btn-ghost" style={{flex:1}}>Cancelar</button>
-              <button onClick={saveEditRem} disabled={editSaving||!editSaq||(editRem.tipo!=='bonus'&&!editDep)||(editRem.tipo!=='redeposito'&&editRem.tipo!=='bonus'&&(!editContas||Number(editContas)<1))} className="btn btn-brand" style={{flex:2}}>
+              <button onClick={saveEditRem} disabled={editSaving||!editSaq||(editRem.tipo!=='bonus'&&!editDep)||(editRem.tipo!=='redeposito'&&editRem.tipo!=='bonus'&&editRem.tipo!=='conta_mae'&&(!editContas||Number(editContas)<1))} className="btn btn-brand" style={{flex:2}}>
                 {editSaving?'Salvando...':'Salvar alteracao'}
               </button>
             </div>

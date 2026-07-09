@@ -60,7 +60,7 @@ import RankAmbient from '../../components/rank/RankAmbient'
 import RankProgress from '../../components/rank/RankProgress'
 import RankReveal from '../../components/rank/RankReveal'
 import { rankBackground, rankTextColor, getRank, isApexLocked } from '../../lib/rank-system'
-import { validClosedMetas } from '../../lib/operator-stats'
+import { validClosedMetas, countTenantDeposits } from '../../lib/operator-stats'
 import { getBillingVariant } from '../../lib/billing-variant'
 import UpgradeStickyBar from '../../components/billing/UpgradeStickyBar'
 import TrialChip from '../../components/billing/TrialChip'
@@ -1563,15 +1563,15 @@ export default function AdminPage() {
                 style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:0 }}>
                 Ola, {getName(profile)}
               </motion.h1>
-              {/* Rank do admin baseado nas metas onde ele operou pessoalmente.
-                  Owner Darkzin (leofritz180@gmail.com) recebe Apex automatico via isApexLocked. */}
+              {/* Rank do admin = SOMA dos depositantes de TODOS os operadores do tenant
+                  (countTenantDeposits). Owner Darkzin recebe Apex automatico via isApexLocked. */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, delay: 0.15, ease }}
               >
                 <RankBadge
-                  contas={validClosedMetas(myMetas).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)}
+                  contas={countTenantDeposits(metas)}
                   forceApex={isApexLocked(user?.email || profile?.email)}
                   size="sm"
                 />
@@ -1715,7 +1715,8 @@ export default function AdminPage() {
                 setMyShowForm(false)
                 router.push(`/meta/${data.id}`)
               }
-              const myDeps = validClosedMetas(myMetas).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+              // Rank do admin = soma de TODOS os operadores do tenant (não só as metas dele)
+              const myDeps = countTenantDeposits(metas)
               const apexLocked = isApexLocked(user?.email || profile?.email)
               const myAmbientRank = getRank(myDeps, { forceApex: apexLocked }).current
 
@@ -3936,7 +3937,8 @@ export default function AdminPage() {
 
         {/* ═══ RANKING ═══ */}
         {tab==='ranking' && (() => {
-          const myDeps = validClosedMetas(myMetas).reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+          // Rank do admin = soma de TODOS os operadores do tenant (countTenantDeposits)
+          const myDeps = countTenantDeposits(metas)
           const apexLocked = isApexLocked(user?.email || profile?.email)
           const myAmbientRank = getRank(myDeps, { forceApex: apexLocked }).current
           return (

@@ -32,7 +32,6 @@ export default function PremiacoesPage() {
       supabase.from('subscriptions').select('*').eq('tenant_id', p.tenant_id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
     ])
     if (t) setTenant(t); if (s2) setSub(s2)
-    // Faturamento = soma de lucro_final das metas fechadas do tenant (todo o histórico)
     const { data: metas } = await supabase.from('metas').select('lucro_final,status_fechamento,deleted_at').eq('tenant_id', p.tenant_id)
     const total = (metas || []).filter(m => !m.deleted_at && m.status_fechamento === 'fechada').reduce((a, m) => a + Number(m.lucro_final || 0), 0)
     setFaturamento(total)
@@ -47,24 +46,35 @@ export default function PremiacoesPage() {
   )
 
   const enabled = premiacoesEnabled(user?.email)
-
-  // Estado de cada quadro + próximo marco
   const items = PREMIACOES.map(p => ({ ...p, unlocked: faturamento >= p.value }))
-  const next = items.find(p => !p.unlocked) || null
   const conquistados = items.filter(p => p.unlocked).length
+  const nextIdx = items.findIndex(p => !p.unlocked)
+  const next = nextIdx >= 0 ? items[nextIdx] : null
+
+  // posição no roadmap (0..1): nós centrados em (i+0.5)/N
+  const N = items.length
+  let roadPos = 1
+  if (nextIdx >= 0) {
+    const lower = nextIdx > 0 ? items[nextIdx - 1].value : 0
+    const upper = items[nextIdx].value
+    const frac = Math.max(0, Math.min(1, (faturamento - lower) / (upper - lower)))
+    const lowerPos = nextIdx > 0 ? (nextIdx - 1 + 0.5) / N : 0
+    const upperPos = (nextIdx + 0.5) / N
+    roadPos = lowerPos + frac * (upperPos - lowerPos)
+  }
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 20px 60px' }}>
+      <div style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 20px 60px' }}>
 
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
           <div style={{ width: 46, height: 46, borderRadius: 13, background: 'rgba(245,184,60,0.12)', border: '1px solid rgba(245,184,60,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#f5b83c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15a4 4 0 004-4V5H8v6a4 4 0 004 4zm0 0v4m-4 0h8M8 5H5a2 2 0 000 4h.5M16 5h3a2 2 0 010 4h-.5" /></svg>
           </div>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>Premiações</h1>
-            <p style={{ fontSize: 12.5, color: 'var(--t4)', margin: '2px 0 0' }}>Quadros de faturamento que você conquista e imprime — 2 tamanhos pra gráfica</p>
+            <p style={{ fontSize: 12.5, color: 'var(--t4)', margin: '2px 0 0' }}>Quadros de faturamento que você conquista e imprime — 15×20 e 30×40 cm</p>
           </div>
         </div>
 
@@ -76,38 +86,70 @@ export default function PremiacoesPage() {
           </div>
         ) : (
           <>
-            {/* Faixa: faturamento atual + progresso pro próximo */}
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}
-              style={{ borderRadius: 16, padding: '20px 24px', marginBottom: 26, background: 'linear-gradient(135deg, rgba(245,184,60,0.12), var(--surface))', border: '1px solid rgba(245,184,60,0.22)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
-                <div style={{ flexShrink: 0 }}>
-                  <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', color: '#f5b83c', textTransform: 'uppercase', marginBottom: 4 }}>Seu faturamento</div>
-                  <div style={{ fontSize: 34, fontWeight: 900, color: 'var(--t1)', fontFamily: 'var(--mono)', letterSpacing: '-0.02em', lineHeight: 1 }}>{fmt(faturamento)}</div>
-                  <div style={{ fontSize: 12, color: 'var(--t4)', marginTop: 6 }}>{conquistados} de {items.length} quadros conquistados</div>
+            {/* ═══ HERO PREMIUM: faturamento + roadmap ═══ */}
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
+              style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, padding: '26px 30px 30px', marginBottom: 30, background: 'radial-gradient(120% 140% at 0% 0%, rgba(245,184,60,0.16), transparent 45%), radial-gradient(120% 140% at 100% 20%, rgba(245,120,60,0.12), transparent 50%), linear-gradient(160deg, #1a140a, #0a0a0e)', border: '1px solid rgba(245,184,60,0.28)', boxShadow: '0 24px 60px rgba(0,0,0,0.5), 0 0 60px rgba(245,184,60,0.08)' }}>
+              {/* brilho topo */}
+              <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1.5, background: 'linear-gradient(90deg, transparent, rgba(245,184,60,0.7), transparent)' }} />
+              {/* blob */}
+              <motion.div aria-hidden animate={{ x: [0, 30, 0], opacity: [0.4, 0.7, 0.4] }} transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ position: 'absolute', top: -70, right: -20, width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(circle, rgba(245,184,60,0.35), transparent 70%)', filter: 'blur(46px)', pointerEvents: 'none' }} />
+
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap', marginBottom: 28 }}>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '0.2em', color: '#f5b83c', textTransform: 'uppercase', marginBottom: 6 }}>Seu faturamento</div>
+                  <div style={{ fontSize: 44, fontWeight: 900, color: '#fff', fontFamily: 'var(--mono)', letterSpacing: '-0.03em', lineHeight: 1, textShadow: '0 2px 20px rgba(245,184,60,0.25)' }}>{fmt(faturamento)}</div>
                 </div>
-                {next && (
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 7, gap: 8 }}>
-                      <span style={{ fontSize: 12.5, color: 'var(--t2)' }}>Próximo quadro: <strong style={{ color: next.color }}>{next.label}</strong></span>
-                      <span style={{ fontSize: 12, color: 'var(--t3)', fontFamily: 'var(--mono)' }}>faltam <strong style={{ color: 'var(--t1)' }}>{fmt(next.value - faturamento)}</strong></span>
-                    </div>
-                    <div style={{ height: 10, borderRadius: 5, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
-                      <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, (faturamento / next.value) * 100)}%` }} transition={{ duration: 1.1, ease }}
-                        style={{ height: '100%', borderRadius: 5, background: `linear-gradient(90deg, #fff, ${next.color})`, boxShadow: `0 0 12px ${next.color}` }} />
-                    </div>
-                  </div>
-                )}
-                {!next && <div style={{ flex: 1, minWidth: 200, fontSize: 13.5, fontWeight: 700, color: '#f5b83c' }}>🎉 Você conquistou todos os quadros!</div>}
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 30, fontWeight: 900, color: '#f5b83c', fontFamily: 'var(--mono)', lineHeight: 1 }}>{conquistados}<span style={{ fontSize: 18, color: 'rgba(255,255,255,0.5)' }}>/{items.length}</span></div>
+                  <div style={{ fontSize: 11, color: 'var(--t3)', marginTop: 4, letterSpacing: '0.04em' }}>quadros conquistados</div>
+                </div>
               </div>
+
+              {/* ROADMAP */}
+              <div style={{ position: 'relative', overflowX: 'auto', paddingBottom: 4 }}>
+                <div style={{ position: 'relative', minWidth: 520 }}>
+                  {/* trilho */}
+                  <div style={{ position: 'absolute', left: `${50 / N}%`, right: `${50 / N}%`, top: 13, height: 3, borderRadius: 3, background: 'rgba(255,255,255,0.1)' }} />
+                  <motion.div initial={{ width: 0 }} animate={{ width: `calc(${Math.max(0, roadPos * 100 - 50 / N)}% )` }} transition={{ duration: 1.3, ease }}
+                    style={{ position: 'absolute', left: `${50 / N}%`, top: 13, height: 3, borderRadius: 3, background: 'linear-gradient(90deg, #f5b83c, #ffd98a)', boxShadow: '0 0 10px rgba(245,184,60,0.7)' }} />
+                  {/* nós */}
+                  <div style={{ position: 'relative', display: 'flex' }}>
+                    {items.map((p, i) => {
+                      const isNext = i === nextIdx
+                      return (
+                        <div key={p.id} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, minWidth: 0 }}>
+                          <div style={{ position: 'relative', width: 28, height: 28 }}>
+                            {isNext && <motion.span aria-hidden animate={{ scale: [1, 1.5], opacity: [0.6, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }} style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: p.color }} />}
+                            <div style={{ position: 'relative', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: p.unlocked ? 'linear-gradient(135deg, #f5b83c, #d99422)' : '#12141c', border: `2px solid ${p.unlocked ? '#ffd98a' : isNext ? p.color : 'rgba(255,255,255,0.18)'}`, boxShadow: p.unlocked ? '0 0 12px rgba(245,184,60,0.6)' : 'none' }}>
+                              {p.unlocked
+                                ? <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#3a2600" strokeWidth={3.2} strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                : <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={isNext ? p.color : 'var(--t4)'} strokeWidth={2.4} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>}
+                            </div>
+                          </div>
+                          <span style={{ fontSize: 10.5, fontWeight: 800, fontFamily: 'var(--mono)', color: p.unlocked ? '#ffd98a' : isNext ? '#fff' : 'var(--t4)', whiteSpace: 'nowrap' }}>{p.id.toUpperCase()}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {next && (
+                <p style={{ position: 'relative', fontSize: 12.5, color: 'var(--t2)', marginTop: 20, textAlign: 'center' }}>
+                  Próximo: <strong style={{ color: next.color }}>{next.label}</strong> — faltam <strong style={{ color: '#fff', fontFamily: 'var(--mono)' }}>{fmt(next.value - faturamento)}</strong>
+                </p>
+              )}
+              {!next && <p style={{ position: 'relative', fontSize: 13.5, fontWeight: 700, color: '#f5b83c', marginTop: 20, textAlign: 'center' }}>🎉 Lenda absoluta — você conquistou todos os quadros!</p>}
             </motion.div>
 
-            {/* Grade de quadros */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 18 }}>
-              {items.map((p, i) => <QuadroCard key={p.id} p={p} faturamento={faturamento} delay={i * 0.05} />)}
+            {/* GRADE */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20 }}>
+              {items.map((p, i) => <QuadroCard key={p.id} p={p} faturamento={faturamento} isNext={i === nextIdx} delay={i * 0.05} />)}
             </div>
 
-            <p style={{ fontSize: 11.5, color: 'var(--t4)', textAlign: 'center', marginTop: 26, lineHeight: 1.6 }}>
-              Cada quadro vem em <strong style={{ color: 'var(--t3)' }}>15×20 cm</strong> e <strong style={{ color: 'var(--t3)' }}>30×40 cm</strong> — baixe e leve pra imprimir na gráfica.
+            <p style={{ fontSize: 11.5, color: 'var(--t4)', textAlign: 'center', marginTop: 28, lineHeight: 1.6 }}>
+              Todo quadro conquistado vem em <strong style={{ color: 'var(--t3)' }}>15×20 cm</strong> e <strong style={{ color: 'var(--t3)' }}>30×40 cm</strong> — baixe e leve pra imprimir na gráfica.
             </p>
           </>
         )}
@@ -116,58 +158,68 @@ export default function PremiacoesPage() {
   )
 }
 
-function QuadroCard({ p, faturamento, delay }) {
+function QuadroCard({ p, faturamento, isNext, delay }) {
   const unlocked = p.unlocked
   const falta = Math.max(0, p.value - faturamento)
+  const pctToThis = Math.min(100, (faturamento / p.value) * 100)
+  const border = unlocked ? p.color + '77' : isNext ? p.color + '55' : 'rgba(255,255,255,0.08)'
+  const shadow = unlocked ? `0 16px 44px rgba(0,0,0,0.45), 0 0 42px ${p.color}30` : isNext ? `0 10px 30px rgba(0,0,0,0.35), 0 0 26px ${p.color}1f` : '0 8px 24px rgba(0,0,0,0.28)'
   return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay, ease }}
-      style={{ borderRadius: 16, overflow: 'hidden', background: 'var(--surface)', border: `1px solid ${unlocked ? p.color + '55' : 'var(--b1)'}`, boxShadow: unlocked ? `0 10px 30px rgba(0,0,0,0.3), 0 0 30px ${p.color}22` : 'none' }}>
-      {/* preview do quadro (arte real quando disponível; senão placeholder) */}
-      <div style={{ position: 'relative', aspectRatio: '3 / 4', background: `linear-gradient(160deg, ${p.color}22, #0a0d14)`, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-        {p.preview ? (
-          <img src={previewPath(p)} alt={`Quadro ${p.label}`} style={{ width: '100%', height: '100%', objectFit: 'contain', filter: unlocked ? 'none' : 'grayscale(1) brightness(0.45)' }} />
-        ) : (
-          // placeholder estilizado (moldura + valor) até a arte chegar
-          <div style={{ position: 'absolute', inset: 14, borderRadius: 10, border: `2px solid ${p.color}66`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 12, filter: unlocked ? 'none' : 'grayscale(0.6) brightness(0.7)' }}>
-            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.2em', color: p.color, textTransform: 'uppercase' }}>Faturamento</div>
-            <div style={{ fontSize: 30, fontWeight: 900, color: '#fff', fontFamily: 'var(--mono)', letterSpacing: '-0.03em', margin: '8px 0 4px' }}>{p.label.replace('R$ ', '')}</div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', color: p.color, textTransform: 'uppercase' }}>{p.tier}</div>
-            <div style={{ position: 'absolute', bottom: 8, fontSize: 8, color: 'var(--t4)', letterSpacing: '0.1em' }}>PRÉVIA · ARTE EM BREVE</div>
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay, ease }}
+      whileHover={{ y: -5 }}
+      style={{ position: 'relative', borderRadius: 18, overflow: 'hidden', background: 'linear-gradient(180deg, rgba(18,22,32,0.7), var(--surface))', border: `1px solid ${border}`, boxShadow: shadow }}>
+
+      {/* PLACA — sempre em cor cheia */}
+      <div style={{ position: 'relative', aspectRatio: '3 / 4', background: `radial-gradient(120% 100% at 50% 0%, ${p.color}22, #070a10)`, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+        <img src={previewPath(p)} alt={`Quadro ${p.label}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: 10 }} />
+
+        {/* brilho passando (só conquistado) */}
+        {unlocked && (
+          <motion.span aria-hidden animate={{ x: ['-130%', '340%'] }} transition={{ duration: 3.4, repeat: Infinity, ease: 'linear', repeatDelay: 2.2 }}
+            style={{ position: 'absolute', top: 0, left: 0, width: '28%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)', transform: 'skewX(-18deg)', pointerEvents: 'none' }} />
+        )}
+
+        {/* tier (topo esq) */}
+        <div style={{ position: 'absolute', top: 10, left: 10, padding: '3px 9px', borderRadius: 20, fontSize: 9.5, fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(0,0,0,0.45)', border: `1px solid ${p.color}66`, color: p.color, backdropFilter: 'blur(4px)' }}>{p.tier}</div>
+
+        {/* estado (topo dir) */}
+        <div style={{ position: 'absolute', top: 10, right: 10, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 9px', borderRadius: 20, fontSize: 10, fontWeight: 800, backdropFilter: 'blur(4px)', background: unlocked ? 'rgba(245,184,60,0.9)' : 'rgba(0,0,0,0.5)', border: `1px solid ${unlocked ? '#ffd98a' : 'rgba(255,255,255,0.18)'}`, color: unlocked ? '#3a2600' : 'var(--t2)' }}>
+          {unlocked
+            ? <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3.2} strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg> Conquistado</>
+            : <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg> {isNext ? 'Próximo' : 'Bloqueado'}</>}
+        </div>
+
+        {/* rodapé de progresso quando bloqueado (translúcido — não esconde a placa) */}
+        {!unlocked && (
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '26px 12px 11px', background: 'linear-gradient(0deg, rgba(4,7,12,0.94) 30%, transparent)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>faltam</span>
+              <span style={{ fontSize: 12.5, color: '#fff', fontWeight: 800, fontFamily: 'var(--mono)' }}>{fmt(falta)}</span>
+            </div>
+            <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.14)', overflow: 'hidden' }}>
+              <motion.div initial={{ width: 0 }} animate={{ width: `${pctToThis}%` }} transition={{ duration: 1.1, ease }} style={{ height: '100%', borderRadius: 3, background: `linear-gradient(90deg, ${p.color}, #fff)` }} />
+            </div>
           </div>
         )}
-        {/* selo de estado */}
-        <div style={{ position: 'absolute', top: 10, right: 10, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 9px', borderRadius: 20, fontSize: 10, fontWeight: 800, background: unlocked ? 'rgba(34,197,94,0.16)' : 'rgba(0,0,0,0.5)', border: `1px solid ${unlocked ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.15)'}`, color: unlocked ? '#4ade80' : 'var(--t3)' }}>
-          {unlocked
-            ? <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg> Conquistado</>
-            : <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg> Bloqueado</>}
-        </div>
       </div>
 
-      {/* rodapé: título + downloads/estado */}
+      {/* rodapé */}
       <div style={{ padding: '14px 16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 10 }}>
-          <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)' }}>{p.label}</span>
-          <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: p.color, textTransform: 'uppercase' }}>{p.tier}</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: unlocked ? 10 : 2 }}>
+          <span style={{ fontSize: 15.5, fontWeight: 800, color: 'var(--t1)' }}>{p.label}</span>
+          <span style={{ fontSize: 12, fontWeight: 900, fontFamily: 'var(--mono)', color: p.color }}>{p.id.toUpperCase()}</span>
         </div>
         {unlocked ? (
           p.available ? (
             <div style={{ display: 'flex', gap: 8 }}>
-              <a href={artPath(p, '15x20')} download style={dlBtn(p.color)}>
-                <DownloadIcon /> 15×20
-              </a>
-              <a href={artPath(p, '30x40')} download style={dlBtn(p.color)}>
-                <DownloadIcon /> 30×40
-              </a>
+              <a href={artPath(p, '15x20')} download style={dlBtn(p.color)}><DownloadIcon /> 15×20</a>
+              <a href={artPath(p, '30x40')} download style={dlBtn(p.color)}><DownloadIcon /> 30×40</a>
             </div>
           ) : (
-            <div style={{ fontSize: 12, color: 'var(--t3)', textAlign: 'center', padding: '9px 0', borderRadius: 9, background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.12)' }}>
-              🎉 Conquistado! Arte pra download em breve.
-            </div>
+            <div style={{ fontSize: 12, color: 'var(--t3)', textAlign: 'center', padding: '9px 0', borderRadius: 9, background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.12)' }}>🎉 Conquistado! Arte em breve.</div>
           )
         ) : (
-          <div style={{ fontSize: 12, color: 'var(--t4)', textAlign: 'center', padding: '9px 0' }}>
-            Faltam <strong style={{ color: 'var(--t2)', fontFamily: 'var(--mono)' }}>{fmt(falta)}</strong> pra desbloquear
-          </div>
+          <p style={{ fontSize: 11.5, color: 'var(--t4)', margin: 0 }}>Desbloqueie ao atingir <strong style={{ color: 'var(--t3)', fontFamily: 'var(--mono)' }}>{fmt(p.value)}</strong> de faturamento.</p>
         )}
       </div>
     </motion.div>
@@ -175,7 +227,7 @@ function QuadroCard({ p, faturamento, delay }) {
 }
 
 function dlBtn(color) {
-  return { flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '9px', borderRadius: 9, textDecoration: 'none', fontSize: 12.5, fontWeight: 800, color: '#fff', background: color, border: 'none', cursor: 'pointer' }
+  return { flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, textDecoration: 'none', fontSize: 12.5, fontWeight: 800, color: '#fff', background: color, border: 'none', cursor: 'pointer' }
 }
 function DownloadIcon() {
   return <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>

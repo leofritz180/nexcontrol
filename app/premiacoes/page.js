@@ -45,7 +45,7 @@ export default function PremiacoesPage() {
     </div>
   )
 
-  const enabled = premiacoesEnabled(user?.email)
+  const enabled = premiacoesEnabled(user?.email) && profile?.role === 'admin'
   const items = PREMIACOES.map(p => ({ ...p, unlocked: faturamento >= p.value }))
   const conquistados = items.filter(p => p.unlocked).length
   const nextIdx = items.findIndex(p => !p.unlocked)

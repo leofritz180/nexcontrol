@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
-import { PREMIACOES, artPath, premiacoesEnabled } from '../../lib/premiacoes'
+import { PREMIACOES, artPath, previewPath, premiacoesEnabled } from '../../lib/premiacoes'
 
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Admin'
 const fmt = n => 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
@@ -124,8 +124,8 @@ function QuadroCard({ p, faturamento, delay }) {
       style={{ borderRadius: 16, overflow: 'hidden', background: 'var(--surface)', border: `1px solid ${unlocked ? p.color + '55' : 'var(--b1)'}`, boxShadow: unlocked ? `0 10px 30px rgba(0,0,0,0.3), 0 0 30px ${p.color}22` : 'none' }}>
       {/* preview do quadro (arte real quando disponível; senão placeholder) */}
       <div style={{ position: 'relative', aspectRatio: '3 / 4', background: `linear-gradient(160deg, ${p.color}22, #0a0d14)`, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-        {p.available ? (
-          <img src={artPath(p, '15x20')} alt={`Quadro ${p.label}`} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: unlocked ? 'none' : 'grayscale(1) brightness(0.5)' }} />
+        {p.preview ? (
+          <img src={previewPath(p)} alt={`Quadro ${p.label}`} style={{ width: '100%', height: '100%', objectFit: 'contain', filter: unlocked ? 'none' : 'grayscale(1) brightness(0.45)' }} />
         ) : (
           // placeholder estilizado (moldura + valor) até a arte chegar
           <div style={{ position: 'absolute', inset: 14, borderRadius: 10, border: `2px solid ${p.color}66`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 12, filter: unlocked ? 'none' : 'grayscale(0.6) brightness(0.7)' }}>

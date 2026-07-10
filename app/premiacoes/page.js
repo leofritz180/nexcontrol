@@ -107,7 +107,7 @@ export default function PremiacoesPage() {
             </div>
 
             <p style={{ fontSize: 11.5, color: 'var(--t4)', textAlign: 'center', marginTop: 26, lineHeight: 1.6 }}>
-              Cada quadro vem em <strong style={{ color: 'var(--t3)' }}>15×20 cm</strong> e <strong style={{ color: 'var(--t3)' }}>20×30 cm</strong> — baixe e leve pra imprimir na gráfica.
+              Cada quadro vem em <strong style={{ color: 'var(--t3)' }}>15×20 cm</strong> e <strong style={{ color: 'var(--t3)' }}>30×40 cm</strong> — baixe e leve pra imprimir na gráfica.
             </p>
           </>
         )}
@@ -155,8 +155,8 @@ function QuadroCard({ p, faturamento, delay }) {
               <a href={artPath(p, '15x20')} download style={dlBtn(p.color)}>
                 <DownloadIcon /> 15×20
               </a>
-              <a href={artPath(p, '20x30')} download style={dlBtn(p.color)}>
-                <DownloadIcon /> 20×30
+              <a href={artPath(p, '30x40')} download style={dlBtn(p.color)}>
+                <DownloadIcon /> 30×40
               </a>
             </div>
           ) : (

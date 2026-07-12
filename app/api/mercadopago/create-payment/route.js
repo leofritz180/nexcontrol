@@ -128,21 +128,33 @@ export async function POST(req) {
           }, { status: 400 })
         }
         resolvedOps = realOps
-      } else if (realOps > currentPaidOps) {
-        // UPGRADE dentro do ciclo: adicionar operadores acima do que ja foi pago.
-        // A base do ciclo ja esta paga — cobra so o DELTA de operadores (senao seria
-        // furo: pagar R$1 e liberar todos os operadores). Nao recobra a base.
-        const requiredDelta = Number((calcOpTier(realOps).total - calcOpTier(currentPaidOps).total).toFixed(2))
-        if (amt < requiredDelta * 0.95) {
-          console.warn('[MP create-payment] BLOQUEADO: upgrade abaixo do delta de operadores', { email, currentPaidOps, realOps, requiredDelta, sent: amt })
+      } else {
+        // UPGRADE dentro do ciclo (a base ja esta paga). ALVO = MAX(desejado pelo
+        // cliente, operadores reais, ja pago):
+        //   - operadores reais = PISO (nunca deixa realOps acima do limite → anti-fraude);
+        //   - desejado > reais → PRE-COMPRA de slots: as vagas extras ficam "abertas"
+        //     (o admin pode criar os operadores depois). Corrige o caso de pagar a
+        //     adicao ANTES de criar os perfis (bug que cobrava sem liberar).
+        // Cobra so o DELTA ate o alvo (nao recobra a base). Anti-fraude: tem que pagar
+        // o delta cheio pro alvo — nao da pra inflar o limite pagando pouco.
+        const desired = Math.max(Number(operatorCountIn) || 0, realOps, currentPaidOps)
+        if (desired > currentPaidOps) {
+          const requiredDelta = Number((calcOpTier(desired).total - calcOpTier(currentPaidOps).total).toFixed(2))
+          if (amt < requiredDelta * 0.95) {
+            console.warn('[MP create-payment] BLOQUEADO: valor abaixo do delta pro alvo de operadores', { email, currentPaidOps, realOps, desired, requiredDelta, sent: amt })
+            return NextResponse.json({
+              error: `Pra ir pra ${desired} operador(es) neste ciclo faltam R$ ${requiredDelta.toFixed(2).replace('.', ',')}.`,
+            }, { status: 400 })
+          }
+          resolvedOps = desired
+        } else {
+          // Nao aumenta o limite (alvo <= ja pago e sem excesso real) — nada a cobrar.
+          // Evita o furo de COBRAR SEM ENTREGAR (pagar e o limite nao subir).
+          console.warn('[MP create-payment] BLOQUEADO: add-op sem aumento de limite', { email, currentPaidOps, realOps, desired, sent: amt })
           return NextResponse.json({
-            error: `Pra cobrir seus ${realOps} operadores neste ciclo faltam R$ ${requiredDelta.toFixed(2).replace('.', ',')}. Remova operadores no painel se quiser pagar menos.`,
+            error: 'Nada a adicionar: seu plano ja cobre esse número de operadores.',
           }, { status: 400 })
         }
-        resolvedOps = realOps
-      } else {
-        // Dentro do limite ja pago — add-op pequeno / ajuste legit. Nao reduz o limite.
-        resolvedOps = Math.max(currentPaidOps, realOps)
       }
       transactionAmount = amt
     } else {

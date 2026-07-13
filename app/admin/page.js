@@ -50,6 +50,8 @@ function weekWindowBR(now) {
   return { start, end }
 }
 import TabAwareTour from '../../components/TabAwareTour'
+import FirstMetaWizard from '../../components/FirstMetaWizard'
+import { REDES, MULTI_REDE } from '../../lib/redes'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_REDES_RANKING, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
 import DemoModeCard from '../../components/DemoModeCard'
 import BettifySponsor from '../../components/BettifySponsor'
@@ -670,8 +672,7 @@ export default function AdminPage() {
   const [mySenha,setMySenha]=useState('')
   const [myMostrarSenha,setMyMostrarSenha]=useState(false)
   const [mySaving,setMySaving]=useState(false)
-  const REDES=['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
-  const MULTI_REDE='MÚLTIPLAS' // opção especial: meta rodando em várias redes
+  // REDES / MULTI_REDE agora vem de lib/redes (compartilhado com FirstMetaWizard)
   const [myRedeOpen,setMyRedeOpen]=useState(false)
   const myRedeRef=useRef(null)
   const [focusLoad, setFocusLoad] = useState(false)
@@ -1566,6 +1567,15 @@ export default function AdminPage() {
           />
         </>
       )}
+
+      {/* Assistente da 1a meta — so p/ admin com 0 metas no tenant (ativacao).
+          Lidera o onboarding (prio 0 no coordenador), nao empilha com o tour. */}
+      <FirstMetaWizard
+        show={!loading && profile?.role === 'admin' && metas.length === 0}
+        user={user}
+        tenantId={profile?.tenant_id}
+        onCreated={() => setFirstMetaJustCreated(true)}
+      />
 
       {/* Onboarding ativo: checklist visual flutuante (some sozinho ao completar/dispensar) */}
       {!loading && profile?.role === 'admin' && (

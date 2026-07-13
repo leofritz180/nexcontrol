@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { sendPushToTenant, sendPushToUser } from '../../../../lib/push'
 import { getOperatorLimitStatus } from '../../../../lib/operator-limit'
 import { pickEngagementSegment, fillTemplate } from '../../../../lib/engagement-segments'
+import { pickActivationSegment } from '../../../../lib/activation-segments'
 import { renderWinbackEmail, sendEmailViaResend } from '../../../../lib/email-templates'
 
 // Call daily via Vercel Cron or external scheduler
@@ -55,8 +56,12 @@ export async function GET(req) {
   // Get all tenants in trial
   const { data: tenants } = await supabase
     .from('tenants')
-    .select('id,name,trial_end,subscription_status,last_trial_notif_date,trial_expired_notified')
+    .select('id,name,trial_end,subscription_status,last_trial_notif_date,trial_expired_notified,created_at')
     .eq('subscription_status', 'trial')
+    // Supabase cap 1000 linhas: ordena pelos mais recentes pra garantir que os
+    // cadastros novos (alvo de ativacao + lembretes 3d/1d) entrem na janela.
+    // Trials antigos que sobram sao dead leads (ja notificados/expirados).
+    .order('created_at', { ascending: false })
 
   if (!tenants?.length) return NextResponse.json({ sent: 0, expired: 0, msg: 'No trials' })
 
@@ -195,5 +200,71 @@ export async function GET(req) {
     console.error('[trial-cron] engagement push failed', e?.message)
   }
 
-  return NextResponse.json({ sent, expired, total: tenants.length, opExcessNotified, engagementSent })
+  // ── ATIVACAO: cadastrou mas NUNCA criou meta (o gargalo do funil) ──
+  // Alvo: trials que ainda estao no modo demo (0 metas). Mensagem de VALOR
+  // ("crie sua 1a meta"), NAO de preco — o pedido de assinatura fica com os
+  // pushes 3d/1d acima. Marcos: 1 e 3 dias apos o cadastro. Anti-spam via
+  // winback_log (1x por marco) + cooldown global 24h.
+  let activationSent = 0
+  try {
+    const trialIds = tenants.map(t => t.id)
+    // Quais trials JA tem pelo menos 1 meta (nao deletada)?
+    const { data: metaRows } = await supabase.from('metas')
+      .select('tenant_id')
+      .in('tenant_id', trialIds)
+      .is('deleted_at', null)
+    const hasMeta = new Set((metaRows || []).map(m => m.tenant_id))
+    const nowMs = Date.now()
+
+    for (const t of tenants) {
+      if (hasMeta.has(t.id)) continue // ja ativou — deixa o fluxo normal seguir
+      if (!t.created_at) continue
+      const daysSinceSignup = Math.floor((nowMs - new Date(t.created_at).getTime()) / 86400000)
+      const seg = pickActivationSegment(daysSinceSignup)
+      if (!seg) continue
+
+      // Anti-spam: ja mandou esse marco pra esse tenant?
+      const { data: prev } = await supabase.from('winback_log')
+        .select('id').eq('tenant_id', t.id).eq('segment', seg.id).limit(1).maybeSingle()
+      if (prev) continue
+      // Cooldown 24h: nao empilha com push de trial/engagement do mesmo dia
+      const dayAgo = new Date(nowMs - 24 * 3600000).toISOString()
+      const { data: recent } = await supabase.from('winback_log')
+        .select('id').eq('tenant_id', t.id).gte('sent_at', dayAgo).limit(1).maybeSingle()
+      if (recent) continue
+
+      // Admin do tenant (recem-cadastrado normalmente so tem o admin)
+      const { data: admin } = await supabase.from('profiles')
+        .select('id,email,nome').eq('tenant_id', t.id).eq('role', 'admin').maybeSingle()
+      const nome = (admin?.nome || '').split(' ')[0] || 'Operador'
+      const vars = { nome }
+
+      await sendPushToTenant(supabase, t.id, {
+        title: fillTemplate(seg.push.title, vars),
+        body: fillTemplate(seg.push.body, vars),
+        url: '/admin',
+        tag: seg.id,
+      })
+      // Email espelhando o push (skip silencioso se sem RESEND_API_KEY)
+      if (admin?.email) {
+        try {
+          const url = `${APP_URL}/admin?utm_source=activation&utm_medium=email&utm_campaign=${seg.id}`
+          const { subject, html } = renderWinbackEmail({ segment: { email: seg.email }, vars: { nome, url } })
+          await sendEmailViaResend({ to: admin.email, subject, html })
+        } catch (e) {
+          console.error('[trial-cron] activation email failed', e?.message)
+        }
+      }
+      await supabase.from('winback_log').insert({
+        user_id: admin?.id || null, tenant_id: t.id,
+        segment: seg.id, channel: 'push',
+        sent_at: new Date().toISOString(),
+      })
+      activationSent++
+    }
+  } catch (e) {
+    console.error('[trial-cron] activation nudge failed', e?.message)
+  }
+
+  return NextResponse.json({ sent, expired, total: tenants.length, opExcessNotified, engagementSent, activationSent })
 }

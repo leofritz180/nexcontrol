@@ -50,7 +50,9 @@ export default function PresencePing() {
     resolveSid().then(() => {
       if (cancelled) return
       ping()
-      pingRef.current = setInterval(ping, 30000)
+      // So pinga em aba visivel (aba de fundo nao gera custo). 60s basta:
+      // "online" = ping nos ultimos 5min. Volta a pingar no visibilitychange.
+      pingRef.current = setInterval(() => { if (document.visibilityState === 'visible') ping() }, 60000)
     })
 
     // Re-resolve quando o auth muda (login/logout).

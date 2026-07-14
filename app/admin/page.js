@@ -694,7 +694,14 @@ export default function AdminPage() {
   const [tabLine, setTabLine] = useState({ left: 0, width: 0 })
 
   useEffect(()=>{ checkAndLoad() },[])
-  useEffect(()=>{ const iv=setInterval(loadAll,30000); return()=>clearInterval(iv) },[])
+  useEffect(()=>{
+    // Refresh do dashboard: 60s e SO em aba visivel (aba de fundo nao consome).
+    // Ao voltar pra aba, atualiza na hora via visibilitychange.
+    const iv=setInterval(()=>{ if(document.visibilityState==='visible') loadAll() },60000)
+    const onVis=()=>{ if(document.visibilityState==='visible') loadAll() }
+    document.addEventListener('visibilitychange',onVis)
+    return()=>{ clearInterval(iv); document.removeEventListener('visibilitychange',onVis) }
+  },[])
 
   // Tab underline tracking
   const updateTabLine = useCallback(() => {
@@ -817,6 +824,7 @@ export default function AdminPage() {
   useEffect(()=>{
     if(!focusMeta||(focusMeta.status==='finalizada'&&focusMeta.status_fechamento==='fechada')) return
     const iv=setInterval(async()=>{
+      if(document.visibilityState!=='visible') return // aba de fundo: nao poll
       const [{data:r},{data:l},{data:m}]=await Promise.all([
         supabase.from('remessas').select('*').eq('meta_id',focusMeta.id).order('created_at',{ascending:true}),
         supabase.from('activity_logs').select('*').eq('meta_id',focusMeta.id).order('created_at',{ascending:false}).limit(50),
@@ -1195,7 +1203,7 @@ export default function AdminPage() {
       } catch {}
     }
     loadMetodos()
-    const interval = setInterval(loadMetodos, 15000)
+    const interval = setInterval(() => { if (document.visibilityState === 'visible') loadMetodos() }, 30000)
     const handler = () => loadMetodos()
     window.addEventListener('metodos:updated', handler)
     const onVis = () => { if (document.visibilityState === 'visible') loadMetodos() }

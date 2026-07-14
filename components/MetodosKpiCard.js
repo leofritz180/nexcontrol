@@ -24,7 +24,7 @@ export default function MetodosKpiCard({ lucroCpa = 0, onGoToTab }) {
       if (alive) setLoading(false)
     }
     load()
-    const interval = setInterval(load, 15000)
+    const interval = setInterval(() => { if (document.visibilityState === 'visible') load() }, 30000)
     // Refresh imediato quando algum registro for criado/deletado em qualquer lugar
     const handler = () => load()
     window.addEventListener('metodos:updated', handler)

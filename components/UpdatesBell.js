@@ -49,7 +49,7 @@ export default function UpdatesBell() {
       if (!uid || !mounted) return
       setUserId(uid)
       fetchUpdates(uid)
-      interval = setInterval(() => fetchUpdates(uid), 60000) // re-check a cada 60s
+      interval = setInterval(() => { if (document.visibilityState === 'visible') fetchUpdates(uid) }, 60000) // 60s, so aba visivel
     })
     return () => { mounted = false; if (interval) clearInterval(interval) }
   }, [])

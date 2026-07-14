@@ -30,7 +30,7 @@ export default function OperatorLimitBanner({ tenantId, variant = 'default' }) {
     }
     check()
     // Re-check a cada 60s pra capturar mudancas (adicao/remocao de op)
-    const interval = setInterval(check, 60000)
+    const interval = setInterval(() => { if (document.visibilityState === 'visible') check() }, 60000)
     return () => { alive = false; clearInterval(interval) }
   }, [tenantId])
 

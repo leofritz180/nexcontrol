@@ -22,8 +22,11 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
     }
 
     ping()
-    intervalRef.current = setInterval(ping, 30000)
-    return () => clearInterval(intervalRef.current)
+    // Pausa em aba de fundo (corta custo); atualiza ao voltar pra aba.
+    intervalRef.current = setInterval(() => { if (document.visibilityState === 'visible') ping() }, 60000)
+    const onVis = () => { if (document.visibilityState === 'visible') ping() }
+    document.addEventListener('visibilitychange', onVis)
+    return () => { clearInterval(intervalRef.current); document.removeEventListener('visibilitychange', onVis) }
   }, [userId])
 
   if (count <= 0 && variant === 'inline') return null

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { authNetwork, computePublicProfile, computeFakeProfile, uploadImage, logMod, displayName } from '../../../../lib/network-server'
-import { VERIFIER_EMAILS, OWNER_EMAIL } from '../../../../lib/network-access'
+import { authNetwork, computePublicProfile, computeFakeProfile, uploadImage, logMod, displayName, hasActiveSubscription } from '../../../../lib/network-server'
+import { VERIFIER_EMAILS, OWNER_EMAIL, networkEnabled, socialBetaEnabled } from '../../../../lib/network-access'
 
 export const dynamic = 'force-dynamic'
 
@@ -139,7 +139,19 @@ export async function POST(req) {
     return NextResponse.json({ ok: true })
   }
 
-  // ── EDITAR o proprio perfil (foto/bio/instagram) ──
+  // ── EDITAR o proprio perfil (foto/bio/instagram) — EXCLUSIVO PRO ──
+  // Identidade e' beneficio de assinante: membro FREE participa do chat mas o
+  // perfil fica basico (sem foto, sem @, sem bio) ate assinar. E' a alavanca de
+  // conversao do Network gratis. Owner/allowlist isentos.
+  if (!isOwner && !networkEnabled(email) && !socialBetaEnabled(email)) {
+    const pro = await hasActiveSubscription(sb, a.profile.tenant_id)
+    if (!pro) {
+      return NextResponse.json({
+        error: 'Personalizar o perfil (foto, @, bio) é exclusivo de assinantes PRO.',
+        code: 'pro_required',
+      }, { status: 403 })
+    }
+  }
   const bio = body.bio != null ? String(body.bio).slice(0, 240) : undefined
   let instagram = body.instagram != null ? String(body.instagram).trim().replace(/^@/, '').slice(0, 60) : undefined
   const patch = { user_id: user.id }

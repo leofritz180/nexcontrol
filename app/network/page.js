@@ -760,7 +760,7 @@ export default function NetworkPage() {
       <AnimatePresence>
         {profileView && (
           <ProfileDrawer view={profileView} isMobile={isMobile} onClose={() => setProfileView(null)}
-            onSaved={() => openProfile(profileView.data?.id)} api={api}
+            onSaved={() => openProfile(profileView.data?.id)} api={api} isFreeMember={isFreeMember}
             isOwnerUser={isOwnerUser} canVerify={canVerify} social={social}
             onOpenImage={(image) => setLightbox({ image })}
             onModerated={() => { openProfile(profileView.data?.id); fetchFeed(channel, false) }} />
@@ -1667,7 +1667,7 @@ function SocialProfileTop({ p, onOpenImage }) {
 }
 
 // ═══════════════ Perfil (drawer) ═══════════════
-function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, canVerify, onModerated, social, onOpenImage }) {
+function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, canVerify, onModerated, social, onOpenImage, isFreeMember }) {
   const p = view.data
   const [bio, setBio] = useState(p?.bio || '')
   const [insta, setInsta] = useState(p?.instagram || '')
@@ -1889,6 +1889,19 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
             <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
               {!edit ? (
                 <button onClick={() => setEdit(true)} className="btn" style={{ width: '100%', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--t1)', fontWeight: 700, padding: '11px', borderRadius: 10, fontSize: 13 }}>Editar meu perfil</button>
+              ) : isFreeMember ? (
+                /* Membro FREE: personalizar perfil e' exclusivo PRO (trava tambem no servidor) */
+                <div style={{ textAlign: 'center', padding: '20px 16px', borderRadius: 12, background: 'linear-gradient(180deg, rgba(229,57,53,0.09), rgba(229,57,53,0.02))', border: '1px solid rgba(229,57,53,0.28)' }}>
+                  <div style={{ width: 44, height: 44, margin: '0 auto 10px', borderRadius: 12, background: 'rgba(229,57,53,0.14)', border: '1px solid rgba(229,57,53,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </div>
+                  <div style={{ fontSize: 15, fontWeight: 900, color: '#F1F5F9', marginBottom: 6 }}>Perfil personalizado é PRO</div>
+                  <p style={{ margin: '0 0 14px', fontSize: 12.5, color: 'var(--t3)', lineHeight: 1.55 }}>
+                    Foto, <strong style={{ color: 'var(--t1)' }}>@</strong>, bio e tags são exclusivos de assinantes da dashboard. Assine o PRO pra personalizar seu perfil — e ficar elegível ao <strong style={{ color: 'var(--t1)' }}>verificado ✓</strong>.
+                  </p>
+                  <button type="button" onClick={() => { window.location.href = '/billing-mp' }} style={{ width: '100%', padding: '11px', borderRadius: 10, border: 'none', background: RED, color: '#fff', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>Assinar PRO e desbloquear</button>
+                  <button type="button" onClick={() => setEdit(false)} style={{ marginTop: 8, width: '100%', padding: '8px', borderRadius: 10, border: 'none', background: 'transparent', color: 'var(--t4)', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Agora não</button>
+                </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {/* Foto de perfil */}

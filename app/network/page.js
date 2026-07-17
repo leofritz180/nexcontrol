@@ -1891,16 +1891,40 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                 <button onClick={() => setEdit(true)} className="btn" style={{ width: '100%', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--t1)', fontWeight: 700, padding: '11px', borderRadius: 10, fontSize: 13 }}>Editar meu perfil</button>
               ) : isFreeMember ? (
                 /* Membro FREE: personalizar perfil e' exclusivo PRO (trava tambem no servidor) */
-                <div style={{ textAlign: 'center', padding: '20px 16px', borderRadius: 12, background: 'linear-gradient(180deg, rgba(229,57,53,0.09), rgba(229,57,53,0.02))', border: '1px solid rgba(229,57,53,0.28)' }}>
-                  <div style={{ width: 44, height: 44, margin: '0 auto 10px', borderRadius: 12, background: 'rgba(229,57,53,0.14)', border: '1px solid rgba(229,57,53,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <div style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', padding: '24px 18px 18px', borderRadius: 16, background: 'linear-gradient(180deg, #101010, #070707)', border: '1px solid rgba(229,57,53,0.3)', boxShadow: '0 0 0 1px rgba(229,57,53,0.06), 0 18px 50px rgba(0,0,0,0.55), 0 0 60px rgba(229,57,53,0.07)' }}>
+                  {/* linha de brilho no topo */}
+                  <div style={{ position: 'absolute', top: 0, left: '16%', right: '16%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.65), transparent)' }} />
+                  {/* glow ambiente */}
+                  <div style={{ position: 'absolute', top: -60, left: '50%', transform: 'translateX(-50%)', width: 220, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.14), transparent 65%)', filter: 'blur(24px)', pointerEvents: 'none' }} />
+
+                  {/* selo verificado em destaque */}
+                  <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+                    <div style={{ width: 58, height: 58, borderRadius: 17, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 28px rgba(0,0,0,0.5)' }}>
+                      <VerifiedBadge size={30} />
+                    </div>
                   </div>
-                  <div style={{ fontSize: 15, fontWeight: 900, color: '#F1F5F9', marginBottom: 6 }}>Perfil personalizado é PRO</div>
-                  <p style={{ margin: '0 0 14px', fontSize: 12.5, color: 'var(--t3)', lineHeight: 1.55 }}>
-                    Foto, <strong style={{ color: 'var(--t1)' }}>@</strong>, bio e tags são exclusivos de assinantes da dashboard. Assine o PRO pra personalizar seu perfil — e ficar elegível ao <strong style={{ color: 'var(--t1)' }}>verificado ✓</strong>.
-                  </p>
-                  <button type="button" onClick={() => { window.location.href = '/billing-mp' }} style={{ width: '100%', padding: '11px', borderRadius: 10, border: 'none', background: RED, color: '#fff', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>Assinar PRO e desbloquear</button>
-                  <button type="button" onClick={() => setEdit(false)} style={{ marginTop: 8, width: '100%', padding: '8px', borderRadius: 10, border: 'none', background: 'transparent', color: 'var(--t4)', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Agora não</button>
+
+                  <div style={{ position: 'relative', fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 21, fontWeight: 400, letterSpacing: '-0.02em', color: '#fafafa', marginBottom: 4 }}>Desbloqueie seu perfil PRO.</div>
+                  <p style={{ position: 'relative', margin: '0 0 16px', fontSize: 12, color: 'var(--t3)', lineHeight: 1.5 }}>Sua identidade na comunidade — e a operação completa na dashboard.</p>
+
+                  {/* beneficios */}
+                  <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 9, textAlign: 'left', margin: '0 0 16px' }}>
+                    {[
+                      [<span key="v" style={{ display: 'inline-flex', verticalAlign: 'middle' }}><VerifiedBadge size={13} /></span>, <>Foto, <strong style={{ color: '#fff' }}>@</strong>, bio e tags no perfil — elegível ao <strong style={{ color: '#fff' }}>verificado</strong></>],
+                      ['📊', <>Metas e remessas com <strong style={{ color: '#fff' }}>lucro em tempo real</strong></>],
+                      ['👥', <>Gestão completa de <strong style={{ color: '#fff' }}>operadores e equipe</strong></>],
+                      ['💰', <>Faturamento, custos e <strong style={{ color: '#fff' }}>planejamento da operação</strong></>],
+                    ].map(([ic, txt], i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
+                        <div style={{ flexShrink: 0, width: 24, height: 24, borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>{ic}</div>
+                        <span style={{ fontSize: 12, color: 'var(--t2)', lineHeight: 1.45, paddingTop: 3 }}>{txt}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button type="button" onClick={() => { window.location.href = '/billing-mp' }} style={{ position: 'relative', width: '100%', padding: '13px', borderRadius: 11, border: 'none', background: `linear-gradient(180deg, ${RED}, #c62828)`, color: '#fff', fontWeight: 800, fontSize: 13.5, cursor: 'pointer', boxShadow: '0 6px 22px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.15)' }}>Assinar PRO e desbloquear</button>
+                  <div style={{ position: 'relative', marginTop: 8, fontSize: 10.5, color: 'var(--t4)' }}>A partir de R$ 59,90/mês · ativação na hora via PIX</div>
+                  <button type="button" onClick={() => setEdit(false)} style={{ position: 'relative', marginTop: 6, width: '100%', padding: '7px', borderRadius: 10, border: 'none', background: 'transparent', color: 'var(--t4)', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Agora não</button>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>

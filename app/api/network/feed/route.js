@@ -164,7 +164,7 @@ async function buildReplyMap(sb, msgs) {
   const replyIds = [...new Set((msgs || []).map(m => m.reply_to).filter(Boolean))]
   if (!replyIds.length) return {}
   const { data: quoted } = await sb.from('network_messages')
-    .select('id,author_id,text,image_url,deleted_at').in('id', replyIds)
+    .select('id,author_id,text,image_url,deleted_at,fake_name').in('id', replyIds)
   const qAuthorMap = await buildAuthorMap(sb, (quoted || []).map(q => q.author_id))
   const map = {}
   for (const q of (quoted || [])) {
@@ -173,7 +173,8 @@ async function buildReplyMap(sb, msgs) {
     } else {
       map[q.id] = {
         id: q.id,
-        name: qAuthorMap[q.author_id]?.name || 'admin',
+        // Msg semente (fake_name) citada: mostra o nome simulado, nunca o autor real
+        name: q.fake_name || qAuthorMap[q.author_id]?.name || 'admin',
         text: q.text ? (q.text.length > 80 ? q.text.slice(0, 80) : q.text) : '',
         hasImage: !!q.image_url,
       }

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
-import { networkEnabled, OWNER_EMAIL } from '../lib/network-access'
+import { networkEnabled, NETWORK_FREE_FOR_ALL, OWNER_EMAIL } from '../lib/network-access'
 
 // ─────────────────────────────────────────────────────────────────────────
 // NETWORK DOCK — chat flutuante estilo Messenger antigo. Fica no canto de TODAS
@@ -45,7 +45,8 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
   const email = String(userEmail || '').toLowerCase()
 
   const subActive = (subscription?.status === 'active' && (!subscription.expires_at || new Date(subscription.expires_at) > new Date())) || tenant?.subscription_status === 'active'
-  const canEnter = networkEnabled(email) || subActive
+  // NETWORK FREE: todo admin entra (trial/free/vencido) — comunidade e' a ancora
+  const canEnter = networkEnabled(email) || NETWORK_FREE_FOR_ALL || subActive
   const isOwner = email === OWNER_EMAIL
 
   const [mobile, setMobile] = useState(false)

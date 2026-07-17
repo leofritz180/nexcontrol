@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
-import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_EMAIL, NETWORK_GA, POST_REACTIONS } from '../../lib/network-access'
+import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_EMAIL, NETWORK_GA, NETWORK_FREE_FOR_ALL, POST_REACTIONS } from '../../lib/network-access'
 import RankProgress from '../../components/rank/RankProgress'
 import { getRank, rankColor } from '../../lib/rank-system'
 
@@ -185,6 +185,8 @@ export default function NetworkPage() {
   const [tenant, setTenant] = useState(null)
   const [sub, setSub] = useState(null)
   const [access, setAccess] = useState('checking') // checking | ok | denied
+  // Membro FREE (sem PRO ativo) — entra pela ancora Network; ve upsell suave
+  const [isFreeMember, setIsFreeMember] = useState(false)
 
   const [channel, setChannel] = useState(() => {
     if (typeof window === 'undefined') return 'geral'
@@ -255,10 +257,12 @@ export default function NetworkPage() {
       if (t) setTenant(t); if (sb2) setSub(sb2)
       const isAdmin = p.role === 'admin' || (u.email || '').toLowerCase() === OWNER_EMAIL
       const subActive = (sb2 && sb2.status === 'active' && (!sb2.expires_at || new Date(sb2.expires_at) > new Date())) || t?.subscription_status === 'active'
-      // Acesso: allowlist OU (GA e PRO ativo). Sempre admin.
-      const allowed = isAdmin && (networkEnabled(u.email) || (NETWORK_GA && subActive))
+      // Acesso: allowlist OU Network FREE (todo admin — ancora de crescimento)
+      // OU (GA e PRO ativo). Sempre admin.
+      const allowed = isAdmin && (networkEnabled(u.email) || NETWORK_FREE_FOR_ALL || (NETWORK_GA && subActive))
       // Admin sem PRO -> "teaser" (previa borrada com trava). Nao-admin -> denied.
       setAccess(allowed ? 'ok' : (isAdmin && NETWORK_GA ? 'teaser' : 'denied'))
+      setIsFreeMember(allowed && !subActive && !networkEnabled(u.email))
     })()
   }, [])
 
@@ -588,6 +592,15 @@ export default function NetworkPage() {
 
   return (
     <Shell profile={profile} user={user} tenant={tenant} sub={sub} bare={isMobile}>
+      {/* Upsell suave pro membro FREE (ancora: comunidade gratis -> assina o painel) */}
+      {isFreeMember && !isMobile && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', marginBottom: 12, borderRadius: 12, background: 'linear-gradient(90deg, rgba(229,57,53,0.10), rgba(229,57,53,0.03))', border: '1px solid rgba(229,57,53,0.22)' }}>
+          <span style={{ fontSize: 12.5, color: 'var(--t2)', lineHeight: 1.4 }}>
+            Você está no <strong style={{ color: '#fff' }}>Network grátis</strong> — a comunidade é sua pra sempre. Pra ter o painel completo (metas, lucro em tempo real, equipe), assine o PRO.
+          </span>
+          <button type="button" onClick={() => router.push('/billing-mp')} className="btn btn-brand btn-sm" style={{ marginLeft: 'auto', whiteSpace: 'nowrap', fontWeight: 800 }}>Desbloquear painel</button>
+        </div>
+      )}
       <div style={isMobile ? {
         // Preso à viewport visível (acompanha teclado/barra do navegador). z abaixo do
         // hambúrguer (250) pra ele seguir clicável. Isso garante composer sempre visível.

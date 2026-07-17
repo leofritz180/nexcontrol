@@ -116,30 +116,26 @@ export async function POST(req) {
         const notified = new Set([user.id])
         // @TODOS: marca todo mundo (só quem tem permissão — validado no servidor).
         // Dispara pela flag do seletor OU detectando o texto "@todos" (digitado / dock).
+        // Envia em LOTES paralelos (20 por vez) — com o Network free a comunidade
+        // cresce e envio sequencial estouraria o timeout do serverless.
+        const pushBatch = async (ids, payload) => {
+          const targets = ids.filter(id => { if (notified.has(id)) return false; notified.add(id); return true })
+          for (let i = 0; i < targets.length; i += 20) {
+            await Promise.allSettled(targets.slice(i, i + 20).map(id => sendPushToUser(sb, id, payload)))
+          }
+        }
         const wantsAll = (body.mentionAll || /(^|\s)@todos(\s|$)/i.test(text)) && a.canMentionAll
         if (wantsAll) {
           const members = await getMembers(sb)
-          for (const m of members) {
-            if (notified.has(m.id)) continue
-            notified.add(m.id)
-            await sendPushToUser(sb, m.id, { title: `${authorName} marcou todos no Network`, body: preview, url: `/network?c=${channelKey}`, tag: 'network-all' })
-          }
+          await pushBatch(members.map(m => m.id), { title: `${authorName} marcou todos no Network`, body: preview, url: `/network?c=${channelKey}`, tag: 'network-all' })
         }
         // Mencoes individuais: avisa cada usuario marcado
         const mentions = Array.isArray(body.mentions) ? body.mentions.filter(id => id && id !== user.id) : []
-        for (const mid of mentions) {
-          if (notified.has(mid)) continue
-          notified.add(mid)
-          await sendPushToUser(sb, mid, { title: `${authorName} te mencionou no Network`, body: preview, url: `/network?c=${channelKey}`, tag: 'network-mention' })
-        }
+        await pushBatch(mentions, { title: `${authorName} te mencionou no Network`, body: preview, url: `/network?c=${channelKey}`, tag: 'network-mention' })
         // Avisos: comunicado oficial -> notifica todos os membros
         if (rule?.ownerOnly) {
           const members = await getMembers(sb)
-          for (const m of members) {
-            if (notified.has(m.id)) continue
-            notified.add(m.id)
-            await sendPushToUser(sb, m.id, { title: '📢 Novo aviso no Network', body: preview, url: '/network?c=avisos', tag: 'network-aviso' })
-          }
+          await pushBatch(members.map(m => m.id), { title: '📢 Novo aviso no Network', body: preview, url: '/network?c=avisos', tag: 'network-aviso' })
         }
       } catch (e) { console.error('[network] push falhou', e?.message) }
     })()

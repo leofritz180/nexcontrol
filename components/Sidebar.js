@@ -10,7 +10,7 @@ import { isPushSupported, getPermissionState, registerSW, subscribePush, savePus
 import ProfileModal from './ProfileModal'
 import { loadLocalProfile } from '../lib/profileLocal'
 import { aulasEnabled } from '../lib/aulas-tenants'
-import { networkEnabled, NETWORK_GA, NETWORK_NEW_UNTIL } from '../lib/network-access'
+import { networkEnabled, NETWORK_GA, NETWORK_FREE_FOR_ALL, NETWORK_NEW_UNTIL } from '../lib/network-access'
 import { premiacoesEnabled } from '../lib/premiacoes'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
@@ -84,7 +84,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   useEffect(() => {
     const s = ownSub || subscription
     const subActive = (s?.status === 'active' && (!s.expires_at || new Date(s.expires_at) > new Date())) || tenant?.subscription_status === 'active'
-    const eligible = isAdmin && (networkEnabled(userEmail) || (NETWORK_GA && subActive))
+    const eligible = isAdmin && (networkEnabled(userEmail) || NETWORK_FREE_FOR_ALL || (NETWORK_GA && subActive))
     if (!eligible) return
     let stop = false
     async function check() {

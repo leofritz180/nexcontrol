@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
+import { translateAuthError } from '../../lib/auth-errors'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -29,7 +30,7 @@ export default function LoginPage() {
     try {
       const redirectTo = typeof window !== 'undefined' ? (window.location.origin + '/reset-password') : undefined
       const { error: err } = await supabase.auth.resetPasswordForEmail(em, { redirectTo })
-      if (err) { setForgotError(err.message); setForgotLoading(false); return }
+      if (err) { setForgotError(translateAuthError(err.message)); setForgotLoading(false); return }
       setForgotMsg('Se este email estiver cadastrado, voce recebera um link para redefinir a senha nos proximos minutos. Verifique tambem a caixa de spam.')
       setForgotLoading(false)
     } catch (e) {
@@ -82,11 +83,11 @@ export default function LoginPage() {
         return
       }
       const { data, error: err } = r.value || {}
-      if (err) { setError(err.message); setLoading(false); return }
+      if (err) { setError(translateAuthError(err.message)); setLoading(false); return }
       if (!data?.user) { setError('Falha ao autenticar. Tente novamente.'); setLoading(false); return }
       await resolveRoleAndGo(data.user.id)
     } catch (e) {
-      setError(e?.message || 'Erro de conexao. Verifique sua internet.')
+      setError(translateAuthError(e?.message, 'Erro de conexão. Verifique sua internet.'))
       setLoading(false)
     }
   }

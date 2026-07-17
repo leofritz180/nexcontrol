@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import { markJustSignedUp } from '../../components/InstallPrompt'
+import { translateAuthError } from '../../lib/auth-errors'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -64,7 +65,7 @@ export default function SignupPage() {
         email, password: pass,
         options: { data: { nome: nome.trim(), tenant_name: tenantName.trim(), role: 'admin' } }
       })
-      if (err) { setLoading(false); setError(err.message); return }
+      if (err) { setLoading(false); setError(translateAuthError(err.message)); return }
       const { data: session } = await supabase.auth.getSession()
       if (session?.session?.user) {
         markJustSignedUp()
@@ -79,7 +80,7 @@ export default function SignupPage() {
       setSuccess(true)
     } catch (e) {
       setLoading(false)
-      setError(e?.message || 'Erro de conexao. Verifique sua internet.')
+      setError(translateAuthError(e?.message, 'Erro de conexão. Verifique sua internet.'))
     }
   }
 

@@ -11,6 +11,7 @@ const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
 const BettifyStoreBanner = dynamic(() => import('./BettifyStoreBanner'), { ssr: false })
 const NetworkLaunchBanner = dynamic(() => import('./NetworkLaunchBanner'), { ssr: false })
 const NetworkDock = dynamic(() => import('./NetworkDock'), { ssr: false })
+const PhoneGate = dynamic(() => import('./PhoneGate'), { ssr: false })
 
 const pageVariants = {
   initial: { opacity: 0, y: 14 },
@@ -59,6 +60,8 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       {pathname !== '/network' && <NetworkLaunchBanner userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />}
       {/* Reativado após upgrade Nano->Micro (08/07) com polling espaçado (90s) pra pegar leve no banco */}
       <NetworkDock userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />
+      {/* Confirma WhatsApp de quem ainda nao tem (base existente; novos ja dao no signup) */}
+      <PhoneGate />
       <style jsx global>{`
         @media (max-width: 768px) {
           .app-content { margin-left: 0 !important; }

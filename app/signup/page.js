@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import { markJustSignedUp } from '../../components/InstallPrompt'
 import { translateAuthError } from '../../lib/auth-errors'
+import { normalizeBRPhone } from '../../lib/phone'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -13,6 +14,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [nome, setNome] = useState('')
+  const [phone, setPhone] = useState('')
   const [tenantName, setTenantName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -59,11 +61,14 @@ export default function SignupPage() {
   async function handleSignup(e) {
     e.preventDefault()
     if (!email || !pass || !nome.trim() || !tenantName.trim()) return
+    // WhatsApp obrigatorio e valido (normaliza pra 55+DDD+numero)
+    const normPhone = normalizeBRPhone(phone)
+    if (!normPhone) { setError('WhatsApp inválido. Use DDD + número, ex: (32) 99834-8889'); return }
     setLoading(true); setError('')
     try {
       const { error: err } = await supabase.auth.signUp({
         email, password: pass,
-        options: { data: { nome: nome.trim(), tenant_name: tenantName.trim(), role: 'admin' } }
+        options: { data: { nome: nome.trim(), tenant_name: tenantName.trim(), role: 'admin', phone: normPhone } }
       })
       if (err) { setLoading(false); setError(translateAuthError(err.message)); return }
       const { data: session } = await supabase.auth.getSession()
@@ -71,6 +76,15 @@ export default function SignupPage() {
         markJustSignedUp()
         await attachRef(email)
         await waitForProfile(session.session.user.id)
+        // Grava o WhatsApp no profile (best-effort; o PhoneGate cobre se falhar)
+        try {
+          await fetch('/api/profile/phone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.session.access_token },
+            body: JSON.stringify({ phone: normPhone }),
+          })
+          try { sessionStorage.setItem('nx_phone_ok', '1') } catch {}
+        } catch {}
         setLoading(false)
         router.push('/admin')
         return
@@ -207,6 +221,15 @@ export default function SignupPage() {
             <input
               type="email" value={email} onChange={e => setEmail(e.target.value)}
               placeholder="seu@email.com" required autoComplete="email"
+              style={inputStyle} {...inputFocus}
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>WhatsApp (com DDD)</label>
+            <input
+              type="text" inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)}
+              placeholder="(32) 99834-8889" required autoComplete="tel"
               style={inputStyle} {...inputFocus}
             />
           </div>

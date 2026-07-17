@@ -125,7 +125,7 @@ export async function GET(req) {
   me.mute = muteInfo(myNp)
   // Selo VETERANO pros primeiros a entrar (nao bloqueia a resposta se falhar).
   // Nao reconceder se o owner removeu manualmente (founder_revoked).
-  await maybeGrantFounder(sb, user.id, !!myNp?.founder || a.isOwner || !!myNp?.founder_revoked)
+  await maybeGrantFounder(sb, user.id, !!myNp?.founder || a.isOwner || !!myNp?.founder_revoked, a.profile.tenant_id)
 
   return NextResponse.json({
     channels: channels || [],

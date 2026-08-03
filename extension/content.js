@@ -6,19 +6,26 @@
 (function () {
   const sent = new Set()
 
-  // ── selo de status (diagnostico visivel) ──
-  let chip
+  // ── selo discreto: mostra SO sucesso (some sozinho) e erros que BLOQUEIAM
+  //    (sem chave / precisa iniciar). Estados normais ficam silenciosos. ──
+  let chip, hideT
   function setChip(txt, color) {
+    const success = color === '#052e1a'
+    const blocking = /chave|Iniciar/i.test(txt)
+    if (!success && !blocking) { if (chip) chip.style.display = 'none'; return }
     try {
       if (!chip) {
         chip = document.createElement('div')
         chip.style.cssText = 'position:fixed;left:4px;bottom:4px;z-index:2147483647;font:700 10px system-ui;padding:3px 7px;border-radius:6px;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.4);white-space:nowrap;max-width:96vw;overflow:hidden'
         ;(document.documentElement || document.body).appendChild(chip)
       }
-      chip.textContent = 'NX: ' + txt
-      chip.style.background = color || '#111'
+      chip.style.display = 'block'
+      chip.textContent = success ? txt : ('NexControl: ' + txt)
+      chip.style.background = success ? '#052e1a' : '#3a1a00'
       chip.style.color = '#fff'
-      chip.style.border = '1px solid ' + (color === '#052e1a' ? '#10b981' : color === '#3a1a00' ? '#f59e0b' : '#333')
+      chip.style.border = '1px solid ' + (success ? '#10b981' : '#f59e0b')
+      clearTimeout(hideT)
+      if (success) hideT = setTimeout(() => { if (chip) chip.style.display = 'none' }, 1600)
     } catch {}
   }
 

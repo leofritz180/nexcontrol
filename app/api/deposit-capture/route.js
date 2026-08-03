@@ -58,12 +58,13 @@ function newCaptureKey() {
   return 'cap_' + Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('')
 }
 
-// Recalcula total/count da sessao a partir das capturas (fonte da verdade) e
+// Recalcula total/count de DEPOSITOS (fonte da verdade p/ o campo da remessa) e
 // atualiza o cache na sessao. Retorna { total, count }.
 async function recompute(sb, sessionId) {
-  const { data: rows } = await sb.from('deposit_captures').select('valor').eq('session_id', sessionId)
-  const count = (rows || []).length
-  const total = (rows || []).reduce((a, r) => a + Number(r.valor || 0), 0)
+  const { data: rows } = await sb.from('deposit_captures').select('valor,tipo').eq('session_id', sessionId)
+  const deps = (rows || []).filter(r => r.tipo !== 'saque')
+  const count = deps.length
+  const total = deps.reduce((a, r) => a + Number(r.valor || 0), 0)
   await sb.from('deposit_capture_sessions').update({ total: Number(total.toFixed(2)), count }).eq('id', sessionId)
   return { total: Number(total.toFixed(2)), count }
 }
@@ -88,8 +89,9 @@ export async function POST(req) {
         .order('started_at', { ascending: false }).limit(1).maybeSingle()
       if (!sess) return NextResponse.json({ ok: false, reason: 'no_active_session' })
 
+      const tipo = body.tipo === 'saque' ? 'saque' : 'deposito'
       const { error: insErr } = await sb.from('deposit_captures').insert({
-        session_id: sess.id, tenant_id: op.tenant_id, operator_id: op.user_id,
+        session_id: sess.id, tenant_id: op.tenant_id, operator_id: op.user_id, tipo,
         order_id: orderId, valor: Number(valor.toFixed(2)), casa: body.casa ? String(body.casa).slice(0, 80) : null,
       })
       const duplicate = insErr && /duplicate|unique/i.test(insErr.message || '')
@@ -169,19 +171,22 @@ export async function GET(req) {
       .select('id,operator_id,status,total,count').eq('id', sessionId).maybeSingle()
     if (!sess || sess.operator_id !== user.id) return NextResponse.json({ error: 'Sessão inválida' }, { status: 403 })
 
-    // Todas as capturas da sessao (dezenas) -> stats reais + ultimas 12
+    // Todas as capturas da sessao -> separa deposito x saque
     const { data: all } = await sb.from('deposit_captures')
-      .select('order_id,valor,casa,created_at').eq('session_id', sessionId)
+      .select('order_id,valor,casa,created_at,tipo').eq('session_id', sessionId)
       .order('created_at', { ascending: false })
     const rows = all || []
-    const total = rows.reduce((a, r) => a + Number(r.valor || 0), 0)
-    const max = rows.reduce((m, r) => Math.max(m, Number(r.valor || 0)), 0)
-    const casas = new Set(rows.map(r => r.casa).filter(Boolean)).size
+    const deps = rows.filter(r => r.tipo !== 'saque')
+    const saques = rows.filter(r => r.tipo === 'saque')
+    const sum = (arr) => Number(arr.reduce((a, r) => a + Number(r.valor || 0), 0).toFixed(2))
+    const maxOf = (arr) => Number(arr.reduce((m, r) => Math.max(m, Number(r.valor || 0)), 0).toFixed(2))
+    const casasOf = (arr) => new Set(arr.map(r => r.casa).filter(Boolean)).size
     return NextResponse.json({
       ok: true, status: sess.status,
-      total: Number(total.toFixed(2)), count: rows.length,
-      max: Number(max.toFixed(2)), casas,
-      last: rows.slice(0, 12),
+      // depositos (compat com o campo da remessa)
+      total: sum(deps), count: deps.length, max: maxOf(deps), casas: casasOf(deps), last: deps.slice(0, 12),
+      // saques (card pronto — enche quando a extensao mandar tipo=saque)
+      saqueTotal: sum(saques), saqueCount: saques.length, saqueMax: maxOf(saques), saqueLast: saques.slice(0, 12),
     })
   } catch (e) {
     return NextResponse.json({ error: e?.message || 'erro' }, { status: 500 })

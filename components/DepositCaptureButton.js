@@ -35,6 +35,9 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
   const [max, setMax] = useState(0)
   const [casas, setCasas] = useState(0)
   const [last, setLast] = useState([])
+  const [saqueTotal, setSaqueTotal] = useState(0)
+  const [saqueCount, setSaqueCount] = useState(0)
+  const [saqueLast, setSaqueLast] = useState([])
   const [busy, setBusy] = useState(false)
   const [cfgOpen, setCfgOpen] = useState(false)
   const [captureKey, setCaptureKey] = useState('')
@@ -44,8 +47,14 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
 
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current) }, [])
 
+  function resetTotals() {
+    setTotal(0); setCount(0); setMax(0); setCasas(0); setLast([])
+    setSaqueTotal(0); setSaqueCount(0); setSaqueLast([])
+  }
+
   async function start() {
     setBusy(true)
+    resetTotals() // zera a UI antes de abrir (nao mostra soma antiga)
     const j = await call('POST', { action: 'start', meta_id: metaId != null ? String(metaId) : null })
     setBusy(false)
     if (!j.session_id) { alert('Não consegui iniciar a captura.\n\n' + (j.error || 'Erro desconhecido')); return }
@@ -61,7 +70,10 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
     const t = await token()
     const r = await fetch(`/api/deposit-capture?session_id=${sidRef.current}`, { headers: { Authorization: 'Bearer ' + t } })
     const j = await r.json().catch(() => ({}))
-    if (j.ok) { setTotal(j.total || 0); setCount(j.count || 0); setMax(j.max || 0); setCasas(j.casas || 0); setLast(j.last || []) }
+    if (j.ok) {
+      setTotal(j.total || 0); setCount(j.count || 0); setMax(j.max || 0); setCasas(j.casas || 0); setLast(j.last || [])
+      setSaqueTotal(j.saqueTotal || 0); setSaqueCount(j.saqueCount || 0); setSaqueLast(j.saqueLast || [])
+    }
   }
 
   // reconfigura o intervalo pra usar pollStatus (com query)
@@ -81,11 +93,17 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
     const final = j.total || total
     onTotal && onTotal(final)
     setOpen(false); setSessionId(null); sidRef.current = null
+    resetTotals()
   }
 
-  function cancel() {
+  // Cancelar = ENCERRA a sessao no servidor (nao usa o total) e zera. Assim o
+  // proximo "Iniciar" comeca do zero (antes reaproveitava a soma antiga).
+  async function cancel() {
     if (pollRef.current) clearInterval(pollRef.current)
+    const sid = sidRef.current
     setOpen(false); setSessionId(null); sidRef.current = null
+    resetTotals()
+    if (sid) { try { await call('POST', { action: 'finish', session_id: sid }) } catch {} }
   }
 
   async function configExtension() {
@@ -160,7 +178,8 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
       )}
 
       <DepositCaptureStage
-        open={open} total={total} count={count} max={max} casas={casas} last={last} busy={busy}
+        open={open} total={total} count={count} max={max} casas={casas} last={last}
+        saqueTotal={saqueTotal} saqueCount={saqueCount} saqueLast={saqueLast} busy={busy}
         onFinish={finish} onCancel={cancel}
       />
     </>

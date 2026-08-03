@@ -96,6 +96,20 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
   async function copyKey() {
     try { await navigator.clipboard.writeText(captureKey); setCopied(true); setTimeout(() => setCopied(false), 1500) } catch {}
   }
+  async function downloadExtension() {
+    setBusy(true)
+    try {
+      const t = await token()
+      const r = await fetch('/api/deposit-capture/extension', { headers: { Authorization: 'Bearer ' + t } })
+      if (!r.ok) { alert('Não consegui gerar a extensão agora. Tenta de novo.'); setBusy(false); return }
+      const blob = await r.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url; a.download = 'nexcontrol-extensao.zip'; document.body.appendChild(a); a.click()
+      a.remove(); URL.revokeObjectURL(url)
+    } catch { alert('Erro ao baixar. Tenta de novo.') }
+    setBusy(false)
+  }
 
   return (
     <>
@@ -116,18 +130,30 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
       </div>
 
       {cfgOpen && (
-        <div style={{ marginTop: 8, padding: '12px 13px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', maxWidth: 460 }}>
-          <div style={{ fontSize: 11.5, color: 'var(--t3)', lineHeight: 1.5, marginBottom: 8 }}>
-            Copie sua <b style={{ color: 'var(--t1)' }}>chave</b> e cole no arquivo <b style={{ color: 'var(--t1)' }}>config.js</b> da extensão (linha <code style={{ color: 'var(--profit,#d1fae5)' }}>CAPTURE_KEY = "..."</code>). É só uma vez — vale pra todas as abas.
+        <div style={{ marginTop: 8, padding: '14px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', maxWidth: 470 }}>
+          <div style={{ fontSize: 12.5, fontWeight: 800, color: 'var(--t1)', marginBottom: 4 }}>Sua extensão, pronta pra usar</div>
+          <div style={{ fontSize: 11.5, color: 'var(--t3)', lineHeight: 1.55, marginBottom: 11 }}>
+            Baixe o arquivo <b style={{ color: 'var(--t1)' }}>já com a sua chave embutida</b> (não precisa editar nada). Descompacte e adicione a pasta no bot em <b style={{ color: 'var(--t1)' }}>“Adicionar Extensão”</b>. É só uma vez — vale pra todas as abas e remessas.
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <input readOnly value={captureKey || 'gerando...'} onFocus={e => e.target.select()}
-              style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: '#0a0a0a', color: '#d1fae5', fontFamily: 'var(--mono, monospace)', fontSize: 12 }} />
-            <button type="button" onClick={copyKey} disabled={!captureKey}
-              style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: 'var(--profit, #d1fae5)', color: '#04140c', fontWeight: 800, fontSize: 12, cursor: 'pointer' }}>
-              {copied ? 'Copiado!' : 'Copiar'}
-            </button>
-          </div>
+          <button type="button" onClick={downloadExtension} disabled={busy}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 16px', borderRadius: 10, border: 'none', background: 'var(--profit, #d1fae5)', color: '#04140c', fontWeight: 800, fontSize: 13, cursor: busy ? 'wait' : 'pointer' }}>
+            <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {busy ? 'Gerando...' : 'Baixar minha extensão'}
+          </button>
+
+          {/* fallback avancado: chave manual */}
+          <details style={{ marginTop: 12 }}>
+            <summary style={{ fontSize: 11, color: 'var(--t4)', cursor: 'pointer' }}>Prefiro colar a chave manualmente</summary>
+            <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+              <input readOnly value={captureKey || 'gerando...'} onFocus={e => e.target.select()}
+                style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: '#0a0a0a', color: '#d1fae5', fontFamily: 'var(--mono, monospace)', fontSize: 12 }} />
+              <button type="button" onClick={copyKey} disabled={!captureKey}
+                style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: 'rgba(255,255,255,0.1)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+                {copied ? 'Copiado!' : 'Copiar'}
+              </button>
+            </div>
+            <div style={{ fontSize: 10.5, color: 'var(--t4)', marginTop: 6 }}>Cole no arquivo config.js, linha CAPTURE_KEY = "..."</div>
+          </details>
         </div>
       )}
 

@@ -10,8 +10,8 @@
 // passa pelo backend (a sessao e' do operador logado). Pop-up faz polling 3s.
 // ─────────────────────────────────────────────────────────────────────────
 import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
+import DepositCaptureStage from './DepositCaptureStage'
 
 const fmt = (n) => 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -32,6 +32,8 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
   const [sessionId, setSessionId] = useState(null)
   const [total, setTotal] = useState(0)
   const [count, setCount] = useState(0)
+  const [max, setMax] = useState(0)
+  const [casas, setCasas] = useState(0)
   const [last, setLast] = useState([])
   const [busy, setBusy] = useState(false)
   const [cfgOpen, setCfgOpen] = useState(false)
@@ -59,7 +61,7 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
     const t = await token()
     const r = await fetch(`/api/deposit-capture?session_id=${sidRef.current}`, { headers: { Authorization: 'Bearer ' + t } })
     const j = await r.json().catch(() => ({}))
-    if (j.ok) { setTotal(j.total || 0); setCount(j.count || 0); setLast(j.last || []) }
+    if (j.ok) { setTotal(j.total || 0); setCount(j.count || 0); setMax(j.max || 0); setCasas(j.casas || 0); setLast(j.last || []) }
   }
 
   // reconfigura o intervalo pra usar pollStatus (com query)
@@ -157,55 +159,10 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
         </div>
       )}
 
-      <AnimatePresence>
-        {open && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 10050, background: 'rgba(0,0,0,0.82)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-            <motion.div initial={{ opacity: 0, y: 16, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              style={{ position: 'relative', width: '100%', maxWidth: 420, background: 'linear-gradient(180deg, #0b0b0b, #060606)', border: '1px solid rgba(209,250,229,0.2)', borderRadius: 20, padding: '24px 22px', boxShadow: '0 30px 90px rgba(0,0,0,0.7), 0 0 60px rgba(209,250,229,0.06)' }}>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--profit, #d1fae5)', boxShadow: '0 0 10px rgba(209,250,229,0.7)', animation: 'nxpulse 1.4s ease-in-out infinite' }} />
-                <span style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--profit, #d1fae5)', fontFamily: 'var(--mono, monospace)' }}>Capturando ao vivo</span>
-              </div>
-
-              <div style={{ fontSize: 13, color: 'var(--t3)', marginBottom: 16 }}>Deixe o bot rodando — cada QR que aparecer entra aqui sozinho.</div>
-
-              <div style={{ textAlign: 'center', padding: '18px 0 8px' }}>
-                <div style={{ fontSize: 11, color: 'var(--t4)', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 6 }}>Total capturado</div>
-                <motion.div key={total} initial={{ scale: 1.08 }} animate={{ scale: 1 }} transition={{ duration: 0.25 }}
-                  style={{ fontSize: 40, fontWeight: 900, color: '#fafafa', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em', lineHeight: 1 }}>
-                  {fmt(total)}
-                </motion.div>
-                <div style={{ fontSize: 12.5, color: 'var(--t3)', marginTop: 8 }}>{count} depósito{count !== 1 ? 's' : ''} detectado{count !== 1 ? 's' : ''}</div>
-              </div>
-
-              {last.length > 0 && (
-                <div style={{ maxHeight: 148, overflowY: 'auto', margin: '12px 0 4px', display: 'flex', flexDirection: 'column', gap: 5 }}>
-                  {last.map((c, i) => (
-                    <div key={c.order_id || i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 11px', borderRadius: 9, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <span style={{ fontSize: 11, color: 'var(--t4)', fontFamily: 'var(--mono, monospace)' }}>{c.casa || 'PIX'} · #{String(c.order_id).slice(-6)}</span>
-                      <span style={{ fontSize: 12.5, fontWeight: 800, color: 'var(--profit, #d1fae5)', fontFamily: 'var(--mono, monospace)' }}>{fmt(c.valor)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div style={{ display: 'flex', gap: 9, marginTop: 18 }}>
-                <button type="button" onClick={finish} disabled={busy}
-                  style={{ flex: 1, padding: '13px', borderRadius: 11, border: 'none', background: 'var(--profit, #d1fae5)', color: '#04140c', fontWeight: 800, fontSize: 13.5, cursor: 'pointer' }}>
-                  Finalizar e usar total
-                </button>
-                <button type="button" onClick={cancel}
-                  style={{ padding: '13px 16px', borderRadius: 11, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'var(--t3)', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
-                  Cancelar
-                </button>
-              </div>
-              <style>{`@keyframes nxpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}`}</style>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <DepositCaptureStage
+        open={open} total={total} count={count} max={max} casas={casas} last={last} busy={busy}
+        onFinish={finish} onCancel={cancel}
+      />
     </>
   )
 }

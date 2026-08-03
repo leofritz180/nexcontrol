@@ -169,10 +169,20 @@ export async function GET(req) {
       .select('id,operator_id,status,total,count').eq('id', sessionId).maybeSingle()
     if (!sess || sess.operator_id !== user.id) return NextResponse.json({ error: 'Sessão inválida' }, { status: 403 })
 
-    const { data: last } = await sb.from('deposit_captures')
+    // Todas as capturas da sessao (dezenas) -> stats reais + ultimas 12
+    const { data: all } = await sb.from('deposit_captures')
       .select('order_id,valor,casa,created_at').eq('session_id', sessionId)
-      .order('created_at', { ascending: false }).limit(12)
-    return NextResponse.json({ ok: true, status: sess.status, total: Number(sess.total || 0), count: sess.count || 0, last: last || [] })
+      .order('created_at', { ascending: false })
+    const rows = all || []
+    const total = rows.reduce((a, r) => a + Number(r.valor || 0), 0)
+    const max = rows.reduce((m, r) => Math.max(m, Number(r.valor || 0)), 0)
+    const casas = new Set(rows.map(r => r.casa).filter(Boolean)).size
+    return NextResponse.json({
+      ok: true, status: sess.status,
+      total: Number(total.toFixed(2)), count: rows.length,
+      max: Number(max.toFixed(2)), casas,
+      last: rows.slice(0, 12),
+    })
   } catch (e) {
     return NextResponse.json({ error: e?.message || 'erro' }, { status: 500 })
   }

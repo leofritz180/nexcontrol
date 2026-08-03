@@ -13,7 +13,7 @@ create table if not exists deposit_capture_sessions (
   id uuid primary key default gen_random_uuid(),
   tenant_id uuid not null,
   operator_id uuid not null,          -- quem esta capturando (admin ou operador)
-  meta_id uuid,                       -- meta aberta na hora do "Iniciar"
+  meta_id text,                       -- id da meta (numerico no NexControl) como texto
   status text not null default 'active', -- active | ended
   total numeric not null default 0,   -- soma corrente (cache; fonte = deposit_captures)
   count int not null default 0,       -- qtd de depositos capturados

@@ -1,4 +1,10 @@
-// Config da extensao NexControl (valores publicos — seguro no client).
-export const SUPABASE_URL = "https://xtxusfvfrawjhmbhgbds.supabase.co";
-export const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0eHVzZnZmcmF3amhtYmhnYmRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MzQwNzgsImV4cCI6MjA5MTExMDA3OH0.n3Yg77g3tY_Gltrqeh0hYGSFgyJWyzxm0Z9eY8tYnOg";
-export const API_BASE = "https://nexcpa.com.br";
+// ─────────────────────────────────────────────────────────────────────────
+// CONFIG DA EXTENSÃO — edite APENAS a linha da CHAVE abaixo.
+//
+// Pegue sua chave no NexControl: abra a META → "Iniciar depósitos automáticos"
+// → "Configurar extensão" → copie a CHAVE e cole aqui entre as aspas.
+// (É só 1 vez. Vale pra TODAS as abas e TODAS as remessas.)
+// ─────────────────────────────────────────────────────────────────────────
+export const CAPTURE_KEY = ""
+
+export const API_BASE = "https://nexcpa.com.br"

@@ -33,8 +33,29 @@ async function getUser(req) {
 }
 
 async function profileOf(sb, userId) {
-  const { data } = await sb.from('profiles').select('id,tenant_id,role').eq('id', userId).maybeSingle()
+  const { data } = await sb.from('profiles').select('id,tenant_id,role,capture_key').eq('id', userId).maybeSingle()
   return data
+}
+
+// Resolve o operador de um INGEST: por chave de captura (extensao, header
+// x-capture-key) OU por Bearer token (fallback). A chave evita login por perfil.
+async function resolveIngestOperator(req, sb) {
+  const key = req.headers.get('x-capture-key')
+  if (key) {
+    const { data } = await sb.from('profiles').select('id,tenant_id').eq('capture_key', key).maybeSingle()
+    if (data?.id) return { user_id: data.id, tenant_id: data.tenant_id }
+    return null
+  }
+  const user = await getUser(req)
+  if (!user?.id) return null
+  const prof = await profileOf(sb, user.id)
+  return prof?.tenant_id ? { user_id: user.id, tenant_id: prof.tenant_id } : null
+}
+
+// Gera uma chave de captura aleatoria (url-safe).
+function newCaptureKey() {
+  const b = crypto.getRandomValues(new Uint8Array(24))
+  return 'cap_' + Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('')
 }
 
 // Recalcula total/count da sessao a partir das capturas (fonte da verdade) e
@@ -49,14 +70,50 @@ async function recompute(sb, sessionId) {
 
 export async function POST(req) {
   try {
+    const sb = svc()
+    const body = await req.json().catch(() => ({}))
+    const action = body.action
+
+    // ── INGEST: extensao (chave) ou dashboard (token). Nao exige login por perfil ──
+    if (action === 'ingest') {
+      const op = await resolveIngestOperator(req, sb)
+      if (!op) return NextResponse.json({ error: 'Chave/sessão inválida' }, { status: 401 })
+      const orderId = String(body.order_id || '').trim()
+      const valor = Number(body.valor)
+      if (!orderId) return NextResponse.json({ error: 'order_id obrigatório' }, { status: 400 })
+      if (!(valor > 0)) return NextResponse.json({ error: 'valor inválido' }, { status: 400 })
+
+      const { data: sess } = await sb.from('deposit_capture_sessions')
+        .select('id').eq('operator_id', op.user_id).eq('status', 'active')
+        .order('started_at', { ascending: false }).limit(1).maybeSingle()
+      if (!sess) return NextResponse.json({ ok: false, reason: 'no_active_session' })
+
+      const { error: insErr } = await sb.from('deposit_captures').insert({
+        session_id: sess.id, tenant_id: op.tenant_id, operator_id: op.user_id,
+        order_id: orderId, valor: Number(valor.toFixed(2)), casa: body.casa ? String(body.casa).slice(0, 80) : null,
+      })
+      const duplicate = insErr && /duplicate|unique/i.test(insErr.message || '')
+      if (insErr && !duplicate) return NextResponse.json({ error: insErr.message }, { status: 500 })
+      const t = await recompute(sb, sess.id)
+      return NextResponse.json({ ok: true, duplicate: !!duplicate, session_id: sess.id, ...t })
+    }
+
+    // ── Demais acoes exigem login (dashboard) ──
     const user = await getUser(req)
     if (!user?.id) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
-    const sb = svc()
     const prof = await profileOf(sb, user.id)
     if (!prof?.tenant_id) return NextResponse.json({ error: 'Perfil inválido' }, { status: 403 })
 
-    const body = await req.json().catch(() => ({}))
-    const action = body.action
+    // ── GET-KEY: retorna (gera se preciso) a chave de captura do operador ──
+    if (action === 'get-key') {
+      let key = prof.capture_key
+      if (!key) {
+        key = newCaptureKey()
+        const { error } = await sb.from('profiles').update({ capture_key: key }).eq('id', user.id)
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      }
+      return NextResponse.json({ ok: true, capture_key: key })
+    }
 
     // ── START: abre (ou reaproveita) a sessao ativa do usuario ──
     if (action === 'start') {
@@ -78,29 +135,6 @@ export async function POST(req) {
       }).select('id').single()
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ ok: true, session_id: created.id, total: 0, count: 0 })
-    }
-
-    // ── INGEST: extensao envia 1 deposito -> vai pra sessao ativa do usuario ──
-    if (action === 'ingest') {
-      const orderId = String(body.order_id || '').trim()
-      const valor = Number(body.valor)
-      if (!orderId) return NextResponse.json({ error: 'order_id obrigatório' }, { status: 400 })
-      if (!(valor > 0)) return NextResponse.json({ error: 'valor inválido' }, { status: 400 })
-
-      const { data: sess } = await sb.from('deposit_capture_sessions')
-        .select('id').eq('operator_id', user.id).eq('status', 'active')
-        .order('started_at', { ascending: false }).limit(1).maybeSingle()
-      if (!sess) return NextResponse.json({ ok: false, reason: 'no_active_session' })
-
-      // dedup: mesmo pedido na mesma sessao = ignora (idempotente)
-      const { error: insErr } = await sb.from('deposit_captures').insert({
-        session_id: sess.id, tenant_id: prof.tenant_id, operator_id: user.id,
-        order_id: orderId, valor: Number(valor.toFixed(2)), casa: body.casa ? String(body.casa).slice(0, 80) : null,
-      })
-      const duplicate = insErr && /duplicate|unique/i.test(insErr.message || '')
-      if (insErr && !duplicate) return NextResponse.json({ error: insErr.message }, { status: 500 })
-      const t = await recompute(sb, sess.id)
-      return NextResponse.json({ ok: true, duplicate: !!duplicate, session_id: sess.id, ...t })
     }
 
     // ── FINISH: encerra a sessao (retorna total pra remessa) ──

@@ -3,33 +3,32 @@
 <head>
 <meta charset="UTF-8" />
 <style>
-  body { width: 280px; margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #f5f5f5; padding: 16px; }
+  body { width: 290px; margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #f5f5f5; padding: 16px; }
   h1 { font-size: 14px; margin: 0 0 2px; }
   .sub { font-size: 11px; color: #8a8a8a; margin: 0 0 14px; }
-  input { width: 100%; box-sizing: border-box; padding: 9px 10px; margin-bottom: 8px; border-radius: 8px; border: 1px solid #2a2a2a; background: #111; color: #fff; font-size: 13px; }
-  button { width: 100%; padding: 10px; border-radius: 8px; border: none; background: #d1fae5; color: #04140c; font-weight: 800; font-size: 13px; cursor: pointer; }
-  .ghost { background: transparent; color: #8a8a8a; font-weight: 600; margin-top: 6px; }
-  .ok { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
-  .err { color: #ff8a8a; font-size: 11.5px; margin: 2px 0 8px; min-height: 14px; }
-  .hint { font-size: 11px; color: #8a8a8a; line-height: 1.5; margin-top: 10px; }
+  .row { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .on { background: #10b981; } .off { background: #ef4444; }
+  .hint { font-size: 11.5px; color: #9a9a9a; line-height: 1.55; }
+  .hint b { color: #d1fae5; }
+  code { background:#161616;border:1px solid #2a2a2a;border-radius:5px;padding:1px 5px;color:#d1fae5;font-size:11px }
 </style>
 </head>
 <body>
   <h1>NexControl · Captura</h1>
   <p class="sub">Depósitos automáticos das abas</p>
 
-  <div id="logged" style="display:none">
-    <div class="ok"><span class="dot"></span> Conectado: <span id="who"></span></div>
-    <p class="hint">Deixe o bot rodando. Cada QR PIX que aparecer vai somar sozinho no pop-up da meta no NexControl. Abra a meta e clique em <b>“Iniciar depósitos automáticos”</b>.</p>
-    <button class="ghost" id="logout">Sair</button>
+  <div id="ok" style="display:none">
+    <div class="row"><span class="dot on"></span> Chave configurada — pronta!</div>
+    <p class="hint">No NexControl, abra a <b>meta</b> e clique em <b>“Iniciar depósitos automáticos”</b>. Deixe o bot rodando — cada QR PIX entra sozinho.</p>
   </div>
 
-  <div id="form">
-    <input id="email" type="email" placeholder="Seu email do NexControl" />
-    <input id="pass" type="password" placeholder="Senha" />
-    <div class="err" id="err"></div>
-    <button id="login">Conectar</button>
+  <div id="nokey" style="display:none">
+    <div class="row"><span class="dot off"></span> Falta configurar a chave</div>
+    <p class="hint">
+      1. No NexControl: abra a <b>meta</b> → <b>“Iniciar depósitos automáticos”</b> → <b>“Configurar extensão”</b> → copie a <b>chave</b>.<br><br>
+      2. Cole a chave no arquivo <code>config.js</code> da extensão, na linha <code>CAPTURE_KEY = "..."</code>, e recarregue a extensão.
+    </p>
   </div>
 
   <script type="module" src="popup.js"></script>

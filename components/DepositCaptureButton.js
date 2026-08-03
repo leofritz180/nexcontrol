@@ -34,6 +34,9 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
   const [count, setCount] = useState(0)
   const [last, setLast] = useState([])
   const [busy, setBusy] = useState(false)
+  const [cfgOpen, setCfgOpen] = useState(false)
+  const [captureKey, setCaptureKey] = useState('')
+  const [copied, setCopied] = useState(false)
   const pollRef = useRef(null)
   const sidRef = useRef(null)
 
@@ -41,9 +44,9 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
 
   async function start() {
     setBusy(true)
-    const j = await call('POST', { action: 'start', meta_id: metaId })
+    const j = await call('POST', { action: 'start', meta_id: metaId != null ? String(metaId) : null })
     setBusy(false)
-    if (!j.session_id) { alert(j.error || 'Não consegui iniciar a captura.'); return }
+    if (!j.session_id) { alert('Não consegui iniciar a captura.\n\n' + (j.error || 'Erro desconhecido')); return }
     sidRef.current = j.session_id
     setSessionId(j.session_id); setTotal(j.total || 0); setCount(j.count || 0); setOpen(true)
     // o polling (pollStatus) e' ligado pelo useEffect [open]
@@ -83,17 +86,50 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
     setOpen(false); setSessionId(null); sidRef.current = null
   }
 
+  async function configExtension() {
+    setCfgOpen(v => !v)
+    if (!captureKey) {
+      const j = await call('POST', { action: 'get-key' })
+      if (j.capture_key) setCaptureKey(j.capture_key)
+    }
+  }
+  async function copyKey() {
+    try { await navigator.clipboard.writeText(captureKey); setCopied(true); setTimeout(() => setCopied(false), 1500) } catch {}
+  }
+
   return (
     <>
-      <button type="button" onClick={start} disabled={busy}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 7, cursor: busy ? 'wait' : 'pointer',
-          padding: compact ? '7px 11px' : '9px 14px', borderRadius: 9, border: '1px solid rgba(209,250,229,0.28)',
-          background: 'rgba(209,250,229,0.08)', color: 'var(--profit, #d1fae5)', fontSize: compact ? 12 : 12.5, fontWeight: 700, fontFamily: 'inherit',
-        }}>
-        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7z"/></svg>
-        Iniciar depósitos automáticos
-      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <button type="button" onClick={start} disabled={busy}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 7, cursor: busy ? 'wait' : 'pointer',
+            padding: compact ? '7px 11px' : '9px 14px', borderRadius: 9, border: '1px solid rgba(209,250,229,0.28)',
+            background: 'rgba(209,250,229,0.08)', color: 'var(--profit, #d1fae5)', fontSize: compact ? 12 : 12.5, fontWeight: 700, fontFamily: 'inherit',
+          }}>
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7z"/></svg>
+          Iniciar depósitos automáticos
+        </button>
+        <button type="button" onClick={configExtension}
+          style={{ background: 'none', border: 'none', color: 'var(--t4)', fontSize: 11.5, fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>
+          Configurar extensão
+        </button>
+      </div>
+
+      {cfgOpen && (
+        <div style={{ marginTop: 8, padding: '12px 13px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', maxWidth: 460 }}>
+          <div style={{ fontSize: 11.5, color: 'var(--t3)', lineHeight: 1.5, marginBottom: 8 }}>
+            Copie sua <b style={{ color: 'var(--t1)' }}>chave</b> e cole no arquivo <b style={{ color: 'var(--t1)' }}>config.js</b> da extensão (linha <code style={{ color: 'var(--profit,#d1fae5)' }}>CAPTURE_KEY = "..."</code>). É só uma vez — vale pra todas as abas.
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <input readOnly value={captureKey || 'gerando...'} onFocus={e => e.target.select()}
+              style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: '#0a0a0a', color: '#d1fae5', fontFamily: 'var(--mono, monospace)', fontSize: 12 }} />
+            <button type="button" onClick={copyKey} disabled={!captureKey}
+              style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: 'var(--profit, #d1fae5)', color: '#04140c', fontWeight: 800, fontSize: 12, cursor: 'pointer' }}>
+              {copied ? 'Copiado!' : 'Copiar'}
+            </button>
+          </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {open && (

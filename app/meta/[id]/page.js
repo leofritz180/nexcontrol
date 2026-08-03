@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useParams, useRouter } from 'next/navigation'
 import AppLayout from '../../../components/AppLayout'
 import BettifySponsor from '../../../components/BettifySponsor'
+import DepositCaptureButton from '../../../components/DepositCaptureButton'
 import { supabase } from '../../../lib/supabase/client'
 import { notifyRemessaCreated } from '../../../lib/notify'
 import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
@@ -1568,6 +1569,7 @@ export default function MetaPage() {
                   <div style={{ background:'var(--surface)', padding:'16px 18px' }}>
                     <p style={colTitle}>2 · Resultados</p>
                     {tipo!=='bonus' && field('DEPOSITO *', <input className="input" type="text" inputMode="decimal" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="Ex: 1055" style={{...inp, fontWeight:700}}/>)}
+                    {tipo!=='bonus' && <div style={{ margin:'-4px 0 12px' }}><DepositCaptureButton metaId={meta?.id || id} onTotal={(t)=>setDep(String(t))} compact/></div>}
                     {field(tipo==='bonus'?<span style={{color:'var(--profit)'}}>VALOR DO BÔNUS (SAQUE) *</span>:'SAQUE *', <input className="input" type="text" inputMode="decimal" value={saq} onChange={e=>setSaq(e.target.value)} required placeholder={tipo==='bonus'?'Ex: 200':'Ex: 941'} style={{...inp, fontWeight:700}}/>)}
                     {field(<>COMPROVANTES <span style={{ color:'var(--t4)', fontWeight:400, textTransform:'none' }}>(fotos dos saques — pode vários)</span></>, (
                       <div onPaste={onPasteComprovante}>
@@ -1688,6 +1690,7 @@ export default function MetaPage() {
                   <div>
                     <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>DEPOSITO *</label>
                     <input className="input" type="text" inputMode="decimal" value={dep} onChange={e=>setDep(e.target.value)} required placeholder="Ex: 1055" style={{ fontSize:13, fontWeight:600, padding:'8px 10px' }}/>
+                    <div style={{ marginTop:6 }}><DepositCaptureButton metaId={meta?.id || id} onTotal={(t)=>setDep(String(t))} compact/></div>
                   </div>
                   <div>
                     <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>SAQUE *</label>

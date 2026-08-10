@@ -24,7 +24,9 @@ export default function SubscriptionGate({ children }) {
   // reason: 'trial' (nunca pagou) | 'expired' (PRO venceu)
   const [reason, setReason] = useState('trial')
   const [stats, setStats] = useState({ metas: 0, ops: 0, lucro: 0 })
-  const cache = useRef({ checked: false, result: 'ok', ts: 0, reason: 'trial', stats: { metas: 0, ops: 0, lucro: 0 } })
+  // Operador NUNCA vê lucro nem tela de pagamento — só mensagem pra falar com o admin.
+  const [isOperator, setIsOperator] = useState(false)
+  const cache = useRef({ checked: false, result: 'ok', ts: 0, reason: 'trial', stats: { metas: 0, ops: 0, lucro: 0 }, isOperator: false })
 
   useEffect(() => {
     if (FREE_PATHS.some(p => pathname === p || pathname?.startsWith(p + '/'))) {
@@ -38,6 +40,7 @@ export default function SubscriptionGate({ children }) {
       setStatus(cache.current.result)
       setReason(cache.current.reason)
       setStats(cache.current.stats)
+      setIsOperator(cache.current.isOperator)
       return
     }
     check()
@@ -112,10 +115,11 @@ export default function SubscriptionGate({ children }) {
 
       const wasPaying = (paidSubs || []).length > 0
       const reasonNow = wasPaying ? 'expired' : 'trial'
+      const isOp = p.role === 'operator'
 
-      // Stats pra exibir na tela (so faz sentido pra ex-PRO)
+      // Stats (metas/operadores/LUCRO) só pro ADMIN — operador NUNCA vê lucro.
       let statsNow = { metas: 0, ops: 0, lucro: 0 }
-      if (wasPaying) {
+      if (wasPaying && !isOp) {
         const [{ count: metasCount }, { count: opsCount }, { data: metasClose }] = await Promise.all([
           supabase.from('metas').select('id', { count: 'exact', head: true }).eq('tenant_id', p.tenant_id).is('deleted_at', null),
           supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('tenant_id', p.tenant_id).eq('role', 'operator'),
@@ -125,21 +129,55 @@ export default function SubscriptionGate({ children }) {
         statsNow = { metas: metasCount || 0, ops: opsCount || 0, lucro: totalLucro }
       }
 
-      finish('blocked', reasonNow, statsNow)
+      finish('blocked', reasonNow, statsNow, isOp)
     } catch {
       finish('ok')
     }
   }
 
-  function finish(result, reasonNow = 'trial', statsNow = { metas: 0, ops: 0, lucro: 0 }) {
-    cache.current = { checked: true, result, ts: Date.now(), reason: reasonNow, stats: statsNow }
+  function finish(result, reasonNow = 'trial', statsNow = { metas: 0, ops: 0, lucro: 0 }, isOp = false) {
+    cache.current = { checked: true, result, ts: Date.now(), reason: reasonNow, stats: statsNow, isOperator: isOp }
     setStatus(result)
     setReason(reasonNow)
     setStats(statsNow)
+    setIsOperator(isOp)
   }
 
   if (status === 'blocked') {
     const isExpired = reason === 'expired'
+
+    // ── OPERADOR: nunca vê lucro nem tela de pagamento. Só orienta a falar com o admin. ──
+    if (isOperator) {
+      return (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.96)', backdropFilter: 'blur(24px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{
+            position: 'relative', maxWidth: 440, width: '100%', textAlign: 'center',
+            background: 'linear-gradient(180deg, var(--raised), #050505)', border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 20, padding: '40px 36px', boxShadow: '0 40px 100px rgba(0,0,0,0.7)',
+            animation: 'scale-in 0.35s cubic-bezier(0.33,1,0.68,1) both',
+          }}>
+            <div style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+              <span style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.5)' }}/>
+              Acesso pausado
+              <span style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.5)' }}/>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
+              <div style={{ width: 60, height: 60, borderRadius: 16, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+            </div>
+            <h2 style={{ fontSize: 24, fontWeight: 700, color: '#fafafa', letterSpacing: '-0.02em', marginBottom: 10, lineHeight: 1.2 }}>Acesso da equipe pausado.</h2>
+            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.62)', marginBottom: 26, lineHeight: 1.55, fontWeight: 300 }}>
+              A assinatura da sua operação está pendente. <strong style={{ color: '#fff', fontWeight: 600 }}>Fale com o administrador</strong> da sua equipe pra regularizar e liberar seu acesso. Seus dados continuam salvos.
+            </p>
+            <button onClick={async () => { await supabase.auth.signOut(); router.push('/login') }}
+              style={{ display: 'block', width: '100%', padding: 12, borderRadius: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>
+              Sair da conta
+            </button>
+          </div>
+        </div>
+      )
+    }
 
     return (
       <div style={{

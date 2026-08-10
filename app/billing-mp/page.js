@@ -31,6 +31,7 @@ export default function BillingMpPage() {
   // Operadores REAIS ativos do tenant = piso da renovacao (o servidor cobra por
   // todos). Se o admin removeu operadores, isto cai e o preco cai junto.
   const [realOps, setRealOps] = useState(0)
+  const [opsList, setOpsList] = useState([]) // operadores ativos (mais antigos primeiro)
   const isRenewal = sp.get('renewal') === '1' || sp.get('early') === '1'
 
   const [user, setUser] = useState(null)
@@ -75,15 +76,16 @@ export default function BillingMpPage() {
       // O opQty passa a REFLETIR essa contagem (piso) — se o admin removeu
       // operadores, o preco cai. Pode aumentar no seletor (pre-comprar vagas),
       // nunca abaixo do real (pra pagar menos, remover operador no painel).
-      const { count: realOpsCount } = await supabase.from('profiles')
-        .select('id', { count: 'exact', head: true })
+      const { data: opsRows } = await supabase.from('profiles')
+        .select('id,nome,created_at')
         .eq('tenant_id', p.tenant_id).eq('role', 'operator')
         .is('removed_from_tenant_id', null)
-      if (Number.isFinite(realOpsCount)) {
-        const r = Number(realOpsCount) || 0
-        setRealOps(r)
-        setOpQty(r) // default = operadores reais atuais (reflete remocoes; sobe no seletor)
-      }
+        .order('created_at', { ascending: true }) // mais antigos primeiro (mantidos)
+      const list = opsRows || []
+      setOpsList(list)
+      const r = list.length
+      setRealOps(r)
+      setOpQty(r) // default = operadores reais atuais (pode reduzir no seletor)
     })
   }, [])
 
@@ -206,6 +208,7 @@ export default function BillingMpPage() {
                 opQty={opQty}
                 setOpQty={setOpQty}
                 realOps={realOps}
+                opsList={opsList}
                 monthlyTier={monthlyTier}
                 selectedPlan={selectedPlan}
                 setSelectedPlan={setSelectedPlan}
@@ -302,9 +305,11 @@ function UpgradeCard({ opQty, currentPaidOps, upgradeAmount, currentExpires, onC
   )
 }
 
-function PeriodCard({ v2, opQty, setOpQty, realOps, monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
+function PeriodCard({ v2, opQty, setOpQty, realOps, opsList = [], monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
   const planLabel = opQty > 0 ? `Admin + ${opQty} operador${opQty > 1 ? 'es' : ''}` : 'Admin Solo'
-  const canDec = setOpQty && opQty > (realOps || 0)   // nunca abaixo dos operadores reais
+  const canDec = setOpQty && opQty > 0                 // pode reduzir até Admin Solo
+  // Operadores que serão REMOVIDOS ao renovar com menos (os mais recentes)
+  const toRemove = opQty < (realOps || 0) ? opsList.slice(opQty) : []
 
   // Dias adicionados (aproximado): planMonths * 30. Pra exibicao do painel.
   const addedDays = selectedCalc.plan.months * 30
@@ -377,7 +382,7 @@ function PeriodCard({ v2, opQty, setOpQty, realOps, monthlyTier, selectedPlan, s
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <button type="button" aria-label="Remover" disabled={!canDec}
-                onClick={() => canDec && setOpQty(q => Math.max(realOps || 0, q - 1))}
+                onClick={() => canDec && setOpQty(q => Math.max(0, q - 1))}
                 style={{ width: 34, height: 34, borderRadius: 9, border: '1px solid rgba(255,255,255,0.14)', background: canDec ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)', color: canDec ? '#fff' : 'var(--t4)', fontSize: 20, fontWeight: 700, cursor: canDec ? 'pointer' : 'not-allowed', lineHeight: 1 }}>−</button>
               <span style={{ minWidth: 26, textAlign: 'center', fontSize: 20, fontWeight: 900, color: '#F1F5F9', fontFamily: 'var(--mono, monospace)' }}>{opQty}</span>
               <button type="button" aria-label="Adicionar"
@@ -385,9 +390,18 @@ function PeriodCard({ v2, opQty, setOpQty, realOps, monthlyTier, selectedPlan, s
                 style={{ width: 34, height: 34, borderRadius: 9, border: '1px solid rgba(229,57,53,0.4)', background: 'rgba(229,57,53,0.14)', color: '#ff6b6b', fontSize: 20, fontWeight: 700, cursor: 'pointer', lineHeight: 1 }}>+</button>
             </div>
           </div>
-          {opQty <= (realOps || 0) && (realOps || 0) > 0 && (
-            <div style={{ fontSize: 10.5, color: 'var(--t4)', marginTop: 10, lineHeight: 1.5 }}>
-              Pra pagar por menos operadores, remova operadores no painel (<b>Operadores</b>) e volte aqui.
+          {/* Aviso de remoção automática ao reduzir */}
+          {toRemove.length > 0 && (
+            <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 10, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
+              <div style={{ fontSize: 11.5, fontWeight: 700, color: '#ff8a8a', marginBottom: 5 }}>
+                {toRemove.length} operador{toRemove.length !== 1 ? 'es' : ''} será{toRemove.length !== 1 ? 'ão' : ''} removido{toRemove.length !== 1 ? 's' : ''} ao renovar:
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+                {toRemove.map(o => o.nome || 'Operador').join(', ')}
+              </div>
+              <div style={{ fontSize: 10, color: 'var(--t4)', marginTop: 6 }}>
+                Os mais recentes. O histórico (metas/remessas) é preservado — eles só perdem o acesso.
+              </div>
             </div>
           )}
         </div>

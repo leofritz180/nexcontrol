@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
 import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
+import { reconcilePaidOperators } from '../../../../lib/reconcile-operators'
 
 // Usado pelo polling do frontend. Consulta DB primeiro; se ainda pendente,
 // bate no MP pra atualizar o status (cobre caso de webhook atrasado).
@@ -113,8 +114,10 @@ async function activatePro(sb, record, paymentId) {
   // Resolve operator_count: prioriza valor desejado salvo na compra.
   // Fallback (pagamentos antigos sem o campo): usa MAX entre count atual+1
   // e operator_count da sub anterior — nunca rebaixa o limite ja contratado.
+  // Honra o valor salvo na compra, INCLUSIVE 0 (Admin Solo intencional).
+  // Só cai no fallback quando o campo é NULO (pagamento antigo sem operator_count).
   let resolvedOpCount = Number(record.operator_count)
-  if (!Number.isFinite(resolvedOpCount) || resolvedOpCount <= 0) {
+  if (record.operator_count == null || !Number.isFinite(resolvedOpCount) || resolvedOpCount < 0) {
     const { count: currentOps } = await sb.from('profiles')
       .select('id', { count: 'exact', head: true })
       .eq('tenant_id', record.tenant_id)
@@ -142,6 +145,10 @@ async function activatePro(sb, record, paymentId) {
     starts_at: now,
     expires_at: expires.toISOString(),
   })
+
+  // RENOVACAO com REDUCAO: remove operadores excedentes pra bater com o pago
+  // (só remove se real > pago; senão não mexe). Destrava sem o admin entrar na conta.
+  await reconcilePaidOperators(sb, record.tenant_id, resolvedOpCount)
 
   // Flag dedicada is_pro — best-effort (se coluna nao existir, ignora)
   try {

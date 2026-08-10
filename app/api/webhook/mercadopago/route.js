@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
 import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
+import { reconcilePaidOperators } from '../../../../lib/reconcile-operators'
 
 // Webhook do Mercado Pago: recebe notificacao, busca o pagamento na API,
 // atualiza status no DB e ativa PRO quando aprovado.
@@ -104,9 +105,10 @@ export async function POST(req) {
           console.log('[MP webhook] fallback 30 dias:', expires.toISOString())
         }
 
-        // Resolve operator_count: prioriza valor desejado salvo na compra.
+        // Resolve operator_count: prioriza valor salvo na compra, INCLUSIVE 0
+        // (Admin Solo). Só cai no fallback quando o campo é NULO (pagamento antigo).
         let resolvedOpCount = Number(record.operator_count)
-        if (!Number.isFinite(resolvedOpCount) || resolvedOpCount <= 0) {
+        if (record.operator_count == null || !Number.isFinite(resolvedOpCount) || resolvedOpCount < 0) {
           const { count: currentOps } = await sb.from('profiles')
             .select('id', { count: 'exact', head: true })
             .eq('tenant_id', record.tenant_id)
@@ -134,6 +136,9 @@ export async function POST(req) {
           starts_at: now,
           expires_at: expires.toISOString(),
         })
+
+        // RENOVACAO com REDUCAO: remove operadores excedentes (só se real > pago).
+        await reconcilePaidOperators(sb, record.tenant_id, resolvedOpCount)
 
         // Flag dedicada — best-effort (se coluna nao existir, ignora)
         try {

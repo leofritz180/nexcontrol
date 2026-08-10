@@ -94,7 +94,13 @@ export async function POST(req) {
     if (plan_period) {
       const plan = getPlan(plan_period)
       planMonths = plan.months
-      const opsForCalc = Math.max(Number(operatorCountIn) || 0, realOps)
+      // RENOVACAO pode REDUZIR operadores: honra o desejado do cliente (>=0).
+      // Trava de seguranca: se o cliente NAO mandou operator_count (null/undefined),
+      // NAO assume 0 (que removeria todos) — cai no numero real (sem reducao).
+      // Os excedentes (real > pago) sao removidos ao APROVAR (reconcilePaidOperators).
+      const opsForCalc = (operatorCountIn == null)
+        ? realOps
+        : Math.max(0, Number(operatorCountIn) || 0)
       resolvedOps = opsForCalc
       const monthlyTier = calcOpTier(opsForCalc).total
       const expected = Number((monthlyTier * plan.months * (1 - plan.discount)).toFixed(2))
@@ -103,10 +109,10 @@ export async function POST(req) {
         if (Number(amount) < minAllowed) {
           console.warn('[MP create-payment] BLOQUEADO: amount abaixo do preco de', opsForCalc, 'operadores', { email, plan_period, opsForCalc, expected, sent: Number(amount) })
           return NextResponse.json({
-            error: `Valor invalido: a renovacao precisa cobrir seus ${opsForCalc} operador(es) ativos. Remova operadores no painel se quiser pagar menos.`,
+            error: `Valor invalido: a renovacao com ${opsForCalc} operador(es) custa R$ ${expected.toFixed(2).replace('.', ',')}.`,
           }, { status: 400 })
         }
-        // Nunca cobra menos que o esperado, mesmo aceitando o amount do cliente.
+        // Nunca cobra menos que o esperado pro numero de operadores escolhido.
         transactionAmount = Math.max(Number(amount), expected)
       } else {
         transactionAmount = expected
@@ -245,7 +251,8 @@ export async function POST(req) {
       amount: transactionAmount,
       pix_qr_code: qrCode,
       pix_qr_code_base64: qrBase64,
-      operator_count: Number.isFinite(operatorCount) && operatorCount > 0 ? operatorCount : null,
+      // >= 0: guarda 0 (Admin Solo intencional) — o approval distingue 0 de null.
+      operator_count: Number.isFinite(operatorCount) && operatorCount >= 0 ? operatorCount : null,
       plan_months: planMonths,
     })
 

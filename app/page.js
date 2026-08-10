@@ -564,46 +564,45 @@ export default function HomePage() {
       {/* ═══ HERO ═══ */}
       <section className="lp-hero" style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px 24px', textAlign:'center', position:'relative' }}>
 
-        <div className="lp-hero-wrap" style={{ maxWidth:580, position:'relative', zIndex:1, animation:'fade-in 0.5s ease both' }}>
+        <div className="lp-hero-wrap" style={{ maxWidth:640, position:'relative', zIndex:1, animation:'fade-in 0.5s ease both' }}>
           {/* Logo + Brand */}
-          <div className="lp-logo" style={{ display:'flex', flexDirection:'column', alignItems:'center', marginBottom:28 }}>
-            <Logo size={1.88} showText={false} glow/>
-            <h2 style={{ fontSize:28, fontWeight:900, letterSpacing:'-0.03em', margin:'14px 0 0', lineHeight:1 }}>
+          <div className="lp-logo" style={{ display:'flex', flexDirection:'column', alignItems:'center', marginBottom:26 }}>
+            <Logo size={1.7} showText={false} glow/>
+            <h2 style={{ fontSize:24, fontWeight:900, letterSpacing:'-0.03em', margin:'12px 0 0', lineHeight:1 }}>
               <span style={{ color:'#F1F5F9' }}>Nex</span><span style={{ color:'#e53935' }}>Control</span>
             </h2>
-            <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:8 }}>
-              <span style={{ width:6, height:6, borderRadius:'50%', background:'var(--profit)', boxShadow:'0 0 8px rgba(209,250,229,0.5)' }}/>
-              <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.4)', letterSpacing:'0.12em', textTransform:'uppercase' }}>Sistema operacional ativo</span>
-            </div>
           </div>
 
-          <h1 style={{ fontSize:40, fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 14px', lineHeight:1.12, animation:'fade-up 0.5s ease 0.1s both' }}>
-            Você não sabe se está lucrando de verdade.
+          {/* selo */}
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'6px 14px', borderRadius:99, background:'rgba(229,57,53,0.1)', border:'1px solid rgba(229,57,53,0.25)', marginBottom:22, animation:'fade-up 0.5s ease 0.05s both' }}>
+            <span style={{ width:6, height:6, borderRadius:'50%', background:'#e53935', boxShadow:'0 0 8px #e53935' }}/>
+            <span style={{ fontSize:11, fontWeight:800, color:'#ff6b6b', letterSpacing:'0.08em', textTransform:'uppercase' }}>O sistema operacional do CPA</span>
+          </div>
+
+          <h1 style={{ fontSize:44, fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 16px', lineHeight:1.08, animation:'fade-up 0.5s ease 0.1s both' }}>
+            Sua operação inteira,<br/><span style={{ color:'#e53935' }}>lucrando no controle.</span>
           </h1>
 
-          <p className="lp-sub1" style={{ fontSize:16, color:'var(--t2)', marginBottom:16, lineHeight:1.6, animation:'fade-up 0.5s ease 0.2s both' }}>
-            Controle depositantes, metas e resultado em tempo real — sem operar no escuro.
-          </p>
-
-          <p className="lp-sub2" style={{ fontSize:14, color:'var(--t3)', marginBottom:36, lineHeight:1.6, animation:'fade-up 0.5s ease 0.25s both' }}>
-            Acompanhe cada remessa, receba alertas e veja exatamente onde está o lucro ou prejuízo da sua operação.
+          <p className="lp-sub1" style={{ fontSize:16.5, color:'var(--t2)', marginBottom:34, lineHeight:1.6, animation:'fade-up 0.5s ease 0.2s both', maxWidth:520, marginLeft:'auto', marginRight:'auto' }}>
+            Metas, operadores e lucro em tempo real — com <strong style={{ color:'#fff' }}>insights de IA</strong>, <strong style={{ color:'#fff' }}>notificações na hora</strong>, <strong style={{ color:'#fff' }}>Network privilegiado</strong> e <strong style={{ color:'#fff' }}>slots premium</strong>. Tudo num lugar só.
           </p>
 
           <div className="lp-ctas" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', animation:'fade-up 0.5s ease 0.3s both' }}>
-            <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:220, justifyContent:'center', fontSize:15, fontWeight:700 }}>
-              Começar agora
+            <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:240, justifyContent:'center', fontSize:15.5, fontWeight:800 }}>
+              Assinar agora — 3 dias grátis
             </Link>
-            <Link href="/login" className="btn btn-ghost btn-lg" style={{ minWidth:180, justifyContent:'center', fontSize:14 }}>
+            <Link href="/login" className="btn btn-ghost btn-lg" style={{ minWidth:160, justifyContent:'center', fontSize:14 }}>
               Já tenho conta
             </Link>
           </div>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12, textAlign: 'center' }}>3 dias grátis • Sem compromisso</p>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 12 }}>Ativação na hora via PIX • Cancele quando quiser</p>
 
-          <div className="lp-badges" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:24, marginTop:40, animation:'fade-in 0.4s ease 0.4s both' }}>
+          <div className="lp-badges" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:24, marginTop:38, flexWrap:'wrap', animation:'fade-in 0.4s ease 0.4s both' }}>
             {[
-              { v:'3 dias', l:'teste grátis' },
-              { v:'Tempo real', l:'atualização 30s' },
-              { v:'App celular', l:'iPhone e Android' },
+              { v:'IA', l:'insights automáticos' },
+              { v:'Tempo real', l:'push na hora' },
+              { v:'Network', l:'comunidade fechada' },
+              { v:'App', l:'iPhone e Android' },
             ].map(({ v, l }) => (
               <div key={v} style={{ textAlign:'center' }}>
                 <p style={{ fontSize:14, fontWeight:800, color:'var(--t1)', margin:'0 0 2px' }}>{v}</p>
@@ -613,65 +612,98 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Scroll indicator — hidden on mobile */}
         <div className="lp-scroll-hint" style={{ position:'absolute', bottom:36, display:'flex', flexDirection:'column', alignItems:'center', gap:8, cursor:'pointer', animation:'fade-in 0.6s ease 1.5s both' }}
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}>
-          <span style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.6)', letterSpacing:'0.12em' }}>VEJA COMO FUNCIONA</span>
+          <span style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.6)', letterSpacing:'0.12em' }}>TUDO QUE VOCÊ RECEBE</span>
           <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth={2.5} strokeLinecap="round" style={{ animation:'float 1.8s ease-in-out infinite' }}><polyline points="6 9 12 15 18 9"/></svg>
         </div>
       </section>
 
-      {/* ═══ PROVA SOCIAL ═══ */}
-      <SocialProofSection />
+      {/* ═══ DIFERENCIAIS (grade de benefícios) ═══ */}
+      <section className="lp-benefits" style={{ padding:'20px 24px 70px', maxWidth:1040, margin:'0 auto' }}>
+        <div style={{ textAlign:'center', marginBottom:36 }}>
+          <p style={{ fontSize:11, fontWeight:800, letterSpacing:'0.2em', textTransform:'uppercase', color:'#ff6b6b', margin:'0 0 10px' }}>Tudo incluído no PRO</p>
+          <h2 style={{ fontSize:30, fontWeight:900, letterSpacing:'-0.03em', color:'#fff', margin:0, lineHeight:1.15 }}>Muito além de uma planilha.</h2>
+        </div>
+        <div className="lp-benefits-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
+          {[
+            { c:'#e53935', icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real em tempo real', d:'Cada remessa entra e o resultado da operação se atualiza sozinho. Sem achismo, sem planilha.' },
+            { c:'#e53935', icon:'M12 3l1.9 4.3L18 9l-4.1 1.7L12 15l-1.9-4.3L6 9l4.1-1.7L12 3z', t:'Insights de IA', d:'A IA vigia sua operação e te avisa: sequência negativa, prejuízo acima da média, meta parada.' },
+            { c:'#e53935', icon:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0', t:'Notificações em tempo real', d:'Push na hora do que importa: meta batida, prejuízo, movimentação da equipe — no celular.' },
+            { c:'var(--profit)', icon:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 0M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', t:'Network privilegiado', d:'Comunidade fechada de admins: troque estratégia, veja resultados reais e cresça junto com os grandes.' },
+            { c:'var(--profit)', icon:'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z', t:'Slots premium', d:'Organize contas e slots no padrão premium — controle visual da operação inteira.' },
+            { c:'var(--profit)', icon:'M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z', t:'VIP & Premiações', d:'Aulas VIP, placas de faturamento e status de elite conforme sua operação cresce.' },
+          ].map(({ c, icon, t, d }, i) => (
+            <div key={i} style={{ padding:'26px 22px', borderRadius:16, background:'linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))', border:'1px solid rgba(255,255,255,0.07)' }}>
+              <div style={{ width:42, height:42, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16, background:`${c==='var(--profit)'?'rgba(209,250,229,0.1)':'rgba(229,57,53,0.12)'}`, border:`1px solid ${c==='var(--profit)'?'rgba(209,250,229,0.22)':'rgba(229,57,53,0.3)'}` }}>
+                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d={icon}/></svg>
+              </div>
+              <h3 style={{ fontSize:16.5, fontWeight:800, color:'var(--t1)', margin:'0 0 7px', letterSpacing:'-0.01em' }}>{t}</h3>
+              <p style={{ fontSize:13, color:'var(--t3)', margin:0, lineHeight:1.55 }}>{d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* ═══ LIVE DASHBOARD DEMO ═══ */}
       <p className="lp-demo-title" style={{ fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: 20 }}>Veja sua operação acontecendo em tempo real:</p>
       <LiveDashboardDemo/>
 
-      {/* ═══ 3 PILARES ═══ */}
-      <section className="lp-pilares" style={{ padding:'40px 24px 80px', maxWidth:900, margin:'0 auto' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }} className="g-4">
-          {[
-            { icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z', t:'Inteligência em tempo real', d:'Veja o que está acontecendo na sua operação agora — não depois.' },
-            { icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', t:'Equipe com performance', d:'Saiba exatamente quem está performando e quem está te fazendo perder dinheiro.' },
-            { icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real, não estimativa', d:'Pare de operar no achismo. Veja o resultado real da sua operação.' },
-          ].map(({icon,t,d},i) => (
-            <div key={i} style={{ padding:'28px 24px', borderRadius:14, background:'linear-gradient(145deg, var(--surface), var(--surface))', border:'1px solid rgba(255,255,255,0.05)' }}>
-              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:16 }}>
-                <path d={icon}/>
-              </svg>
-              <h3 style={{ fontSize:16, fontWeight:700, color:'var(--t1)', margin:'0 0 8px' }}>{t}</h3>
-              <p style={{ fontSize:13, color:'var(--t3)', margin:0, lineHeight:1.5 }}>{d}</p>
+      {/* ═══ PROVA SOCIAL ═══ */}
+      <SocialProofSection />
+
+      {/* ═══ PREÇO / PLANO ═══ */}
+      <section id="planos" className="lp-pricing" style={{ padding:'50px 24px 70px', maxWidth:560, margin:'0 auto' }}>
+        <div style={{ textAlign:'center', marginBottom:26 }}>
+          <p style={{ fontSize:11, fontWeight:800, letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--profit)', margin:'0 0 10px' }}>Comece hoje</p>
+          <h2 style={{ fontSize:30, fontWeight:900, letterSpacing:'-0.03em', color:'#fff', margin:0 }}>Um plano. Tudo liberado.</h2>
+        </div>
+
+        <div style={{ position:'relative', overflow:'hidden', borderRadius:22, padding:'32px 28px', background:'linear-gradient(180deg, #140707, #080404)', border:'1px solid rgba(229,57,53,0.3)', boxShadow:'0 30px 90px rgba(0,0,0,0.6), 0 0 70px rgba(229,57,53,0.08)' }}>
+          <div style={{ position:'absolute', top:0, left:'18%', right:'18%', height:1, background:'linear-gradient(90deg, transparent, #e53935, transparent)' }}/>
+
+          <div style={{ textAlign:'center', marginBottom:22 }}>
+            <div style={{ display:'inline-block', padding:'4px 12px', borderRadius:99, background:'rgba(209,250,229,0.1)', border:'1px solid rgba(209,250,229,0.25)', fontSize:11, fontWeight:800, color:'var(--profit)', marginBottom:16 }}>3 DIAS GRÁTIS</div>
+            <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'center', gap:4 }}>
+              <span style={{ fontSize:18, fontWeight:700, color:'var(--t3)', marginBottom:8 }}>R$</span>
+              <span style={{ fontSize:56, fontWeight:900, color:'#fff', letterSpacing:'-0.04em', lineHeight:1 }}>59,90</span>
+              <span style={{ fontSize:15, color:'var(--t3)', marginBottom:9 }}>/mês</span>
             </div>
-          ))}
+            <p style={{ fontSize:12.5, color:'var(--t3)', margin:'8px 0 0' }}>+ R$ 29,90 por operador · com desconto por volume</p>
+          </div>
+
+          <div style={{ display:'flex', flexDirection:'column', gap:11, margin:'24px 0 26px' }}>
+            {[
+              'Lucro e metas em tempo real',
+              'Insights de IA + notificações na hora',
+              'Network privilegiado (comunidade de admins)',
+              'Slots premium e gestão de operadores',
+              'Aulas VIP, premiações e status de elite',
+              'App no celular (iPhone e Android)',
+            ].map((b, i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:11 }}>
+                <span style={{ flexShrink:0, width:20, height:20, borderRadius:6, background:'rgba(209,250,229,0.12)', border:'1px solid rgba(209,250,229,0.28)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth={3} strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+                </span>
+                <span style={{ fontSize:13.5, color:'rgba(255,255,255,0.82)', fontWeight:500 }}>{b}</span>
+              </div>
+            ))}
+          </div>
+
+          <Link href="/signup" className="btn btn-brand btn-lg" style={{ width:'100%', justifyContent:'center', fontSize:15.5, fontWeight:800 }}>
+            Criar conta e começar grátis
+          </Link>
+          <p style={{ fontSize:11.5, color:'var(--t4)', textAlign:'center', margin:'12px 0 0' }}>Sem cartão pra testar • Ativação via PIX quando decidir assinar</p>
         </div>
       </section>
 
-      {/* ═══ PAIN SECTION ═══ */}
-      <div className="lp-pain" style={{ maxWidth: 700, margin: '0 auto', padding: '60px 20px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: 26, fontWeight: 800, color: '#fff', marginBottom: 24, letterSpacing: '-0.03em' }}>
-          Se você não controla isso, você já perdeu dinheiro:
-        </h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28, textAlign: 'left', maxWidth: 440, margin: '0 auto 28px' }}>
-          {['Depositantes desorganizados', 'Metas sem controle', 'Prejuízo escondido', 'Operação no feeling', 'Falta de visão real'].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 10, background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.08)' }}>
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{item}</span>
-            </div>
-          ))}
-        </div>
-        <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--loss)', lineHeight: 1.5 }}>
-          Sem controle, qualquer operação vira prejuízo invisível.
-        </p>
-      </div>
-
       {/* ═══ CTA FINAL ═══ */}
-      <section className="lp-cta-final" style={{ padding:'40px 24px 80px', textAlign:'center' }}>
+      <section className="lp-cta-final" style={{ padding:'30px 24px 80px', textAlign:'center' }}>
         <div>
-          <h2 style={{ fontSize:28, fontWeight:800, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pare de operar no escuro.</h2>
-          <p style={{ fontSize:14, color:'var(--t3)', marginBottom:28 }}>Comece a ver sua operação como ela realmente é.</p>
-          <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:240, justifyContent:'center', fontSize:15, fontWeight:700 }}>
-            Começar agora
+          <h2 style={{ fontSize:30, fontWeight:900, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pare de operar no escuro.</h2>
+          <p style={{ fontSize:14.5, color:'var(--t3)', marginBottom:26 }}>Assine agora e comece a ver sua operação como ela realmente é.</p>
+          <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:260, justifyContent:'center', fontSize:15.5, fontWeight:800 }}>
+            Assinar agora — 3 dias grátis
           </Link>
         </div>
 
@@ -686,6 +718,12 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <style>{`
+        @media (max-width: 760px) {
+          .lp-benefits-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </main>
   )
 }

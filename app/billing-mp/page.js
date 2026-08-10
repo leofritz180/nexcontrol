@@ -390,17 +390,14 @@ function PeriodCard({ v2, opQty, setOpQty, realOps, opsList = [], monthlyTier, s
                 style={{ width: 34, height: 34, borderRadius: 9, border: '1px solid rgba(229,57,53,0.4)', background: 'rgba(229,57,53,0.14)', color: '#ff6b6b', fontSize: 20, fontWeight: 700, cursor: 'pointer', lineHeight: 1 }}>+</button>
             </div>
           </div>
-          {/* Aviso de remoção automática ao reduzir */}
+          {/* Aviso: reduziu abaixo do real → escolhe quais remover DEPOIS de pagar */}
           {toRemove.length > 0 && (
             <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 10, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
-              <div style={{ fontSize: 11.5, fontWeight: 700, color: '#ff8a8a', marginBottom: 5 }}>
-                {toRemove.length} operador{toRemove.length !== 1 ? 'es' : ''} será{toRemove.length !== 1 ? 'ão' : ''} removido{toRemove.length !== 1 ? 's' : ''} ao renovar:
+              <div style={{ fontSize: 11.5, fontWeight: 700, color: '#ff8a8a', marginBottom: 4 }}>
+                Você tem {realOps} e escolheu {opQty}.
               </div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
-                {toRemove.map(o => o.nome || 'Operador').join(', ')}
-              </div>
-              <div style={{ fontSize: 10, color: 'var(--t4)', marginTop: 6 }}>
-                Os mais recentes. O histórico (metas/remessas) é preservado — eles só perdem o acesso.
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>
+                Depois de pagar, você escolhe <b>quais {toRemove.length} operador{toRemove.length !== 1 ? 'es' : ''}</b> remover pra ficar com {opQty}. O histórico é preservado.
               </div>
             </div>
           )}

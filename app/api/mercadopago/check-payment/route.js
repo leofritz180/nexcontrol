@@ -2,7 +2,6 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
 import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
-import { reconcilePaidOperators } from '../../../../lib/reconcile-operators'
 
 // Usado pelo polling do frontend. Consulta DB primeiro; se ainda pendente,
 // bate no MP pra atualizar o status (cobre caso de webhook atrasado).
@@ -145,10 +144,6 @@ async function activatePro(sb, record, paymentId) {
     starts_at: now,
     expires_at: expires.toISOString(),
   })
-
-  // RENOVACAO com REDUCAO: remove operadores excedentes pra bater com o pago
-  // (só remove se real > pago; senão não mexe). Destrava sem o admin entrar na conta.
-  await reconcilePaidOperators(sb, record.tenant_id, resolvedOpCount)
 
   // Flag dedicada is_pro — best-effort (se coluna nao existir, ignora)
   try {

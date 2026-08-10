@@ -2,7 +2,6 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
 import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
-import { reconcilePaidOperators } from '../../../../lib/reconcile-operators'
 
 // Webhook do Mercado Pago: recebe notificacao, busca o pagamento na API,
 // atualiza status no DB e ativa PRO quando aprovado.
@@ -136,9 +135,6 @@ export async function POST(req) {
           starts_at: now,
           expires_at: expires.toISOString(),
         })
-
-        // RENOVACAO com REDUCAO: remove operadores excedentes (só se real > pago).
-        await reconcilePaidOperators(sb, record.tenant_id, resolvedOpCount)
 
         // Flag dedicada — best-effort (se coluna nao existir, ignora)
         try {

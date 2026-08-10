@@ -4,295 +4,403 @@
    Rota isolada: /dashboard-v2 · 100% FRONTEND, dados mock.
    Nao importa AppLayout/Sidebar de producao, nao chama Supabase.
    ══════════════════════════════════════════════════════════════ */
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import Shell, { Icon, I } from './_components/Shell'
+import Shell from './_components/Shell'
+import { Icon, I } from './_components/icons'
 import CSS from './_components/styles'
-import { AreaChart, Sparkline, Bar } from './_components/charts'
 import {
-  brl, pct, PERIODS, seriesFor, kpis, metasAtivas,
-  operadores, remessasRecentes, redes, custos, totals,
+  ToastHost, useToast, Drawer, Modal, Field, Input, Select, Def, Pill, Progress, EmptyState,
+} from './_components/ui'
+import {
+  brl, fmtData, fmtHora, custosIniciais, CUSTO_TIPOS, REDES_DISPONIVEIS,
+  operadores as opsFn, allMetas as allMetasFn,
 } from './_components/data'
 
-const fade = (delay = 0) => ({
-  initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.45, delay, ease: [0.33, 1, 0.68, 1] },
-})
+import Overview from './_views/Overview'
+import Metas from './_views/Metas'
+import Operadores from './_views/Operadores'
+import Redes from './_views/Redes'
+import SlotsView from './_views/Slots'
+import Faturamento from './_views/Faturamento'
+import CustosView from './_views/Custos'
+import Pix from './_views/Pix'
+import Premiacoes from './_views/Premiacoes'
+import Network from './_views/Network'
+import Config from './_views/Config'
 
 const toneOf = (v) => (v > 0 ? 'var(--profit)' : v < 0 ? 'var(--loss)' : 'var(--t2)')
 
-function PanelHead({ title, sub, action }) {
+/* ══════════════ Drawer: detalhe da meta ══════════════ */
+function MetaDrawer({ meta, onClose, onToast }) {
   return (
-    <div className="v2-panel-h">
-      <div style={{ minWidth: 0 }}>
-        <h3 className="v2-panel-t">{title}</h3>
-        {sub && <p className="v2-panel-s">{sub}</p>}
-      </div>
-      {action}
-    </div>
+    <Drawer
+      open={!!meta} onClose={onClose}
+      title={meta?.titulo || ''}
+      sub={meta ? `${meta.rede} · ${meta.operador} · criada em ${fmtData(meta.criadaEm)}` : ''}
+      footer={
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button type="button" className="v2-btn-ghost" onClick={onClose}>Fechar</button>
+          <button type="button" className="v2-btn-primary" onClick={() => { onToast(meta.fechada ? 'Meta reaberta para edição' : 'Meta pronta para fechamento', 'profit'); onClose() }}>
+            {meta?.fechada ? 'Editar fechamento' : 'Fechar meta'}
+          </button>
+        </div>
+      }
+    >
+      {meta && (
+        <>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap' }}>
+            <Pill tom={meta.fechada ? 'neutral' : 'profit'}>{meta.fechada ? 'Fechada' : 'Ativa'}</Pill>
+            <span className="v2-tag">{meta.rede}</span>
+            <span className="v2-tag">{meta.remessas} remessas</span>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <p className="v2-eyebrow">Resultado</p>
+            <p className="v2-mono" style={{ margin: '8px 0 0', fontSize: 30, fontWeight: 700, letterSpacing: '-.04em', color: toneOf(meta.lucroFinal) }}>
+              {brl(meta.lucroFinal, { sign: true })}
+            </p>
+            <div style={{ marginTop: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5, color: 'var(--t4)', marginBottom: 7 }}>
+                <span>{meta.contasFeitas}/{meta.contasTotal} contas</span>
+                <span className="v2-mono">{meta.progresso}%</span>
+              </div>
+              <Progress value={meta.progresso} tom={meta.fechada ? 'profit' : 'neutral'} />
+            </div>
+          </div>
+
+          <p className="v2-eyebrow" style={{ marginBottom: 4 }}>Composição</p>
+          <Def label="Depósito total" value={brl(meta.deposito)} />
+          <Def label="Saque total" value={brl(meta.saque)} />
+          <Def label="Resultado das remessas" value={brl(meta.resultado, { sign: true })} tom={meta.resultado >= 0 ? 'profit' : 'loss'} />
+          {meta.fechada && (
+            <>
+              <Def label="Salário" value={brl(meta.salario)} />
+              <Def label="Baú" value={brl(meta.bau)} />
+              <Def label="Custo fixo" value={`- ${brl(meta.custoFixo)}`} />
+              <Def label="Taxa do agente" value={`- ${brl(meta.taxaAgente)}`} />
+              <Def label="Lucro final" value={brl(meta.lucroFinal, { sign: true })} tom={meta.lucroFinal >= 0 ? 'profit' : 'loss'} />
+              <Def label="Fechada em" value={meta.fechadaEm ? `${fmtData(meta.fechadaEm)} · ${fmtHora(meta.fechadaEm)}` : '—'} />
+            </>
+          )}
+
+          <p className="v2-eyebrow" style={{ margin: '22px 0 10px' }}>Remessas</p>
+          {meta.lista.length === 0 && <EmptyState titulo="Nenhuma remessa" texto="Esta meta ainda não recebeu lançamentos." />}
+          {meta.lista.map(r => (
+            <div key={r.id} className="v2-mini-row">
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <p className="v2-row-t">
+                  {r.titulo}
+                  {r.tipo === 'redeposito' && <span className="v2-tag" style={{ marginLeft: 8 }}>redep.</span>}
+                  {r.problema && <span className="v2-tag" style={{ marginLeft: 8, color: 'var(--loss)', borderColor: 'var(--loss-border)' }}>pendente</span>}
+                </p>
+                <p className="v2-row-s">{r.slot} · {r.contas} contas · {fmtData(r.created_at)} {fmtHora(r.created_at)}</p>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <p className="v2-mono" style={{ margin: 0, fontSize: 13, fontWeight: 700, color: toneOf(r.resultado) }}>{brl(r.resultado, { sign: true })}</p>
+                <p className="v2-row-s v2-mono" style={{ marginTop: 3 }}>{brl(r.deposito, { cents: false })} → {brl(r.saque, { cents: false })}</p>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+    </Drawer>
   )
 }
 
-export default function DashboardV2() {
-  const [period, setPeriod] = useState('30d')
+/* ══════════════ Drawer: detalhe do operador ══════════════ */
+function OperadorDrawer({ op, onClose, onOpenMeta, onToast }) {
+  return (
+    <Drawer
+      open={!!op} onClose={onClose}
+      title={op?.nome || ''}
+      sub={op?.email}
+      footer={
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button type="button" className="v2-btn-ghost" onClick={onClose}>Fechar</button>
+          <button type="button" className="v2-btn-primary" onClick={() => { onToast(`Mensagem enviada para ${op.nome.split(' ')[0]}`, 'profit'); onClose() }}>
+            Enviar mensagem
+          </button>
+        </div>
+      }
+    >
+      {op && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <span className="v2-avatar" style={{ width: 44, height: 44, fontSize: 14 }}>{op.iniciais}</span>
+            <div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <Pill tom={op.online ? 'profit' : 'neutral'}>{op.online ? 'Online' : 'Offline'}</Pill>
+                <span className="v2-tag">#{op.rank} no ranking</span>
+              </div>
+              <p className="v2-row-s" style={{ marginTop: 6 }}>{op.badge}</p>
+            </div>
+          </div>
 
-  const serie = useMemo(() => seriesFor(period), [period])
-  const cells = useMemo(() => kpis(period), [period])
-  const metas = useMemo(() => metasAtivas(), [])
-  const ops = useMemo(() => operadores(), [])
-  const rems = useMemo(() => remessasRecentes(8), [])
-  const nets = useMemo(() => redes(), [])
-  const cst = useMemo(() => custos(), [])
-  const custoTotal = cst.reduce((a, c) => a + c.amount, 0)
+          <p className="v2-eyebrow">Lucro final gerado</p>
+          <p className="v2-mono" style={{ margin: '8px 0 20px', fontSize: 30, fontWeight: 700, letterSpacing: '-.04em', color: toneOf(op.lucro) }}>
+            {brl(op.lucro, { sign: true })}
+          </p>
 
+          <Def label="Metas fechadas" value={op.metas} />
+          <Def label="Metas ativas" value={op.ativas} />
+          <Def label="Contas processadas" value={op.contas} />
+          <Def label="Remessas lançadas" value={op.remessas} />
+          <Def label="Taxa de acerto" value={`${op.winRate}%`} tom={op.winRate >= 60 ? 'profit' : undefined} />
+          <Def label="Lucro por conta" value={brl(op.porConta)} tom={op.porConta >= 0 ? 'profit' : 'loss'} />
+
+          <p className="v2-eyebrow" style={{ margin: '22px 0 10px' }}>Metas do operador</p>
+          {op.listaMetas.map(m => (
+            <button key={m.id} type="button" className="v2-mini-row is-btn" onClick={() => { onClose(); onOpenMeta(m) }}>
+              <div style={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
+                <p className="v2-row-t">{m.titulo} <span className="v2-tag" style={{ marginLeft: 6 }}>{m.rede}</span></p>
+                <p className="v2-row-s">{m.fechada ? 'Fechada' : 'Ativa'} · {m.contasFeitas}/{m.contasTotal} contas</p>
+              </div>
+              <span className="v2-mono" style={{ fontSize: 13, fontWeight: 700, color: toneOf(m.lucroFinal) }}>{brl(m.lucroFinal, { sign: true })}</span>
+            </button>
+          ))}
+        </>
+      )}
+    </Drawer>
+  )
+}
+
+/* ══════════════ Modal: nova meta ══════════════ */
+function NovaMetaModal({ open, onClose, onCriar }) {
+  const ops = useMemo(() => opsFn(), [])
+  const [titulo, setTitulo] = useState('')
+  const [rede, setRede] = useState('W1')
+  const [contas, setContas] = useState('30')
+  const [operador, setOperador] = useState(ops[0]?.id || '')
+
+  function submit() {
+    const qtd = parseInt(String(contas).replace(/\D/g, ''), 10) || 0
+    if (!titulo.trim() || !qtd) return
+    onCriar({
+      titulo: titulo.trim(), rede, contasTotal: qtd,
+      operador: ops.find(o => o.id === operador)?.nome || '—',
+      operadorId: operador,
+    })
+    setTitulo(''); setContas('30')
+  }
+
+  return (
+    <Modal open={open} onClose={onClose} title="Nova meta" sub="Defina o alvo de depósitos e quem vai executar."
+      footer={
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button type="button" className="v2-btn-ghost" onClick={onClose}>Cancelar</button>
+          <button type="button" className="v2-btn-primary" onClick={submit} disabled={!titulo.trim()}>Criar meta</button>
+        </div>
+      }>
+      <div style={{ display: 'grid', gap: 14 }}>
+        <Field label="Título da meta" hint="Ex.: 30 DEP W1">
+          <Input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="30 DEP W1" />
+        </Field>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <Field label="Rede">
+            <Select value={rede} onChange={e => setRede(e.target.value)} options={REDES_DISPONIVEIS} />
+          </Field>
+          <Field label="Quantidade de contas">
+            <Input value={contas} inputMode="decimal" onChange={e => setContas(e.target.value)} />
+          </Field>
+        </div>
+        <Field label="Operador responsável">
+          <Select value={operador} onChange={e => setOperador(e.target.value)}
+            options={ops.map(o => ({ value: o.id, label: o.nome }))} />
+        </Field>
+      </div>
+    </Modal>
+  )
+}
+
+/* ══════════════ Modal: novo custo ══════════════ */
+function NovoCustoModal({ open, onClose, onCriar }) {
+  const [tipo, setTipo] = useState('proxy')
+  const [valor, setValor] = useState('')
+  const [nota, setNota] = useState('')
+
+  function submit() {
+    const v = parseFloat(String(valor).replace(/\./g, '').replace(',', '.'))
+    if (!v || v <= 0) return
+    onCriar({ tipo, valor: Number(v.toFixed(2)), nota: nota.trim() || 'Sem descrição', data: new Date().toISOString().slice(0, 10) })
+    setValor(''); setNota('')
+  }
+
+  return (
+    <Modal open={open} onClose={onClose} title="Lançar custo" sub="Custos do tenant entram no cálculo de exibição, não na meta."
+      footer={
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button type="button" className="v2-btn-ghost" onClick={onClose}>Cancelar</button>
+          <button type="button" className="v2-btn-primary" onClick={submit} disabled={!valor.trim()}>Lançar</button>
+        </div>
+      }>
+      <div style={{ display: 'grid', gap: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <Field label="Tipo">
+            <Select value={tipo} onChange={e => setTipo(e.target.value)} options={CUSTO_TIPOS} />
+          </Field>
+          <Field label="Valor" hint="Formato brasileiro: 1.055,90">
+            <Input value={valor} inputMode="decimal" placeholder="0,00" onChange={e => setValor(e.target.value)} />
+          </Field>
+        </div>
+        <Field label="Descrição">
+          <Input value={nota} onChange={e => setNota(e.target.value)} placeholder="Proxy mensal" />
+        </Field>
+      </div>
+    </Modal>
+  )
+}
+
+/* ══════════════ Modal: convidar operador ══════════════ */
+function ConvidarModal({ open, onClose, onEnviar }) {
+  const [email, setEmail] = useState('')
+  return (
+    <Modal open={open} onClose={onClose} title="Convidar operador" sub="Ele recebe um link de acesso restrito ao painel do operador."
+      footer={
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button type="button" className="v2-btn-ghost" onClick={onClose}>Cancelar</button>
+          <button type="button" className="v2-btn-primary" onClick={() => { onEnviar(email); setEmail('') }} disabled={!email.includes('@')}>
+            Enviar convite
+          </button>
+        </div>
+      }>
+      <div style={{ display: 'grid', gap: 14 }}>
+        <Field label="E-mail do operador">
+          <Input value={email} type="email" placeholder="operador@email.com" onChange={e => setEmail(e.target.value)} />
+        </Field>
+        <div className="v2-note">
+          <Icon d={I.wallet} size={14} />
+          <span>Cada operador ativo adiciona <strong className="v2-mono">R$ 29,90</strong> por mês à sua assinatura.</span>
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+/* ══════════════ App ══════════════ */
+function DashboardV2() {
+  const toast = useToast()
+  const [view, setView] = useState('overview')
+  const [refreshing, setRefreshing] = useState(false)
+  const [metaSel, setMetaSel] = useState(null)
+  const [opSel, setOpSel] = useState(null)
+  const [modal, setModal] = useState(null)
+  const [custos, setCustos] = useState(() => custosIniciais())
+  const [metasExtras, setMetasExtras] = useState([])
+
+  /* deep-link: ?view=metas · ?modal=meta|custo|convidar · ?meta=<id> */
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search)
+    const v = q.get('view'); if (v) setView(v)
+    const m = q.get('modal'); if (m) setModal(m)
+    const id = q.get('meta')
+    if (id) {
+      const alvo = allMetasFn().find(x => x.id === id)
+      if (alvo) setMetaSel(alvo)
+    }
+  }, [])
+
+  const navigate = useCallback((id) => {
+    if (id === 'docs') { toast('Documentação abriria em nova aba'); return }
+    if (id === 'suporte') { toast('Canal de suporte aberto'); return }
+    setView(id)
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', id === 'overview' ? window.location.pathname : `?view=${id}`)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [toast])
+
+  const action = useCallback((id) => {
+    if (id === 'nova-meta') return setModal('meta')
+    if (id === 'novo-custo') return setModal('custo')
+    if (id === 'convidar') return setModal('convidar')
+    if (id === 'exportar') return toast('Relatório CSV gerado', 'profit')
+    if (id === 'pagar') return toast('PIX copia e cola gerado', 'profit')
+    toast('Ação de demonstração')
+  }, [toast])
+
+  const refresh = useCallback(() => {
+    if (refreshing) return
+    setRefreshing(true)
+    setTimeout(() => { setRefreshing(false); toast('Dados atualizados', 'profit') }, 1100)
+  }, [refreshing, toast])
+
+  function criarMeta(dados) {
+    const nova = {
+      id: `nova-${metasExtras.length + 1}`,
+      titulo: dados.titulo, rede: dados.rede, operador: dados.operador, operadorId: dados.operadorId,
+      contasFeitas: 0, contasTotal: dados.contasTotal, progresso: 0, resultado: 0, remessas: 0,
+      fechada: false, status: 'ativa', lucroFinal: 0, salario: 0, bau: 0, custoFixo: 0, taxaAgente: 0,
+      criadaEm: new Date().toISOString(), fechadaEm: null, deposito: 0, saque: 0, lista: [],
+    }
+    setMetasExtras(l => [nova, ...l])
+    setModal(null)
+    toast(`Meta “${dados.titulo}” criada`, 'profit')
+    setView('metas')
+  }
+
+  function criarCusto(c) {
+    setCustos(l => [{ id: `c-${Date.now()}`, ...c }, ...l])
+    setModal(null)
+    toast(`Custo de ${brl(c.valor)} lançado`, 'profit')
+  }
+
+  const viewProps = {
+    onNavigate: navigate,
+    onAction: action,
+    onOpenMeta: setMetaSel,
+    onOpenOperador: setOpSel,
+    loading: refreshing,
+  }
+
+  let content = null
+  if (view === 'overview') content = <Overview {...viewProps} extras={metasExtras} />
+  else if (view === 'metas') content = <Metas {...viewProps} extras={metasExtras} />
+  else if (view === 'operadores') content = <Operadores {...viewProps} />
+  else if (view === 'redes') content = <Redes {...viewProps} />
+  else if (view === 'slots') content = <SlotsView {...viewProps} />
+  else if (view === 'faturamento') content = <Faturamento {...viewProps} />
+  else if (view === 'custos') content = <CustosView lista={custos} onNovo={() => setModal('custo')} onRemover={(id) => { setCustos(l => l.filter(c => c.id !== id)); toast('Custo removido') }} />
+  else if (view === 'pix') content = <Pix {...viewProps} />
+  else if (view === 'premiacoes') content = <Premiacoes {...viewProps} />
+  else if (view === 'network') content = <Network {...viewProps} />
+  else if (view === 'config') content = <Config {...viewProps} />
+
+  return (
+    <Shell view={view} onNavigate={navigate} onAction={action} onRefresh={refresh} refreshing={refreshing}>
+      <motion.div key={view} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28 }}>
+        {content}
+      </motion.div>
+
+      <footer className="v2-foot">
+        <span>NexControl · Dashboard v2 · dados de demonstração</span>
+        <nav>
+          <button type="button" onClick={() => navigate('docs')}>Documentação</button>
+          <button type="button" onClick={() => toast('Changelog: v2.0 — nova dashboard')}>Changelog</button>
+          <button type="button" onClick={() => navigate('suporte')}>Suporte</button>
+          <button type="button" onClick={() => toast('Todos os sistemas operacionais', 'profit')}>Status</button>
+        </nav>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+          <i style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--profit)', display: 'block' }} />
+          Todos os sistemas operacionais
+        </span>
+      </footer>
+
+      <MetaDrawer meta={metaSel} onClose={() => setMetaSel(null)} onToast={toast} />
+      <OperadorDrawer op={opSel} onClose={() => setOpSel(null)} onOpenMeta={setMetaSel} onToast={toast} />
+      <NovaMetaModal open={modal === 'meta'} onClose={() => setModal(null)} onCriar={criarMeta} />
+      <NovoCustoModal open={modal === 'custo'} onClose={() => setModal(null)} onCriar={criarCusto} />
+      <ConvidarModal open={modal === 'convidar'} onClose={() => setModal(null)}
+        onEnviar={(email) => { setModal(null); toast(`Convite enviado para ${email}`, 'profit') }} />
+    </Shell>
+  )
+}
+
+export default function Page() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
-      <Shell>
-        {/* ═══════════ CABECALHO DA PAGINA ═══════════ */}
-        <motion.header {...fade(0)} style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap', marginBottom: 22 }}>
-          <div>
-            <h1 className="v2-title">Visão geral</h1>
-            <p className="v2-subtitle">Tudo o que aconteceu na sua operação, em um lugar só.</p>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button type="button" className="v2-btn-ghost">Exportar CSV</button>
-            <button type="button" className="v2-btn-ghost" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <Icon d={I.chart} size={13} /> Relatório
-            </button>
-          </div>
-        </motion.header>
-
-        <div className="v2-stack">
-          {/* ═══════════ HERO — lucro + grafico ═══════════ */}
-          <motion.section {...fade(0.05)} className="v2-panel">
-            <div className="v2-hero-top">
-              <div>
-                <p className="v2-eyebrow">Lucro final · {PERIODS.find(p => p.id === period)?.label}</p>
-                <p className="v2-hero-value">{brl(serie.total)}</p>
-                <div className="v2-hero-sub">
-                  {serie.delta === null ? (
-                    <>
-                      <span className="v2-pill">Período completo</span>
-                      <span>sem base de comparação anterior</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className={`v2-pill ${serie.delta >= 0 ? 'is-profit' : 'is-loss'}`}>
-                        <Icon d={serie.delta >= 0 ? 'M12 19V5M6 11l6-6 6 6' : 'M12 5v14M6 13l6 6 6-6'} size={11} />
-                        {pct(serie.delta)}
-                      </span>
-                      <span>vs. período anterior ({brl(serie.prev)})</span>
-                    </>
-                  )}
-                  <span style={{ color: 'var(--t4)' }}>·</span>
-                  <span>{serie.days} dias · {totals.totalRem} remessas</span>
-                </div>
-              </div>
-
-              <div className="v2-seg">
-                {PERIODS.map(p => (
-                  <button key={p.id} type="button" onClick={() => setPeriod(p.id)}
-                    className={period === p.id ? 'is-on' : ''}>{p.label}</button>
-                ))}
-              </div>
-            </div>
-
-            <div className="v2-hero-chart">
-              <AreaChart values={serie.values} labels={serie.labels} height={230} format={(v) => brl(v)} />
-            </div>
-          </motion.section>
-
-          {/* ═══════════ FAIXA DE KPIs ═══════════ */}
-          <motion.section {...fade(0.1)} className="v2-panel">
-            <div className="v2-kpis">
-              {cells.map((k, i) => (
-                <div key={k.label} className="v2-kpi">
-                  <div className="v2-kpi-top">
-                    <p className="v2-eyebrow">{k.label}</p>
-                    <Sparkline values={k.spark} color={k.negative ? 'rgba(239,68,68,0.55)' : 'rgba(255,255,255,0.42)'} />
-                  </div>
-                  <p className="v2-kpi-v">{k.value}</p>
-                  <p className="v2-kpi-h">{k.hint}</p>
-                </div>
-              ))}
-            </div>
-          </motion.section>
-
-          {/* ═══════════ METAS + OPERADORES ═══════════ */}
-          <div className="v2-grid-2">
-            <motion.section {...fade(0.15)} className="v2-panel">
-              <PanelHead
-                title="Metas em andamento"
-                sub={`${metas.length} metas rodando agora`}
-                action={<button type="button" className="v2-link">Ver todas <Icon d={I.arrow} size={12} /></button>}
-              />
-              {metas.map((m, i) => (
-                <div key={m.id} className="v2-row">
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <p className="v2-row-t">{m.titulo}</p>
-                      <span className="v2-tag">{m.rede}</span>
-                    </div>
-                    <p className="v2-row-s">{m.operador} · {m.remessas} remessas · {m.contasFeitas}/{m.contasTotal} contas</p>
-                    <div style={{ marginTop: 9, maxWidth: 260 }}>
-                      <Bar value={m.progresso} delay={0.2 + i * 0.06} />
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <p className="v2-mono" style={{ margin: 0, fontSize: 14, fontWeight: 700, color: toneOf(m.resultado) }}>
-                      {brl(m.resultado, { sign: true })}
-                    </p>
-                    <p className="v2-row-s v2-mono" style={{ marginTop: 4 }}>{m.progresso}%</p>
-                  </div>
-                </div>
-              ))}
-            </motion.section>
-
-            <motion.section {...fade(0.2)} className="v2-panel">
-              <PanelHead
-                title="Operadores"
-                sub="Ranking por lucro final"
-                action={<button type="button" className="v2-link">Gerenciar</button>}
-              />
-              {ops.map((o, i) => (
-                <div key={o.email} className="v2-row">
-                  <span className={`v2-rank ${i === 0 ? 'is-first' : ''}`}>{o.rank}</span>
-                  <span className="v2-avatar">{o.iniciais}</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p className="v2-row-t">{o.nome}</p>
-                    <p className="v2-row-s">{o.metas} fechadas · {o.winRate}% acerto</p>
-                  </div>
-                  <Sparkline values={o.spark} width={54} height={20}
-                    color={o.lucro >= 0 ? 'rgba(209,250,229,0.55)' : 'rgba(239,68,68,0.55)'} />
-                  <p className="v2-mono" style={{ margin: 0, fontSize: 13, fontWeight: 700, color: toneOf(o.lucro), minWidth: 84, textAlign: 'right' }}>
-                    {brl(o.lucro, { sign: true })}
-                  </p>
-                </div>
-              ))}
-            </motion.section>
-          </div>
-
-          {/* ═══════════ TABELA DE REMESSAS ═══════════ */}
-          <motion.section {...fade(0.25)} className="v2-panel">
-            <PanelHead
-              title="Remessas recentes"
-              sub="Últimos lançamentos da equipe"
-              action={
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span className="v2-pill"><i style={{ background: 'var(--profit)' }} />Sincronizado</span>
-                  <button type="button" className="v2-link">Ver histórico <Icon d={I.arrow} size={12} /></button>
-                </div>
-              }
-            />
-            <div className="v2-table-wrap">
-              <table className="v2-table">
-                <thead>
-                  <tr>
-                    <th>Status</th>
-                    <th>Remessa</th>
-                    <th>Rede</th>
-                    <th>Slot</th>
-                    <th>Operador</th>
-                    <th className="num">Depósito</th>
-                    <th className="num">Saque</th>
-                    <th className="num">Resultado</th>
-                    <th className="num">Horário</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rems.map(r => (
-                    <tr key={r.id}>
-                      <td>
-                        <span className={`v2-pill ${r.status === 'lucro' ? 'is-profit' : r.status === 'prejuizo' ? 'is-loss' : ''}`}>
-                          <i />
-                          {r.status === 'lucro' ? 'Lucro' : r.status === 'prejuizo' ? 'Prejuízo' : 'Pendente'}
-                        </span>
-                      </td>
-                      <td className="strong">{r.titulo}{r.tipo === 'redeposito' && <span className="v2-tag" style={{ marginLeft: 8 }}>redep.</span>}</td>
-                      <td><span className="v2-tag">{r.rede}</span></td>
-                      <td>{r.slot}</td>
-                      <td>{r.operador}</td>
-                      <td className="num">{brl(r.deposito, { cents: false })}</td>
-                      <td className="num">{brl(r.saque, { cents: false })}</td>
-                      <td className="num" style={{ color: toneOf(r.resultado), fontWeight: 700 }}>{brl(r.resultado, { sign: true })}</td>
-                      <td className="num" style={{ color: 'var(--t4)' }}>{r.dia} · {r.hora}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </motion.section>
-
-          {/* ═══════════ REDES + CUSTOS ═══════════ */}
-          <div className="v2-grid-2e">
-            <motion.section {...fade(0.3)} className="v2-panel">
-              <PanelHead title="Desempenho por rede" sub="Lucro final acumulado em metas fechadas" />
-              <div style={{ padding: '6px 18px 16px' }}>
-                {nets.map((n, i) => (
-                  <div key={n.rede} style={{ padding: '12px 0', borderBottom: i === nets.length - 1 ? 'none' : '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                        <span className="v2-tag">{n.rede}</span>
-                        <span style={{ fontSize: 11.5, color: 'var(--t4)' }}>{n.metas} metas · {n.contas} contas</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                        <span className="v2-mono" style={{ fontSize: 11, color: 'var(--t4)' }}>{brl(n.porConta)}/conta</span>
-                        <span className="v2-mono" style={{ fontSize: 13, fontWeight: 700, color: toneOf(n.lucro) }}>{brl(n.lucro, { sign: true })}</span>
-                      </div>
-                    </div>
-                    <Bar value={n.share} tone={n.lucro >= 0 ? 'profit' : 'loss'} delay={0.35 + i * 0.06} />
-                  </div>
-                ))}
-              </div>
-            </motion.section>
-
-            <motion.section {...fade(0.35)} className="v2-panel">
-              <PanelHead
-                title="Custos da operação"
-                sub={`${brl(custoTotal)} no período`}
-                action={<button type="button" className="v2-link">Lançar custo</button>}
-              />
-              <div style={{ padding: '6px 18px 16px' }}>
-                {cst.map((c, i) => (
-                  <div key={c.type} style={{ padding: '12px 0', borderBottom: i === cst.length - 1 ? 'none' : '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 8 }}>
-                      <span style={{ fontSize: 12.5, color: 'var(--t1)', fontWeight: 500, textTransform: 'capitalize' }}>{c.type}</span>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                        <span className="v2-mono" style={{ fontSize: 11, color: 'var(--t4)' }}>{c.share}%</span>
-                        <span className="v2-mono" style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>{brl(c.amount)}</span>
-                      </div>
-                    </div>
-                    <Bar value={c.share} delay={0.4 + i * 0.06} />
-                  </div>
-                ))}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--b1)' }}>
-                  <span style={{ fontSize: 11.5, color: 'var(--t3)' }}>Impacto no lucro final</span>
-                  <span className="v2-mono" style={{ fontSize: 13, fontWeight: 700, color: 'var(--loss)' }}>
-                    -{((custoTotal / (totals.lucroFinalTotal || 1)) * 100).toFixed(1)}%
-                  </span>
-                </div>
-              </div>
-            </motion.section>
-          </div>
-        </div>
-
-        {/* ═══════════ RODAPE ═══════════ */}
-        <motion.footer {...fade(0.4)} className="v2-foot">
-          <span>NexControl · Dashboard v2 · dados de demonstração</span>
-          <nav>
-            <button type="button">Documentação</button>
-            <button type="button">Changelog</button>
-            <button type="button">Suporte</button>
-            <button type="button">Status</button>
-          </nav>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
-            <i style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--profit)', display: 'block' }} />
-            Todos os sistemas operacionais
-          </span>
-        </motion.footer>
-      </Shell>
+      <ToastHost><DashboardV2 /></ToastHost>
     </>
   )
 }

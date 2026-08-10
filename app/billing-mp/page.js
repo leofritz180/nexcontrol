@@ -211,7 +211,7 @@ export default function BillingMpPage() {
                 setSelectedPlan={setSelectedPlan}
                 selectedCalc={selectedCalc}
                 onConfirm={handleStart}
-                onBack={() => router.push(isRenewal ? '/admin' : '/billing')}
+                onBack={() => router.push('/admin')}
                 isRenewal={isRenewal}
                 isEarlyRenewal={isEarlyRenewal}
                 daysRemaining={daysRemaining}

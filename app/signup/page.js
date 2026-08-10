@@ -86,7 +86,10 @@ export default function SignupPage() {
           try { sessionStorage.setItem('nx_phone_ok', '1') } catch {}
         } catch {}
         setLoading(false)
-        router.push('/admin')
+        // Após criar a conta, leva DIRETO pra tela de pagamento (não pro painel):
+        // o cadastro veio do "Assinar agora". A pessoa ainda pode voltar e usar o
+        // trial, mas o caminho natural é assinar na hora.
+        router.push('/billing-mp')
         return
       }
       attachRef(email)

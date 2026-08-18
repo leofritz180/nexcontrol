@@ -50,9 +50,11 @@ export default function PresencePing() {
     resolveSid().then(() => {
       if (cancelled) return
       ping()
-      // So pinga em aba visivel (aba de fundo nao gera custo). 60s basta:
-      // "online" = ping nos ultimos 5min. Volta a pingar no visibilitychange.
-      pingRef.current = setInterval(() => { if (document.visibilityState === 'visible') ping() }, 60000)
+      // Pinga a cada 60s SEMPRE (inclusive aba de fundo) — quem deixa o painel
+      // aberto trabalhando o bot conta como online. O navegador ja afrouxa o
+      // timer em segundo plano, entao o custo segue baixo. (Antes tinha guarda de
+      // visibilidade que fazia o contador de "online" cair demais.)
+      pingRef.current = setInterval(ping, 60000)
     })
 
     // Re-resolve quando o auth muda (login/logout).

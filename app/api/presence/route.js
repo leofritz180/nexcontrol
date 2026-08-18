@@ -41,7 +41,7 @@ export async function POST(req) {
         } catch {}
       }
     }
-    const cutoff = new Date(Date.now() - 300000).toISOString()
+    const cutoff = new Date(Date.now() - 480000).toISOString()
     const { count } = await sb.from('presence').select('*', { count: 'exact', head: true }).gte('last_seen', cutoff)
 
     // Fire-and-forget: dispara reconcile de pagamentos pendentes em background.
@@ -59,7 +59,7 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     const sb = getClient()
-    const cutoff = new Date(Date.now() - 300000).toISOString()
+    const cutoff = new Date(Date.now() - 480000).toISOString()
     const { count } = await sb.from('presence').select('*', { count: 'exact', head: true }).gte('last_seen', cutoff)
     triggerReconcile(req)
     return NextResponse.json({ online: count || 0 })

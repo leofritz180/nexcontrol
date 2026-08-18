@@ -11,6 +11,9 @@ import { renderWinbackEmail, sendEmailViaResend } from '../../../../lib/email-te
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://nexcpa.com.br'
 
+// Dá folga pro cron (evita ser morto no meio e nunca gravar nada).
+export const maxDuration = 60
+
 // E-mails de conversao do TRIAL (espelham o push). Disparam junto com o push
 // nos momentos-chave. Sem RESEND_API_KEY o envio e' apenas pulado (sem erro).
 const TRIAL_EMAILS = {
@@ -68,6 +71,7 @@ export async function GET(req) {
   const now = new Date()
 
   for (const t of tenants) {
+   try {
     const trialEnd = new Date(t.trial_end)
     const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24))
 
@@ -96,8 +100,9 @@ export async function GET(req) {
         sent++
       }
 
-    } else if (!t.trial_expired_notified) {
-      // Trial expired — send expiration notice + update status
+    } else if (!t.trial_expired_notified && daysLeft >= -3) {
+      // Trial expirou RECENTEMENTE (ate 3 dias) — avisa 1x. Guarda de recencia:
+      // trials velhos NUNCA disparam (evita blast de lead morto, mesmo se sobrar).
       await sendPushToTenant(supabase, t.id, {
         title: 'Seu teste expirou',
         body: 'Assine agora pra recuperar acesso e nao perder seus dados.',
@@ -112,7 +117,13 @@ export async function GET(req) {
       }).eq('id', t.id)
 
       expired++
+    } else if (!t.trial_expired_notified) {
+      // Expirou ha mais de 3 dias: marca como notificado SEM enviar (silencia lead frio).
+      await supabase.from('tenants').update({ trial_expired_notified: true }).eq('id', t.id)
     }
+   } catch (e) {
+     console.error('[trial-cron] tenant falhou', t.id, e?.message) // um erro nao derruba o cron
+   }
   }
 
   // ── BONUS: detecta excesso de operadores e notifica admins ──

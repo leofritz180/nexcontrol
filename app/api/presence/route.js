@@ -13,14 +13,11 @@ function getClient() {
   )
 }
 
-async function triggerReconcile(req) {
-  try {
-    const host = req.headers.get('host')
-    if (!host) return
-    const proto = host.includes('localhost') ? 'http' : 'https'
-    fetch(`${proto}://${host}/api/reconcile-pending`, { method: 'GET', cache: 'no-store' }).catch(() => {})
-  } catch {}
-}
+// (removido) — antes cada ping de presenca disparava um fetch pro
+// /api/reconcile-pending, DOBRANDO as invocacoes do endpoint mais chamado do
+// app (todo user online, a cada 60s). Agora a captura de pagamento orfao roda
+// pelo cron reconcile-payments a cada 10min (barato) + polling da tela de
+// pagamento (pega o proprio pagante na hora). Corta custo grande na Vercel.
 
 export async function POST(req) {
   try {
@@ -43,13 +40,6 @@ export async function POST(req) {
     }
     const cutoff = new Date(Date.now() - 480000).toISOString()
     const { count } = await sb.from('presence').select('*', { count: 'exact', head: true }).gte('last_seen', cutoff)
-
-    // Fire-and-forget: dispara reconcile de pagamentos pendentes em background.
-    // Endpoint internamente rate-limited (1 exec/minuto) entao varios pings nao
-    // sobrecarregam. Garante que pagamentos orfaos sao capturados em ~30s mesmo
-    // se o webhook do MP falhar.
-    triggerReconcile(req)
-
     return NextResponse.json({ online: count || 0 })
   } catch (err) {
     return NextResponse.json({ online: 0 })
@@ -61,7 +51,6 @@ export async function GET(req) {
     const sb = getClient()
     const cutoff = new Date(Date.now() - 480000).toISOString()
     const { count } = await sb.from('presence').select('*', { count: 'exact', head: true }).gte('last_seen', cutoff)
-    triggerReconcile(req)
     return NextResponse.json({ online: count || 0 })
   } catch {
     return NextResponse.json({ online: 0 })

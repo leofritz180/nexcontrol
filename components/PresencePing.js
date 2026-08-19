@@ -54,7 +54,7 @@ export default function PresencePing() {
       // aberto trabalhando o bot conta como online. O navegador ja afrouxa o
       // timer em segundo plano, entao o custo segue baixo. (Antes tinha guarda de
       // visibilidade que fazia o contador de "online" cair demais.)
-      pingRef.current = setInterval(ping, 60000)
+      pingRef.current = setInterval(ping, 90000)
     })
 
     // Re-resolve quando o auth muda (login/logout).

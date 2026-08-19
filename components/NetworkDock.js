@@ -124,7 +124,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
   useEffect(() => {
     if (!active || !meId) return
     checkUnread()
-    const id = setInterval(() => { if (document.visibilityState === 'visible') checkUnread() }, 90000)
+    const id = setInterval(() => { if (document.visibilityState === 'visible') checkUnread() }, 180000)
     return () => clearInterval(id)
   }, [active, meId, checkUnread])
 

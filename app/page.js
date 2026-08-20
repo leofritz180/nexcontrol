@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 import Logo, { NexIcon } from '../components/Logo'
+import CursorSpotlight from '../components/marketing/CursorSpotlight'
+import SpotlightCard from '../components/marketing/SpotlightCard'
 
 const ease = [0.33,1,0.68,1]
 
@@ -561,6 +563,11 @@ export default function HomePage() {
         @keyframes lpOrb3 { 0%,100% { transform:translate(0,0); } 50% { transform:translate(40px,-30px); } }
       `}</style>
 
+      {/* LED difuso vermelho que segue o cursor. zIndex -1 -> atras de TODO o
+          conteudo (main e transparente sobre o preto do body). Desktop-only,
+          respeita reduced-motion, pointer-events none (nao bloqueia clique). */}
+      <CursorSpotlight zIndex={-1} />
+
       {/* ═══ HERO ═══ */}
       <section className="lp-hero" style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px 24px', textAlign:'center', position:'relative' }}>
 
@@ -634,13 +641,13 @@ export default function HomePage() {
             { c:'var(--profit)', icon:'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z', t:'Slots premium', d:'Organize contas e slots no padrão premium — controle visual da operação inteira.' },
             { c:'var(--profit)', icon:'M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z', t:'VIP & Premiações', d:'Aulas VIP, placas de faturamento e status de elite conforme sua operação cresce.' },
           ].map(({ c, icon, t, d }, i) => (
-            <div key={i} style={{ padding:'26px 22px', borderRadius:16, background:'linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))', border:'1px solid rgba(255,255,255,0.07)' }}>
+            <SpotlightCard key={i} style={{ padding:'26px 22px', borderRadius:16, background:'linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))', border:'1px solid rgba(255,255,255,0.07)' }}>
               <div style={{ width:42, height:42, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16, background:`${c==='var(--profit)'?'rgba(209,250,229,0.1)':'rgba(229,57,53,0.12)'}`, border:`1px solid ${c==='var(--profit)'?'rgba(209,250,229,0.22)':'rgba(229,57,53,0.3)'}` }}>
                 <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d={icon}/></svg>
               </div>
               <h3 style={{ fontSize:16.5, fontWeight:800, color:'var(--t1)', margin:'0 0 7px', letterSpacing:'-0.01em' }}>{t}</h3>
               <p style={{ fontSize:13, color:'var(--t3)', margin:0, lineHeight:1.55 }}>{d}</p>
-            </div>
+            </SpotlightCard>
           ))}
         </div>
       </section>

@@ -1514,3 +1514,26 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 .nx-owner [style*="solid rgba(255, 255, 255"] { border-color: var(--owner-gold-line) !important; }
 /* fundos branco-translucidos (chips/fills) -> leve dourado */
 .nx-owner [style*="background: rgba(255, 255, 255"]:not([style*="gradient"]) { background: rgba(212,175,55,0.05) !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SpotlightCard — reflexo local sutil que segue o cursor dentro do
+   card (paginas publicas/comerciais). Local e bem mais fraco que o
+   CursorSpotlight global. Nao muda posicao nem bloqueia clique.
+   ═══════════════════════════════════════════════════════════════ */
+.nx-spotcard { position: relative; --sc-op: 0; }
+.nx-spotcard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--sc-op, 0);
+  transition: opacity 300ms ease;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(255,60,80,0.10), transparent 60%);
+}
+/* conteudo do card sempre acima do reflexo */
+.nx-spotcard > * { position: relative; z-index: 1; }
+/* touch / movimento reduzido: sem reflexo */
+@media (hover: none), (pointer: coarse) { .nx-spotcard::before { display: none; } }
+@media (prefers-reduced-motion: reduce) { .nx-spotcard::before { display: none; } }

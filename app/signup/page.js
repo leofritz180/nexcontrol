@@ -85,10 +85,18 @@ export default function SignupPage() {
           })
           try { sessionStorage.setItem('nx_phone_ok', '1') } catch {}
         } catch {}
+        // Novo modelo "só entra se pagar": desliga o trial da conta recém-criada
+        // (rebaixa trial -> expired no servidor). Best-effort: se falhar, o signup
+        // segue normal e o pior caso é a conta manter o trial antigo (fail-open).
+        try {
+          await fetch('/api/tenant/start-unpaid', {
+            method: 'POST',
+            headers: { Authorization: 'Bearer ' + session.session.access_token },
+          })
+        } catch {}
         setLoading(false)
         // Após criar a conta, leva DIRETO pra tela de pagamento (não pro painel):
-        // o cadastro veio do "Assinar agora". A pessoa ainda pode voltar e usar o
-        // trial, mas o caminho natural é assinar na hora.
+        // o cadastro veio do "Assinar agora".
         router.push('/billing-mp')
         return
       }
@@ -327,7 +335,7 @@ export default function SignupPage() {
         <p style={{
           textAlign: 'center', fontSize: 12, color: 'var(--t3)', marginTop: 24,
         }}>
-          3 dias gratis · Sem cartao · Cancele quando quiser
+          Pagamento via PIX · Ativacao na hora · Cancele quando quiser
         </p>
 
         <p style={{

@@ -221,7 +221,7 @@ export default function SubscriptionGate({ children }) {
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           }}>
             <span style={{ width: 24, height: 1, background: isExpired ? '#10B981' : '#e53935' }}/>
-            {isExpired ? 'Assinatura · vencida' : 'Período de teste · expirado'}
+            {isExpired ? 'Assinatura · vencida' : 'Assinatura · pendente'}
             <span style={{ width: 24, height: 1, background: isExpired ? '#10B981' : '#e53935' }}/>
           </div>
 
@@ -236,7 +236,7 @@ export default function SubscriptionGate({ children }) {
           <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.62)', marginBottom: 28, lineHeight: 1.55, fontWeight: 300 }}>
             {isExpired
               ? 'Renove em segundos via PIX e retome o controle de onde parou.'
-              : 'Seu período de teste chegou ao fim. Assine pra continuar operando.'}
+              : 'Ative sua assinatura via PIX pra começar a usar a NexControl.'}
           </p>
 
           {/* Stats — so aparece pra ex-PRO */}
@@ -273,7 +273,7 @@ export default function SubscriptionGate({ children }) {
           )}
 
           <button
-            onClick={() => router.push(isExpired ? `/billing-mp?operators=${stats.ops || 0}&renewal=1` : '/billing')}
+            onClick={() => router.push(isExpired ? `/billing-mp?operators=${stats.ops || 0}&renewal=1` : '/billing-mp')}
             className="btn btn-profit btn-lg"
             style={{
               width: '100%', justifyContent: 'center', fontSize: 14.5, fontWeight: 800,

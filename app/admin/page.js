@@ -57,6 +57,7 @@ import DemoModeCard from '../../components/DemoModeCard'
 import BettifySponsor from '../../components/BettifySponsor'
 import RankBadge from '../../components/rank/RankBadge'
 import DailyGoalCard from '../../components/DailyGoalCard'
+import PrimeirosPassos from '../../components/PrimeirosPassos'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
 import RankAmbient from '../../components/rank/RankAmbient'
@@ -469,6 +470,9 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
           </motion.button>
         )}
       </motion.div>
+
+      {/* Guia de ativação — só aparece no modo demo (conta ainda sem meta real) */}
+      <PrimeirosPassos onCreateMeta={onCreateMeta} userName={userName} />
 
       {/* Insight rotativo */}
       <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3, delay:0.1 }}

@@ -49,7 +49,6 @@ export const metadata = {
       { url: '/apple-touch-icon.png?v=7', sizes: '180x180', type: 'image/png' },
     ],
   },
-  themeColor: '#060607',
   openGraph: {
     title: OG_TITLE,
     description: OG_DESC,
@@ -67,7 +66,7 @@ export const metadata = {
   },
 }
 
-export const viewport = { width: 'device-width', initialScale: 1, maximumScale: 1, viewportFit: 'cover' }
+export const viewport = { width: 'device-width', initialScale: 1, maximumScale: 1, viewportFit: 'cover', themeColor: '#060607' }
 
 export default function RootLayout({ children }) {
   return (

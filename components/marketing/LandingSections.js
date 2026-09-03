@@ -291,7 +291,11 @@ export function LandingFooter() {
         </div>
       </div>
       <div style={{ maxWidth: 1040, margin: '32px auto 0', paddingTop: 22, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', margin: 0 }}>© 2026 NexControl. Todos os direitos reservados.</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', margin: 0 }}>© 2026 NexControl. Todos os direitos reservados.</p>
+          <Link href="/termos" style={{ fontSize: 12, color: 'rgba(255,255,255,0.42)', textDecoration: 'none' }}>Termos de Uso</Link>
+          <Link href="/privacidade" style={{ fontSize: 12, color: 'rgba(255,255,255,0.42)', textDecoration: 'none' }}>Privacidade</Link>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--profit)', boxShadow: '0 0 6px rgba(209,250,229,0.5)' }} />
           <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Sistema operacional ativo</span>

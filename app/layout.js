@@ -13,10 +13,26 @@ const VoiceCommandPanel = dynamic(() => import('../components/VoiceCommandPanel'
 const DesignMode = dynamic(() => import('../components/DesignMode'), { ssr: false })
 const DataCorrectionModal = dynamic(() => import('../components/DataCorrectionModal'), { ssr: false })
 
+const SITE_URL = 'https://nexcpa.com.br'
+const OG_TITLE = 'NexControl | Gestão de Operações CPA, Metas e Operadores'
+const OG_DESC = 'O sistema operacional do CPA: metas, operadores e lucro em tempo real, com insights de IA, notificações na hora, Network privilegiado e slots premium. 3 dias grátis.'
+
 export const metadata = {
-  title: 'NexControl',
-  description: 'Gestão inteligente de metas, operadores e faturamento',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: OG_TITLE,
+    template: '%s | NexControl',
+  },
+  description: OG_DESC,
+  applicationName: 'NexControl',
+  keywords: ['NexControl', 'gestão CPA', 'iGaming', 'metas', 'operadores', 'remessas', 'lucro em tempo real', 'CPA marketing'],
+  authors: [{ name: 'NexControl' }],
+  alternates: { canonical: '/' },
   manifest: '/manifest.json',
+  robots: {
+    index: true, follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -33,12 +49,21 @@ export const metadata = {
       { url: '/apple-touch-icon.png?v=7', sizes: '180x180', type: 'image/png' },
     ],
   },
-  themeColor: 'var(--surface)',
+  themeColor: '#060607',
   openGraph: {
-    title: 'NexControl',
-    description: 'Gestao inteligente de metas, operadores e faturamento',
+    title: OG_TITLE,
+    description: OG_DESC,
     siteName: 'NexControl',
+    url: SITE_URL,
+    locale: 'pt_BR',
     type: 'website',
+    images: [{ url: '/nexcontrol-icon-256.png', width: 256, height: 256, alt: 'NexControl' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: OG_TITLE,
+    description: OG_DESC,
+    images: ['/nexcontrol-icon-256.png'],
   },
 }
 
@@ -48,6 +73,33 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'Organization',
+              '@id': `${SITE_URL}/#organization`,
+              name: 'NexControl',
+              url: SITE_URL,
+              logo: `${SITE_URL}/nexcontrol-icon-256.png`,
+            },
+            {
+              '@type': 'SoftwareApplication',
+              name: 'NexControl',
+              applicationCategory: 'BusinessApplication',
+              operatingSystem: 'Web, iOS, Android',
+              url: SITE_URL,
+              description: OG_DESC,
+              publisher: { '@id': `${SITE_URL}/#organization` },
+              offers: {
+                '@type': 'Offer',
+                price: '59.90',
+                priceCurrency: 'BRL',
+                description: 'Plano mensal com 3 dias grátis. Operador adicional R$ 29,90/mês.',
+              },
+            },
+          ],
+        }) }} />
         <script dangerouslySetInnerHTML={{ __html: `
           if('serviceWorker' in navigator){
             navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})

@@ -6,7 +6,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 import Logo, { NexIcon } from '../components/Logo'
 import CursorSpotlight from '../components/marketing/CursorSpotlight'
-import SpotlightCard from '../components/marketing/SpotlightCard'
+import LandingHeader from '../components/marketing/LandingHeader'
+import HeroStage from '../components/marketing/HeroStage'
+import MarqueeBands from '../components/marketing/MarqueeBands'
+import PlaquesShowcase from '../components/marketing/PlaquesShowcase'
+import FaqAccordion from '../components/marketing/FaqAccordion'
+import { Chapters, AntesDepois, AppSection, EcosystemBento, LandingFooter } from '../components/marketing/LandingSections'
 
 const ease = [0.33,1,0.68,1]
 
@@ -288,7 +293,7 @@ function SocialProofSection() {
   ]
 
   return (
-    <section ref={sectionRef} className="lp-social" style={{ padding:'48px 24px 40px', maxWidth:800, margin:'0 auto', textAlign:'center', position:'relative' }}>
+    <section ref={sectionRef} id="resultados" className="lp-social" style={{ padding:'48px 24px 40px', maxWidth:800, margin:'0 auto', textAlign:'center', position:'relative' }}>
 
       {/* HUD scan line */}
       {active && (
@@ -526,12 +531,16 @@ function LiveDashboardDemo() {
 
 export default function HomePage() {
   const router = useRouter()
-  const [checking, setChecking] = useState(true)
+  // A landing renderiza SEMPRE (SEO + prospecto deslogado ve o conteudo na hora).
+  // Só quem está logado é redirecionado — e nesse caso mostramos um overlay de
+  // spinner por cima enquanto o router.push acontece (sem flash da landing).
+  const [redirecting, setRedirecting] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       const u = data?.session?.user
-      if (!u) { setChecking(false); return }
+      if (!u) return
+      setRedirecting(true)
       try {
         const { data: p } = await supabase.from('profiles').select('role,is_team_leader,tenant_id,team').eq('id', u.id).maybeSingle()
         const role = p?.role || 'operator'
@@ -544,19 +553,23 @@ export default function HomePage() {
     })
   }, [])
 
-  if (checking) return (
-    <main style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
-      <div className="spinner" style={{ width:24, height:24, borderTopColor:'var(--t1)' }}/>
-    </main>
-  )
-
   return (
     <main style={{ minHeight:'100vh', position:'relative', zIndex:1, overflow:'hidden' }}>
 
+      {/* Overlay de redirecionamento (só para usuários logados) */}
+      {redirecting && (
+        <div style={{ position:'fixed', inset:0, zIndex:200, background:'#060607', display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <div className="spinner" style={{ width:24, height:24, borderTopColor:'var(--t1)' }}/>
+        </div>
+      )}
+
+      {/* Cabeçalho premium fixo */}
+      <LandingHeader />
+
       {/* Ambient glow orbs — strong red/green like login page */}
-      <div className="lp-ambient" style={{ position:'fixed', top:'-18%', left:'-12%', width:750, height:750, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.18) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb1 20s ease-in-out infinite' }}/>
-      <div className="lp-ambient" style={{ position:'fixed', bottom:'-18%', right:'-10%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(209,250,229,0.12) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
-      <div className="lp-ambient" style={{ position:'fixed', top:'40%', right:'10%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.08) 0%, transparent 65%)', filter:'blur(70px)', pointerEvents:'none', animation:'lpOrb3 30s ease-in-out infinite' }}/>
+      <div className="lp-ambient" style={{ position:'fixed', top:'-18%', left:'-12%', width:750, height:750, borderRadius:'50%', background:'radial-gradient(circle, rgba(225,29,29,0.2) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb1 20s ease-in-out infinite' }}/>
+      <div className="lp-ambient" style={{ position:'fixed', bottom:'-18%', right:'-10%', width:650, height:650, borderRadius:'50%', background:'radial-gradient(circle, rgba(176,22,17,0.14) 0%, transparent 65%)', filter:'blur(60px)', pointerEvents:'none', animation:'lpOrb2 25s ease-in-out infinite' }}/>
+      <div className="lp-ambient" style={{ position:'fixed', top:'40%', right:'10%', width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle, rgba(225,29,29,0.09) 0%, transparent 65%)', filter:'blur(70px)', pointerEvents:'none', animation:'lpOrb3 30s ease-in-out infinite' }}/>
       <style>{`
         @keyframes lpOrb1 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(30px,-20px) scale(1.05); } 66% { transform:translate(-20px,15px) scale(0.97); } }
         @keyframes lpOrb2 { 0%,100% { transform:translate(0,0) scale(1); } 33% { transform:translate(-25px,20px) scale(0.96); } 66% { transform:translate(15px,-10px) scale(1.04); } }
@@ -568,115 +581,119 @@ export default function HomePage() {
           respeita reduced-motion, pointer-events none (nao bloqueia clique). */}
       <CursorSpotlight zIndex={-1} />
 
-      {/* ═══ HERO ═══ */}
-      <section className="lp-hero" style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px 24px', textAlign:'center', position:'relative' }}>
+      {/* ═══ HERO (split: copy à esquerda, vitrine 3D à direita) ═══ */}
+      <section className="lp-hero" style={{ minHeight:'100vh', display:'flex', alignItems:'center', padding:'132px 24px 60px', position:'relative' }}>
+        <div className="lp-hero-grid" style={{ maxWidth:1180, margin:'0 auto', display:'grid', gridTemplateColumns:'1.02fr 0.98fr', gap:56, alignItems:'center', width:'100%' }}>
 
-        <div className="lp-hero-wrap" style={{ maxWidth:640, position:'relative', zIndex:1, animation:'fade-in 0.5s ease both' }}>
-          {/* Logo + Brand */}
-          <div className="lp-logo" style={{ display:'flex', flexDirection:'column', alignItems:'center', marginBottom:26 }}>
-            <Logo size={1.7} showText={false} glow/>
-            <h2 style={{ fontSize:24, fontWeight:900, letterSpacing:'-0.03em', margin:'12px 0 0', lineHeight:1 }}>
-              <span style={{ color:'#F1F5F9' }}>Nex</span><span style={{ color:'#e53935' }}>Control</span>
-            </h2>
+          {/* Coluna de texto */}
+          <div className="lp-hero-copy" style={{ position:'relative', zIndex:2 }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'6px 14px', borderRadius:99, background:'rgba(225,29,29,0.1)', border:'1px solid rgba(225,29,29,0.28)', marginBottom:22, animation:'fade-up 0.5s ease 0.05s both' }}>
+              <span style={{ width:6, height:6, borderRadius:'50%', background:'#e11d1d', boxShadow:'0 0 8px #e11d1d' }}/>
+              <span style={{ fontSize:11, fontWeight:800, color:'#ff6b6b', letterSpacing:'0.1em', textTransform:'uppercase' }}>O sistema operacional do CPA</span>
+            </div>
+
+            <h1 style={{ fontSize:'clamp(34px, 5.2vw, 56px)', fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 18px', lineHeight:1.03, animation:'fade-up 0.5s ease 0.1s both' }}>
+              Sua operação inteira,<br/>
+              <span style={{ background:'linear-gradient(90deg, #ff5b56, #e11d1d)', WebkitBackgroundClip:'text', backgroundClip:'text', color:'transparent' }}>lucrando no controle.</span>
+            </h1>
+
+            <p className="lp-sub1" style={{ fontSize:17, color:'var(--t2)', marginBottom:28, lineHeight:1.6, animation:'fade-up 0.5s ease 0.2s both', maxWidth:520 }}>
+              Centralize equipes, depósitos, remessas, metas e resultados em uma plataforma construída para escalar operações de CPA.
+            </p>
+
+            <div className="lp-ctas" style={{ display:'flex', gap:12, flexWrap:'wrap', animation:'fade-up 0.5s ease 0.3s both' }}>
+              <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:240, justifyContent:'center', fontSize:15.5, fontWeight:800 }}>
+                Assinar agora
+              </Link>
+              <a href="#produto" onClick={(e)=>{e.preventDefault();document.getElementById('produto')?.scrollIntoView({behavior:'smooth'})}} className="btn btn-ghost btn-lg" style={{ minWidth:160, justifyContent:'center', fontSize:14, cursor:'pointer' }}>
+                Ver a plataforma
+              </a>
+            </div>
+
+            <div className="lp-hero-benes" style={{ display:'flex', gap:22, marginTop:24, flexWrap:'wrap', animation:'fade-in 0.5s ease 0.4s both' }}>
+              {['Ativação imediata', 'Configuração rápida', 'Acesso completo'].map((b) => (
+                <div key={b} style={{ display:'flex', alignItems:'center', gap:7 }}>
+                  <span style={{ width:16, height:16, borderRadius:5, background:'rgba(209,250,229,0.12)', border:'1px solid rgba(209,250,229,0.25)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth={3.5} strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+                  </span>
+                  <span style={{ fontSize:12.5, color:'rgba(255,255,255,0.7)', fontWeight:600 }}>{b}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* selo */}
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'6px 14px', borderRadius:99, background:'rgba(229,57,53,0.1)', border:'1px solid rgba(229,57,53,0.25)', marginBottom:22, animation:'fade-up 0.5s ease 0.05s both' }}>
-            <span style={{ width:6, height:6, borderRadius:'50%', background:'#e53935', boxShadow:'0 0 8px #e53935' }}/>
-            <span style={{ fontSize:11, fontWeight:800, color:'#ff6b6b', letterSpacing:'0.08em', textTransform:'uppercase' }}>O sistema operacional do CPA</span>
+          {/* Coluna da vitrine 3D com telas reais + notificações */}
+          <div className="lp-hero-visual" style={{ position:'relative', zIndex:1 }}>
+            <HeroStage />
           </div>
-
-          <h1 style={{ fontSize:44, fontWeight:900, letterSpacing:'-0.04em', color:'var(--t1)', margin:'0 0 16px', lineHeight:1.08, animation:'fade-up 0.5s ease 0.1s both' }}>
-            Sua operação inteira,<br/><span style={{ color:'#e53935' }}>lucrando no controle.</span>
-          </h1>
-
-          <p className="lp-sub1" style={{ fontSize:16.5, color:'var(--t2)', marginBottom:34, lineHeight:1.6, animation:'fade-up 0.5s ease 0.2s both', maxWidth:520, marginLeft:'auto', marginRight:'auto' }}>
-            Metas, operadores e lucro em tempo real — com <strong style={{ color:'#fff' }}>insights de IA</strong>, <strong style={{ color:'#fff' }}>notificações na hora</strong>, <strong style={{ color:'#fff' }}>Network privilegiado</strong> e <strong style={{ color:'#fff' }}>slots premium</strong>. Tudo num lugar só.
-          </p>
-
-          <div className="lp-ctas" style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap', animation:'fade-up 0.5s ease 0.3s both' }}>
-            <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:240, justifyContent:'center', fontSize:15.5, fontWeight:800 }}>
-              Assinar agora — 3 dias grátis
-            </Link>
-            <Link href="/login" className="btn btn-ghost btn-lg" style={{ minWidth:160, justifyContent:'center', fontSize:14 }}>
-              Já tenho conta
-            </Link>
-          </div>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 12 }}>Ativação na hora via PIX • Cancele quando quiser</p>
-
-          <div className="lp-badges" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:24, marginTop:38, flexWrap:'wrap', animation:'fade-in 0.4s ease 0.4s both' }}>
-            {[
-              { v:'IA', l:'insights automáticos' },
-              { v:'Tempo real', l:'push na hora' },
-              { v:'Network', l:'comunidade fechada' },
-              { v:'App', l:'iPhone e Android' },
-            ].map(({ v, l }) => (
-              <div key={v} style={{ textAlign:'center' }}>
-                <p style={{ fontSize:14, fontWeight:800, color:'var(--t1)', margin:'0 0 2px' }}>{v}</p>
-                <p style={{ fontSize:10, color:'var(--t3)', margin:0 }}>{l}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="lp-scroll-hint" style={{ position:'absolute', bottom:36, display:'flex', flexDirection:'column', alignItems:'center', gap:8, cursor:'pointer', animation:'fade-in 0.6s ease 1.5s both' }}
-          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}>
-          <span style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.6)', letterSpacing:'0.12em' }}>TUDO QUE VOCÊ RECEBE</span>
-          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth={2.5} strokeLinecap="round" style={{ animation:'float 1.8s ease-in-out infinite' }}><polyline points="6 9 12 15 18 9"/></svg>
         </div>
       </section>
 
-      {/* ═══ DIFERENCIAIS (grade de benefícios) ═══ */}
-      <section className="lp-benefits" style={{ padding:'20px 24px 70px', maxWidth:1040, margin:'0 auto' }}>
-        <div style={{ textAlign:'center', marginBottom:36 }}>
-          <p style={{ fontSize:11, fontWeight:800, letterSpacing:'0.2em', textTransform:'uppercase', color:'#ff6b6b', margin:'0 0 10px' }}>Tudo incluído no PRO</p>
-          <h2 style={{ fontSize:30, fontWeight:900, letterSpacing:'-0.03em', color:'#fff', margin:0, lineHeight:1.15 }}>Muito além de uma planilha.</h2>
-        </div>
-        <div className="lp-benefits-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
+      {/* ═══ NÚMEROS (barra única premium, valores reais no HTML) ═══ */}
+      <section aria-label="Números da plataforma" style={{ padding:'0 24px', maxWidth:960, margin:'0 auto' }}>
+        <div className="lp-statbar" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', alignItems:'center', borderRadius:18, padding:'22px 20px', background:'linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01))', border:'1px solid rgba(255,255,255,0.09)', boxShadow:'0 20px 60px rgba(0,0,0,0.4)' }}>
           {[
-            { c:'#e53935', icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', t:'Lucro real em tempo real', d:'Cada remessa entra e o resultado da operação se atualiza sozinho. Sem achismo, sem planilha.' },
-            { c:'#e53935', icon:'M12 3l1.9 4.3L18 9l-4.1 1.7L12 15l-1.9-4.3L6 9l4.1-1.7L12 3z', t:'Insights de IA', d:'A IA vigia sua operação e te avisa: sequência negativa, prejuízo acima da média, meta parada.' },
-            { c:'#e53935', icon:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0', t:'Notificações em tempo real', d:'Push na hora do que importa: meta batida, prejuízo, movimentação da equipe — no celular.' },
-            { c:'var(--profit)', icon:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 0M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', t:'Network privilegiado', d:'Comunidade fechada de admins: troque estratégia, veja resultados reais e cresça junto com os grandes.' },
-            { c:'var(--profit)', icon:'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z', t:'Slots premium', d:'Organize contas e slots no padrão premium — controle visual da operação inteira.' },
-            { c:'var(--profit)', icon:'M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z', t:'VIP & Premiações', d:'Aulas VIP, placas de faturamento e status de elite conforme sua operação cresce.' },
-          ].map(({ c, icon, t, d }, i) => (
-            <SpotlightCard key={i} style={{ padding:'26px 22px', borderRadius:16, background:'linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))', border:'1px solid rgba(255,255,255,0.07)' }}>
-              <div style={{ width:42, height:42, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16, background:`${c==='var(--profit)'?'rgba(209,250,229,0.1)':'rgba(229,57,53,0.12)'}`, border:`1px solid ${c==='var(--profit)'?'rgba(209,250,229,0.22)':'rgba(229,57,53,0.3)'}` }}>
-                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d={icon}/></svg>
-              </div>
-              <h3 style={{ fontSize:16.5, fontWeight:800, color:'var(--t1)', margin:'0 0 7px', letterSpacing:'-0.01em' }}>{t}</h3>
-              <p style={{ fontSize:13, color:'var(--t3)', margin:0, lineHeight:1.55 }}>{d}</p>
-            </SpotlightCard>
+            { v:'400+', l:'operadores ativos' },
+            { v:'R$ 1M+', l:'monitorados em operações' },
+            { v:'3.000+', l:'metas analisadas' },
+          ].map(({ v, l }, i) => (
+            <div key={l} style={{ textAlign:'center', borderLeft: i>0 ? '1px solid rgba(255,255,255,0.08)' : 'none', padding:'4px 8px' }}>
+              <p style={{ fontFamily:'var(--mono, monospace)', fontSize:'clamp(22px, 3.6vw, 34px)', fontWeight:900, color:'#fff', margin:0, letterSpacing:'-0.03em' }}>{v}</p>
+              <p style={{ fontSize:'clamp(10px, 1.4vw, 12.5px)', color:'rgba(255,255,255,0.45)', margin:'6px 0 0', fontWeight:500 }}>{l}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* ═══ LIVE DASHBOARD DEMO ═══ */}
-      <p className="lp-demo-title" style={{ fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', marginBottom: 20 }}>Veja sua operação acontecendo em tempo real:</p>
-      <LiveDashboardDemo/>
+      {/* ═══ FAIXAS DIAGONAIS ANIMADAS ═══ */}
+      <MarqueeBands />
+
+      {/* ═══ CAPÍTULOS EDITORIAIS (produto) ═══ */}
+      <Chapters />
+
+      {/* ═══ ANTES / DEPOIS ═══ */}
+      <AntesDepois />
+
+      {/* ═══ APP + NOTIFICAÇÕES ═══ */}
+      <AppSection />
+
+      {/* ═══ ECOSSISTEMA (bento assimétrico) ═══ */}
+      <EcosystemBento />
+
+      {/* ═══ PLACAS DE FATURAMENTO (artes reais) ═══ */}
+      <PlaquesShowcase />
 
       {/* ═══ PROVA SOCIAL ═══ */}
       <SocialProofSection />
 
       {/* ═══ PREÇO / PLANO ═══ */}
-      <section id="planos" className="lp-pricing" style={{ padding:'50px 24px 70px', maxWidth:560, margin:'0 auto' }}>
+      <section id="planos" className="lp-pricing" style={{ padding:'50px 24px 70px', maxWidth:560, margin:'0 auto', scrollMarginTop:80 }}>
         <div style={{ textAlign:'center', marginBottom:26 }}>
           <p style={{ fontSize:11, fontWeight:800, letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--profit)', margin:'0 0 10px' }}>Comece hoje</p>
-          <h2 style={{ fontSize:30, fontWeight:900, letterSpacing:'-0.03em', color:'#fff', margin:0 }}>Um plano. Tudo liberado.</h2>
+          <h2 style={{ fontSize:30, fontWeight:900, letterSpacing:'-0.03em', color:'#fff', margin:'0 0 10px' }}>Um plano. Tudo liberado.</h2>
+          <p style={{ fontSize:14, color:'var(--t3)', margin:0, maxWidth:420, marginInline:'auto' }}>Assine, pague via PIX e o acesso é liberado na hora. Sem fidelidade — cancele quando quiser.</p>
         </div>
 
         <div style={{ position:'relative', overflow:'hidden', borderRadius:22, padding:'32px 28px', background:'linear-gradient(180deg, #140707, #080404)', border:'1px solid rgba(229,57,53,0.3)', boxShadow:'0 30px 90px rgba(0,0,0,0.6), 0 0 70px rgba(229,57,53,0.08)' }}>
           <div style={{ position:'absolute', top:0, left:'18%', right:'18%', height:1, background:'linear-gradient(90deg, transparent, #e53935, transparent)' }}/>
 
           <div style={{ textAlign:'center', marginBottom:22 }}>
-            <div style={{ display:'inline-block', padding:'4px 12px', borderRadius:99, background:'rgba(209,250,229,0.1)', border:'1px solid rgba(209,250,229,0.25)', fontSize:11, fontWeight:800, color:'var(--profit)', marginBottom:16 }}>3 DIAS GRÁTIS</div>
+            <div style={{ display:'inline-block', padding:'4px 12px', borderRadius:99, background:'rgba(229,57,53,0.12)', border:'1px solid rgba(229,57,53,0.3)', fontSize:11, fontWeight:800, color:'#ff6b6b', marginBottom:16 }}>PLANO COMPLETO</div>
             <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'center', gap:4 }}>
               <span style={{ fontSize:18, fontWeight:700, color:'var(--t3)', marginBottom:8 }}>R$</span>
               <span style={{ fontSize:56, fontWeight:900, color:'#fff', letterSpacing:'-0.04em', lineHeight:1 }}>59,90</span>
               <span style={{ fontSize:15, color:'var(--t3)', marginBottom:9 }}>/mês</span>
             </div>
-            <p style={{ fontSize:12.5, color:'var(--t3)', margin:'8px 0 0' }}>+ R$ 29,90 por operador · com desconto por volume</p>
+            <p style={{ fontSize:12.5, color:'var(--t3)', margin:'8px 0 0' }}>Plataforma completa, sem surpresa na fatura.</p>
+          </div>
+
+          <div style={{ display:'flex', gap:8, justifyContent:'center', marginBottom:6, flexWrap:'wrap' }}>
+            {[['Ativação', 'na hora via PIX'], ['Sem fidelidade', 'cancele quando quiser'], ['Acesso', 'completo ao PRO']].map(([l, v]) => (
+              <div key={l} style={{ flex:'1 1 140px', minWidth:120, padding:'10px 12px', borderRadius:10, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)', textAlign:'center' }}>
+                <p style={{ fontSize:10.5, color:'var(--t3)', margin:'0 0 4px' }}>{l}</p>
+                <p style={{ fontSize:12, fontWeight:800, color:'#fff', margin:0 }}>{v}</p>
+              </div>
+            ))}
           </div>
 
           <div style={{ display:'flex', flexDirection:'column', gap:11, margin:'24px 0 26px' }}>
@@ -698,39 +715,85 @@ export default function HomePage() {
           </div>
 
           <Link href="/signup" className="btn btn-brand btn-lg" style={{ width:'100%', justifyContent:'center', fontSize:15.5, fontWeight:800 }}>
-            Criar conta e começar grátis
+            Assinar agora
           </Link>
-          <p style={{ fontSize:11.5, color:'var(--t4)', textAlign:'center', margin:'12px 0 0' }}>Sem cartão pra testar • Ativação via PIX quando decidir assinar</p>
+          <p style={{ fontSize:11.5, color:'var(--t4)', textAlign:'center', margin:'12px 0 0' }}>Pagamento via PIX • Ativação na hora • Cancele quando quiser</p>
         </div>
       </section>
+
+      {/* ═══ FAQ ═══ */}
+      <FaqAccordion />
 
       {/* ═══ CTA FINAL ═══ */}
-      <section className="lp-cta-final" style={{ padding:'30px 24px 80px', textAlign:'center' }}>
+      <section className="lp-cta-final" style={{ padding:'40px 24px 60px', textAlign:'center' }}>
         <div>
-          <h2 style={{ fontSize:30, fontWeight:900, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pare de operar no escuro.</h2>
+          <h2 style={{ fontSize:'clamp(24px, 5vw, 32px)', fontWeight:900, color:'var(--t1)', margin:'0 0 10px', letterSpacing:'-0.03em' }}>Pare de operar no escuro.</h2>
           <p style={{ fontSize:14.5, color:'var(--t3)', marginBottom:26 }}>Assine agora e comece a ver sua operação como ela realmente é.</p>
           <Link href="/signup" className="btn btn-brand btn-lg" style={{ minWidth:260, justifyContent:'center', fontSize:15.5, fontWeight:800 }}>
-            Assinar agora — 3 dias grátis
+            Assinar agora
           </Link>
-        </div>
-
-        <div style={{ marginTop:48, display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
-          <Logo size={0.75} showText={false} style={{ opacity:0.5 }}/>
-          <p style={{ fontSize:14, fontWeight:800, margin:0 }}>
-            <span style={{ color:'rgba(255,255,255,0.4)' }}>Nex</span><span style={{ color:'rgba(229,57,53,0.5)' }}>Control</span>
-          </p>
-          <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-            <span style={{ width:4, height:4, borderRadius:'50%', background:'rgba(209,250,229,0.4)' }}/>
-            <span style={{ fontSize:9, color:'var(--t4)', letterSpacing:'0.1em', textTransform:'uppercase' }}>Sistema operacional ativo</span>
-          </div>
+          <p style={{ fontSize:12, color:'rgba(255,255,255,0.35)', marginTop:12 }}>Pagamento via PIX • Ativação na hora • Cancele quando quiser</p>
         </div>
       </section>
 
+      {/* ═══ FOOTER ═══ */}
+      <LandingFooter />
+
+      {/* CTA fixo no mobile — some ao chegar nos planos (via IntersectionObserver) */}
+      <MobileCta />
+
       <style>{`
+        section[id] { scroll-margin-top: 84px; }
         @media (max-width: 760px) {
-          .lp-benefits-grid { grid-template-columns: 1fr !important; }
+          .lp-hero { padding-top: 116px !important; min-height: auto !important; }
+          .lp-hero-grid { grid-template-columns: 1fr !important; gap: 34px !important; }
+          .lp-chapter { grid-template-columns: 1fr !important; gap: 28px !important; }
+          .lp-chapter-text { order: 1 !important; }
+          .lp-chapter-visual { order: 2 !important; }
+          .lp-ad-grid { grid-template-columns: 1fr !important; }
+          .lp-app-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .lp-footer-grid { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+          .lp-cta-final { padding-bottom: 116px !important; }
+        }
+        @media (max-width: 480px) {
+          .lp-statbar { padding: 16px 10px !important; }
+          .lp-footer-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </main>
+  )
+}
+
+/* ── CTA fixo no mobile (some ao entrar nos planos) ── */
+function MobileCta() {
+  const [pastHero, setPastHero] = useState(false)
+  const [atPlanos, setAtPlanos] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.85)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    const planos = document.getElementById('planos')
+    let obs
+    if (planos) {
+      obs = new IntersectionObserver(([e]) => setAtPlanos(e.isIntersecting), { threshold: 0.05 })
+      obs.observe(planos)
+    }
+    return () => { window.removeEventListener('scroll', onScroll); if (obs) obs.disconnect() }
+  }, [])
+  const hidden = !pastHero || atPlanos
+  return (
+    <div className="lp-mobile-cta" style={{
+      position:'fixed', left:0, right:0, bottom:0, zIndex:90, display:'none',
+      padding:'12px 16px calc(12px + env(safe-area-inset-bottom))',
+      background:'linear-gradient(180deg, rgba(6,6,7,0), rgba(6,6,7,0.92) 34%)',
+      transform: hidden ? 'translateY(120%)' : 'translateY(0)',
+      opacity: hidden ? 0 : 1, transition:'transform 0.35s ease, opacity 0.35s ease',
+      pointerEvents: hidden ? 'none' : 'auto',
+    }}>
+      <Link href="/signup" className="btn btn-brand btn-lg" style={{ width:'100%', justifyContent:'center', fontSize:15.5, fontWeight:800 }}>
+        Assinar agora
+      </Link>
+      <style>{`@media (max-width: 760px) { .lp-mobile-cta { display: block !important; } }`}</style>
+    </div>
   )
 }

@@ -8,7 +8,7 @@ const QuickNotifyPanel = dynamic(() => import('./QuickNotifyPanel'), { ssr: fals
 const VoiceAnnounceCard = dynamic(() => import('./VoiceAnnounceCard'), { ssr: false })
 const RedesignHeader = dynamic(() => import('./RedesignHeader'), { ssr: false })
 const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
-const BettifyStoreBanner = dynamic(() => import('./BettifyStoreBanner'), { ssr: false })
+const BettifyPromo = dynamic(() => import('./BettifyPromo'), { ssr: false })
 const NetworkLaunchBanner = dynamic(() => import('./NetworkLaunchBanner'), { ssr: false })
 const NetworkDock = dynamic(() => import('./NetworkDock'), { ssr: false })
 const PhoneGate = dynamic(() => import('./PhoneGate'), { ssr: false })
@@ -56,7 +56,8 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       <QuickNotifyPanel userEmail={userEmail} />
       <VoiceAnnounceCard userEmail={userEmail} isAdmin={isAdmin} />
       <VoiceBanner userEmail={userEmail} />
-      <BettifyStoreBanner userEmail={userEmail} />
+      {/* Promo Bettify: todo login até 10/09, depois 1x por usuário (novos/retornos). Some nas telas da própria loja. */}
+      {pathname !== '/proxy' && pathname !== '/minhas-proxies' && <BettifyPromo userEmail={userEmail} />}
       {pathname !== '/network' && <NetworkLaunchBanner userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />}
       {/* Reativado após upgrade Nano->Micro (08/07) com polling espaçado (90s) pra pegar leve no banco */}
       <NetworkDock userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />

@@ -56,7 +56,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       <QuickNotifyPanel userEmail={userEmail} />
       <VoiceAnnounceCard userEmail={userEmail} isAdmin={isAdmin} />
       <VoiceBanner userEmail={userEmail} />
-      {/* Promo Bettify: todo login até 10/09, depois 1x por usuário (novos/retornos). Some nas telas da própria loja. */}
+      {/* Promo Bettify: PERMANENTE — 1x por sessão (todo login/abertura). Some nas telas da própria loja. */}
       {pathname !== '/proxy' && pathname !== '/minhas-proxies' && <BettifyPromo userEmail={userEmail} />}
       {pathname !== '/network' && <NetworkLaunchBanner userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />}
       {/* Reativado após upgrade Nano->Micro (08/07) com polling espaçado (90s) pra pegar leve no banco */}

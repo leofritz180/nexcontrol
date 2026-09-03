@@ -4,9 +4,8 @@
 // loja integrada no painel via /proxy). Peça central: o "medidor de giga" que
 // compara outras lojas (paga 10GB, recebe 7) vs Bettify (recebe 10 certinho).
 //
-// Exibição:
-//   • Até 10/09/2026: uma vez POR SESSÃO pra todo mundo (todo login vê).
-//   • Depois: uma vez POR USUÁRIO (novos e quem voltou veem na primeira vez).
+// Exibição: PERMANENTE (pedido do dono em 03/09) — uma vez POR SESSÃO, ou
+// seja, todo login / toda vez que abrir a Nex. Sem data de fim por enquanto.
 // Usa o useOverlaySlot (prio 5, modal) — nunca aparece em cima do tour/phone.
 // Cores da Bettify (#FF6B00) só aqui, como já acontece no item da Sidebar.
 // ─────────────────────────────────────────────────────────────────────────
@@ -15,9 +14,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useOverlaySlot } from '../lib/overlayCoordinator'
 
-const FIM_JANELA_7D = new Date('2026-09-11T03:00:00Z') // 10/09 ~meia-noite BRT
 const KEY_SESSAO = 'nx_bettify_promo_v1_sessao'
-const keyUsuario = (email) => `nx_bettify_promo_v1_${(email || 'anon').toLowerCase()}`
 
 const LARANJA = '#FF6B00'
 
@@ -60,13 +57,7 @@ export default function BettifyPromo({ userEmail }) {
 
   useEffect(() => {
     try {
-      const agora = new Date()
-      const naJanela = agora < FIM_JANELA_7D
-      if (naJanela) {
-        if (sessionStorage.getItem(KEY_SESSAO)) return
-      } else {
-        if (localStorage.getItem(keyUsuario(userEmail))) return
-      }
+      if (sessionStorage.getItem(KEY_SESSAO)) return // ja viu NESTA sessao
       // pequeno atraso pra nao competir com o carregamento do painel
       const t = setTimeout(() => setWant(true), 2500)
       return () => clearTimeout(t)
@@ -76,10 +67,7 @@ export default function BettifyPromo({ userEmail }) {
   const granted = useOverlaySlot('bettify-promo', 5, want)
 
   function marcarVisto() {
-    try {
-      sessionStorage.setItem(KEY_SESSAO, '1')
-      localStorage.setItem(keyUsuario(userEmail), '1')
-    } catch {}
+    try { sessionStorage.setItem(KEY_SESSAO, '1') } catch {}
   }
   function fechar() { marcarVisto(); setWant(false) }
   function abrirLoja() { marcarVisto(); setWant(false); router.push('/proxy') }

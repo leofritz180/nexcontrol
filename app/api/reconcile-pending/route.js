@@ -33,14 +33,19 @@ async function doReconcile() {
     process.env.SUPABASE_SERVICE_ROLE_KEY
   )
 
-  // Pendings dos ultimos 30min — janela curta porque eh chamada com frequencia
-  const cutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString()
+  // Janela de 7 DIAS (era 30min). INCIDENTE 04/09/2026 "Balak": o webhook do MP
+  // falhou, o reconcile so olhava os ultimos 30min e o pagamento aprovado virou
+  // orfao PARA SEMPRE — o cliente renovou, pagou e ficou sem acesso.
+  // A janela larga e barata porque a fila se auto-limpa: todo pending que o MP
+  // reporta como cancelled/rejected/expired e marcado abaixo e sai do pool.
+  // Um erro pontual na API do MP agora tambem se cura sozinho na proxima rodada.
+  const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
   const { data: pendings } = await sb.from('mp_payments')
     .select('id,tenant_id,user_id,mp_payment_id,status,amount,operator_count,plan_months,created_at')
     .eq('status', 'pending')
     .gt('created_at', cutoff)
     .order('created_at', { ascending: false })
-    .limit(30)
+    .limit(60)
 
   const stats = { checked: 0, activated: 0, still_pending: 0, errors: 0, activations: [] }
 

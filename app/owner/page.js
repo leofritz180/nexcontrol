@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase/client'
 import OnlineCounter from '../../components/OnlineCounter'
 import dynamicImport from 'next/dynamic'
 const QuickNotifyPanel = dynamicImport(() => import('../../components/QuickNotifyPanel'), { ssr: false })
+import OwnerExecutive from '../../components/OwnerExecutive'
 
 const OWNER = 'leofritz180@gmail.com'
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -232,7 +233,7 @@ export default function OwnerPage() {
   return (
     <main className="nx-owner" style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
       {/* Ambient dourado */}
-      <div style={{ position: 'fixed', top: '-10%', left: '15%', width: 540, height: 540, borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,175,55,0.06), transparent 62%)', filter: 'blur(90px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', top: '-10%', left: '15%', width: 540, height: 540, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.04), transparent 62%)', filter: 'blur(90px)', pointerEvents: 'none' }} />
 
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 28px 80px' }}>
 
@@ -240,48 +241,31 @@ export default function OwnerPage() {
         <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14, marginBottom: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 13 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 13, background: 'rgba(212,175,55,0.10)', border: '1px solid rgba(212,175,55,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 26px rgba(212,175,55,0.2)' }}>
-                <svg width={21} height={21} viewBox="0 0 24 24" fill="none" stroke="#e8c766" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.7 5.8 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+              <div style={{ width: 44, height: 44, borderRadius: 13, background: 'rgba(225,29,29,0.10)', border: '1px solid rgba(225,29,29,0.32)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 26px rgba(225,29,29,0.22)' }}>
+                <svg width={21} height={21} viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.7 5.8 21 7 14 2 9.3 9 8.5 12 2"/></svg>
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                  <h1 style={{ fontSize: 23, fontWeight: 800, color: '#f7f0df', margin: 0, letterSpacing: '-0.03em' }}>Centro de Comando</h1>
-                  <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', padding: '3px 9px', borderRadius: 5, background: 'rgba(212,175,55,0.12)', color: '#e8c766', border: '1px solid rgba(212,175,55,0.32)' }}>OWNER</span>
+                  <h1 style={{ fontSize: 23, fontWeight: 800, color: '#F5F5F5', margin: 0, letterSpacing: '-0.03em' }}>Centro de Comando</h1>
+                  <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.14em', padding: '3px 9px', borderRadius: 5, background: 'rgba(225,29,29,0.12)', color: '#ff6b6b', border: '1px solid rgba(225,29,29,0.32)' }}>OWNER</span>
                 </div>
-                <p style={{ fontSize: 11.5, color: '#998b6a', margin: '3px 0 0', textTransform: 'capitalize' }}>{dateStr}</p>
+                <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.42)', margin: '3px 0 0', textTransform: 'capitalize' }}>{dateStr}</p>
               </div>
             </div>
             <button onClick={() => router.push('/admin')}
-              style={{ fontSize: 12, fontWeight: 700, padding: '9px 20px', borderRadius: 10, cursor: 'pointer', border: '1px solid rgba(212,175,55,0.25)', background: 'rgba(212,175,55,0.06)', color: '#e8c766', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.12)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.06)' }}
+              style={{ fontSize: 12, fontWeight: 700, padding: '9px 20px', borderRadius: 10, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#ff6b6b', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(225,29,29,0.12)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
             >Voltar ao painel</button>
           </div>
 
-          {/* KPIs ao vivo */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 1, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(212,175,55,0.18)', background: 'rgba(212,175,55,0.14)' }}>
-            {[
-              { l: 'MRR', v: <CountUp value={kpis.mrr} prefix="R$ " />, gold: true },
-              { l: 'Receita hoje', v: <CountUp value={kpis.revenueToday} prefix="R$ " /> },
-              { l: 'Receita ontem', v: <CountUp value={kpis.revenueYesterday || 0} prefix="R$ " /> },
-              { l: 'Pagantes (clientes)', v: <CountUpInt value={kpis.activeSubs} /> },
-              { l: 'Pagantes (admin+op)', v: <CountUpInt value={kpis.payingPeople != null ? kpis.payingPeople : kpis.activeSubs} /> },
-              { l: 'Receita total', v: <CountUp value={kpis.totalRevenue} prefix="R$ " /> },
-            ].map((k, i) => (
-              <div key={i} style={{ padding: '15px 18px', background: '#14110b' }}>
-                <p style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#998b6a', margin: '0 0 6px' }}>{k.l}</p>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 800, color: k.gold ? '#e8c766' : '#f7f0df', margin: 0, letterSpacing: '-0.01em' }}>{k.v}</p>
-              </div>
-            ))}
-          </div>
-
           {/* Abas */}
-          <div style={{ display: 'flex', gap: 4, marginTop: 20, borderBottom: '1px solid rgba(212,175,55,0.16)', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 4, marginTop: 20, borderBottom: '1px solid rgba(255,255,255,0.08)', flexWrap: 'wrap' }}>
             {[['geral', 'Visão geral'], ['receita', 'Receita'], ['operacao', 'Operação & Saúde'], ['clientes', 'Clientes'], ['network', 'Network']].map(([k, l]) => (
               <button key={k} onClick={() => setTab(k)} style={{
                 padding: '11px 18px', fontSize: 13, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer',
-                background: 'transparent', border: 'none', borderBottom: tab === k ? '2px solid #e8c766' : '2px solid transparent',
-                color: tab === k ? '#f7f0df' : '#998b6a', marginBottom: -1, transition: 'all 0.15s',
+                background: 'transparent', border: 'none', borderBottom: tab === k ? '2px solid #ff6b6b' : '2px solid transparent',
+                color: tab === k ? '#F5F5F5' : 'rgba(255,255,255,0.42)', marginBottom: -1, transition: 'all 0.15s',
               }}>{l}</button>
             ))}
           </div>
@@ -315,62 +299,8 @@ export default function OwnerPage() {
           <OnlineCounter userId={userId} variant="card" />
         </div>
 
-        {/* ═══ LEVEL 1: HERO ═══ */}
-        <motion.div {...fadeUp(1)} style={{ marginBottom: 16 }}>
-          <div style={{ ...card, position: 'relative', overflow: 'hidden', padding: '36px 36px 28px' }}>
-            <div style={{ position: 'absolute', top: '-20%', left: '5%', width: 500, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(209,250,229,0.08), transparent 60%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(209,250,229,0.08), transparent)', pointerEvents: 'none' }} />
-
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                    <p style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, margin: 0 }}>Receita total acumulada</p>
-                    {variation !== 0 && (
-                      <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 6, background: variationUp ? 'rgba(209,250,229,0.1)' : 'rgba(239,68,68,0.1)', color: variationUp ? 'var(--profit)' : 'var(--loss)', border: `1px solid ${variationUp ? 'rgba(209,250,229,0.2)' : 'rgba(239,68,68,0.2)'}`, fontFamily: 'var(--mono)' }}>
-                        {variationUp ? '+' : ''}{variation}%
-                      </span>
-                    )}
-                  </div>
-                  <motion.p
-                    animate={{ textShadow: ['0 0 30px rgba(209,250,229,0.1)', '0 0 60px rgba(209,250,229,0.2)', '0 0 30px rgba(209,250,229,0.1)'] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{ fontFamily: 'var(--mono)', fontSize: 48, fontWeight: 900, color: 'var(--profit)', lineHeight: 1, letterSpacing: '-0.03em', margin: '0 0 12px' }}
-                  >
-                    <CountUp value={kpis.totalRevenue} prefix="R$ " />
-                  </motion.p>
-                  <span style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 6, background: variationUp ? 'rgba(209,250,229,0.06)' : 'rgba(239,68,68,0.06)', color: variationUp ? '#4ade80' : '#fca5a5' }}>
-                    {variationUp ? 'Operacao em crescimento' : 'Atencao na queda'}
-                  </span>
-                </div>
-                {/* Mini sparkline */}
-                <div style={{ flexShrink: 0, paddingTop: 20 }}>
-                  <MiniSparkline data={sparkValues} w={160} h={50} />
-                  <p style={{ fontSize: 9, color: '#64748B', margin: '6px 0 0', textAlign: 'right' }}>Ultimos 30 dias</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Sub-KPIs */}
-        <div className="g-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 28 }}>
-          {[
-            { l: 'Receita hoje', v: kpis.revenueToday, c: kpis.revenueToday > 0 ? 'var(--profit)' : '#64748B' },
-            { l: 'Receita do mes', v: kpis.revenueMonth, c: '#F1F5F9' },
-            { l: 'MRR estimado', v: kpis.mrr, c: 'var(--profit)', sub: `${kpis.activeSubs} assinatura${kpis.activeSubs !== 1 ? 's' : ''}` },
-            { l: 'Ticket medio', v: kpis.avgTicket || 0, c: '#F1F5F9' },
-          ].map((item, i) => (
-            <motion.div key={i} {...fadeUp(i, 0.12)} style={{ ...card, padding: '20px 22px' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.5)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = card.boxShadow }}
-            >
-              <p style={{ fontSize: 10, color: '#64748B', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>{item.l}</p>
-              <p style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 800, color: item.c, margin: 0, lineHeight: 1 }}><CountUp value={item.v} prefix="R$ " /></p>
-              {item.sub && <p style={{ fontSize: 10, color: '#64748B', margin: '6px 0 0' }}>{item.sub}</p>}
-            </motion.div>
-          ))}
-        </div>
+        {/* ═══ PAINEL EXECUTIVO (MRR/ARR, caixa, saúde, 12 meses, funil) ═══ */}
+        <OwnerExecutive kpis={kpis} funnel={data.funnel} monthSeries={data.monthSeries} activity={data.activity} />
 
         {/* ═══ "O QUE ESTA ACONTECENDO AGORA" + PREVISAO ═══ */}
         <div className="g-side" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20, marginBottom: 28 }}>
@@ -911,7 +841,7 @@ export default function OwnerPage() {
                               fontFamily: 'var(--mono)', fontSize: 8.5, fontWeight: 700,
                               letterSpacing: '0.1em', textTransform: 'uppercase',
                               background: s.gateway === 'mp' ? 'rgba(96,165,250,0.08)' : 'rgba(209,250,229,0.06)',
-                              color: s.gateway === 'mp' ? '#60A5FA' : 'var(--profit)',
+                              color: s.gateway === 'mp' ? '#ff6b6b' : 'var(--profit)',
                               border: `1px solid ${s.gateway === 'mp' ? 'rgba(96,165,250,0.2)' : 'rgba(209,250,229,0.18)'}`,
                             }}>
                               {s.gateway === 'mp' ? 'MP' : 'Asaas'}
@@ -1132,7 +1062,7 @@ export default function OwnerPage() {
                         <span style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, minWidth: 70 }}>R$ {p.amount.toFixed(2).replace('.',',')}</span>
                         <span style={{ fontSize: 11, color: 'var(--t3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.tenant}</span>
                         <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{p.mp_id}</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', minWidth: 50, textAlign: 'right' }}>{p.minutesOld}min</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#ff6b6b', minWidth: 50, textAlign: 'right' }}>{p.minutesOld}min</span>
                       </div>
                     ))}
                   </div>
@@ -1145,8 +1075,8 @@ export default function OwnerPage() {
                   background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>Tenants excedendo limite de operadores</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}>{issues.opLimit.length}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#ff6b6b' }}>Tenants excedendo limite de operadores</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(225,29,29,0.14)', color: '#ff6b6b' }}>{issues.opLimit.length}</span>
                     </div>
                     <span style={{ fontSize: 10, color: '#64748B' }}>cliente bloqueado · cobrar upgrade</span>
                   </div>
@@ -1155,7 +1085,7 @@ export default function OwnerPage() {
                       <div key={t.tenant_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 6, background: 'rgba(0,0,0,0.2)' }}>
                         <span style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.tenant}</span>
                         <span style={{ fontSize: 11, color: 'var(--t3)' }}>{t.current} ops · plano {t.limit}</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', minWidth: 40, textAlign: 'right' }}>+{t.excess}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#ff6b6b', minWidth: 40, textAlign: 'right' }}>+{t.excess}</span>
                       </div>
                     ))}
                   </div>
@@ -1168,8 +1098,8 @@ export default function OwnerPage() {
                   background: 'rgba(96,165,250,0.04)', border: '1px solid rgba(96,165,250,0.2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#60A5FA' }}>Operadores possivelmente duplicados</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(96,165,250,0.15)', color: '#60A5FA' }}>{issues.duplicates.length}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#ff6b6b' }}>Operadores possivelmente duplicados</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(225,29,29,0.14)', color: '#ff6b6b' }}>{issues.duplicates.length}</span>
                     </div>
                     <span style={{ fontSize: 10, color: '#64748B' }}>mesmo nome no mesmo tenant</span>
                   </div>
@@ -1178,7 +1108,7 @@ export default function OwnerPage() {
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 6, background: 'rgba(0,0,0,0.2)' }}>
                         <span style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, minWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.name}</span>
                         <span style={{ fontSize: 11, color: 'var(--t3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.tenant}</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#60A5FA', minWidth: 40, textAlign: 'right' }}>x{d.count}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#ff6b6b', minWidth: 40, textAlign: 'right' }}>x{d.count}</span>
                       </div>
                     ))}
                   </div>
@@ -1191,8 +1121,8 @@ export default function OwnerPage() {
                   background: 'rgba(245,158,11,0.04)', border: '1px solid rgba(245,158,11,0.2)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>Webhooks lentos nas ultimas 24h</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(245,158,11,0.15)', color: '#F59E0B' }}>{issues.slowHooks.length}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#ff6b6b' }}>Webhooks lentos nas ultimas 24h</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: 'rgba(225,29,29,0.14)', color: '#ff6b6b' }}>{issues.slowHooks.length}</span>
                     </div>
                     <span style={{ fontSize: 10, color: '#64748B' }}>chegaram com mais de 5min · padrao = MP instavel</span>
                   </div>
@@ -1202,7 +1132,7 @@ export default function OwnerPage() {
                         <span style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, minWidth: 70 }}>R$ {p.amount.toFixed(2).replace('.',',')}</span>
                         <span style={{ fontSize: 11, color: 'var(--t3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.tenant}</span>
                         <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)' }}>{p.mp_id}</span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', minWidth: 50, textAlign: 'right' }}>{p.latency_min}min</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#ff6b6b', minWidth: 50, textAlign: 'right' }}>{p.latency_min}min</span>
                       </div>
                     ))}
                   </div>
@@ -1223,7 +1153,7 @@ export default function OwnerPage() {
               </div>
               {(() => {
                 const sr = webhookHealth.h24.successRate
-                const color = sr >= 95 ? '#10B981' : sr >= 80 ? '#F59E0B' : 'var(--loss)'
+                const color = sr >= 95 ? 'var(--profit)' : sr >= 80 ? '#ff6b6b' : 'var(--loss)'
                 const label = sr >= 95 ? 'Saudavel' : sr >= 80 ? 'Atencao' : 'Critico'
                 return (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 8,
@@ -1239,8 +1169,8 @@ export default function OwnerPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 20 }}>
               {[
                 { label: 'Total 24h', value: webhookHealth.h24.total, color: '#F1F5F9' },
-                { label: 'Instant (<60s)', value: webhookHealth.h24.instant, color: '#10B981' },
-                { label: 'Atrasado (1-5min)', value: webhookHealth.h24.delayed, color: '#F59E0B' },
+                { label: 'Instant (<60s)', value: webhookHealth.h24.instant, color: 'var(--profit)' },
+                { label: 'Atrasado (1-5min)', value: webhookHealth.h24.delayed, color: '#ff6b6b' },
                 { label: 'Orfao (>5min)', value: webhookHealth.h24.orfao, color: 'var(--loss)' },
               ].map((b, i) => (
                 <div key={i} style={{ padding: '12px 14px', borderRadius: 10,
@@ -1272,7 +1202,7 @@ export default function OwnerPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {webhookHealth.lastPayments.map(p => {
                   const sec = p.latency_s
-                  const color = sec < 60 ? '#10B981' : sec < 300 ? '#F59E0B' : 'var(--loss)'
+                  const color = sec < 60 ? 'var(--profit)' : sec < 300 ? '#ff6b6b' : 'var(--loss)'
                   const label = sec < 60 ? sec + 's' : sec < 3600 ? Math.round(sec/60) + 'min' : Math.round(sec/3600) + 'h'
                   const dt = new Date(p.created_at).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
                   return (
@@ -1565,10 +1495,10 @@ function NetworkMetricsPanel() {
   }
   useEffect(() => { load() }, [])
 
-  const gold = '#e8c766', ink = '#14110b', line = 'rgba(212,175,55,0.16)'
+  const gold = '#ff6b6b', ink = '#14110b', line = 'rgba(255,255,255,0.08)'
   const cardS = { background: ink, border: `1px solid ${line}`, borderRadius: 14 }
 
-  if (state === 'loading') return <motion.div {...fadeUp(1)} style={{ ...cardS, padding: 40, textAlign: 'center', color: '#998b6a', fontSize: 13 }}>Carregando métricas do Network…</motion.div>
+  if (state === 'loading') return <motion.div {...fadeUp(1)} style={{ ...cardS, padding: 40, textAlign: 'center', color: 'rgba(255,255,255,0.42)', fontSize: 13 }}>Carregando métricas do Network…</motion.div>
   if (state === 'error' || !m) return <motion.div {...fadeUp(1)} style={{ ...cardS, padding: 40, textAlign: 'center', color: '#c98a8a', fontSize: 13 }}>Não consegui carregar as métricas. <button onClick={load} style={{ marginLeft: 8, background: 'none', border: 'none', color: gold, cursor: 'pointer', textDecoration: 'underline' }}>tentar de novo</button></motion.div>
 
   const adoption = m.eligible ? Math.round((m.accessed7d / m.eligible) * 100) : 0
@@ -1593,9 +1523,9 @@ function NetworkMetricsPanel() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 18 }}>
         {kpis.map((k, i) => (
           <div key={i} style={{ ...cardS, padding: '15px 16px' }}>
-            <p style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#998b6a', margin: '0 0 6px' }}>{k.l}</p>
-            <p style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 800, color: k.gold ? gold : '#f7f0df', margin: 0, letterSpacing: '-0.02em' }}><CountUpInt value={k.v} /></p>
-            {k.sub && <p style={{ fontSize: 10.5, color: '#8f8468', margin: '4px 0 0' }}>{k.sub}</p>}
+            <p style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.42)', margin: '0 0 6px' }}>{k.l}</p>
+            <p style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 800, color: k.gold ? gold : '#F5F5F5', margin: 0, letterSpacing: '-0.02em' }}><CountUpInt value={k.v} /></p>
+            {k.sub && <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.35)', margin: '4px 0 0' }}>{k.sub}</p>}
           </div>
         ))}
       </div>
@@ -1603,8 +1533,8 @@ function NetworkMetricsPanel() {
       {/* Mensagens por dia (14 dias) */}
       <div style={{ ...cardS, padding: '18px 20px', marginBottom: 18 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
-          <p style={{ fontSize: 13, fontWeight: 800, color: '#f7f0df', margin: 0 }}>Mensagens por dia</p>
-          <p style={{ fontSize: 10.5, color: '#8f8468', margin: 0 }}>últimos 14 dias · {m.messages7d} nos últimos 7</p>
+          <p style={{ fontSize: 13, fontWeight: 800, color: '#F5F5F5', margin: 0 }}>Mensagens por dia</p>
+          <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.35)', margin: 0 }}>últimos 14 dias · {m.messages7d} nos últimos 7</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 120 }}>
           {m.perDay.map((d, i) => {
@@ -1612,7 +1542,7 @@ function NetworkMetricsPanel() {
             const dd = d.date.slice(8) + '/' + d.date.slice(5, 7)
             return (
               <div key={i} title={`${dd}: ${d.messages} msgs`} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, minWidth: 0 }}>
-                <div style={{ fontSize: 9, color: '#8f8468', fontFamily: 'var(--mono)' }}>{d.messages || ''}</div>
+                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontFamily: 'var(--mono)' }}>{d.messages || ''}</div>
                 <div style={{ width: '100%', maxWidth: 26, height: `${Math.max(h, d.messages ? 6 : 2)}%`, minHeight: 2, borderRadius: 5, background: d.messages ? `linear-gradient(180deg, ${gold}, #a5842f)` : 'rgba(255,255,255,0.05)', transition: 'height 0.5s' }} />
                 <div style={{ fontSize: 8.5, color: '#6f684f', fontFamily: 'var(--mono)' }}>{dd}</div>
               </div>
@@ -1624,21 +1554,21 @@ function NetworkMetricsPanel() {
       {/* Top contribuidores */}
       {m.top?.length > 0 && (
         <div style={{ ...cardS, padding: '18px 20px' }}>
-          <p style={{ fontSize: 13, fontWeight: 800, color: '#f7f0df', margin: '0 0 14px' }}>Quem mais participa</p>
+          <p style={{ fontSize: 13, fontWeight: 800, color: '#F5F5F5', margin: '0 0 14px' }}>Quem mais participa</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {m.top.map((t, i) => {
               const maxMsgs = m.top[0].msgs || 1
               return (
                 <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 800, color: i < 3 ? gold : '#8f8468', width: 20 }}>{i + 1}º</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 800, color: i < 3 ? gold : 'rgba(255,255,255,0.35)', width: 20 }}>{i + 1}º</span>
                   {t.avatar
                     ? <img src={t.avatar} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                     : <span style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, background: t.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff' }}>{(t.name || '?')[0].toUpperCase()}</span>}
-                  <span style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 600, color: '#f7f0df', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
+                  <span style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 600, color: '#F5F5F5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
                   <div style={{ width: 120, height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', flexShrink: 0 }}>
                     <div style={{ width: `${(t.msgs / maxMsgs) * 100}%`, height: '100%', background: gold }} />
                   </div>
-                  <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 800, color: '#f7f0df', width: 44, textAlign: 'right' }}>{t.msgs}</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 800, color: '#F5F5F5', width: 44, textAlign: 'right' }}>{t.msgs}</span>
                 </div>
               )
             })}

@@ -160,8 +160,51 @@ export async function POST(req) {
 
     // ARPU / Churn / LTV
     const arpu = admins.length > 0 ? totalRevenue / admins.length : 0
-    const churnRate = allSubs.length > 0 ? Math.round((cancelledSubs.length / allSubs.length) * 100) : 0
-    const ltv = churnRate > 0 ? avgTicket / (churnRate / 100) : avgTicket * 12
+    // ── MÉTRICAS EXECUTIVAS (15/09/2026) ─────────────────────────────────
+    // ARR = MRR anualizado.
+    const arr = Number((mrrReal * 12).toFixed(2))
+    // CHURN MENSAL REAL: dos tenants cuja assinatura venceu nos ÚLTIMOS 30 DIAS
+    // (janela fechada, com 5 dias de carência pra renovar), quantos NÃO voltaram.
+    // Substitui o cálculo antigo (cancelados/total histórico), que não media nada.
+    const _paidSubs = allSubs.filter(s => Number(s.total_amount || 0) > 0)
+    const _churnWinEnd = _nowMs - 5 * 86400000
+    const _churnWinStart = _churnWinEnd - 30 * 86400000
+    const _expiredInWin = {}
+    for (const s of _paidSubs) {
+      if (!s.expires_at) continue
+      const e = new Date(s.expires_at).getTime()
+      if (e >= _churnWinStart && e < _churnWinEnd) {
+        if (!_expiredInWin[s.tenant_id] || e > _expiredInWin[s.tenant_id]) _expiredInWin[s.tenant_id] = e
+      }
+    }
+    let churnDue = 0, churnLost = 0
+    for (const tid of Object.keys(_expiredInWin)) {
+      churnDue++
+      const exp = _expiredInWin[tid]
+      const renewed = _paidSubs.some(s => s.tenant_id === tid && s.expires_at &&
+        new Date(s.expires_at).getTime() > exp && new Date(s.created_at).getTime() >= exp - 5 * 86400000)
+      if (!renewed) churnLost++
+    }
+    const churnRate = churnDue > 0 ? Math.round((churnLost / churnDue) * 100) : 0
+    const renewalRate = churnDue > 0 ? 100 - churnRate : 0
+    // LTV = ticket mensal médio dos pagantes ATUAIS / churn mensal (piso 5%)
+    const _mrrTicket = activePayingCount > 0 ? mrrReal / activePayingCount : 0
+    const ltv = Number((_mrrTicket / Math.max(churnRate / 100, 0.05)).toFixed(2))
+    // Pagantes com equipe (>=1 operador) — mede o upsell de operadores
+    const _opsByTenant = {}
+    for (const o of operators) if (o.tenant_id) _opsByTenant[o.tenant_id] = (_opsByTenant[o.tenant_id] || 0) + 1
+    const payingWithTeam = Array.from(activePayingTenantIds).filter(t => (_opsByTenant[t] || 0) > 0).length
+    // Receita mensal (12 meses, YYYY-MM em BRT) pra gráfico de tendência
+    const _revByMonth = {}
+    for (const p of paidPayments) { const k = brDateKey(p.created_at).slice(0, 7); _revByMonth[k] = (_revByMonth[k] || 0) + Number(p.amount || 0) }
+    const monthSeries = []
+    { const d = new Date()
+      for (let i = 11; i >= 0; i--) {
+        const m = new Date(d.getFullYear(), d.getMonth() - i, 1)
+        const k = m.getFullYear() + '-' + String(m.getMonth() + 1).padStart(2, '0')
+        monthSeries.push({ month: k, revenue: Number((_revByMonth[k] || 0).toFixed(2)) })
+      }
+    }
 
     // Conversion funnel
     const totalSignups = admins.length
@@ -579,6 +622,7 @@ export async function POST(req) {
         mrr, totalRevenue, revenueToday, revenueYesterday, revenueMonth, rev30, rev7,
         prevRevenue7d, revenueVariation,
         new7, new30, avgTicket, arpu, churnRate, ltv,
+        arr, renewalRate, churnDue, churnLost, payingWithTeam, mrrTicket: Number(_mrrTicket.toFixed(2)),
         totalMetas: allMetas.length, totalRemessas: allRem.length,
         totalRefunded, refundsMonth, refundsCount: refundPayments.length,
         refunds24h: refund24h.length, refunds7d: refund7d.length,
@@ -593,6 +637,7 @@ export async function POST(req) {
       alerts,
       insights,
       revenueByDay,
+      monthSeries,
       recentSales,
       recentRefunds,
       allSales,

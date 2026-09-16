@@ -163,9 +163,10 @@ export default function OwnerExecutive({ kpis, funnel, monthSeries, activity }) 
       </div>
 
       {/* NÍVEL 2: RITMO DE CAIXA + SAÚDE DA BASE */}
-      <div className="ox-row2" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.06)' }}>
+      <div className="ox-row2" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.06)' }}>
         {[
-          { l: 'Hoje', v: <Money v={k.revenueToday} size={19} />, hint: `ontem R$ ${fmt(k.revenueYesterday)}` },
+          { l: 'Hoje', v: <Money v={k.revenueToday} size={19} />, hint: 'receita do dia (BRT)' },
+          { l: 'Ontem', v: <Money v={k.revenueYesterday} size={19} />, hint: 'dia anterior fechado' },
           { l: 'Últimos 7 dias', v: <Money v={k.rev7} size={19} />, hint: `30 dias R$ ${fmt(k.rev30)}` },
           { l: 'Renovação mensal', v: <Int v={renew} size={19} suffix="%" color={renew >= 60 ? MINT : renew >= 45 ? T1 : LOSS} />, hint: `${k.churnLost || 0} de ${k.churnDue || 0} não voltaram` },
           { l: 'Churn mensal', v: <Int v={k.churnRate} size={19} suffix="%" color={k.churnRate <= 40 ? MINT : k.churnRate <= 55 ? T1 : LOSS} />, hint: 'venceu nos últimos 30d e não renovou' },
@@ -198,7 +199,7 @@ export default function OwnerExecutive({ kpis, funnel, monthSeries, activity }) 
       </div>
 
       <style>{`
-        @media (max-width: 1100px) { .ox-heroes { grid-template-columns: 1fr 1fr !important; } .ox-row2 { grid-template-columns: repeat(3, 1fr) !important; } }
+        @media (max-width: 1100px) { .ox-heroes { grid-template-columns: 1fr 1fr !important; } .ox-row2 { grid-template-columns: repeat(4, 1fr) !important; } }
         @media (max-width: 760px) { .ox-heroes, .ox-row3 { grid-template-columns: 1fr !important; } .ox-row2 { grid-template-columns: repeat(2, 1fr) !important; } }
       `}</style>
     </div>

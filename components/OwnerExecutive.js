@@ -122,7 +122,7 @@ function Funnel({ f, active }) {
   )
 }
 
-export default function OwnerExecutive({ kpis, funnel, monthSeries, activity }) {
+export default function OwnerExecutive({ kpis, funnel, monthSeries, activity, salesMeta }) {
   const k = kpis || {}
   const renew = k.renewalRate ?? 0
   const teamPct = k.activeSubs > 0 ? Math.round((k.payingWithTeam / k.activeSubs) * 100) : 0
@@ -135,7 +135,7 @@ export default function OwnerExecutive({ kpis, funnel, monthSeries, activity }) 
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
 
       {/* NÍVEL 1: HERÓIS — MRR / ARR / mês */}
-      <div className="ox-heroes" style={{ display: 'grid', gridTemplateColumns: '1.35fr 1fr 1fr', gap: 16 }}>
+      <div className="ox-heroes" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr 1fr 1fr', gap: 16 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}
           style={{ ...shell, padding: '26px 28px', position: 'relative', overflow: 'hidden', border: '1px solid rgba(225,29,29,0.32)', boxShadow: `${shell.boxShadow}, 0 0 70px rgba(225,29,29,0.08)` }}>
           <div aria-hidden style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1.5, background: `linear-gradient(90deg, transparent, ${RED}, transparent)` }} />
@@ -156,6 +156,12 @@ export default function OwnerExecutive({ kpis, funnel, monthSeries, activity }) 
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.14 }} style={{ ...shell, padding: '26px 28px' }}>
+          <Label>Total vendido</Label>
+          <Money v={k.totalRevenue} size={30} />
+          <Hint>{salesMeta?.total ? `${fmt0(salesMeta.total)} vendas · ` : ''}líquido R$ {fmt(k.netRevenue)}{k.totalRefunded > 0 ? ` (−R$ ${fmt(k.totalRefunded)} estornos)` : ''}</Hint>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.21 }} style={{ ...shell, padding: '26px 28px' }}>
           <Label>Receita do mês</Label>
           <Money v={k.revenueMonth} size={30} color={MINT} />
           <Hint>Projeção no ritmo atual: <strong style={{ color: T2 }}>R$ {fmt(monthPace)}</strong></Hint>
@@ -199,7 +205,7 @@ export default function OwnerExecutive({ kpis, funnel, monthSeries, activity }) 
       </div>
 
       <style>{`
-        @media (max-width: 1100px) { .ox-heroes { grid-template-columns: 1fr 1fr !important; } .ox-row2 { grid-template-columns: repeat(4, 1fr) !important; } }
+        @media (max-width: 1250px) { .ox-heroes { grid-template-columns: 1fr 1fr !important; } .ox-row2 { grid-template-columns: repeat(4, 1fr) !important; } }
         @media (max-width: 760px) { .ox-heroes, .ox-row3 { grid-template-columns: 1fr !important; } .ox-row2 { grid-template-columns: repeat(2, 1fr) !important; } }
       `}</style>
     </div>

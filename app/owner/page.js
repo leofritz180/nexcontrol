@@ -300,7 +300,7 @@ export default function OwnerPage() {
         </div>
 
         {/* ═══ PAINEL EXECUTIVO (MRR/ARR, caixa, saúde, 12 meses, funil) ═══ */}
-        <OwnerExecutive kpis={kpis} funnel={data.funnel} monthSeries={data.monthSeries} activity={data.activity} />
+        <OwnerExecutive kpis={kpis} funnel={data.funnel} monthSeries={data.monthSeries} activity={data.activity} salesMeta={data.salesMeta} />
 
         {/* ═══ "O QUE ESTA ACONTECENDO AGORA" + PREVISAO ═══ */}
         <div className="g-side" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 20, marginBottom: 28 }}>

@@ -204,15 +204,37 @@ export function Barras({ titulo, sub, dados, delay = 0.16 }) {
 }
 
 // lista de linhas
-export function Lista({ titulo, linhas, vazio = 'Nada por aqui ainda.', delay = 0.22, acao }) {
+// Tira acento e caixa: procurar por "joao" tem que achar "João".
+const semAcento = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
+// A BUSCA MORA AQUI, e nao em cada pagina.
+// O campo existia no kit desde a onda 2 e nao estava ligado em lugar nenhum,
+// porque ligar dava trabalho em cada chamada (estado, filtro, slot). Assim
+// TODA lista do bento ganha busca de uma vez — e so quando faz falta: com
+// menos de `minBusca` linhas o campo nem aparece, pra nao poluir as curtas.
+export function Lista({ titulo, linhas, vazio = 'Nada por aqui ainda.', delay = 0.22, acao, buscavel = true, minBusca = 8, placeholderBusca = 'Buscar…' }) {
   linhas = lista(linhas)
+  const [busca, setBusca] = useState('')
+  const mostrarBusca = buscavel && linhas.length >= minBusca
+  const alvo = semAcento(busca).trim()
+  const todas = linhas
+  if (mostrarBusca && alvo) {
+    linhas = linhas.filter(r => semAcento([r.t, r.s, r.v].filter(Boolean).join(' ')).includes(alvo))
+  }
   return (
     <BCard pad={24} delay={delay}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
         <p style={{ fontSize: 16.5, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>{titulo}</p>
-        {acao}
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+          {mostrarBusca && <BuscaLista valor={busca} aoMudar={setBusca} placeholder={placeholderBusca} />}
+          {acao}
+        </span>
       </div>
-      {linhas.length === 0 && <Vazio titulo={vazio} icone={<><path d="M8 6h13M8 12h13M8 18h13" /><circle cx="3.5" cy="6" r="1" /><circle cx="3.5" cy="12" r="1" /><circle cx="3.5" cy="18" r="1" /></>} />}
+      {todas.length === 0 && <Vazio titulo={vazio} icone={<><path d="M8 6h13M8 12h13M8 18h13" /><circle cx="3.5" cy="6" r="1" /><circle cx="3.5" cy="12" r="1" /><circle cx="3.5" cy="18" r="1" /></>} />}
+      {todas.length > 0 && linhas.length === 0 && (
+        <Vazio titulo={`Nada com “${busca}”`} texto={`Nenhuma das ${todas.length} linhas bate com essa busca.`}
+          icone={<><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></>} />
+      )}
       {linhas.map((r, i) => (
         <motion.div key={r.k || i} layout
           initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, height: 0 }}

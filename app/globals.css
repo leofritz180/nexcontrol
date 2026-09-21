@@ -1654,10 +1654,13 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   --surface: #1c1c22;
   --raised: #24242b;
 }
-/* item ativo ganha acento verde-limão da logo nova */
-.nx-bento .sidebar a[style*="var(--fill-2)"],
-.nx-bento aside a[style*="var(--fill-2)"] { box-shadow: inset 2px 0 0 #c4f042 !important; }
-.nx-bento .sidebar a:hover, .nx-bento aside a:hover { background: rgba(255,255,255,0.07) !important; }
+/* item ativo ganha o acento da marca na borda esquerda */
+.nx-bento .sidebar a[data-ativo="1"],
+.nx-bento aside a[data-ativo="1"] { box-shadow: inset 2px 0 0 var(--brand) !important; }
+/* hover só em quem NÃO é o ativo: o ativo tem tratamento próprio e clarear
+   por cima dele apagava o texto. */
+.nx-bento .sidebar a:not([data-ativo="1"]):hover,
+.nx-bento aside a:not([data-ativo="1"]):hover { background: rgba(255,255,255,0.07) !important; }
 
 /* ── V2 · DOCK: junta os botões flutuantes soltos num grupo organizado ── */
 .nx-bento .nx-dock-item {
@@ -1709,15 +1712,14 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   /* expandido continua flutuante */
   .nx-bento .sb-rd:hover { border-radius: 26px !important; }
 
-  /* item ativo: chip arredondado com acento verde-limão da logo */
-  .nx-bento .sb-rd nav a[style*="var(--fill-2)"] {
-    background: rgba(196,240,66,0.14) !important;
-    border-radius: 14px !important;
-    box-shadow: none !important;
-  }
-  .nx-bento .sb-rd nav a[style*="var(--fill-2)"] svg { color: #c4f042 !important; }
+  /* O bloco que existia aqui pintava o item ativo de verde-limão (#c4f042) e
+     mirava em a[style*="var(--fill-2)"] — um alvo que nenhum item usa mais, e
+     uma cor que está fora da paleta (só preto/branco/vermelho da marca/mint).
+     Quem manda no item ativo agora é o bloco a[data-ativo="1"], mais abaixo. */
   .nx-bento .sb-rd nav a { border-radius: 14px !important; margin: 1px 0; }
-  .nx-bento .sb-rd nav a:hover { background: rgba(255,255,255,0.08) !important; }
+  /* hover de item NÃO ativo: clareia de leve e só. Nada de virar branco —
+     era o que fazia o texto ficar #15151a sobre o rail escuro e sumir. */
+  .nx-bento .sb-rd nav a:not([data-ativo="1"]):hover { background: rgba(255,255,255,0.07) !important; }
 }
 
 /* ── V2 · ESPAÇAMENTO: o conteúdo ganha respiro (bento pede ar) ── */
@@ -1734,7 +1736,7 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 .nx-bento .sb-rd nav a:hover svg[stroke="currentColor"] { color: #ffffff !important; }
 
 /* ITEM ATIVO — chip claro que "salta" pra fora do rail (módulo aberto) */
-.nx-bento .sb-rd nav a[style*="var(--raised)"] {
+.nx-bento .sb-rd nav a[data-ativo="1"] {
   position: relative;
   background: #ffffff !important;
   border-radius: 16px !important;
@@ -1743,17 +1745,49 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   box-shadow: 0 8px 22px rgba(0,0,0,0.30) !important;
   z-index: 2;
 }
-.nx-bento .sb-rd nav a[style*="var(--raised)"] svg[stroke="currentColor"] { color: #15151a !important; }
-.nx-bento .sb-rd nav a[style*="var(--raised)"] .sb-label { color: #15151a !important; font-weight: 700 !important; }
-/* marcador verde-limão da logo, na borda esquerda do chip */
-.nx-bento .sb-rd nav a[style*="var(--raised)"]::before {
+.nx-bento .sb-rd nav a[data-ativo="1"] svg[stroke="currentColor"] { color: #15151a !important; }
+.nx-bento .sb-rd nav a[data-ativo="1"] .sb-label { color: #15151a !important; font-weight: 700 !important; }
+/* marcador da marca, na borda esquerda do chip */
+.nx-bento .sb-rd nav a[data-ativo="1"]::before {
   content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-  width: 4px; height: 22px; border-radius: 0 4px 4px 0; background: #c4f042;
+  width: 4px; height: 22px; border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, #ff7a4d, #e5391f);
 }
 /* transição suave ao trocar de módulo */
 .nx-bento .sb-rd nav a { transition: background .2s ease, box-shadow .2s ease, margin .2s ease, padding .2s ease !important; }
 .nx-bento .sb-rd nav a svg { transition: color .2s ease, transform .2s ease; }
 .nx-bento .sb-rd nav a:hover svg { transform: scale(1.12); }
+
+/* ── V2 · LOJA PROXY: o item de parceiro ────────────────────────────────────
+   Ele precisa se destacar sem brigar com o item ativo (que é o chip branco).
+   Então em vez de outro bloco de cor, ele ganha LUZ: uma moldura no laranja
+   da marca (o mesmo #ff7a4d → #e5391f do selo 2.0 e do site) e um brilho que
+   respira devagar. O laranja da Bettify (#ff6b00) saiu — destoava do resto.
+
+   Enquanto ele é o item ativo, tudo isso se apaga: quem manda é o chip. */
+.nx-bento .sb-rd nav a[data-loja="1"]:not([data-ativo="1"]) {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(255,122,77,0.34) !important;
+}
+/* a luz que atravessa a moldura de tempos em tempos */
+.nx-bento .sb-rd nav a[data-loja="1"]:not([data-ativo="1"])::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,160,120,0.22) 50%, transparent 62%);
+  transform: translateX(-140%);
+  animation: nx-loja-brilho 5.5s ease-in-out infinite;
+}
+@keyframes nx-loja-brilho {
+  0%, 62% { transform: translateX(-140%); }
+  86%, 100% { transform: translateX(140%); }
+}
+.nx-bento .sb-rd nav a[data-loja="1"] .sb-label { color: #ffd9c8 !important; }
+.nx-bento .sb-rd nav a[data-loja="1"]:hover .sb-label { color: #ffffff !important; }
+/* o selo PARCEIRO some junto com os rótulos quando o rail recolhe */
+.nx-bento .sb-rd nav a[data-loja="1"] .sb-label[style*="PARCEIRO"] { letter-spacing: 0.08em; }
+@media (prefers-reduced-motion: reduce) {
+  .nx-bento .sb-rd nav a[data-loja="1"]::after { animation: none; opacity: 0; }
+}
 
 /* ── V2 · ABAS VIRAM DOCK FLUTUANTE (como o seletor de painel da referência) ─
    A barra de abas sai do topo e vira um pill escuro flutuando embaixo, no
@@ -1833,6 +1867,13 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 
 /* espaço no fim da página pro dock não cobrir conteúdo */
 .nx-bento .app-content { padding-bottom: 92px; }
+
+/* TRAVA: o wrapper de transição de página NUNCA pode carregar filtro nem
+   transform. Qualquer um dos dois troca o bloco de contenção e o dock (que é
+   position:fixed) vira absolute: vai parar no fim do conteúdo e some ao
+   rolar. Já aconteceu uma vez com `filter: blur()` na animação de entrada.
+   Vale para os modais também (components/ui/folha.js usa fixed/inset:0). */
+.nx-pagina { filter: none !important; backdrop-filter: none !important; transform: none !important; }
 
 @media (max-width: 768px) {
   .nx-bento .tabs-scroll { bottom: 12px !important; max-width: 94vw; padding: 6px 7px !important; }
@@ -1916,9 +1957,9 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .nx-bento .sb-rd:not(:hover) > div > a:first-child { padding: 20px 0 18px !important; }
   /* marca reduzida: um pouco maior e com brilho sutil */
   .nx-bento .sb-rd .nx-logo-mark img { width: 42px !important; height: 42px !important; }
-  .nx-bento .sb-rd .nx-logo-mark { filter: drop-shadow(0 0 10px rgba(196,240,66,0.28)); }
+  .nx-bento .sb-rd .nx-logo-mark { filter: drop-shadow(0 0 11px rgba(255,122,77,0.30)); }
   /* logo completa: destaque real */
-  .nx-bento .sb-rd .nx-logo-full { filter: drop-shadow(0 0 14px rgba(196,240,66,0.22)); }
+  .nx-bento .sb-rd .nx-logo-full { filter: drop-shadow(0 0 15px rgba(255,122,77,0.24)); }
   /* transição suave entre os dois estados */
   .nx-bento .sb-rd .nx-logo-mark, .nx-bento .sb-rd .nx-logo-full { transition: opacity .2s ease; }
 }
@@ -1931,7 +1972,7 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 @media (min-width: 769px) {
   /* o item ativo encosta exatamente na borda direita do rail
      (-12px cancela o padding do nav; não ultrapassa, então nada é cortado) */
-  .nx-bento .sb-rd nav a[style*="var(--raised)"] {
+  .nx-bento .sb-rd nav a[data-ativo="1"] {
     position: relative;
     background: #f0f0f3 !important;      /* mesma cor do fundo da página */
     color: #15151a !important;
@@ -1941,25 +1982,25 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     box-shadow: none !important;
     z-index: 3;
   }
-  .nx-bento .sb-rd nav a[style*="var(--raised)"] svg[stroke="currentColor"] { color: #15151a !important; }
-  .nx-bento .sb-rd nav a[style*="var(--raised)"] .sb-label { color: #15151a !important; font-weight: 700 !important; }
+  .nx-bento .sb-rd nav a[data-ativo="1"] svg[stroke="currentColor"] { color: #15151a !important; }
+  .nx-bento .sb-rd nav a[data-ativo="1"] .sb-label { color: #15151a !important; font-weight: 700 !important; }
 
   /* cantos côncavos: quadradinho da cor da página com um quarto de disco
      recortado — dá a curva que "puxa" o preto pra dentro */
-  .nx-bento .sb-rd nav a[style*="var(--raised)"]::before,
-  .nx-bento .sb-rd nav a[style*="var(--raised)"]::after {
+  .nx-bento .sb-rd nav a[data-ativo="1"]::before,
+  .nx-bento .sb-rd nav a[data-ativo="1"]::after {
     content: ''; position: absolute; right: 0;
     width: 14px; height: 14px; background: #f0f0f3;
     pointer-events: none;
   }
   /* acima: recorta o disco do canto superior-esquerdo */
-  .nx-bento .sb-rd nav a[style*="var(--raised)"]::before {
+  .nx-bento .sb-rd nav a[data-ativo="1"]::before {
     bottom: 100%; top: auto; left: auto; transform: none;
     -webkit-mask: radial-gradient(circle 14px at 0 0, transparent 98%, #000 100%);
             mask: radial-gradient(circle 14px at 0 0, transparent 98%, #000 100%);
   }
   /* abaixo: espelhado */
-  .nx-bento .sb-rd nav a[style*="var(--raised)"]::after {
+  .nx-bento .sb-rd nav a[data-ativo="1"]::after {
     top: 100%;
     -webkit-mask: radial-gradient(circle 14px at 0 100%, transparent 98%, #000 100%);
             mask: radial-gradient(circle 14px at 0 100%, transparent 98%, #000 100%);
@@ -1976,7 +2017,7 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 /* ── V2 · LOGO expandida: marca PNG + escrita em texto (nitida em qualquer tamanho) ── */
 @media (min-width: 769px) {
   .nx-bento .sb-rd:hover .nx-logo-full { display: flex !important; }
-  .nx-bento .sb-rd .nx-logo-full img { filter: drop-shadow(0 0 12px rgba(196,240,66,0.30)); }
+  .nx-bento .sb-rd .nx-logo-full img { filter: drop-shadow(0 0 13px rgba(255,122,77,0.32)); }
 }
 @media (max-width: 768px) {
   .nx-bento .nx-logo-full { display: flex !important; }
@@ -1999,19 +2040,19 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 
   /* o recorte agora encosta de fato na borda direita do rail */
   .nx-bento .sb-rd nav { padding-right: 0 !important; }
-  .nx-bento .sb-rd nav a[style*="var(--raised)"] {
+  .nx-bento .sb-rd nav a[data-ativo="1"] {
     margin-right: 0 !important;
     padding-right: 16px !important;
     border-radius: 18px 0 0 18px !important;
   }
   /* raio dos cantos côncavos alinhado ao do recorte */
-  .nx-bento .sb-rd nav a[style*="var(--raised)"]::before,
-  .nx-bento .sb-rd nav a[style*="var(--raised)"]::after { width: 16px; height: 16px; }
-  .nx-bento .sb-rd nav a[style*="var(--raised)"]::before {
+  .nx-bento .sb-rd nav a[data-ativo="1"]::before,
+  .nx-bento .sb-rd nav a[data-ativo="1"]::after { width: 16px; height: 16px; }
+  .nx-bento .sb-rd nav a[data-ativo="1"]::before {
     -webkit-mask: radial-gradient(circle 16px at 0 0, transparent 98%, #000 100%);
             mask: radial-gradient(circle 16px at 0 0, transparent 98%, #000 100%);
   }
-  .nx-bento .sb-rd nav a[style*="var(--raised)"]::after {
+  .nx-bento .sb-rd nav a[data-ativo="1"]::after {
     -webkit-mask: radial-gradient(circle 16px at 0 100%, transparent 98%, #000 100%);
             mask: radial-gradient(circle 16px at 0 100%, transparent 98%, #000 100%);
   }
@@ -2092,12 +2133,12 @@ html, body { max-width: 100vw; overflow-x: hidden; }
           mask: radial-gradient(circle 16px at 0 100%, transparent 98%, #000 100%);
 }
 /* com o selo no ar, o proprio item para de pintar fundo e recorte */
-.nx-bento .sb-rd nav[data-selo="1"] a[style*="var(--raised)"] {
+.nx-bento .sb-rd nav[data-selo="1"] a[data-ativo="1"] {
   background: transparent !important;
   box-shadow: none !important;
 }
-.nx-bento .sb-rd nav[data-selo="1"] a[style*="var(--raised)"]::before,
-.nx-bento .sb-rd nav[data-selo="1"] a[style*="var(--raised)"]::after { display: none !important; }
+.nx-bento .sb-rd nav[data-selo="1"] a[data-ativo="1"]::before,
+.nx-bento .sb-rd nav[data-selo="1"] a[data-ativo="1"]::after { display: none !important; }
 /* o texto e o icone ficam ACIMA do selo */
 .nx-bento .sb-rd nav a { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
@@ -2188,8 +2229,8 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 .nx-bento.nx-noir .sb-rd nav > .nx-rail-selo,
 .nx-bento.nx-noir .sb-rd nav > .nx-rail-selo::before,
 .nx-bento.nx-noir .sb-rd nav > .nx-rail-selo::after { background: #0e0e11 !important; }
-.nx-bento.nx-noir .sb-rd nav a[style*="var(--raised)"] svg[stroke="currentColor"],
-.nx-bento.nx-noir .sb-rd nav a[style*="var(--raised)"] .sb-label { color: #f4f4f6 !important; }
+.nx-bento.nx-noir .sb-rd nav a[data-ativo="1"] svg[stroke="currentColor"],
+.nx-bento.nx-noir .sb-rd nav a[data-ativo="1"] .sb-label { color: #f4f4f6 !important; }
 .nx-bento.nx-noir .tabs-scroll > .nx-dock-pilula { background: #2a2a33 !important; }
 .nx-bento.nx-noir .tabs-scroll button[data-active="true"] { color: #ffffff !important; }
 .nx-bento.nx-noir .tabs-scroll button[data-active="true"] svg { color: #ffffff !important; }

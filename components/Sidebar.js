@@ -240,10 +240,12 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             {grp.items.map(item => {
           const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
           const bettify = item.bettify
-          const BETT_BG = 'linear-gradient(135deg, rgba(255,107,0,0.16), rgba(255,107,0,0.05))'
-          const BETT_BG_HOVER = 'linear-gradient(135deg, rgba(255,107,0,0.28), rgba(255,107,0,0.09))'
+          const BETT_BG = 'linear-gradient(135deg, rgba(255,122,77,0.20), rgba(229,57,31,0.05))'
+          const BETT_BG_HOVER = 'linear-gradient(135deg, rgba(255,122,77,0.32), rgba(229,57,31,0.11))'
           return (
             <Link key={item.href} href={item.href} onClick={()=>setMobileOpen(false)}
+              data-ativo={active ? '1' : undefined}
+              data-loja={bettify ? '1' : undefined}
               data-tour={`menu-${item.href.replace(/^\//, '').replace(/\//g, '-')}`}
               style={{
                 display:'flex', alignItems:'center', gap: redesign?13:11,
@@ -251,16 +253,16 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                 fontSize: redesign?13.5:13, fontWeight: bettify?700:(active?(redesign?600:500):(redesign?500:400)),
                 color: bettify ? 'var(--t1)' : (active?'var(--t1)':'var(--t3)'),
                 background: bettify ? BETT_BG : (active?'var(--raised)':'transparent'),
-                border: bettify ? '1px solid rgba(255,107,0,0.4)' : '1px solid transparent',
-                boxShadow: bettify ? '0 0 18px rgba(255,107,0,0.10)' : 'none',
+                border: bettify ? '1px solid rgba(255,122,77,0.42)' : '1px solid transparent',
+                boxShadow: bettify ? '0 0 18px rgba(229,57,31,0.14)' : 'none',
                 transition:'background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
               }}
-              onMouseEnter={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG_HOVER; e.currentTarget.style.boxShadow='0 6px 22px rgba(255,107,0,0.22)' } else if(!active){e.currentTarget.style.background='var(--raised)';e.currentTarget.style.color='var(--t2)'} }}
-              onMouseLeave={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG; e.currentTarget.style.boxShadow='0 0 18px rgba(255,107,0,0.10)' } else if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'} }}
+              onMouseEnter={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG_HOVER; e.currentTarget.style.boxShadow='0 6px 22px rgba(229,57,31,0.26)' } else if(!active){e.currentTarget.style.background='var(--raised)';e.currentTarget.style.color='var(--t2)'} }}
+              onMouseLeave={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG; e.currentTarget.style.boxShadow='0 0 18px rgba(229,57,31,0.14)' } else if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'} }}
             >
               {bettify ? (
                 <img className="sb-ico" src="/bettify-logo.png" alt="Bettify" width={redesign?22:18} height={redesign?22:18}
-                  style={{ flexShrink:0, objectFit:'contain', filter:'drop-shadow(0 0 6px rgba(255,107,0,0.55))' }} />
+                  style={{ flexShrink:0, objectFit:'contain', filter:'drop-shadow(0 0 7px rgba(255,122,77,0.60))' }} />
               ) : (
                 <svg className="sb-ico" width={redesign?20:15} height={redesign?20:15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={redesign?1.9:1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity: redesign ? (active?1:0.85) : (active?0.9:0.45) }}>
                   <path d={nex2 ? iconV2(item.href, item.icon) : item.icon}/>
@@ -270,7 +272,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               {bettify && (
                 <span className="sb-label" style={{
                   marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
-                  background:'rgba(255,107,0,0.18)', color:'var(--warn)', border:'1px solid rgba(255,107,0,0.4)',
+                  background:'rgba(255,122,77,0.18)', color:'#ff9a78', border:'1px solid rgba(255,122,77,0.40)',
                   letterSpacing:'0.06em',
                 }}>PARCEIRO</span>
               )}
@@ -291,15 +293,15 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               {item.network && netUnread && (
                 <span style={{
                   marginLeft:'auto', width:8, height:8, borderRadius:'50%', flexShrink:0,
-                  background:'#e53935', boxShadow:'0 0 8px #e53935',
+                  background:'#e5391f', boxShadow:'0 0 9px rgba(229,57,31,0.85)',
                   animation:'notif-pulse 1.8s ease-in-out infinite',
                 }} title="Mensagens novas"/>
               )}
               {item.network && !netUnread && new Date() < new Date(NETWORK_NEW_UNTIL) && (
                 <span className="sb-label" style={{
                   marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
-                  background:'#e53935', color:'#fff', border:'1px solid var(--b3)',
-                  letterSpacing:'0.08em', boxShadow:'0 0 10px rgba(229,57,53,0.5)',
+                  background:'linear-gradient(135deg, #ff7a4d, #e5391f)', color:'#fff', border:'1px solid rgba(255,122,77,0.45)',
+                  letterSpacing:'0.08em', boxShadow:'0 4px 14px rgba(229,57,31,0.45)',
                   animation:'notif-pulse 2s ease-in-out infinite',
                 }}>NOVO</span>
               )}
@@ -321,8 +323,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               background:'var(--fill-3)', border:'none',
               transition:'background 0.15s',
             }}
-            onMouseEnter={e=>{e.currentTarget.style.background='#2563eb'}}
-            onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.78)'}}
+            onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(135deg, #ff7a4d, #e5391f)';e.currentTarget.style.color='#fff'}}
+            onMouseLeave={e=>{e.currentTarget.style.background='var(--fill-3)';e.currentTarget.style.color='var(--t1)'}}
           >
             <span className="sb-label">Desbloquear PRO</span>
           </Link>
@@ -332,7 +334,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* ── Plan status — minimal ── */}
       <div style={{ padding:'0 12px 12px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 12px' }}>
-          <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'var(--profit)':'#9ca3af' }}/>
+          <div style={{ width:5, height:5, borderRadius:'50%', background:subActive?'var(--profit)':'var(--t4)' }}/>
           <span className="sb-label" style={{ fontSize:11, color:'var(--t3)', fontWeight:400 }}>
             {subActive?'PRO ativo':'Trial · 3 dias'}
           </span>
@@ -357,13 +359,13 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               style={{
                 width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:8,
                 padding:'10px 14px', borderRadius:8, fontSize:12.5, fontWeight:600,
-                color:'#fff', background:'#e53935', border:'none',
+                color:'#fff', background:'linear-gradient(135deg, #ff7a4d, #e5391f)', border:'none',
                 cursor: pushBusy ? 'default' : 'pointer', opacity: pushBusy ? 0.7 : 1,
                 transition:'background 0.15s',
                 animation: pushBusy ? 'none' : 'notif-pulse 2.2s ease-in-out infinite',
               }}
-              onMouseEnter={e=>{ if(!pushBusy) e.currentTarget.style.background='#d32f2f' }}
-              onMouseLeave={e=>{ if(!pushBusy) e.currentTarget.style.background='#e53935' }}
+              onMouseEnter={e=>{ if(!pushBusy) e.currentTarget.style.background='linear-gradient(135deg, #ff8a5f, #cf2f18)' }}
+              onMouseLeave={e=>{ if(!pushBusy) e.currentTarget.style.background='linear-gradient(135deg, #ff7a4d, #e5391f)' }}
             >
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               <span className="sb-label">{pushBusy ? 'Ativando...' : 'Ativar notificações'}</span>

@@ -22,10 +22,23 @@ const PhoneGate = dynamic(() => import('./PhoneGate'), { ssr: false })
 
 // A saída é mais curta que a entrada de propósito: o olho perdoa um corte
 // rápido no que está saindo, mas estranha o que entra apressado.
+//
+// SÓ OPACIDADE — e isso não é economia, é requisito.
+//
+// `filter` e `transform` num ancestral trocam o bloco de contenção de tudo
+// que é position:fixed lá dentro: o elemento passa a se posicionar por ESTE
+// div, não pela janela. O y:16 some no fim (o Framer devolve transform:none),
+// mas o blur NÃO: ele para em `filter: blur(0px)`, que continua sendo um
+// filtro. O bloco de contenção ficava quebrado pra sempre.
+//
+// Foi o que derrubou o dock flutuante: ele é fixed, virava absolute dentro
+// do conteúdo, ia parar no fim da página e sumia ao rolar. Valia também pros
+// modais (components/ui/folha.js usa fixed/inset:0) e já tinha obrigado a
+// excluir o /network deste wrapper, logo abaixo, pelo mesmo motivo.
 const pageVariants = {
-  initial: { opacity: 0, y: 16, filter: 'blur(3px)' },
-  enter: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.42, ease: [0.33, 1, 0.68, 1] } },
-  exit: { opacity: 0, y: -10, filter: 'blur(2px)', transition: { duration: 0.16, ease: 'easeIn' } },
+  initial: { opacity: 0 },
+  enter: { opacity: 1, transition: { duration: 0.34, ease: [0.33, 1, 0.68, 1] } },
+  exit: { opacity: 0, transition: { duration: 0.14, ease: 'easeIn' } },
 }
 
 export default function AppLayout({ children, userName, userEmail, isAdmin, tenant, subscription, userId, tenantId }) {
@@ -59,6 +72,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
           <AnimatePresence mode="wait">
             <motion.div
               key={pathname}
+              className="nx-pagina"
               variants={pageVariants}
               initial="initial"
               animate="enter"

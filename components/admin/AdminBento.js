@@ -1,0 +1,279 @@
+'use client'
+// ─────────────────────────────────────────────────────────────────────────
+// ADMIN BENTO — nova camada de APRESENTAÇÃO da visão geral do /admin, no
+// estilo aprovado em /design-v2 (bento claro, cantos arredondados, blobs
+// orgânicos, pills, curva suave).
+//
+// É 100% PRESENTACIONAL: recebe por props os dados que o /admin já calcula
+// (global, ranking, metas, dailyGoal…) e os handlers que já existem. Não
+// busca nada, não grava nada, não recalcula regra de negócio.
+//
+// Só é montado para as contas liberadas em lib/theme-v2.js — o resto dos
+// usuários continua vendo a visão geral antiga, sem nenhuma alteração.
+// ─────────────────────────────────────────────────────────────────────────
+import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+
+const RED = '#e5391f', RED2 = '#ff7a4d'
+const MONO = 'var(--mono, "JetBrains Mono", monospace)'
+const money = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const money0 = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
+const int = v => Number(v || 0).toLocaleString('pt-BR')
+
+// tons que funcionam no claro e no escuro (via tokens já existentes)
+const S = {
+  card: { position: 'relative', overflow: 'hidden', background: 'var(--surface)', borderRadius: 24, border: '1px solid var(--b1)', boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 8px 26px rgba(0,0,0,0.05)' },
+  t1: 'var(--t1)', t2: 'var(--t2)', t3: 'var(--t3)',
+}
+
+function Blob({ c1, c2 }) {
+  const id = 'ab' + String(c1).replace(/\W/g, '')
+  return (
+    <svg viewBox="0 0 200 140" preserveAspectRatio="none" aria-hidden style={{ position: 'absolute', top: 0, right: 0, width: '58%', height: '100%', pointerEvents: 'none' }}>
+      <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor={c1} /><stop offset="100%" stopColor={c2} /></linearGradient></defs>
+      <path d="M40,0 C90,18 70,58 110,78 C150,98 180,80 200,64 L200,0 Z" fill={`url(#${id})`} opacity="0.9" />
+      <path d="M78,0 C118,22 100,54 142,72 C172,85 190,78 200,70 L200,0 Z" fill={c1} opacity="0.45" />
+    </svg>
+  )
+}
+const Ico = ({ d, c = '#fff', s = 19 }) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{d}</svg>
+
+function curva(pts) {
+  if (pts.length < 2) return ''
+  let d = `M${pts[0][0]},${pts[0][1]}`
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2
+    d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)},${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(1)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)},${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(1)} ${p2[0]},${p2[1]}`
+  }
+  return d
+}
+
+function Card({ children, style, pad = 22, blob }) {
+  return (
+    <div style={{ ...S.card, padding: pad, ...style }}>
+      {blob && <Blob c1={blob[0]} c2={blob[1]} />}
+      <div style={{ position: 'relative' }}>{children}</div>
+    </div>
+  )
+}
+function Chip({ bg, children }) {
+  return <span style={{ width: 40, height: 40, borderRadius: 13, background: bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{children}</span>
+}
+
+export default function AdminBento({ nome, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, insight }) {
+  const [semana, setSemana] = useState('lucro')
+
+  const lucroHoje = (g?.lucroHoje || 0) - (g?.custosHoje || 0)
+  const lucroTotal = (g?.lucroFinalTotal || 0) - (g?.custosTotal || 0)
+  const abertas = useMemo(() => metas.filter(m => !m.deleted_at && m.status_fechamento !== 'fechada'), [metas])
+  const fechadas = useMemo(() => metas.filter(m => !m.deleted_at && m.status_fechamento === 'fechada'), [metas])
+  const equipeOn = ranking.length
+
+  // meta do dia
+  const alvo = Number(dailyGoal?.target || 0), feito = Number(dailyGoal?.today || 0)
+  const pctDia = alvo > 0 ? Math.min(100, Math.round((feito / alvo) * 100)) : 0
+
+  // série da semana: lucro das metas fechadas por dia (7 dias)
+  const serie = useMemo(() => {
+    const dias = []
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i)
+      const key = d.toISOString().slice(0, 10)
+      const v = fechadas.filter(m => String(m.fechada_em || m.created_at || '').slice(0, 10) === key)
+        .reduce((a, m) => a + Number(m.lucro_final || 0), 0)
+      dias.push({ label: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][d.getDay()], v })
+    }
+    return dias
+  }, [fechadas])
+
+  const W = 680, H = 190
+  const maxV = Math.max(1, ...serie.map(s => s.v)) * 1.2
+  const pts = serie.map((s, i) => [(i * W) / 6, H - (s.v / maxV) * H])
+
+  // metas abertas com progresso
+  const emAndamento = useMemo(() => abertas.slice(0, 5).map(m => {
+    const alvoC = Number(m.quantidade_contas || 0)
+    return { id: m.id, rede: m.rede || '—', alvo: alvoC, lucro: Number(m.lucro_final || 0), criada: m.created_at }
+  }), [abertas])
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+      {/* saudação */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: S.t1, margin: 0, letterSpacing: '-0.03em' }}>Olá, {nome || 'admin'}</h1>
+          <p style={{ fontSize: 13.5, color: S.t3, margin: '3px 0 0' }}>{abertas.length} meta{abertas.length === 1 ? '' : 's'} em andamento · {equipeOn} operador{equipeOn === 1 ? '' : 'es'}</p>
+        </div>
+        <button type="button" onClick={onNovaMeta} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
+          <Ico d={<path d="M12 5v14M5 12h14" />} s={16} /> Nova meta
+        </button>
+      </div>
+
+      {/* LINHA 1 — 4 cards */}
+      <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <Card blob={['var(--profit-dim)', 'var(--profit-border)']} style={{ minHeight: 148 }}>
+            <Chip bg="var(--profit-dim)"><Ico d={<><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>} c="var(--profit)" /></Chip>
+            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}>{money0(lucroTotal)}</p>
+            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>lucro final acumulado</p>
+          </Card>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.06 }}>
+          <Card blob={[RED2, RED]} style={{ minHeight: 148 }}>
+            <Chip bg={RED}><Ico d={<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /></>} c="#fff" /></Chip>
+            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}>{int(fechadas.length)}</p>
+            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>metas fechadas</p>
+          </Card>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.12 }}>
+          <Card style={{ minHeight: 148 }}>
+            <Chip bg="var(--fill-2)"><Ico d={<><path d="M3 3v18h18" /><path d="M7 15l3-3 4 4 5-6" /></>} c={S.t2} /></Chip>
+            <p style={{ fontSize: 27, fontWeight: 900, color: lucroHoje >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}>{money0(lucroHoje)}</p>
+            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>lucro de hoje</p>
+          </Card>
+        </motion.div>
+
+        {/* meta do dia — card vermelho */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.18 }}>
+          <div style={{ position: 'relative', overflow: 'hidden', minHeight: 148, height: '100%', borderRadius: 24, padding: 22, background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 14px 34px rgba(229,57,31,0.3)' }}>
+            <svg viewBox="0 0 200 140" preserveAspectRatio="none" aria-hidden style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.3 }}>
+              <path d="M0,96 C46,60 84,124 132,88 C164,64 182,74 200,66 L200,140 L0,140 Z" fill="#fff" opacity="0.35" />
+              <path d="M0,116 C52,86 92,138 140,110 C170,92 186,98 200,92 L200,140 L0,140 Z" fill="#fff" opacity="0.4" />
+            </svg>
+            <div style={{ position: 'relative' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <p style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.02em' }}>Meta do dia</p>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', margin: '3px 0 0' }}>{alvo > 0 ? `${money0(feito)} de ${money0(alvo)}` : 'defina sua meta'}</p>
+                </div>
+                {alvo > 0 && <span style={{ fontFamily: MONO, fontSize: 18, fontWeight: 900, color: '#fff' }}>{pctDia}%</span>}
+              </div>
+              <div style={{ marginTop: 20, height: 8, borderRadius: 5, background: 'rgba(255,255,255,0.32)', overflow: 'hidden' }}>
+                <motion.div initial={{ width: 0 }} animate={{ width: `${pctDia}%` }} transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }} style={{ height: '100%', borderRadius: 5, background: '#fff' }} />
+              </div>
+              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.82)', margin: '10px 0 0' }}>
+                {alvo > 0 ? (feito >= alvo ? 'meta batida hoje' : `faltam ${money0(alvo - feito)}`) : 'toque em Meta do dia abaixo'}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* LINHA 2 — curva + depositado/sacado */}
+      <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '2.1fr 1fr', gap: 14 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.22 }}>
+          <Card pad={24}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, flexWrap: 'wrap' }}>
+              <div>
+                <p style={{ fontSize: 16.5, fontWeight: 800, color: S.t1, margin: 0, letterSpacing: '-0.02em' }}>Resultado da semana</p>
+                <p style={{ fontSize: 12.5, color: S.t3, margin: '3px 0 0' }}>lucro das metas fechadas por dia</p>
+              </div>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: S.t2, fontWeight: 600 }}>
+                <span style={{ width: 9, height: 9, borderRadius: '50%', background: RED }} />Lucro
+              </span>
+            </div>
+            <div style={{ position: 'relative', marginTop: 30 }}>
+              <svg viewBox={`0 0 ${W} ${H + 8}`} style={{ width: '100%', height: 'auto', overflow: 'visible', display: 'block' }}>
+                <path d={curva(pts)} fill="none" stroke={RED} strokeWidth="4" strokeLinecap="round" />
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                {serie.map((s, i) => s.v > 0 && (
+                  <span key={i} style={{ position: 'absolute', left: `${(i / 6) * 100}%`, top: `${(pts[i][1] / (H + 8)) * 100}%`, transform: 'translate(-50%,-150%)', background: 'var(--t1)', color: 'var(--surface)', fontFamily: MONO, fontSize: 10.5, fontWeight: 800, padding: '3px 8px', borderRadius: 20, whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>{money0(s.v)}</span>
+                ))}
+              </div>
+              <div style={{ display: 'flex', marginTop: 14 }}>
+                {serie.map((s, i) => <span key={i} style={{ flex: 1, textAlign: 'center', fontSize: 11.5, color: S.t3, fontWeight: 600 }}>{s.label}</span>)}
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.28 }}>
+          <div style={{ height: '100%', borderRadius: 24, padding: 24, background: 'var(--profit-dim)', border: '1px solid var(--profit-border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 18 }}>
+              <Chip bg="var(--surface)"><Ico d={<path d="M3 17l6-6 4 4 8-8" />} c="var(--profit)" s={17} /></Chip>
+              <p style={{ fontSize: 15.5, fontWeight: 800, color: S.t1, margin: 0, lineHeight: 1.25, letterSpacing: '-0.02em' }}>Movimento<br />da operação</p>
+            </div>
+            {[['Depositado', g?.totalDep || 0], ['Sacado', g?.totalSaq || 0], ['Custos', g?.custosTotal || 0]].map(([l, v], i) => {
+              const maxM = Math.max(1, g?.totalDep || 0, g?.totalSaq || 0)
+              return (
+                <div key={l} style={{ marginBottom: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: S.t2 }}>{l}</span>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: S.t1, fontFamily: MONO }}>{money0(v)}</span>
+                  </div>
+                  <div style={{ height: 18, borderRadius: 9, background: 'var(--surface)', overflow: 'hidden' }}>
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, (v / maxM) * 100)}%` }} transition={{ duration: 1, delay: 0.3 + i * 0.1, ease: [0.33, 1, 0.68, 1] }}
+                      style={{ height: '100%', borderRadius: 9, background: i === 2 ? 'var(--loss)' : 'var(--profit)' }} />
+                  </div>
+                </div>
+              )
+            })}
+            <p style={{ fontSize: 11.5, color: S.t3, margin: '16px 0 0' }}>{int(g?.totalContasFechadas || 0)} contas processadas</p>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* LINHA 3 — metas + ranking */}
+      <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '2.1fr 1fr', gap: 14 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.34 }}>
+          <Card pad={24}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <p style={{ fontSize: 16.5, fontWeight: 800, color: S.t1, margin: 0, letterSpacing: '-0.02em' }}>Metas em andamento</p>
+              <button type="button" onClick={onVerMetas} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5, fontWeight: 700, color: RED }}>ver todas →</button>
+            </div>
+            {emAndamento.length === 0 && <p style={{ fontSize: 13, color: S.t3, margin: 0 }}>Nenhuma meta aberta. Crie a primeira no botão acima.</p>}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
+              {emAndamento.map((m, i) => {
+                const dias = m.criada ? Math.floor((Date.now() - new Date(m.criada).getTime()) / 86400000) : 0
+                const parada = dias > 15
+                return (
+                  <div key={m.id} onClick={() => onAbrirMeta && onAbrirMeta(m.id)} style={{ cursor: onAbrirMeta ? 'pointer' : 'default' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7, gap: 10 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
+                        <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: S.t1 }}>{m.rede}</span>
+                        {parada && <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 800, background: 'var(--loss-dim)', color: 'var(--loss)', border: '1px solid var(--loss-border)' }}>parada há {dias}d</span>}
+                      </div>
+                      <span style={{ fontFamily: MONO, fontSize: 11.5, color: S.t3 }}>{m.alvo} contas</span>
+                    </div>
+                    <div style={{ height: 7, borderRadius: 4, background: 'var(--fill-1)', overflow: 'hidden' }}>
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, 20 + i * 15)}%` }} transition={{ duration: 0.9, ease: [0.33, 1, 0.68, 1] }}
+                        style={{ height: '100%', borderRadius: 4, background: parada ? 'var(--loss)' : `linear-gradient(90deg, ${RED2}, ${RED})` }} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </Card>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.4 }}>
+          <Card pad={24}>
+            <p style={{ fontSize: 16.5, fontWeight: 800, color: S.t1, margin: '0 0 16px', letterSpacing: '-0.02em' }}>Ranking</p>
+            {ranking.length === 0 && <p style={{ fontSize: 13, color: S.t3, margin: 0 }}>Sem operadores ainda.</p>}
+            {ranking.slice(0, 5).map((op, i, a) => (
+              <div key={op.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '11px 0', borderBottom: i < a.length - 1 ? '1px solid var(--b1)' : 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                  <span style={{ fontFamily: MONO, fontSize: 10.5, fontWeight: 800, color: i === 0 ? RED : S.t3, width: 14 }}>{i + 1}º</span>
+                  <span style={{ width: 28, height: 28, borderRadius: 9, background: i === 0 ? RED : 'var(--fill-2)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 900, color: i === 0 ? '#fff' : S.t2, flexShrink: 0 }}>
+                    {String(op.nome || op.email || '?')[0].toUpperCase()}
+                  </span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: S.t1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{op.nome || op.email}</span>
+                </div>
+                <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)', flexShrink: 0 }}>{money0(op.lucroFinal)}</span>
+              </div>
+            ))}
+          </Card>
+        </motion.div>
+      </div>
+
+      <style>{`
+        @media (max-width: 1000px) { .ab-r1 { grid-template-columns: 1fr 1fr !important; } .ab-r2 { grid-template-columns: 1fr !important; } }
+        @media (max-width: 600px) { .ab-r1 { grid-template-columns: 1fr !important; } }
+      `}</style>
+    </div>
+  )
+}

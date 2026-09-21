@@ -58,6 +58,8 @@ import BettifySponsor from '../../components/BettifySponsor'
 import RankBadge from '../../components/rank/RankBadge'
 import DailyGoalCard from '../../components/DailyGoalCard'
 import PrimeirosPassos from '../../components/PrimeirosPassos'
+import AdminBento from '../../components/admin/AdminBento'
+import { isNex2 } from '../../lib/theme-v2'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
 import RankAmbient from '../../components/rank/RankAmbient'
@@ -2618,6 +2620,23 @@ export default function AdminPage() {
               userName={getName(profile)}
               onExitDemo={() => { exitDemoMode(user?.id); init() }}
             />
+          ) : isNex2(user?.email) ? (
+            /* ══ VISUAL V2 (bento) — só para as contas liberadas em lib/theme-v2 ══ */
+            <>
+              <AdminBento
+                nome={getName(profile)}
+                global={global}
+                ranking={ranking}
+                metas={metas}
+                dailyGoal={dailyGoal}
+                onNovaMeta={() => { setTab('myops'); setTimeout(() => setMyShowForm(true), 300) }}
+                onVerMetas={() => setTab('myops')}
+                onAbrirMeta={(id) => router.push('/meta/' + id)}
+              />
+              <div style={{ marginTop: 16 }}>
+                <DailyGoalCard data={dailyGoal} onSave={saveDailyGoal} />
+              </div>
+            </>
           ) : (<>
           {/* ── META DO DIA (card gamificado, igual pra todos) ── */}
           <DailyGoalCard data={dailyGoal} onSave={saveDailyGoal} />

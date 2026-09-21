@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { getRank, rankBackground, rankTextColor, getNextRanks } from '../../lib/rank-system'
+import { getRank, rankBackground, rankTextColor, getNextRanks, rankPalette, PRISMATIC_LIGHT } from '../../lib/rank-system'
+import { useBento } from '../../lib/useBento'
 import RankIcon from './RankIcon'
 import { RankAura, OrbitalParticles, GlowBorder, ShinePass, SignatureOverlay } from './RankFX'
 
@@ -12,7 +13,12 @@ import { RankAura, OrbitalParticles, GlowBorder, ShinePass, SignatureOverlay } f
  *          de energia com light traveling, próximos níveis com hover).
  */
 export default function RankProgress({ contas, name = 'Voce', compact = false, forceApex = false }) {
+  const claro = useBento()
   const { current, next, progress, isMax, remaining } = getRank(contas, { forceApex })
+  // No claro os halos viram mancha e os tons quase brancos (Prata, Platina,
+  // Diamante) somem: 'tom' devolve a cor legivel e 'halo' apaga o brilho.
+  const tom = (r) => claro ? rankPalette(r.tier, true).ink : (r.primary === 'prismatic' ? '#E0E0FF' : r.primary)
+  const halo = (v) => claro ? 'none' : v
   const nextRanks = getNextRanks(current.tier, 3)
   const bg = rankBackground(current)
   const textColor = rankTextColor(current)

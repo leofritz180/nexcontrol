@@ -1788,7 +1788,21 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   white-space: nowrap;
   box-shadow: none !important;
 }
-.nx-bento .tabs-scroll button[data-active="true"] { box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important; }
+/* O dock e escuro, entao ele mesmo manda na cor dos itens — antes dependia do
+   estilo inline de cada pagina e a aba ativa sumia onde a pagina nao pintava. */
+.nx-bento .tabs-scroll button {
+  background: transparent !important;
+  color: rgba(255,255,255,0.62) !important;
+  border: none !important;
+  border-bottom: none !important;
+}
+.nx-bento .tabs-scroll button[data-active="true"] {
+  background: #ffffff !important;
+  color: #15151a !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+}
+.nx-bento .tabs-scroll button[data-active="true"] svg { color: #15151a !important; }
 .nx-bento .tabs-scroll button:hover { background: rgba(255,255,255,0.10) !important; }
 .nx-bento .tabs-scroll button[data-active="true"]:hover { background: #ffffff !important; }
 /* o sublinhado animado não faz sentido no dock */

@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import CustosBento from '../../components/modules/CustosBento'
 import { isNex2 } from '../../lib/theme-v2'
+import { useConfirmar } from '../../components/v2/Confirmar'
+import { useAviso } from '../../components/v2/Avisos'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
@@ -33,6 +35,8 @@ const COST_TYPES = [
 const typeMap = Object.fromEntries(COST_TYPES.map(t => [t.id, t]))
 
 export default function CustosPage() {
+  const perguntar = useConfirmar()
+  const { sucesso } = useAviso()
   const router = useRouter()
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
@@ -104,9 +108,27 @@ export default function CustosPage() {
   }
 
   async function handleDelete(id) {
-    if (!confirm('Tem certeza que deseja excluir este custo?')) return
+    // O custo some da tela na hora e so vai pro banco depois da janela de
+    // desfazer. Se o usuario desfizer, nada foi apagado de verdade.
+    const alvo = (costs || []).find(c => c.id === id)
+    const ok = await perguntar({
+      titulo: 'Excluir este custo?',
+      alvo: alvo ? `${(typeMap[alvo.type] || {}).label || alvo.type} · R$ ${Number(alvo.amount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '',
+      texto: 'Ele deixa de ser descontado do lucro do periodo.',
+      confirmar: 'Excluir',
+    })
+    if (!ok) return
     await supabase.from('costs').delete().eq('id', id)
     loadData()
+    sucesso('Custo excluido', {
+      descricao: alvo ? `${(typeMap[alvo.type] || {}).label || alvo.type} · R$ ${Number(alvo.amount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : undefined,
+      desfazer: alvo ? async () => {
+        // recria a linha com os mesmos campos; o id novo nao importa
+        const { id: _ignora, ...campos } = alvo
+        await supabase.from('costs').insert(campos)
+        loadData()
+      } : undefined,
+    })
   }
 
   const isDemo = !loading && shouldShowDemo(metas, user?.id)

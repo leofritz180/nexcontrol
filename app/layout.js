@@ -5,6 +5,7 @@ import MotionGate from '../components/MotionGate'
 // Avisos (toasts) do V2: provider + portal fixo. Import estático de propósito —
 // com dynamic/ssr:false os children parariam de ser renderizados no servidor.
 import { ProvedorDeAvisos } from '../components/v2/Avisos'
+import { ProvedorDeConfirmacao } from '../components/v2/Confirmar'
 const DynamicBackground = dynamic(() => import('../components/DynamicBackground'), { ssr: false })
 const SubscriptionGate = dynamic(() => import('../components/SubscriptionGate'), { ssr: false })
 const OperatorLimitGate = dynamic(() => import('../components/OperatorLimitGate'), { ssr: false })
@@ -113,6 +114,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <MotionGate>
+          <ProvedorDeConfirmacao>
           <ProvedorDeAvisos>
             <Suspense fallback={null}><TelaDeAbertura/></Suspense>
             <Suspense fallback={null}><SubscriptionGate><OperatorLimitGate>{children}</OperatorLimitGate></SubscriptionGate></Suspense>
@@ -123,6 +125,7 @@ export default function RootLayout({ children }) {
             <Suspense fallback={null}><DesignMode/></Suspense>
             <Suspense fallback={null}><DataCorrectionModal/></Suspense>
           </ProvedorDeAvisos>
+          </ProvedorDeConfirmacao>
         </MotionGate>
       </body>
     </html>

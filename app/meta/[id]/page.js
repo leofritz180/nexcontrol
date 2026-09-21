@@ -17,6 +17,7 @@ import FechamentoV2 from '../../../components/modules/FechamentoV2'
 import ConfirmarFinalizacao from '../../../components/modules/ConfirmarFinalizacao'
 import { useBento } from '../../../lib/useBento'
 import { isNex2 } from '../../../lib/theme-v2'
+import { useConfirmar } from '../../../components/v2/Confirmar'
 import { SLOTS } from '../../../lib/slots-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
@@ -399,6 +400,7 @@ function KPI({ label, value, color, small=false, accent }) {
 export default function MetaPage() {
   const router = useRouter()
   const { id } = useParams()
+  const perguntar = useConfirmar()
   const [user,    setUser]    = useState(null)
   const [profile, setProfile] = useState(null)
   const [meta,    setMeta]    = useState(null)
@@ -516,7 +518,14 @@ export default function MetaPage() {
 
   // ── Deletar remessa ──
   async function deleteRemessa(remId) {
-    if (!confirm('Tem certeza que deseja excluir esta remessa?')) return
+    const alvoRem = remessas.find(r => r.id === remId)
+    const okRem = await perguntar({
+      titulo: 'Excluir esta remessa?',
+      alvo: alvoRem ? `${alvoRem.titulo || 'Remessa'} · R$ ${fmt(Math.abs(Number(alvoRem.resultado || 0)))}` : '',
+      texto: 'O resultado dela sai do acumulado da meta.',
+      confirmar: 'Excluir',
+    })
+    if (!okRem) return
     const rem = remessas.find(r => r.id === remId)
     await supabase.from('remessas').delete().eq('id', remId)
     // Log

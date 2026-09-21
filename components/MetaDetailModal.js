@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useConfirmar } from './v2/Confirmar'
 import { motion } from 'framer-motion'
 
 // ─────────────────────────────────────────────────────────────
@@ -89,6 +90,7 @@ function SalaryPanel({ meta, liqCalc, tenantOpModel, leaderId, onSaved }) {
 }
 
 export default function MetaDetailModal({ meta, remessas = [], logs = [], operators = [], tenantOpModel, leaderId, loading, isOwnMeta, onClose, onRefresh, onDeleted, onOperate }) {
+  const perguntar = useConfirmar()
   if (!meta) return null
   const op = operators.find(o => o.id === meta.operator_id)
   const fechada = meta.status_fechamento === 'fechada'
@@ -102,12 +104,19 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
   const displayVal = fechada && meta.lucro_final != null ? Number(meta.lucro_final) : liqR
 
   async function delMeta() {
-    if (!confirm('Tem certeza que deseja EXCLUIR esta meta e todas as remessas? Esta ação não pode ser desfeita.')) return
+    const okMeta = await perguntar({
+      titulo: 'Excluir a meta inteira?',
+      alvo: meta?.titulo || '',
+      texto: 'Todas as remessas dela vao junto. Isso nao tem como desfazer.',
+      confirmar: 'Excluir tudo',
+    })
+    if (!okMeta) return
     await fetch('/api/meta/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ meta_id: meta.id }) })
     if (onDeleted) onDeleted()
   }
   async function delRemessa(rid) {
-    if (!confirm('Excluir esta remessa?')) return
+    const okR = await perguntar({ titulo: 'Excluir esta remessa?', texto: 'O resultado dela sai do acumulado da meta.', confirmar: 'Excluir' })
+    if (!okR) return
     await fetch('/api/remessa/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ remessa_id: rid }) })
     if (onRefresh) onRefresh()
   }

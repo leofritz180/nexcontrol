@@ -11,10 +11,10 @@ import { motion } from 'framer-motion'
 
 // ── tokens ──
 export const NX = {
-  red: '#e11d1d', redSoft: 'var(--loss)', redDeep: '#b01611',
+  red: 'var(--brand)', redSoft: 'var(--loss)', redDeep: 'var(--brand)',
   mint: 'var(--profit)', loss: 'var(--loss)',
-  t1: '#F5F5F5', t2: 'rgba(255,255,255,0.62)', t3: 'rgba(255,255,255,0.42)', t4: 'rgba(255,255,255,0.26)',
-  line: 'rgba(255,255,255,0.08)', lineSoft: 'rgba(255,255,255,0.05)',
+  t1: 'var(--t1)', t2: 'var(--t2)', t3: 'var(--t3)', t4: 'var(--t4)',
+  line: 'var(--b1)', lineSoft: 'var(--fill-1)',
   mono: 'var(--mono, "JetBrains Mono", monospace)',
 }
 
@@ -24,8 +24,8 @@ export const brl = v => 'R$ ' + fmt(v)
 
 // superfície padrão: preto sólido + filetes laterais de luz
 export const surface = {
-  borderRadius: 16, background: '#000', border: `1px solid ${NX.line}`,
-  boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 16px 42px rgba(0,0,0,0.45)',
+  borderRadius: 24, background: 'var(--surface)', border: `1px solid ${NX.line}`,
+  boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 8px 26px rgba(0,0,0,0.05)',
 }
 
 // ── contagem animada ──
@@ -88,9 +88,9 @@ export function Panel({ children, style, accent = false, pad = '22px 24px', ...r
 export function Strip({ items, cols }) {
   const n = cols || items.length
   return (
-    <div className="nx-strip" style={{ display: 'grid', gridTemplateColumns: `repeat(${n}, 1fr)`, gap: 1, borderRadius: 16, overflow: 'hidden', border: `1px solid ${NX.line}`, background: 'rgba(255,255,255,0.06)' }}>
+    <div className="nx-strip" style={{ display: 'grid', gridTemplateColumns: `repeat(${n}, 1fr)`, gap: 1, borderRadius: 16, overflow: 'hidden', border: `1px solid ${NX.line}`, background: 'var(--fill-1)' }}>
       {items.map((c, i) => (
-        <div key={i} style={{ padding: '15px 17px', background: '#000' }}>
+        <div key={i} style={{ padding: '15px 17px', background: 'var(--surface)' }}>
           <p style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: NX.t3, margin: '0 0 8px' }}>{c.l}</p>
           <div>{c.v}</div>
           {c.hint && <p style={{ fontSize: 10.5, color: NX.t4, margin: '6px 0 0' }}>{c.hint}</p>}
@@ -105,7 +105,7 @@ export function Bar({ pct, color, height = 8, glow = true }) {
   const c = color || NX.red
   const p = Math.max(0, Math.min(100, pct))
   return (
-    <div style={{ height, borderRadius: height / 2, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+    <div style={{ height, borderRadius: height / 2, background: 'var(--fill-1)', overflow: 'hidden' }}>
       <motion.div initial={{ width: 0 }} animate={{ width: `${p}%` }} transition={{ duration: 0.9, ease: [0.33, 1, 0.68, 1] }}
         style={{ height: '100%', borderRadius: height / 2, background: `linear-gradient(90deg, ${c}, ${c === NX.red ? '#ff5b56' : '#7ff0ae'})`, boxShadow: glow ? `0 0 12px ${c === NX.red ? 'rgba(225,29,29,0.5)' : 'rgba(209,250,229,0.4)'}` : 'none' }} />
     </div>
@@ -138,7 +138,7 @@ export function Row({ left, right, sub, avatar, pos, last }) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '10px 0', borderBottom: last ? 'none' : `1px solid ${NX.lineSoft}` }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
         {pos != null && <span style={{ fontFamily: NX.mono, fontSize: 10, fontWeight: 800, color: pos === 1 ? NX.redSoft : NX.t4, width: 16, flexShrink: 0 }}>{pos}º</span>}
-        {avatar && <span style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: 'linear-gradient(135deg,#26262b,#131315)', border: `1px solid ${NX.line}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: NX.t2 }}>{avatar}</span>}
+        {avatar && <span style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, background: 'var(--fill-2)', border: `1px solid ${NX.line}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: NX.t2 }}>{avatar}</span>}
         <div style={{ minWidth: 0 }}>
           <p style={{ fontSize: 13, color: NX.t1, margin: 0, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{left}</p>
           {sub && <p style={{ fontSize: 10.5, color: NX.t4, margin: '2px 0 0' }}>{sub}</p>}
@@ -152,7 +152,7 @@ export function Row({ left, right, sub, avatar, pos, last }) {
 // ── pill de status ──
 export function Pill({ children, tone = 'neutral' }) {
   const map = {
-    neutral: { bg: 'rgba(255,255,255,0.05)', bd: NX.line, c: NX.t2 },
+    neutral: { bg: 'var(--fill-1)', bd: NX.line, c: NX.t2 },
     red: { bg: 'rgba(225,29,29,0.12)', bd: 'rgba(225,29,29,0.32)', c: NX.redSoft },
     mint: { bg: 'rgba(209,250,229,0.1)', bd: 'rgba(209,250,229,0.25)', c: NX.mint },
     loss: { bg: 'rgba(239,68,68,0.1)', bd: 'rgba(239,68,68,0.28)', c: NX.loss },

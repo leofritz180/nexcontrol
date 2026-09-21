@@ -1720,3 +1720,34 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 
 /* ── V2 · ESPAÇAMENTO: o conteúdo ganha respiro (bento pede ar) ── */
 .nx-bento .app-content > div { padding-top: 4px; }
+
+/* ── V2 · MENU: cores e estado ativo ───────────────────────────────────────
+   Corrige 2 coisas: (1) a regra .nx-redesign svg{color:#D10000} pintava TODO
+   ícone de vermelho; (2) o item ativo usa var(--raised), não var(--fill-2). */
+
+/* ícones do rail: brancos suaves; nada de vermelho */
+.nx-bento .sb-rd svg[stroke="currentColor"],
+.nx-bento aside svg[stroke="currentColor"] { color: rgba(255,255,255,0.62) !important; }
+.nx-bento .sb-rd nav a:hover svg[stroke="currentColor"] { color: #ffffff !important; }
+
+/* ITEM ATIVO — chip claro que "salta" pra fora do rail (módulo aberto) */
+.nx-bento .sb-rd nav a[style*="var(--raised)"] {
+  position: relative;
+  background: #ffffff !important;
+  border-radius: 16px !important;
+  margin-right: -10px !important;
+  padding-right: 20px !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.30) !important;
+  z-index: 2;
+}
+.nx-bento .sb-rd nav a[style*="var(--raised)"] svg[stroke="currentColor"] { color: #15151a !important; }
+.nx-bento .sb-rd nav a[style*="var(--raised)"] .sb-label { color: #15151a !important; font-weight: 700 !important; }
+/* marcador verde-limão da logo, na borda esquerda do chip */
+.nx-bento .sb-rd nav a[style*="var(--raised)"]::before {
+  content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 4px; height: 22px; border-radius: 0 4px 4px 0; background: #c4f042;
+}
+/* transição suave ao trocar de módulo */
+.nx-bento .sb-rd nav a { transition: background .2s ease, box-shadow .2s ease, margin .2s ease, padding .2s ease !important; }
+.nx-bento .sb-rd nav a svg { transition: color .2s ease, transform .2s ease; }
+.nx-bento .sb-rd nav a:hover svg { transform: scale(1.12); }

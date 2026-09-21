@@ -190,8 +190,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         style={{ display:'flex', alignItems:'center', padding:'22px 22px 28px', textDecoration:'none' }}>
         {nex2 ? (
           <span style={{ display:'flex', alignItems:'center', gap:10 }}>
-            <img src="/brand/nex-v2.png" alt="NexControl" width={34} height={34}
-              style={{ width:34, height:34, objectFit:'contain', borderRadius:10, flexShrink:0 }} />
+            <img src="/brand/nex-v2.png" alt="NexControl" width={38} height={38}
+              style={{ width:38, height:38, objectFit:'contain', flexShrink:0 }} />
             <span className="sb-label" style={{ fontSize:16, fontWeight:800, letterSpacing:'-0.03em', color:'#fff', whiteSpace:'nowrap' }}>
               Nex<span style={{ color:'#c4f042' }}>Control</span>
             </span>

@@ -2104,3 +2104,100 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .nx-bento .sb-rd nav > .nx-rail-selo { transition: none; }
 }
 
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   NEX NOIR — a versão escura da 2.0.
+
+   Não é o tema antigo de volta: é o MESMO bento, com as superfícies
+   invertidas. Por isso ele redefine só os tokens — cantos, sombras,
+   rail, dock, cards e animações continuam valendo, porque tudo neles
+   já é escrito em var().
+
+   Duas escolhas que fazem diferença no escuro:
+    • A superfície do card (#17171c) é MAIS CLARA que o fundo (#0e0e11).
+      No escuro a hierarquia vem da luz, não da sombra — sombra em cima
+      de preto não aparece.
+    • Os tons de lucro/prejuízo ficam mais saturados: sobre fundo escuro
+      a mesma cor parece mais apagada do que sobre branco.
+   ═══════════════════════════════════════════════════════════════════ */
+.nx-bento.nx-noir {
+  --void: #0b0b0e;
+  --base: #0e0e11;
+  --surface: #17171c;
+  --raised: #1d1d23;
+  --overlay: #1d1d23;
+  --float: #1d1d23;
+  --sidebar: #08080a;
+  --sb-bg: #08080a;
+  --t1: #f4f4f6;
+  --t2: #a6a6b2;
+  --t3: #82828f;
+  --t4: #62626e;
+  --b1: rgba(255,255,255,0.07);
+  --b2: rgba(255,255,255,0.11);
+  --b3: rgba(255,255,255,0.16);
+  --fill-1: rgba(255,255,255,0.035);
+  --fill-2: rgba(255,255,255,0.06);
+  --fill-3: rgba(255,255,255,0.09);
+  --muted: var(--fill-2);
+  --input: #101014;
+  --border-token: var(--b1);
+  --brand:        #ff5a3c;
+  --brand-bright: #ff7a4d;
+  --brand-dim:    rgba(255,90,60,0.14);
+  --brand-glow:   rgba(255,90,60,0.22);
+  --brand-border: rgba(255,90,60,0.34);
+  --profit:        #7ee08a;
+  --profit-dim:    rgba(126,224,138,0.13);
+  --profit-border: rgba(126,224,138,0.30);
+  --profit-glow:   rgba(126,224,138,0.18);
+  --success:       #7ee08a;
+  --loss:        #ff6b6b;
+  --loss-dim:    rgba(255,107,107,0.13);
+  --loss-border: rgba(255,107,107,0.30);
+  --loss-glow:   rgba(255,107,107,0.16);
+  --warn: #ffa366; --warn-dim: rgba(255,163,102,0.13); --warn-border: rgba(255,163,102,0.30);
+  --info: #a6a6b2; --info-dim: rgba(255,255,255,0.06); --info-border: rgba(255,255,255,0.14);
+  color-scheme: dark;
+}
+.nx-bento.nx-noir body { background: #0e0e11 !important; color: var(--t1); }
+
+/* sombra nao aparece sobre preto: o card se separa do fundo por uma
+   borda mais clara e um leve halo interno no topo */
+.nx-bento.nx-noir [style*="var(--surface)"] {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 12px 32px rgba(0,0,0,0.45) !important;
+}
+.nx-bento.nx-noir .card,
+.nx-bento.nx-noir .row-card {
+  background: var(--surface) !important;
+  border-color: var(--b1) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 10px 26px rgba(0,0,0,0.4) !important;
+}
+.nx-bento.nx-noir .row-card:hover {
+  border-color: var(--b2) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 16px 38px rgba(0,0,0,0.5) !important;
+}
+/* no escuro o rail e o dock ficam AINDA mais fundos que a pagina, pra
+   nao virarem uma mancha cinza no meio de outra */
+.nx-bento.nx-noir .sidebar, .nx-bento.nx-noir aside, .nx-bento.nx-noir .sb-rd {
+  background: #08080a !important;
+}
+.nx-bento.nx-noir .tabs-scroll { background: #08080a !important; }
+/* o selo do rail e a pilula do dock deixam de ser branco puro */
+.nx-bento.nx-noir .sb-rd nav > .nx-rail-selo,
+.nx-bento.nx-noir .sb-rd nav > .nx-rail-selo::before,
+.nx-bento.nx-noir .sb-rd nav > .nx-rail-selo::after { background: #0e0e11 !important; }
+.nx-bento.nx-noir .sb-rd nav a[style*="var(--raised)"] svg[stroke="currentColor"],
+.nx-bento.nx-noir .sb-rd nav a[style*="var(--raised)"] .sb-label { color: #f4f4f6 !important; }
+.nx-bento.nx-noir .tabs-scroll > .nx-dock-pilula { background: #2a2a33 !important; }
+.nx-bento.nx-noir .tabs-scroll button[data-active="true"] { color: #ffffff !important; }
+.nx-bento.nx-noir .tabs-scroll button[data-active="true"] svg { color: #ffffff !important; }
+/* controles: a moldura do kit escurece junto */
+.nx-bento.nx-noir input:not(.nx-campo-ctl),
+.nx-bento.nx-noir select:not(.nx-campo-ctl),
+.nx-bento.nx-noir textarea:not(.nx-campo-ctl) {
+  background: #101014 !important; border-color: var(--b2) !important; color: var(--t1) !important;
+}
+.nx-bento.nx-noir ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.16); }
+

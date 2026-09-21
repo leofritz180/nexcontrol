@@ -144,6 +144,20 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const name = localProfile.nome || userName || userEmail?.split('@')[0] || '?'
   const initial = name[0].toUpperCase()
   const avatar = localProfile.avatar
+
+  // Nex Noir: a escolha vive no localStorage e quem aplica a classe e o
+  // DesignMode. Aqui so gravamos e avisamos, pra nao ter duas fontes da
+  // verdade sobre o tema.
+  const [noir, setNoir] = useState(false)
+  useEffect(() => {
+    try { setNoir(localStorage.getItem('nx_noir') === '1') } catch {}
+  }, [])
+  function alternarNoir() {
+    const novo = !noir
+    setNoir(novo)
+    try { localStorage.setItem('nx_noir', novo ? '1' : '0') } catch {}
+    document.documentElement.classList.toggle('nx-noir', novo)
+  }
   const myRole = userEmail === OWNER_EMAIL ? 'owner' : (isAdmin ? 'admin' : 'operator')
   const baseItems = isAdmin ? ADMIN_NAV : OP_NAV
   // Aulas VIP saiu do menu em 21/09/2026 (decisao do dono). A rota /aulas e os
@@ -376,6 +390,35 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
           </div>
           <svg className="sb-label" width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><polyline points="9 18 15 12 9 6"/></svg>
         </button>
+        {/* Nex Noir — so pras contas do visual 2.0 */}
+        {nex2 && (
+          <button type="button" onClick={alternarNoir} aria-pressed={noir}
+            title={noir ? 'Voltar ao claro' : 'Modo escuro (Nex Noir)'}
+            style={{
+              width:'100%', display:'flex', alignItems:'center', gap:8, marginBottom:8,
+              padding:'8px 12px', borderRadius:10, fontSize:11, fontWeight:600,
+              color:'var(--t3)', background:'transparent', border:'1px solid var(--fill-2)',
+              cursor:'pointer', transition:'all 0.15s',
+            }}
+            onMouseEnter={e=>{e.currentTarget.style.background='var(--fill-2)';e.currentTarget.style.color='var(--t1)'}}
+            onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'}}>
+            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              {noir
+                ? <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>
+                : <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>}
+            </svg>
+            <span className="sb-label" style={{ flex:1, textAlign:'left' }}>{noir ? 'Modo claro' : 'Modo escuro'}</span>
+            <span className="sb-label" aria-hidden style={{
+              width:26, height:15, borderRadius:20, flexShrink:0, position:'relative',
+              background: noir ? '#ff5a3c' : 'var(--fill-3)', transition:'background .2s ease',
+            }}>
+              <span style={{
+                position:'absolute', top:2, left: noir ? 13 : 2, width:11, height:11, borderRadius:'50%',
+                background:'#fff', transition:'left .2s cubic-bezier(.33,1,.68,1)',
+              }} />
+            </span>
+          </button>
+        )}
         <button onClick={logout}
           style={{
             width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:6,

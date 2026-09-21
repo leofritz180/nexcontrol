@@ -48,6 +48,12 @@ export default function DesignMode() {
         // VISUAL V2 (bento claro) — gated por conta em lib/theme-v2.js e por rota.
         const nex2 = isNex2(email) && bentoNaRota(pathname)
         document.documentElement.classList.toggle('nx-bento', nex2)
+        // Nex Noir: a versao escura da 2.0. A escolha e por navegador
+        // (localStorage) e so vale dentro do bento — fora dele o tema
+        // antigo continua mandando pelo 'nx_theme' de sempre.
+        let noir = false
+        if (nex2) { try { noir = localStorage.getItem('nx_noir') === '1' } catch {} }
+        document.documentElement.classList.toggle('nx-noir', noir)
         // Modo claro: forçado no V2; senão respeita a escolha salva
         let light = nex2
         if (!nex2 && on) { try { light = localStorage.getItem('nx_theme') === 'light' } catch {} }

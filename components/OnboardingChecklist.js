@@ -140,6 +140,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
       {/* Card flutuante — só renderiza quando o coordenador libera (ou recolhido) */}
       {shouldShow && (collapsed || grantedCard) && (
       <motion.div
+        className="nx-checklist"
         initial={{ x: 380, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ type: 'spring', damping: 24, stiffness: 200 }}

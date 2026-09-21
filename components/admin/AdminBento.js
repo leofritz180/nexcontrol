@@ -13,6 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
+import { Rosca, FATIAS } from '../ui/bento'
 
 const RED = '#e5391f', RED2 = '#ff7a4d'
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
@@ -108,6 +109,32 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
   const pts = serie.map((s, i) => [(i * W) / 6, yDe(s.v)])
   const yZero = yDe(0)
   const temNegativo = lo < 0
+
+  // ── Roscas: onde o lucro se concentra e como as metas estao divididas ──
+  const porRede = useMemo(() => {
+    const mapa = new Map()
+    for (const m of fechadas) {
+      const rede = (m.rede || 'Sem rede').toUpperCase()
+      const v = Number(m.lucro_final || 0)
+      if (v <= 0) continue // rosca so faz sentido com fatias positivas
+      mapa.set(rede, (mapa.get(rede) || 0) + v)
+    }
+    const todas = [...mapa.entries()].map(([l, v]) => ({ l, v })).sort((a, b) => b.v - a.v)
+    const topo = todas.slice(0, 4).map((d, i) => ({ ...d, c: FATIAS[i] }))
+    const resto = todas.slice(4).reduce((a, d) => a + d.v, 0)
+    if (resto > 0) topo.push({ l: 'Outras', v: resto, c: FATIAS[4] })
+    return topo
+  }, [fechadas])
+  const lucroRedes = porRede.reduce((a, d) => a + d.v, 0)
+
+  const situacao = useMemo(() => {
+    const paradas = abertas.filter(m => m.created_at && (Date.now() - new Date(m.created_at).getTime()) / 86400000 > 15).length
+    return [
+      { l: 'Em andamento', v: abertas.length - paradas, c: FATIAS[2] },
+      { l: 'Paradas (+15d)', v: paradas, c: FATIAS[0] },
+      { l: 'Fechadas', v: fechadas.length, c: FATIAS[4] },
+    ].filter(d => d.v > 0)
+  }, [abertas, fechadas])
 
   // metas abertas com progresso
   const emAndamento = useMemo(() => abertas.slice(0, 5).map(m => {
@@ -285,7 +312,25 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         </motion.div>
       </div>
 
-      {/* LINHA 3 — metas + ranking */}
+      {/* LINHA 3 — roscas: concentracao de lucro e situacao das metas */}
+      <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.3 }}>
+          <Card pad={24}>
+            <p style={{ fontSize: 16.5, fontWeight: 800, color: S.t1, margin: '0 0 3px', letterSpacing: '-0.02em' }}>Redes com mais lucro</p>
+            <p style={{ fontSize: 12.5, color: S.t3, margin: '0 0 20px' }}>soma do lucro final das metas fechadas</p>
+            <Rosca dados={porRede} centro={money0(lucroRedes)} rotulo="no total" formata={money0} delay={0.34} />
+          </Card>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.36 }}>
+          <Card pad={24}>
+            <p style={{ fontSize: 16.5, fontWeight: 800, color: S.t1, margin: '0 0 3px', letterSpacing: '-0.02em' }}>Situação das metas</p>
+            <p style={{ fontSize: 12.5, color: S.t3, margin: '0 0 20px' }}>parada = aberta há mais de 15 dias</p>
+            <Rosca dados={situacao} centro={int(abertas.length + fechadas.length)} rotulo="metas" formata={int} delay={0.4} />
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* LINHA 4 — metas + ranking */}
       <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '2.1fr 1fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.34 }}>
           <Card pad={24}>

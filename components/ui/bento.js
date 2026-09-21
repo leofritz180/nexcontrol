@@ -180,3 +180,61 @@ export function Lista({ titulo, linhas, vazio = 'Nada por aqui ainda.', delay = 
 
 export const grid3 = { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }
 export const grid2 = { display: 'grid', gridTemplateColumns: '2.1fr 1fr', gap: 14 }
+
+// ── ROSCA (donut) ────────────────────────────────────────────────────────
+// Anel com o total no miolo e legenda ao lado. Cada fatia é um arco desenhado
+// com stroke-dasharray, então a animação é o próprio traço sendo riscado.
+// `dados`: [{ l, v, c }] já ordenados. `centro`/`rotulo` vão no miolo.
+export function Rosca({ dados = [], centro, rotulo, tamanho = 132, espessura = 16, formata = int, delay = 0.1 }) {
+  const total = dados.reduce((a, d) => a + Number(d.v || 0), 0)
+  const r = (tamanho - espessura) / 2
+  const circ = 2 * Math.PI * r
+  const vazio = total <= 0
+
+  let acumulado = 0
+  const fatias = dados.map(d => {
+    const frac = vazio ? 0 : Number(d.v || 0) / total
+    const seg = { ...d, frac, offset: acumulado }
+    acumulado += frac
+    return seg
+  })
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 22, flexWrap: 'wrap' }}>
+      <div style={{ position: 'relative', width: tamanho, height: tamanho, flexShrink: 0 }}>
+        <svg width={tamanho} height={tamanho} viewBox={`0 0 ${tamanho} ${tamanho}`} style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx={tamanho / 2} cy={tamanho / 2} r={r} fill="none" stroke="var(--fill-2)" strokeWidth={espessura} />
+          {!vazio && fatias.map((s, i) => (
+            <motion.circle
+              key={s.l}
+              cx={tamanho / 2} cy={tamanho / 2} r={r} fill="none"
+              stroke={s.c} strokeWidth={espessura} strokeLinecap="round"
+              strokeDasharray={`${Math.max(0, s.frac * circ - 3)} ${circ}`}
+              initial={{ strokeDashoffset: circ }}
+              animate={{ strokeDashoffset: -s.offset * circ }}
+              transition={{ duration: 1, delay: delay + i * 0.12, ease: [0.33, 1, 0.68, 1] }}
+            />
+          ))}
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontFamily: MONO, fontSize: 23, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.03em', lineHeight: 1 }}>{centro}</span>
+          {rotulo && <span style={{ fontSize: 10.5, color: 'var(--t3)', marginTop: 4 }}>{rotulo}</span>}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 11, flex: 1, minWidth: 140 }}>
+        {dados.length === 0 && <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Sem dados no período.</p>}
+        {dados.map(d => (
+          <div key={d.l} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ width: 9, height: 9, borderRadius: '50%', background: d.c, flexShrink: 0 }} />
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--t2)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d.l}</span>
+            <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: 'var(--t1)', flexShrink: 0 }}>{formata(d.v)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// rampa de cores das fatias — família da marca + lima, sem azul/roxo
+export const FATIAS = ['#e5391f', '#ff7a4d', '#c4f042', '#ffb08a', '#b6b6c0']

@@ -69,7 +69,7 @@ function Chip({ bg, children }) {
 // mesmos periodos do painel antigo, pra nao mudar o que o numero significa
 const PERIODOS = [['month','Mês'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d'],['all','Tudo']]
 
-export default function AdminBento({ nome, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, onSaveGoal , periodo, onPeriodo, lucroPeriodo }) {
+export default function AdminBento({ nome, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, onSaveGoal , periodo, onPeriodo, lucroPeriodo , onAtualizar, atualizando }) {
   const [editGoal, setEditGoal] = useState(false)
   const [goalVal, setGoalVal] = useState('')
 
@@ -151,9 +151,25 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
           <h1 style={{ fontSize: 26, fontWeight: 800, color: S.t1, margin: 0, letterSpacing: '-0.03em' }}>Olá, {nome || 'admin'}</h1>
           <p style={{ fontSize: 13.5, color: S.t3, margin: '3px 0 0' }}>{abertas.length} meta{abertas.length === 1 ? '' : 's'} em andamento · {equipeOn} operador{equipeOn === 1 ? '' : 'es'}</p>
         </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        {onAtualizar && (
+          <motion.button type="button" onClick={onAtualizar} disabled={atualizando}
+            whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 18px', borderRadius: 30, cursor: atualizando ? 'default' : 'pointer',
+              fontFamily: 'inherit', fontSize: 13, fontWeight: 700, color: S.t2,
+              background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 1px 2px rgba(0,0,0,0.04)', opacity: atualizando ? 0.55 : 1 }}>
+            <motion.span style={{ display: 'inline-flex' }}
+              animate={atualizando ? { rotate: 360 } : { rotate: 0 }}
+              transition={atualizando ? { duration: 0.8, repeat: Infinity, ease: 'linear' } : { duration: 0.2 }}>
+              <Ico d={<><path d="M21 12a9 9 0 1 1-2.64-6.36" /><path d="M21 3v6h-6" /></>} s={15} c={S.t2} />
+            </motion.span>
+            {atualizando ? 'Atualizando' : 'Atualizar'}
+          </motion.button>
+        )}
         <motion.button type="button" onClick={onNovaMeta} whileHover={{ y: -2, boxShadow: '0 14px 32px rgba(229,57,31,0.38)' }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
           <Ico d={<path d="M12 5v14M5 12h14" />} s={16} /> Nova meta
         </motion.button>
+        </div>
       </div>
 
       {/* filtro de periodo — manda no primeiro card */}

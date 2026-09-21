@@ -1612,6 +1612,9 @@ export default function AdminPage() {
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
         {/* ── PAGE HEADER — clean ── */}
+        {/* No V2 esta faixa sai inteira: o 'Ola, ...' do bento e que abre a
+            pagina. O Atualizar foi pro cabecalho do proprio bento. */}
+        {!isNex2(user?.email) && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -1687,6 +1690,7 @@ export default function AdminPage() {
             {refreshing ? 'Atualizando...' : 'Atualizar'}
           </motion.button>
         </motion.div>
+        )}
 
         {/* Tour por tab — cada aba dispara seu proprio tour */}
         <TabAwareTour
@@ -2655,6 +2659,8 @@ export default function AdminPage() {
                 periodo={heroPeriod}
                 onPeriodo={setHeroPeriod}
                 lucroPeriodo={heroLucro?.value}
+                onAtualizar={handleRefresh}
+                atualizando={refreshing}
               />
           ) : (<>
           {/* ── META DO DIA (card gamificado, igual pra todos) ── */}

@@ -437,10 +437,12 @@ function PillarColumn({ rank, height, active, isApex, isCurrent, isAchieved }) {
   const rgb = rank.rgb || '255,255,255'
 
   // Conic gradient pra apex, normal pros outros
+  // O roxo (120,60,200) que estava aqui era o ultimo resto do arco-iris: a
+  // coluna do Apex subia de laranja pra lilas.
   const fillBg = isApex
-    ? 'linear-gradient(180deg, rgba(255,154,120,0.7) 0%, rgba(120,60,200,0.5) 50%, rgba(60,30,120,0.3) 100%)'
+    ? 'linear-gradient(180deg, rgba(255,122,77,0.85) 0%, rgba(229,57,31,0.6) 50%, rgba(21,21,26,0.35) 100%)'
     : isPrismatic
-      ? 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,154,120,0.4) 50%, rgba(120,60,200,0.2) 100%)'
+      ? 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,154,120,0.45) 50%, rgba(182,182,192,0.25) 100%)'
       : `linear-gradient(180deg, rgba(${rgb},0.7) 0%, rgba(${rgb},0.4) 60%, rgba(${rgb},0.15) 100%)`
 
   return (

@@ -260,6 +260,15 @@ html.nx-aqua:not(.nx-light) {
 .nx-bento .pl-tabela::-webkit-scrollbar-thumb { background: var(--fill-3); border-radius: 9px; }
 .nx-bento .pl-tabela::-webkit-scrollbar-thumb:hover { background: var(--t4); }
 .nx-bento .pl-tabela table { padding-right: 8px; }
+/* A planilha e mais larga que o card em qualquer tela: a ultima coluna
+   ("Lucro total") terminava cortada na borda, como se estivesse quebrada.
+   Este esmaecimento na direita e o sinal de "tem mais coisa, arraste". */
+.nx-bento .pl-planilha { position: relative; }
+.nx-bento .pl-planilha::after {
+  content: ''; position: absolute; top: 1px; right: 1px; bottom: 1px; width: 52px;
+  pointer-events: none; border-radius: 0 24px 24px 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--surface) 82%);
+}
 
 /* 6b) ESCOTILHA GERAL: texto que DEVE continuar branco no claro.
    A regra 2 acima decide olhando o style do PRÓPRIO elemento. Quando o fundo

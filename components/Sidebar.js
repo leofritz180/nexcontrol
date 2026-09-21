@@ -146,17 +146,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const avatar = localProfile.avatar
   const myRole = userEmail === OWNER_EMAIL ? 'owner' : (isAdmin ? 'admin' : 'operator')
   const baseItems = isAdmin ? ADMIN_NAV : OP_NAV
-  // Inject Aulas VIP after Tutorial (admin) or after Chaves PIX (operator)
-  const items = showAulas
-    ? (() => {
-        const arr = [...baseItems]
-        const anchor = isAdmin
-          ? arr.findIndex(i => i.href === '/tutorial')
-          : arr.findIndex(i => i.href === '/pix')
-        arr.splice(anchor !== -1 ? anchor + 1 : arr.length, 0, AULAS_VIP_ITEM)
-        return arr
-      })()
-    : baseItems
+  // Aulas VIP saiu do menu em 21/09/2026 (decisao do dono). A rota /aulas e os
+  // dados continuam de pe — pra trazer de volta, e so voltar a injecao abaixo
+  // usando showAulas + AULAS_VIP_ITEM, que seguem definidos.
+  const items = baseItems
 
   // Use own fetch OR parent prop — whichever confirms PRO
   const sub = ownSub || subscription
@@ -170,7 +163,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
     // Premiações — todos os admins (GA)
     ...(isAdmin && premiacoesEnabled(userEmail) ? [PREMIACOES_ITEM] : []),
     ...(isAdmin && userEmail === OWNER_EMAIL ? [
-      { href:'/planejamento', label:'Controle Op.', icon:'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', group:'Master' },
+      // Controle Op. (/planejamento) saiu do menu em 21/09/2026; a rota continua no ar
       { href:'/owner', label:'Owner', icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', group:'Master' },
     ] : []),
   ]

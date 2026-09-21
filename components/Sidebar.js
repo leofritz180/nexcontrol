@@ -190,11 +190,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         style={{ display:'flex', alignItems:'center', padding:'22px 22px 28px', textDecoration:'none' }}>
         {nex2 ? (
           <span style={{ display:'flex', alignItems:'center', gap:10 }}>
-            <img src="/brand/nex-v2.png" alt="NexControl" width={38} height={38}
+            <img className="nx-logo-mark" src="/brand/nex-mark.png" alt="NexControl" width={38} height={38}
               style={{ width:38, height:38, objectFit:'contain', flexShrink:0 }} />
-            <span className="sb-label" style={{ fontSize:16, fontWeight:800, letterSpacing:'-0.03em', color:'#fff', whiteSpace:'nowrap' }}>
-              Nex<span style={{ color:'#c4f042' }}>Control</span>
-            </span>
+            <img className="nx-logo-full" src="/brand/nex-full-light.png" alt="NexControl"
+              style={{ height:30, width:'auto', objectFit:'contain', flexShrink:0, display:'none' }} />
           </span>
         ) : <Logo size={0.875} style={{ gap:10 }}/>}
       </Link>

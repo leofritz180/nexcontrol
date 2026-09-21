@@ -1800,3 +1800,30 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .nx-bento .tabs-scroll { bottom: 12px !important; max-width: 94vw; padding: 6px 7px !important; }
   .nx-bento .tabs-scroll button { padding: 8px 14px !important; font-size: 12px !important; }
 }
+
+/* ── V2 · LOGO do rail: marca quando reduzido, marca+escrita quando expande ── */
+@media (min-width: 769px) {
+  .nx-bento .sb-rd .nx-logo-mark { display: block !important; }
+  .nx-bento .sb-rd .nx-logo-full { display: none !important; }
+  .nx-bento .sb-rd:hover .nx-logo-mark { display: none !important; }
+  .nx-bento .sb-rd:hover .nx-logo-full { display: block !important; }
+}
+@media (max-width: 768px) {
+  .nx-bento .nx-logo-mark { display: none !important; }
+  .nx-bento .nx-logo-full { display: block !important; }
+}
+
+/* ── V2 · DOCK: corrige o tremor ────────────────────────────────────────────
+   O translateX(-50%) brigava com as medições do indicador animado do
+   framer-motion (layout), gerando loop de re-render = tremia. Centralizo
+   com margin auto (sem transform) e travo o layout. */
+.nx-bento .tabs-scroll {
+  left: 0 !important; right: 0 !important;
+  margin: 0 auto !important;
+  transform: none !important;
+  width: fit-content !important;
+  contain: layout paint;
+  will-change: auto !important;
+}
+.nx-bento .tabs-scroll * { animation: none !important; }
+.nx-bento .tabs-scroll button { transition: background .18s ease, color .18s ease !important; transform: none !important; }

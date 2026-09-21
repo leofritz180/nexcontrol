@@ -1618,13 +1618,15 @@ export default function AdminPage() {
           style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom: isRedesign(user?.email)?18:32 }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', marginBottom:4 }}>
-              <motion.h1
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.05, ease }}
-                style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:0 }}>
-                Ola, {getName(profile)}
-              </motion.h1>
+              {!isNex2(user?.email) && (
+                <motion.h1
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.05, ease }}
+                  style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:0 }}>
+                  Ola, {getName(profile)}
+                </motion.h1>
+              )}
               {/* Rank do admin = SOMA dos depositantes de TODOS os operadores do tenant
                   (countTenantDeposits). Owner Darkzin recebe Apex automatico via isApexLocked. */}
               <motion.div
@@ -1632,11 +1634,13 @@ export default function AdminPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, delay: 0.15, ease }}
               >
-                <RankBadge
-                  contas={countTenantDeposits(metas)}
-                  forceApex={isApexLocked(user?.email || profile?.email)}
-                  size="sm"
-                />
+                {!isNex2(user?.email) && (
+                  <RankBadge
+                    contas={countTenantDeposits(metas)}
+                    forceApex={isApexLocked(user?.email || profile?.email)}
+                    size="sm"
+                  />
+                )}
               </motion.div>
               {/* Trial chip (Variant B): countdown ao lado do nome */}
               {billingVariant === 'B' && (

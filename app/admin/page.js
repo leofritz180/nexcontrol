@@ -438,7 +438,7 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
   }, [])
 
   const insight = DEMO_INSIGHTS[insightIdx]
-  const insightColors = { profit:{ bg:'rgba(209,250,229,0.06)', border:'rgba(209,250,229,0.12)', color:'var(--profit)' }, loss:{ bg:'rgba(239,68,68,0.06)', border:'rgba(239,68,68,0.12)', color:'var(--loss)' }, warn:{ bg:'rgba(255,255,255,0.06)', border:'var(--b2)', color:'var(--t1)' }, info:{ bg:'rgba(229,57,53,0.06)', border:'rgba(229,57,53,0.12)', color:'#e53935' } }
+  const insightColors = { profit:{ bg:'rgba(209,250,229,0.06)', border:'rgba(209,250,229,0.12)', color:'var(--profit)' }, loss:{ bg:'rgba(239,68,68,0.06)', border:'rgba(239,68,68,0.12)', color:'var(--loss)' }, warn:{ bg:'rgba(255,255,255,0.06)', border:'var(--b2)', color:'var(--t1)' }, info:{ bg:'rgba(229,57,31,0.06)', border:'rgba(229,57,31,0.12)', color:'#e5391f' } }
   const ic = insightColors[insight.type]
   const g = DEMO_GLOBAL
 
@@ -446,23 +446,23 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
     <div>
       {/* Demo banner com botao SAIR DO MODO DEMO */}
       <motion.div className="demo-banner" initial={{ opacity:0, y:-8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }}
-        style={{ padding:'14px 18px', borderRadius:12, marginBottom:24, background:'linear-gradient(135deg, rgba(229,57,53,0.10), rgba(229,57,53,0.04))', border:'1px solid rgba(229,57,53,0.22)', display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', justifyContent:'space-between' }}>
+        style={{ padding:'14px 18px', borderRadius:12, marginBottom:24, background:'linear-gradient(135deg, rgba(229,57,31,0.10), rgba(229,57,31,0.04))', border:'1px solid rgba(229,57,31,0.22)', display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10, flex:1, minWidth:240 }}>
-          <motion.div animate={{ boxShadow:['0 0 0 0 rgba(229,57,53,0.6)','0 0 0 6px rgba(229,57,53,0)','0 0 0 0 rgba(229,57,53,0)'] }} transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
-            style={{ width:9, height:9, borderRadius:'50%', background:'#e53935', flexShrink:0 }} />
+          <motion.div animate={{ boxShadow:['0 0 0 0 rgba(229,57,31,0.6)','0 0 0 6px rgba(229,57,31,0)','0 0 0 0 rgba(229,57,31,0)'] }} transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
+            style={{ width:9, height:9, borderRadius:'50%', background:'#e5391f', flexShrink:0 }} />
           <span style={{ fontSize:13, color:'var(--t2)', fontWeight:500 }}>{DEMO_BANNER_TEXT}</span>
         </div>
         {onExitDemo && (
           <motion.button type="button" onClick={onExitDemo}
-            whileHover={{ scale:1.03, boxShadow:'0 8px 22px rgba(229,57,53,0.5)' }}
+            whileHover={{ scale:1.03, boxShadow:'0 8px 22px rgba(229,57,31,0.5)' }}
             whileTap={{ scale:0.97 }}
             style={{
               display:'inline-flex', alignItems:'center', gap:8,
               padding:'10px 16px', fontSize:12, fontWeight:800, fontFamily:'inherit',
               letterSpacing:'0.08em', textTransform:'uppercase',
-              color:'#fff', background:'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
+              color:'#fff', background:'linear-gradient(135deg, #e5391f 0%, #b32c16 100%)',
               border:'none', borderRadius:8, cursor:'pointer',
-              boxShadow:'0 4px 14px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
+              boxShadow:'0 4px 14px rgba(229,57,31,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
               transition:'box-shadow 0.2s',
               flexShrink:0,
             }}>
@@ -575,7 +575,7 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
           {DEMO_REDES_RANKING.map((r, i) => (
             <div key={r.rede} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 0', borderBottom:i<DEMO_REDES_RANKING.length-1?'1px solid var(--b1)':'none' }}>
               <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                <div style={{ width:26, height:26, borderRadius:8, background:'rgba(229,57,53,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:800, color:'#e53935' }}>{r.rede}</div>
+                <div style={{ width:26, height:26, borderRadius:8, background:'rgba(229,57,31,0.08)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:10, fontWeight:800, color:'#e5391f' }}>{r.rede}</div>
                 <div>
                   <p style={{ fontSize:12, fontWeight:600, color:'var(--t1)', margin:0 }}>{r.metas} metas · {r.contas} contas</p>
                   <p style={{ fontSize:10, color:'var(--t4)', margin:0 }}>R$ {fmt(r.lucroPerConta)}/conta · {r.winRate}% acerto</p>
@@ -620,11 +620,11 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
 
       {/* CTA */}
       <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4, delay:0.4, ease }}
-        style={{ padding:'32px 40px', borderRadius:18, textAlign:'center', background:'linear-gradient(145deg, rgba(229,57,53,0.06), rgba(229,57,53,0.02))', border:'1px solid rgba(229,57,53,0.12)' }}>
+        style={{ padding:'32px 40px', borderRadius:18, textAlign:'center', background:'linear-gradient(145deg, rgba(229,57,31,0.06), rgba(229,57,31,0.02))', border:'1px solid rgba(229,57,31,0.12)' }}>
         <h3 style={{ fontSize:20, fontWeight:800, color:'var(--t1)', margin:'0 0 8px', letterSpacing:'-0.02em' }}>Pronto para comecar sua operacao?</h3>
         <p style={{ fontSize:14, color:'var(--t3)', margin:'0 0 24px' }}>Crie sua primeira meta e veja seus dados reais neste painel.</p>
         <motion.button whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }} onClick={onCreateMeta}
-          style={{ padding:'16px 40px', fontSize:15, fontWeight:700, color:'#fff', background:'linear-gradient(135deg, #e53935, #c62828)', border:'none', borderRadius:14, cursor:'pointer', boxShadow:'0 4px 24px rgba(229,57,53,0.3)', display:'inline-flex', alignItems:'center', gap:8 }}>
+          style={{ padding:'16px 40px', fontSize:15, fontWeight:700, color:'#fff', background:'linear-gradient(135deg, #e5391f, #b32c16)', border:'none', borderRadius:14, cursor:'pointer', boxShadow:'0 4px 24px rgba(229,57,31,0.3)', display:'inline-flex', alignItems:'center', gap:8 }}>
           <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
           Criar minha primeira meta
         </motion.button>
@@ -1507,7 +1507,7 @@ export default function AdminPage() {
                                     {fotos.map((item,fi)=>{ const f=nF(item); const ts=f.ts||r.created_at; return (
                                       <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{position:'relative',display:'block'}}>
                                         <img src={f.url} alt={`comprovante ${fi+1}`} style={{width:72,height:72,objectFit:'cover',borderRadius:6,border:'1px solid var(--b2)',display:'block'}}/>
-                                        {ts && !f.burned && <span style={{position:'absolute',bottom:2,left:2,padding:'1px 4px',borderRadius:4,background:'rgba(229,57,53,0.92)',color:'var(--t1)',fontSize:8,fontWeight:800,fontFamily:'var(--mono, monospace)',lineHeight:1.2}}>{fTs(ts)}</span>}
+                                        {ts && !f.burned && <span style={{position:'absolute',bottom:2,left:2,padding:'1px 4px',borderRadius:4,background:'rgba(229,57,31,0.92)',color:'var(--t1)',fontSize:8,fontWeight:800,fontFamily:'var(--mono, monospace)',lineHeight:1.2}}>{fTs(ts)}</span>}
                                       </a>
                                     )})}
                                   </div>
@@ -1891,7 +1891,7 @@ export default function AdminPage() {
                         <p style={{fontSize:12,color:'var(--t3)',margin:'12px 0 0',fontWeight:500}}>{sg(lucroMes)}{f$(lucroMes)} este mês · {sg(lucroSemana)}{f$(lucroSemana)} na semana</p>
                       </div>
                       <motion.button onClick={()=>setMyShowForm(!myShowForm)} whileHover={{scale:1.03}} whileTap={{scale:0.96}}
-                        style={{padding:'13px 24px',borderRadius:13,border:'none',cursor:'pointer',fontSize:13.5,fontWeight:800,fontFamily:'inherit',display:'flex',alignItems:'center',gap:8,color:'var(--t1)',background: myShowForm?'rgba(255,255,255,0.06)':'linear-gradient(145deg,#e53935,#c62828)',boxShadow: myShowForm?'none':'0 8px 26px rgba(229,57,53,0.45),inset 0 1px 0 rgba(255,255,255,0.18)'}}>
+                        style={{padding:'13px 24px',borderRadius:13,border:'none',cursor:'pointer',fontSize:13.5,fontWeight:800,fontFamily:'inherit',display:'flex',alignItems:'center',gap:8,color:'var(--t1)',background: myShowForm?'rgba(255,255,255,0.06)':'linear-gradient(145deg,#e5391f,#b32c16)',boxShadow: myShowForm?'none':'0 8px 26px rgba(229,57,31,0.45),inset 0 1px 0 rgba(255,255,255,0.18)'}}>
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round">{myShowForm?<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>:<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>}</svg>
                         {myShowForm?'Fechar':'Nova meta'}
                       </motion.button>
@@ -1914,7 +1914,7 @@ export default function AdminPage() {
                   {l:'Lucro semana', v:lucroSemana, c:col(lucroSemana), money:true, sign:true},
                   {l:'Lucro mês', v:lucroMes, c:col(lucroMes), money:true, sign:true},
                   {l:'Lucro médio / meta', v:lucroMedioMeta, c:col(lucroMedioMeta), money:true, sign:true},
-                  {l:'Contas processadas', v:contasProc, c:'#e53935'},
+                  {l:'Contas processadas', v:contasProc, c:'#e5391f'},
                   {l:'Remessas', v:myRem.length, c:'var(--t1)'},
                   {l:'Taxa de acerto', v:taxaAcerto, c:'var(--profit)', suffix:'%'},
                   {l:'ROI médio', v:roiMedio, c:col(roiMedio), suffix:'%', sign:true},
@@ -1940,7 +1940,7 @@ export default function AdminPage() {
               const activeCardV2 = (m,i) => {
                 const liq=metaLiqV(m); const prog=metaProg(m); const nRem=myRem.filter(r=>r.meta_id===m.id).length
                 const done=prog>=100; const near=prog>=75 && prog<100
-                const status = done?{l:'Concluída',c:'var(--profit)'}:near?{l:'Quase lá',c:'#FCD34D'}:{l:'Em andamento',c:'#e53935'}
+                const status = done?{l:'Concluída',c:'var(--profit)'}:near?{l:'Quase lá',c:'#FCD34D'}:{l:'Em andamento',c:'#e5391f'}
                 const pc = col(liq)
                 return (
                   <motion.div key={m.id} {...fadeUp(i)} whileHover={{y:-4,borderColor:`${pc}35`,boxShadow:`0 16px 40px rgba(0,0,0,0.5),0 0 30px ${pc}12`,transition:{duration:0.2}}}
@@ -1999,32 +1999,32 @@ export default function AdminPage() {
               const renderMyOpsListV2 = () => {
                 if (myMetas.length===0) return (
                   <motion.div initial={{opacity:0,scale:0.98}} animate={{opacity:1,scale:1}} transition={{duration:0.4,ease}}
-                    style={{borderRadius:18,padding:'48px 32px',textAlign:'center',background:'linear-gradient(145deg, var(--raised), var(--surface))',border:'1px dashed rgba(229,57,53,0.2)'}}>
-                    <div style={{width:56,height:56,borderRadius:16,margin:'0 auto 16px',background:'rgba(229,57,53,0.08)',border:'1px solid rgba(229,57,53,0.2)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                      <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    style={{borderRadius:18,padding:'48px 32px',textAlign:'center',background:'linear-gradient(145deg, var(--raised), var(--surface))',border:'1px dashed rgba(229,57,31,0.2)'}}>
+                    <div style={{width:56,height:56,borderRadius:16,margin:'0 auto 16px',background:'rgba(229,57,31,0.08)',border:'1px solid rgba(229,57,31,0.2)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                      <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                     </div>
                     <p style={{color:'var(--t1)',fontSize:16,fontWeight:700,marginBottom:6}}>Sua mesa de operações está pronta</p>
                     <p style={{color:'var(--t3)',fontSize:13,marginBottom:20}}>Crie sua primeira operação e comece a registrar remessas.</p>
-                    <motion.button onClick={()=>setMyShowForm(true)} whileHover={{scale:1.03,boxShadow:'0 8px 28px rgba(229,57,53,0.5)'}} whileTap={{scale:0.97}}
-                      style={{padding:'12px 26px',borderRadius:12,border:'none',cursor:'pointer',fontSize:14,fontWeight:700,color:'#fff',fontFamily:'inherit',background:'linear-gradient(145deg, #e53935, #c62828)',boxShadow:'0 6px 20px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',display:'inline-flex',alignItems:'center',gap:8}}>
+                    <motion.button onClick={()=>setMyShowForm(true)} whileHover={{scale:1.03,boxShadow:'0 8px 28px rgba(229,57,31,0.5)'}} whileTap={{scale:0.97}}
+                      style={{padding:'12px 26px',borderRadius:12,border:'none',cursor:'pointer',fontSize:14,fontWeight:700,color:'#fff',fontFamily:'inherit',background:'linear-gradient(145deg, #e5391f, #b32c16)',boxShadow:'0 6px 20px rgba(229,57,31,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',display:'inline-flex',alignItems:'center',gap:8}}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                       Criar primeira meta
                     </motion.button>
                   </motion.div>
                 )
-                const evMeta = { remessa:{c:'var(--profit)',ic:<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>}, fechada:{c:'#e53935',ic:<><path d="M20 6 9 17l-5-5"/></>}, criada:{c:'rgba(255,255,255,0.6)',ic:<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>} }
+                const evMeta = { remessa:{c:'var(--profit)',ic:<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>}, fechada:{c:'#e5391f',ic:<><path d="M20 6 9 17l-5-5"/></>}, criada:{c:'rgba(255,255,255,0.6)',ic:<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>} }
                 const insights = [
                   { ic:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', tag:'Melhor meta', c:'var(--profit)',
                     title: melhorMeta? melhorMeta.m.titulo : '—', sub: melhorMeta? `${melhorMeta.m.rede||'—'} · ${melhorMeta.m.quantidade_contas||0} contas`:'Sem dados', val: melhorMeta? sg(melhorMeta.liq)+f$(melhorMeta.liq):'—', vc:'var(--profit)' },
                   { ic:'M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01', tag:'Maior prejuízo', c:'var(--loss)',
                     title: (piorMeta && piorMeta.liq<0)? piorMeta.m.titulo : 'Nenhum prejuízo', sub: (piorMeta && piorMeta.liq<0)? (piorMeta.m.rede||'—') : 'Operação no azul', val: (piorMeta && piorMeta.liq<0)? sg(piorMeta.liq)+f$(piorMeta.liq):'—', vc:(piorMeta && piorMeta.liq<0)?'var(--loss)':'var(--t4)' },
-                  { ic:'M23 6 13.5 15.5 8.5 10.5 1 18M17 6h6v6', tag:'Melhor rede', c:'#e53935',
+                  { ic:'M23 6 13.5 15.5 8.5 10.5 1 18M17 6h6v6', tag:'Melhor rede', c:'#e5391f',
                     title: melhorRede? melhorRede[0]:'—', sub:'Lucro acumulado na rede', val: melhorRede? sg(melhorRede[1])+f$(melhorRede[1]):'—', vc: melhorRede? col(melhorRede[1]):'var(--t4)' },
                 ]
                 return (<>
                   {ativas.length>0 && (
                     <section style={{marginBottom:28}}>
-                      {v2head('Operações ativas', ativas.length, '#e53935')}
+                      {v2head('Operações ativas', ativas.length, '#e5391f')}
                       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))',gap:14}}>
                         {ativas.map((m,i)=>activeCardV2(m,i))}
                       </div>
@@ -2153,7 +2153,7 @@ export default function AdminPage() {
                       <div>
                         <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:2 }}>
                           <h2 style={{ fontSize:20, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>Minha operacao</h2>
-                          <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(229,57,53,0.1)', color:'#e53935', border:'1px solid rgba(229,57,53,0.2)', letterSpacing:'0.08em' }}>ADMIN</span>
+                          <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(229,57,31,0.1)', color:'#e5391f', border:'1px solid rgba(229,57,31,0.2)', letterSpacing:'0.08em' }}>ADMIN</span>
                         </div>
                         <p style={{ fontSize:12, color:'var(--t3)', margin:0, fontWeight:500 }}>Suas metas e remessas pessoais · gestao direta</p>
                       </div>
@@ -2161,16 +2161,16 @@ export default function AdminPage() {
                     <motion.button
                       data-tour="myops-new"
                       onClick={()=>setMyShowForm(!myShowForm)}
-                      whileHover={{ scale: 1.03, boxShadow: myShowForm ? 'none' : '0 10px 32px rgba(229,57,53,0.55), 0 0 50px rgba(229,57,53,0.2)' }}
+                      whileHover={{ scale: 1.03, boxShadow: myShowForm ? 'none' : '0 10px 32px rgba(229,57,31,0.55), 0 0 50px rgba(229,57,31,0.2)' }}
                       whileTap={{ scale: 0.96 }}
                       style={{
                         padding:'12px 22px', borderRadius:12, border:'none', cursor:'pointer',
                         fontSize:13, fontWeight:700, fontFamily:'inherit',
                         display:'flex', alignItems:'center', gap:8,
-                        background: myShowForm ? 'rgba(255,255,255,0.05)' : 'linear-gradient(145deg, #e53935, #c62828)',
+                        background: myShowForm ? 'rgba(255,255,255,0.05)' : 'linear-gradient(145deg, #e5391f, #b32c16)',
                         color: myShowForm ? 'var(--t2)' : '#fff',
                         border: myShowForm ? '1px solid rgba(255,255,255,0.08)' : 'none',
-                        boxShadow: myShowForm ? 'none' : '0 6px 20px rgba(229,57,53,0.4), 0 0 30px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
+                        boxShadow: myShowForm ? 'none' : '0 6px 20px rgba(229,57,31,0.4), 0 0 30px rgba(229,57,31,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
                         transition: 'all 0.25s ease',
                       }}>
                       {myShowForm ? (
@@ -2194,7 +2194,7 @@ export default function AdminPage() {
                 {!isV2 && (
                 <div className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:12,marginBottom:20}}>
                   {[
-                    {l:'Minhas metas', sub:'Total criadas', v:myMetas.length, c:'#e53935', iconPath:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'},
+                    {l:'Minhas metas', sub:'Total criadas', v:myMetas.length, c:'#e5391f', iconPath:'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'},
                     {l:'Remessas', sub:'Registros lancados', v:myRem.length, c:'rgba(255,255,255,0.78)', iconPath:'M13 2L3 14h9l-1 8 10-12h-9l1-8z'},
                     {l:'Lucro bruto', sub:'Soma de entradas', v:myLucro, c:'var(--profit)', isMoney:true, iconPath:'M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6'},
                     {l:'Resultado liquido', sub: myLiq>=0 ? 'Operacao positiva' : 'Operacao negativa', v:myLiq, c:myLiq>=0?'var(--profit)':'var(--loss)', isMoney:true, showSign:true, iconPath: myLiq>=0 ? 'M23 6 13.5 15.5 8.5 10.5 1 18' : 'M1 18 10.5 8.5 15.5 13.5 23 6'},
@@ -2291,11 +2291,11 @@ export default function AdminPage() {
                       <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                         <div style={{
                           width:40, height:40, borderRadius:11,
-                          background:'rgba(229,57,53,0.12)', border:'1px solid rgba(229,57,53,0.28)',
+                          background:'rgba(229,57,31,0.12)', border:'1px solid rgba(229,57,31,0.28)',
                           display:'flex', alignItems:'center', justifyContent:'center',
-                          boxShadow:'0 0 20px rgba(229,57,53,0.2)',
+                          boxShadow:'0 0 20px rgba(229,57,31,0.2)',
                         }}>
-                          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                         </div>
                         <div>
                           <h2 style={{ fontSize:20, fontWeight:800, color:'var(--t1)', margin:'0 0 3px', letterSpacing:'-0.02em' }}>Nova operacao</h2>
@@ -2303,7 +2303,7 @@ export default function AdminPage() {
                         </div>
                       </div>
                       <button onClick={() => setMyShowForm(false)} style={{ width:34, height:34, borderRadius:10, border:'1px solid var(--b1)', background:'var(--fill-1)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'var(--t3)', transition:'all 0.2s' }}
-                        onMouseEnter={e=>{ e.currentTarget.style.background='rgba(229,57,53,0.1)'; e.currentTarget.style.color='#e53935' }}
+                        onMouseEnter={e=>{ e.currentTarget.style.background='rgba(229,57,31,0.1)'; e.currentTarget.style.color='#e5391f' }}
                         onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.02)'; e.currentTarget.style.color='var(--t3)' }}
                       >
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -2329,9 +2329,9 @@ export default function AdminPage() {
                             {myRedeOpen && (
                               <div style={{position:'absolute',top:'calc(100% + 6px)',left:0,right:0,zIndex:100,background:'var(--surface)',border:'1px solid var(--b2)',borderRadius:14,boxShadow:'0 20px 60px rgba(0,0,0,0.6)',maxHeight:260,overflowY:'auto',padding:6}}>
                                 <button type="button" onClick={()=>{setMyRede(MULTI_REDE);setMyRedeOpen(false)}}
-                                  onMouseEnter={e=>{if(myRede!==MULTI_REDE)e.currentTarget.style.background='rgba(16,185,129,0.12)'}}
-                                  onMouseLeave={e=>{e.currentTarget.style.background=myRede===MULTI_REDE?'rgba(16,185,129,0.18)':'transparent'}}
-                                  style={{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'9px 14px',border:'none',borderRadius:9,textAlign:'left',cursor:'pointer',fontSize:13,fontWeight:700,color:'var(--profit)',background:myRede===MULTI_REDE?'rgba(16,185,129,0.18)':'transparent',marginBottom:4}}>
+                                  onMouseEnter={e=>{if(myRede!==MULTI_REDE)e.currentTarget.style.background='rgba(63,155,30,0.12)'}}
+                                  onMouseLeave={e=>{e.currentTarget.style.background=myRede===MULTI_REDE?'rgba(63,155,30,0.18)':'transparent'}}
+                                  style={{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'9px 14px',border:'none',borderRadius:9,textAlign:'left',cursor:'pointer',fontSize:13,fontWeight:700,color:'var(--profit)',background:myRede===MULTI_REDE?'rgba(63,155,30,0.18)':'transparent',marginBottom:4}}>
                                   <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
                                   Múltiplas redes
                                 </button>
@@ -2340,7 +2340,7 @@ export default function AdminPage() {
                                   <button key={r} type="button" onClick={()=>{setMyRede(r);setMyRedeOpen(false)}}
                                     onMouseEnter={e=>{if(myRede!==r)e.currentTarget.style.background='var(--raised)'}}
                                     onMouseLeave={e=>{if(myRede!==r)e.currentTarget.style.background='transparent'}}
-                                    style={{width:'100%',display:'block',padding:'9px 14px',border:'none',borderRadius:9,textAlign:'left',cursor:'pointer',fontSize:13,fontWeight:myRede===r?700:500,color:myRede===r?'white':'var(--t2)',background:myRede===r?'rgba(229,57,53,0.2)':'transparent'}}>
+                                    style={{width:'100%',display:'block',padding:'9px 14px',border:'none',borderRadius:9,textAlign:'left',cursor:'pointer',fontSize:13,fontWeight:myRede===r?700:500,color:myRede===r?'white':'var(--t2)',background:myRede===r?'rgba(229,57,31,0.2)':'transparent'}}>
                                     {r}
                                   </button>
                                 ))}
@@ -2370,9 +2370,9 @@ export default function AdminPage() {
                             <button key={n} type="button" onClick={()=>setMyContas(String(n))} style={{
                               flex:1, padding:'9px 0', borderRadius:10, fontSize:13, fontWeight:700,
                               fontFamily:'var(--mono)', border:'none', cursor:'pointer',
-                              background: Number(myContas)===n ? 'rgba(229,57,53,0.12)' : 'var(--raised)',
-                              color: Number(myContas)===n ? '#e53935' : 'var(--t3)',
-                              border:`1px solid ${Number(myContas)===n ? 'rgba(229,57,53,0.25)' : 'var(--b1)'}`,
+                              background: Number(myContas)===n ? 'rgba(229,57,31,0.12)' : 'var(--raised)',
+                              color: Number(myContas)===n ? '#e5391f' : 'var(--t3)',
+                              border:`1px solid ${Number(myContas)===n ? 'rgba(229,57,31,0.25)' : 'var(--b1)'}`,
                               transition:'all 0.2s',
                             }}>{n}</button>
                           ))}
@@ -2396,22 +2396,22 @@ export default function AdminPage() {
                                 whileTap={{ scale:0.98 }}
                                 style={{
                                   padding:'14px 14px', borderRadius:12, cursor:'pointer',
-                                  background: selected ? 'linear-gradient(145deg, rgba(229,57,53,0.12), rgba(229,57,53,0.04))' : 'rgba(255,255,255,0.02)',
-                                  border: `1px solid ${selected ? 'rgba(229,57,53,0.4)' : 'rgba(255,255,255,0.06)'}`,
-                                  boxShadow: selected ? '0 4px 20px rgba(229,57,53,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' : 'inset 0 1px 0 rgba(255,255,255,0.02)',
+                                  background: selected ? 'linear-gradient(145deg, rgba(229,57,31,0.12), rgba(229,57,31,0.04))' : 'rgba(255,255,255,0.02)',
+                                  border: `1px solid ${selected ? 'rgba(229,57,31,0.4)' : 'rgba(255,255,255,0.06)'}`,
+                                  boxShadow: selected ? '0 4px 20px rgba(229,57,31,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' : 'inset 0 1px 0 rgba(255,255,255,0.02)',
                                   textAlign:'left', fontFamily:'inherit',
                                   transition:'all 0.2s ease', position:'relative',
                                 }}>
                                 {selected && (
-                                  <div style={{ position:'absolute', top:8, right:8, width:16, height:16, borderRadius:'50%', background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 0 10px rgba(229,57,53,0.6)' }}>
+                                  <div style={{ position:'absolute', top:8, right:8, width:16, height:16, borderRadius:'50%', background:'#e5391f', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 0 10px rgba(229,57,31,0.6)' }}>
                                     <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                                   </div>
                                 )}
-                                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4, color: selected ? '#e53935' : 'var(--t2)' }}>
+                                <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4, color: selected ? '#e5391f' : 'var(--t2)' }}>
                                   {o.icon}
                                   <span style={{ fontSize:13, fontWeight:800 }}>{o.l}</span>
                                 </div>
-                                <p style={{ fontSize:10, color: selected ? 'rgba(229,57,53,0.75)' : 'var(--t4)', margin:0, fontWeight:500, lineHeight:1.4 }}>
+                                <p style={{ fontSize:10, color: selected ? 'rgba(229,57,31,0.75)' : 'var(--t4)', margin:0, fontWeight:500, lineHeight:1.4 }}>
                                   {o.desc}
                                 </p>
                               </motion.button>
@@ -2503,13 +2503,13 @@ export default function AdminPage() {
                       <motion.button
                         type="submit"
                         disabled={mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede}
-                        whileHover={mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede ? {} : {scale:1.015, boxShadow:'0 12px 40px rgba(229,57,53,0.55), 0 0 60px rgba(229,57,53,0.2)'}}
+                        whileHover={mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede ? {} : {scale:1.015, boxShadow:'0 12px 40px rgba(229,57,31,0.55), 0 0 60px rgba(229,57,31,0.2)'}}
                         whileTap={mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede ? {} : {scale:0.97}}
                         style={{
                           width:'100%', padding:'16px 24px', borderRadius:14, border:'none', cursor:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?'not-allowed':'pointer',
                           fontSize:15, fontWeight:800, color:'var(--t1)', fontFamily:'inherit',
-                          background:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?'rgba(229,57,53,0.35)':'linear-gradient(145deg, #e53935, #c62828)',
-                          boxShadow:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?'none':'0 8px 28px rgba(229,57,53,0.45), 0 0 40px rgba(229,57,53,0.15), inset 0 1px 0 rgba(255,255,255,0.18)',
+                          background:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?'rgba(229,57,31,0.35)':'linear-gradient(145deg, #e5391f, #b32c16)',
+                          boxShadow:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?'none':'0 8px 28px rgba(229,57,31,0.45), 0 0 40px rgba(229,57,31,0.15), inset 0 1px 0 rgba(255,255,255,0.18)',
                           display:'flex', alignItems:'center', justifyContent:'center', gap:10,
                           opacity:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?0.75:1,
                           letterSpacing:'-0.01em',
@@ -2552,26 +2552,26 @@ export default function AdminPage() {
                         borderRadius:18, padding:'48px 32px', textAlign:'center',
                         background:'linear-gradient(145deg, var(--raised), var(--surface))',
                         backdropFilter:'blur(16px)', WebkitBackdropFilter:'blur(16px)',
-                        border:'1px dashed rgba(229,57,53,0.2)',
+                        border:'1px dashed rgba(229,57,31,0.2)',
                       }}>
                       <div style={{
                         width:56, height:56, borderRadius:16, margin:'0 auto 16px',
-                        background:'rgba(229,57,53,0.08)', border:'1px solid rgba(229,57,53,0.2)',
+                        background:'rgba(229,57,31,0.08)', border:'1px solid rgba(229,57,31,0.2)',
                         display:'flex', alignItems:'center', justifyContent:'center',
                       }}>
-                        <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                       </div>
                       <p style={{color:'var(--t1)', fontSize:16, fontWeight:700, marginBottom:6}}>Nenhuma meta criada ainda</p>
                       <p style={{color:'var(--t3)', fontSize:13, marginBottom:20}}>Crie sua primeira operacao e comece a registrar remessas.</p>
                       <motion.button
                         onClick={()=>setMyShowForm(true)}
-                        whileHover={{scale:1.03, boxShadow:'0 8px 28px rgba(229,57,53,0.5)'}}
+                        whileHover={{scale:1.03, boxShadow:'0 8px 28px rgba(229,57,31,0.5)'}}
                         whileTap={{scale:0.97}}
                         style={{
                           padding:'12px 26px', borderRadius:12, border:'none', cursor:'pointer',
                           fontSize:14, fontWeight:700, color:'#fff', fontFamily:'inherit',
-                          background:'linear-gradient(145deg, #e53935, #c62828)',
-                          boxShadow:'0 6px 20px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',
+                          background:'linear-gradient(145deg, #e5391f, #b32c16)',
+                          boxShadow:'0 6px 20px rgba(229,57,31,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',
                           display:'inline-flex', alignItems:'center', gap:8,
                         }}>
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2584,7 +2584,7 @@ export default function AdminPage() {
                     const prej=mRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
                     const liq=lucro-prej
                     const fechada=m.status_fechamento==='fechada'
-                    const accentC = fechada ? 'var(--profit)' : '#e53935'
+                    const accentC = fechada ? 'var(--profit)' : '#e5391f'
                     return (
                       <motion.div key={m.id} {...fadeUp(i)}
                         whileHover={{ x:4, borderColor:`${accentC}35`, boxShadow:`0 10px 32px rgba(0,0,0,0.45), 0 0 30px ${accentC}10`, transition:{duration:0.2} }}
@@ -2617,9 +2617,9 @@ export default function AdminPage() {
                             <h3 style={{ fontSize:15, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>{m.titulo}</h3>
                             <span style={{
                               fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5,
-                              background: fechada ? 'rgba(209,250,229,0.12)' : 'rgba(229,57,53,0.1)',
-                              color: fechada ? 'var(--profit)' : '#e53935',
-                              border: `1px solid ${fechada ? 'rgba(209,250,229,0.25)' : 'rgba(229,57,53,0.2)'}`,
+                              background: fechada ? 'rgba(209,250,229,0.12)' : 'rgba(229,57,31,0.1)',
+                              color: fechada ? 'var(--profit)' : '#e5391f',
+                              border: `1px solid ${fechada ? 'rgba(209,250,229,0.25)' : 'rgba(229,57,31,0.2)'}`,
                               letterSpacing:'0.08em', textTransform:'uppercase',
                             }}>
                               {fechada?'Fechada':(m.status||'ativa')==='ativa'?'Ativa':'Finalizada'}
@@ -2987,16 +2987,16 @@ export default function AdminPage() {
                 background:'var(--surface)', border:'1px solid var(--b1)',
                 transition:'border-color 0.15s',
               }}
-              onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(229,57,53,0.35)'}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(229,57,31,0.35)'}}
               onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--b1)'}}
             >
               <div style={{ display:'flex', alignItems:'center', gap:12, minWidth:0 }}>
-                <div style={{ width:34, height:34, borderRadius:9, flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(229,57,53,0.10)', border:'1px solid rgba(229,57,53,0.25)' }}>
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                <div style={{ width:34, height:34, borderRadius:9, flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(229,57,31,0.10)', border:'1px solid rgba(229,57,31,0.25)' }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                 </div>
                 <div style={{ minWidth:0 }}>
                   <p style={{ fontSize:11, color:'var(--t3)', margin:0, fontWeight:500, letterSpacing:'0.03em', textTransform:'uppercase' }}>
-                    Lucro parcial · Métodos <span style={{ fontSize:8.5, fontWeight:800, padding:'1px 5px', borderRadius:4, background:'rgba(229,57,53,0.14)', color:'#e53935', letterSpacing:'0.05em', marginLeft:4 }}>BETA</span>
+                    Lucro parcial · Métodos <span style={{ fontSize:8.5, fontWeight:800, padding:'1px 5px', borderRadius:4, background:'rgba(229,57,31,0.14)', color:'#e5391f', letterSpacing:'0.05em', marginLeft:4 }}>BETA</span>
                   </p>
                   <p style={{ fontSize:12, color:'var(--t4)', margin:'2px 0 0' }}>{metodosData.registros} registro{metodosData.registros!==1?'s':''} · clique pra abrir</p>
                 </div>
@@ -3412,7 +3412,7 @@ export default function AdminPage() {
                 emLucro > 0 && { label:'em lucro', count:emLucro, c:'var(--profit)', bg:'rgba(209,250,229,0.08)', border:'rgba(209,250,229,0.22)' },
                 emPrej > 0 && { label:'em prejuizo', count:emPrej, c:'var(--loss)', bg:'rgba(239,68,68,0.08)', border:'rgba(239,68,68,0.24)', pulse:true },
                 neutras > 0 && { label:'neutras', count:neutras, c:'rgba(255,255,255,0.78)', bg:'rgba(255,255,255,0.08)', border:'var(--b3)' },
-                fechadas > 0 && { label:'concluidas', count:fechadas, c:'var(--t3)', bg:'rgba(148,163,184,0.06)', border:'rgba(148,163,184,0.16)' },
+                fechadas > 0 && { label:'concluidas', count:fechadas, c:'var(--t3)', bg:'rgba(130,130,141,0.06)', border:'rgba(130,130,141,0.16)' },
               ].filter(Boolean)
               return (
                 <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35 }}
@@ -3989,12 +3989,12 @@ export default function AdminPage() {
                       setTenant(prev => ({ ...prev, operation_model: opt.key }))
                     }} style={{
                       flex: 1, padding: '14px 16px', borderRadius: 12, border: 'none', cursor: 'pointer',
-                      background: active ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.02)',
-                      border: `1px solid ${active ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.05)'}`,
+                      background: active ? 'rgba(229,57,31,0.1)' : 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${active ? 'rgba(229,57,31,0.25)' : 'rgba(255,255,255,0.05)'}`,
                       textAlign: 'left', transition: 'all 0.2s',
                     }}>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: active ? '#e53935' : 'var(--t2)', margin: '0 0 3px' }}>{opt.label}</p>
-                      <p style={{ fontSize: 11, color: active ? 'rgba(229,57,53,0.6)' : 'var(--t4)', margin: 0 }}>{opt.desc}</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: active ? '#e5391f' : 'var(--t2)', margin: '0 0 3px' }}>{opt.label}</p>
+                      <p style={{ fontSize: 11, color: active ? 'rgba(229,57,31,0.6)' : 'var(--t4)', margin: 0 }}>{opt.desc}</p>
                     </button>
                   )
                 })}
@@ -4216,15 +4216,15 @@ export default function AdminPage() {
                 padding:'20px 24px', borderRadius:16, marginBottom:22,
                 background:'linear-gradient(145deg, var(--raised), var(--surface))',
                 backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
-                border:'1px solid rgba(148,163,184,0.14)',
+                border:'1px solid rgba(130,130,141,0.14)',
                 boxShadow:'0 6px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
-              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(148,163,184,0.3), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(130,130,141,0.3), transparent)', pointerEvents:'none' }}/>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:16, flexWrap:'wrap' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:14 }}>
                   <div style={{
                     width:42, height:42, borderRadius:12,
-                    background:'rgba(148,163,184,0.08)', border:'1px solid rgba(148,163,184,0.2)',
+                    background:'rgba(130,130,141,0.08)', border:'1px solid rgba(130,130,141,0.2)',
                     display:'flex', alignItems:'center', justifyContent:'center',
                   }}>
                     <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -4232,7 +4232,7 @@ export default function AdminPage() {
                   <div>
                     <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                       <h2 style={{ fontSize:20, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>Lixeira</h2>
-                      <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(148,163,184,0.1)', color:'var(--t3)', border:'1px solid rgba(148,163,184,0.2)', letterSpacing:'0.08em' }}>AREA SECUNDARIA</span>
+                      <span style={{ fontSize:9, fontWeight:800, padding:'3px 8px', borderRadius:5, background:'rgba(130,130,141,0.1)', color:'var(--t3)', border:'1px solid rgba(130,130,141,0.2)', letterSpacing:'0.08em' }}>AREA SECUNDARIA</span>
                     </div>
                     <p style={{ fontSize:12, color:'var(--t3)', margin:'3px 0 0', fontWeight:500 }}>Metas excluidas · restaurar ou remover permanentemente</p>
                   </div>
@@ -4254,9 +4254,9 @@ export default function AdminPage() {
                   borderRadius:18, padding:'56px 32px', textAlign:'center',
                   background:'linear-gradient(145deg, var(--raised), var(--surface))',
                   backdropFilter:'blur(14px)', WebkitBackdropFilter:'blur(14px)',
-                  border:'1px dashed rgba(148,163,184,0.18)',
+                  border:'1px dashed rgba(130,130,141,0.18)',
                 }}>
-                <div style={{ width:52, height:52, borderRadius:14, background:'rgba(148,163,184,0.06)', border:'1px solid rgba(148,163,184,0.15)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
+                <div style={{ width:52, height:52, borderRadius:14, background:'rgba(130,130,141,0.06)', border:'1px solid rgba(130,130,141,0.15)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
                   <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="1.6" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <p style={{ color:'var(--t1)', fontSize:15, fontWeight:700, marginBottom:5 }}>Lixeira vazia</p>
@@ -4273,24 +4273,24 @@ export default function AdminPage() {
                     <motion.div key={m.id}
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.35, delay: i * 0.05, ease }}
-                      whileHover={{ x:4, borderColor:'rgba(148,163,184,0.25)', transition:{duration:0.2} }}
+                      whileHover={{ x:4, borderColor:'rgba(130,130,141,0.25)', transition:{duration:0.2} }}
                       style={{
                         position:'relative', overflow:'hidden',
                         padding:'16px 20px', borderRadius:14,
                         background:'linear-gradient(145deg, var(--raised), var(--surface))',
                         backdropFilter:'blur(14px) saturate(140%)', WebkitBackdropFilter:'blur(14px) saturate(140%)',
-                        border:'1px solid rgba(148,163,184,0.12)',
+                        border:'1px solid rgba(130,130,141,0.12)',
                         display:'flex', alignItems:'center', gap:14, flexWrap:'wrap',
                         boxShadow:'0 3px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.02)',
                       }}
                     >
                       {/* Accent bar esquerdo cinza */}
-                      <div style={{ position:'absolute', left:0, top:0, bottom:0, width:2, background:'rgba(148,163,184,0.3)' }}/>
+                      <div style={{ position:'absolute', left:0, top:0, bottom:0, width:2, background:'rgba(130,130,141,0.3)' }}/>
 
                       {/* Icon com iniciais da rede */}
                       <div style={{
                         width:40, height:40, borderRadius:11, flexShrink:0,
-                        background:'rgba(148,163,184,0.08)', border:'1px solid rgba(148,163,184,0.18)',
+                        background:'rgba(130,130,141,0.08)', border:'1px solid rgba(130,130,141,0.18)',
                         display:'flex', alignItems:'center', justifyContent:'center',
                         fontFamily:'var(--mono)', fontSize:10, fontWeight:800, color:'var(--t3)',
                       }}>

@@ -41,7 +41,7 @@ export async function GET(req) {
     text: c.text,
     parent_id: c.parent_id || null,
     created_at: c.created_at,
-    author: authorMap[c.author_id] || { id: c.author_id, name: 'admin', color: '#e53935' },
+    author: authorMap[c.author_id] || { id: c.author_id, name: 'admin', color: '#e5391f' },
     mine: c.author_id === user.id,
     likes: likeByC[c.id]?.count || 0,
     liked: !!likeByC[c.id]?.mine,

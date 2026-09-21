@@ -177,7 +177,7 @@ export default function OperatorLimitGate({ children }) {
               style={{
                 flex: 1, minWidth: 200,
                 padding: '14px 22px', borderRadius: 12, border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(180deg, var(--loss), #c62828)',
+                background: 'linear-gradient(180deg, var(--loss), #b32c16)',
                 color: '#fff', fontSize: 13.5, fontWeight: 800, fontFamily: 'inherit',
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 boxShadow: '0 6px 22px rgba(239,68,68,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',

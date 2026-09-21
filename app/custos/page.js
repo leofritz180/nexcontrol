@@ -23,7 +23,7 @@ const getName = p => p?.nome || p?.email?.split('@')[0] || '?'
 const COST_TYPES = [
   { id: 'proxy', label: 'Proxy', icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', color: 'var(--t1)' },
   { id: 'sms', label: 'SMS', icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: 'var(--profit)' },
-  { id: 'instagram', label: 'Postagem Instagram', icon: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5z', color: '#E53935' },
+  { id: 'instagram', label: 'Postagem Instagram', icon: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5z', color: '#e5391f' },
   { id: 'bot', label: 'Bot / Automacao', icon: 'M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a2 2 0 010 4h-1a7 7 0 01-7 7h-2a7 7 0 01-7-7H4a2 2 0 010-4h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z', color: 'var(--t1)' },
   { id: 'vps', label: 'VPS / Servidor', icon: 'M22 12H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11zM6 16h.01M10 16h.01', color: 'var(--t1)' },
   { id: 'outros', label: 'Outros', icon: 'M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6', color: 'var(--t3)' },
@@ -235,8 +235,8 @@ export default function CustosPage() {
           {/* Demo Banner */}
           {isDemo && (
             <motion.div className="demo-banner" initial={{ opacity:0, y:-8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }}
-              style={{ padding:'12px 20px', borderRadius:12, marginBottom:24, background:'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))', border:'1px solid rgba(229,57,53,0.15)', display:'flex', alignItems:'center', gap:10 }}>
-              <div className="demo-banner-dot" style={{ width:8, height:8, borderRadius:'50%', background:'#e53935', flexShrink:0 }} />
+              style={{ padding:'12px 20px', borderRadius:12, marginBottom:24, background:'linear-gradient(135deg, rgba(229,57,31,0.08), rgba(229,57,31,0.03))', border:'1px solid rgba(229,57,31,0.15)', display:'flex', alignItems:'center', gap:10 }}>
+              <div className="demo-banner-dot" style={{ width:8, height:8, borderRadius:'50%', background:'#e5391f', flexShrink:0 }} />
               <span style={{ fontSize:13, color:'var(--t2)', fontWeight:500 }}>{DEMO_BANNER_TEXT}</span>
             </motion.div>
           )}
@@ -422,8 +422,8 @@ export default function CustosPage() {
                   style={{
                     marginTop: 20, display: 'inline-flex', alignItems: 'center', gap: 8,
                     padding: '10px 22px', borderRadius: 10, border: 'none',
-                    background: '#e53935', color: '#fff', fontSize: 13, fontWeight: 700,
-                    cursor: 'pointer', boxShadow: '0 4px 20px rgba(229,57,53,0.25)',
+                    background: '#e5391f', color: '#fff', fontSize: 13, fontWeight: 700,
+                    cursor: 'pointer', boxShadow: '0 4px 20px rgba(229,57,31,0.25)',
                   }}
                 >
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
@@ -683,17 +683,17 @@ export default function CustosPage() {
 
                 {/* Submit premium */}
                 <motion.button
-                  whileHover={saving || !formAmount || Number(formAmount) <= 0 ? {} : { scale: 1.015, boxShadow:'0 12px 36px rgba(229,57,53,0.5), 0 0 50px rgba(229,57,53,0.18)' }}
+                  whileHover={saving || !formAmount || Number(formAmount) <= 0 ? {} : { scale: 1.015, boxShadow:'0 12px 36px rgba(229,57,31,0.5), 0 0 50px rgba(229,57,31,0.18)' }}
                   whileTap={saving || !formAmount || Number(formAmount) <= 0 ? {} : { scale: 0.97 }}
                   onClick={handleSave}
                   disabled={saving || !formAmount || Number(formAmount) <= 0}
                   style={{
                     width: '100%', padding: '14px 22px', borderRadius: 12, border: 'none', fontFamily:'inherit',
-                    background: saving || !formAmount || Number(formAmount) <= 0 ? 'rgba(229,57,53,0.35)' : 'linear-gradient(145deg, #e53935, #c62828)',
+                    background: saving || !formAmount || Number(formAmount) <= 0 ? 'rgba(229,57,31,0.35)' : 'linear-gradient(145deg, #e5391f, #b32c16)',
                     color: 'var(--t1)', fontSize: 14, fontWeight: 800,
                     cursor: saving || !formAmount || Number(formAmount) <= 0 ? 'not-allowed' : 'pointer',
                     opacity: saving || !formAmount || Number(formAmount) <= 0 ? 0.6 : 1,
-                    boxShadow: saving || !formAmount || Number(formAmount) <= 0 ? 'none' : '0 6px 22px rgba(229,57,53,0.4), 0 0 30px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
+                    boxShadow: saving || !formAmount || Number(formAmount) <= 0 ? 'none' : '0 6px 22px rgba(229,57,31,0.4), 0 0 30px rgba(229,57,31,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
                     transition: 'all 0.2s ease',
                     display:'flex', alignItems:'center', justifyContent:'center', gap:8, letterSpacing:'-0.01em',
                   }}

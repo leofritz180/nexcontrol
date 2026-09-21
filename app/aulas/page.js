@@ -12,7 +12,7 @@ import { isNex2 } from '../../lib/theme-v2'
 
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 const ease = [0.33, 1, 0.68, 1]
-const RED = '#e53935'
+const RED = '#e5391f'
 const AMBER = 'rgba(255,255,255,0.78)'
 
 const THUMB_GRADIENTS = [
@@ -52,8 +52,8 @@ function HeroBanner({ course, onWatch, onDetails }) {
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(4,7,14,0.15) 0%, rgba(4,7,14,0.5) 40%, rgba(4,7,14,0.92) 75%, var(--surface) 100%)' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(4,7,14,0.9) 0%, rgba(4,7,14,0.5) 40%, transparent 70%)' }} />
       {/* Red glow orbs */}
-      <div style={{ position: 'absolute', top: '-20%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.12), transparent 70%)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '-10%', right: '10%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.06), transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: '-20%', left: '-5%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,31,0.12), transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-10%', right: '10%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,31,0.06), transparent 70%)', pointerEvents: 'none' }} />
 
       {/* Content */}
       <div style={{ position: 'relative', zIndex: 2, padding: '100px 40px 52px', maxWidth: 620 }}>
@@ -90,7 +90,7 @@ function HeroBanner({ course, onWatch, onDetails }) {
             onClick={e => { e.stopPropagation(); onWatch() }}
             style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '14px 32px', borderRadius: 8,
-              background: `linear-gradient(135deg, ${RED}, #c62828)`, border: 'none', cursor: 'pointer',
+              background: `linear-gradient(135deg, ${RED}, #b32c16)`, border: 'none', cursor: 'pointer',
               fontSize: 15, fontWeight: 700, color: '#fff', boxShadow: `0 4px 24px ${RED}35`,
             }}
           >
@@ -173,8 +173,8 @@ function CourseCard({ course, progress: prog, index = 0 }) {
         flexShrink: 0, width: 280, borderRadius: 10, overflow: 'hidden',
         cursor: 'pointer', scrollSnapAlign: 'start', position: 'relative',
         background: 'var(--surface)',
-        border: `1px solid ${hov ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.04)'}`,
-        boxShadow: hov ? '0 16px 48px rgba(229,57,53,0.08), 0 0 0 1px rgba(229,57,53,0.12)' : '0 4px 16px rgba(0,0,0,0.3)',
+        border: `1px solid ${hov ? 'rgba(229,57,31,0.25)' : 'rgba(255,255,255,0.04)'}`,
+        boxShadow: hov ? '0 16px 48px rgba(229,57,31,0.08), 0 0 0 1px rgba(229,57,31,0.12)' : '0 4px 16px rgba(0,0,0,0.3)',
         transform: hov ? 'scale(1.04) translateY(-4px)' : 'scale(1)',
         transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
         zIndex: hov ? 10 : 1,
@@ -202,7 +202,7 @@ function CourseCard({ course, progress: prog, index = 0 }) {
         {/* Play overlay */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: hov ? 1 : 0, transition: 'opacity 0.25s', background: 'rgba(0,0,0,0.35)', zIndex: 4 }}>
           <motion.div animate={hov ? { scale: [1, 1.12, 1] } : {}} transition={{ duration: 1.5, repeat: Infinity }}
-            style={{ width: 50, height: 50, borderRadius: '50%', background: `linear-gradient(135deg, ${RED}, #c62828)`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 6px 24px ${RED}60` }}>
+            style={{ width: 50, height: 50, borderRadius: '50%', background: `linear-gradient(135deg, ${RED}, #b32c16)`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 6px 24px ${RED}60` }}>
             <svg width={22} height={22} viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M8 5.14v14.72a1 1 0 001.5.86l11.24-7.36a1 1 0 000-1.72L9.5 4.28A1 1 0 008 5.14z" /></svg>
           </motion.div>
         </div>
@@ -320,8 +320,8 @@ export default function AulasVipPage() {
         </div>
       ) : (<>
       {/* Red ambient glows */}
-      <div style={{ position: 'fixed', top: '-15%', left: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.08), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'fixed', bottom: '-10%', right: '-5%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.05), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'fixed', top: '-15%', left: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,31,0.08), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'fixed', bottom: '-10%', right: '-5%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,31,0.05), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Top bar */}

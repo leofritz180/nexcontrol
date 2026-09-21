@@ -16,9 +16,9 @@ import { networkEnabled, NETWORK_FREE_FOR_ALL, OWNER_EMAIL } from '../lib/networ
 // Reaproveita as APIs /api/network/* (acesso é validado no servidor).
 // ─────────────────────────────────────────────────────────────────────────
 
-const RED = '#e53935'
+const RED = '#e5391f'
 const MINT = '#22C55E'
-// A bolha era AZUL (#2563eb) — um "teste de destaque" que ficou. Azul está
+// A bolha era AZUL (#e5391f) — um "teste de destaque" que ficou. Azul está
 // fora da paleta (só preto/branco/vermelho da marca/mint) e, com o visual
 // 2.0, ela era a única mancha azul de TODAS as telas, gritando mais que o
 // botão de ação da página.
@@ -211,7 +211,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
                   ))}
                 </div>
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24, gap: 10 }}>
-                  <div style={{ width: 46, height: 46, borderRadius: 13, background: 'rgba(229,57,53,0.14)', border: '1px solid rgba(229,57,53,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><LockIcon /></div>
+                  <div style={{ width: 46, height: 46, borderRadius: 13, background: 'rgba(229,57,31,0.14)', border: '1px solid rgba(229,57,31,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><LockIcon /></div>
                   <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)' }}>Comunidade exclusiva do PRO</div>
                   <div style={{ fontSize: 12, color: 'var(--t2)', lineHeight: 1.5 }}>Fale com admins que operam de verdade, em tempo real. Assine o PRO pra entrar.</div>
                   <button onClick={() => router.push('/billing-mp?renewal=1')} style={{ marginTop: 4, padding: '10px 18px', borderRadius: 11, border: 'none', background: RED, color: 'var(--t1)', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>Assinar PRO →</button>
@@ -236,7 +236,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
             {/* header */}
             <div style={dockHeader}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                <div style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(229,57,53,0.16)', border: '1px solid rgba(229,57,53,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><ChatIcon size={14} /></div>
+                <div style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(229,57,31,0.16)', border: '1px solid rgba(229,57,31,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><ChatIcon size={14} /></div>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--t1)', lineHeight: 1.1 }}>Network</div>
                   <div style={{ fontSize: 10.5, color: 'var(--t2)', display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: MINT, boxShadow: `0 0 6px ${MINT}` }} />{online} online</div>
@@ -290,7 +290,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
 // ── estilos/ícones ──
 const bubbleStyle = { position: 'relative', width: 56, height: 56, borderRadius: '50%', border: 'none', cursor: 'pointer', background: `linear-gradient(135deg, ${BUBBLE}, ${BUBBLE_DARK})`, boxShadow: '0 10px 28px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }
 const panelStyle = { width: 340, height: 460, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 120px)', borderRadius: 18, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 24px 70px rgba(0,0,0,0.6)' }
-const dockHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderBottom: '1px solid var(--b1)', background: 'rgba(229,57,53,0.06)', flexShrink: 0 }
+const dockHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderBottom: '1px solid var(--b1)', background: 'rgba(229,57,31,0.06)', flexShrink: 0 }
 const iconBtn = { width: 28, height: 28, borderRadius: 8, border: 'none', background: 'var(--fill-2)', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }
 function Dot() { return <span style={{ position: 'absolute', top: 0, right: 0, width: 16, height: 16, borderRadius: '50%', background: MINT, border: '2px solid #0b0e16', boxShadow: `0 0 8px ${MINT}`, zIndex: 2 }} /> }
 function ChatIcon({ size = 24, color = '#fff' }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg> }

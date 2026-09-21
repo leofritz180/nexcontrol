@@ -196,8 +196,8 @@ export default function SubscriptionGate({ children }) {
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
           width: 520, height: 520, borderRadius: '50%', pointerEvents: 'none',
           background: isExpired
-            ? 'radial-gradient(circle, rgba(16,185,129,0.06), transparent 65%)'
-            : 'radial-gradient(circle, rgba(229,57,53,0.08), transparent 65%)',
+            ? 'radial-gradient(circle, rgba(63,155,30,0.06), transparent 65%)'
+            : 'radial-gradient(circle, rgba(229,57,31,0.08), transparent 65%)',
           filter: 'blur(40px)',
         }}/>
 
@@ -207,8 +207,8 @@ export default function SubscriptionGate({ children }) {
           border: '1px solid var(--b1)',
           borderRadius: 20, padding: '40px 36px',
           boxShadow: isExpired
-            ? '0 0 0 1px rgba(16,185,129,0.04), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(16,185,129,0.05)'
-            : '0 0 0 1px rgba(229,57,53,0.04), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(229,57,53,0.06)',
+            ? '0 0 0 1px rgba(63,155,30,0.04), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(63,155,30,0.05)'
+            : '0 0 0 1px rgba(229,57,31,0.04), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(229,57,31,0.06)',
           animation: 'scale-in 0.35s cubic-bezier(0.33,1,0.68,1) both',
         }}>
           {/* eyebrow mono */}
@@ -216,13 +216,13 @@ export default function SubscriptionGate({ children }) {
             fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
             fontSize: 9, fontWeight: 600, letterSpacing: '0.28em',
             textTransform: 'uppercase',
-            color: isExpired ? '#10B981' : '#e53935',
+            color: isExpired ? '#3f9b1e' : '#e5391f',
             marginBottom: 24,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           }}>
-            <span style={{ width: 24, height: 1, background: isExpired ? '#10B981' : '#e53935' }}/>
+            <span style={{ width: 24, height: 1, background: isExpired ? '#3f9b1e' : '#e5391f' }}/>
             {isExpired ? 'Assinatura · vencida' : 'Assinatura · pendente'}
-            <span style={{ width: 24, height: 1, background: isExpired ? '#10B981' : '#e53935' }}/>
+            <span style={{ width: 24, height: 1, background: isExpired ? '#3f9b1e' : '#e5391f' }}/>
           </div>
 
           {/* Title — Instrument Serif feel */}
@@ -288,8 +288,8 @@ export default function SubscriptionGate({ children }) {
 
           <p style={{ fontSize: 11, color: 'var(--t3)', marginTop: 14, letterSpacing: '0.01em' }}>
             {isExpired
-              ? <>PIX instantâneo · a partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 59,90/mês</strong></>
-              : <>A partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 59,90/mês</strong></>}
+              ? <>PIX instantâneo · a partir de <strong style={{ color: '#e5391f', fontWeight: 700 }}>R$ 59,90/mês</strong></>
+              : <>A partir de <strong style={{ color: '#e5391f', fontWeight: 700 }}>R$ 59,90/mês</strong></>}
           </p>
 
           <button

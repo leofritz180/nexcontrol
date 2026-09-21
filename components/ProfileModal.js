@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase/client'
 import { loadLocalProfile, saveLocalProfile, fileToAvatarDataUrl } from '../lib/profileLocal'
 
 const ease = [0.33, 1, 0.68, 1]
-const BRAND = '#e53935'
+const BRAND = '#e5391f'
 
 const roleLabel = r => r === 'owner' ? 'Owner' : r === 'admin' ? 'Administrador' : 'Operador'
 
@@ -115,7 +115,7 @@ export default function ProfileModal({ open, onClose, userId, userEmail, userNam
                 </div>
                 <p style={{ fontSize: 19, fontWeight: 700, color: 'var(--t1)', margin: '12px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nome || 'Seu nome'}</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 5, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.28)', color: BRAND, letterSpacing: '0.04em' }}>{roleLabel(role)}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 5, background: 'rgba(229,57,31,0.12)', border: '1px solid rgba(229,57,31,0.28)', color: BRAND, letterSpacing: '0.04em' }}>{roleLabel(role)}</span>
                   {memberSince && <span style={{ fontSize: 11, color: 'var(--t4)' }}>desde {memberSince}</span>}
                 </div>
               </div>

@@ -94,8 +94,8 @@ export function GenerateVideoButton({ amount, completedGoals, goalPct, mode, sta
           style={{
             fontSize: 12, fontWeight: 700, padding: '8px 20px', borderRadius: 8,
             cursor: (status === 'rendering' || status === 'uploading') ? 'wait' : 'pointer',
-            border: '1px solid rgba(229,57,53,0.3)',
-            background: status === 'error' ? 'rgba(239,68,68,0.15)' : 'rgba(229,57,53,0.15)',
+            border: '1px solid rgba(229,57,31,0.3)',
+            background: status === 'error' ? 'rgba(239,68,68,0.15)' : 'rgba(229,57,31,0.15)',
             color: status === 'error' ? '#EF4444' : '#ff6b6b',
             opacity: (status === 'rendering' || status === 'uploading') ? 0.7 : 1,
             display: 'flex', alignItems: 'center', gap: 8,

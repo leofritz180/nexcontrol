@@ -309,11 +309,11 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
               style={{
                 marginTop: 8,
                 padding: '12px 28px', borderRadius: 10,
-                background: '#e53935', color: '#fff',
+                background: '#e5391f', color: '#fff',
                 border: 'none', cursor: 'pointer',
                 fontSize: 14, fontWeight: 700, fontFamily: 'inherit',
                 letterSpacing: '0.02em',
-                boxShadow: '0 8px 24px rgba(229,57,53,0.4)',
+                boxShadow: '0 8px 24px rgba(229,57,31,0.4)',
               }}
             >
               Continuar

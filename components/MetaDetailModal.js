@@ -61,7 +61,7 @@ function SalaryPanel({ meta, liqCalc, tenantOpModel, leaderId, onSaved }) {
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>{apenasBau ? 'Baú e custos' : 'Salário e custos'}</span>
         {isActive && <span style={{ fontSize: 11, color: 'var(--t4)', marginLeft: 4 }}>Pré-configure para fechamento automático</span>}
         {isFinalizedNotClosed && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--warn)', marginLeft: 4 }}>Operador finalizou — defina valores e feche</span>}
-        {fechada && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--profit, #10b981)', marginLeft: 4 }}>Meta fechada — ajuste se necessário</span>}
+        {fechada && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--profit, #3f9b1e)', marginLeft: 4 }}>Meta fechada — ajuste se necessário</span>}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: apenasBau ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
         {!apenasBau && (<div><label style={lbl}>Salário (R$)</label><input type="number" step="0.01" min="0" value={salario} onChange={e => setSalario(e.target.value)} placeholder="0,00" style={inp}/></div>)}
@@ -69,19 +69,19 @@ function SalaryPanel({ meta, liqCalc, tenantOpModel, leaderId, onSaved }) {
         <div><label style={lbl}>Custo fixo (R$)</label><input type="number" step="0.01" min="0" value={custo} onChange={e => setCusto(e.target.value)} placeholder="0,00" style={inp}/></div>
         {!apenasBau && (<div><label style={lbl}>Taxa agente (R$)</label><input type="number" step="0.01" min="0" value={taxa} onChange={e => setTaxa(e.target.value)} placeholder="0,00" style={inp}/></div>)}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, padding: '14px 16px', borderRadius: 12, background: newLucro >= 0 ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${newLucro >= 0 ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.15)'}`, marginBottom: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, padding: '14px 16px', borderRadius: 12, background: newLucro >= 0 ? 'rgba(63,155,30,0.08)' : 'rgba(239,68,68,0.06)', border: `1px solid ${newLucro >= 0 ? 'rgba(63,155,30,0.2)' : 'rgba(239,68,68,0.15)'}`, marginBottom: 12 }}>
         <div style={{ minWidth: 0 }}>
           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t2)' }}>Lucro final</span>
           <p style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--t4)' }}>
             {apenasBau ? `Resultado (${fmt(liqCalc)}) + Baú (${fmt(bv)}) - Custo (${fmt(cst)})` : `Resultado (${fmt(liqCalc)}) + Sal (${fmt(sal)}) + Baú (${fmt(bv)}) - Custo (${fmt(cst)}) - Taxa (${fmt(tax)})`}
           </p>
         </div>
-        <span style={{ fontSize: 22, fontWeight: 800, color: newLucro >= 0 ? 'var(--profit, #10b981)' : 'var(--loss, #ef4444)', flexShrink: 0, fontFamily: 'var(--mono, monospace)' }}>
+        <span style={{ fontSize: 22, fontWeight: 800, color: newLucro >= 0 ? 'var(--profit, #3f9b1e)' : 'var(--loss, #ef4444)', flexShrink: 0, fontFamily: 'var(--mono, monospace)' }}>
           {newLucro >= 0 ? '+' : ''}R$ {fmt(newLucro)}
         </span>
       </div>
       <button type="button" onClick={save} disabled={saving}
-        style={{ width: '100%', padding: '12px', borderRadius: 11, border: 'none', cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: 'var(--t1)', background: isFinalizedNotClosed ? 'linear-gradient(180deg, var(--profit, #10b981), #00a06d)' : 'linear-gradient(180deg, #ef4444, #c62828)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: saving ? 0.7 : 1 }}>
+        style={{ width: '100%', padding: '12px', borderRadius: 11, border: 'none', cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: 'var(--t1)', background: isFinalizedNotClosed ? 'linear-gradient(180deg, var(--profit, #3f9b1e), #00a06d)' : 'linear-gradient(180deg, #ef4444, #b32c16)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: saving ? 0.7 : 1 }}>
         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         {saving ? 'Salvando...' : isActive ? 'Salvar configuração' : isFinalizedNotClosed ? 'Salvar e fechar meta' : 'Salvar ajustes'}
       </button>
@@ -134,10 +134,10 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
     { l: 'Remessas', v: remessas.length, c: '#7aa2ff' },
     { l: 'Depósito total', v: `R$ ${fmt(depR)}`, c: 'rgba(255,255,255,0.78)' },
     { l: 'Saque total', v: `R$ ${fmt(saqR)}`, c: 'rgba(255,255,255,0.78)' },
-    { l: 'Lucro', v: `R$ ${fmt(lucroR)}`, c: 'var(--profit, #10b981)' },
+    { l: 'Lucro', v: `R$ ${fmt(lucroR)}`, c: 'var(--profit, #3f9b1e)' },
     { l: 'Prejuízo', v: `R$ ${fmt(prejR)}`, c: 'var(--loss, #ef4444)' },
-    { l: 'Acerto', v: `${pct}%`, c: pct >= 50 ? 'var(--profit, #10b981)' : '#ffd166' },
-    { l: fechada ? 'LUCRO FINAL' : 'Líquido', v: `${displayVal>=0?'+':'-'}R$ ${fmt(Math.abs(displayVal))}`, c: displayVal>=0?'var(--profit, #10b981)':'var(--loss, #ef4444)', big: true },
+    { l: 'Acerto', v: `${pct}%`, c: pct >= 50 ? 'var(--profit, #3f9b1e)' : '#ffd166' },
+    { l: fechada ? 'LUCRO FINAL' : 'Líquido', v: `${displayVal>=0?'+':'-'}R$ ${fmt(Math.abs(displayVal))}`, c: displayVal>=0?'var(--profit, #3f9b1e)':'var(--loss, #ef4444)', big: true },
   ]
   const iconMap = { meta_created:'plus', meta_finalized:'flag', meta_closed:'check', meta_status_changed:'refresh', meta_reactivated:'refresh', remessa_created:'dollar', remessa_edited:'flag' }
 
@@ -149,7 +149,7 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', minWidth: 0 }}>
             <h2 style={{ fontSize: 22, fontWeight: 900, color: 'var(--t1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60vw' }}>{meta.titulo}</h2>
-            <span style={{ padding: '4px 12px', borderRadius: 99, fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', background: fechada?'rgba(16,185,129,0.15)':finalizada?'rgba(239,68,68,0.1)':'rgba(255,255,255,0.1)', border: `1px solid ${fechada?'rgba(16,185,129,0.3)':finalizada?'rgba(239,68,68,0.2)':'rgba(255,255,255,0.2)'}`, color: fechada?'var(--profit, #10b981)':finalizada?'var(--loss, #ef4444)':'#7aa2ff' }}>
+            <span style={{ padding: '4px 12px', borderRadius: 99, fontSize: 10, fontWeight: 700, letterSpacing: '0.05em', background: fechada?'rgba(63,155,30,0.15)':finalizada?'rgba(239,68,68,0.1)':'rgba(255,255,255,0.1)', border: `1px solid ${fechada?'rgba(63,155,30,0.3)':finalizada?'rgba(239,68,68,0.2)':'rgba(255,255,255,0.2)'}`, color: fechada?'var(--profit, #3f9b1e)':finalizada?'var(--loss, #ef4444)':'#7aa2ff' }}>
               {fechada?'CONCLUÍDA':finalizada?'Finalizada':'Ativa'}
             </span>
           </div>
@@ -201,20 +201,20 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                     const pos = Number(r.resultado||0) >= 0
                     const isLatest = i === 0
                     return (
-                      <div key={r.id} style={{ padding: '12px 14px', borderRadius: 12, background: isLatest?(pos?'rgba(16,185,129,0.06)':'rgba(239,68,68,0.06)'):'rgba(255,255,255,0.03)', border: `1px solid ${isLatest?(pos?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.12)'):'var(--b1)'}`, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <div key={r.id} style={{ padding: '12px 14px', borderRadius: 12, background: isLatest?(pos?'rgba(63,155,30,0.06)':'rgba(239,68,68,0.06)'):'rgba(255,255,255,0.03)', border: `1px solid ${isLatest?(pos?'rgba(63,155,30,0.15)':'rgba(239,68,68,0.12)'):'var(--b1)'}`, display: 'flex', flexDirection: 'column', gap: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 30, height: 30, borderRadius: 8, background: pos?'rgba(16,185,129,0.12)':'rgba(239,68,68,0.12)', border: `1px solid ${pos?'rgba(16,185,129,0.3)':'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={pos?'var(--profit, #10b981)':'var(--loss, #ef4444)'} strokeWidth="3" strokeLinecap="round"><polyline points={pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>
+                        <div style={{ width: 30, height: 30, borderRadius: 8, background: pos?'rgba(63,155,30,0.12)':'rgba(239,68,68,0.12)', border: `1px solid ${pos?'rgba(63,155,30,0.3)':'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={pos?'var(--profit, #3f9b1e)':'var(--loss, #ef4444)'} strokeWidth="3" strokeLinecap="round"><polyline points={pos?'18 15 12 9 6 15':'6 9 12 15 18 9'}/></svg>
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
                             <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--t1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.titulo || `Remessa ${remessas.length-i}`}</p>
-                            {isLatest && <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: pos?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.12)', color: pos?'var(--profit, #10b981)':'var(--loss, #ef4444)' }}>{pos?'LUCRO':'PREJUÍZO'}</span>}
+                            {isLatest && <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: pos?'rgba(63,155,30,0.15)':'rgba(239,68,68,0.12)', color: pos?'var(--profit, #3f9b1e)':'var(--loss, #ef4444)' }}>{pos?'LUCRO':'PREJUÍZO'}</span>}
                             {r.slot_name && <span style={{ fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4, background: 'var(--fill-3)', border: '1px solid var(--b3)', color: 'var(--t2)' }}>{r.slot_name}</span>}
                           </div>
                           <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>{r.tipo} · D: R$ {fmt(r.deposito)} · S: R$ {fmt(r.saque)}</p>
                         </div>
-                        <p style={{ fontSize: isLatest?16:14, fontWeight: 800, color: pos?'var(--profit, #10b981)':'var(--loss, #ef4444)', flexShrink: 0, fontFamily: 'var(--mono, monospace)' }}>{pos?'+':'-'}R$ {fmt(Math.abs(Number(r.resultado||0)))}</p>
+                        <p style={{ fontSize: isLatest?16:14, fontWeight: 800, color: pos?'var(--profit, #3f9b1e)':'var(--loss, #ef4444)', flexShrink: 0, fontFamily: 'var(--mono, monospace)' }}>{pos?'+':'-'}R$ {fmt(Math.abs(Number(r.resultado||0)))}</p>
                         <button type="button" onClick={() => delRemessa(r.id)} title="Excluir remessa" style={{ width: 26, height: 26, borderRadius: 6, border: '1px solid rgba(239,68,68,0.3)', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, opacity: 0.6 }}>
                           <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--loss, #ef4444)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
                         </button>
@@ -229,7 +229,7 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                               {fotos.map((item, fi) => { const f = nF(item); const ts = f.ts || r.created_at; return (
                                 <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{ position:'relative', display:'block' }}>
                                   <img src={f.url} alt={`comprovante ${fi+1}`} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--b2, var(--b2))', display: 'block' }}/>
-                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'var(--t1)', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fTs(ts)}</span>}
+                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,31,0.92)', color:'var(--t1)', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fTs(ts)}</span>}
                                 </a>
                               )})}
                             </div>
@@ -252,7 +252,7 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                   {logs.map((log, i) => {
                     const logOp = operators.find(o => o.id === log.operator_id)
                     const ic = iconMap[log.action] || 'circle'
-                    const lc = log.action==='meta_closed'?'var(--profit, #10b981)':log.action==='remessa_created'?'#7aa2ff':log.action==='meta_created'?'var(--loss)':'#ffd166'
+                    const lc = log.action==='meta_closed'?'var(--profit, #3f9b1e)':log.action==='remessa_created'?'#7aa2ff':log.action==='meta_created'?'var(--loss)':'#ffd166'
                     return (
                       <div key={log.id} style={{ display: 'flex', gap: 12, paddingBottom: 16, position: 'relative' }}>
                         {i < logs.length-1 && <div style={{ position: 'absolute', left: 13, top: 28, bottom: 0, width: 1, background: 'var(--b1)' }}/>}

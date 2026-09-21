@@ -30,7 +30,7 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
   if (dismissed && !isExpired) return null // expired sempre forca
 
   const { monthly, daily } = formatPriceAnchor(59.90)
-  const urgencyColor = urgency === 'critical' || urgency === 'high' ? '#ff4444' : urgency === 'medium' ? '#ff8a47' : '#e53935'
+  const urgencyColor = urgency === 'critical' || urgency === 'high' ? '#ff4444' : urgency === 'medium' ? '#ff8a47' : '#e5391f'
 
   function handleDismiss() {
     setDismissed(true)
@@ -54,8 +54,8 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
               background: 'linear-gradient(180deg, rgba(15,8,8,0.96) 0%, rgba(0,0,0,0.98) 100%)',
               backdropFilter: 'blur(16px) saturate(160%)',
               WebkitBackdropFilter: 'blur(16px) saturate(160%)',
-              borderTop: `1px solid rgba(229,57,53,0.35)`,
-              boxShadow: `0 -12px 40px rgba(0,0,0,0.55), 0 -1px 0 ${urgencyColor}, 0 -8px 32px rgba(229,57,53,0.18)`,
+              borderTop: `1px solid rgba(229,57,31,0.35)`,
+              boxShadow: `0 -12px 40px rgba(0,0,0,0.55), 0 -1px 0 ${urgencyColor}, 0 -8px 32px rgba(229,57,31,0.18)`,
             }}
           >
             {/* Top glow line animada */}
@@ -115,7 +115,7 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
               <motion.button
                 type="button"
                 onClick={() => { window.location.href = '/billing-mp?renewal=1' }}
-                whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(229,57,53,0.6), 0 0 40px rgba(229,57,53,0.3)' }}
+                whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(229,57,31,0.6), 0 0 40px rgba(229,57,31,0.3)' }}
                 whileTap={{ scale: 0.97 }}
                 style={{
                   position: 'relative', overflow: 'hidden',
@@ -124,10 +124,10 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
                   fontSize: 14, fontWeight: 800, fontFamily: 'inherit',
                   letterSpacing: '0.06em',
                   color: '#fff',
-                  background: 'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
+                  background: 'linear-gradient(135deg, #e5391f 0%, #b32c16 100%)',
                   border: 'none', borderRadius: 10,
                   cursor: 'pointer',
-                  boxShadow: '0 6px 22px rgba(229,57,53,0.45), inset 0 1px 0 rgba(255,255,255,0.22)',
+                  boxShadow: '0 6px 22px rgba(229,57,31,0.45), inset 0 1px 0 rgba(255,255,255,0.22)',
                   flexShrink: 0,
                 }}
               >

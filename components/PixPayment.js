@@ -92,20 +92,20 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
             backdropFilter: 'blur(40px) saturate(160%)',
             WebkitBackdropFilter: 'blur(40px) saturate(160%)',
             border: '1px solid var(--b1)',
-            boxShadow: '0 40px 80px rgba(0,0,0,0.55), 0 0 60px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.07)',
+            boxShadow: '0 40px 80px rgba(0,0,0,0.55), 0 0 60px rgba(229,57,31,0.12), inset 0 1px 0 rgba(255,255,255,0.07)',
             animation: 'pix-card-in 0.35s cubic-bezier(0.33,1,0.68,1) both',
             position: 'relative',
           }}
         >
           {/* Glow sutil no topo */}
-          <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.35), transparent)' }}/>
+          <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,31,0.35), transparent)' }}/>
 
           {/* Header */}
           <div style={{ padding: '22px 24px 18px', borderBottom: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <div style={{ minWidth: 0 }}>
               <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Pagamento via Pix</h2>
               <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {planName || 'NexControl'} · <strong style={{ color: '#e53935', fontFamily: 'var(--mono)' }}>R$ {fmt(amount)}</strong>
+                {planName || 'NexControl'} · <strong style={{ color: '#e5391f', fontFamily: 'var(--mono)' }}>R$ {fmt(amount)}</strong>
               </p>
             </div>
             <button
@@ -117,7 +117,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: 'var(--t3)', transition: 'all 0.2s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.12)'; e.currentTarget.style.color = '#e53935' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,31,0.12)'; e.currentTarget.style.color = '#e5391f' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = 'var(--t3)' }}
             >
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -131,8 +131,8 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
             {step === 'intro' && (
               <div style={{ animation: 'pix-fade-in 0.3s ease-out both' }}>
                 <div style={{ textAlign: 'center', marginBottom: 22 }}>
-                  <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                    <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(229,57,31,0.1)', border: '1px solid rgba(229,57,31,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                    <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                   </div>
                   <p style={{ fontSize: 15, color: 'var(--t1)', margin: '0 0 6px', fontWeight: 600, lineHeight: 1.4 }}>
                     Pague em poucos segundos
@@ -146,14 +146,14 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                   onClick={createPayment}
                   style={{
                     width: '100%', padding: '15px 24px', borderRadius: 14, border: 'none', cursor: 'pointer',
-                    background: 'linear-gradient(145deg, #e53935, #c62828)',
+                    background: 'linear-gradient(145deg, #e5391f, #b32c16)',
                     color: 'white', fontSize: 15, fontWeight: 700, fontFamily: 'inherit',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    boxShadow: '0 4px 24px rgba(229,57,53,0.4), 0 0 40px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.2)',
+                    boxShadow: '0 4px 24px rgba(229,57,31,0.4), 0 0 40px rgba(229,57,31,0.12), inset 0 1px 0 rgba(255,255,255,0.2)',
                     transition: 'transform 0.15s, box-shadow 0.15s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(229,57,53,0.55), 0 0 60px rgba(229,57,53,0.18)' }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(229,57,53,0.4), 0 0 40px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.2)' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(229,57,31,0.55), 0 0 60px rgba(229,57,31,0.18)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(229,57,31,0.4), 0 0 40px rgba(229,57,31,0.12), inset 0 1px 0 rgba(255,255,255,0.2)' }}
                 >
                   <span style={{ fontSize: 16 }}>⚡</span> Gerar QR Code Pix
                 </button>
@@ -187,13 +187,13 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 {/* Botao disabled */}
                 <div style={{
                   width: '100%', padding: '14px 24px', borderRadius: 13, textAlign: 'center',
-                  background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.2)',
+                  background: 'rgba(229,57,31,0.12)', border: '1px solid rgba(229,57,31,0.2)',
                   color: 'var(--loss)', fontSize: 14, fontWeight: 700,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                 }}>
                   <div style={{
                     width: 14, height: 14, borderRadius: '50%',
-                    border: '2px solid rgba(229,57,53,0.25)', borderTopColor: '#e53935',
+                    border: '2px solid rgba(229,57,31,0.25)', borderTopColor: '#e5391f',
                     animation: 'pix-spin 0.7s linear infinite',
                   }}/>
                   Gerando pagamento...
@@ -210,7 +210,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                     display: 'inline-block', padding: 12, background: '#fff', borderRadius: 14,
                     marginBottom: 18,
                     animation: 'pix-pulse 2.6s ease-in-out infinite',
-                    boxShadow: '0 0 30px rgba(229,57,53,0.18)',
+                    boxShadow: '0 0 30px rgba(229,57,31,0.18)',
                   }}>
                     <img
                       src={`data:image/png;base64,${qrImage}`}
@@ -225,7 +225,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                   <div style={{
                     padding: '10px 12px', borderRadius: 10, marginBottom: 8,
                     background: 'var(--surface)', border: '1px solid var(--b1)',
-                    fontSize: 10, fontFamily: 'var(--mono)', color: '#64748B',
+                    fontSize: 10, fontFamily: 'var(--mono)', color: '#82828d',
                     wordBreak: 'break-all', maxHeight: 56, overflowY: 'auto', textAlign: 'left',
                   }}>
                     {qrCode}
@@ -238,11 +238,11 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                       fontSize: 14, fontWeight: 700, fontFamily: 'inherit',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                       transition: 'all 0.2s',
-                      background: copied ? 'rgba(209,250,229,0.15)' : 'linear-gradient(145deg, #e53935, #c62828)',
+                      background: copied ? 'rgba(209,250,229,0.15)' : 'linear-gradient(145deg, #e5391f, #b32c16)',
                       color: copied ? 'var(--profit)' : 'white',
                       boxShadow: copied
                         ? '0 0 0 1px rgba(209,250,229,0.3) inset'
-                        : '0 4px 20px rgba(229,57,53,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+                        : '0 4px 20px rgba(229,57,31,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
                     }}
                   >
                     {copied ? (
@@ -322,10 +322,10 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                   onClick={createPayment}
                   style={{
                     width: '100%', padding: '13px 20px', borderRadius: 13, border: 'none', cursor: 'pointer',
-                    background: 'linear-gradient(145deg, #e53935, #c62828)',
+                    background: 'linear-gradient(145deg, #e5391f, #b32c16)',
                     color: 'white', fontSize: 14, fontWeight: 700, fontFamily: 'inherit',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    boxShadow: '0 4px 20px rgba(229,57,53,0.35)',
+                    boxShadow: '0 4px 20px rgba(229,57,31,0.35)',
                   }}
                 >
                   Tentar novamente
@@ -352,8 +352,8 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
         }
         @keyframes pix-spin { to { transform: rotate(360deg) } }
         @keyframes pix-pulse {
-          0%,100% { box-shadow: 0 0 30px rgba(229,57,53,0.18) }
-          50%     { box-shadow: 0 0 48px rgba(229,57,53,0.32) }
+          0%,100% { box-shadow: 0 0 30px rgba(229,57,31,0.18) }
+          50%     { box-shadow: 0 0 48px rgba(229,57,31,0.32) }
         }
         @keyframes pix-ping {
           0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.5) }

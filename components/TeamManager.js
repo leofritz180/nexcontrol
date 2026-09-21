@@ -142,7 +142,7 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
           <button type="button" onClick={addTeam}
             style={{
               padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', fontFamily: 'inherit',
-              background: 'linear-gradient(180deg, var(--loss, #ef4444), #c62828)', color: '#fff', fontSize: 13, fontWeight: 800,
+              background: 'linear-gradient(180deg, var(--loss, #ef4444), #b32c16)', color: '#fff', fontSize: 13, fontWeight: 800,
               boxShadow: '0 6px 18px rgba(239,68,68,0.35)',
             }}>
             Criar equipe
@@ -156,7 +156,7 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
         </div>
       )}
       {okMsg && (
-        <div style={{ padding: '10px 14px', marginBottom: 14, borderRadius: 10, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: 'var(--profit)', fontSize: 12.5, fontWeight: 600 }}>
+        <div style={{ padding: '10px 14px', marginBottom: 14, borderRadius: 10, background: 'rgba(63,155,30,0.1)', border: '1px solid rgba(63,155,30,0.3)', color: 'var(--profit)', fontSize: 12.5, fontWeight: 600 }}>
           {okMsg}
         </div>
       )}

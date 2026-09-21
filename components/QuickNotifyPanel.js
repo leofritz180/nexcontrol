@@ -130,8 +130,8 @@ export default function QuickNotifyPanel({ userEmail }) {
           position: 'fixed', bottom: 22, right: 184, zIndex: 201,
           width: 40, height: 40, borderRadius: '50%',
           cursor: 'pointer',
-          background: open ? '#10B981' : 'rgba(20,20,20,0.95)',
-          border: '1px solid ' + (open ? '#10B981' : 'rgba(255,255,255,0.1)'),
+          background: open ? '#3f9b1e' : 'rgba(20,20,20,0.95)',
+          border: '1px solid ' + (open ? '#3f9b1e' : 'rgba(255,255,255,0.1)'),
           color: 'var(--t1)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 6px 18px rgba(0,0,0,0.4)',
@@ -165,9 +165,9 @@ export default function QuickNotifyPanel({ userEmail }) {
             <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--b1)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Notificacao rapida</span>
-                <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,53,0.15)', color: '#e53935', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
+                <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,31,0.15)', color: '#e5391f', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
               </div>
-              <p style={{ fontSize: 11, color: '#64748B', margin: 0 }}>
+              <p style={{ fontSize: 11, color: '#82828d', margin: 0 }}>
                 Dispara push pro seu celular com dado em tempo real.
               </p>
             </div>
@@ -175,8 +175,8 @@ export default function QuickNotifyPanel({ userEmail }) {
             {toast && (
               <div style={{
                 padding: '10px 16px', fontSize: 11, fontWeight: 600,
-                background: toast.ok ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
-                color: toast.ok ? '#10B981' : 'var(--loss)',
+                background: toast.ok ? 'rgba(63,155,30,0.08)' : 'rgba(239,68,68,0.08)',
+                color: toast.ok ? '#3f9b1e' : 'var(--loss)',
                 borderBottom: '1px solid var(--b1)',
               }}>
                 {toast.ok ? '✓' : '⚠'} {toast.msg}
@@ -186,8 +186,8 @@ export default function QuickNotifyPanel({ userEmail }) {
             <div style={{ overflowY: 'auto', padding: '8px 0' }}>
               {/* Owner-only: disparo pra TODOS admins */}
               {isOwner && (
-                <div style={{ marginBottom: 4, paddingBottom: 8, borderBottom: '1px solid rgba(229,57,53,0.15)' }}>
-                  <div style={{ padding: '8px 16px 4px', fontSize: 9, fontWeight: 700, color: '#e53935', textTransform: 'uppercase', letterSpacing: '0.08em' }}>OWNER · Disparo em massa</div>
+                <div style={{ marginBottom: 4, paddingBottom: 8, borderBottom: '1px solid rgba(229,57,31,0.15)' }}>
+                  <div style={{ padding: '8px 16px 4px', fontSize: 9, fontWeight: 700, color: '#e5391f', textTransform: 'uppercase', letterSpacing: '0.08em' }}>OWNER · Disparo em massa</div>
                   {[
                     { type: 'lucro_hoje',      label: 'Lucro de hoje · TODOS' },
                     { type: 'lucro_semana',    label: 'Lucro da semana · TODOS' },
@@ -197,17 +197,17 @@ export default function QuickNotifyPanel({ userEmail }) {
                     <button key={it.type} type="button" onClick={() => triggerMass(it.type, it.label)}
                       disabled={busy === 'mass_' + it.type}
                       style={{ width:'100%', textAlign:'left', padding:'10px 16px', display:'flex', alignItems:'center', gap:10, background:'transparent', border:'none', cursor:busy?'not-allowed':'pointer', fontFamily:'inherit', transition:'background 0.15s' }}
-                      onMouseEnter={e => { if (!busy) e.currentTarget.style.background = 'rgba(229,57,53,0.06)' }}
+                      onMouseEnter={e => { if (!busy) e.currentTarget.style.background = 'rgba(229,57,31,0.06)' }}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)' }}>{it.label}</div>
-                        <div style={{ fontSize: 11, color: '#64748B' }}>so admins com atividade na semana</div>
+                        <div style={{ fontSize: 11, color: '#82828d' }}>so admins com atividade na semana</div>
                       </div>
                       {busy === 'mass_' + it.type ? (
-                        <motion.div style={{ width: 14, height: 14, borderRadius:'50%', border:'2px solid var(--b3)', borderTopColor:'#e53935' }}
+                        <motion.div style={{ width: 14, height: 14, borderRadius:'50%', border:'2px solid var(--b3)', borderTopColor:'#e5391f' }}
                           animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} />
                       ) : (
-                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M22 2 11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" />
                         </svg>
                       )}
@@ -218,7 +218,7 @@ export default function QuickNotifyPanel({ userEmail }) {
 
               {ITEMS.map(grp => (
                 <div key={grp.group} style={{ marginBottom: 4 }}>
-                  <div style={{ padding: '8px 16px 4px', fontSize: 9, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{grp.group}</div>
+                  <div style={{ padding: '8px 16px 4px', fontSize: 9, fontWeight: 700, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{grp.group}</div>
                   {grp.items.map(it => (
                     <button
                       key={it.type}
@@ -236,13 +236,13 @@ export default function QuickNotifyPanel({ userEmail }) {
                     >
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', marginBottom: 2 }}>{it.label}</div>
-                        <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.4 }}>{it.desc}</div>
+                        <div style={{ fontSize: 11, color: '#82828d', lineHeight: 1.4 }}>{it.desc}</div>
                       </div>
                       {busy === it.type ? (
-                        <motion.div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--b3)', borderTopColor: '#10B981', flexShrink: 0 }}
+                        <motion.div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--b3)', borderTopColor: '#3f9b1e', flexShrink: 0 }}
                           animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} />
                       ) : (
-                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#82828d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                           <path d="M22 2 11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" />
                         </svg>
                       )}

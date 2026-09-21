@@ -60,7 +60,7 @@ export default function DemoPage() {
       {/* ═══ Banner fixo de demo ═══ */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 40,
-        background: 'linear-gradient(90deg, var(--fill-3), rgba(229,57,53,0.14))',
+        background: 'linear-gradient(90deg, var(--fill-3), rgba(229,57,31,0.14))',
         backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
         borderBottom: '1px solid var(--b3)',
         padding: '10px 20px',
@@ -84,13 +84,13 @@ export default function DemoPage() {
         <Logo size={1.2} />
         <Link href="/signup" style={{ textDecoration: 'none' }}>
           <motion.div
-            whileHover={{ scale: 1.03, boxShadow: '0 6px 30px rgba(229,57,53,0.45)' }}
+            whileHover={{ scale: 1.03, boxShadow: '0 6px 30px rgba(229,57,31,0.45)' }}
             whileTap={{ scale: 0.97 }}
             style={{
               padding: '10px 20px', borderRadius: 12, fontSize: 13, fontWeight: 700,
-              background: 'linear-gradient(145deg, #e53935, #c62828)', color: 'white',
+              background: 'linear-gradient(145deg, #e5391f, #b32c16)', color: 'white',
               display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-              boxShadow: '0 4px 18px rgba(229,57,53,0.35)',
+              boxShadow: '0 4px 18px rgba(229,57,31,0.35)',
             }}
           >
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
@@ -118,9 +118,9 @@ export default function DemoPage() {
               style={{
                 padding: '8px 16px', borderRadius: 10, border: 'none', cursor: 'pointer',
                 fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap',
-                background: tab === t.id ? 'rgba(229,57,53,0.12)' : 'transparent',
-                color: tab === t.id ? '#e53935' : 'var(--t3)',
-                border: tab === t.id ? '1px solid rgba(229,57,53,0.25)' : '1px solid transparent',
+                background: tab === t.id ? 'rgba(229,57,31,0.12)' : 'transparent',
+                color: tab === t.id ? '#e5391f' : 'var(--t3)',
+                border: tab === t.id ? '1px solid rgba(229,57,31,0.25)' : '1px solid transparent',
                 transition: 'all 0.2s', fontFamily: 'inherit',
               }}
             >
@@ -224,7 +224,7 @@ function TabOperadores() {
         {DEMO_OPERATOR_RANKING.map((op, i) => (
           <motion.div key={op.id} {...fade(i)} style={cardStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(145deg, #e53935, #c62828)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 16, fontWeight: 800, flexShrink: 0 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(145deg, #e5391f, #b32c16)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 16, fontWeight: 800, flexShrink: 0 }}>
                 {i + 1}
               </div>
               <div style={{ flex: 1, minWidth: 140 }}>
@@ -235,7 +235,7 @@ function TabOperadores() {
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: 10, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 3px' }}>Lucro final</p>
+                <p style={{ fontSize: 10, color: '#82828d', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 3px' }}>Lucro final</p>
                 <p style={{ fontSize: 18, fontWeight: 800, color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)', fontFamily: 'var(--mono)', margin: 0 }}>
                   R$ {fmt(op.lucroFinal)}
                 </p>
@@ -278,7 +278,7 @@ function TabRedes() {
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: 10, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 3px' }}>Rentabilidade</p>
+                <p style={{ fontSize: 10, color: '#82828d', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 3px' }}>Rentabilidade</p>
                 <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--profit)', fontFamily: 'var(--mono)', margin: 0 }}>R$ {fmt(r.lucroFinal)}</p>
               </div>
             </div>
@@ -326,7 +326,7 @@ function TabCustos() {
         <Kpi label="Média/tipo" value={`R$ ${fmt(total/Math.max(types.length,1))}`} color="rgba(255,255,255,0.78)" icon="chart"/>
       </div>
       <div style={{ ...cardStyle, padding: 22 }}>
-        <p style={{ fontSize: 12, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, margin: '0 0 16px' }}>Distribuição por tipo</p>
+        <p style={{ fontSize: 12, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, margin: '0 0 16px' }}>Distribuição por tipo</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {types.map(([type, amount], i) => {
             const pct = total > 0 ? (amount / total) * 100 : 0
@@ -375,7 +375,7 @@ function TabMetas() {
                   <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', margin: '0 0 3px' }}>{m.titulo}</p>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 11, color: 'var(--t3)' }}>{m.operador?.nome}</span>
-                    <span style={{ fontSize: 11, color: '#64748B' }}>·</span>
+                    <span style={{ fontSize: 11, color: '#82828d' }}>·</span>
                     <span style={{ fontSize: 11, color: 'var(--t3)' }}>{m.remessas} remessas</span>
                   </div>
                 </div>
@@ -401,8 +401,8 @@ function TabMetas() {
 function HeroCard({ G }) {
   const receita = G.lucroFinalTotal + G.custosTotal
   return (
-    <motion.div {...fade(0)} style={{ ...cardStyle, padding: 28, marginBottom: 18, background: 'linear-gradient(145deg, rgba(209,250,229,0.06), rgba(229,57,53,0.04))', border: '1px solid rgba(209,250,229,0.15)' }}>
-      <p style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, margin: '0 0 8px' }}>
+    <motion.div {...fade(0)} style={{ ...cardStyle, padding: 28, marginBottom: 18, background: 'linear-gradient(145deg, rgba(209,250,229,0.06), rgba(229,57,31,0.04))', border: '1px solid rgba(209,250,229,0.15)' }}>
+      <p style={{ fontSize: 11, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, margin: '0 0 8px' }}>
         Lucro acumulado da operação
       </p>
       <p style={{ fontSize: 42, fontWeight: 900, color: G.lucroFinalTotal >= 0 ? 'var(--profit)' : 'var(--loss)', fontFamily: 'var(--mono)', margin: '0 0 14px', letterSpacing: '-0.03em', lineHeight: 1 }}>
@@ -416,7 +416,7 @@ function HeroCard({ G }) {
           { l: 'Contas', v: G.totalContas, c: 'rgba(255,255,255,0.78)', raw: true },
         ].map(x => (
           <div key={x.l} style={{ padding: '10px 12px', background: 'var(--surface)', borderRadius: 10, border: '1px solid var(--b1)' }}>
-            <p style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, margin: '0 0 3px' }}>{x.l}</p>
+            <p style={{ fontSize: 9, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, margin: '0 0 3px' }}>{x.l}</p>
             <p style={{ fontSize: 14, fontWeight: 800, color: x.c, fontFamily: 'var(--mono)', margin: 0 }}>
               {x.raw ? x.v : `R$ ${fmt(x.v)}`}
             </p>
@@ -432,7 +432,7 @@ function ChartCard({ chartData, maxChart }) {
     <motion.div {...fade(1)} style={{ ...cardStyle, padding: 22, marginBottom: 22 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Receita diária</p>
-        <span style={{ fontSize: 10, color: '#64748B', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Últimos 30 dias</span>
+        <span style={{ fontSize: 10, color: '#82828d', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Últimos 30 dias</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 130 }}>
         {chartData.map((d, i) => {
@@ -450,8 +450,8 @@ function ChartCard({ chartData, maxChart }) {
         })}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-        <span style={{ fontSize: 9, color: '#64748B', fontFamily: 'var(--mono)' }}>{chartData[0].date}</span>
-        <span style={{ fontSize: 9, color: '#64748B', fontFamily: 'var(--mono)' }}>{chartData[chartData.length - 1].date}</span>
+        <span style={{ fontSize: 9, color: '#82828d', fontFamily: 'var(--mono)' }}>{chartData[0].date}</span>
+        <span style={{ fontSize: 9, color: '#82828d', fontFamily: 'var(--mono)' }}>{chartData[chartData.length - 1].date}</span>
       </div>
     </motion.div>
   )
@@ -491,7 +491,7 @@ function ActivityCard() {
         {DEMO_ACTIVITY.slice(0, 5).map((a, i) => (
           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 4 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
             <p style={{ fontSize: 12, color: 'var(--t2)', margin: 0, flex: 1 }}>{a.text}</p>
-            <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)', flexShrink: 0 }}>{relativeTime(a.at)}</span>
+            <span style={{ fontSize: 10, color: '#82828d', fontFamily: 'var(--mono)', flexShrink: 0 }}>{relativeTime(a.at)}</span>
           </div>
         ))}
       </div>
@@ -505,7 +505,7 @@ function Kpi({ label, value, color, big }) {
       whileHover={{ y: -2 }}
       style={{ ...cardStyle, padding: 18 }}
     >
-      <p style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, margin: '0 0 6px' }}>{label}</p>
+      <p style={{ fontSize: 10, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, margin: '0 0 6px' }}>{label}</p>
       <p style={{ fontSize: big ? 22 : 20, fontWeight: 800, color, fontFamily: 'var(--mono)', margin: 0, letterSpacing: '-0.02em' }}>{value}</p>
     </motion.div>
   )
@@ -539,8 +539,8 @@ function CtaBottom() {
       style={{
         ...cardStyle,
         padding: '36px 28px', marginTop: 28, textAlign: 'center',
-        background: 'linear-gradient(145deg, rgba(229,57,53,0.08), rgba(229,57,53,0.02))',
-        border: '1px solid rgba(229,57,53,0.2)',
+        background: 'linear-gradient(145deg, rgba(229,57,31,0.08), rgba(229,57,31,0.02))',
+        border: '1px solid rgba(229,57,31,0.2)',
       }}
     >
       <h3 style={{ fontSize: 24, fontWeight: 900, color: 'var(--t1)', margin: '0 0 8px', letterSpacing: '-0.02em' }}>
@@ -551,14 +551,14 @@ function CtaBottom() {
       </p>
       <Link href="/signup" style={{ textDecoration: 'none' }}>
         <motion.div
-          whileHover={{ scale: 1.03, boxShadow: '0 12px 40px rgba(229,57,53,0.5)' }}
+          whileHover={{ scale: 1.03, boxShadow: '0 12px 40px rgba(229,57,31,0.5)' }}
           whileTap={{ scale: 0.97 }}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
             padding: '14px 32px', borderRadius: 14, fontSize: 15, fontWeight: 700,
-            background: 'linear-gradient(145deg, #e53935, #c62828)', color: 'white',
+            background: 'linear-gradient(145deg, #e5391f, #b32c16)', color: 'white',
             cursor: 'pointer',
-            boxShadow: '0 6px 24px rgba(229,57,53,0.4)',
+            boxShadow: '0 6px 24px rgba(229,57,31,0.4)',
           }}
         >
           <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>

@@ -96,7 +96,7 @@ export default function BillingPage() {
           style={{ position:'relative', textAlign:'center', marginBottom:36 }}>
           {/* Ambient glow */}
           <div style={{ position:'absolute', top:'-10%', left:'20%', right:'20%', height:260, borderRadius:'50%', background:'radial-gradient(ellipse, var(--fill-3), transparent 65%)', filter:'blur(50px)', pointerEvents:'none', zIndex:-1 }}/>
-          <div style={{ position:'absolute', top:'10%', right:'15%', width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.08), transparent 65%)', filter:'blur(40px)', pointerEvents:'none', zIndex:-1 }}/>
+          <div style={{ position:'absolute', top:'10%', right:'15%', width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,31,0.08), transparent 65%)', filter:'blur(40px)', pointerEvents:'none', zIndex:-1 }}/>
 
           {/* Status badge */}
           <motion.div
@@ -166,7 +166,7 @@ export default function BillingPage() {
           const isWarning = daysLeft <= 15 && !isUrgent
 
           // Cor do destaque dos dias
-          const daysColor = isUrgent ? '#e53935' : isWarning ? '#FCD34D' : 'var(--profit)'
+          const daysColor = isUrgent ? '#e5391f' : isWarning ? '#FCD34D' : 'var(--profit)'
 
           return (
             <motion.div
@@ -180,19 +180,19 @@ export default function BillingPage() {
                 borderRadius: 20, marginBottom: 14,
                 background: 'var(--surface)',
                 border: '1px solid var(--b1)',
-                boxShadow: '0 24px 60px rgba(0,0,0,0.6), 0 0 80px rgba(229,57,53,0.08), inset 0 1px 0 rgba(255,255,255,0.04)',
+                boxShadow: '0 24px 60px rgba(0,0,0,0.6), 0 0 80px rgba(229,57,31,0.08), inset 0 1px 0 rgba(255,255,255,0.04)',
               }}>
                 {/* Glow vermelho no canto direito */}
                 <div style={{
                   position: 'absolute', top: '-40%', right: '-15%',
                   width: 420, height: 420, borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(229,57,53,0.18) 0%, transparent 60%)',
+                  background: 'radial-gradient(circle, rgba(229,57,31,0.18) 0%, transparent 60%)',
                   filter: 'blur(50px)', pointerEvents: 'none',
                 }}/>
                 {/* Top line highlight */}
                 <div style={{
                   position: 'absolute', top: 0, left: '10%', right: '10%', height: 1,
-                  background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.45), transparent)',
+                  background: 'linear-gradient(90deg, transparent, rgba(229,57,31,0.45), transparent)',
                 }}/>
 
                 <div style={{ position: 'relative', padding: '32px 32px 28px' }}>
@@ -200,12 +200,12 @@ export default function BillingPage() {
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 8,
                     padding: '4px 12px', borderRadius: 99, marginBottom: 18,
-                    background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.22)',
+                    background: 'rgba(63,155,30,0.08)', border: '1px solid rgba(63,155,30,0.22)',
                   }}>
                     <motion.span
-                      animate={{ boxShadow: ['0 0 0 0 rgba(16,185,129,0.7)', '0 0 0 5px rgba(16,185,129,0)', '0 0 0 0 rgba(16,185,129,0)'] }}
+                      animate={{ boxShadow: ['0 0 0 0 rgba(63,155,30,0.7)', '0 0 0 5px rgba(63,155,30,0)', '0 0 0 0 rgba(63,155,30,0)'] }}
                       transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                      style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }}
+                      style={{ width: 6, height: 6, borderRadius: '50%', background: '#3f9b1e' }}
                     />
                     <span style={{
                       fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 800,
@@ -283,17 +283,17 @@ export default function BillingPage() {
                   {/* CTA VERMELHO — destaque principal de acao */}
                   <motion.button
                     onClick={() => router.push(`/billing-mp?operators=${operators.length}&early=1`)}
-                    whileHover={{ scale: 1.008, boxShadow: '0 16px 48px rgba(229,57,53,0.5), inset 0 1px 0 rgba(255,255,255,0.18)' }}
+                    whileHover={{ scale: 1.008, boxShadow: '0 16px 48px rgba(229,57,31,0.5), inset 0 1px 0 rgba(255,255,255,0.18)' }}
                     whileTap={{ scale: 0.995 }}
                     style={{
                       width: '100%', padding: '17px 24px', borderRadius: 14,
                       border: 'none',
-                      background: 'linear-gradient(180deg, var(--loss) 0%, #c62828 100%)',
+                      background: 'linear-gradient(180deg, var(--loss) 0%, #b32c16 100%)',
                       color: '#fff', fontSize: 15, fontWeight: 800,
                       cursor: 'pointer', fontFamily: 'inherit',
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                       transition: 'all 0.22s ease',
-                      boxShadow: '0 8px 28px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.12)',
+                      boxShadow: '0 8px 28px rgba(229,57,31,0.4), inset 0 1px 0 rgba(255,255,255,0.12)',
                     }}
                   >
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
@@ -343,7 +343,7 @@ export default function BillingPage() {
                       margin: '0 0 6px', letterSpacing: '0.18em', textTransform: 'uppercase',
                     }}>Status</p>
                     <p style={{ display: 'inline-flex', alignItems: 'center', gap: 7, margin: 0 }}>
-                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px rgba(16,185,129,0.6)' }}/>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#3f9b1e', boxShadow: '0 0 10px rgba(63,155,30,0.6)' }}/>
                       <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>Ativa</span>
                     </p>
                   </div>
@@ -385,16 +385,16 @@ export default function BillingPage() {
             style={{
               position:'relative', overflow:'hidden', borderRadius:20, cursor:'pointer',
               background: opQty===0
-                ? 'linear-gradient(145deg, rgba(14,22,38,0.85), rgba(8,14,26,0.85))'
-                : 'linear-gradient(145deg, rgba(14,22,38,0.6), rgba(8,14,26,0.6))',
+                ? 'linear-gradient(145deg, rgba(23,23,28,0.85), rgba(16,16,20,0.85))'
+                : 'linear-gradient(145deg, rgba(23,23,28,0.6), rgba(16,16,20,0.6))',
               backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
-              border: `${opQty===0?'1.5px':'1px'} solid ${opQty===0?'rgba(148,163,184,0.25)':'rgba(255,255,255,0.06)'}`,
+              border: `${opQty===0?'1.5px':'1px'} solid ${opQty===0?'rgba(130,130,141,0.25)':'rgba(255,255,255,0.06)'}`,
               boxShadow: opQty===0
                 ? '0 14px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)'
                 : '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
               transition:'all 0.3s',
             }}>
-            {opQty===0 && <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(148,163,184,0.4), transparent)' }}/>}
+            {opQty===0 && <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(130,130,141,0.4), transparent)' }}/>}
             <div style={{padding:'26px 24px'}}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
                 <div>
@@ -402,7 +402,7 @@ export default function BillingPage() {
                   <h3 style={{fontSize:18,fontWeight:900,color:'var(--t1)',margin:0, letterSpacing:'-0.02em'}}>Admin Solo</h3>
                 </div>
                 {opQty===0 && (
-                  <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(145deg, var(--t3), #64748B)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 12px rgba(148,163,184,0.4)'}}>
+                  <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(145deg, var(--t3), #82828d)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 12px rgba(130,130,141,0.4)'}}>
                     <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
                 )}
@@ -415,8 +415,8 @@ export default function BillingPage() {
               <div style={{display:'flex',flexDirection:'column',gap:9}}>
                 {['Acesso completo ao painel','Gestao de metas e remessas','Faturamento e relatorios','Chaves PIX','Sem operadores'].map((t,i)=>(
                   <div key={i} style={{display:'flex',alignItems:'center',gap:8}}>
-                    <div style={{ width:16, height:16, borderRadius:4, background: i<4?'rgba(209,250,229,0.12)':'rgba(148,163,184,0.08)', border:`1px solid ${i<4?'rgba(209,250,229,0.25)':'rgba(148,163,184,0.18)'}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={i<4?'var(--profit)':'#64748B'} strokeWidth="3" strokeLinecap="round">
+                    <div style={{ width:16, height:16, borderRadius:4, background: i<4?'rgba(209,250,229,0.12)':'rgba(130,130,141,0.08)', border:`1px solid ${i<4?'rgba(209,250,229,0.25)':'rgba(130,130,141,0.18)'}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={i<4?'var(--profit)':'#82828d'} strokeWidth="3" strokeLinecap="round">
                         {i<4?<polyline points="20 6 9 17 4 12"/>:<line x1="5" y1="12" x2="19" y2="12"/>}
                       </svg>
                     </div>
@@ -434,8 +434,8 @@ export default function BillingPage() {
             style={{
               position:'relative', overflow:'hidden', borderRadius:20, cursor:'pointer',
               background: opQty>0
-                ? 'linear-gradient(145deg, rgba(255,255,255,0.12), rgba(14,22,38,0.85) 70%)'
-                : 'linear-gradient(145deg, rgba(255,255,255,0.06), rgba(14,22,38,0.6) 70%)',
+                ? 'linear-gradient(145deg, rgba(255,255,255,0.12), rgba(23,23,28,0.85) 70%)'
+                : 'linear-gradient(145deg, rgba(255,255,255,0.06), rgba(23,23,28,0.6) 70%)',
               backdropFilter:'blur(20px) saturate(160%)', WebkitBackdropFilter:'blur(20px) saturate(160%)',
               border:`${opQty>0?'1.5px':'1px'} solid ${opQty>0?'rgba(255,255,255,0.45)':'rgba(255,255,255,0.2)'}`,
               boxShadow: opQty>0
@@ -446,7 +446,7 @@ export default function BillingPage() {
             {/* Recomendado ribbon */}
             <div style={{
               position:'absolute', top:-1, right:-1, padding:'6px 14px', borderRadius:'0 20px 0 12px',
-              background:'linear-gradient(135deg, rgba(255,255,255,0.78), #1d4ed8)',
+              background:'linear-gradient(135deg, rgba(255,255,255,0.78), #e5391f)',
               fontSize:9, fontWeight:900, color:'var(--t1)', letterSpacing:'0.1em',
               boxShadow:'0 4px 14px rgba(255,255,255,0.4)',
               display:'flex', alignItems:'center', gap:5,
@@ -464,7 +464,7 @@ export default function BillingPage() {
                   <h3 style={{fontSize:18,fontWeight:900,color:'var(--t1)',margin:0, letterSpacing:'-0.02em'}}>Admin + Operadores</h3>
                 </div>
                 {opQty>0 && (
-                  <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(145deg, rgba(255,255,255,0.78), #1d4ed8)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 14px rgba(255,255,255,0.5)'}}>
+                  <div style={{width:24,height:24,borderRadius:'50%',background:'linear-gradient(145deg, rgba(255,255,255,0.78), #e5391f)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 14px rgba(255,255,255,0.5)'}}>
                     <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
                 )}
@@ -539,7 +539,7 @@ export default function BillingPage() {
                       padding:'14px 10px', borderRadius:12, textAlign:'center', cursor:'default',
                       background: isActive
                         ? 'linear-gradient(145deg, rgba(209,250,229,0.15), rgba(209,250,229,0.03))'
-                        : t.discount > 0 ? 'rgba(255,255,255,0.03)' : 'rgba(148,163,184,0.04)',
+                        : t.discount > 0 ? 'rgba(255,255,255,0.03)' : 'rgba(130,130,141,0.04)',
                       border:`${isActive?'1.5px':'1px'} solid ${isActive?'rgba(209,250,229,0.4)':'rgba(255,255,255,0.06)'}`,
                       boxShadow: isActive ? '0 6px 20px rgba(209,250,229,0.2), 0 0 24px rgba(209,250,229,0.1)' : 'none',
                       transition:'all 0.25s',

@@ -11,7 +11,7 @@ import { ModuloEsqueleto } from '../../components/ui/bento'
 
 const ease = [0.33, 1, 0.68, 1]
 const MINT = '#34d399'
-const RED = '#e53935'
+const RED = '#e5391f'
 
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Cliente'
 

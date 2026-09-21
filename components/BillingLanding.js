@@ -94,7 +94,7 @@ export default function BillingLanding() {
       {/* ═══ MINI NEXCONTROL MOBILE (realista) ═══ */}
       <section style={{ padding:'40px 0 60px', position:'relative' }}>
         <div style={{ position:'absolute', top:'20%', right:'15%', width:440, height:440, borderRadius:'50%', background:'radial-gradient(circle, rgba(209,250,229,0.08), transparent 55%)', filter:'blur(70px)', pointerEvents:'none' }}/>
-        <div style={{ position:'absolute', bottom:'10%', left:'10%', width:320, height:320, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.06), transparent 55%)', filter:'blur(56px)', pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', bottom:'10%', left:'10%', width:320, height:320, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,31,0.06), transparent 55%)', filter:'blur(56px)', pointerEvents:'none' }}/>
 
         <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1.1fr', gap:56, alignItems:'center', position:'relative' }}>
 
@@ -149,7 +149,7 @@ export default function BillingLanding() {
                 background:'linear-gradient(160deg, rgba(14,22,38,0.95) 0%, rgba(8,12,20,0.95) 50%, rgba(4,7,14,0.95) 100%)',
                 backdropFilter:'blur(30px) saturate(160%)', WebkitBackdropFilter:'blur(30px) saturate(160%)',
                 border:'1px solid var(--b1)',
-                boxShadow:`0 50px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(229,57,53,0.04), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 ${flash?'80':'40'}px rgba(209,250,229,${flash?'0.18':'0.05'})`,
+                boxShadow:`0 50px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(229,57,31,0.04), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 ${flash?'80':'40'}px rgba(209,250,229,${flash?'0.18':'0.05'})`,
                 position:'relative', transform:'rotateX(3deg)',
                 transition:'box-shadow 0.6s ease',
               }}>
@@ -173,7 +173,7 @@ export default function BillingLanding() {
                 {/* Header NexControl */}
                 <div style={{ padding:'12px 14px 8px', borderBottom:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-                    <div style={{ width:18, height:18, borderRadius:5, background:'linear-gradient(145deg, #e53935, #c62828)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 0 10px rgba(229,57,53,0.35)' }}>
+                    <div style={{ width:18, height:18, borderRadius:5, background:'linear-gradient(145deg, #e5391f, #b32c16)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 0 10px rgba(229,57,31,0.35)' }}>
                       <NexIcon size={9}/>
                     </div>
                     <div>
@@ -207,7 +207,7 @@ export default function BillingLanding() {
                         boxShadow:'0 8px 24px rgba(0,0,0,0.4), 0 0 20px rgba(209,250,229,0.1)',
                       }}>
                       <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:4 }}>
-                        <div style={{ width:16, height:16, borderRadius:4, background:'linear-gradient(145deg, #e53935, #c62828)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <div style={{ width:16, height:16, borderRadius:4, background:'linear-gradient(145deg, #e5391f, #b32c16)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                           <NexIcon size={8}/>
                         </div>
                         <span style={{ fontSize:8, fontWeight:800, color:'var(--t1)', letterSpacing:'-0.01em' }}>NexControl</span>
@@ -313,7 +313,7 @@ export default function BillingLanding() {
               <div style={{ position:'absolute', top:0, left:0, right:0, height:'40%', borderRadius:'36px 36px 0 0', background:'linear-gradient(180deg, var(--fill-1), transparent)', pointerEvents:'none' }}/>
 
               {/* External red glow glow bleed */}
-              <div style={{ position:'absolute', top:'40%', left:-30, width:60, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.18), transparent 65%)', filter:'blur(24px)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:'40%', left:-30, width:60, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,31,0.18), transparent 65%)', filter:'blur(24px)', pointerEvents:'none' }}/>
               <div style={{ position:'absolute', bottom:'30%', right:-30, width:60, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(209,250,229,0.14), transparent 65%)', filter:'blur(24px)', pointerEvents:'none' }}/>
             </motion.div>
           </motion.div>
@@ -349,13 +349,13 @@ export default function BillingLanding() {
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', borderRadius: 99,
-            background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.15)',
+            background: 'rgba(229,57,31,0.08)', border: '1px solid rgba(229,57,31,0.15)',
             marginBottom: 16,
           }}>
-            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round">
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2" strokeLinecap="round">
               <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
             </svg>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#e53935', letterSpacing: '0.06em' }}>EXCLUSIVO PRO</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#e5391f', letterSpacing: '0.06em' }}>EXCLUSIVO PRO</span>
           </div>
           <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.03em', marginBottom: 8 }}>
             +{SLOTS.length} slots premium liberados no PRO
@@ -373,7 +373,7 @@ export default function BillingLanding() {
             { v: '24/7', l: 'atualizado' },
           ].map((s, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
-              <p style={{ fontSize: 20, fontWeight: 800, color: '#e53935', margin: '0 0 2px', fontFamily: 'var(--mono, monospace)' }}>{s.v}</p>
+              <p style={{ fontSize: 20, fontWeight: 800, color: '#e5391f', margin: '0 0 2px', fontFamily: 'var(--mono, monospace)' }}>{s.v}</p>
               <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0, letterSpacing: '0.04em' }}>{s.l}</p>
             </div>
           ))}
@@ -389,7 +389,7 @@ export default function BillingLanding() {
             const blurVar = 7 + (slot.id % 4)
             return (
               <motion.div key={slot.id} {...fadeUp(0.1 + i * 0.06)} style={{
-                background: 'var(--fill-1)', border: '1px solid rgba(229,57,53,0.06)',
+                background: 'var(--fill-1)', border: '1px solid rgba(229,57,31,0.06)',
                 borderRadius: 14, overflow: 'hidden', position: 'relative',
               }}>
                 {/* Shimmer */}
@@ -452,8 +452,8 @@ export default function BillingLanding() {
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             padding: '14px 32px', borderRadius: 14,
             fontSize: 15, fontWeight: 700, textDecoration: 'none',
-            background: 'linear-gradient(135deg, #e53935, #c62828)', color: '#fff',
-            boxShadow: '0 6px 24px rgba(229,57,53,0.25)',
+            background: 'linear-gradient(135deg, #e5391f, #b32c16)', color: '#fff',
+            boxShadow: '0 6px 24px rgba(229,57,31,0.25)',
           }}>
             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
@@ -467,7 +467,7 @@ export default function BillingLanding() {
       <div style={{ textAlign:'center', padding:'20px 0' }}>
         <p style={{ fontSize:12, color:'var(--t4)' }}>3 dias gratis. Sem cartao. Cancele quando quiser.</p>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginTop:12 }}>
-          <div style={{ width:22, height:22, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <div style={{ width:22, height:22, borderRadius:6, background:'#e5391f', display:'flex', alignItems:'center', justifyContent:'center' }}>
             <NexIcon size={9}/>
           </div>
           <Logo showIcon={false} textSize={12} style={{ opacity:0.3 }}/>

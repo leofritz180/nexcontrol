@@ -161,7 +161,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
             <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: '0 0 6px', lineHeight: 1.5 }}>
               Não perca seus dados, metas e histórico da sua operação
             </p>
-            <p style={{ fontSize: 12, color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 12, color: '#82828d', margin: 0, lineHeight: 1.5 }}>
               Continue acompanhando lucro, operadores e resultados em tempo real
             </p>
           </div>
@@ -177,7 +177,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
                 ].map(({ l, v, c }) => (
                   <div key={l} style={{ background: 'var(--fill-1)', border: '1px solid var(--b1)', borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
                     <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: c, margin: '0 0 2px' }}>{v}</p>
-                    <p style={{ fontSize: 9, color: '#64748B', letterSpacing: '0.04em', fontWeight: 600, margin: 0 }}>{l}</p>
+                    <p style={{ fontSize: 9, color: '#82828d', letterSpacing: '0.04em', fontWeight: 600, margin: 0 }}>{l}</p>
                   </div>
                 ))}
               </div>
@@ -188,12 +188,12 @@ export function ConversionModal({ tenant, subscription, stats }) {
           <div style={{ padding: '18px 32px 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', padding: '14px 18px', borderRadius: 12, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
               <div>
-                <p style={{ fontSize: 11, color: '#64748B', margin: '0 0 2px', fontWeight: 600 }}>A partir de</p>
+                <p style={{ fontSize: 11, color: '#82828d', margin: '0 0 2px', fontWeight: 600 }}>A partir de</p>
                 <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>Menos que 1 operação perdida por dia</p>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: 'var(--profit)', letterSpacing: '-0.02em' }}>R$ 59,90</span>
-                <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4, fontWeight: 600 }}>/mês</span>
+                <span style={{ fontSize: 11, color: '#82828d', marginLeft: 4, fontWeight: 600 }}>/mês</span>
               </div>
             </div>
           </div>
@@ -226,7 +226,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
               <span aria-hidden className="nc-unlock-shimmer" />
             </motion.button>
 
-            <p style={{ textAlign: 'center', fontSize: 11, color: '#64748B', margin: '10px 0 0', fontWeight: 500 }}>
+            <p style={{ textAlign: 'center', fontSize: 11, color: '#82828d', margin: '10px 0 0', fontWeight: 500 }}>
               Ativação imediata · Sem perder dados
             </p>
 
@@ -236,11 +236,11 @@ export function ConversionModal({ tenant, subscription, stats }) {
                 style={{
                   display: 'block', width: '100%', marginTop: 14, padding: 8,
                   background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: 11, color: '#64748B', textAlign: 'center',
+                  fontSize: 11, color: '#82828d', textAlign: 'center',
                   transition: 'color 0.2s',
                 }}
                 onMouseEnter={e => e.currentTarget.style.color = 'var(--t3)'}
-                onMouseLeave={e => e.currentTarget.style.color = '#64748B'}
+                onMouseLeave={e => e.currentTarget.style.color = '#82828d'}
               >
                 Continuar no trial
               </button>

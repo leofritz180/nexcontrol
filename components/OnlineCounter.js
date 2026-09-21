@@ -58,7 +58,7 @@ export default function OnlineCounter({ userId, variant = 'inline' }) {
             style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--profit)', flexShrink: 0 }}
           />
           <div>
-            <p style={{ fontSize: 11, color: '#64748B', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Usuarios online agora</p>
+            <p style={{ fontSize: 11, color: '#82828d', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Usuarios online agora</p>
             <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>Ativos na plataforma neste momento</p>
           </div>
         </div>

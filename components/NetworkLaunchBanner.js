@@ -59,21 +59,21 @@ export default function NetworkLaunchBanner({ userEmail, isAdmin, subscription, 
             style={{
               position: 'relative', width: '100%', maxWidth: 440, borderRadius: 22, overflow: 'hidden',
               background: 'rgba(195,19,54,0.10)',
-              border: '1px solid rgba(229,57,53,0.25)',
-              boxShadow: '0 30px 90px rgba(0,0,0,0.8), 0 0 70px rgba(229,57,53,0.14)',
+              border: '1px solid rgba(229,57,31,0.25)',
+              boxShadow: '0 30px 90px rgba(0,0,0,0.8), 0 0 70px rgba(229,57,31,0.14)',
               padding: '34px 28px 28px', textAlign: 'center',
             }}
           >
             {/* glow topo */}
-            <div style={{ position: 'absolute', top: 0, left: '18%', right: '18%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.6), transparent)' }} />
+            <div style={{ position: 'absolute', top: 0, left: '18%', right: '18%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,31,0.6), transparent)' }} />
             {/* fechar */}
-            <button type="button" onClick={dismiss} aria-label="Fechar" style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: 9, background: 'var(--fill-2)', border: '1px solid var(--b2)', color: 'var(--t3, #94A3B8)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+            <button type="button" onClick={dismiss} aria-label="Fechar" style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: 9, background: 'var(--fill-2)', border: '1px solid var(--b2)', color: 'var(--t3, #9b9ba6)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
               <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
             </button>
 
             <div style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.28em', color: 'var(--loss)', textTransform: 'uppercase', marginBottom: 18 }}>Novidade</div>
 
-            <div style={{ width: 64, height: 64, borderRadius: 18, margin: '0 auto 16px', background: 'linear-gradient(135deg, rgba(229,57,53,0.25), rgba(229,57,53,0.05))', border: '1px solid rgba(229,57,53,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 34px rgba(229,57,53,0.25)' }}>
+            <div style={{ width: 64, height: 64, borderRadius: 18, margin: '0 auto 16px', background: 'linear-gradient(135deg, rgba(229,57,31,0.25), rgba(229,57,31,0.05))', border: '1px solid rgba(229,57,31,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 34px rgba(229,57,31,0.25)' }}>
               <svg width={30} height={30} viewBox="0 0 24 24" fill="none" stroke="#ff5b56" strokeWidth={2} strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
             </div>
 
@@ -90,8 +90,8 @@ export default function NetworkLaunchBanner({ userEmail, isAdmin, subscription, 
 
             <button type="button" onClick={go} style={{
               width: '100%', padding: '15px', borderRadius: 13, border: 'none', cursor: 'pointer',
-              background: 'linear-gradient(180deg, #e53935, #c62828)', color: '#fff', fontSize: 14.5, fontWeight: 800,
-              boxShadow: '0 8px 26px rgba(229,57,53,0.45), inset 0 1px 0 rgba(255,255,255,0.15)',
+              background: 'linear-gradient(180deg, #e5391f, #b32c16)', color: '#fff', fontSize: 14.5, fontWeight: 800,
+              boxShadow: '0 8px 26px rgba(229,57,31,0.45), inset 0 1px 0 rgba(255,255,255,0.15)',
             }}>
               {canEnter ? 'Entrar na comunidade →' : 'Assinar PRO e entrar →'}
             </button>

@@ -115,10 +115,10 @@ function Filters({ operators, redes, filters, setFilters }) {
                 style={{
                   padding:'7px 12px', borderRadius:8, fontSize:11, fontWeight:700, fontFamily:'inherit',
                   letterSpacing:'0.04em', cursor:'pointer',
-                  background: active ? 'rgba(229,57,53,0.14)' : 'rgba(255,255,255,0.03)',
+                  background: active ? 'rgba(229,57,31,0.14)' : 'rgba(255,255,255,0.03)',
                   color: active ? 'var(--loss)' : 'var(--t2)',
-                  border: `1px solid ${active ? 'rgba(229,57,53,0.45)' : 'rgba(255,255,255,0.08)'}`,
-                  boxShadow: active ? '0 0 14px rgba(229,57,53,0.2)' : 'none',
+                  border: `1px solid ${active ? 'rgba(229,57,31,0.45)' : 'rgba(255,255,255,0.08)'}`,
+                  boxShadow: active ? '0 0 14px rgba(229,57,31,0.2)' : 'none',
                   transition: 'all 0.18s',
                 }}
                 onMouseEnter={e => { if(!active) { e.currentTarget.style.background='rgba(255,255,255,0.06)'; e.currentTarget.style.color='var(--t1)' } }}
@@ -467,11 +467,11 @@ export default function FaturamentoPage() {
         {demoMode && (
           <div className="demo-banner" style={{
             marginBottom:20, padding:'14px 20px', borderRadius:14,
-            background:'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))',
-            border:'1px solid rgba(229,57,53,0.15)',
+            background:'linear-gradient(135deg, rgba(229,57,31,0.08), rgba(229,57,31,0.03))',
+            border:'1px solid rgba(229,57,31,0.15)',
             display:'flex', alignItems:'center', gap:12,
           }}>
-            <span className="demo-banner-dot" style={{width:8,height:8,borderRadius:'50%',background:'#e53935',flexShrink:0}}/>
+            <span className="demo-banner-dot" style={{width:8,height:8,borderRadius:'50%',background:'#e5391f',flexShrink:0}}/>
             <p style={{fontSize:13,color:'var(--t2)',fontWeight:500,margin:0,lineHeight:1.5}}>{DEMO_BANNER_TEXT}</p>
           </div>
         )}

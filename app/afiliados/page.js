@@ -112,7 +112,7 @@ export default function AfiliadosPage() {
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
       ) : (
       <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="spinner" style={{ width: 22, height: 22, borderTopColor: '#e53935' }} />
+        <div className="spinner" style={{ width: 22, height: 22, borderTopColor: '#e5391f' }} />
       </main>
       )}
     </AppLayout>
@@ -247,10 +247,10 @@ function SectionEyebrow({ children }) {
   return (
     <div style={{
       fontFamily: 'var(--mono, monospace)', fontSize: 10, fontWeight: 700,
-      color: '#e53935', letterSpacing: '0.28em', textTransform: 'uppercase',
+      color: '#e5391f', letterSpacing: '0.28em', textTransform: 'uppercase',
       marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10,
     }}>
-      <span style={{ width: 20, height: 1, background: '#e53935' }} />
+      <span style={{ width: 20, height: 1, background: '#e5391f' }} />
       {children}
     </div>
   )
@@ -331,7 +331,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
           position: 'absolute', top: '-20%', left: '-10%',
           width: '60vw', height: '60vw', maxWidth: 900, maxHeight: 900,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(229,57,53,0.22), transparent 70%)',
+          background: 'radial-gradient(circle, rgba(229,57,31,0.22), transparent 70%)',
           filter: 'blur(80px)',
           animation: 'mesh-pulse 18s ease-in-out infinite',
         }} />
@@ -339,7 +339,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
           position: 'absolute', top: '20%', right: '-15%',
           width: '50vw', height: '50vw', maxWidth: 800, maxHeight: 800,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(229,57,53,0.18), transparent 70%)',
+          background: 'radial-gradient(circle, rgba(229,57,31,0.18), transparent 70%)',
           filter: 'blur(80px)',
           animation: 'mesh-pulse 22s ease-in-out infinite reverse',
         }} />
@@ -374,7 +374,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
             marginBottom: 28, backdropFilter: 'blur(8px)',
           }}>
           <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2, repeat: Infinity }}
-            style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
+            style={{ width: 6, height: 6, borderRadius: '50%', background: '#3f9b1e' }} />
           <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10.5, color: 'var(--t1)', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
             Programa de Afiliados · {Math.round(rate * 100)}% de comissão
           </span>
@@ -413,13 +413,13 @@ function HeroFullBleed({ rate, totals, link, code }) {
         {/* CTAs duplos */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4, ease }}
           style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 56 }}>
-          <motion.button onClick={shareLink} whileHover={{ scale: 1.03, boxShadow: '0 16px 48px rgba(229,57,53,0.5)' }} whileTap={{ scale: 0.97 }}
+          <motion.button onClick={shareLink} whileHover={{ scale: 1.03, boxShadow: '0 16px 48px rgba(229,57,31,0.5)' }} whileTap={{ scale: 0.97 }}
             style={{
               padding: '16px 28px', borderRadius: 12, border: 'none', cursor: 'pointer',
-              background: 'linear-gradient(180deg, var(--loss), #c62828)',
+              background: 'linear-gradient(180deg, var(--loss), #b32c16)',
               color: '#fff', fontSize: 14.5, fontWeight: 700, fontFamily: 'inherit',
               display: 'inline-flex', alignItems: 'center', gap: 10,
-              boxShadow: '0 8px 32px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
+              boxShadow: '0 8px 32px rgba(229,57,31,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
             }}>
             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             Compartilhar meu link
@@ -432,7 +432,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
               color: 'var(--t1)', fontSize: 14.5, fontWeight: 600, fontFamily: 'inherit',
               display: 'inline-flex', alignItems: 'center', gap: 10,
             }}>
-            {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style={{ color: 'var(--profit)' }}>Copiado</span></>)
+            {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#3f9b1e" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style={{ color: 'var(--profit)' }}>Copiado</span></>)
               : (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar link</>)}
           </motion.button>
         </motion.div>
@@ -526,7 +526,7 @@ function ActivityMarquee({ referrals }) {
       }}>
         {doubled.map((item, i) => (
           <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px rgba(16,185,129,0.6)' }} />
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#3f9b1e', boxShadow: '0 0 8px rgba(63,155,30,0.6)' }} />
             <span style={{ fontSize: 12, color: 'var(--t2)' }}>
               <strong style={{ color: 'var(--t1)', fontWeight: 700 }}>{item.name}</strong> {item.action} <span style={{ color: 'var(--t3)' }}>· {item.when}</span>
             </span>
@@ -642,13 +642,13 @@ function HowItWorks({ rate }) {
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 10,
                     padding: '12px 16px', borderRadius: 11,
-                    background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.24)',
+                    background: 'rgba(63,155,30,0.08)', border: '1px solid rgba(63,155,30,0.24)',
                     color: 'var(--t1)', textDecoration: 'none', fontSize: 13, fontWeight: 600,
                     transition: 'all 0.18s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.14)' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.08)' }}>
-                  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="1.8" strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(63,155,30,0.14)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(63,155,30,0.08)' }}>
+                  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#3f9b1e" strokeWidth="1.8" strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                   <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.15 }}>
                     <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, color: 'var(--profit)', letterSpacing: '0.1em' }}>WHATSAPP</span>
                     <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, color: 'var(--t1)' }}>(32) 99834-8889</span>
@@ -737,9 +737,9 @@ function WithdrawalCode({ code }) {
                 <button onClick={copyCode} type="button" disabled={!revealed}
                   style={{
                     padding: '10px 12px', borderRadius: 10, cursor: revealed ? 'pointer' : 'not-allowed',
-                    background: copied ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.04)',
-                    border: '1px solid ' + (copied ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'),
-                    color: copied ? '#10B981' : revealed ? '#fff' : 'rgba(255,255,255,0.3)',
+                    background: copied ? 'rgba(63,155,30,0.15)' : 'rgba(255,255,255,0.04)',
+                    border: '1px solid ' + (copied ? 'rgba(63,155,30,0.3)' : 'rgba(255,255,255,0.1)'),
+                    color: copied ? '#3f9b1e' : revealed ? '#fff' : 'rgba(255,255,255,0.3)',
                     fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
                     display: 'inline-flex', alignItems: 'center', gap: 6, opacity: revealed ? 1 : 0.5,
                   }}>
@@ -816,7 +816,7 @@ function CalculatorMega({ rate }) {
           </div>
 
           <input type="range" min="1" max="100" value={n} onChange={e => setN(Number(e.target.value))}
-            style={{ width: '100%', accentColor: '#e53935', cursor: 'pointer' }} />
+            style={{ width: '100%', accentColor: '#e5391f', cursor: 'pointer' }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--t4)', marginTop: 8, fontFamily: 'var(--mono, monospace)' }}>
             <span>1</span><span>25</span><span>50</span><span>75</span><span>100</span>
           </div>
@@ -830,7 +830,7 @@ function CalculatorMega({ rate }) {
 
         {/* Resultados */}
         <div style={{ position: 'relative', padding: '40px 36px', background: 'var(--surface)' }}>
-          <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.15), transparent 70%)', filter: 'blur(40px)' }} />
+          <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,31,0.15), transparent 70%)', filter: 'blur(40px)' }} />
 
           <div style={{ position: 'relative' }}>
             <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>Sua comissão</p>
@@ -955,8 +955,8 @@ function ShareKitImersive({ link, userName }) {
                 <button key={k} onClick={() => setTab(k)} type="button"
                   style={{
                     flex: '1 0 auto', padding: '10px 14px', borderRadius: 8, border: 'none', cursor: 'pointer',
-                    background: active ? 'rgba(229,57,53,0.14)' : 'transparent',
-                    color: active ? '#e53935' : 'rgba(255,255,255,0.55)',
+                    background: active ? 'rgba(229,57,31,0.14)' : 'transparent',
+                    color: active ? '#e5391f' : 'rgba(255,255,255,0.55)',
                     fontSize: 12, fontWeight: 700, fontFamily: 'inherit',
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 7, whiteSpace: 'nowrap',
                     transition: 'all 0.15s',
@@ -974,11 +974,11 @@ function ShareKitImersive({ link, userName }) {
           <motion.button onClick={copyTpl} whileTap={{ scale: 0.97 }}
             style={{
               width: '100%', marginTop: 14, padding: '14px 20px', borderRadius: 11, border: 'none', cursor: 'pointer',
-              background: copied ? 'rgba(16,185,129,0.18)' : 'linear-gradient(180deg, var(--loss), #c62828)',
-              color: copied ? '#10B981' : '#fff',
+              background: copied ? 'rgba(63,155,30,0.18)' : 'linear-gradient(180deg, var(--loss), #b32c16)',
+              color: copied ? '#3f9b1e' : '#fff',
               fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              boxShadow: copied ? 'none' : '0 4px 16px rgba(229,57,53,0.35)',
+              boxShadow: copied ? 'none' : '0 4px 16px rgba(229,57,31,0.35)',
             }}>
             {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Copiado pra área de transferência</>)
               : (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar esta mensagem</>)}
@@ -1003,7 +1003,7 @@ function PhoneMockup({ text, channel }) {
       background: 'var(--surface)',
       border: '1px solid var(--b1)',
       padding: 8,
-      boxShadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(229,57,53,0.08)',
+      boxShadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(229,57,31,0.08)',
       margin: '0 auto',
     }}>
       {/* Notch */}
@@ -1020,7 +1020,7 @@ function PhoneMockup({ text, channel }) {
         {/* Header phone */}
         <div style={{ padding: '42px 16px 12px', borderBottom: '1px solid var(--b1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(145deg, #e53935, #c62828)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(145deg, #e5391f, #b32c16)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--t1)' }}>V</span>
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -1092,15 +1092,15 @@ function PixSection({ data, userEmail, onRefresh }) {
         <div style={{
           padding: 32, borderRadius: 18,
           background: 'var(--surface)',
-          border: '1px solid ' + (hasPix ? 'rgba(16,185,129,0.22)' : 'rgba(229,57,53,0.25)'),
+          border: '1px solid ' + (hasPix ? 'rgba(63,155,30,0.22)' : 'rgba(229,57,31,0.25)'),
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
             <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: 0 }}>Chave atual</p>
             <span style={{
               fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 800, padding: '5px 10px', borderRadius: 6,
-              background: hasPix ? 'rgba(16,185,129,0.12)' : 'rgba(229,57,53,0.12)',
-              color: hasPix ? '#10B981' : '#e53935',
-              border: '1px solid ' + (hasPix ? 'rgba(16,185,129,0.3)' : 'rgba(229,57,53,0.3)'),
+              background: hasPix ? 'rgba(63,155,30,0.12)' : 'rgba(229,57,31,0.12)',
+              color: hasPix ? '#3f9b1e' : '#e5391f',
+              border: '1px solid ' + (hasPix ? 'rgba(63,155,30,0.3)' : 'rgba(229,57,31,0.3)'),
               letterSpacing: '0.12em',
             }}>{hasPix ? '● CADASTRADA' : '⚠ PENDENTE'}</span>
           </div>
@@ -1122,10 +1122,10 @@ function PixSection({ data, userEmail, onRefresh }) {
             style={{
               width: '100%', padding: '14px 18px', borderRadius: 11, border: 'none',
               cursor: saving || !pixKey.trim() ? 'not-allowed' : 'pointer',
-              background: savedFlash ? 'rgba(16,185,129,0.18)' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(180deg, var(--loss), #c62828)',
-              color: savedFlash ? '#10B981' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.35)' : '#fff',
+              background: savedFlash ? 'rgba(63,155,30,0.18)' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(180deg, var(--loss), #b32c16)',
+              color: savedFlash ? '#3f9b1e' : (saving || !pixKey.trim()) ? 'rgba(255,255,255,0.35)' : '#fff',
               fontSize: 13, fontWeight: 700, fontFamily: 'inherit',
-              boxShadow: (savedFlash || saving || !pixKey.trim()) ? 'none' : '0 4px 16px rgba(229,57,53,0.3)',
+              boxShadow: (savedFlash || saving || !pixKey.trim()) ? 'none' : '0 4px 16px rgba(229,57,31,0.3)',
             }}>
             {savedFlash ? '✓ Chave salva' : saving ? 'Salvando...' : 'Salvar chave PIX'}
           </button>
@@ -1191,7 +1191,7 @@ function ReferralsAndTop({ referrals }) {
               initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
               transition={{ duration: 0.3, ease }}
               style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '18px 24px', borderBottom: i < referrals.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-              <div style={{ width: 42, height: 42, borderRadius: 11, background: 'linear-gradient(145deg, rgba(229,57,53,0.2), rgba(229,57,53,0.04))', border: '1px solid rgba(229,57,53,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 42, height: 42, borderRadius: 11, background: 'linear-gradient(145deg, rgba(229,57,31,0.2), rgba(229,57,31,0.04))', border: '1px solid rgba(229,57,31,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)' }}>{(r.tenant_name || '?')[0].toUpperCase()}</span>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -1312,14 +1312,14 @@ function FinalCTA({ link, rate }) {
         position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)',
         width: '70vw', height: '70vw', maxWidth: 900, maxHeight: 900,
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(229,57,53,0.15), transparent 70%)',
+        background: 'radial-gradient(circle, rgba(229,57,31,0.15), transparent 70%)',
         filter: 'blur(80px)', pointerEvents: 'none',
       }} />
       <motion.div
         initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
         transition={{ duration: 0.7, ease }}
         style={{ position: 'relative', maxWidth: 800, margin: '0 auto' }}>
-        <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10.5, color: '#e53935', letterSpacing: '0.28em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 24px' }}>
+        <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10.5, color: '#e5391f', letterSpacing: '0.28em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 24px' }}>
           Pronto pra começar?
         </p>
         <h2 style={{
@@ -1332,13 +1332,13 @@ function FinalCTA({ link, rate }) {
         <p style={{ fontSize: 16, color: 'var(--t2)', margin: '0 0 36px', lineHeight: 1.55 }}>
           Pega seu link, manda no grupo, espera o pagamento entrar.
         </p>
-        <motion.button onClick={copyLink} whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(229,57,53,0.6)' }} whileTap={{ scale: 0.97 }}
+        <motion.button onClick={copyLink} whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(229,57,31,0.6)' }} whileTap={{ scale: 0.97 }}
           style={{
             padding: '18px 36px', borderRadius: 14, border: 'none', cursor: 'pointer',
-            background: 'linear-gradient(180deg, var(--loss), #c62828)',
+            background: 'linear-gradient(180deg, var(--loss), #b32c16)',
             color: '#fff', fontSize: 15, fontWeight: 800, fontFamily: 'inherit',
             display: 'inline-flex', alignItems: 'center', gap: 12,
-            boxShadow: '0 12px 40px rgba(229,57,53,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',
+            boxShadow: '0 12px 40px rgba(229,57,31,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',
           }}>
           {copied ? (<><svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Link copiado · agora cola onde quiser</>)
             : (<><svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar meu link agora</>)}

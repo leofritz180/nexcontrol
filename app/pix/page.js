@@ -240,7 +240,7 @@ export default function PixPage() {
             { l: 'Telefone', v: stats.telefone, c: 'var(--profit)', rgb:'34,197,94' },
             { l: 'CPF', v: stats.cpf, c: 'rgba(255,255,255,0.78)', rgb:'245,158,11' },
             { l: 'Email', v: stats.email, c: 'rgba(255,255,255,0.78)', rgb:'59,130,246' },
-            { l: 'EVP', v: stats.evp, c: '#e53935', rgb:'229,57,53' },
+            { l: 'EVP', v: stats.evp, c: '#e5391f', rgb:'229,57,53' },
           ].map(({ l, v, c, rgb }, i) => (
             <motion.div key={l}
               initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}

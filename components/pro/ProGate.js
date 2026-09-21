@@ -17,8 +17,8 @@ export function ProLockedCard({ title, description, icon, children }) {
         style={{
           cursor:'pointer', borderRadius:16, overflow:'hidden',
           background:'linear-gradient(145deg, var(--surface), var(--surface))',
-          border:`1px solid ${hovered?'rgba(229,57,53,0.25)':'rgba(255,255,255,0.05)'}`,
-          boxShadow: hovered?'0 12px 36px rgba(229,57,53,0.08), 0 0 0 1px rgba(229,57,53,0.05)':'0 4px 20px rgba(0,0,0,0.3)',
+          border:`1px solid ${hovered?'rgba(229,57,31,0.25)':'rgba(255,255,255,0.05)'}`,
+          boxShadow: hovered?'0 12px 36px rgba(229,57,31,0.08), 0 0 0 1px rgba(229,57,31,0.05)':'0 4px 20px rgba(0,0,0,0.3)',
           transition:'border-color 0.3s, box-shadow 0.3s',
         }}
       >
@@ -28,8 +28,8 @@ export function ProLockedCard({ title, description, icon, children }) {
             {icon && (
               <div style={{
                 width:34, height:34, borderRadius:10,
-                background: hovered?'rgba(229,57,53,0.1)':'rgba(209,250,229,0.08)',
-                border:`1px solid ${hovered?'rgba(229,57,53,0.2)':'rgba(209,250,229,0.15)'}`,
+                background: hovered?'rgba(229,57,31,0.1)':'rgba(209,250,229,0.08)',
+                border:`1px solid ${hovered?'rgba(229,57,31,0.2)':'rgba(209,250,229,0.15)'}`,
                 display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0,
                 transition:'all 0.3s',
               }}>
@@ -80,13 +80,13 @@ export function ProLockedCard({ title, description, icon, children }) {
             display:'flex', alignItems:'center', justifyContent:'center',
           }}>
             <motion.div
-              animate={{ boxShadow:['0 0 15px rgba(229,57,53,0.15)','0 0 25px rgba(229,57,53,0.3)','0 0 15px rgba(229,57,53,0.15)'] }}
+              animate={{ boxShadow:['0 0 15px rgba(229,57,31,0.15)','0 0 25px rgba(229,57,31,0.3)','0 0 15px rgba(229,57,31,0.15)'] }}
               transition={{ duration:2.5, repeat:Infinity }}
               style={{
                 display:'flex', alignItems:'center', gap:7,
                 padding:'10px 24px', borderRadius:99,
-                background: hovered?'rgba(229,57,53,0.2)':'rgba(229,57,53,0.12)',
-                border:'1px solid rgba(229,57,53,0.3)',
+                background: hovered?'rgba(229,57,31,0.2)':'rgba(229,57,31,0.12)',
+                border:'1px solid rgba(229,57,31,0.3)',
                 color:'#ff4444', fontSize:12, fontWeight:700,
                 transition:'background 0.2s',
               }}
@@ -129,15 +129,15 @@ export function ProUpgradeModal({ onClose, feature }) {
         style={{
           width:'100%', maxWidth:420, padding:'40px 36px', borderRadius:20,
           background:'linear-gradient(145deg, var(--surface), var(--surface))',
-          border:'1px solid rgba(229,57,53,0.15)',
-          boxShadow:'0 30px 80px rgba(0,0,0,0.6), 0 0 40px rgba(229,57,53,0.06)',
+          border:'1px solid rgba(229,57,31,0.15)',
+          boxShadow:'0 30px 80px rgba(0,0,0,0.6), 0 0 40px rgba(229,57,31,0.06)',
           textAlign:'center',
         }}>
         <motion.div
-          animate={{ boxShadow:['0 0 20px rgba(229,57,53,0.2)','0 0 40px rgba(229,57,53,0.4)','0 0 20px rgba(229,57,53,0.2)'] }}
+          animate={{ boxShadow:['0 0 20px rgba(229,57,31,0.2)','0 0 40px rgba(229,57,31,0.4)','0 0 20px rgba(229,57,31,0.2)'] }}
           transition={{ duration:3, repeat:Infinity }}
           style={{
-            width:56, height:56, borderRadius:16, background:'#e53935',
+            width:56, height:56, borderRadius:16, background:'#e5391f',
             display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 24px',
           }}>
           <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round">
@@ -159,8 +159,8 @@ export function ProUpgradeModal({ onClose, feature }) {
             style={{
               display:'flex', alignItems:'center', justifyContent:'center', gap:8,
               padding:'14px 24px', borderRadius:12, fontSize:15, fontWeight:700,
-              background:'#e53935', color:'white', textDecoration:'none',
-              boxShadow:'0 4px 20px rgba(229,57,53,0.3)',
+              background:'#e5391f', color:'white', textDecoration:'none',
+              boxShadow:'0 4px 20px rgba(229,57,31,0.3)',
             }}>
             Ativar PRO agora
           </Link>
@@ -185,8 +185,8 @@ export function ProBadge() {
   return (
     <span style={{
       fontSize:8, fontWeight:700, padding:'2px 7px', borderRadius:4,
-      background:'rgba(229,57,53,0.12)', color:'#ff4444',
-      border:'1px solid rgba(229,57,53,0.2)', letterSpacing:'0.06em',
+      background:'rgba(229,57,31,0.12)', color:'#ff4444',
+      border:'1px solid rgba(229,57,31,0.2)', letterSpacing:'0.06em',
       marginLeft:6, verticalAlign:'middle',
     }}>
       PRO

@@ -78,13 +78,13 @@ function SlotCard({ slot, index, isPro }) {
           ? 'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01))'
           : 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
         border: `1px solid ${hovered
-          ? locked ? 'rgba(229,57,53,0.18)' : 'rgba(255,255,255,0.1)'
-          : locked ? 'rgba(229,57,53,0.06)' : 'rgba(255,255,255,0.05)'}`,
+          ? locked ? 'rgba(229,57,31,0.18)' : 'rgba(255,255,255,0.1)'
+          : locked ? 'rgba(229,57,31,0.06)' : 'rgba(255,255,255,0.05)'}`,
         borderRadius: 18,
         overflow: 'hidden',
         transform: hovered ? (locked ? 'scale(1.008)' : 'translateY(-3px) scale(1.01)') : 'none',
         boxShadow: hovered
-          ? locked ? '0 0 25px rgba(229,57,53,0.08), inset 0 0 20px rgba(229,57,53,0.02)' : '0 16px 50px rgba(0,0,0,0.4)'
+          ? locked ? '0 0 25px rgba(229,57,31,0.08), inset 0 0 20px rgba(229,57,31,0.02)' : '0 16px 50px rgba(0,0,0,0.4)'
           : 'none',
         transition: 'all 0.3s ease',
         display: 'flex', flexDirection: 'column',
@@ -102,7 +102,7 @@ function SlotCard({ slot, index, isPro }) {
       {/* Image area */}
       <div style={{
         position: 'relative', aspectRatio: '16/10',
-        background: `linear-gradient(135deg, ${isAlta ? 'rgba(229,57,53,0.08)' : 'rgba(255,255,255,0.08)'}, rgba(255,255,255,0.02))`,
+        background: `linear-gradient(135deg, ${isAlta ? 'rgba(229,57,31,0.08)' : 'rgba(255,255,255,0.08)'}, rgba(255,255,255,0.02))`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
       }}>
@@ -122,7 +122,7 @@ function SlotCard({ slot, index, isPro }) {
         ) : (
           <div style={{
             position: 'absolute', inset: 0,
-            background: `linear-gradient(145deg, #151c2c, ${isAlta ? 'rgba(229,57,53,0.12)' : 'rgba(255,255,255,0.12)'})`,
+            background: `linear-gradient(145deg, #151c2c, ${isAlta ? 'rgba(229,57,31,0.12)' : 'rgba(255,255,255,0.12)'})`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             {!locked && <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center', padding: '0 12px' }}>{slot.name}</p>}
@@ -206,11 +206,11 @@ function SlotCard({ slot, index, isPro }) {
           <Link href="/billing" onClick={e => e.stopPropagation()} style={{
             width: '100%', padding: '10px 14px', borderRadius: 10,
             fontSize: 11, fontWeight: 700, textDecoration: 'none',
-            background: 'linear-gradient(135deg, rgba(229,57,53,0.12), rgba(229,57,53,0.06))',
-            color: '#e53935',
-            border: '1px solid rgba(229,57,53,0.18)',
+            background: 'linear-gradient(135deg, rgba(229,57,31,0.12), rgba(229,57,31,0.06))',
+            color: '#e5391f',
+            border: '1px solid rgba(229,57,31,0.18)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            boxShadow: '0 0 15px rgba(229,57,53,0.04)',
+            boxShadow: '0 0 15px rgba(229,57,31,0.04)',
             transition: 'all 0.2s',
           }}>
             <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -226,9 +226,9 @@ function SlotCard({ slot, index, isPro }) {
             style={{
               width: '100%', padding: '10px 14px', borderRadius: 10,
               fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
-              background: copied ? 'rgba(209,250,229,0.12)' : 'rgba(229,57,53,0.08)',
-              color: copied ? 'var(--profit)' : '#e53935',
-              border: `1px solid ${copied ? 'rgba(209,250,229,0.2)' : 'rgba(229,57,53,0.15)'}`,
+              background: copied ? 'rgba(209,250,229,0.12)' : 'rgba(229,57,31,0.08)',
+              color: copied ? 'var(--profit)' : '#e5391f',
+              border: `1px solid ${copied ? 'rgba(209,250,229,0.2)' : 'rgba(229,57,31,0.15)'}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               transition: 'all 0.2s',
             }}
@@ -410,9 +410,9 @@ export default function SlotsPage() {
                       padding: '8px 16px', borderRadius: 10,
                       fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
                       flexShrink: 0,
-                      background: active ? 'rgba(229,57,53,0.12)' : 'rgba(255,255,255,0.03)',
-                      color: active ? '#e53935' : 'rgba(255,255,255,0.4)',
-                      border: `1px solid ${active ? 'rgba(229,57,53,0.2)' : 'rgba(255,255,255,0.05)'}`,
+                      background: active ? 'rgba(229,57,31,0.12)' : 'rgba(255,255,255,0.03)',
+                      color: active ? '#e5391f' : 'rgba(255,255,255,0.4)',
+                      border: `1px solid ${active ? 'rgba(229,57,31,0.2)' : 'rgba(255,255,255,0.05)'}`,
                       transition: 'all 0.2s',
                       display: 'flex', alignItems: 'center', gap: 6,
                     }}
@@ -420,7 +420,7 @@ export default function SlotsPage() {
                     {p.label}
                     <span style={{
                       fontSize: 10, fontWeight: 700,
-                      color: active ? 'rgba(229,57,53,0.6)' : 'rgba(255,255,255,0.2)',
+                      color: active ? 'rgba(229,57,31,0.6)' : 'rgba(255,255,255,0.2)',
                       fontFamily: 'var(--mono, monospace)',
                     }}>{counts[p.id] || 0}</span>
                   </button>

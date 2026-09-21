@@ -88,8 +88,8 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
                 position: 'relative', overflow: 'hidden',
                 maxWidth: 460, width: '100%',
                 borderRadius: 20, padding: 1,
-                background: 'linear-gradient(135deg, rgba(229,57,53,0.6), rgba(255,140,140,0.4), rgba(229,57,53,0.6))',
-                boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 60px rgba(229,57,53,0.3)',
+                background: 'linear-gradient(135deg, rgba(229,57,31,0.6), rgba(255,140,140,0.4), rgba(229,57,31,0.6))',
+                boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 60px rgba(229,57,31,0.3)',
               }}
             >
               {/* Border gradient animada */}
@@ -99,7 +99,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
                 transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
                 style={{
                   position: 'absolute', inset: 0, borderRadius: 20, padding: 1,
-                  background: 'linear-gradient(110deg, rgba(229,57,53,0.7) 0%, rgba(255,140,140,0.5) 50%, rgba(229,57,53,0.7) 100%)',
+                  background: 'linear-gradient(110deg, rgba(229,57,31,0.7) 0%, rgba(255,140,140,0.5) 50%, rgba(229,57,31,0.7) 100%)',
                   backgroundSize: '200% 100%',
                   mask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
                   WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
@@ -121,7 +121,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
                   style={{
                     position: 'absolute', top: -40, right: -40, width: 200, height: 200,
                     borderRadius: '50%',
-                    background: 'radial-gradient(circle, rgba(229,57,53,0.22) 0%, transparent 60%)',
+                    background: 'radial-gradient(circle, rgba(229,57,31,0.22) 0%, transparent 60%)',
                     filter: 'blur(30px)',
                   }}
                 />
@@ -176,8 +176,8 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
                 <div style={{
                   position: 'relative',
                   padding: '16px 18px', borderRadius: 12,
-                  background: 'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(0,0,0,0.4))',
-                  border: '1px solid rgba(229,57,53,0.22)',
+                  background: 'linear-gradient(135deg, rgba(229,57,31,0.08), rgba(0,0,0,0.4))',
+                  border: '1px solid rgba(229,57,31,0.22)',
                   marginBottom: 18,
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
                 }}>
@@ -202,7 +202,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
                 {/* CTA */}
                 <motion.button
                   type="button" onClick={() => setShowPix(true)}
-                  whileHover={{ scale: 1.02, boxShadow: '0 14px 36px rgba(229,57,53,0.55), 0 0 50px rgba(229,57,53,0.28)' }}
+                  whileHover={{ scale: 1.02, boxShadow: '0 14px 36px rgba(229,57,31,0.55), 0 0 50px rgba(229,57,31,0.28)' }}
                   whileTap={{ scale: 0.98 }}
                   style={{
                     position: 'relative', overflow: 'hidden',
@@ -211,10 +211,10 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
                     fontSize: 14, fontWeight: 800, fontFamily: 'inherit',
                     letterSpacing: '0.06em',
                     color: '#fff',
-                    background: 'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
+                    background: 'linear-gradient(135deg, #e5391f 0%, #b32c16 100%)',
                     border: 'none', borderRadius: 11,
                     cursor: 'pointer',
-                    boxShadow: '0 8px 26px rgba(229,57,53,0.5), inset 0 1px 0 rgba(255,255,255,0.22)',
+                    boxShadow: '0 8px 26px rgba(229,57,31,0.5), inset 0 1px 0 rgba(255,255,255,0.22)',
                   }}>
                   <motion.span aria-hidden
                     animate={{ x: ['-150%', '150%'] }}

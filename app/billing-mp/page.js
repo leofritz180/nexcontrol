@@ -184,7 +184,7 @@ export default function BillingMpPage() {
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative', zIndex: 1 }}>
-      <div style={{ position: 'fixed', top: '-18%', left: '-12%', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.14) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
+      <div style={{ position: 'fixed', top: '-18%', left: '-12%', width: 700, height: 700, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,31,0.14) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
       <div style={{ position: 'fixed', bottom: '-18%', right: '-8%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(209,250,229,0.1) 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}/>
 
       <div style={{ width: '100%', maxWidth: 620, position: 'relative', zIndex: 2 }}>
@@ -345,10 +345,10 @@ function PeriodCard({ v2, opQty, setOpQty, realOps, opsList = [], monthlyTier, s
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 7,
             padding: '5px 12px', borderRadius: 99,
-            background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)',
-            fontSize: 10, fontWeight: 800, color: '#e53935', letterSpacing: '0.08em',
+            background: 'rgba(229,57,31,0.1)', border: '1px solid rgba(229,57,31,0.25)',
+            fontSize: 10, fontWeight: 800, color: '#e5391f', letterSpacing: '0.08em',
           }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#e53935' }}/>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#e5391f' }}/>
             {isEarlyRenewal ? 'RENOVAÇÃO ANTECIPADA' : 'RENOVAÇÃO DE PLANO'}
           </div>
         )}
@@ -356,8 +356,8 @@ function PeriodCard({ v2, opQty, setOpQty, realOps, opsList = [], monthlyTier, s
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 22 }}>
-        <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
-          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round">
+        <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(229,57,31,0.1)', border: '1px solid rgba(229,57,31,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2" strokeLinecap="round">
             {isRenewal
               ? <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
               : <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>}
@@ -387,7 +387,7 @@ function PeriodCard({ v2, opQty, setOpQty, realOps, opsList = [], monthlyTier, s
               <span style={{ minWidth: 26, textAlign: 'center', fontSize: 20, fontWeight: 900, color: 'var(--t1)', fontFamily: 'var(--mono, monospace)' }}>{opQty}</span>
               <button type="button" aria-label="Adicionar"
                 onClick={() => setOpQty(q => q + 1)}
-                style={{ width: 34, height: 34, borderRadius: 9, border: '1px solid rgba(229,57,53,0.4)', background: 'rgba(229,57,53,0.14)', color: 'var(--loss)', fontSize: 20, fontWeight: 700, cursor: 'pointer', lineHeight: 1 }}>+</button>
+                style={{ width: 34, height: 34, borderRadius: 9, border: '1px solid rgba(229,57,31,0.4)', background: 'rgba(229,57,31,0.14)', color: 'var(--loss)', fontSize: 20, fontWeight: 700, cursor: 'pointer', lineHeight: 1 }}>+</button>
             </div>
           </div>
           {/* Aviso: reduziu abaixo do real → escolhe quais remover DEPOIS de pagar */}
@@ -475,21 +475,21 @@ function PeriodCard({ v2, opQty, setOpQty, realOps, opsList = [], monthlyTier, s
 
       <motion.button
         onClick={onConfirm}
-        whileHover={{ scale: 1.015, boxShadow: '0 8px 40px rgba(229,57,53,0.5)' }}
+        whileHover={{ scale: 1.015, boxShadow: '0 8px 40px rgba(229,57,31,0.5)' }}
         whileTap={{ scale: 0.97 }}
         style={{
           width: '100%', padding: '16px 24px', borderRadius: 13, border: 'none', cursor: 'pointer',
-          background: 'linear-gradient(145deg, #e53935, #c62828)',
+          background: 'linear-gradient(145deg, #e5391f, #b32c16)',
           color: 'white', fontSize: 15, fontWeight: 800, fontFamily: 'inherit',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-          boxShadow: '0 4px 24px rgba(229,57,53,0.35)',
+          boxShadow: '0 4px 24px rgba(229,57,31,0.35)',
         }}
       >
         <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         {isRenewal ? 'Renovar' : 'Gerar PIX'} · R$ {fmt(selectedCalc.total)}
       </motion.button>
 
-      <p style={{ fontSize: 10.5, color: '#64748B', textAlign: 'center', margin: '12px 0 0' }}>
+      <p style={{ fontSize: 10.5, color: '#82828d', textAlign: 'center', margin: '12px 0 0' }}>
         PIX via Mercado Pago · aprovação em segundos
       </p>
     </div>
@@ -507,18 +507,18 @@ function UpgradePanel({ daysRemaining, addedDays, totalDaysAfter, newExpiresDate
         padding: '16px 18px',
         borderRadius: 14,
         marginBottom: 18,
-        background: 'linear-gradient(145deg, rgba(229,57,53,0.08), rgba(229,57,53,0.02))',
-        border: '1px solid rgba(229,57,53,0.22)',
+        background: 'linear-gradient(145deg, rgba(229,57,31,0.08), rgba(229,57,31,0.02))',
+        border: '1px solid rgba(229,57,31,0.22)',
         overflow: 'hidden',
       }}
     >
-      <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.5), transparent)' }}/>
+      <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,31,0.5), transparent)' }}/>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <div style={{ width: 22, height: 22, borderRadius: 7, background: 'rgba(229,57,53,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.5" strokeLinecap="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        <div style={{ width: 22, height: 22, borderRadius: 7, background: 'rgba(229,57,31,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2.5" strokeLinecap="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
         </div>
-        <p style={{ fontSize: 12, fontWeight: 800, color: '#e53935', margin: 0, letterSpacing: '0.02em' }}>
+        <p style={{ fontSize: 12, fontWeight: 800, color: '#e5391f', margin: 0, letterSpacing: '0.02em' }}>
           Dias acumulados
         </p>
       </div>
@@ -528,7 +528,7 @@ function UpgradePanel({ daysRemaining, addedDays, totalDaysAfter, newExpiresDate
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontSize: 9.5, color: 'var(--t3)', margin: '0 0 3px', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>Atuais</p>
           <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 900, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>{daysRemaining}</p>
-          <p style={{ fontSize: 9, color: '#64748B', margin: '2px 0 0' }}>dias</p>
+          <p style={{ fontSize: 9, color: '#82828d', margin: '2px 0 0' }}>dias</p>
         </div>
 
         <span style={{ fontSize: 16, color: '#475569', fontWeight: 300 }}>+</span>
@@ -537,7 +537,7 @@ function UpgradePanel({ daysRemaining, addedDays, totalDaysAfter, newExpiresDate
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontSize: 9.5, color: 'var(--t3)', margin: '0 0 3px', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700 }}>{planLabel}</p>
           <p style={{ fontFamily: 'var(--mono)', fontSize: 18, fontWeight: 900, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>+{addedDays}</p>
-          <p style={{ fontSize: 9, color: '#64748B', margin: '2px 0 0' }}>dias</p>
+          <p style={{ fontSize: 9, color: '#82828d', margin: '2px 0 0' }}>dias</p>
         </div>
 
         <span style={{ fontSize: 16, color: '#475569', fontWeight: 300 }}>=</span>
@@ -546,11 +546,11 @@ function UpgradePanel({ daysRemaining, addedDays, totalDaysAfter, newExpiresDate
         <div style={{ textAlign: 'center', padding: '4px 0', borderRadius: 8, background: 'rgba(209,250,229,0.06)' }}>
           <p style={{ fontSize: 9.5, color: 'var(--profit)', margin: '0 0 3px', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 800 }}>Total</p>
           <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 900, color: 'var(--profit)', margin: 0, letterSpacing: '-0.02em' }}>{totalDaysAfter}</p>
-          <p style={{ fontSize: 9, color: '#64748B', margin: '2px 0 0' }}>dias</p>
+          <p style={{ fontSize: 9, color: '#82828d', margin: '2px 0 0' }}>dias</p>
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(229,57,53,0.12)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(229,57,31,0.12)' }}>
         <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>
           Novo vencimento: <strong style={{ color: 'var(--t2)' }}>{fmtDate(newExpiresDate)}</strong>
@@ -569,16 +569,16 @@ function PlanCard({ plan, calc, isSelected, onSelect }) {
         position: 'relative',
         padding: '16px 14px 14px',
         borderRadius: 14,
-        border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.08)'),
+        border: '1.5px solid ' + (isSelected ? '#e5391f' : 'rgba(255,255,255,0.08)'),
         background: isSelected
-          ? 'linear-gradient(145deg, rgba(229,57,53,0.10), rgba(229,57,53,0.02))'
+          ? 'linear-gradient(145deg, rgba(229,57,31,0.10), rgba(229,57,31,0.02))'
           : 'rgba(255,255,255,0.02)',
         cursor: 'pointer',
         textAlign: 'left',
         transition: 'all 0.18s',
         fontFamily: 'inherit',
         display: 'flex', flexDirection: 'column', gap: 4,
-        boxShadow: isSelected ? '0 8px 28px rgba(229,57,53,0.15)' : 'none',
+        boxShadow: isSelected ? '0 8px 28px rgba(229,57,31,0.15)' : 'none',
         minHeight: 130,
       }}
     >
@@ -586,22 +586,22 @@ function PlanCard({ plan, calc, isSelected, onSelect }) {
         <span style={{
           position: 'absolute', top: -9, right: 12,
           fontSize: 9, fontWeight: 800, padding: '3px 9px', borderRadius: 5,
-          background: plan.highlighted ? '#e53935' : 'rgba(209,250,229,0.15)',
+          background: plan.highlighted ? '#e5391f' : 'rgba(209,250,229,0.15)',
           color: plan.highlighted ? '#fff' : 'var(--profit)',
           border: plan.highlighted ? 'none' : '1px solid rgba(209,250,229,0.3)',
           letterSpacing: '0.06em',
-          boxShadow: plan.highlighted ? '0 4px 12px rgba(229,57,53,0.4)' : 'none',
+          boxShadow: plan.highlighted ? '0 4px 12px rgba(229,57,31,0.4)' : 'none',
         }}>{plan.badge}</span>
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
         <div style={{
           width: 16, height: 16, borderRadius: '50%',
-          border: '1.5px solid ' + (isSelected ? '#e53935' : 'rgba(255,255,255,0.18)'),
+          border: '1.5px solid ' + (isSelected ? '#e5391f' : 'rgba(255,255,255,0.18)'),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
-          {isSelected && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935' }} />}
+          {isSelected && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#e5391f' }} />}
         </div>
         <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>
           {plan.label}
@@ -612,7 +612,7 @@ function PlanCard({ plan, calc, isSelected, onSelect }) {
         R$ {fmt(calc.total)}
       </p>
 
-      <p style={{ fontSize: 10.5, color: '#64748B', margin: 0 }}>
+      <p style={{ fontSize: 10.5, color: '#82828d', margin: 0 }}>
         R$ {fmt(calc.perMonth)}/mês
       </p>
 
@@ -622,7 +622,7 @@ function PlanCard({ plan, calc, isSelected, onSelect }) {
           economia R$ {fmt(calc.savings)}
         </div>
       ) : (
-        <div style={{ fontSize: 9.5, color: '#64748B', marginTop: 4 }}>
+        <div style={{ fontSize: 9.5, color: '#82828d', marginTop: 4 }}>
           {plan.months} {plan.months === 1 ? 'mês' : 'meses'}
         </div>
       )}
@@ -637,18 +637,18 @@ function PlanRowV2({ plan, calc, isSelected, onSelect }) {
     <button type="button" onClick={onSelect} style={{
       position: 'relative', width: '100%', display: 'flex', alignItems: 'center', gap: 14,
       padding: '15px 16px', borderRadius: 14, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
-      border: '1.5px solid ' + (isSelected ? '#e53935' : 'var(--b1)'),
-      background: isSelected ? 'linear-gradient(90deg, rgba(229,57,53,0.10), rgba(229,57,53,0.02))' : 'var(--surface)',
-      boxShadow: isSelected ? '0 0 26px rgba(229,57,53,0.14)' : 'none',
+      border: '1.5px solid ' + (isSelected ? '#e5391f' : 'var(--b1)'),
+      background: isSelected ? 'linear-gradient(90deg, rgba(229,57,31,0.10), rgba(229,57,31,0.02))' : 'var(--surface)',
+      boxShadow: isSelected ? '0 0 26px rgba(229,57,31,0.14)' : 'none',
       transition: 'all 0.18s',
     }}>
-      <span style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, border: '1.5px solid ' + (isSelected ? '#e53935' : 'var(--b2)'), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {isSelected && <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e53935' }} />}
+      <span style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, border: '1.5px solid ' + (isSelected ? '#e5391f' : 'var(--b2)'), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {isSelected && <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e5391f' }} />}
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.01em' }}>{plan.label}</span>
-          {plan.badge && <span style={{ fontSize: 8.5, fontWeight: 800, padding: '2px 7px', borderRadius: 5, letterSpacing: '0.05em', background: isPop ? '#e53935' : 'rgba(34,197,94,0.14)', color: isPop ? '#fff' : '#22C55E', border: isPop ? 'none' : '1px solid rgba(34,197,94,0.3)' }}>{plan.badge}</span>}
+          {plan.badge && <span style={{ fontSize: 8.5, fontWeight: 800, padding: '2px 7px', borderRadius: 5, letterSpacing: '0.05em', background: isPop ? '#e5391f' : 'rgba(34,197,94,0.14)', color: isPop ? '#fff' : '#22C55E', border: isPop ? 'none' : '1px solid rgba(34,197,94,0.3)' }}>{plan.badge}</span>}
         </div>
         <p style={{ fontSize: 11, color: 'var(--t3)', margin: '3px 0 0' }}>
           R$ {fmt(calc.perMonth)}/mês{calc.savings > 0 ? ` · economia R$ ${fmt(calc.savings)}` : ''}
@@ -666,12 +666,12 @@ function LoadingCard() {
   return (
     <div style={{ ...cardStyle, textAlign: 'center' }}>
       <motion.div
-        style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid rgba(229,57,53,0.2)', borderTopColor: '#e53935', margin: '0 auto 18px' }}
+        style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid rgba(229,57,31,0.2)', borderTopColor: '#e5391f', margin: '0 auto 18px' }}
         animate={{ rotate: 360 }}
         transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
       />
       <p style={{ fontSize: 14, color: 'var(--t1)', margin: 0, fontWeight: 600 }}>Gerando cobranca PIX...</p>
-      <p style={{ fontSize: 12, color: '#64748B', margin: '6px 0 0' }}>Aguarde alguns segundos</p>
+      <p style={{ fontSize: 12, color: '#82828d', margin: '6px 0 0' }}>Aguarde alguns segundos</p>
     </div>
   )
 }
@@ -707,7 +707,7 @@ function PixCard({ payment, copied, onCopy, amount, planLabel }) {
       ) : null}
 
       <div style={{ marginBottom: 18 }}>
-        <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#64748B', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+        <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#82828d', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
           Codigo PIX copia e cola
         </label>
         <div style={{ position: 'relative' }}>
@@ -725,8 +725,8 @@ function PixCard({ payment, copied, onCopy, amount, planLabel }) {
             style={{
               position: 'absolute', right: 8, top: 8,
               width: 32, height: 32, borderRadius: 8, border: 'none', cursor: 'pointer',
-              background: copied ? 'rgba(209,250,229,0.15)' : 'rgba(229,57,53,0.15)',
-              color: copied ? 'var(--profit)' : '#e53935',
+              background: copied ? 'rgba(209,250,229,0.15)' : 'rgba(229,57,31,0.15)',
+              color: copied ? 'var(--profit)' : '#e5391f',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -790,8 +790,8 @@ function ErrorCard({ error, onRetry }) {
         onClick={onRetry}
         style={{
           width: '100%', padding: '12px 20px', borderRadius: 12,
-          background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.3)',
-          color: '#e53935', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+          background: 'rgba(229,57,31,0.12)', border: '1px solid rgba(229,57,31,0.3)',
+          color: '#e5391f', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
         }}
       >
         Tentar novamente

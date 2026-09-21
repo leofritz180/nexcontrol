@@ -41,14 +41,14 @@ export default function PreviewIndicator({ onTriggerSmart }) {
         top: 12, right: 12, zIndex: 9999,
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '8px 12px', borderRadius: 10,
-        background: 'linear-gradient(135deg, rgba(229,57,53,0.18), rgba(0,0,0,0.85))',
-        border: '1px solid rgba(229,57,53,0.5)',
-        boxShadow: '0 8px 22px rgba(0,0,0,0.5), 0 0 18px rgba(229,57,53,0.25)',
+        background: 'linear-gradient(135deg, rgba(229,57,31,0.18), rgba(0,0,0,0.85))',
+        border: '1px solid rgba(229,57,31,0.5)',
+        boxShadow: '0 8px 22px rgba(0,0,0,0.5), 0 0 18px rgba(229,57,31,0.25)',
         backdropFilter: 'blur(8px)',
       }}
     >
       <motion.span
-        animate={{ boxShadow: ['0 0 0 0 rgba(229,57,53,0.7)', '0 0 0 5px rgba(229,57,53,0)', '0 0 0 0 rgba(229,57,53,0)'] }}
+        animate={{ boxShadow: ['0 0 0 0 rgba(229,57,31,0.7)', '0 0 0 5px rgba(229,57,31,0)', '0 0 0 0 rgba(229,57,31,0)'] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
         style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff4444' }}
       />

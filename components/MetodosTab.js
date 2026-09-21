@@ -160,7 +160,7 @@ export default function MetodosTab() {
           style={{
             padding: '11px 20px', fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
             borderRadius: 8, border: 'none', cursor: 'pointer',
-            color: 'var(--t1)', background: showForm ? 'rgba(100,100,100,0.4)' : '#e53935',
+            color: 'var(--t1)', background: showForm ? 'rgba(100,100,100,0.4)' : '#e5391f',
             transition: 'background 0.15s',
           }}
         >
@@ -192,10 +192,10 @@ export default function MetodosTab() {
                       <button key={t} type="button" onClick={() => setForm({ ...form, tipo: t })}
                         style={{
                           flex: 1, padding: '10px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-                          color: form.tipo === t ? (t === 'lucro' ? '#10B981' : 'var(--loss)') : 'var(--t3)',
-                          background: form.tipo === t ? (t === 'lucro' ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)') : 'rgba(255,255,255,0.02)',
+                          color: form.tipo === t ? (t === 'lucro' ? '#3f9b1e' : 'var(--loss)') : 'var(--t3)',
+                          background: form.tipo === t ? (t === 'lucro' ? 'rgba(63,155,30,0.08)' : 'rgba(239,68,68,0.08)') : 'rgba(255,255,255,0.02)',
                           border: form.tipo === t
-                            ? '1px solid ' + (t === 'lucro' ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)')
+                            ? '1px solid ' + (t === 'lucro' ? 'rgba(63,155,30,0.35)' : 'rgba(239,68,68,0.35)')
                             : '1px solid rgba(255,255,255,0.1)',
                           transition: 'all 0.15s',
                         }}>
@@ -225,7 +225,7 @@ export default function MetodosTab() {
               )}
 
               <button type="submit" disabled={saving}
-                style={{ padding: '12px 20px', fontSize: 14, fontWeight: 600, fontFamily: 'inherit', borderRadius: 8, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', color: 'var(--t1)', background: saving ? 'rgba(229,57,53,0.5)' : '#e53935', transition: 'background 0.15s' }}>
+                style={{ padding: '12px 20px', fontSize: 14, fontWeight: 600, fontFamily: 'inherit', borderRadius: 8, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', color: 'var(--t1)', background: saving ? 'rgba(229,57,31,0.5)' : '#e5391f', transition: 'background 0.15s' }}>
                 {saving ? 'Salvando...' : 'Salvar registro'}
               </button>
             </form>
@@ -261,7 +261,7 @@ export default function MetodosTab() {
                 <div key={row.k} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 10px', borderRadius: 6, background: 'var(--fill-1)' }}>
                   <span style={{ fontSize: 12, color: 'var(--t1)', fontWeight: 600, flex: 1 }}>{modLabel(row.k)}</span>
                   <span style={{ fontSize: 11, color: 'var(--t4)' }}>{row.count} reg</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'var(--mono)', color: row.liquido >= 0 ? '#10B981' : 'var(--loss)', minWidth: 110, textAlign: 'right' }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'var(--mono)', color: row.liquido >= 0 ? '#3f9b1e' : 'var(--loss)', minWidth: 110, textAlign: 'right' }}>
                     {row.liquido >= 0 ? '+' : '-'}R$ {fmtBRL(Math.abs(row.liquido))}
                   </span>
                 </div>
@@ -288,11 +288,11 @@ export default function MetodosTab() {
               const isLucro = it.tipo === 'lucro'
               return (
                 <div key={it.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: isLucro ? '#10B981' : 'var(--loss)', flexShrink: 0 }} />
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: isLucro ? '#3f9b1e' : 'var(--loss)', flexShrink: 0 }} />
                   <span style={{ fontSize: 12, color: 'var(--t1)', fontWeight: 600, minWidth: 130 }}>{modLabel(it.modalidade)}</span>
                   <span style={{ fontSize: 11, color: 'var(--t3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.descricao || '—'}</span>
                   <span style={{ fontSize: 10, color: 'var(--t4)', fontFamily: 'var(--mono)' }}>{fmtDate(it.created_at)}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'var(--mono)', color: isLucro ? '#10B981' : 'var(--loss)', minWidth: 110, textAlign: 'right' }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'var(--mono)', color: isLucro ? '#3f9b1e' : 'var(--loss)', minWidth: 110, textAlign: 'right' }}>
                     {isLucro ? '+' : '-'}R$ {fmtBRL(it.valor)}
                   </span>
                   <button type="button" onClick={() => remove(it.id)} aria-label="Apagar"

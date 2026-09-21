@@ -114,7 +114,7 @@ export default function OperatorLimitBanner({ tenantId, variant = 'default' }) {
             )}
             <button onClick={onUpgrade} type="button" style={{
               padding: '10px 16px', borderRadius: 10, border: 'none', cursor: 'pointer',
-              background: 'linear-gradient(180deg, var(--loss), #c62828)',
+              background: 'linear-gradient(180deg, var(--loss), #b32c16)',
               color: '#fff', fontSize: 12.5, fontWeight: 800, fontFamily: 'inherit',
               display: 'inline-flex', alignItems: 'center', gap: 6,
               boxShadow: '0 4px 14px rgba(239,68,68,0.4)',

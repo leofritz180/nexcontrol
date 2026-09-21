@@ -26,11 +26,11 @@ const DEMO_OPS = [
 const FEED_EVENTS = [
   { text:'Carlos registrou +R$ 120', color:'var(--profit)' },
   { text:'Meta concluida com sucesso', color:'var(--profit)' },
-  { text:'Novo operador ativo', color:'#e53935' },
+  { text:'Novo operador ativo', color:'#e5391f' },
   { text:'+R$ 68 registrado agora', color:'var(--profit)' },
   { text:'Pedro finalizou meta', color:'var(--profit)' },
   { text:'Ana registrou +R$ 95', color:'var(--profit)' },
-  { text:'Nova remessa processada', color:'#e53935' },
+  { text:'Nova remessa processada', color:'#e5391f' },
 ]
 
 const TICKER_ITEMS = [
@@ -255,7 +255,7 @@ function StatusLine({ active }) {
       <motion.span
         animate={{ opacity:[0.4, 1, 0.4] }}
         transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-        style={{ width:5, height:5, borderRadius:'50%', background:'#e53935', boxShadow:'0 0 6px rgba(229,57,53,0.4)' }}
+        style={{ width:5, height:5, borderRadius:'50%', background:'#e5391f', boxShadow:'0 0 6px rgba(229,57,31,0.4)' }}
       />
       <AnimatePresence mode="wait">
         <motion.span
@@ -441,7 +441,7 @@ function LiveDashboardDemo() {
                 display:'flex', alignItems:'center', gap:10,
                 boxShadow:'0 4px 16px rgba(0,0,0,0.3)',
               }}>
-              <div style={{ width:20, height:20, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              <div style={{ width:20, height:20, borderRadius:6, background:'#e5391f', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                 <NexIcon size={9}/>
               </div>
               <div style={{ flex:1 }}>
@@ -460,7 +460,7 @@ function LiveDashboardDemo() {
         {/* Header */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-            <div style={{ width:18, height:18, borderRadius:5, background:'#e53935' }}/>
+            <div style={{ width:18, height:18, borderRadius:5, background:'#e5391f' }}/>
             <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.4)' }}>Painel executivo</span>
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:5 }}>
@@ -674,11 +674,11 @@ export default function HomePage() {
           <p style={{ fontSize:14, color:'var(--t3)', margin:0, maxWidth:420, marginInline:'auto' }}>Assine, pague via PIX e o acesso é liberado na hora. Sem fidelidade — cancele quando quiser.</p>
         </div>
 
-        <div style={{ position:'relative', overflow:'hidden', borderRadius:22, padding:'32px 28px', background:'linear-gradient(180deg, #140707, #080404)', border:'1px solid rgba(229,57,53,0.3)', boxShadow:'0 30px 90px rgba(0,0,0,0.6), 0 0 70px rgba(229,57,53,0.08)' }}>
-          <div style={{ position:'absolute', top:0, left:'18%', right:'18%', height:1, background:'linear-gradient(90deg, transparent, #e53935, transparent)' }}/>
+        <div style={{ position:'relative', overflow:'hidden', borderRadius:22, padding:'32px 28px', background:'linear-gradient(180deg, #140707, #080404)', border:'1px solid rgba(229,57,31,0.3)', boxShadow:'0 30px 90px rgba(0,0,0,0.6), 0 0 70px rgba(229,57,31,0.08)' }}>
+          <div style={{ position:'absolute', top:0, left:'18%', right:'18%', height:1, background:'linear-gradient(90deg, transparent, #e5391f, transparent)' }}/>
 
           <div style={{ textAlign:'center', marginBottom:22 }}>
-            <div style={{ display:'inline-block', padding:'4px 12px', borderRadius:99, background:'rgba(229,57,53,0.12)', border:'1px solid rgba(229,57,53,0.3)', fontSize:11, fontWeight:800, color:'#ff6b6b', marginBottom:16 }}>PLANO COMPLETO</div>
+            <div style={{ display:'inline-block', padding:'4px 12px', borderRadius:99, background:'rgba(229,57,31,0.12)', border:'1px solid rgba(229,57,31,0.3)', fontSize:11, fontWeight:800, color:'#ff6b6b', marginBottom:16 }}>PLANO COMPLETO</div>
             <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'center', gap:4 }}>
               <span style={{ fontSize:18, fontWeight:700, color:'var(--t3)', marginBottom:8 }}>R$</span>
               <span style={{ fontSize:56, fontWeight:900, color:'#fff', letterSpacing:'-0.04em', lineHeight:1 }}>59,90</span>

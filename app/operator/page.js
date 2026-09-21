@@ -161,8 +161,8 @@ function RedeBadge({ rede }) {
   return (
     <span style={{
       fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 5,
-      background: 'rgba(229,57,53,0.1)', color: '#e53935',
-      border: '1px solid rgba(229,57,53,0.2)',
+      background: 'rgba(229,57,31,0.1)', color: '#e5391f',
+      border: '1px solid rgba(229,57,31,0.2)',
     }}>
       {rede}
     </span>
@@ -222,7 +222,7 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
   const totalSaq = demoRem.reduce((a, r) => a + Number(r.saque || 0), 0)
 
   const insight = DEMO_INSIGHTS[insightIdx]
-  const insightColors = { profit: 'var(--profit)', loss: 'var(--loss)', warn: 'rgba(255,255,255,0.78)', info: '#e53935' }
+  const insightColors = { profit: 'var(--profit)', loss: 'var(--loss)', warn: 'rgba(255,255,255,0.78)', info: '#e5391f' }
 
   return (
     <div>
@@ -233,16 +233,16 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
         transition={{ duration: 0.4 }}
         style={{
           padding: '14px 18px', borderRadius: 12, marginBottom: 24,
-          background: 'linear-gradient(135deg, rgba(229,57,53,0.10), rgba(229,57,53,0.04))',
-          border: '1px solid rgba(229,57,53,0.22)',
+          background: 'linear-gradient(135deg, rgba(229,57,31,0.10), rgba(229,57,31,0.04))',
+          border: '1px solid rgba(229,57,31,0.22)',
           display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 240 }}>
           <motion.div
-            animate={{ boxShadow: ['0 0 0 0 rgba(229,57,53,0.6)', '0 0 0 6px rgba(229,57,53,0)', '0 0 0 0 rgba(229,57,53,0)'] }}
+            animate={{ boxShadow: ['0 0 0 0 rgba(229,57,31,0.6)', '0 0 0 6px rgba(229,57,31,0)', '0 0 0 0 rgba(229,57,31,0)'] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ width: 9, height: 9, borderRadius: '50%', background: '#e53935', flexShrink: 0 }} />
+            style={{ width: 9, height: 9, borderRadius: '50%', background: '#e5391f', flexShrink: 0 }} />
           <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>
             {DEMO_BANNER_TEXT}
           </span>
@@ -250,15 +250,15 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
         {onExitDemo && (
           <motion.button type="button"
             onClick={onExitDemo}
-            whileHover={{ scale: 1.03, boxShadow: '0 8px 22px rgba(229,57,53,0.5)' }}
+            whileHover={{ scale: 1.03, boxShadow: '0 8px 22px rgba(229,57,31,0.5)' }}
             whileTap={{ scale: 0.97 }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '10px 16px', fontSize: 12, fontWeight: 800, fontFamily: 'inherit',
               letterSpacing: '0.08em', textTransform: 'uppercase',
-              color: '#fff', background: 'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
+              color: '#fff', background: 'linear-gradient(135deg, #e5391f 0%, #b32c16 100%)',
               border: 'none', borderRadius: 8, cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(229,57,53,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
+              boxShadow: '0 4px 14px rgba(229,57,31,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
               transition: 'box-shadow 0.2s', flexShrink: 0,
             }}>
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -375,12 +375,12 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
                 width: '100%', padding: '14px 28px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 fontSize: 14, fontWeight: 700, color: '#fff',
-                background: '#e53935', border: 'none', borderRadius: 11,
-                cursor: 'pointer', boxShadow: '0 4px 16px rgba(229,57,53,0.3)',
+                background: '#e5391f', border: 'none', borderRadius: 11,
+                cursor: 'pointer', boxShadow: '0 4px 16px rgba(229,57,31,0.3)',
                 transition: 'all 0.2s ease',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#c62828' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#e53935' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#b32c16' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#e5391f' }}
             >
               <IconBolt /> Criar minha primeira meta real
             </button>
@@ -534,7 +534,7 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.4 }}
-            style={{ padding: 22, borderRadius: 16, background: 'linear-gradient(145deg, rgba(229,57,53,0.08), rgba(229,57,53,0.02))', border: '1px solid rgba(229,57,53,0.15)' }}
+            style={{ padding: 22, borderRadius: 16, background: 'linear-gradient(145deg, rgba(229,57,31,0.08), rgba(229,57,31,0.02))', border: '1px solid rgba(229,57,31,0.15)' }}
           >
             <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: '0 0 8px' }}>Pronto para comecar?</h3>
             <p style={{ fontSize: 12, color: 'var(--t3)', margin: '0 0 16px', lineHeight: 1.5 }}>
@@ -546,8 +546,8 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
                 width: '100%', padding: '12px 16px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 fontSize: 13, fontWeight: 700, color: '#fff',
-                background: '#e53935', border: 'none', borderRadius: 10,
-                cursor: 'pointer', boxShadow: '0 2px 12px rgba(229,57,53,0.25)',
+                background: '#e5391f', border: 'none', borderRadius: 10,
+                cursor: 'pointer', boxShadow: '0 2px 12px rgba(229,57,31,0.25)',
               }}
             >
               <IconPlus /> Iniciar minha operacao
@@ -759,7 +759,7 @@ export default function OperatorPage() {
         <div style={{
           position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
           width: 560, height: 560, borderRadius: '50%', pointerEvents: 'none',
-          background: 'radial-gradient(circle, rgba(229,57,53,0.07), transparent 65%)',
+          background: 'radial-gradient(circle, rgba(229,57,31,0.07), transparent 65%)',
           filter: 'blur(40px)',
         }}/>
 
@@ -768,27 +768,27 @@ export default function OperatorPage() {
           background: 'var(--surface)',
           border: '1px solid var(--b1)',
           borderRadius: 20, padding: '44px 38px',
-          boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(229,57,53,0.06), 0 0 0 1px rgba(229,57,53,0.04)',
+          boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(229,57,31,0.06), 0 0 0 1px rgba(229,57,31,0.04)',
         }}>
           {/* Eyebrow */}
           <div style={{
             fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
             fontSize: 9, fontWeight: 600, letterSpacing: '0.28em',
-            textTransform: 'uppercase', color: '#e53935', marginBottom: 24,
+            textTransform: 'uppercase', color: '#e5391f', marginBottom: 24,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           }}>
-            <span style={{ width: 24, height: 1, background: '#e53935' }}/>
+            <span style={{ width: 24, height: 1, background: '#e5391f' }}/>
             Acesso · Desvinculado
-            <span style={{ width: 24, height: 1, background: '#e53935' }}/>
+            <span style={{ width: 24, height: 1, background: '#e5391f' }}/>
           </div>
 
           {/* Icon */}
           <div style={{
             width: 56, height: 56, borderRadius: 14,
-            background: 'rgba(229,57,53,0.06)',
-            border: '1px solid rgba(229,57,53,0.2)',
+            background: 'rgba(229,57,31,0.06)',
+            border: '1px solid rgba(229,57,31,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 22px', color: '#e53935',
+            margin: '0 auto 22px', color: '#e5391f',
           }}>
             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
@@ -921,11 +921,11 @@ export default function OperatorPage() {
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '8px 20px', fontSize: 13, fontWeight: 700,
                   color: showForm ? 'var(--t2)' : '#fff',
-                  background: showForm ? 'transparent' : '#e53935',
-                  border: showForm ? '1px solid var(--b2)' : '1px solid #e53935',
+                  background: showForm ? 'transparent' : '#e5391f',
+                  border: showForm ? '1px solid var(--b2)' : '1px solid #e5391f',
                   borderRadius: 10, cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  boxShadow: showForm ? 'none' : '0 2px 12px rgba(229,57,53,0.25)',
+                  boxShadow: showForm ? 'none' : '0 2px 12px rgba(229,57,31,0.25)',
                 }}
               >
                 <IconPlus /> {showForm ? 'Fechar' : 'Nova meta'}
@@ -1049,7 +1049,7 @@ export default function OperatorPage() {
                             outline: 'none', boxSizing: 'border-box',
                             transition: 'border-color 0.2s, box-shadow 0.2s',
                           }}
-                          onFocus={e => { e.target.style.borderColor = '#e53935'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,53,0.1)' }}
+                          onFocus={e => { e.target.style.borderColor = '#e5391f'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,31,0.1)' }}
                           onBlur={e => { e.target.style.borderColor = 'var(--b2)'; e.target.style.boxShadow = 'none' }}
                         />
                       </div>
@@ -1061,12 +1061,12 @@ export default function OperatorPage() {
                           style={{
                             width: '100%', padding: '12px 16px', fontSize: 14, fontWeight: 500,
                             color: rede ? 'var(--t1)' : 'var(--t4)',
-                            background: redeOpen ? 'rgba(229,57,53,0.04)' : 'var(--void)',
-                            border: `1px solid ${redeOpen ? '#e53935' : 'var(--b2)'}`,
+                            background: redeOpen ? 'rgba(229,57,31,0.04)' : 'var(--void)',
+                            border: `1px solid ${redeOpen ? '#e5391f' : 'var(--b2)'}`,
                             borderRadius: 11, outline: 'none', cursor: 'pointer',
                             textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                             transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
-                            boxShadow: redeOpen ? '0 0 0 3px rgba(229,57,53,0.1)' : 'none',
+                            boxShadow: redeOpen ? '0 0 0 3px rgba(229,57,31,0.1)' : 'none',
                             boxSizing: 'border-box',
                           }}
                         >
@@ -1084,13 +1084,13 @@ export default function OperatorPage() {
                             <button
                               key="__multi" type="button"
                               onClick={() => { setRede(MULTI_REDE); setRedeOpen(false) }}
-                              onMouseEnter={e => { if (rede !== MULTI_REDE) e.currentTarget.style.background = 'rgba(16,185,129,0.12)' }}
-                              onMouseLeave={e => { e.currentTarget.style.background = rede === MULTI_REDE ? 'rgba(16,185,129,0.18)' : 'transparent' }}
+                              onMouseEnter={e => { if (rede !== MULTI_REDE) e.currentTarget.style.background = 'rgba(63,155,30,0.12)' }}
+                              onMouseLeave={e => { e.currentTarget.style.background = rede === MULTI_REDE ? 'rgba(63,155,30,0.18)' : 'transparent' }}
                               style={{
                                 width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px',
                                 border: 'none', borderRadius: 9, textAlign: 'left', cursor: 'pointer',
                                 fontSize: 13, fontWeight: 700, color: 'var(--profit)',
-                                background: rede === MULTI_REDE ? 'rgba(16,185,129,0.18)' : 'transparent',
+                                background: rede === MULTI_REDE ? 'rgba(63,155,30,0.18)' : 'transparent',
                                 marginBottom: 4, transition: 'background 0.12s',
                               }}
                             >
@@ -1109,7 +1109,7 @@ export default function OperatorPage() {
                                   border: 'none', borderRadius: 9, textAlign: 'left',
                                   cursor: 'pointer', fontSize: 13, fontWeight: rede === r ? 700 : 500,
                                   color: rede === r ? 'white' : 'var(--t2)',
-                                  background: rede === r ? 'rgba(229,57,53,0.2)' : 'transparent',
+                                  background: rede === r ? 'rgba(229,57,31,0.2)' : 'transparent',
                                   transition: 'background 0.12s',
                                 }}
                               >
@@ -1137,7 +1137,7 @@ export default function OperatorPage() {
                             outline: 'none', boxSizing: 'border-box',
                             transition: 'border-color 0.2s, box-shadow 0.2s',
                           }}
-                          onFocus={e => { e.target.style.borderColor = '#e53935'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,53,0.1)' }}
+                          onFocus={e => { e.target.style.borderColor = '#e5391f'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,31,0.1)' }}
                           onBlur={e => { e.target.style.borderColor = 'var(--b2)'; e.target.style.boxShadow = 'none' }}
                         />
                       </div>
@@ -1154,7 +1154,7 @@ export default function OperatorPage() {
                             outline: 'none', boxSizing: 'border-box',
                             transition: 'border-color 0.2s, box-shadow 0.2s',
                           }}
-                          onFocus={e => { e.target.style.borderColor = '#e53935'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,53,0.1)' }}
+                          onFocus={e => { e.target.style.borderColor = '#e5391f'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,31,0.1)' }}
                           onBlur={e => { e.target.style.borderColor = 'var(--b2)'; e.target.style.boxShadow = 'none' }}
                         />
                       </div>
@@ -1172,7 +1172,7 @@ export default function OperatorPage() {
                             fontFamily: 'var(--mono)',
                             transition: 'border-color 0.2s, box-shadow 0.2s',
                           }}
-                          onFocus={e => { e.target.style.borderColor = '#e53935'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,53,0.1)' }}
+                          onFocus={e => { e.target.style.borderColor = '#e5391f'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,31,0.1)' }}
                           onBlur={e => { e.target.style.borderColor = 'var(--b2)'; e.target.style.boxShadow = 'none' }}
                         />
                       </div>
@@ -1186,9 +1186,9 @@ export default function OperatorPage() {
                           <button key={n} type="button" onClick={() => setContas(String(n))} style={{
                             flex: 1, padding: '10px 0', borderRadius: 10, fontSize: 13, fontWeight: 700,
                             fontFamily: 'var(--mono)', border: 'none', cursor: 'pointer',
-                            background: Number(contas) === n ? 'rgba(229,57,53,0.12)' : 'var(--raised)',
-                            color: Number(contas) === n ? '#e53935' : 'var(--t3)',
-                            border: `1px solid ${Number(contas) === n ? 'rgba(229,57,53,0.25)' : 'var(--b1)'}`,
+                            background: Number(contas) === n ? 'rgba(229,57,31,0.12)' : 'var(--raised)',
+                            color: Number(contas) === n ? '#e5391f' : 'var(--t3)',
+                            border: `1px solid ${Number(contas) === n ? 'rgba(229,57,31,0.25)' : 'var(--b1)'}`,
                             transition: 'all 0.2s',
                           }}>{n}</button>
                         ))}
@@ -1212,7 +1212,7 @@ export default function OperatorPage() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {[
                           { text: 'Lucro ou ate R$ 5/conta', sub: 'Bom resultado', color: 'var(--profit)', dot: 'rgba(209,250,229,0.5)' },
-                          { text: 'De R$ 5 a R$ 10/conta', sub: 'Normal de acontecer', color: 'var(--t2)', dot: 'rgba(148,163,184,0.5)' },
+                          { text: 'De R$ 5 a R$ 10/conta', sub: 'Normal de acontecer', color: 'var(--t2)', dot: 'rgba(130,130,141,0.5)' },
                           { text: 'De R$ 10 a R$ 14/conta', sub: 'Comeca a comprometer', color: 'var(--warn)', dot: 'rgba(255,255,255,0.5)' },
                           { text: 'Acima de R$ 14/conta', sub: 'Resultado ruim, atencao', color: 'var(--loss)', dot: 'rgba(239,68,68,0.5)' },
                         ].map((tip, i) => (
@@ -1279,9 +1279,9 @@ export default function OperatorPage() {
                         width: '100%', padding: '14px 24px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                         fontSize: 14, fontWeight: 700, color: 'var(--t1)',
-                        background: (saving || !titulo.trim() || !plataforma.trim() || !rede) ? 'rgba(229,57,53,0.4)' : '#e53935',
+                        background: (saving || !titulo.trim() || !plataforma.trim() || !rede) ? 'rgba(229,57,31,0.4)' : '#e5391f',
                         border: 'none', borderRadius: 11, cursor: (saving || !titulo.trim() || !plataforma.trim() || !rede) ? 'not-allowed' : 'pointer',
-                        boxShadow: '0 2px 12px rgba(229,57,53,0.25)',
+                        boxShadow: '0 2px 12px rgba(229,57,31,0.25)',
                         transition: 'all 0.2s ease',
                       }}
                     >
@@ -1392,7 +1392,7 @@ export default function OperatorPage() {
 
               {loading ? (
                 <div style={{ padding: 60, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 20, height: 20, border: '2px solid var(--b2)', borderTopColor: '#e53935', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
+                  <div style={{ width: 20, height: 20, border: '2px solid var(--b2)', borderTopColor: '#e5391f', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
                   <p style={{ fontSize: 12, color: 'var(--t3)' }}>Carregando...</p>
                 </div>
               ) : metas.length === 0 ? (
@@ -1414,9 +1414,9 @@ export default function OperatorPage() {
                     onClick={() => setShowForm(true)}
                     style={{
                       padding: '10px 24px', fontSize: 13, fontWeight: 700,
-                      color: '#fff', background: '#e53935', border: 'none',
+                      color: '#fff', background: '#e5391f', border: 'none',
                       borderRadius: 10, cursor: 'pointer',
-                      boxShadow: '0 2px 12px rgba(229,57,53,0.25)',
+                      boxShadow: '0 2px 12px rgba(229,57,31,0.25)',
                     }}
                   >
                     + Criar primeira meta
@@ -1545,7 +1545,7 @@ export default function OperatorPage() {
                             variants={fadeUp}
                             initial="hidden"
                             animate="visible"
-                            whileHover={{ y: -2, borderColor: 'rgba(229,57,53,0.3)', transition: { duration: 0.15 } }}
+                            whileHover={{ y: -2, borderColor: 'rgba(229,57,31,0.3)', transition: { duration: 0.15 } }}
                             onClick={() => router.push(`/meta/${meta.id}`)}
                             style={{
                               padding: '18px 22px',
@@ -1750,8 +1750,8 @@ export default function OperatorPage() {
                       width: '100%', padding: '10px 16px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                       fontSize: 13, fontWeight: 700, color: '#fff',
-                      background: '#e53935', border: 'none', borderRadius: 10,
-                      cursor: 'pointer', boxShadow: '0 2px 12px rgba(229,57,53,0.25)',
+                      background: '#e5391f', border: 'none', borderRadius: 10,
+                      cursor: 'pointer', boxShadow: '0 2px 12px rgba(229,57,31,0.25)',
                       transition: 'all 0.2s ease',
                     }}
                   >

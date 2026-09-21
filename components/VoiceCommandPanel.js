@@ -535,7 +535,7 @@ export default function VoiceCommandPanel({ userEmail }) {
 
   if (!enabled) return null
 
-  const statusColor = speaking ? 'var(--profit)' : status === 'listening' ? '#10B981' : status === 'starting' ? '#F59E0B' : status === 'error' ? 'var(--loss)' : '#64748B'
+  const statusColor = speaking ? 'var(--profit)' : status === 'listening' ? '#3f9b1e' : status === 'starting' ? '#ff7a4d' : status === 'error' ? 'var(--loss)' : '#82828d'
   const statusLabel = speaking ? 'Respondendo' : status === 'listening' ? 'Ouvindo' : status === 'starting' ? 'Iniciando...' : status === 'error' ? 'Erro' : 'Inativo'
 
   return (
@@ -556,11 +556,11 @@ export default function VoiceCommandPanel({ userEmail }) {
           position: 'fixed', bottom: 22, right: 130, zIndex: 201,
           width: 40, height: 40, borderRadius: '50%',
           cursor: 'pointer',
-          background: listening ? '#e53935' : 'rgba(20,20,20,0.95)',
-          border: '1px solid ' + (listening ? '#e53935' : 'rgba(255,255,255,0.1)'),
+          background: listening ? '#e5391f' : 'rgba(20,20,20,0.95)',
+          border: '1px solid ' + (listening ? '#e5391f' : 'rgba(255,255,255,0.1)'),
           color: 'var(--t1)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: listening ? '0 0 0 0 rgba(229,57,53,0.4), 0 6px 18px rgba(0,0,0,0.4)' : '0 6px 18px rgba(0,0,0,0.4)',
+          boxShadow: listening ? '0 0 0 0 rgba(229,57,31,0.4), 0 6px 18px rgba(0,0,0,0.4)' : '0 6px 18px rgba(0,0,0,0.4)',
           transition: 'all 0.2s',
         }}
       >
@@ -570,7 +570,7 @@ export default function VoiceCommandPanel({ userEmail }) {
             initial={{ scale: 1, opacity: 0.6 }}
             animate={{ scale: 1.5, opacity: 0 }}
             transition={{ duration: 1.4, repeat: Infinity }}
-            style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#e53935' }}
+            style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#e5391f' }}
           />
         )}
         <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'relative' }}>
@@ -614,7 +614,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Comandos de Voz</span>
                 <span style={{ fontSize: 10, color: statusColor, fontWeight: 600, marginLeft: 4 }}>· {statusLabel}</span>
-                <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,53,0.15)', color: '#e53935', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
+                <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,31,0.15)', color: '#e5391f', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
                 <button
                   type="button"
                   onClick={() => { setOpen(false); setListening(false) }}
@@ -634,7 +634,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                   </svg>
                 </button>
               </div>
-              <p style={{ fontSize: 11, color: '#64748B', margin: 0 }}>
+              <p style={{ fontSize: 11, color: '#82828d', margin: 0 }}>
                 <kbd style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: 'var(--fill-3)', border: '1px solid var(--b1)', fontFamily: 'var(--mono)' }}>F3</kbd> ativar · <kbd style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: 'var(--fill-3)', border: '1px solid var(--b1)', fontFamily: 'var(--mono)' }}>Esc</kbd> fechar
               </p>
             </div>
@@ -660,7 +660,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                   </div>
                 )}
                 {lastAction && (
-                  <div style={{ fontSize: 11, color: lastAction.ok ? '#10B981' : '#F59E0B', fontWeight: 600 }}>
+                  <div style={{ fontSize: 11, color: lastAction.ok ? '#3f9b1e' : '#ff7a4d', fontWeight: 600 }}>
                     {lastAction.ok ? '✓' : '⚠'} {lastAction.msg}
                   </div>
                 )}
@@ -668,51 +668,51 @@ export default function VoiceCommandPanel({ userEmail }) {
             )}
 
             {status === 'listening' && !transcript && !interim && (
-              <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--b1)', background: 'rgba(16,185,129,0.04)', fontSize: 11, color: 'var(--profit)', textAlign: 'center' }}>
+              <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--b1)', background: 'rgba(63,155,30,0.04)', fontSize: 11, color: 'var(--profit)', textAlign: 'center' }}>
                 Microfone ativo · pode falar
               </div>
             )}
 
             {/* Commands list */}
             <div style={{ overflowY: 'auto', padding: '12px 16px' }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Navegacao</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Navegacao</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                 {(isAdminLevel ? NAV_COMMANDS : OPERATOR_NAV).map(c => (
                   <div key={c.label} style={{ fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'baseline', gap: 6 }}>
                     <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"{c.keys[0]}"</span>
-                    <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
+                    <span style={{ fontSize: 11, color: '#82828d' }}>— {c.label}</span>
                   </div>
                 ))}
               </div>
 
               {isAdminLevel && (
                 <>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Abas do painel</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Abas do painel</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                     {TAB_COMMANDS.map(c => (
                       <div key={c.tab} style={{ fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'baseline', gap: 6 }}>
                         <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"{c.keys[0]}"</span>
-                        <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
+                        <span style={{ fontSize: 11, color: '#82828d' }}>— {c.label}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
                     Perguntas
                     <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3, background: 'rgba(209,250,229,0.12)', color: 'var(--profit)' }}>voz responde</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"quanto lucrei hoje?"</span>
-                      <span style={{ fontSize: 11, color: '#64748B' }}> — fala o lucro de hoje</span>
+                      <span style={{ fontSize: 11, color: '#82828d' }}> — fala o lucro de hoje</span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"quanto lucrei essa semana?"</span>
-                      <span style={{ fontSize: 11, color: '#64748B' }}> — lucro dos 7 dias</span>
+                      <span style={{ fontSize: 11, color: '#82828d' }}> — lucro dos 7 dias</span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"qual meu lucro do mês?"</span>
-                      <span style={{ fontSize: 11, color: '#64748B' }}> — lucro do mês atual</span>
+                      <span style={{ fontSize: 11, color: '#82828d' }}> — lucro do mês atual</span>
                     </div>
                   </div>
                 </>
@@ -720,19 +720,19 @@ export default function VoiceCommandPanel({ userEmail }) {
 
               {isAdminLevel && (
                 <>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Acoes rapidas</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Acoes rapidas</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"lucro 150"</span>
-                      <span style={{ fontSize: 11, color: '#64748B' }}> — abre Metodos com R$ 150</span>
+                      <span style={{ fontSize: 11, color: '#82828d' }}> — abre Metodos com R$ 150</span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"prejuizo 80"</span>
-                      <span style={{ fontSize: 11, color: '#64748B' }}> — idem prejuizo</span>
+                      <span style={{ fontSize: 11, color: '#82828d' }}> — idem prejuizo</span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
                       <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"novo metodo"</span>
-                      <span style={{ fontSize: 11, color: '#64748B' }}> — abre form vazio</span>
+                      <span style={{ fontSize: 11, color: '#82828d' }}> — abre form vazio</span>
                     </div>
                   </div>
                 </>

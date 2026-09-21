@@ -13,7 +13,7 @@ import { calculatePrice } from '../lib/pricing'
 // p/ lucro. Refs: Stripe / Linear / Framer / Arc / Vercel.
 // ─────────────────────────────────────────────────────────────────────────
 
-const BRAND = '#e53935'
+const BRAND = '#e5391f'
 const PROFIT = '#22C55E'
 const ease = [0.33, 1, 0.68, 1]
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -116,11 +116,11 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
         color: variant === 'solid' ? '#fff' : 'var(--t1)',
         background: variant === 'solid' ? BRAND : 'transparent',
         border: variant === 'solid' ? 'none' : '1px solid var(--b2)',
-        boxShadow: variant === 'solid' ? '0 10px 28px rgba(229,57,53,0.32)' : 'none',
+        boxShadow: variant === 'solid' ? '0 10px 28px rgba(229,57,31,0.32)' : 'none',
         transition: 'transform 0.18s, box-shadow 0.18s, background 0.18s',
       }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; if (variant === 'solid') e.currentTarget.style.boxShadow = '0 16px 38px rgba(229,57,53,0.46)'; else e.currentTarget.style.background = 'var(--raised)' }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'none'; if (variant === 'solid') e.currentTarget.style.boxShadow = '0 10px 28px rgba(229,57,53,0.32)'; else e.currentTarget.style.background = 'transparent' }}>
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; if (variant === 'solid') e.currentTarget.style.boxShadow = '0 16px 38px rgba(229,57,31,0.46)'; else e.currentTarget.style.background = 'var(--raised)' }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'none'; if (variant === 'solid') e.currentTarget.style.boxShadow = '0 10px 28px rgba(229,57,31,0.32)'; else e.currentTarget.style.background = 'transparent' }}>
       {label}
       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
     </button>
@@ -455,7 +455,7 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
 
           <Reveal delay={0.1} style={{ display: 'flex', justifyContent: 'center' }}>
             {/* celular */}
-            <div style={{ position: 'relative', width: 290, maxWidth: '100%', borderRadius: 40, padding: 12, background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 70px rgba(229,57,53,0.08)' }}>
+            <div style={{ position: 'relative', width: 290, maxWidth: '100%', borderRadius: 40, padding: 12, background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 70px rgba(229,57,31,0.08)' }}>
               <div style={{ position: 'absolute', top: 22, left: '50%', transform: 'translateX(-50%)', width: 90, height: 7, borderRadius: 99, background: 'var(--fill-3)' }} />
               <div style={{ borderRadius: 30, background: 'var(--surface)', padding: '48px 14px 22px', minHeight: 470 }}>
                 <p style={{ textAlign: 'center', fontFamily: 'var(--mono,monospace)', fontSize: 11, color: 'var(--t3)', margin: '0 0 18px', letterSpacing: '0.1em' }}>9:41 · NexControl</p>

@@ -78,7 +78,7 @@ export default function GlobalLoadingScreen() {
               color: 'var(--t1)',
               lineHeight: 1,
             }}>
-              Nex<span style={{ color: '#e53935' }}>Control</span>
+              Nex<span style={{ color: '#e5391f' }}>Control</span>
             </span>
           </motion.div>
         </motion.div>

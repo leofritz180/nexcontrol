@@ -130,7 +130,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
         <motion.div initial={{opacity:0,y:-15}} animate={{opacity:1,y:0}} transition={{delay:0.5,duration:0.4}}
           style={{ position:'absolute', top:20, left:24, right:24, display:'flex', alignItems:'center', justifyContent:'space-between', zIndex:10 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-            <div style={{ width:24, height:24, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <div style={{ width:24, height:24, borderRadius:6, background:'#e5391f', display:'flex', alignItems:'center', justifyContent:'center' }}>
               <NexIcon size={10}/>
             </div>
             <span style={{ fontSize:13, fontWeight:700, color:'var(--t3)' }}>NexControl</span>
@@ -151,7 +151,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
         <div style={{ position:'absolute', top:16, right:16, zIndex:10, display:'flex', gap:8 }}>
           <GenerateVideoButton amount={val} completedGoals={fechadas.length} goalPct={goalPct} mode={mode} stats={stats} onClose={onClose}/>
           <button onClick={exportImage} disabled={exporting}
-            style={{ fontSize:11, fontWeight:600, padding:'6px 14px', borderRadius:7, cursor:exporting?'wait':'pointer', border:'none', background:'#e53935', color:'white', opacity:exporting?0.6:1 }}>
+            style={{ fontSize:11, fontWeight:600, padding:'6px 14px', borderRadius:7, cursor:exporting?'wait':'pointer', border:'none', background:'#e5391f', color:'white', opacity:exporting?0.6:1 }}>
             {exporting?'Gerando...':'Baixar imagem'}
           </button>
           <button onClick={()=>setPrintMode(false)} style={{ fontSize:11, padding:'6px 12px', borderRadius:7, cursor:'pointer', border:'none', background:'var(--fill-2)', color:'var(--t4)' }}>
@@ -172,9 +172,9 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
             style={{ position:'absolute', display:'flex', flexDirection:'column', alignItems:'center', gap:24 }}
           >
             <motion.div
-              animate={{ boxShadow:['0 0 40px rgba(229,57,53,0.3)','0 0 60px rgba(229,57,53,0.5)','0 0 40px rgba(229,57,53,0.3)'] }}
+              animate={{ boxShadow:['0 0 40px rgba(229,57,31,0.3)','0 0 60px rgba(229,57,31,0.5)','0 0 40px rgba(229,57,31,0.3)'] }}
               transition={{ duration:3, repeat:Infinity }}
-              style={{ width:80, height:80, borderRadius:20, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}
+              style={{ width:80, height:80, borderRadius:20, background:'#e5391f', display:'flex', alignItems:'center', justifyContent:'center' }}
             >
               <NexIcon size={36}/>
             </motion.div>
@@ -332,7 +332,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
         <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.5,duration:0.8}}
           style={{ position:'absolute', bottom:40, display:'flex', flexDirection:'column', alignItems:'center', gap:12, zIndex:2 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-            <div style={{ width:28, height:28, borderRadius:7, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <div style={{ width:28, height:28, borderRadius:7, background:'#e5391f', display:'flex', alignItems:'center', justifyContent:'center' }}>
               <NexIcon size={12}/>
             </div>
             <span style={{ fontSize:14, color:'var(--t3)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
@@ -348,7 +348,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
         <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.3}}
           style={{ position:'absolute', bottom:40, display:'flex', flexDirection:'column', alignItems:'center', gap:14, zIndex:2 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-            <div style={{ width:30, height:30, borderRadius:7, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <div style={{ width:30, height:30, borderRadius:7, background:'#e5391f', display:'flex', alignItems:'center', justifyContent:'center' }}>
               <NexIcon size={13}/>
             </div>
             <div>
@@ -382,7 +382,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
           </div>
           <div style={{ position:'absolute', bottom:80, display:'flex', flexDirection:'column', alignItems:'center', gap:16 }}>
             <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-              <div style={{ width:32, height:32, borderRadius:8, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <div style={{ width:32, height:32, borderRadius:8, background:'#e5391f', display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <NexIcon size={14}/>
               </div>
               <span style={{ fontSize:20, color:'var(--t3)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>

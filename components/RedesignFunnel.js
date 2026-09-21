@@ -13,7 +13,7 @@ import { motion, useInView } from 'framer-motion'
  */
 
 const ease = [0.33, 1, 0.68, 1]
-const BRAND = '#e53935'
+const BRAND = '#e5391f'
 
 // largura de cada bloco (afunila de cima p/ baixo) — sutil, não decorativo
 const WIDTHS = [100, 92, 84, 76, 68]
@@ -70,7 +70,7 @@ export default function RedesignFunnel({ items = [], legacy = false }) {
           <div style={{
             width: 28, height: 28, borderRadius: 7, flexShrink: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(229,57,53,0.10)', border: '1px solid rgba(229,57,53,0.30)',
+            background: 'rgba(229,57,31,0.10)', border: '1px solid rgba(229,57,31,0.30)',
           }}>
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={BRAND} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
@@ -104,7 +104,7 @@ export default function RedesignFunnel({ items = [], legacy = false }) {
                   background: legacy ? '#000' : '#e10000',
                   border: legacy ? `1px solid ${BRAND}` : '1px solid rgba(255,255,255,0.28)',
                   boxShadow: highlight
-                    ? (legacy ? `0 0 0 3px rgba(229,57,53,0.18), 0 0 18px rgba(229,57,53,0.20)` : '0 0 0 3px rgba(225,0,0,0.20)')
+                    ? (legacy ? `0 0 0 3px rgba(229,57,31,0.18), 0 0 18px rgba(229,57,31,0.20)` : '0 0 0 3px rgba(225,0,0,0.20)')
                     : 'none',
                   borderRadius: 10,
                   padding: '12px 16px',
@@ -139,16 +139,16 @@ export default function RedesignFunnel({ items = [], legacy = false }) {
               {/* conector + taxa de conversão entre níveis */}
               {i < data.length - 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '7px 0' }}>
-                  <div style={{ width: 1, height: 9, background: 'rgba(229,57,53,0.35)' }} />
+                  <div style={{ width: 1, height: 9, background: 'rgba(229,57,31,0.35)' }} />
                   <span style={{
                     fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono)',
-                    color: 'var(--loss)', background: 'rgba(229,57,53,0.10)',
-                    border: '1px solid rgba(229,57,53,0.25)', borderRadius: 5,
+                    color: 'var(--loss)', background: 'rgba(229,57,31,0.10)',
+                    border: '1px solid rgba(229,57,31,0.25)', borderRadius: 5,
                     padding: '2px 7px', lineHeight: 1.2, letterSpacing: '0.02em',
                   }}>
                     {conv[i + 1] == null ? '—' : `${conv[i + 1]}%`}
                   </span>
-                  <div style={{ width: 1, height: 9, background: 'rgba(229,57,53,0.35)' }} />
+                  <div style={{ width: 1, height: 9, background: 'rgba(229,57,31,0.35)' }} />
                 </div>
               )}
             </div>

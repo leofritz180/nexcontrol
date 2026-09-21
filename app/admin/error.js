@@ -39,14 +39,14 @@ export default function AdminError({ error, reset }) {
           maxHeight: 140, overflowY: 'auto',
         }}>
           {error?.message || 'Erro desconhecido'}
-          {error?.digest && <div style={{ marginTop: 6, color: '#64748B' }}>digest: {error.digest}</div>}
+          {error?.digest && <div style={{ marginTop: 6, color: '#82828d' }}>digest: {error.digest}</div>}
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <button onClick={() => reset()} style={{
             flex: 1, padding: '12px 20px', borderRadius: 11, border: 'none', cursor: 'pointer',
             fontSize: 13, fontWeight: 700, fontFamily: 'inherit', color: '#fff',
-            background: 'linear-gradient(145deg, #e53935, #c62828)',
-            boxShadow: '0 4px 14px rgba(229,57,53,0.35)',
+            background: 'linear-gradient(145deg, #e5391f, #b32c16)',
+            boxShadow: '0 4px 14px rgba(229,57,31,0.35)',
           }}>Tentar novamente</button>
           <button onClick={() => { if (typeof window !== 'undefined') window.location.href = '/login' }} style={{
             padding: '12px 20px', borderRadius: 11, border: '1px solid var(--b1)', cursor: 'pointer',

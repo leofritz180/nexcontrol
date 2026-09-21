@@ -12,7 +12,7 @@ const fmt = n => 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { maximumFractio
 
 // Paletas por estado — base quase preta + glow discreto (sem amarelo/dourado).
 const PAL = {
-  low:  { b1: '#230a0c', b2: '#0a0405', a1: 'rgba(255,74,74,0.26)', a2: 'rgba(229,57,53,0.18)', ring: '#ff4a4a', accent: '#ff8a86', border: 'rgba(255,96,96,0.30)', shadow: 'rgba(229,57,53,0.32)' },
+  low:  { b1: '#230a0c', b2: '#0a0405', a1: 'rgba(255,74,74,0.26)', a2: 'rgba(229,57,31,0.18)', ring: '#ff4a4a', accent: '#ff8a86', border: 'rgba(255,96,96,0.30)', shadow: 'rgba(229,57,31,0.32)' },
   near: { b1: '#2c0a0a', b2: '#0c0505', a1: 'rgba(255,58,58,0.40)', a2: 'rgba(255,40,40,0.26)', ring: '#ff2d2d', accent: '#ff7a75', border: 'rgba(255,72,72,0.44)', shadow: 'rgba(255,48,48,0.42)' },
   hit:  { b1: '#06210f', b2: '#03110a', a1: 'rgba(52,230,140,0.30)', a2: 'rgba(34,197,94,0.20)', ring: '#2fe08a', accent: '#7ff0ae', border: 'rgba(52,220,140,0.34)', shadow: 'rgba(34,197,94,0.36)' },
 }

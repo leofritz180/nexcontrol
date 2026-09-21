@@ -625,17 +625,17 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
             {/* Summary */}
             <div style={{ background:'var(--fill-1)', border:'1px solid var(--b1)', borderRadius:12, padding:16, marginBottom:16 }}>
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
-                <span style={{ fontSize:11, color:'#64748B' }}>Modelo atual</span>
+                <span style={{ fontSize:11, color:'#82828d' }}>Modelo atual</span>
                 <span style={{ fontSize:12, fontWeight:600, color:'var(--t3)' }}>{MODELS.find(m=>m.key===currentModel)?.label}</span>
               </div>
               <div style={{ width:'100%', height:1, background:'var(--fill-2)', margin:'0 0 10px' }} />
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
-                <span style={{ fontSize:11, color:'#64748B' }}>Novo modelo</span>
+                <span style={{ fontSize:11, color:'#82828d' }}>Novo modelo</span>
                 <span style={{ fontSize:12, fontWeight:700, color: pendingModel === 'divisao_resultado' ? 'rgba(255,255,255,0.78)' : 'var(--profit)' }}>{MODELS.find(m=>m.key===pendingModel)?.label}</span>
               </div>
               {/* Value input for new model */}
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                <span style={{ fontSize:11, color:'#64748B' }}>{MODELS.find(m=>m.key===pendingModel)?.valueLabel}</span>
+                <span style={{ fontSize:11, color:'#82828d' }}>{MODELS.find(m=>m.key===pendingModel)?.valueLabel}</span>
                 <input className="input" type="number" step="0.01" min="0" max={pendingModel==='divisao_resultado'?100:undefined}
                   value={pendingValue}
                   onChange={e => setPendingValue(e.target.value)}
@@ -1030,11 +1030,11 @@ export default function OperadoresPage() {
   const DemoBanner = () => (
     <motion.div className="demo-banner" {...fadeUp(0)} style={{
       display: 'flex', alignItems: 'center', gap: 10, padding: '12px 18px', marginBottom: 20,
-      background: 'linear-gradient(135deg, rgba(229,57,53,0.12), rgba(229,57,53,0.04))',
-      border: '1px solid rgba(229,57,53,0.18)', borderRadius: 12,
+      background: 'linear-gradient(135deg, rgba(229,57,31,0.12), rgba(229,57,31,0.04))',
+      border: '1px solid rgba(229,57,31,0.18)', borderRadius: 12,
     }}>
-      <span className="demo-banner-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', flexShrink: 0 }} />
-      <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(229,57,53,0.85)', margin: 0 }}>{DEMO_BANNER_TEXT}</p>
+      <span className="demo-banner-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#e5391f', flexShrink: 0 }} />
+      <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(229,57,31,0.85)', margin: 0 }}>{DEMO_BANNER_TEXT}</p>
     </motion.div>
   )
 
@@ -1522,7 +1522,7 @@ export default function OperadoresPage() {
                             <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>{getName(op)}</p>
                             <span style={{
                               fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
-                              color: 'var(--t3)', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
+                              color: 'var(--t3)', background: 'rgba(130,130,141,0.08)', border: '1px solid rgba(130,130,141,0.12)',
                             }}>Operador</span>
                           </div>
                           <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>{op.email}</p>
@@ -1574,7 +1574,7 @@ export default function OperadoresPage() {
                           <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
                           <span style={{
                             fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
-                            color: 'var(--t3)', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
+                            color: 'var(--t3)', background: 'rgba(130,130,141,0.08)', border: '1px solid rgba(130,130,141,0.12)',
                           }}>Operador</span>
                         </div>
                         <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>{op.email}</p>
@@ -1686,13 +1686,13 @@ export default function OperadoresPage() {
                           flexShrink: 0, padding: '7px 14px', borderRadius: 8,
                           fontSize: 11, fontWeight: 700, letterSpacing: '0.02em',
                           color: reactivatingId === op.id ? 'rgba(255,255,255,0.4)' : 'rgba(209,250,229,0.85)',
-                          background: 'rgba(16,185,129,0.08)',
-                          border: '1px solid rgba(16,185,129,0.25)',
+                          background: 'rgba(63,155,30,0.08)',
+                          border: '1px solid rgba(63,155,30,0.25)',
                           cursor: reactivatingId === op.id ? 'default' : 'pointer',
                           whiteSpace: 'nowrap', transition: 'all 0.2s',
                         }}
-                        onMouseEnter={e => { if (reactivatingId !== op.id) e.currentTarget.style.background = 'rgba(16,185,129,0.16)' }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.08)' }}
+                        onMouseEnter={e => { if (reactivatingId !== op.id) e.currentTarget.style.background = 'rgba(63,155,30,0.16)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(63,155,30,0.08)' }}
                       >
                         {reactivatingId === op.id ? 'Reativando…' : 'Reativar'}
                       </button>
@@ -1822,7 +1822,7 @@ export default function OperadoresPage() {
                         ))}
                         <div style={{
                           display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
-                          padding: '14px 20px', background: 'rgba(229,57,53,0.04)',
+                          padding: '14px 20px', background: 'rgba(229,57,31,0.04)',
                           borderTop: '1px solid var(--brand-border)',
                         }}>
                           <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Total</p>
@@ -1897,7 +1897,7 @@ export default function OperadoresPage() {
                 {/* Total row */}
                 <div style={{
                   display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
-                  padding: '14px 20px', background: 'rgba(229,57,53,0.04)',
+                  padding: '14px 20px', background: 'rgba(229,57,31,0.04)',
                   borderTop: '1px solid var(--brand-border)',
                 }}>
                   <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Total</p>
@@ -1925,7 +1925,7 @@ export default function OperadoresPage() {
             {/* Modelo de operacao padrao */}
             <div style={{ padding: '22px 20px', background: 'var(--fill-1)', border: '1px solid var(--b1)', borderRadius: 14, marginBottom: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+                <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
                 <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>Modelo de operacao padrao</span>
               </div>
               <p style={{ fontSize: 11, color: 'var(--t4)', margin: '0 0 14px' }}>Pode ser alterado por meta</p>
@@ -1941,12 +1941,12 @@ export default function OperadoresPage() {
                       setTenant(prev => ({ ...prev, operation_model: opt.key }))
                     }} style={{
                       flex: 1, padding: '14px 16px', borderRadius: 12, cursor: 'pointer',
-                      background: active ? 'rgba(229,57,53,0.1)' : 'rgba(255,255,255,0.02)',
-                      border: `1px solid ${active ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.05)'}`,
+                      background: active ? 'rgba(229,57,31,0.1)' : 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${active ? 'rgba(229,57,31,0.25)' : 'rgba(255,255,255,0.05)'}`,
                       textAlign: 'left', transition: 'all 0.2s',
                     }}>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: active ? '#e53935' : 'rgba(255,255,255,0.5)', margin: '0 0 3px' }}>{opt.label}</p>
-                      <p style={{ fontSize: 11, color: active ? 'rgba(229,57,53,0.5)' : 'rgba(255,255,255,0.2)', margin: 0 }}>{opt.desc}</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: active ? '#e5391f' : 'rgba(255,255,255,0.5)', margin: '0 0 3px' }}>{opt.label}</p>
+                      <p style={{ fontSize: 11, color: active ? 'rgba(229,57,31,0.5)' : 'rgba(255,255,255,0.2)', margin: 0 }}>{opt.desc}</p>
                     </button>
                   )
                 })}
@@ -2002,10 +2002,10 @@ export default function OperadoresPage() {
               </div>
             </div>
             ) : (
-            <div style={{ padding: '18px 20px', background: 'rgba(229,57,53,0.04)', border: '1px solid rgba(229,57,53,0.1)', borderRadius: 14, marginTop: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <div style={{ padding: '18px 20px', background: 'rgba(229,57,31,0.04)', border: '1px solid rgba(229,57,31,0.1)', borderRadius: 14, marginTop: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
               <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: '#e53935', margin: '0 0 2px' }}>Slots favoritos — exclusivo PRO</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: '#e5391f', margin: '0 0 2px' }}>Slots favoritos — exclusivo PRO</p>
                 <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>Assine o PRO para configurar slots para seus operadores</p>
               </div>
             </div>

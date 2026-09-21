@@ -54,7 +54,7 @@ export async function GET(req) {
   for (const m of msgs) byAuthor[m.author_id] = (byAuthor[m.author_id] || 0) + 1
   const topIds = Object.keys(byAuthor).sort((x, y) => byAuthor[y] - byAuthor[x]).slice(0, 8)
   const authorMap = await buildAuthorMap(sb, topIds)
-  const top = topIds.map(id => ({ id, name: authorMap[id]?.name || 'admin', avatar: authorMap[id]?.avatar || null, color: authorMap[id]?.color || '#e53935', msgs: byAuthor[id] }))
+  const top = topIds.map(id => ({ id, name: authorMap[id]?.name || 'admin', avatar: authorMap[id]?.avatar || null, color: authorMap[id]?.color || '#e5391f', msgs: byAuthor[id] }))
 
   return NextResponse.json({
     eligible: members.length,

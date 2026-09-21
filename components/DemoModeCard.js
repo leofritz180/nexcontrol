@@ -57,8 +57,8 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
             zIndex: 9990,
             borderRadius: 18,
             padding: 1, // pra glow border
-            background: 'linear-gradient(135deg, rgba(229,57,53,0.6), rgba(229,57,53,0.2), rgba(255,140,140,0.4))',
-            boxShadow: '0 28px 60px rgba(0,0,0,0.6), 0 0 50px rgba(229,57,53,0.25)',
+            background: 'linear-gradient(135deg, rgba(229,57,31,0.6), rgba(229,57,31,0.2), rgba(255,140,140,0.4))',
+            boxShadow: '0 28px 60px rgba(0,0,0,0.6), 0 0 50px rgba(229,57,31,0.25)',
           }}
         >
           {/* Animated border gradient */}
@@ -68,7 +68,7 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
             transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
             style={{
               position: 'absolute', inset: 0, borderRadius: 18, padding: 1,
-              background: 'linear-gradient(110deg, rgba(229,57,53,0.6) 0%, rgba(255,140,140,0.4) 50%, rgba(229,57,53,0.6) 100%)',
+              background: 'linear-gradient(110deg, rgba(229,57,31,0.6) 0%, rgba(255,140,140,0.4) 50%, rgba(229,57,31,0.6) 100%)',
               backgroundSize: '200% 100%',
               mask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
               WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
@@ -92,7 +92,7 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
               style={{
                 position: 'absolute', top: -30, right: -30, width: 160, height: 160,
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(229,57,53,0.18) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(229,57,31,0.18) 0%, transparent 70%)',
                 filter: 'blur(20px)',
                 pointerEvents: 'none',
               }}
@@ -120,14 +120,14 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
               <motion.span
                 animate={{ boxShadow: [
-                  '0 0 0 0 rgba(229,57,53,0.6)',
-                  '0 0 0 8px rgba(229,57,53,0)',
-                  '0 0 0 0 rgba(229,57,53,0)',
+                  '0 0 0 0 rgba(229,57,31,0.6)',
+                  '0 0 0 8px rgba(229,57,31,0)',
+                  '0 0 0 0 rgba(229,57,31,0)',
                 ] }}
                 transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
                 style={{
                   width: 10, height: 10, borderRadius: '50%',
-                  background: '#e53935', flexShrink: 0,
+                  background: '#e5391f', flexShrink: 0,
                 }}
               />
               <span style={{
@@ -175,7 +175,7 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
             {/* CTA button */}
             <motion.button
               type="button" onClick={handleExit}
-              whileHover={{ scale: 1.02, boxShadow: '0 12px 32px rgba(229,57,53,0.55), 0 0 40px rgba(229,57,53,0.25)' }}
+              whileHover={{ scale: 1.02, boxShadow: '0 12px 32px rgba(229,57,31,0.55), 0 0 40px rgba(229,57,31,0.25)' }}
               whileTap={{ scale: 0.98 }}
               style={{
                 position: 'relative', overflow: 'hidden',
@@ -184,10 +184,10 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
                 fontSize: 14, fontWeight: 800, fontFamily: 'inherit',
                 letterSpacing: '0.06em',
                 color: '#fff',
-                background: 'linear-gradient(135deg, #e53935 0%, #c62828 100%)',
+                background: 'linear-gradient(135deg, #e5391f 0%, #b32c16 100%)',
                 border: 'none', borderRadius: 10,
                 cursor: 'pointer',
-                boxShadow: '0 8px 22px rgba(229,57,53,0.45), inset 0 1px 0 rgba(255,255,255,0.2)',
+                boxShadow: '0 8px 22px rgba(229,57,31,0.45), inset 0 1px 0 rgba(255,255,255,0.2)',
                 transition: 'box-shadow 0.2s',
               }}
             >

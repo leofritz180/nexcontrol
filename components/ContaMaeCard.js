@@ -31,18 +31,18 @@ export default function ContaMaeCard({
       {/* Glow sutil no topo */}
       <div style={{
         position: 'absolute', top: 0, left: '15%', right: '15%', height: 1,
-        background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.35), transparent)',
+        background: 'linear-gradient(90deg, transparent, rgba(229,57,31,0.35), transparent)',
       }}/>
 
       {/* Header com cadeado */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
         <div style={{
           width: 28, height: 28, borderRadius: 8,
-          background: 'rgba(229,57,53,0.1)',
-          border: '1px solid rgba(229,57,53,0.22)',
+          background: 'rgba(229,57,31,0.1)',
+          border: '1px solid rgba(229,57,31,0.22)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.2" strokeLinecap="round">
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2.2" strokeLinecap="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
@@ -87,7 +87,7 @@ export default function ContaMaeCard({
             fontFamily: 'var(--mono)',
             transition: 'border-color 0.18s, box-shadow 0.18s',
           }}
-          onFocus={e => { e.target.style.borderColor = 'rgba(229,57,53,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,53,0.08)' }}
+          onFocus={e => { e.target.style.borderColor = 'rgba(229,57,31,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,31,0.08)' }}
           onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none' }}
         />
       </div>
@@ -117,7 +117,7 @@ export default function ContaMaeCard({
               fontFamily: 'var(--mono)',
               transition: 'border-color 0.18s, box-shadow 0.18s',
             }}
-            onFocus={e => { e.target.style.borderColor = 'rgba(229,57,53,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,53,0.08)' }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(229,57,31,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,31,0.08)' }}
             onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none' }}
           />
         </div>
@@ -146,7 +146,7 @@ export default function ContaMaeCard({
                 fontFamily: 'var(--mono)', letterSpacing: mostrarSenha ? 'normal' : '0.15em',
                 transition: 'border-color 0.18s, box-shadow 0.18s',
               }}
-              onFocus={e => { e.target.style.borderColor = 'rgba(229,57,53,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,53,0.08)' }}
+              onFocus={e => { e.target.style.borderColor = 'rgba(229,57,31,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(229,57,31,0.08)' }}
               onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none' }}
             />
             <button
@@ -158,7 +158,7 @@ export default function ContaMaeCard({
                 width: 28, height: 28, borderRadius: 7,
                 background: 'transparent', border: 'none', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: mostrarSenha ? '#e53935' : 'rgba(255,255,255,0.45)',
+                color: mostrarSenha ? '#e5391f' : 'rgba(255,255,255,0.45)',
                 transition: 'color 0.15s, background 0.15s',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
@@ -182,7 +182,7 @@ export default function ContaMaeCard({
 
       {/* Footer com selo de seguranca */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--b1)' }}>
-        <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="rgba(16,185,129,0.7)" strokeWidth="2" strokeLinecap="round">
+        <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="rgba(63,155,30,0.7)" strokeWidth="2" strokeLinecap="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
         <p style={{ fontSize: 9.5, color: 'var(--t3)', margin: 0, fontWeight: 500 }}>
@@ -223,16 +223,16 @@ export function ContaMaeView({ link, login, senha }) {
     }}>
       <div style={{
         position: 'absolute', top: 0, left: '15%', right: '15%', height: 1,
-        background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.35), transparent)',
+        background: 'linear-gradient(90deg, transparent, rgba(229,57,31,0.35), transparent)',
       }}/>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
         <div style={{
           width: 28, height: 28, borderRadius: 8,
-          background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.22)',
+          background: 'rgba(229,57,31,0.1)', border: '1px solid rgba(229,57,31,0.22)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.2" strokeLinecap="round">
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2.2" strokeLinecap="round">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
@@ -294,14 +294,14 @@ function CredField({ label, value, displayValue, onCopy, copied, asLink, toggle,
       }}>
         {asLink ? (
           <a href={/^https?:\/\//i.test(value) ? value : `https://${value}`} target="_blank" rel="noopener noreferrer" style={{
-            color: 'var(--t1)', textDecoration: 'none', borderBottom: '1px dotted rgba(229,57,53,0.4)',
+            color: 'var(--t1)', textDecoration: 'none', borderBottom: '1px dotted rgba(229,57,31,0.4)',
           }}>{value}</a>
         ) : (displayValue ?? value)}
       </span>
       {toggle && (
         <button type="button" onClick={toggle} aria-label={mostrar ? 'Ocultar' : 'Mostrar'} style={{
           width: 26, height: 26, borderRadius: 6, border: 'none', cursor: 'pointer',
-          background: 'transparent', color: mostrar ? '#e53935' : 'rgba(255,255,255,0.45)',
+          background: 'transparent', color: mostrar ? '#e5391f' : 'rgba(255,255,255,0.45)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           {mostrar ? (
@@ -319,8 +319,8 @@ function CredField({ label, value, displayValue, onCopy, copied, asLink, toggle,
       )}
       <button type="button" onClick={onCopy} aria-label="Copiar" style={{
         width: 26, height: 26, borderRadius: 6, border: 'none', cursor: 'pointer',
-        background: copied ? 'rgba(16,185,129,0.15)' : 'transparent',
-        color: copied ? '#10B981' : 'rgba(255,255,255,0.45)',
+        background: copied ? 'rgba(63,155,30,0.15)' : 'transparent',
+        color: copied ? '#3f9b1e' : 'rgba(255,255,255,0.45)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         transition: 'background 0.18s, color 0.18s',
       }}>

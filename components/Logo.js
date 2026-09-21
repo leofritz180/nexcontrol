@@ -84,7 +84,7 @@ export default function Logo({
         transition: 'text-shadow 0.3s ease',
       }}
     >
-      Nex<span style={{ color: '#e53935' }}>Control</span>
+      Nex<span style={{ color: '#e5391f' }}>Control</span>
     </span>
   ) : null
 

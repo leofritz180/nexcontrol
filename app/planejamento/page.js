@@ -16,7 +16,7 @@ const ease = [0.33, 1, 0.68, 1]
 const REDES = ['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
 
 const REDE_COLORS = {
-  W1:'#e53935',WE:'#2979FF',VOY:'#ab47bc','91':'#ff9800',DZ:'#00e676',A8:'#ffeb3b',
+  W1:'#e5391f',WE:'#2979FF',VOY:'#ab47bc','91':'#ff9800',DZ:'#00e676',A8:'#ffeb3b',
   OKOK:'#ff5722',ANJO:'#ec407a',XW:'#26c6da',EK:'#8d6e63',DY:'#66bb6a','777':'#ffd600',
   '888':'#ef5350',WP:'#42a5f5',BRA:'#66bb6a',GAME:'#ab47bc',ALFA:'#29b6f6',KK:'#ffa726',
   MK:'#9ccc65',M9:'#7e57c2',KF:'#26a69a',PU:'#ec407a',COROA:'#fdd835',MANGA:'#ff7043',
@@ -228,7 +228,7 @@ export default function PlanejamentoPage() {
         <div style={{ maxWidth: 1800, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
       ) : (
       <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="spinner" style={{ width: 22, height: 22, borderTopColor: '#e53935' }} />
+        <div className="spinner" style={{ width: 22, height: 22, borderTopColor: '#e5391f' }} />
       </main>
       )}
     </AppLayout>
@@ -333,8 +333,8 @@ export default function PlanejamentoPage() {
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14, marginBottom: 22 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.6" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(229,57,31,0.1)', border: '1px solid rgba(229,57,31,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="1.6" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             </div>
             <div>
               <h1 style={{ fontSize: 22, fontWeight: 900, color: 'var(--t1)', margin: '0 0 3px', letterSpacing: '-0.02em' }}>Controle Operacional</h1>
@@ -390,12 +390,12 @@ export default function PlanejamentoPage() {
 
         {/* Filters */}
         <div style={{ display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' }}>
-          {[['todos', 'Todos', null], ...STATUSES.map(s => [s.key, s.label, s.color]), ['vazia', 'Vazias', '#64748B']].map(([k, l, c]) => (
+          {[['todos', 'Todos', null], ...STATUSES.map(s => [s.key, s.label, s.color]), ['vazia', 'Vazias', '#82828d']].map(([k, l, c]) => (
             <button key={k} onClick={() => setFilter(k)} style={{
               padding: '5px 14px', borderRadius: 7, fontSize: 10, fontWeight: 700, cursor: 'pointer',
-              background: filter === k ? `${c || '#e53935'}18` : 'rgba(255,255,255,0.02)',
-              color: filter === k ? (c || '#e53935') : 'var(--t3)',
-              border: `1px solid ${filter === k ? `${c || '#e53935'}40` : 'rgba(255,255,255,0.05)'}`,
+              background: filter === k ? `${c || '#e5391f'}18` : 'rgba(255,255,255,0.02)',
+              color: filter === k ? (c || '#e5391f') : 'var(--t3)',
+              border: `1px solid ${filter === k ? `${c || '#e5391f'}40` : 'rgba(255,255,255,0.05)'}`,
               transition: 'all 0.15s', letterSpacing: '0.03em',
             }}>{l}</button>
           ))}
@@ -479,7 +479,7 @@ export default function PlanejamentoPage() {
                                 onMouseLeave={e => { if (copiedLink !== r.id) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}>
                                 {copiedLink === r.id
                                   ? <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                  : <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                                  : <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#82828d" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
                                 }
                               </button>
                             )}
@@ -520,7 +520,7 @@ export default function PlanejamentoPage() {
                         </td>
                         {/* Obs */}
                         <td style={{ padding: '6px 8px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
-                          <CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="..." style={{ fontSize: 11, color: '#64748B' }} />
+                          <CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="..." style={{ fontSize: 11, color: '#82828d' }} />
                         </td>
                         {/* Prej./Lucro */}
                         <td style={{ padding: '4px 4px', minWidth: 75 }} onClick={e => e.stopPropagation()}>
@@ -597,9 +597,9 @@ export default function PlanejamentoPage() {
 
         {/* Botao nova linha (abaixo da tabela) */}
         <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} onClick={addRow}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '12px 20px', marginTop: 12, marginBottom: 8, borderRadius: 12, border: '1px dashed rgba(229,57,53,0.3)', background: 'rgba(229,57,53,0.04)', color: '#e53935', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.08)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.5)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(229,57,53,0.04)'; e.currentTarget.style.borderColor = 'rgba(229,57,53,0.3)' }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '12px 20px', marginTop: 12, marginBottom: 8, borderRadius: 12, border: '1px dashed rgba(229,57,31,0.3)', background: 'rgba(229,57,31,0.04)', color: '#e5391f', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(229,57,31,0.08)'; e.currentTarget.style.borderColor = 'rgba(229,57,31,0.5)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(229,57,31,0.04)'; e.currentTarget.style.borderColor = 'rgba(229,57,31,0.3)' }}
           className="plan-add-btn">
           <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Nova linha
@@ -669,7 +669,7 @@ export default function PlanejamentoPage() {
                                   }} style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: copiedLink === r.id ? 'rgba(209,250,229,0.15)' : 'rgba(255,255,255,0.06)' }}>
                                     {copiedLink === r.id
                                       ? <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                      : <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                                      : <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#82828d" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
                                     }
                                   </button>
                                 )}

@@ -32,7 +32,7 @@ const ease = [0.33, 1, 0.68, 1]
 const fadeUp = (i, base = 0) => ({ initial: { opacity: 0, y: 14 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.4, delay: base + i * 0.05, ease } })
 
 function statusInfo(m) {
-  if (m.status_fechamento === 'fechada') return { label: 'Fechada', color: 'var(--profit, #10b981)', bg: 'rgba(16,185,129,0.12)', bd: 'rgba(16,185,129,0.3)' }
+  if (m.status_fechamento === 'fechada') return { label: 'Fechada', color: 'var(--profit, #3f9b1e)', bg: 'rgba(63,155,30,0.12)', bd: 'rgba(63,155,30,0.3)' }
   if (m.status === 'finalizada') return { label: 'Finalizada — fechar', color: 'var(--warn)', bg: 'rgba(255,209,102,0.12)', bd: 'rgba(255,209,102,0.32)' }
   return { label: 'Ativa', color: 'var(--t1)', bg: 'rgba(255,255,255,0.06)', bd: 'rgba(255,255,255,0.14)' }
 }
@@ -125,7 +125,7 @@ function CreateMetaModal({ leaderId, operators, onClose, onCreated }) {
 
           <div style={{ display: 'flex', gap: 10 }}>
             <button type="button" onClick={onClose} style={{ flex: 1, padding: '12px', borderRadius: 11, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t2)', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Cancelar</button>
-            <button type="submit" disabled={saving} style={{ flex: 1.6, padding: '12px', borderRadius: 11, border: 'none', background: 'linear-gradient(180deg, #ef4444, #c62828)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}>{saving ? 'Criando...' : 'Criar e operar'}</button>
+            <button type="submit" disabled={saving} style={{ flex: 1.6, padding: '12px', borderRadius: 11, border: 'none', background: 'linear-gradient(180deg, #ef4444, #b32c16)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}>{saving ? 'Criando...' : 'Criar e operar'}</button>
           </div>
         </form>
       </motion.div>
@@ -191,7 +191,7 @@ function CostModal({ leaderId, onClose, onSaved }) {
           {error && <div style={{ padding: '9px 12px', marginBottom: 12, borderRadius: 9, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--loss)', fontSize: 12.5 }}>{error}</div>}
           <div style={{ display: 'flex', gap: 10 }}>
             <button type="button" onClick={onClose} style={{ flex: 1, padding: '12px', borderRadius: 11, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t2)', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Cancelar</button>
-            <button type="submit" disabled={saving} style={{ flex: 1.4, padding: '12px', borderRadius: 11, border: 'none', background: 'linear-gradient(180deg, #ef4444, #c62828)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}>{saving ? 'Salvando...' : 'Adicionar custo'}</button>
+            <button type="submit" disabled={saving} style={{ flex: 1.4, padding: '12px', borderRadius: 11, border: 'none', background: 'linear-gradient(180deg, #ef4444, #b32c16)', color: '#fff', fontSize: 13, fontWeight: 800, cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}>{saving ? 'Salvando...' : 'Adicionar custo'}</button>
           </div>
         </form>
       </motion.div>
@@ -422,7 +422,7 @@ export default function EquipePage() {
             </p>
           </div>
           <button type="button" onClick={() => setShowCreate(true)}
-            style={{ padding: '12px 20px', borderRadius: 12, border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(180deg, #ef4444, #c62828)', color: '#fff', fontSize: 13.5, fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 6px 20px rgba(239,68,68,0.35)' }}>
+            style={{ padding: '12px 20px', borderRadius: 12, border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: 'linear-gradient(180deg, #ef4444, #b32c16)', color: '#fff', fontSize: 13.5, fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 6px 20px rgba(239,68,68,0.35)' }}>
             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Nova meta
           </button>
@@ -441,7 +441,7 @@ export default function EquipePage() {
           <Kpi label="A fechar" value={toClose.length} color={toClose.length > 0 ? '#ffd166' : undefined} />
           <Kpi label="Depositantes" value={teamDeps} />
           <Kpi label="Custos" value={custosTotal} isCurrency color={custosTotal > 0 ? 'var(--loss, #ef4444)' : undefined} />
-          <Kpi label="Lucro líquido" value={teamLucro} isCurrency color={teamLucro >= 0 ? 'var(--profit, #10b981)' : 'var(--loss, #ef4444)'} />
+          <Kpi label="Lucro líquido" value={teamLucro} isCurrency color={teamLucro >= 0 ? 'var(--profit, #3f9b1e)' : 'var(--loss, #ef4444)'} />
         </motion.div>
 
         {/* Ranking dos operadores */}
@@ -461,7 +461,7 @@ export default function EquipePage() {
                     background: 'var(--surface)', border: '1px solid var(--b1)',
                   }}>
                     <div style={{ width: 30, height: 30, borderRadius: 9, flexShrink: 0, background: 'var(--fill-2)', border: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 900, color: 'var(--t2)', fontFamily: 'var(--mono, monospace)' }}>{idx + 1}</div>
-                    <div style={{ width: 42, height: 42, borderRadius: 13, flexShrink: 0, background: isProfit ? 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.05))' : 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.05))', border: `1.5px solid ${isProfit ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 800, color: 'var(--t1)' }}>{getInitial(op)}</div>
+                    <div style={{ width: 42, height: 42, borderRadius: 13, flexShrink: 0, background: isProfit ? 'linear-gradient(135deg, rgba(63,155,30,0.18), rgba(63,155,30,0.05))' : 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.05))', border: `1.5px solid ${isProfit ? 'rgba(63,155,30,0.3)' : 'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 800, color: 'var(--t1)' }}>{getInitial(op)}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                         <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>{getName(op)}</span>
@@ -473,7 +473,7 @@ export default function EquipePage() {
                       </span>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontSize: 16, fontWeight: 800, color: isProfit ? 'var(--profit, #10b981)' : 'var(--loss, #ef4444)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(op.lucroFinal)}</p>
+                      <p style={{ fontSize: 16, fontWeight: 800, color: isProfit ? 'var(--profit, #3f9b1e)' : 'var(--loss, #ef4444)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(op.lucroFinal)}</p>
                       <p style={{ fontSize: 10.5, color: 'var(--t4)', margin: '2px 0 0' }}>{op.winRate.toFixed(0)}% acerto</p>
                     </div>
                   </motion.div>
@@ -541,7 +541,7 @@ export default function EquipePage() {
                       <span style={{ fontSize: 11.5, color: 'var(--t3)' }}>{getName(op)} · {(m.rede || '—').toUpperCase()} · {m.quantidade_contas || 0} contas</span>
                     </div>
                     {m.status_fechamento === 'fechada' && (
-                      <span style={{ fontSize: 14, fontWeight: 800, color: Number(m.lucro_final || 0) >= 0 ? 'var(--profit, #10b981)' : 'var(--loss, #ef4444)', fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(m.lucro_final)}</span>
+                      <span style={{ fontSize: 14, fontWeight: 800, color: Number(m.lucro_final || 0) >= 0 ? 'var(--profit, #3f9b1e)' : 'var(--loss, #ef4444)', fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(m.lucro_final)}</span>
                     )}
                     <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><polyline points="9 18 15 12 9 6"/></svg>
                   </button>

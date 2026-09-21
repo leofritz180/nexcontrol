@@ -495,7 +495,7 @@ function PainelDaRede({ rede, onClose, allRedes }) {
                     <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 500 }}>
                       {m.operador_nome || 'Operador'}
                     </span>
-                    <span style={{ fontSize: 10, color: '#64748B', marginLeft: 8 }}>
+                    <span style={{ fontSize: 10, color: '#82828d', marginLeft: 8 }}>
                       {date.toLocaleDateString('pt-BR')}
                     </span>
                   </div>
@@ -509,7 +509,7 @@ function PainelDaRede({ rede, onClose, allRedes }) {
               )
             })}
             {recentMetas.length === 0 && (
-              <p style={{ fontSize: 12, color: '#64748B', textAlign: 'center', padding: '12px 0' }}>Nenhuma meta recente</p>
+              <p style={{ fontSize: 12, color: '#82828d', textAlign: 'center', padding: '12px 0' }}>Nenhuma meta recente</p>
             )}
           </div>
         </div>
@@ -896,7 +896,7 @@ export default function RedesPage() {
             <div style={{ width: 'min(1200px, 92vw)' }}><ModuloEsqueleto cards={4} /></div>
           ) : (<>
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            style={{ width: 32, height: 32, border: '3px solid rgba(229,57,53,0.2)', borderTopColor: '#e53935', borderRadius: '50%' }} />
+            style={{ width: 32, height: 32, border: '3px solid rgba(229,57,31,0.2)', borderTopColor: '#e5391f', borderRadius: '50%' }} />
           <p style={{ fontSize: 13, color: 'var(--t3)' }}>Carregando sistema estrategico...</p>
           </>)}
         </motion.div>
@@ -933,10 +933,10 @@ export default function RedesPage() {
                 <motion.div className="demo-banner" {...fadeUp(1)} style={{
                   display: 'flex', alignItems: 'center', gap: 12,
                   padding: '12px 20px', borderRadius: 12, marginBottom: 24,
-                  background: 'linear-gradient(135deg, rgba(229,57,53,0.08), rgba(229,57,53,0.03))',
-                  border: '1px solid rgba(229,57,53,0.15)',
+                  background: 'linear-gradient(135deg, rgba(229,57,31,0.08), rgba(229,57,31,0.03))',
+                  border: '1px solid rgba(229,57,31,0.15)',
                 }}>
-                  <div className="demo-banner-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', flexShrink: 0 }} />
+                  <div className="demo-banner-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#e5391f', flexShrink: 0 }} />
                   <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>{DEMO_BANNER_TEXT}</span>
                 </motion.div>
 
@@ -955,7 +955,7 @@ export default function RedesPage() {
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
                     <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)' }}>Ranking por Network Score</span>
-                    <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4 }}>{DEMO_REDES_RANKING.length} redes</span>
+                    <span style={{ fontSize: 11, color: '#82828d', marginLeft: 4 }}>{DEMO_REDES_RANKING.length} redes</span>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -1000,7 +1000,7 @@ export default function RedesPage() {
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 5, flexWrap: 'wrap' }}>
                                   <span style={{
-                                    fontSize: 11, fontWeight: 800, color: '#64748B', fontFamily: 'var(--mono, monospace)',
+                                    fontSize: 11, fontWeight: 800, color: '#82828d', fontFamily: 'var(--mono, monospace)',
                                     minWidth: 24,
                                   }}>#{i + 1}</span>
                                   <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)' }}>{rede.rede}</span>
@@ -1017,16 +1017,16 @@ export default function RedesPage() {
                                 </div>
                                 {/* Metrics row */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-                                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                                  <span style={{ fontSize: 11, color: '#82828d' }}>
                                     <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.metas}</span> metas
                                   </span>
-                                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                                  <span style={{ fontSize: 11, color: '#82828d' }}>
                                     <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.contas}</span> contas
                                   </span>
-                                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                                  <span style={{ fontSize: 11, color: '#82828d' }}>
                                     <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.remessas}</span> rem.
                                   </span>
-                                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                                  <span style={{ fontSize: 11, color: '#82828d' }}>
                                     win <span style={{ fontWeight: 700, color: rede.winRate >= 50 ? 'var(--profit)' : 'var(--loss)', fontFamily: 'var(--mono, monospace)' }}>{rede.winRate}%</span>
                                   </span>
                                 </div>
@@ -1055,7 +1055,7 @@ export default function RedesPage() {
                                 }}>
                                   {rede.lucroFinal >= 0 ? '+' : ''}R$ {fmt(rede.lucroFinal)}
                                 </p>
-                                <p style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>lucro total</p>
+                                <p style={{ fontSize: 10, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>lucro total</p>
                               </div>
                             </div>
 
@@ -1170,7 +1170,7 @@ export default function RedesPage() {
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
               </svg>
               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)' }}>Ranking por Network Score</span>
-              <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4 }}>{redesData.length} rede{redesData.length !== 1 ? 's' : ''}</span>
+              <span style={{ fontSize: 11, color: '#82828d', marginLeft: 4 }}>{redesData.length} rede{redesData.length !== 1 ? 's' : ''}</span>
             </div>
 
             {redesData.length === 0 ? (
@@ -1184,7 +1184,7 @@ export default function RedesPage() {
                   <circle cx="12" cy="12" r="2" />
                 </svg>
                 <p style={{ fontSize: 14, color: 'var(--t3)', fontWeight: 500 }}>Nenhuma rede com metas fechadas ainda</p>
-                <p style={{ fontSize: 12, color: '#64748B', marginTop: 6 }}>Feche metas para ativar o sistema estrategico</p>
+                <p style={{ fontSize: 12, color: '#82828d', marginTop: 6 }}>Feche metas para ativar o sistema estrategico</p>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -1233,7 +1233,7 @@ export default function RedesPage() {
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 5, flexWrap: 'wrap' }}>
                               <span style={{
-                                fontSize: 11, fontWeight: 800, color: '#64748B', fontFamily: 'var(--mono, monospace)',
+                                fontSize: 11, fontWeight: 800, color: '#82828d', fontFamily: 'var(--mono, monospace)',
                                 minWidth: 24,
                               }}>#{i + 1}</span>
                               <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rede.nome}</span>
@@ -1259,16 +1259,16 @@ export default function RedesPage() {
                             </div>
                             {/* Metrics row */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-                              <span style={{ fontSize: 11, color: '#64748B' }}>
+                              <span style={{ fontSize: 11, color: '#82828d' }}>
                                 <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.metas.length}</span> metas
                               </span>
-                              <span style={{ fontSize: 11, color: '#64748B' }}>
+                              <span style={{ fontSize: 11, color: '#82828d' }}>
                                 <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.depositantes}</span> dep.
                               </span>
-                              <span style={{ fontSize: 11, color: '#64748B' }}>
+                              <span style={{ fontSize: 11, color: '#82828d' }}>
                                 <span style={{ fontWeight: 700, color: 'var(--t3)' }}>{rede.remessaCount}</span> rem.
                               </span>
-                              <span style={{ fontSize: 11, color: '#64748B' }}>
+                              <span style={{ fontSize: 11, color: '#82828d' }}>
                                 win <span style={{ fontWeight: 700, color: rede.winRate >= 50 ? 'var(--profit)' : 'var(--loss)', fontFamily: 'var(--mono, monospace)' }}>{rede.winRate.toFixed(0)}%</span>
                               </span>
                             </div>
@@ -1313,7 +1313,7 @@ export default function RedesPage() {
                             }}>
                               {rede.lucroFinal >= 0 ? '+' : ''}R$ {fmt(rede.lucroFinal)}
                             </p>
-                            <p style={{ fontSize: 10, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>lucro total</p>
+                            <p style={{ fontSize: 10, color: '#82828d', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>lucro total</p>
                           </div>
                         </div>
 

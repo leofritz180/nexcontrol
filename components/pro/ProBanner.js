@@ -38,14 +38,14 @@ export default function ProBanner({ blockedCount = 3 }) {
             position:'fixed', bottom:24, right:24, zIndex:9000,
             maxWidth:340, padding:'16px 20px', borderRadius:14,
             background:'linear-gradient(145deg, var(--surface), var(--surface))',
-            border:'1px solid rgba(229,57,53,0.15)',
-            boxShadow:'0 12px 40px rgba(0,0,0,0.5), 0 0 20px rgba(229,57,53,0.05)',
+            border:'1px solid rgba(229,57,31,0.15)',
+            boxShadow:'0 12px 40px rgba(0,0,0,0.5), 0 0 20px rgba(229,57,31,0.05)',
           }}
         >
           <div style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
             <div style={{
-              width:32, height:32, borderRadius:9, background:'rgba(229,57,53,0.12)',
-              border:'1px solid rgba(229,57,53,0.2)',
+              width:32, height:32, borderRadius:9, background:'rgba(229,57,31,0.12)',
+              border:'1px solid rgba(229,57,31,0.2)',
               display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0,
             }}>
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth={2} strokeLinecap="round">
@@ -61,7 +61,7 @@ export default function ProBanner({ blockedCount = 3 }) {
               </p>
               <div style={{ display:'flex', gap:8 }}>
                 <Link href="/billing" onClick={dismiss}
-                  style={{ fontSize:11, fontWeight:700, padding:'6px 14px', borderRadius:7, background:'#e53935', color:'white', textDecoration:'none' }}>
+                  style={{ fontSize:11, fontWeight:700, padding:'6px 14px', borderRadius:7, background:'#e5391f', color:'white', textDecoration:'none' }}>
                   Desbloquear PRO
                 </Link>
                 <button onClick={dismiss}

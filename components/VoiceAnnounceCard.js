@@ -122,16 +122,16 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
               <div style={{
                 width: 52, height: 52, borderRadius: 14, flexShrink: 0,
-                background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.3)',
+                background: 'rgba(229,57,31,0.12)', border: '1px solid rgba(229,57,31,0.3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="9" y="2" width="6" height="12" rx="3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" />
                 </svg>
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: '#e53935', textTransform: 'uppercase' }}>Novidade</span>
+                  <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: '#e5391f', textTransform: 'uppercase' }}>Novidade</span>
                   <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 4, background: 'var(--fill-2)', color: 'var(--t2)', letterSpacing: '0.05em' }}>BETA</span>
                 </div>
                 <h2 style={{ fontFamily: 'var(--font-display, Georgia), serif', fontWeight: 400, fontSize: 30, lineHeight: 1.1, letterSpacing: '-0.02em', color: 'var(--t1)', margin: '2px 0 0' }}>
@@ -199,12 +199,12 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
 
             {/* CTA */}
             <button type="button" onClick={dismiss} style={{
-              width: '100%', background: '#e53935', color: 'white', border: 'none',
+              width: '100%', background: '#e5391f', color: 'white', border: 'none',
               padding: '14px 20px', borderRadius: 10, fontSize: 15, fontWeight: 600, cursor: 'pointer',
               transition: 'background 0.15s',
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#d32f2f' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#e53935' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#cf2f18' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#e5391f' }}
             >
               Entendi, bora testar
             </button>

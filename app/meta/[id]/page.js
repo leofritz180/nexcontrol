@@ -63,7 +63,7 @@ async function burnTimestamp(file) {
     const bw = Math.round(tw + padX * 2), bh = Math.round(fs + padY * 2)
     const margin = Math.max(8, Math.round(w * 0.015))
     const bx = margin, by = h - bh - margin
-    ctx.fillStyle = 'rgba(229,57,53,0.92)'
+    ctx.fillStyle = 'rgba(229,57,31,0.92)'
     rRect(ctx, bx, by, bw, bh, Math.round(fs * 0.3)); ctx.fill()
     ctx.fillStyle = '#ffffff'; ctx.textBaseline = 'middle'
     ctx.fillText(label, bx + padX, by + bh / 2 + 1)
@@ -970,7 +970,7 @@ export default function MetaPage() {
             // canReactivate: tanto meta finalizada quanto fechada podem ser reabertas
             const canReactivate = isFinalizada || isFechada
             const isAdminUser = profile?.role === 'admin' || leaderAllowed
-            const statusC = isFechada ? 'var(--profit)' : isFinalizada ? 'var(--t1)' : '#e53935'
+            const statusC = isFechada ? 'var(--profit)' : isFinalizada ? 'var(--t1)' : '#e5391f'
             const statusL = isFechada ? 'FECHADA' : isFinalizada ? 'FINALIZADA' : 'AO VIVO'
             return (
               <motion.div
@@ -1021,7 +1021,7 @@ export default function MetaPage() {
                       </div>
                       <div style={{ width:1, height:10, background:'var(--fill-3)' }}/>
                       <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2.2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                         <span style={{ fontSize:11, color:'var(--t3)', fontFamily:'var(--mono)', fontWeight:600 }}>{remessas.length} remessas</span>
                       </div>
                       <div style={{ width:1, height:10, background:'var(--fill-3)' }}/>
@@ -1053,17 +1053,17 @@ export default function MetaPage() {
                     )}
                     <motion.button
                       onClick={toggleStatus}
-                      whileHover={{ scale:1.03, boxShadow: canReactivate ? '0 8px 24px rgba(209,250,229,0.45)' : '0 8px 24px rgba(229,57,53,0.45)' }}
+                      whileHover={{ scale:1.03, boxShadow: canReactivate ? '0 8px 24px rgba(209,250,229,0.45)' : '0 8px 24px rgba(229,57,31,0.45)' }}
                       whileTap={{ scale:0.97 }}
                       style={{
                         padding:'10px 18px', borderRadius:11, border:'none', cursor:'pointer',
                         fontSize:12, fontWeight:800, fontFamily:'inherit', color:'var(--t1)',
                         background: canReactivate
                           ? 'linear-gradient(145deg, var(--profit), #00a06d)'
-                          : 'linear-gradient(145deg, #e53935, #c62828)',
+                          : 'linear-gradient(145deg, #e5391f, #b32c16)',
                         boxShadow: canReactivate
                           ? '0 6px 20px rgba(209,250,229,0.35), inset 0 1px 0 rgba(255,255,255,0.18)'
-                          : '0 6px 20px rgba(229,57,53,0.35), inset 0 1px 0 rgba(255,255,255,0.18)',
+                          : '0 6px 20px rgba(229,57,31,0.35), inset 0 1px 0 rgba(255,255,255,0.18)',
                         display:'flex', alignItems:'center', gap:7,
                       }}>
                       {canReactivate?<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Reativar meta</>:<><svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg> Finalizar meta</>}
@@ -1593,7 +1593,7 @@ export default function MetaPage() {
         <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
           {/* ══ REGISTRAR REMESSA ══ (escondido p/ líder gerenciando meta de operador) */}
           {isLeaderManaging ? null : isV2 ? (() => {
-            const colTitle = { fontFamily:'var(--mono)', fontSize:9, fontWeight:800, color:'#e53935', letterSpacing:'0.14em', textTransform:'uppercase', margin:'0 0 12px' }
+            const colTitle = { fontFamily:'var(--mono)', fontSize:9, fontWeight:800, color:'#e5391f', letterSpacing:'0.14em', textTransform:'uppercase', margin:'0 0 12px' }
             const inp = { fontSize:13, padding:'9px 11px' }
             const field = (label, children) => (<div style={{ marginBottom:11 }}><label className="t-label" style={{ display:'block', marginBottom:5, fontSize:8.5 }}>{label}</label>{children}</div>)
             const contasN = Number(contasRemessa||0)
@@ -1630,10 +1630,10 @@ export default function MetaPage() {
             return (
             <div className="card a2" style={{ padding:0, overflow:'hidden', borderRadius:18, border:'1px solid var(--b2)', background:'linear-gradient(180deg, var(--raised), var(--surface))', boxShadow:'0 24px 60px rgba(0,0,0,0.45)' }}>
               {/* Header */}
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 20px', borderBottom:'1px solid var(--b1)', background:'linear-gradient(90deg, rgba(229,57,53,0.07), transparent 60%)' }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 20px', borderBottom:'1px solid var(--b1)', background:'linear-gradient(90deg, rgba(229,57,31,0.07), transparent 60%)' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                  <div style={{ width:32, height:32, borderRadius:9, background:'rgba(229,57,53,0.12)', border:'1px solid rgba(229,57,53,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  <div style={{ width:32, height:32, borderRadius:9, background:'rgba(229,57,31,0.12)', border:'1px solid rgba(229,57,31,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                   </div>
                   <div>
                     <p style={{ fontSize:13.5, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Central de Remessa</p>
@@ -1656,8 +1656,8 @@ export default function MetaPage() {
                       : <span style={{ fontSize:10, color:'var(--t4)' }}>opcional · toque para escolher</span>}
                   </div>
                   <div style={{ position:'relative' }}>
-                    <button type="button" onClick={()=>{const el=document.getElementById('slot-nf');if(el)el.scrollBy({left:-280,behavior:'smooth'})}} style={{ position:'absolute', left:-6, top:'42%', transform:'translateY(-50%)', zIndex:3, width:32, height:32, borderRadius:'50%', border:'1px solid var(--b2)', background:'rgba(0,0,0,0.72)', backdropFilter:'blur(4px)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#e53935' }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-                    <button type="button" onClick={()=>{const el=document.getElementById('slot-nf');if(el)el.scrollBy({left:280,behavior:'smooth'})}} style={{ position:'absolute', right:-6, top:'42%', transform:'translateY(-50%)', zIndex:3, width:32, height:32, borderRadius:'50%', border:'1px solid var(--b2)', background:'rgba(0,0,0,0.72)', backdropFilter:'blur(4px)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#e53935' }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+                    <button type="button" onClick={()=>{const el=document.getElementById('slot-nf');if(el)el.scrollBy({left:-280,behavior:'smooth'})}} style={{ position:'absolute', left:-6, top:'42%', transform:'translateY(-50%)', zIndex:3, width:32, height:32, borderRadius:'50%', border:'1px solid var(--b2)', background:'rgba(0,0,0,0.72)', backdropFilter:'blur(4px)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#e5391f' }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+                    <button type="button" onClick={()=>{const el=document.getElementById('slot-nf');if(el)el.scrollBy({left:280,behavior:'smooth'})}} style={{ position:'absolute', right:-6, top:'42%', transform:'translateY(-50%)', zIndex:3, width:32, height:32, borderRadius:'50%', border:'1px solid var(--b2)', background:'rgba(0,0,0,0.72)', backdropFilter:'blur(4px)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#e5391f' }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
                   <div id="slot-nf" style={{ display:'flex', gap:10, overflowX:'auto', paddingBottom:6, scrollbarWidth:'none', padding:'0 6px 6px' }}>
                     <style>{`#slot-nf::-webkit-scrollbar{display:none}`}</style>
                     {slotList.map(s => {
@@ -1697,7 +1697,7 @@ export default function MetaPage() {
                       : field(<>CONTAS {tipo!=='redeposito' && <span style={{color:'var(--loss)'}}>*</span>}</>, <>
                       <input className="input" type="number" min="1" step="1" value={contasRemessa} onChange={e=>setContasRemessa(e.target.value)} placeholder="5" required={tipo!=='redeposito'} style={inp}/>
                       <div style={{ display:'flex', gap:4, marginTop:5 }}>
-                        {[3,5,10,15,20].map(n=>(<button key={n} type="button" onClick={()=>setContasRemessa(String(n))} style={{ flex:1, padding:'4px 0', borderRadius:6, fontSize:10, fontWeight:700, cursor:'pointer', background:Number(contasRemessa)===n?'rgba(229,57,53,0.14)':'var(--fill-1)', color:Number(contasRemessa)===n?'#e53935':'var(--t4)', border:`1px solid ${Number(contasRemessa)===n?'rgba(229,57,53,0.3)':'var(--b1)'}` }}>{n}</button>))}
+                        {[3,5,10,15,20].map(n=>(<button key={n} type="button" onClick={()=>setContasRemessa(String(n))} style={{ flex:1, padding:'4px 0', borderRadius:6, fontSize:10, fontWeight:700, cursor:'pointer', background:Number(contasRemessa)===n?'rgba(229,57,31,0.14)':'var(--fill-1)', color:Number(contasRemessa)===n?'#e5391f':'var(--t4)', border:`1px solid ${Number(contasRemessa)===n?'rgba(229,57,31,0.3)':'var(--b1)'}` }}>{n}</button>))}
                       </div>
                     </>)}
                   </div>
@@ -1715,7 +1715,7 @@ export default function MetaPage() {
                             {comprovantes.map((item, ci) => { const f = normFoto(item); return (
                               <div key={ci} style={{ position:'relative' }}>
                                 <a href={f.url} target="_blank" rel="noreferrer"><img src={f.url} alt={`comprovante ${ci+1}`} style={{ width:64, height:64, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/></a>
-                                {f.ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'var(--t1)', fontSize:7.5, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2, letterSpacing:'-0.02em' }}>{fmtFotoTs(f.ts)}</span>}
+                                {f.ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,31,0.92)', color:'var(--t1)', fontSize:7.5, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2, letterSpacing:'-0.02em' }}>{fmtFotoTs(f.ts)}</span>}
                                 <button type="button" onClick={()=>setComprovantes(prev=>prev.filter((_,i)=>i!==ci))} title="Remover"
                                   style={{ position:'absolute', top:-6, right:-6, width:18, height:18, borderRadius:'50%', border:'1px solid var(--b2)', background:'var(--surface)', color:'var(--loss)', cursor:'pointer', fontSize:11, lineHeight:'1', display:'flex', alignItems:'center', justifyContent:'center', padding:0 }}>×</button>
                               </div>
@@ -1810,9 +1810,9 @@ export default function MetaPage() {
                       {[3,5,10,15,20].map(n=>(
                         <button key={n} type="button" onClick={()=>setContasRemessa(String(n))} style={{
                           flex:1, padding:'3px 0', borderRadius:5, fontSize:9, fontWeight:700, cursor:'pointer',
-                          background: Number(contasRemessa)===n ? 'rgba(229,57,53,0.12)' : 'rgba(255,255,255,0.03)',
-                          color: Number(contasRemessa)===n ? '#e53935' : 'var(--t4)',
-                          border: `1px solid ${Number(contasRemessa)===n ? 'rgba(229,57,53,0.25)' : 'var(--b1)'}`,
+                          background: Number(contasRemessa)===n ? 'rgba(229,57,31,0.12)' : 'rgba(255,255,255,0.03)',
+                          color: Number(contasRemessa)===n ? '#e5391f' : 'var(--t4)',
+                          border: `1px solid ${Number(contasRemessa)===n ? 'rgba(229,57,31,0.25)' : 'var(--b1)'}`,
                           transition:'all 0.15s',
                         }}>{n}</button>
                       ))}
@@ -1899,11 +1899,11 @@ export default function MetaPage() {
                       <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>SLOT</label>
                       <div style={{ position:'relative' }}>
                         <button type="button" onClick={()=>{const el=document.getElementById('slot-scroll');if(el)el.scrollBy({left:-160,behavior:'smooth'})}}
-                          style={{ position:'absolute',left:-2,top:'50%',transform:'translateY(-50%)',zIndex:2,width:24,height:24,borderRadius:6,border:'1px solid rgba(229,57,53,0.2)',background:'rgba(229,57,53,0.06)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',color:'#e53935' }}>
+                          style={{ position:'absolute',left:-2,top:'50%',transform:'translateY(-50%)',zIndex:2,width:24,height:24,borderRadius:6,border:'1px solid rgba(229,57,31,0.2)',background:'rgba(229,57,31,0.06)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',color:'#e5391f' }}>
                           <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
                         </button>
                         <button type="button" onClick={()=>{const el=document.getElementById('slot-scroll');if(el)el.scrollBy({left:160,behavior:'smooth'})}}
-                          style={{ position:'absolute',right:-2,top:'50%',transform:'translateY(-50%)',zIndex:2,width:24,height:24,borderRadius:6,border:'1px solid rgba(229,57,53,0.2)',background:'rgba(229,57,53,0.06)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',color:'#e53935' }}>
+                          style={{ position:'absolute',right:-2,top:'50%',transform:'translateY(-50%)',zIndex:2,width:24,height:24,borderRadius:6,border:'1px solid rgba(229,57,31,0.2)',background:'rgba(229,57,31,0.06)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',color:'#e5391f' }}>
                           <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
                         <div id="slot-scroll" style={{ display:'flex',gap:6,overflowX:'auto',scrollbarWidth:'none',padding:'0 24px',scrollSnapType:'x mandatory' }}>
@@ -2059,7 +2059,7 @@ export default function MetaPage() {
                               {fotos.map((item, fi) => { const f = normFoto(item); const ts = f.ts || r.created_at; return (
                                 <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{ position:'relative', display:'block' }}>
                                   <img src={f.url} alt={`comprovante ${fi+1}`} style={{ width:72, height:72, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/>
-                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'var(--t1)', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fmtFotoTs(ts)}</span>}
+                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,31,0.92)', color:'var(--t1)', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fmtFotoTs(ts)}</span>}
                                 </a>
                               )})}
                             </div>
@@ -2239,7 +2239,7 @@ export default function MetaPage() {
                 const W = 1080, H = 1350
                 const c = document.createElement('canvas'); c.width = W; c.height = H
                 const x = c.getContext('2d')
-                const RED = '#e53935'
+                const RED = '#e5391f'
                 const accent = isLucro ? '34,197,94' : '229,57,53'      // verde lucro / vermelho perda
                 const accentHex = isLucro ? '#22C55E' : '#ef4444'
                 const rede = redeStr.toUpperCase()
@@ -2445,7 +2445,7 @@ export default function MetaPage() {
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                   </button>
 
-                  <p style={{ fontFamily: 'var(--mono)', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.22em', color: '#e53935', margin: '0 0 14px', textTransform: 'uppercase' }}>NexControl{meta.rede ? ` · ${meta.rede}` : ''}</p>
+                  <p style={{ fontFamily: 'var(--mono)', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.22em', color: '#e5391f', margin: '0 0 14px', textTransform: 'uppercase' }}>NexControl{meta.rede ? ` · ${meta.rede}` : ''}</p>
                   <h2 style={{ fontSize: 27, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.03em', margin: '0 0 22px' }}>Operação finalizada</h2>
 
                   <p style={{ fontSize: 12, color: 'var(--t3)', margin: '0 0 6px' }}>Resultado líquido da operação</p>
@@ -2482,7 +2482,7 @@ export default function MetaPage() {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                     <button type="button" onClick={baixarCertificado}
-                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, width: '100%', padding: '14px', borderRadius: 13, border: 'none', cursor: 'pointer', fontSize: 14.5, fontWeight: 800, fontFamily: 'inherit', color: '#fff', background: '#e53935', boxShadow: '0 10px 28px rgba(229,57,53,0.32)' }}>
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, width: '100%', padding: '14px', borderRadius: 13, border: 'none', cursor: 'pointer', fontSize: 14.5, fontWeight: 800, fontFamily: 'inherit', color: '#fff', background: '#e5391f', boxShadow: '0 10px 28px rgba(229,57,31,0.32)' }}>
                       <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
                       Baixar imagem
                     </button>
@@ -2660,7 +2660,7 @@ export default function MetaPage() {
                     style={{
                       width:'100%', padding:'16px 28px', borderRadius:14, border:'none', cursor:'pointer',
                       fontSize:15, fontWeight:700, color:'#fff',
-                      background: liq>=0 ? 'linear-gradient(135deg, var(--profit), #00a06d)' : 'linear-gradient(135deg, #e53935, #c62828)',
+                      background: liq>=0 ? 'linear-gradient(135deg, var(--profit), #00a06d)' : 'linear-gradient(135deg, #e5391f, #b32c16)',
                       boxShadow: `0 6px 24px rgba(${glowColor},0.3)`,
                       display:'flex', alignItems:'center', justifyContent:'center', gap:8,
                     }}

@@ -161,8 +161,8 @@ function RedeBadge({ rede }) {
   return (
     <span style={{
       fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 5,
-      background: 'rgba(229,57,53,0.1)', color: '#e53935',
-      border: '1px solid rgba(229,57,53,0.2)',
+      background: 'rgba(229,57,31,0.1)', color: '#e5391f',
+      border: '1px solid rgba(229,57,31,0.2)',
     }}>
       {rede}
     </span>
@@ -712,11 +712,11 @@ export default function PerformancePage() {
                 {profile?.role === 'admin' && rankingStats.position && (
                   <div style={{
                     padding: '24px', borderRadius: 14,
-                    background: 'rgba(229,57,53,0.04)', border: '1px solid rgba(229,57,53,0.15)',
+                    background: 'rgba(229,57,31,0.04)', border: '1px solid rgba(229,57,31,0.15)',
                     textAlign: 'center',
                   }}>
                     <p style={{ fontSize: 11, color: 'var(--t4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Sua posicao no ranking</p>
-                    <p style={{ fontFamily: 'var(--mono)', fontSize: 36, fontWeight: 800, color: '#e53935', margin: 0, lineHeight: 1 }}>
+                    <p style={{ fontFamily: 'var(--mono)', fontSize: 36, fontWeight: 800, color: '#e5391f', margin: 0, lineHeight: 1 }}>
                       {rankingStats.position}°
                     </p>
                     <p style={{ fontSize: 11, color: 'var(--t3)', marginTop: 6 }}>de {rankingStats.totalOperators} operadores</p>
@@ -967,7 +967,7 @@ export default function PerformancePage() {
                               <div style={{
                                 width: `${prog.pct}%`,
                                 height: '100%', borderRadius: 3,
-                                background: prog.pct >= 80 ? 'var(--profit)' : prog.pct >= 50 ? 'rgba(255,255,255,0.78)' : '#e53935',
+                                background: prog.pct >= 80 ? 'var(--profit)' : prog.pct >= 50 ? 'rgba(255,255,255,0.78)' : '#e5391f',
                                 transition: 'width 0.6s ease',
                               }} />
                             </div>
@@ -979,7 +979,7 @@ export default function PerformancePage() {
                               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                               width: '100%', padding: '9px 16px',
                               fontSize: 12, fontWeight: 700,
-                              color: '#fff', background: '#e53935',
+                              color: '#fff', background: '#e5391f',
                               border: 'none', borderRadius: 8,
                               cursor: 'pointer', transition: 'opacity 0.2s ease',
                             }}

@@ -70,7 +70,7 @@ export default function MetodosKpiCard({ lucroCpa = 0, onGoToTab }) {
         onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'}>
         <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
           Lucro Metodos
-          <span style={{ fontSize: 8, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,53,0.15)', color: '#e53935', letterSpacing: '0.04em' }}>BETA</span>
+          <span style={{ fontSize: 8, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,31,0.15)', color: '#e5391f', letterSpacing: '0.04em' }}>BETA</span>
         </div>
         <div style={{ fontFamily: 'var(--mono)', fontSize: 22, fontWeight: 800, color: liquidoMetodos >= 0 ? 'var(--profit)' : 'var(--loss)', letterSpacing: '-0.02em' }}>
           {loading ? '...' : (liquidoMetodos >= 0 ? '+' : '-') + 'R$ ' + fmtBRL(Math.abs(liquidoMetodos))}
@@ -79,9 +79,9 @@ export default function MetodosKpiCard({ lucroCpa = 0, onGoToTab }) {
       </button>
 
       {/* Consolidado */}
-      <div style={{ ...cardBase, background: consolidado >= 0 ? 'rgba(16,185,129,0.04)' : 'rgba(239,68,68,0.04)', border: '1px solid ' + (consolidado >= 0 ? 'rgba(16,185,129,0.22)' : 'rgba(239,68,68,0.22)') }}>
+      <div style={{ ...cardBase, background: consolidado >= 0 ? 'rgba(63,155,30,0.04)' : 'rgba(239,68,68,0.04)', border: '1px solid ' + (consolidado >= 0 ? 'rgba(63,155,30,0.22)' : 'rgba(239,68,68,0.22)') }}>
         <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Consolidado (CPA + Metodos)</div>
-        <div style={{ fontFamily: 'var(--mono)', fontSize: 26, fontWeight: 900, color: consolidado >= 0 ? '#10B981' : 'var(--loss)', letterSpacing: '-0.02em' }}>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 26, fontWeight: 900, color: consolidado >= 0 ? '#3f9b1e' : 'var(--loss)', letterSpacing: '-0.02em' }}>
           {consolidado >= 0 ? '+' : '-'}R$ {fmtBRL(Math.abs(consolidado))}
         </div>
       </div>

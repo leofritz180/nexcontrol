@@ -82,7 +82,7 @@ export default function ProxyPage() {
           {iframeErr ? (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: 'var(--surface)', textAlign: 'center', padding: 24 }}>
               <p style={{ color: 'var(--t2)', fontSize: 14, margin: 0 }}>Nao consegui carregar a loja aqui dentro.</p>
-              <a href={iframeUrl || 'https://bettifyproxy.com'} target="_blank" rel="noopener noreferrer" style={{ color: '#e53935', fontWeight: 600, fontSize: 13 }}>Abrir em nova aba</a>
+              <a href={iframeUrl || 'https://bettifyproxy.com'} target="_blank" rel="noopener noreferrer" style={{ color: '#e5391f', fontWeight: 600, fontSize: 13 }}>Abrir em nova aba</a>
             </div>
           ) : (
             <>
@@ -116,10 +116,10 @@ export default function ProxyPage() {
         <div style={{ maxWidth: 560, margin: '0 auto', padding: '64px 20px', textAlign: 'center' }}>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
             style={{ position: 'relative', overflow: 'hidden', borderRadius: 24, padding: '52px 36px', background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
-            <div style={{ position: 'absolute', top: -60, left: '50%', marginLeft: -130, width: 260, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.10), transparent 70%)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', top: -60, left: '50%', marginLeft: -130, width: 260, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,31,0.10), transparent 70%)', pointerEvents: 'none' }} />
 
-            <div style={{ width: 60, height: 60, borderRadius: 16, margin: '0 auto 22px', background: 'rgba(229,57,53,0.10)', border: '1px solid rgba(229,57,53,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-              <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <div style={{ width: 60, height: 60, borderRadius: 16, margin: '0 auto 22px', background: 'rgba(229,57,31,0.10)', border: '1px solid rgba(229,57,31,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
               </svg>
             </div>
@@ -131,9 +131,9 @@ export default function ProxyPage() {
               Estamos finalizando os ultimos ajustes da loja integrada. Em breve voce vai comprar seus proxies direto por aqui. Obrigado pela paciencia.
             </p>
 
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 22, padding: '8px 14px', borderRadius: 999, background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.22)', position: 'relative' }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#e53935' }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#e53935' }}>Em manutencao</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 22, padding: '8px 14px', borderRadius: 999, background: 'rgba(229,57,31,0.08)', border: '1px solid rgba(229,57,31,0.22)', position: 'relative' }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#e5391f' }} />
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#e5391f' }}>Em manutencao</span>
             </div>
           </motion.div>
         </div>

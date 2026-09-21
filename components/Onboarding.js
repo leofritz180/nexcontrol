@@ -74,9 +74,9 @@ export default function Onboarding() {
             style={{ textAlign:'center' }}
           >
             <div style={{
-              width:52, height:52, borderRadius:14, background:'#e53935',
+              width:52, height:52, borderRadius:14, background:'#e5391f',
               display:'flex', alignItems:'center', justifyContent:'center',
-              margin:'0 auto 20px', boxShadow:'0 0 30px rgba(229,57,53,0.3)',
+              margin:'0 auto 20px', boxShadow:'0 0 30px rgba(229,57,31,0.3)',
             }}>
               <NexIcon size={22}/>
             </div>
@@ -106,7 +106,7 @@ export default function Onboarding() {
               {[1,2,3].map(i => (
                 <div key={i} style={{
                   width: step===i?20:6, height:6, borderRadius:3,
-                  background: step===i?'#e53935':'rgba(255,255,255,0.12)',
+                  background: step===i?'#e5391f':'rgba(255,255,255,0.12)',
                   transition:'all 0.3s',
                 }}/>
               ))}
@@ -116,8 +116,8 @@ export default function Onboarding() {
               <button onClick={next}
                 style={{
                   padding:'12px 32px', borderRadius:10, fontSize:14, fontWeight:700,
-                  background:'#e53935', color:'white', border:'none', cursor:'pointer',
-                  boxShadow:'0 4px 16px rgba(229,57,53,0.25)',
+                  background:'#e5391f', color:'white', border:'none', cursor:'pointer',
+                  boxShadow:'0 4px 16px rgba(229,57,31,0.25)',
                 }}>
                 {step < 3 ? 'Proximo' : 'Comecar a usar'}
               </button>

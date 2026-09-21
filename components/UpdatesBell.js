@@ -101,11 +101,11 @@ export default function UpdatesBell() {
           width: 42, height: 42, borderRadius: 12,
           background: 'var(--surface)',
           border: '1px solid var(--b1)',
-          color: unread > 0 ? '#e53935' : 'rgba(255,255,255,0.7)',
+          color: unread > 0 ? '#e5391f' : 'rgba(255,255,255,0.7)',
           cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: unread > 0
-            ? '0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(229,57,53,0.15), 0 0 28px rgba(229,57,53,0.18)'
+            ? '0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(229,57,31,0.15), 0 0 28px rgba(229,57,31,0.18)'
             : '0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)',
           transition: 'all 0.2s ease',
         }}
@@ -121,7 +121,7 @@ export default function UpdatesBell() {
               position: 'absolute', top: -4, right: -4,
               minWidth: 18, height: 18, padding: '0 5px',
               borderRadius: 9,
-              background: 'linear-gradient(180deg, var(--loss), #c62828)',
+              background: 'linear-gradient(180deg, var(--loss), #b32c16)',
               color: '#fff', fontSize: 10, fontWeight: 800,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               border: '2px solid #050505',

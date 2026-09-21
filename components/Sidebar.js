@@ -472,7 +472,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         </svg>
         {/* Lembrete: pontinho vermelho quando ainda nao ativou push */}
         {!mobileOpen && userId && tenantId && (pushState === 'default' || pushState === 'prompt') && (
-          <span style={{ position:'absolute', top:5, right:5, width:9, height:9, borderRadius:'50%', background:'#e53935', border:'2px solid #000', animation:'notif-pulse 1.8s ease-in-out infinite' }}/>
+          <span style={{ position:'absolute', top:5, right:5, width:9, height:9, borderRadius:'50%', background:'#e5391f', border:'2px solid #000', animation:'notif-pulse 1.8s ease-in-out infinite' }}/>
         )}
       </motion.button>
 
@@ -510,8 +510,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
 
       <style jsx global>{`
         @keyframes notif-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0.5); }
-          60% { box-shadow: 0 0 0 7px rgba(229,57,53,0); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,31,0.5); }
+          60% { box-shadow: 0 0 0 7px rgba(229,57,31,0); }
         }
         .sidebar-desktop { display: block !important; }
         .sidebar-mobile-toggle { display: none !important; }

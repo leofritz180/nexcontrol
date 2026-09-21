@@ -167,11 +167,14 @@ html.nx-aqua:not(.nx-light) {
    escuro. Escopado em .nx-aqua (só a conta leofritz178). */
 .nx-aqua [style*="border-radius: 14px"][style*="solid var(--b1)"],
 .nx-aqua [style*="border-radius: 12px"][style*="solid var(--b1)"] {
-  border-left: 3px solid #e53935 !important;
+  border-left: 3px solid var(--brand) !important;
 }
-/* eyebrows / rótulos em CAPS viram vermelho (identidade RED) */
+/* Eyebrows / rótulos em CAPS viram vermelho (identidade da marca).
+   Era #e53935 — um vermelho PARECIDO com o da marca, mas não ele. Os dois
+   apareciam lado a lado na mesma tela: o rótulo num tom e o botão de ação
+   noutro. Agora os dois usam var(--brand). */
 .nx-aqua p[style*="text-transform: uppercase"] {
-  color: #e53935 !important;
+  color: var(--brand) !important;
 }
 
 /* ════════════════════════════════════════════════════════════════

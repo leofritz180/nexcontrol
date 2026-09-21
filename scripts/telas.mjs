@@ -69,6 +69,25 @@ const LOGADAS = [
 
 fs.mkdirSync(PASTA, { recursive: true })
 
+// ── modo link: consome um magic link e salva a sessão, sem digitar senha ──
+// Gere o link com a API admin do Supabase e deixe em .telas/link.txt.
+if (tem('--link')) {
+  const url = fs.readFileSync(path.join(PASTA, 'link.txt'), 'utf8').trim()
+  if (!url) { console.error('.telas/link.txt está vazio'); process.exit(1) }
+  const b = await chromium.launch({ executablePath: process.env.CHROME_PATH || navegador })
+  const ctx = await b.newContext({ locale: 'pt-BR' })
+  const pg = await ctx.newPage()
+  await pg.goto(url, { waitUntil: 'networkidle', timeout: 60000 })
+  await pg.waitForTimeout(4000)
+  console.log('parou em: ' + pg.url())
+  await ctx.storageState({ path: SESSAO })
+  await b.close()
+  // o link é de uso único: não deixa rastro depois de consumido
+  try { fs.unlinkSync(path.join(PASTA, 'link.txt')) } catch {}
+  console.log('Sessão salva em ' + SESSAO + ' (.telas está no .gitignore).')
+  process.exit(0)
+}
+
 // ── modo login: abre visível, você entra, ele salva a sessão ──
 if (tem('--login')) {
   const b = await chromium.launch({ executablePath: process.env.CHROME_PATH || navegador, headless: false })
@@ -105,24 +124,63 @@ if (NOIR) {
 } else {
   await ctx.addInitScript(() => { try { localStorage.setItem('nx_noir', '0') } catch {} })
 }
-// tira do caminho o que só aparece uma vez e cobriria a tela
+// Tira do caminho tudo que só aparece uma vez e cobriria a tela.
+// Isto NÃO é cosmético: o rail e o dock são position:fixed, então numa
+// captura de página inteira eles aparecem na altura da janela — ou seja,
+// atrás de qualquer modal que esteja aberto. Com um pop-up no ar, a foto
+// perde justamente os dois elementos que mais precisam de conferência.
 await ctx.addInitScript(() => {
+  const L = [
+    'nexcontrol_install_done', 'nexcontrol_just_signed_up', 'nexcontrol_onboarded',
+    'nx_phone_ok', 'nx_network_launch_seen_v1', 'nexVoiceAnnounce_v1',
+    'nx_dock_seen_v1', 'nx_bemvindo_20_',
+  ]
+  const S = ['nx_bettify_promo_v1_sessao', 'nx_push_prompt_shown', 'nx_upgrade_bar_dismissed']
   try {
-    localStorage.setItem('nx_bemvindo_20_', '1')
-    Object.keys(localStorage).filter(k => k.startsWith('nx_bemvindo_20_')).forEach(k => localStorage.setItem(k, '1'))
-    sessionStorage.setItem('nx_bettify_promo_v1_sessao', '1')
+    L.forEach(k => localStorage.setItem(k, k === 'nexcontrol_install_done' ? String(Date.now()) : '1'))
+    S.forEach(k => sessionStorage.setItem(k, '1'))
+    // Famílias de chave com sufixo variável (id do tour, id do usuário).
+    // Não dá pra enumerar, então a leitura é que responde "já viu".
+    const orig = localStorage.getItem.bind(localStorage)
+    localStorage.getItem = k =>
+      /^nx_(tour_completed_|bemvindo_20_|firstmeta_wizard_dismissed_)/.test(String(k)) ? '1' : orig(k)
   } catch {}
 })
 
 const sufixo = (NOIR ? '-noir' : '') + (MOBILE ? '-mobile' : '')
 let ok = 0, erro = 0
 
+// ── ERRO DE JAVASCRIPT ──────────────────────────────────────────────────
+// A foto sozinha nao basta: uma tela que estourou mostra o cartao de erro,
+// e num relance ele parece "uma tela". Em 21/09/2026 o /performance estava
+// derrubado em producao e so apareceu porque alguem LEU a imagem. Agora o
+// proprio script grita.
+const estouros = []
+let rotaAtual = ''
+pg.on('pageerror', e => estouros.push([rotaAtual, String(e?.message || e).split(String.fromCharCode(10))[0]]))
+pg.on('console', m => {
+  if (m.type() !== 'error') return
+  const t = m.text()
+  // ruido conhecido que nao e defeito da tela
+  if (/favicon|manifest|net::ERR_|Failed to load resource/i.test(t)) return
+  estouros.push([rotaAtual, t.split(String.fromCharCode(10))[0].slice(0, 160)])
+})
+
 for (const [rota, nome] of alvos) {
+  rotaAtual = rota
   const arquivo = path.join(PASTA, `${nome}${sufixo}.png`)
   try {
     await pg.goto(BASE + rota, { waitUntil: 'networkidle', timeout: 45000 })
     // tempo pro contador terminar e as animações assentarem
     await pg.waitForTimeout(2200)
+    // O que escapar das chaves sai no clique. Depois da espera, de propósito:
+    // vários overlays têm atraso de entrada e não existiam ainda no load.
+    for (const texto of ['Sair', 'Agora não', 'Agora nao', 'Pular', 'Depois', 'Entendi', 'Fechar']) {
+      try {
+        const b = pg.getByRole('button', { name: texto, exact: false }).first()
+        if (await b.isVisible({ timeout: 250 })) { await b.click({ timeout: 1000 }); await pg.waitForTimeout(500) }
+      } catch {}
+    }
     await pg.screenshot({ path: arquivo, fullPage: true })
     console.log('  ok   ' + rota + '  →  ' + path.relative(process.cwd(), arquivo))
     ok++
@@ -134,3 +192,17 @@ for (const [rota, nome] of alvos) {
 
 await b.close()
 console.log(`\n${ok} capturada(s), ${erro} com erro. Pasta: ${path.relative(process.cwd(), PASTA)}`)
+
+if (estouros.length) {
+  console.log('')
+  console.log('!! ' + estouros.length + ' ERRO(S) DE JAVASCRIPT — tela quebrada no navegador:')
+  const vistos = new Set()
+  for (const [rota, msg] of estouros) {
+    const k = rota + msg
+    if (vistos.has(k)) continue
+    vistos.add(k)
+    console.log('   ' + rota + '  →  ' + msg)
+  }
+} else {
+  console.log('Nenhum erro de JavaScript nas telas visitadas.')
+}

@@ -38,6 +38,13 @@ export const surf = {
   boxShadow: SOMBRA.repouso,
 }
 
+// O kit e PURAMENTE VISUAL: se uma pagina passar a coisa errada numa prop
+// de lista, o certo e o bloco aparecer vazio — nunca derrubar a tela toda
+// pelo error boundary. Foi o que aconteceu em 21/09/2026: o /performance
+// recebeu `stats` (um objeto de totais) onde ia a lista de metas e morreu
+// inteiro com "(r || []).slice is not a function". O ESLint nao ve isso.
+const lista = v => (Array.isArray(v) ? v : [])
+
 export const Ico = ({ d, c = 'currentColor', s = 18 }) => (
   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{d}</svg>
 )
@@ -120,6 +127,7 @@ export function AcaoBtn({ children, onClick, icon }) {
 
 // herói: número grande com blob
 export function Hero({ rotulo, valor, cor, nota, extras = [], blob, delay = 0.04 }) {
+  extras = lista(extras)
   return (
     <Tilt>
     <BCard pad="28px 30px" blob={blob} delay={delay}>
@@ -147,6 +155,7 @@ export function Hero({ rotulo, valor, cor, nota, extras = [], blob, delay = 0.04
 
 // tira de indicadores colada
 export function Tira({ itens }) {
+  itens = lista(itens)
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.1 }}
       className="bk-tira" style={{ display: 'grid', gridTemplateColumns: `repeat(${itens.length}, 1fr)`, gap: 1, borderRadius: 18, overflow: 'hidden', border: '1px solid var(--b1)', background: 'var(--b1)' }}>
@@ -163,6 +172,7 @@ export function Tira({ itens }) {
 
 // barras horizontais (distribuição)
 export function Barras({ titulo, dados, delay = 0.16 }) {
+  dados = lista(dados)
   const max = Math.max(1, ...dados.map(d => d.v))
   return (
     <BCard pad={24} delay={delay}>
@@ -191,6 +201,7 @@ export function Barras({ titulo, dados, delay = 0.16 }) {
 
 // lista de linhas
 export function Lista({ titulo, linhas, vazio = 'Nada por aqui ainda.', delay = 0.22, acao }) {
+  linhas = lista(linhas)
   return (
     <BCard pad={24} delay={delay}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -233,6 +244,7 @@ export const grid2 = { display: 'grid', gridTemplateColumns: '2.1fr 1fr', gap: 1
 // com stroke-dasharray, então a animação é o próprio traço sendo riscado.
 // `dados`: [{ l, v, c }] já ordenados. `centro`/`rotulo` vão no miolo.
 export function Rosca({ dados = [], centro, rotulo, tamanho = 132, espessura = 16, formata = int, delay = 0.1 }) {
+  dados = lista(dados)
   const total = dados.reduce((a, d) => a + Number(d.v || 0), 0)
   const r = (tamanho - espessura) / 2
   const circ = 2 * Math.PI * r
@@ -540,6 +552,7 @@ function caminhoSuave(pts) {
 }
 
 export function Sparkline({ rotulo, valor, serie = [], cor = RED, nota, delay = 0.06, altura = 150 }) {
+  serie = lista(serie)
   const id = 'sp' + String(rotulo).replace(/\W/g, '')
   const W = 260, H = 64
   const vals = serie.length ? serie.map(Number) : [0]
@@ -661,6 +674,7 @@ export function Arco({ rotulo, pct = 0, centro, nota, cor = RED, delay = 0.1, ta
 // ── SEQUÊNCIA ────────────────────────────────────────────────────────────
 // "7 dias seguidos no lucro": os dias como bolinhas que acendem em cascata.
 export function Sequencia({ rotulo, dias = [], nota, delay = 0.12 }) {
+  dias = lista(dias)
   const seguidos = (() => { let n = 0; for (let i = dias.length - 1; i >= 0; i--) { if (dias[i]) n++; else break } return n })()
   return (
     <BCard pad={22} delay={delay}>
@@ -729,6 +743,7 @@ export function Destaque({ rotulo, titulo, valor, nota, avatar, blob = [RED2, RE
 // fixo — por isso a legenda embaixo diz qual é esse teto. Sem ela, um
 // prejuízo pequeno ao lado de um dia excepcional parece insignificante.
 export function Calor({ rotulo, dias = [], formata = money0, delay = 0.16 }) {
+  dias = lista(dias)
   const vals = dias.map(d => Number(d.v) || 0)
   const teto = Math.max(1, ...vals.map(Math.abs))
   const [alvo, setAlvo] = useState(null)
@@ -841,6 +856,7 @@ export function Calor({ rotulo, dias = [], formata = money0, delay = 0.16 }) {
 // Top 3 em pódio, altura proporcional ao resultado. Só faz sentido com 2 ou
 // mais: com um só não existe disputa, e a lista já diz quem é.
 export function Podio({ rotulo, itens = [], formata = money0, delay = 0.14, aoAbrir }) {
+  itens = lista(itens)
   const top = itens.slice(0, 3)
   const teto = Math.max(1, ...top.map(t => Math.abs(Number(t.v) || 0)))
   // 2º, 1º, 3º — a ordem visual de um pódio de verdade
@@ -902,6 +918,7 @@ export function Podio({ rotulo, itens = [], formata = money0, delay = 0.14, aoAb
 // Card que só aparece quando há algo a olhar. A borda pulsa devagar: chama
 // atenção sem gritar, que é o certo pra um alerta que fica na tela.
 export function Risco({ rotulo = 'Precisa de atenção', itens = [], delay = 0.18 }) {
+  itens = lista(itens)
   const semMovimento = useReducedMotion()
   if (!itens.length) return null
   return (

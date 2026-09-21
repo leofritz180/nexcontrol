@@ -464,7 +464,11 @@ export default function PerformancePage() {
                 depositantes: (metas||[]).filter(m=>m.status_fechamento==='fechada'&&!m.deleted_at).reduce((a,m)=>a+Number(m.quantidade_contas||0),0),
                 taxa: (remessas||[]).length ? Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100) : 0,
               }}
-              metasRecentes={stats}
+              // `stats` e um OBJETO de totais, nao a lista. A lista das
+              // ultimas metas fechadas (ja com remCount e date) e `evolution`.
+              // Trocar um pelo outro derrubava a tela inteira com
+              // "(r || []).slice is not a function".
+              metasRecentes={evolution}
             />
           ) : (<>
 

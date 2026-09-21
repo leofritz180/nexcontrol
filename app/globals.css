@@ -1687,12 +1687,43 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 /* ── botões e inputs arredondados ── */
 .nx-bento .btn, .nx-bento button { border-radius: 14px !important; }
 .nx-bento .btn-brand { background: linear-gradient(135deg, #ff7a4d, #e5391f) !important; box-shadow: 0 10px 26px rgba(229,57,31,0.28) !important; }
-/* O kit de campos (components/ui/campo.js) ja desenha a propria moldura.
-   Sem o :not() abaixo, esta regra pintava uma SEGUNDA caixa por dentro dela. */
+/* CAMPOS QUE AINDA NAO USAM O KIT.
+   O kit (components/ui/campo.js) cobre as telas novas. As antigas — /admin,
+   /meta/[id], /faturamento, /pix, /custos, /operadores — tem ~56 campos com
+   a classe .input, herdada do tema escuro. Migrar um por um seria cirurgia
+   nas duas telas mais criticas do produto por um ganho pequeno.
+   Em vez disso, esta regra copia o ACABAMENTO do kit: mesma altura (44),
+   mesmo canto (14), mesmo respiro e o mesmo anel de foco vermelho. No olho
+   ficam iguais; o que o kit ainda da a mais e rotulo flutuante, texto de
+   ajuda e estado de erro — que so faz sentido migrando de verdade.
+
+   O :not(.nx-campo-ctl) existe porque o kit ja desenha a propria moldura:
+   sem ele, esta regra pintava uma SEGUNDA caixa por dentro. */
 .nx-bento input:not(.nx-campo-ctl), .nx-bento select:not(.nx-campo-ctl), .nx-bento textarea:not(.nx-campo-ctl) {
-  background: #ffffff !important; border: 1px solid var(--b2) !important;
-  color: var(--t1) !important; border-radius: 12px !important;
+  background: var(--input, #ffffff) !important;
+  border: 1px solid var(--b2) !important;
+  color: var(--t1) !important;
+  border-radius: 14px !important;
+  padding: 11px 14px !important;
+  box-shadow: 0 0 0 0 rgba(0,0,0,0) !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease !important;
 }
+.nx-bento input:not(.nx-campo-ctl):not([type="checkbox"]):not([type="radio"]),
+.nx-bento select:not(.nx-campo-ctl) { min-height: 44px; }
+.nx-bento input:not(.nx-campo-ctl):hover,
+.nx-bento select:not(.nx-campo-ctl):hover,
+.nx-bento textarea:not(.nx-campo-ctl):hover { border-color: var(--b3) !important; }
+.nx-bento input:not(.nx-campo-ctl):focus,
+.nx-bento select:not(.nx-campo-ctl):focus,
+.nx-bento textarea:not(.nx-campo-ctl):focus {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 3px rgba(229,57,31,0.12) !important;
+  outline: none !important;
+}
+.nx-bento input:not(.nx-campo-ctl)::placeholder,
+.nx-bento textarea:not(.nx-campo-ctl)::placeholder { color: var(--t4) !important; }
+/* rotulo dos campos antigos: .t-label nasce em var(--t3), fraco demais */
+.nx-bento .t-label { color: var(--t2) !important; letter-spacing: 0.04em; }
 
 /* ── o que era brilho do modo escuro some no claro ── */
 .nx-bento .lp-ambient, .nx-bento .depth-bg, .nx-bento .bg-flow { display: none !important; }

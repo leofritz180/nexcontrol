@@ -37,7 +37,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
         background: 'var(--surface)',
         padding: 1, // espaço pra GlowBorder
         overflow: 'hidden',
-        boxShadow: `0 24px 60px rgba(0,0,0,0.55), 0 0 60px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.12)' : current.glow.replace(/0\.\d+/, '0.12')}`,
+        boxShadow: `0 24px 60px rgba(0,0,0,0.55), 0 0 60px ${current.glow === 'prismatic' ? 'rgba(255,154,120,0.12)' : current.glow.replace(/0\.\d+/, '0.12')}`,
       }}
     >
       <GlowBorder rank={current} thickness={1} intensity={1.2} />
@@ -83,7 +83,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
               style={{
                 position: 'absolute', inset: -14, borderRadius: 22,
-                background: `radial-gradient(circle, ${isPrismatic ? 'rgba(180,120,255,0.35)' : current.glow.replace(/0\.\d+/, '0.35')} 0%, transparent 60%)`,
+                background: `radial-gradient(circle, ${isPrismatic ? 'rgba(255,154,120,0.35)' : current.glow.replace(/0\.\d+/, '0.35')} 0%, transparent 60%)`,
                 filter: 'blur(10px)', pointerEvents: 'none',
               }}
             />
@@ -97,7 +97,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
               boxShadow: `
                 0 0 0 1px rgba(255,255,255,0.18),
                 0 12px 32px rgba(0,0,0,0.5),
-                0 0 38px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.55)' : current.glow},
+                0 0 38px ${current.glow === 'prismatic' ? 'rgba(255,154,120,0.55)' : current.glow},
                 inset 0 2px 0 rgba(255,255,255,0.30),
                 inset 0 -2px 0 rgba(0,0,0,0.25)
               `,
@@ -153,13 +153,13 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
                 fontSize: compact ? 36 : 48, fontWeight: 400, letterSpacing: '-0.03em',
                 margin: 0, lineHeight: 1, fontFamily: 'var(--font-display, serif)',
                 background: isPrismatic
-                  ? 'linear-gradient(135deg, #FFFFFF 0%, #E0E0FF 50%, #FFD700 100%)'
+                  ? 'linear-gradient(135deg, #FFFFFF 0%, #E0E0FF 50%, #FF7A4D 100%)'
                   : isApex
-                    ? 'linear-gradient(135deg, #B478FF 0%, #FFD700 50%, #4FC3F7 100%)'
+                    ? 'linear-gradient(135deg, #FF9A78 0%, #FF7A4D 50%, #FFFFFF 100%)'
                     : `linear-gradient(135deg, ${claro ? rankPalette(current.tier, true).ink : current.primary} 0%, ${claro ? rankPalette(current.tier, true).chip : 'rgba(255,255,255,0.95)'} 50%, ${claro ? rankPalette(current.tier, true).ink : current.primary} 100%)`,
                 WebkitBackgroundClip: 'text', backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent', color: 'transparent',
-                filter: claro ? 'none' : `drop-shadow(0 0 18px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : current.glow})`,
+                filter: claro ? 'none' : `drop-shadow(0 0 18px ${current.glow === 'prismatic' ? 'rgba(255,154,120,0.5)' : current.glow})`,
               }}
             >
               {current.name}
@@ -183,7 +183,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
                 Próximo:{' '}
                 <span style={{
                   color: tom(next), fontWeight: 800, letterSpacing: '0.02em',
-                  textShadow: `0 0 12px ${next.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : next.glow}`,
+                  textShadow: `0 0 12px ${next.glow === 'prismatic' ? 'rgba(255,154,120,0.4)' : next.glow}`,
                 }}>{next.name}</span>
               </span>
               <span style={{ fontSize: 13, fontFamily: 'var(--mono)', color: 'var(--t3)', fontWeight: 600 }}>
@@ -205,7 +205,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
                 style={{
                   position: 'relative', height: '100%', borderRadius: 7,
                   background: claro ? (isPrismatic ? PRISMATIC_LIGHT : rankPalette(current.tier, true).chip) : bg,
-                  boxShadow: claro ? '0 2px 8px rgba(0,0,0,0.12)' : `0 0 16px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.55)' : current.glow}, inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.2)`,
+                  boxShadow: claro ? '0 2px 8px rgba(0,0,0,0.12)' : `0 0 16px ${current.glow === 'prismatic' ? 'rgba(255,154,120,0.55)' : current.glow}, inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.2)`,
                   overflow: 'hidden',
                 }}
               >
@@ -241,7 +241,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
               </span>
               <span style={{
                 fontSize: 14, fontFamily: 'var(--mono)', color: 'var(--t1)', fontWeight: 800,
-                textShadow: `0 0 10px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : current.glow}`,
+                textShadow: `0 0 10px ${current.glow === 'prismatic' ? 'rgba(255,154,120,0.4)' : current.glow}`,
               }}>
                 {progress.toFixed(1)}%
               </span>
@@ -259,14 +259,14 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
             style={{
               position: 'relative', overflow: 'hidden',
               padding: '14px 18px', borderRadius: 12,
-              background: 'linear-gradient(90deg, rgba(255,215,0,0.08) 0%, rgba(180,120,255,0.05) 100%)',
+              background: 'linear-gradient(90deg, rgba(255,215,0,0.08) 0%, rgba(255,154,120,0.05) 100%)',
               border: '1px solid rgba(255,215,0,0.3)',
               marginBottom: 18,
               display: 'flex', alignItems: 'center', gap: 12,
             }}
           >
             <ShinePass duration={2.5} interval={4} color="rgba(255,215,0,0.25)" />
-            <RankIcon name="apex" size={22} color="#FFD700" />
+            <RankIcon name="apex" size={22} color="#FF7A4D" />
             <div>
               <p style={{ fontSize: 13, color: 'var(--warn)', fontWeight: 800, letterSpacing: '0.06em', margin: 0, textTransform: 'uppercase' }}>
                 APEX · TOPO ABSOLUTO
@@ -325,8 +325,8 @@ function NextRankCard({ rank, claro }) {
         boxShadow: claro
           ? (hover ? '0 5px 14px rgba(0,0,0,0.14)' : '0 2px 6px rgba(0,0,0,0.08)')
           : hover
-          ? `0 0 16px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.6)' : rank.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`
-          : `0 0 8px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.3)' : rank.glow.replace(/0\.\d+/, '0.3')}, inset 0 1px 0 rgba(255,255,255,0.15)`,
+          ? `0 0 16px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.6)' : rank.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`
+          : `0 0 8px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.3)' : rank.glow.replace(/0\.\d+/, '0.3')}, inset 0 1px 0 rgba(255,255,255,0.15)`,
         transition: 'box-shadow 0.25s',
       }}>
         <RankIcon name={rank.icon} size={17} color={claro ? '#ffffff' : rankTextColor(rank)} />
@@ -346,7 +346,7 @@ function NextRankCard({ rank, claro }) {
         <p style={{
           fontSize: 13, fontWeight: 800, margin: 0, lineHeight: 1, letterSpacing: '0.01em',
           color: claro ? rankPalette(rank.tier, true).ink : (isPrismatic ? '#E0E0FF' : rank.primary),
-          textShadow: (hover && !claro) ? `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : rank.glow}` : 'none',
+          textShadow: (hover && !claro) ? `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.4)' : rank.glow}` : 'none',
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
           {rank.name}

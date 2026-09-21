@@ -138,7 +138,7 @@ function CurrentRankBadgeBig({ rank, contas }) {
         width: 36, height: 36, borderRadius: 10,
         background: rankBackground(rank),
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: claroFX ? '0 3px 10px rgba(0,0,0,0.12)' : `0 0 16px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.6)' : rank.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
+        boxShadow: claroFX ? '0 3px 10px rgba(0,0,0,0.12)' : `0 0 16px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.6)' : rank.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
       }}>
         <RankIcon name={rank.icon} size={18} color={rankTextColor(rank)} />
       </span>
@@ -149,7 +149,7 @@ function CurrentRankBadgeBig({ rank, contas }) {
         <p style={{
           fontSize: 16, fontWeight: 800, margin: '2px 0 0', lineHeight: 1,
           color: claroFX ? rankPalette(rank.tier, true).ink : (isPrismatic ? '#E0E0FF' : rank.primary), letterSpacing: '0.04em',
-          textShadow: claroFX ? 'none' : `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : rank.glow}`,
+          textShadow: claroFX ? 'none' : `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.4)' : rank.glow}`,
           fontFamily: 'var(--font-display, serif)', fontWeight: 400, fontSize: 20,
         }}>
           {rank.name}
@@ -283,7 +283,7 @@ function Pillar({ rank, height, currentTier, isHovered, isSelected, onHover, onU
         letterSpacing: '0.16em', textTransform: 'uppercase',
         fontFamily: 'var(--mono)',
         marginBottom: 6,
-        textShadow: active ? `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.6)' : rank.glow}` : 'none',
+        textShadow: active ? `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.6)' : rank.glow}` : 'none',
         whiteSpace: 'nowrap',
         opacity: isAchieved || isCurrent || isHovered || isElite ? 1 : 0.6,
         transition: 'text-shadow 0.25s, color 0.25s, opacity 0.25s',
@@ -363,8 +363,8 @@ function PillarEmblem({ rank, size, active, isApex, isCurrent }) {
         background: rankBackground(rank),
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         boxShadow: active
-          ? `0 0 0 1.5px rgba(255,255,255,0.22), 0 8px 26px rgba(0,0,0,0.5), 0 0 ${isApex ? 36 : 22}px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.65)' : rank.glow}, inset 0 2px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,0,0,0.22)`
-          : `0 0 0 1px rgba(255,255,255,0.12), 0 4px 12px rgba(0,0,0,0.4), 0 0 ${isApex ? 22 : 10}px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.3)' : rank.glow.replace(/0\.\d+/, '0.32')}, inset 0 1px 0 rgba(255,255,255,0.18)`,
+          ? `0 0 0 1.5px rgba(255,255,255,0.22), 0 8px 26px rgba(0,0,0,0.5), 0 0 ${isApex ? 36 : 22}px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.65)' : rank.glow}, inset 0 2px 0 rgba(255,255,255,0.32), inset 0 -2px 0 rgba(0,0,0,0.22)`
+          : `0 0 0 1px rgba(255,255,255,0.12), 0 4px 12px rgba(0,0,0,0.4), 0 0 ${isApex ? 22 : 10}px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.3)' : rank.glow.replace(/0\.\d+/, '0.32')}, inset 0 1px 0 rgba(255,255,255,0.18)`,
         overflow: 'hidden',
         marginBottom: 4,
         zIndex: 2,
@@ -398,7 +398,7 @@ function PillarEmblem({ rank, size, active, isApex, isCurrent }) {
             transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
             style={{
               position: 'absolute', inset: -3, pointerEvents: 'none',
-              background: 'conic-gradient(from 90deg, transparent 0deg, rgba(180,120,255,0.32) 40deg, transparent 80deg, transparent 360deg)',
+              background: 'conic-gradient(from 90deg, transparent 0deg, rgba(255,154,120,0.32) 40deg, transparent 80deg, transparent 360deg)',
             }}
           />
         </>
@@ -420,7 +420,7 @@ function PillarEmblem({ rank, size, active, isApex, isCurrent }) {
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           style={{
             position: 'absolute', inset: -8, borderRadius: '50%',
-            background: `radial-gradient(circle, ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : rank.glow.replace(/0\.\d+/, '0.5')} 0%, transparent 70%)`,
+            background: `radial-gradient(circle, ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.5)' : rank.glow.replace(/0\.\d+/, '0.5')} 0%, transparent 70%)`,
             filter: 'blur(8px)',
           }}
         />
@@ -438,9 +438,9 @@ function PillarColumn({ rank, height, active, isApex, isCurrent, isAchieved }) {
 
   // Conic gradient pra apex, normal pros outros
   const fillBg = isApex
-    ? 'linear-gradient(180deg, rgba(180,120,255,0.7) 0%, rgba(120,60,200,0.5) 50%, rgba(60,30,120,0.3) 100%)'
+    ? 'linear-gradient(180deg, rgba(255,154,120,0.7) 0%, rgba(120,60,200,0.5) 50%, rgba(60,30,120,0.3) 100%)'
     : isPrismatic
-      ? 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(180,120,255,0.4) 50%, rgba(120,60,200,0.2) 100%)'
+      ? 'linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,154,120,0.4) 50%, rgba(120,60,200,0.2) 100%)'
       : `linear-gradient(180deg, rgba(${rgb},0.7) 0%, rgba(${rgb},0.4) 60%, rgba(${rgb},0.15) 100%)`
 
   return (
@@ -488,7 +488,7 @@ function PillarColumn({ rank, height, active, isApex, isCurrent, isAchieved }) {
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: 4,
         background: `linear-gradient(180deg, ${isPrismatic ? 'rgba(255,255,255,0.7)' : `rgba(${rgb},0.7)`}, transparent)`,
-        boxShadow: `0 0 ${active ? 12 : 6}px ${isPrismatic ? 'rgba(180,120,255,0.5)' : `rgba(${rgb},0.5)`}`,
+        boxShadow: `0 0 ${active ? 12 : 6}px ${isPrismatic ? 'rgba(255,154,120,0.5)' : `rgba(${rgb},0.5)`}`,
       }}/>
 
       {/* Apex extra: stardust caindo */}
@@ -525,8 +525,8 @@ function ApexPillarStardustEscuro() {
           style={{
             position: 'absolute', left: `${d.x}%`,
             width: d.size, height: d.size, borderRadius: '50%',
-            background: i % 2 === 0 ? '#FFD700' : '#B478FF',
-            boxShadow: `0 0 ${d.size * 4}px ${i % 2 === 0 ? '#FFD700' : '#B478FF'}`,
+            background: i % 2 === 0 ? '#FF7A4D' : '#FF9A78',
+            boxShadow: `0 0 ${d.size * 4}px ${i % 2 === 0 ? '#FF7A4D' : '#FF9A78'}`,
           }}
         />
       ))}
@@ -587,8 +587,8 @@ function StaircaseStarsEscuro() {
             left: `${s.x}%`, top: `${s.y}%`,
             width: s.size, height: s.size,
             borderRadius: '50%',
-            background: i % 7 === 0 ? '#FFD700' : '#FFFFFF',
-            boxShadow: `0 0 ${s.size * 3}px ${i % 7 === 0 ? '#FFD700' : 'rgba(180,120,255,0.4)'}`,
+            background: i % 7 === 0 ? '#FF7A4D' : '#FFFFFF',
+            boxShadow: `0 0 ${s.size * 3}px ${i % 7 === 0 ? '#FF7A4D' : 'rgba(255,154,120,0.4)'}`,
           }}
         />
       ))}
@@ -652,7 +652,7 @@ function FocusPanel({ rank, contas, currentTier }) {
           width: 50, height: 50, borderRadius: 12,
           background: rankBackground(rank),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: claroFX ? '0 3px 10px rgba(0,0,0,0.12)' : `0 0 22px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.55)' : rank.glow}, inset 0 2px 0 rgba(255,255,255,0.28), 0 0 0 1px rgba(255,255,255,0.18)`,
+          boxShadow: claroFX ? '0 3px 10px rgba(0,0,0,0.12)' : `0 0 22px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.55)' : rank.glow}, inset 0 2px 0 rgba(255,255,255,0.28), 0 0 0 1px rgba(255,255,255,0.18)`,
           flexShrink: 0,
         }}>
           <RankIcon name={rank.icon} size={26} color={rankTextColor(rank)} />
@@ -663,7 +663,7 @@ function FocusPanel({ rank, contas, currentTier }) {
               fontFamily: 'var(--font-display, serif)', fontSize: 24, fontWeight: 400,
               color: claroFX ? rankPalette(rank.tier, true).ink : (isPrismatic ? '#E0E0FF' : rank.primary),
               margin: 0, letterSpacing: '-0.01em', lineHeight: 1,
-              textShadow: claroFX ? 'none' : `0 0 14px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : rank.glow}`,
+              textShadow: claroFX ? 'none' : `0 0 14px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.5)' : rank.glow}`,
             }}>{rank.name}</h4>
             {isCurrent && (
               <span style={{

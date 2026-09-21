@@ -32,8 +32,8 @@ function ApexStarField() {
             left: `${s.x}%`, top: `${s.y}%`,
             width: s.size, height: s.size,
             borderRadius: '50%',
-            background: s.gold ? '#FFD700' : '#FFFFFF',
-            boxShadow: `0 0 ${s.size * 4}px ${s.gold ? '#FFD700' : 'rgba(180,120,255,0.6)'}`,
+            background: s.gold ? '#FF7A4D' : '#FFFFFF',
+            boxShadow: `0 0 ${s.size * 4}px ${s.gold ? '#FF7A4D' : 'rgba(255,154,120,0.6)'}`,
           }}
         />
       ))}
@@ -69,7 +69,7 @@ function RankAuraEscuro({ rank, intensity = 1, className }) {
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
           style={{
             position: 'absolute', top: '20%', left: '10%', width: '50%', height: '60%',
-            background: 'radial-gradient(circle, rgba(180,120,255,0.20) 0%, transparent 65%)',
+            background: 'radial-gradient(circle, rgba(255,154,120,0.20) 0%, transparent 65%)',
             filter: 'blur(35px)',
           }}
         />
@@ -79,7 +79,7 @@ function RankAuraEscuro({ rank, intensity = 1, className }) {
           transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
           style={{
             position: 'absolute', inset: '-10%',
-            background: 'conic-gradient(from 0deg, rgba(180,120,255,0.10) 0deg, rgba(80,160,255,0.10) 60deg, rgba(255,215,0,0.08) 120deg, rgba(255,80,200,0.10) 200deg, rgba(180,120,255,0.10) 360deg)',
+            background: 'conic-gradient(from 0deg, rgba(255,154,120,0.10) 0deg, rgba(80,160,255,0.10) 60deg, rgba(255,215,0,0.08) 120deg, rgba(255,80,200,0.10) 200deg, rgba(255,154,120,0.10) 360deg)',
             mixBlendMode: 'screen',
             filter: 'blur(8px)',
           }}
@@ -153,7 +153,7 @@ function OrbitalParticlesEscuro({ rank, count = 4, radius = 80, size = 3, speed 
   if (!rank) return null
   const isApex = rank.tier === 15
   const isPrismatic = rank.primary === 'prismatic'
-  const baseColor = isApex ? '#FFD700' : isPrismatic ? '#FFFFFF' : (rank.particle || rank.primary)
+  const baseColor = isApex ? '#FF7A4D' : isPrismatic ? '#FFFFFF' : (rank.particle || rank.primary)
 
   return (
     <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -161,7 +161,7 @@ function OrbitalParticlesEscuro({ rank, count = 4, radius = 80, size = 3, speed 
         const angle = (i / count) * 360
         const dur = speed + (i % 3) * 2
         const reverse = i % 2 === 1
-        const colorMix = isApex && i % 2 === 0 ? '#B478FF' : baseColor
+        const colorMix = isApex && i % 2 === 0 ? '#FF9A78' : baseColor
         return (
           <motion.div
             key={i}
@@ -220,8 +220,8 @@ function GlowBorderEscuro({ rank, thickness = 1, intensity = 1, animate: animate
           position: 'absolute', inset: -thickness, borderRadius: 'inherit',
           padding: thickness, pointerEvents: 'none',
           background: isApex
-            ? 'conic-gradient(from 0deg, #B478FF, #4FC3F7, #FFD700, #FF6B9D, #B478FF)'
-            : 'conic-gradient(from 0deg, #FF6B9D, #C77DFF, #4FC3F7, #66BB6A, #FFEE58, #FFA726, #FF6B9D)',
+            ? 'conic-gradient(from 0deg, #FF9A78, #FFFFFF, #FF7A4D, #E5391F, #FF9A78)'
+            : 'conic-gradient(from 0deg, #E5391F, #FF9A78, #FFFFFF, #B6B6C0, #FF7A4D, #15151a, #E5391F)',
           opacity: 0.7 * intensity,
           mask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
           WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',

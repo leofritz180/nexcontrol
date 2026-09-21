@@ -46,7 +46,7 @@ function RankAmbientEscuro({ rank, density = 'normal', className }) {
   const isPrismatic = rank?.primary === 'prismatic'
   const rgb = rank?.rgb || '255,255,255'
   const ambient = isApex
-    ? 'rgba(180,120,255,0.10)'
+    ? 'rgba(255,154,120,0.10)'
     : isPrismatic
       ? 'rgba(199,125,255,0.08)'
       : `rgba(${rgb},0.07)`
@@ -107,13 +107,13 @@ function RankAmbientEscuro({ rank, density = 'normal', className }) {
             width: p.size, height: p.size,
             borderRadius: '50%',
             background: isApex && i % 4 === 0
-              ? '#FFD700'
+              ? '#FF7A4D'
               : isApex && i % 4 === 1
-                ? '#B478FF'
+                ? '#FF9A78'
                 : isPrismatic && i % 3 === 0
-                  ? '#C77DFF'
+                  ? '#FF7A4D'
                   : `rgba(${rgb},0.7)`,
-            boxShadow: `0 0 ${p.size * 3}px ${isApex && i % 2 === 0 ? 'rgba(180,120,255,0.5)' : `rgba(${rgb},0.4)`}`,
+            boxShadow: `0 0 ${p.size * 3}px ${isApex && i % 2 === 0 ? 'rgba(255,154,120,0.5)' : `rgba(${rgb},0.4)`}`,
             willChange: 'transform, opacity',
           }}
         />
@@ -133,7 +133,7 @@ function RankAmbientEscuro({ rank, density = 'normal', className }) {
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           style={{
             position: 'absolute', inset: 0,
-            background: 'conic-gradient(from 90deg at 50% 50%, transparent 0deg, rgba(180,120,255,0.12) 90deg, transparent 180deg, rgba(255,215,0,0.08) 270deg, transparent 360deg)',
+            background: 'conic-gradient(from 90deg at 50% 50%, transparent 0deg, rgba(255,154,120,0.12) 90deg, transparent 180deg, rgba(255,215,0,0.08) 270deg, transparent 360deg)',
             mixBlendMode: 'screen', filter: 'blur(2px)',
           }}
         />

@@ -132,7 +132,7 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
             transition={{ delay: 0.2, duration: 1.2, ease: [0.33, 1, 0.68, 1] }}
             style={{
               position: 'absolute', width: '60vmin', height: '60vmin', borderRadius: '50%',
-              background: `radial-gradient(circle, ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : rank.glow.replace(/0\.\d+/, '0.45')} 0%, transparent 60%)`,
+              background: `radial-gradient(circle, ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.4)' : rank.glow.replace(/0\.\d+/, '0.45')} 0%, transparent 60%)`,
               filter: 'blur(40px)', pointerEvents: 'none',
             }}
           />
@@ -149,8 +149,8 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
                 left: `${p.x}%`, top: `${p.y}%`,
                 width: p.size, height: p.size,
                 borderRadius: '50%',
-                background: isPrismatic ? '#FFD700' : (isApex ? '#FFD700' : rank.primary),
-                boxShadow: `0 0 8px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.6)' : rank.glow}`,
+                background: isPrismatic ? '#FF7A4D' : (isApex ? '#FF7A4D' : rank.primary),
+                boxShadow: `0 0 8px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.6)' : rank.glow}`,
                 pointerEvents: 'none',
               }}
             />
@@ -211,7 +211,7 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
                 width: 160, height: 160, borderRadius: 32,
                 background: bg,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: `0 0 80px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.6)' : rank.glow}, 0 0 200px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.3)' : rank.glow.replace(/0\.\d+/, '0.3')}, inset 0 2px 0 rgba(255,255,255,0.25)`,
+                boxShadow: `0 0 80px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.6)' : rank.glow}, 0 0 200px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.3)' : rank.glow.replace(/0\.\d+/, '0.3')}, inset 0 2px 0 rgba(255,255,255,0.25)`,
                 position: 'relative', overflow: 'hidden',
               }}
             >
@@ -264,7 +264,7 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
                 fontSize: 56, fontWeight: 400, letterSpacing: '-0.03em',
                 color: isPrismatic ? '#E0E0FF' : rank.primary,
                 margin: 0, lineHeight: 1, textAlign: 'center',
-                textShadow: `0 0 32px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : rank.glow}`,
+                textShadow: `0 0 32px ${rank.glow === 'prismatic' ? 'rgba(255,154,120,0.5)' : rank.glow}`,
               }}
             >
               {rank.name}

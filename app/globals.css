@@ -273,6 +273,39 @@ html.nx-aqua:not(.nx-light) {
   background: linear-gradient(90deg, rgba(0,0,0,0) 0%, var(--surface) 82%);
 }
 
+/* ── V2 · NETWORK: um chat é escuro, e tudo bem ───────────────────────────
+   O /network recebe .nx-bento como qualquer rota logada, mas ele foi
+   desenhado inteiro pro tema preto: fundos escuros proprios e texto em
+   var(--t1). No claro o var(--t1) vira quase preto e o painel ficava cinza
+   sobre marrom — ilegivel de ponta a ponta.
+
+   A saida nao e clarear o chat: um chat escuro e o que todo mundo espera
+   (e o que o produto ja fazia). A saida e REESCOPAR os tokens dentro do
+   painel, o mesmo truque do rail — assim cada var() inline resolve pra
+   claro sem tocar em nenhuma linha de JSX. O rail, o cabecalho e o resto da
+   pagina continuam bento.
+   ═══════════════════════════════════════════════════════════════════════ */
+.nx-bento .nx-net-painel {
+  --void: #0b0b0e; --base: #0e0e11;
+  --surface: #17171c; --raised: #1d1d23; --overlay: #1d1d23; --float: #1d1d23;
+  --t1: #f4f4f6; --t2: #a6a6b2; --t3: #82828f; --t4: #62626e;
+  --b1: rgba(255,255,255,0.08); --b2: rgba(255,255,255,0.13); --b3: rgba(255,255,255,0.18);
+  --fill-1: rgba(255,255,255,0.035); --fill-2: rgba(255,255,255,0.06); --fill-3: rgba(255,255,255,0.09);
+  --input: #101014;
+  --profit: #7ee08a; --loss: #ff6b6b; --brand: #ff5a3c; --warn: #ffa366;
+  --profit-dim: rgba(126,224,138,0.13); --loss-dim: rgba(255,107,107,0.13);
+  --brand-dim: rgba(255,90,60,0.14); --brand-border: rgba(255,90,60,0.32);
+  --profit-border: rgba(126,224,138,0.26); --loss-border: rgba(255,107,107,0.26);
+}
+/* a traducao de tema claro do globals nao pode alcancar o que esta dentro do
+   painel: la dentro o branco e o certo */
+.nx-light .nx-net-painel [style*="color: rgb(255, 255, 255)"],
+.nx-light .nx-net-painel [style*="color: rgba(255, 255, 255"] { color: inherit !important; }
+.nx-bento .nx-net-painel input:not(.nx-campo-ctl),
+.nx-bento .nx-net-painel textarea:not(.nx-campo-ctl) {
+  background: #101014 !important; border-color: var(--b2) !important; color: var(--t1) !important;
+}
+
 /* 6b) ESCOTILHA GERAL: texto que DEVE continuar branco no claro.
    A regra 2 acima decide olhando o style do PRÓPRIO elemento. Quando o fundo
    escuro vem de um IRMÃO — uma pílula preta que desliza por baixo do rótulo,

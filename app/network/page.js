@@ -614,15 +614,21 @@ export default function NetworkPage() {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 40,
         display: 'flex', width: '100%', overflow: 'hidden',
         height: vpH ? vpH + 'px' : '100dvh',
-        background: 'rgba(4,7,14,0.96)',
+        background: '#101014',
       } : {
         display: 'flex', gap: 0,
         height: 'calc(100vh - 96px)', minHeight: 480,
-        borderRadius: 18, overflow: 'hidden',
-        border: '1px solid var(--b1)',
-        background: 'linear-gradient(180deg, rgba(12,18,32,0.5), rgba(4,7,14,0.6))',
-        backdropFilter: 'blur(12px)',
-      }}>
+        borderRadius: 24, overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.07)',
+        // Era navy a 50% de opacidade. Sobre o fundo CLARO do bento isso virava
+        // um marrom sujo, e o texto de dentro usa var(--t1) — que no claro e
+        // escuro. Resultado: cinza-escuro sobre marrom, ilegivel.
+        // Agora e opaco e escuro de verdade, e a classe abaixo reescopa os
+        // tokens (mesmo truque do rail): o var() inline resolve pra claro.
+        background: 'linear-gradient(180deg, #17171d, #101014)',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.06), 0 22px 54px rgba(0,0,0,0.22)',
+      }}
+      className="nx-net-painel">
         {/* ── COL 1: canais (desktop) ── */}
         {!isMobile && (
           <ChannelList channels={channels} active={channel} onSelect={setChannel} online={data.online} onlineCount={data.onlineCount} unread={unread} />

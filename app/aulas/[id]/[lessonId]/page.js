@@ -1,5 +1,8 @@
 'use client'
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import PlayerAulaBento from '../../../../components/modules/PlayerAulaBento'
+import { isNex2 } from '../../../../lib/theme-v2'
+import { ModuloEsqueleto } from '../../../../components/ui/bento'
 import { useRouter, useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../../../lib/supabase/client'
@@ -169,6 +172,19 @@ export default function LessonPlayerPage() {
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
+      {/* V2: player no bento. O layout antigo segue logo abaixo, intacto. */}
+      {isNex2(user?.email) ? (
+        <div style={{ maxWidth: 1380, margin: '0 auto', padding: '24px 28px' }}>
+          <PlayerAulaBento
+            curso={course} aula={currentLesson} modulos={modules} aulas={lessons}
+            concluidas={progress} pct={percent} feitas={completedLessons} total={totalLessons}
+            anterior={prevLesson} proxima={nextLessonObj}
+            aoIr={(id) => router.push(`/aulas/${courseId}/${id}`)}
+            urlEmbed={embedUrl} videoDireto={directVideo ? currentLesson?.video_url : null}
+            concluida={isCompleted} salvando={completing} aoAlternarConclusao={toggleCompletion}
+          />
+        </div>
+      ) : (<>
       <div style={{ display: 'flex', minHeight: 'calc(100vh - 60px)', flexDirection: 'row' }} className="lesson-layout">
         {/* ── Main Content ── */}
         <div style={{ flex: 1, minWidth: 0, padding: '24px 20px', overflowY: 'auto' }}>
@@ -333,6 +349,7 @@ export default function LessonPlayerPage() {
           }
         `}</style>
       </div>
+      </>)}
     </AppLayout>
   )
 }

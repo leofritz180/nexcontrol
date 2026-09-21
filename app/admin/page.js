@@ -3237,21 +3237,24 @@ export default function AdminPage() {
         </motion.div>)}
 
         {/* ═══ OPERATIONS ═══ */}
+        {tab==='operations' && isNex2(user?.email) && (
+          <div style={{ marginBottom: 18 }}>
+            <h1 style={{ fontSize: 25, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.03em' }}>Metas & Fechamento</h1>
+            <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '3px 0 0' }}>Acompanhe, filtre e feche as operações da equipe</p>
+          </div>
+        )}
         {tab==='operations' && (()=>{
-          const NET_COLORS={
-            COROA:{h:'42,100%,50%',hex:'#d4a017',name:'Dourado'},VOY:{h:'220,90%,60%',hex:'rgba(255,255,255,0.78)',name:'Azul'},
-            WE:{h:'270,70%,60%',hex:'rgba(255,255,255,0.78)',name:'Roxo'},W1:{h:'200,80%,55%',hex:'#0ea5e9',name:'Cyan'},
-            OKOK:{h:'160,70%,45%',hex:'var(--profit)',name:'Verde'},DZ:{h:'0,65%,55%',hex:'var(--loss)',name:'Vermelho'},
-            A8:{h:'30,90%,55%',hex:'rgba(255,255,255,0.78)',name:'Laranja'},ANJO:{h:'320,60%,55%',hex:'#d946ef',name:'Pink'},
-            '91':{h:'180,60%,45%',hex:'#14b8a6',name:'Teal'},'777':{h:'50,80%,55%',hex:'#eab308',name:'Amarelo'},
-            '888':{h:'280,55%,55%',hex:'rgba(255,255,255,0.78)',name:'Violeta'},XW:{h:'340,65%,55%',hex:'#f43f5e',name:'Rose'},
-            EK:{h:'210,70%,50%',hex:'#2563eb',name:'Royal'},DY:{h:'150,60%,50%',hex:'var(--profit)',name:'Lime'},
-            GAME:{h:'260,60%,55%',hex:'rgba(255,255,255,0.78)',name:'Indigo'},ALFA:{h:'10,80%,55%',hex:'#f97316',name:'Amber'},
-            BRA:{h:'140,50%,45%',hex:'#059669',name:'Emerald'},WP:{h:'190,60%,50%',hex:'#0891b2',name:'Oceano'},
-            KK:{h:'300,50%,50%',hex:'#c026d3',name:'Magenta'},MK:{h:'170,55%,45%',hex:'#0d9488',name:'Agua'},
-            DEFAULT:{h:'220,60%,55%',hex:'#6366f1',name:'Indigo'},
+          // Cor por rede: em vez do arco-iris antigo (dourado, azul, roxo,
+          // ciano, rosa), a rede recebe um tom da familia da marca de forma
+          // deterministica — o mesmo nome sempre cai no mesmo tom, e nenhuma
+          // cor de fora da paleta entra.
+          const NET_RAMPA = ['#e5391f', '#ff7a4d', '#c4f042', '#ffb08a', '#8fd14f', '#b6b6c0']
+          function getNC(rede) {
+            const n = String(rede || '')
+            let h = 0
+            for (let i = 0; i < n.length; i++) h = (h * 31 + n.charCodeAt(i)) >>> 0
+            return { hex: NET_RAMPA[h % NET_RAMPA.length] }
           }
-          function getNC(rede){return NET_COLORS[rede]||NET_COLORS.DEFAULT}
           return (
           <motion.div key="operations" data-tour="tab-operations"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
@@ -3332,7 +3335,7 @@ export default function AdminPage() {
                       width:34, height:34, borderRadius:10,
                       background:'var(--fill-3)', border:'1px solid var(--b3)',
                       display:'flex', alignItems:'center', justifyContent:'center',
-                      boxShadow:'0 0 16px rgba(255,255,255,0.2)',
+                      boxShadow:'none',
                     }}>
                       <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                     </div>
@@ -3360,7 +3363,7 @@ export default function AdminPage() {
                             padding:'9px 12px', borderRadius:10,
                             background:`${c}08`, border:`1px solid ${c}14`,
                           }}>
-                          <div style={{ width:6, height:6, borderRadius:'50%', background:c, flexShrink:0, boxShadow:`0 0 8px ${c}` }}/>
+                          <div style={{ width:6, height:6, borderRadius:'50%', background:c, flexShrink:0, boxShadow:'none' }}/>
                           <span style={{ fontSize:12, color:'var(--t1)', lineHeight:1.45, fontWeight:600 }}>{ins.text}</span>
                         </motion.div>
                       )
@@ -3409,7 +3412,7 @@ export default function AdminPage() {
                         animation: it.pulse ? 'metaResumoBreath 3s ease-in-out infinite' : 'none',
                       }}>
                       {/* Accent line */}
-                      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:'0 2px 2px 0', background:it.c, boxShadow:`0 0 8px ${it.c}` }}/>
+                      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:'0 2px 2px 0', background:it.c, boxShadow:'none' }}/>
                       <div style={{ flex:1 }}>
                         <div style={{ display:'flex', alignItems:'baseline', gap:4 }}>
                           <span style={{ fontSize:22, fontWeight:900, color:it.c, fontFamily:'var(--mono)', letterSpacing:'-0.02em', lineHeight:1 }}>{it.count}</span>
@@ -3493,14 +3496,14 @@ export default function AdminPage() {
                     transition={{duration:0.35,delay:Math.min(i*0.04,0.5),ease}}
                     whileHover={{
                       y:-5,scale:1.025,
-                      boxShadow:`0 0 30px ${statusColor}18, 0 16px 40px rgba(0,0,0,0.45)`,
+                      boxShadow:'none',
                       borderColor:`${statusColor}55`,
                       transition:{duration:0.2}
                     }}
                     whileTap={{ scale:0.98 }}
                     style={{
                     borderRadius:18,overflow:'hidden',position:'relative',
-                    background:`linear-gradient(160deg, ${statusColor}${!isPos&&!fechada?'18':'0e'} 0%, ${statusColor}05 40%, rgba(10,18,32,0.92) 100%)`,
+                    background:`linear-gradient(160deg, ${statusColor}${!isPos&&!fechada?'18':'0e'} 0%, ${statusColor}05 40%, var(--surface) 100%)`,
                     backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
                     border:`1px solid ${statusColor}${!isPos&&!fechada?'55':'30'}`,
                     boxShadow:`0 0 ${!isPos&&!fechada?'32':'20'}px ${statusColor}${!isPos&&!fechada?'18':'08'}, 0 8px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)`,
@@ -3508,7 +3511,7 @@ export default function AdminPage() {
                     animation: !isPos && !fechada ? 'metaBreath 3s ease-in-out infinite' : 'none',
                   }}>
                     {/* Top accent — mais grosso e com glow */}
-                    <div style={{height:4,background:`linear-gradient(90deg, ${nc.hex}, ${nc.hex}88, ${nc.hex})`, boxShadow:`0 0 12px ${nc.hex}80`}}/>
+                    <div style={{height:4,background:`linear-gradient(90deg, ${nc.hex}, ${nc.hex}55)`}}/>
                     {/* Ambient orb no canto pra metas em prejuizo */}
                     {!isPos && !fechada && (
                       <div style={{ position:'absolute', top:-20, right:-20, width:90, height:90, borderRadius:'50%', background:'radial-gradient(circle, rgba(239,68,68,0.14), transparent 65%)', filter:'blur(14px)', pointerEvents:'none' }}/>
@@ -3522,7 +3525,7 @@ export default function AdminPage() {
                             padding:'3px 9px', borderRadius:5,
                             background:`${statusColor}18`, color:statusColor,
                             border:`1px solid ${statusColor}38`,
-                            boxShadow: !isPos && !fechada ? `0 0 10px ${statusColor}40` : 'none',
+                            boxShadow: !isPos && !fechada ? 'none' : 'none',
                           }}>
                             {statusLabel}
                           </span>
@@ -3549,7 +3552,7 @@ export default function AdminPage() {
                       </div>
                       {/* Title + rede chip */}
                       <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:3}}>
-                        <div style={{width:8,height:8,borderRadius:'50%',background:nc.hex,boxShadow:`0 0 8px ${nc.hex}90, 0 0 2px ${nc.hex}`,flexShrink:0}}/>
+                        <div style={{width:9,height:9,borderRadius:3,background:nc.hex,flexShrink:0}}/>
                         <span style={{fontSize:15,fontWeight:900,color:'var(--t1)',letterSpacing:'-0.01em'}}>{totalContas} DEP {m.rede||'—'}</span>
                       </div>
                       {/* Insight */}
@@ -3574,7 +3577,7 @@ export default function AdminPage() {
                             initial={{ width:0 }}
                             animate={{ width:`${progPct}%` }}
                             transition={{ duration:1, delay:Math.min(i*0.04,0.5)+0.2, ease:[0.4,0,0.2,1] }}
-                            style={{ height:'100%', borderRadius:99, background:progColor, boxShadow:`0 0 10px ${statusColor}40, inset 0 1px 0 rgba(255,255,255,0.2)`, position:'relative', overflow:'hidden' }}
+                            style={{ height:'100%', borderRadius:99, background:progColor, boxShadow:'none', position:'relative', overflow:'hidden' }}
                           >
                             {!fechada && <div style={{ position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,var(--fill-3),transparent)',animation:'progShimmer 2s ease-in-out infinite' }}/>}
                           </motion.div>
@@ -3621,6 +3624,12 @@ export default function AdminPage() {
         )}
 
         {/* ═══ RANKING ═══ */}
+        {tab==='ranking' && isNex2(user?.email) && (
+          <div style={{ marginBottom: 18 }}>
+            <h1 style={{ fontSize: 25, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.03em' }}>Ranking</h1>
+            <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '3px 0 0' }}>Quem puxou o resultado, por lucro final</p>
+          </div>
+        )}
         {tab==='ranking' && (
           <motion.div key="ranking"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
@@ -3662,7 +3671,7 @@ export default function AdminPage() {
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
                             <motion.div
-                              whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(255,255,255,0.3)' }}
+                              whileHover={{ scale: 1.1, boxShadow:'none' }}
                               style={{ width:30, height:30, borderRadius:8, background:'linear-gradient(135deg,var(--fill-3),var(--fill-3))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
                               <span style={{ fontSize:12, fontWeight:800, color:'var(--t1)' }}>{getName(op)[0].toUpperCase()}</span>
                             </motion.div>
@@ -3776,6 +3785,12 @@ export default function AdminPage() {
         )}
 
         {/* ═══ REDES ═══ */}
+        {tab==='redes' && isNex2(user?.email) && (
+          <div style={{ marginBottom: 18 }}>
+            <h1 style={{ fontSize: 25, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.03em' }}>Redes</h1>
+            <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '3px 0 0' }}>Desempenho por rede, pelo lucro final das metas fechadas</p>
+          </div>
+        )}
         {tab==='redes' && (
           <motion.div key="redes"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
@@ -3811,7 +3826,7 @@ export default function AdminPage() {
                       padding:'18px 22px', borderRadius:16,
                       background:isTop?'linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,215,0,0.02))':'var(--surface)',
                       border:isTop?'1px solid rgba(255,215,0,0.2)':'1px solid var(--b1)',
-                      boxShadow:isTop?'0 0 30px rgba(255,215,0,0.06)':'none',
+                      boxShadow:isTop?'none':'none',
                     }}>
                       <div style={{width:44,height:44,borderRadius:12,flexShrink:0,background:isTop?'rgba(255,215,0,0.12)':'var(--raised)',border:`2px solid ${isTop?'#FFD700':'var(--b2)'}`,display:'flex',alignItems:'center',justifyContent:'center'}}>
                         <span style={{fontSize:17,fontWeight:900,color:isTop?'#FFD700':'var(--t3)',fontFamily:'var(--mono)'}}>#{i+1}</span>
@@ -3916,6 +3931,12 @@ export default function AdminPage() {
         )}
 
         {/* ═══ TEAM ═══ */}
+        {tab==='team' && isNex2(user?.email) && (
+          <div style={{ marginBottom: 18 }}>
+            <h1 style={{ fontSize: 25, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.03em' }}>Equipe & Configurações</h1>
+            <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '3px 0 0' }}>Operadores, convites e modelo de remuneração</p>
+          </div>
+        )}
         {tab==='team' && (
           <motion.div key="team"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
@@ -4059,7 +4080,7 @@ export default function AdminPage() {
                       whileHover={{ x: 4, background: 'var(--overlay)', transition: { duration: 0.15 } }}>
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                         <motion.div
-                          whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(255,255,255,0.3)' }}
+                          whileHover={{ scale: 1.1, boxShadow:'none' }}
                           style={{ width:32, height:32, borderRadius:9, background:'linear-gradient(135deg,var(--fill-3),var(--fill-3))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
                           <span style={{ fontSize:12, fontWeight:800, color:'var(--t1)' }}>{getName(op)[0].toUpperCase()}</span>
                         </motion.div>
@@ -4155,6 +4176,12 @@ export default function AdminPage() {
         })()}
 
         {/* ═══ TRASH ═══ */}
+        {tab==='trash' && isNex2(user?.email) && (
+          <div style={{ marginBottom: 18 }}>
+            <h1 style={{ fontSize: 25, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.03em' }}>Lixeira</h1>
+            <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '3px 0 0' }}>Metas removidas — dá pra restaurar ou apagar de vez</p>
+          </div>
+        )}
         {tab==='trash' && (
           <motion.div key="trash" data-tour="tab-trash"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}

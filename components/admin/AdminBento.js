@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor } from '../ui/bento'
+import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor, Podio, Risco, Barras } from '../ui/bento'
 
 const RED = '#e5391f', RED2 = '#ff7a4d'
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
@@ -157,6 +157,35 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
     const ord = [...ranking].sort((x, y) => Number(y.lucroFinal || 0) - Number(x.lucroFinal || 0))
     return ord[0] || null
   }, [ranking])
+
+  // ── O que precisa de atencao ──
+  // Tudo aqui sai do que a pagina ja tem em maos. Sem consulta nova e sem
+  // inventar limiar: parada = 15 dias, o mesmo corte que a rosca de
+  // situacao ja usa; no vermelho = lucro_final negativo de verdade.
+  const alertas = useMemo(() => {
+    const out = []
+    const agora = Date.now()
+    const paradas = abertas.filter(m => m.created_at && (agora - new Date(m.created_at).getTime()) / 86400000 > 15)
+    if (paradas.length) {
+      const nomes = paradas.slice(0, 3).map(m => m.titulo || m.rede || "meta").join(", ")
+      out.push(`${int(paradas.length)} meta${paradas.length === 1 ? "" : "s"} aberta${paradas.length === 1 ? "" : "s"} ha mais de 15 dias: ${nomes}${paradas.length > 3 ? " e outras" : ""}`)
+    }
+    const negativas = fechadas.filter(m => Number(m.lucro_final || 0) < 0)
+    if (negativas.length) {
+      const soma = negativas.reduce((a, m) => a + Number(m.lucro_final || 0), 0)
+      out.push(`${int(negativas.length)} meta${negativas.length === 1 ? "" : "s"} fechada${negativas.length === 1 ? "" : "s"} no prejuizo, somando ${money0(Math.abs(soma))}`)
+    }
+    const semOperador = abertas.filter(m => !m.operator_id)
+    if (semOperador.length) out.push(`${int(semOperador.length)} meta${semOperador.length === 1 ? "" : "s"} aberta${semOperador.length === 1 ? "" : "s"} sem operador atribuido`)
+    return out
+  }, [abertas, fechadas])
+
+  // ── Podio: os tres que mais trouxeram ──
+  const podio = useMemo(() => [...ranking]
+    .sort((a, b) => Number(b.lucroFinal || 0) - Number(a.lucroFinal || 0))
+    .slice(0, 3)
+    .map(o => ({ l: o.nome || o.email?.split("@")[0] || "Operador", v: Number(o.lucroFinal || 0) })),
+  [ranking])
 
   // ── Roscas: onde o lucro se concentra e como as metas estao divididas ──
   const porRede = useMemo(() => {
@@ -400,6 +429,9 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         </motion.div>
       </div>
 
+      {/* so aparece quando ha algo a olhar */}
+      <Risco itens={alertas} delay={0.28} />
+
       {/* LINHA 4 — quem puxou o resultado e o mes dia a dia */}
       <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 14 }}>
         {melhorOp ? (
@@ -416,6 +448,21 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
           <Destaque rotulo="Destaque da equipe" titulo="Ainda sem ranking" valor="R$ 0" nota="assim que a equipe fechar metas, o destaque aparece" delay={0.3} />
         )}
         <Calor rotulo="Os ultimos 30 dias" dias={dias30} delay={0.34} />
+      </div>
+
+      {/* LINHA 4b — podio da equipe */}
+      <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 14 }}>
+        <Podio rotulo="Podio da equipe" itens={podio} delay={0.36} onAbrir={onVerMetas} />
+        <Barras
+          titulo="Lucro por operador"
+          dados={[...ranking].sort((a, b) => Number(b.lucroFinal || 0) - Number(a.lucroFinal || 0)).slice(0, 6).map(o => ({
+            l: o.nome || o.email?.split("@")[0] || "Operador",
+            v: Math.abs(Number(o.lucroFinal || 0)),
+            txt: money0(o.lucroFinal),
+            dot: Number(o.lucroFinal) >= 0 ? undefined : 'var(--loss)',
+          }))}
+          delay={0.4}
+        />
       </div>
 
       {/* LINHA 5 — roscas: concentracao de lucro e situacao das metas */}

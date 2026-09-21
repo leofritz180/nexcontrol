@@ -750,3 +750,145 @@ export function Calor({ rotulo, dias = [], formata = money0, delay = 0.16 }) {
     </BCard>
   )
 }
+
+// ── PÓDIO ────────────────────────────────────────────────────────────────
+// Top 3 em pódio, altura proporcional ao resultado. Só faz sentido com 2 ou
+// mais: com um só não existe disputa, e a lista já diz quem é.
+export function Podio({ rotulo, itens = [], formata = money0, delay = 0.14, aoAbrir }) {
+  const top = itens.slice(0, 3)
+  const teto = Math.max(1, ...top.map(t => Math.abs(Number(t.v) || 0)))
+  // 2º, 1º, 3º — a ordem visual de um pódio de verdade
+  const ordem = top.length >= 3 ? [1, 0, 2] : top.length === 2 ? [1, 0] : [0]
+  const alturas = [96, 72, 56]
+
+  return (
+    <BCard pad={24} delay={delay}>
+      <p style={{ ...TIPO.secao, color: 'var(--t1)', margin: '0 0 3px' }}>{rotulo}</p>
+      <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 22px' }}>os três que mais trouxeram no período</p>
+      {top.length < 2 ? (
+        <Vazio titulo="Ainda não há disputa" texto="Com dois ou mais operadores fechando metas, o pódio aparece aqui."
+          icone={<><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M6 4h12v7a6 6 0 0 1-12 0z" /><path d="M12 17v4M8 21h8" /></>} />
+      ) : (
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 12 }}>
+          {ordem.map((idx, pos) => {
+            const t = top[idx]
+            if (!t) return null
+            const lugar = idx + 1
+            const h = alturas[idx] * (0.55 + 0.45 * (Math.abs(Number(t.v) || 0) / teto))
+            const primeiro = lugar === 1
+            return (
+              <div key={t.l || pos} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, minWidth: 0, flex: 1, maxWidth: 120 }}>
+                <motion.span
+                  initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.45, delay: delay + pos * 0.1, ease: [0.33, 1, 0.68, 1] }}
+                  style={{
+                    width: primeiro ? 46 : 38, height: primeiro ? 46 : 38, borderRadius: '50%',
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    fontFamily: MONO, fontSize: primeiro ? 15 : 13, fontWeight: 900, color: '#fff',
+                    background: primeiro ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--t4)',
+                    boxShadow: primeiro ? '0 8px 22px rgba(229,57,31,0.3)' : 'none',
+                  }}>
+                  {String(t.l || '?').slice(0, 2).toUpperCase()}
+                </motion.span>
+                <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--t1)', margin: 0, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{t.l}</p>
+                <NumeroTexto delay={delay + 0.3} style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: Number(t.v) >= 0 ? 'var(--profit)' : 'var(--loss)' }}>{formata(t.v)}</NumeroTexto>
+                <motion.div
+                  onClick={aoAbrir ? () => aoAbrir(t) : undefined}
+                  initial={{ height: 0 }} animate={{ height: h }}
+                  transition={{ duration: 0.7, delay: delay + 0.15 + pos * 0.1, ease: [0.33, 1, 0.68, 1] }}
+                  style={{
+                    width: '100%', borderRadius: '14px 14px 0 0', cursor: aoAbrir ? 'pointer' : 'default',
+                    background: primeiro ? `linear-gradient(180deg, ${RED2}, ${RED})` : 'var(--fill-2)',
+                    display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 8,
+                  }}>
+                  <span style={{ fontFamily: MONO, fontSize: 13, fontWeight: 900, color: primeiro ? '#fff' : 'var(--t3)' }}>{lugar}º</span>
+                </motion.div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </BCard>
+  )
+}
+
+// ── TERMÔMETRO DE RISCO ──────────────────────────────────────────────────
+// Card que só aparece quando há algo a olhar. A borda pulsa devagar: chama
+// atenção sem gritar, que é o certo pra um alerta que fica na tela.
+export function Risco({ rotulo = 'Precisa de atenção', itens = [], delay = 0.18 }) {
+  const semMovimento = useReducedMotion()
+  if (!itens.length) return null
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay }}
+      style={{ position: 'relative', borderRadius: 24, overflow: 'hidden' }}>
+      <motion.div
+        animate={semMovimento ? {} : { opacity: [0.35, 0.75, 0.35] }}
+        transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ position: 'absolute', inset: 0, borderRadius: 24, border: '1.5px solid var(--loss)', pointerEvents: 'none', zIndex: 2 }}
+      />
+      <div style={{ background: 'var(--loss-dim)', border: '1px solid var(--loss-border)', borderRadius: 24, padding: '20px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+          <span style={{ width: 30, height: 30, borderRadius: 10, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--loss)', color: '#fff' }}>
+            <Ico d={<><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><path d="M12 9v4M12 17h.01" /></>} s={15} c="#fff" />
+          </span>
+          <p style={{ ...TIPO.secao, color: 'var(--loss)', margin: 0 }}>{rotulo}</p>
+        </div>
+        {itens.map((it, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginTop: i ? 10 : 0 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', marginTop: 6, flexShrink: 0, background: 'var(--loss)' }} />
+            <span style={{ fontSize: 13, color: 'var(--t1)', lineHeight: 1.5 }}>{typeof it === 'string' ? it : it.texto}</span>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+// ── BUSCA DE LISTA ───────────────────────────────────────────────────────
+// Campo de busca enxuto pra usar no `acao` da Lista. Não filtra sozinho:
+// devolve o termo e quem tem os dados decide o que fazer.
+export function BuscaLista({ valor, aoMudar, placeholder = 'Buscar…', largura = 190 }) {
+  const [foco, setFoco] = useState(false)
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 7, width: largura, maxWidth: '100%',
+      padding: '7px 12px', borderRadius: 30,
+      background: 'var(--surface)',
+      border: `1px solid ${foco ? 'var(--brand)' : 'var(--b1)'}`,
+      boxShadow: foco ? '0 0 0 3px rgba(229,57,31,0.12)' : 'none',
+      transition: 'border-color .16s ease, box-shadow .16s ease',
+    }}>
+      <Ico d={<><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></>} s={13} c="var(--t3)" />
+      <input
+        className="nx-campo-ctl" value={valor} onChange={e => aoMudar(e.target.value)}
+        onFocus={() => setFoco(true)} onBlur={() => setFoco(false)}
+        placeholder={placeholder}
+        style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'inherit', fontSize: 12.5, color: 'var(--t1)' }}
+      />
+      {valor && (
+        <button type="button" onClick={() => aoMudar('')} aria-label="Limpar busca"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--t4)', padding: 0, display: 'inline-flex' }}>
+          <Ico d={<path d="M18 6L6 18M6 6l12 12" />} s={12} c="var(--t4)" />
+        </button>
+      )}
+    </span>
+  )
+}
+
+/** Realça o trecho encontrado, sem depender de dangerouslySetInnerHTML. */
+export function Realce({ texto, termo }) {
+  const t = String(texto ?? '')
+  const b = String(termo ?? '').trim()
+  if (!b) return <>{t}</>
+  const limpa = (x) => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+  const i = limpa(t).indexOf(limpa(b))
+  if (i < 0) return <>{t}</>
+  return (
+    <>
+      {t.slice(0, i)}
+      <mark style={{ background: 'var(--brand-dim)', color: 'var(--brand)', borderRadius: 4, padding: '0 2px' }}>{t.slice(i, i + b.length)}</mark>
+      {t.slice(i + b.length)}
+    </>
+  )
+}

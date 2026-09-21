@@ -33,7 +33,7 @@ export default function RedesBento({ kpis, redesData = [], onAbrir }) {
         { l: 'Custos', v: money0(k.custosTotal), c: 'var(--loss)' },
       ]} />
 
-      <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 14 }}>
+      <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 14, alignItems: 'start' }}>
         <BCard pad={24} delay={0.14}>
           <p style={{ fontSize: 16.5, fontWeight: 800, color: 'var(--t1)', margin: '0 0 3px', letterSpacing: '-0.02em' }}>Concentração do lucro</p>
           {/* A rosca soma SO as redes positivas, o hero soma todas. A diferenca
@@ -55,7 +55,7 @@ export default function RedesBento({ kpis, redesData = [], onAbrir }) {
         </BCard>
       </div>
 
-      <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 14 }}>
+      <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 14, alignItems: 'start' }}>
         <Barras
           titulo="Lucro por rede"
           dados={ord.slice(0, 8).map(r => ({

@@ -1,6 +1,6 @@
 'use client'
 // CUSTOS — visual 2.0. Apresentação apenas; recebe dados/handlers do /custos.
-import { ModuleHeader, AcaoBtn, Hero, Tira, Barras, Lista, BCard, money0, money, RED, RED2 } from '../ui/bento'
+import { ModuleHeader, AcaoBtn, Hero, Barras, Lista, money0 } from '../ui/bento'
 
 // A data vem do banco como 'YYYY-MM-DD' e estava indo crua pra tela
 // ("2026-06-10"). Formato de banco não é formato de gente.
@@ -29,18 +29,16 @@ export default function CustosBento({ kpis, chartData, custos = [], typeMap = {}
         nota={k.pctLucro != null ? `${Math.round(k.pctLucro)}% do lucro de hoje foi para custos` : 'Sem lucro registrado hoje para comparar'}
         blob={['var(--loss-dim)', 'var(--loss-border)']}
         extras={[
-          { l: 'Hoje', v: money0(k.custoHoje), c: 'var(--loss)' },
+          { l: 'Custo hoje', v: money0(k.custoHoje), c: 'var(--loss)' },
+          { l: 'Lucro hoje', v: money0(k.lucroHoje), c: 'var(--profit)' },
           { l: 'Líquido hoje', v: money0(k.lucroLiquido), c: Number(k.lucroLiquido) >= 0 ? 'var(--profit)' : 'var(--loss)' },
         ]}
       />
 
-      <Tira itens={[
-        { l: 'Custo hoje', v: money0(k.custoHoje), c: 'var(--loss)' },
-        { l: 'Custo no mês', v: money0(k.custoMes), c: 'var(--loss)' },
-        { l: 'Média por dia', v: money0(k.mediaDia) },
-        { l: 'Lucro hoje', v: money0(k.lucroHoje), c: 'var(--profit)' },
-        { l: 'Lucro líquido', v: money0(k.lucroLiquido), c: Number(k.lucroLiquido) >= 0 ? 'var(--profit)' : 'var(--loss)' },
-      ]} />
+      {/* A tira que existia aqui repetia CINCO valores: custo hoje e líquido
+          hoje já estavam nos chips do herói, custo no mês É o numerão, e a
+          média por dia foi pro subtítulo. Sobrava só o lucro de hoje — que
+          agora é o terceiro chip. */}
 
       {/* alignItems start: sem isso o card das barras estica pra igualar a
           altura da lista de lançamentos e sobra meio metro de branco */}

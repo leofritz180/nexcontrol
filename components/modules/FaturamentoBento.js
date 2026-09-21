@@ -26,7 +26,10 @@ export default function FaturamentoBento({ stats, chartData = [], operadores = 0
         nota={`Bruto ${money0(s.lucroFinalBruto)} · custos ${money0(s.custosTotal)}`}
         blob={pos ? ['var(--profit-dim)', 'var(--profit-border)'] : ['var(--loss-dim)', 'var(--loss-border)']}
         extras={[
-          { l: 'ROI', v: `${Math.round(Number(s.roi) || 0)}%`, c: Number(s.roi) >= 0 ? 'var(--profit)' : 'var(--loss)' },
+          // O calculo e liq/dep: mede SO as remessas, nao o lucro final. Ficava
+          // "ROI -9%" vermelho colado num "+R$ 91.371" verde e parecia erro.
+          // A conta continua a mesma; o rotulo e que agora diz o que ela mede.
+          { l: 'Retorno das remessas', v: `${Math.round(Number(s.roi) || 0)}%`, c: Number(s.roi) >= 0 ? 'var(--profit)' : 'var(--loss)' },
           { l: 'Taxa de acerto', v: `${int(s.taxa)}%` },
         ]}
       />
@@ -40,9 +43,12 @@ export default function FaturamentoBento({ stats, chartData = [], operadores = 0
         { l: 'Redes', v: int(redes) },
       ]} />
 
-      <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.35fr 1fr', gap: 14 }}>
+      {/* alignItems start: senao o "Resumo do periodo" estica pra igualar a
+          altura do grafico e sobra meio metro de branco */}
+      <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.35fr 1fr', gap: 14, alignItems: 'start' }}>
         <Barras
           titulo="Evolução do faturamento"
+          sub="resultado das remessas por dia — salário e baú entram só no fechamento da meta"
           // O /faturamento monta {name, lucro, prejuizo, liquido}. Aqui se lia
           // d.label e d.value — nomes que não existem nesse objeto. Resultado:
           // 12 barras zeradas, com "—" no lugar da data, numa conta com 414

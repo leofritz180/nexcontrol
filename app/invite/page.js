@@ -1,11 +1,35 @@
 'use client'
+// ─────────────────────────────────────────────────────────────────────────
+// ACEITAR CONVITE — visual 2.0.
+//
+// Esta é a PRIMEIRA tela que um operador vê do NexControl. Ela ficou no
+// visual antigo enquanto login, cadastro e redefinir senha já eram 2.0 —
+// ou seja, quem entrava por convite via a versão velha logo de cara.
+//
+// A lógica não mudou: o lookup do convite pelo endpoint público (RLS
+// bloqueia o select anônimo), a revalidação antes de criar, a checagem do
+// limite de operadores do plano e o signUp continuam byte a byte como
+// estavam. Só o JSX é novo.
+// ─────────────────────────────────────────────────────────────────────────
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
+import AuthSplitV2, { AvisoAuth, BotaoAuth, LinkAuth, OlhoSenha } from '../../components/v2/AuthSplitV2'
+import { Campo } from '../../components/ui/campo'
+
+const ICO_PESSOA = <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>
+const ICO_EMAIL = <><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-10 6L2 7" /></>
+const ICO_CADEADO = <><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>
 
 export default function InviteWrapper() {
-  return <Suspense fallback={<main style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',zIndex:1,position:'relative'}}><div className="spinner" style={{width:28,height:28,borderTopColor:'var(--brand-bright)'}}/></main>}><InvitePage/></Suspense>
+  return (
+    <Suspense fallback={
+      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, position: 'relative' }}>
+        <div className="spinner" style={{ width: 28, height: 28, borderTopColor: 'var(--brand-bright)' }} />
+      </main>
+    }><InvitePage /></Suspense>
+  )
 }
 
 function InvitePage() {
@@ -21,6 +45,7 @@ function InvitePage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [showPass, setShowPass] = useState(false)
 
   useEffect(() => {
     if (token) loadInvite()
@@ -66,7 +91,7 @@ function InvitePage() {
           const limit = Math.max(...validLimits)
           if ((opCount || 0) >= limit) {
             setSaving(false)
-            setError('Este convite expirou por limite de plano. Peca ao admin para liberar uma vaga.')
+            setError('Este convite expirou por limite de plano. Peça ao admin para liberar uma vaga.')
             return
           }
         }
@@ -85,73 +110,121 @@ function InvitePage() {
     setSuccess(true)
   }
 
+  const equipe = tenant?.name || 'a equipe'
+
   if (loading) return (
-    <main style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1, position:'relative' }}>
-      <div className="spinner" style={{ width:28, height:28, borderTopColor:'var(--brand-bright)' }}/>
+    <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, position: 'relative' }}>
+      <div className="spinner" style={{ width: 28, height: 28, borderTopColor: 'var(--brand-bright)' }} />
     </main>
   )
 
+  // ── link morto ──
   if (!token || !invite) return (
-    <main style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:24, zIndex:1, position:'relative' }}>
-      <div className="card card-glass" style={{ padding:40, textAlign:'center', maxWidth:440 }}>
-        <h2 className="t-h2" style={{ marginBottom:8 }}>Convite indisponível</h2>
-        <p className="t-body" style={{ marginBottom:8 }}>Este link expirou ou foi revogado pelo administrador.</p>
-        <p className="t-body" style={{ marginBottom:24, fontSize:13, color:'var(--t3)' }}>
-          <strong style={{ color:'var(--t2)' }}>NÃO crie uma conta nova</strong> — peça um novo link de convite ao administrador da sua operação.
-        </p>
-      </div>
-    </main>
+    <AuthSplitV2
+      frase="Todo operador começa por um convite."
+      apoio="O link é individual e tem prazo. Se o seu venceu, o administrador gera outro em segundos."
+      rodape="Conexão segura · Dados criptografados"
+    >
+      <h1 style={{ fontSize: 31, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, color: 'var(--t1)', margin: '0 0 8px' }}>
+        Convite indisponível
+      </h1>
+      <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: '0 0 26px' }}>
+        Este link expirou ou foi revogado pelo administrador.
+      </p>
+      <AvisoAuth tipo="erro">
+        Não crie uma conta nova por fora — peça um novo link de convite ao administrador da sua operação.
+      </AvisoAuth>
+      <p style={{ fontSize: 13, color: 'var(--t2)', margin: '18px 0 0' }}>
+        Já tem conta? <LinkAuth href="/login">Entrar</LinkAuth>.
+      </p>
+    </AuthSplitV2>
   )
 
+  // ── conta criada ──
   if (success) return (
-    <main style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:24, zIndex:1, position:'relative' }}>
-      <div className="card card-glass" style={{ padding:40, textAlign:'center', maxWidth:420 }}>
-        <div style={{ width:52, height:52, borderRadius:14, background:'var(--profit-dim)', border:'1px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
-          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <h2 className="t-h2" style={{ marginBottom:8 }}>Conta criada</h2>
-        <p className="t-body" style={{ marginBottom:4 }}>Voce foi adicionado a <strong style={{ color:'var(--t1)' }}>{tenant?.name}</strong></p>
-        <p className="t-body" style={{ marginBottom:24 }}>Verifique seu email para confirmar.</p>
-        <Link href="/login" className="btn btn-brand" style={{ width:'100%', justifyContent:'center' }}>Ir para o login</Link>
+    <AuthSplitV2
+      frase="Bem-vindo à operação."
+      apoio="A partir de agora suas metas, remessas e resultados ficam todos num lugar só."
+      rodape="Conexão segura · Dados criptografados"
+    >
+      <h1 style={{ fontSize: 31, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, color: 'var(--t1)', margin: '0 0 8px' }}>
+        Conta criada
+      </h1>
+      <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: '0 0 22px' }}>
+        Você entrou em <strong style={{ color: 'var(--t1)' }}>{equipe}</strong>.
+      </p>
+      <AvisoAuth tipo="sucesso">
+        Confirme o seu e-mail para liberar o acesso. Se não achar a mensagem, olhe no spam.
+      </AvisoAuth>
+      <div style={{ marginTop: 20 }}>
+        <BotaoAuth tipo="button" onClick={() => router.push('/login')}>Ir para o login</BotaoAuth>
       </div>
-    </main>
+    </AuthSplitV2>
   )
 
+  // ── formulário ──
   return (
-    <main style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:24, zIndex:1, position:'relative' }}>
-      <div style={{ width:'100%', maxWidth:420 }}>
-        <div className="a1" style={{ textAlign:'center', marginBottom:36 }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'4px 14px', borderRadius:99, background:'var(--brand-dim)', border:'1px solid var(--brand-border)', marginBottom:16 }}>
-            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-            <span style={{ fontSize:11, fontWeight:700, color:'var(--brand-bright)', letterSpacing:'0.06em' }}>CONVITE</span>
-          </div>
-          <h1 style={{ fontFamily:'Inter,sans-serif', fontWeight:900, fontSize:26, letterSpacing:'-0.03em', color:'var(--t1)', marginBottom:6 }}>
-            Junte-se a {tenant?.name || 'equipe'}
-          </h1>
-          <p className="t-body">Voce foi convidado como <strong style={{ color:'var(--brand-bright)' }}>{invite.role}</strong></p>
-        </div>
+    <AuthSplitV2
+      frase={`Você foi chamado para ${equipe}.`}
+      apoio="Crie a sua conta e entre direto na operação — sem pagar nada: quem assina é o administrador."
+      rodape="Conexão segura · Dados criptografados"
+    >
+      <span style={{
+        display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 13px', borderRadius: 99,
+        background: 'var(--brand-dim)', border: '1px solid var(--brand-border)', marginBottom: 16,
+      }}>
+        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--brand)" strokeWidth="2.2" strokeLinecap="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" />
+          <line x1="20" y1="8" x2="20" y2="14" /><line x1="23" y1="11" x2="17" y2="11" />
+        </svg>
+        <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--brand)', letterSpacing: '0.14em' }}>CONVITE</span>
+      </span>
 
-        <div className="a2 card card-glass" style={{ padding:32 }}>
-          <form onSubmit={handleAccept} style={{ display:'flex', flexDirection:'column', gap:16 }}>
-            <div>
-              <label className="t-label" style={{ display:'block', marginBottom:8 }}>Seu nome *</label>
-              <input className="input" value={nome} onChange={e=>setNome(e.target.value)} placeholder="Nome completo" required/>
-            </div>
-            <div>
-              <label className="t-label" style={{ display:'block', marginBottom:8 }}>Email *</label>
-              <input className="input" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="seu@email.com" required/>
-            </div>
-            <div>
-              <label className="t-label" style={{ display:'block', marginBottom:8 }}>Criar senha *</label>
-              <input className="input" type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Minimo 6 caracteres" required minLength={6}/>
-            </div>
-            {error && <div className="alert-error" style={{ display:'flex', alignItems:'center', gap:8 }}><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{error}</div>}
-            <button type="submit" className="btn btn-profit btn-lg" disabled={saving} style={{ width:'100%' }}>
-              {saving ? <><div className="spinner" style={{ width:14, height:14, borderTopColor:'#012b1c' }}/> Criando...</> : 'Aceitar convite e criar conta'}
-            </button>
-          </form>
-        </div>
-      </div>
-    </main>
+      <h1 style={{ fontSize: 31, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, color: 'var(--t1)', margin: '0 0 8px' }}>
+        Junte-se a {equipe}
+      </h1>
+      <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: '0 0 28px' }}>
+        Você foi convidado como <strong style={{ color: 'var(--t1)' }}>{invite.role}</strong>.
+      </p>
+
+      <form onSubmit={handleAccept} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Campo
+          rotulo="Seu nome"
+          valor={nome} aoMudar={setNome}
+          placeholder="Nome completo"
+          obrigatorio autoComplete="name"
+          icone={ICO_PESSOA}
+          ajuda="É assim que o administrador vai te ver no painel."
+        />
+        <Campo
+          rotulo="E-mail"
+          tipo="email"
+          valor={email} aoMudar={setEmail}
+          placeholder="seu@email.com"
+          obrigatorio autoComplete="email"
+          icone={ICO_EMAIL}
+        />
+        <Campo
+          rotulo="Criar senha"
+          tipo={showPass ? 'text' : 'password'}
+          valor={pass} aoMudar={setPass}
+          placeholder="••••••••"
+          obrigatorio minLength={6} autoComplete="new-password"
+          icone={ICO_CADEADO}
+          ajuda="Mínimo de 6 caracteres."
+          sufixo={<OlhoSenha mostrando={showPass} aoAlternar={() => setShowPass(!showPass)} />}
+        />
+
+        <AnimatePresence>
+          {error && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+              <AvisoAuth tipo="erro">{error}</AvisoAuth>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <BotaoAuth carregando={saving} textoCarregando="Criando…">Aceitar convite e criar conta</BotaoAuth>
+      </form>
+    </AuthSplitV2>
   )
 }

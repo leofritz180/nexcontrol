@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase/client'
 import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_EMAIL, NETWORK_GA, NETWORK_FREE_FOR_ALL, POST_REACTIONS } from '../../lib/network-access'
 import RankProgress from '../../components/rank/RankProgress'
 import { getRank, rankColor } from '../../lib/rank-system'
+import { useConfirmar } from '../../components/v2/Confirmar'
 
 const CHANNEL_KEYS = new Set(NETWORK_CHANNELS.map(c => c.key))
 
@@ -178,6 +179,7 @@ function useViewportH() {
 
 export default function NetworkPage() {
   const router = useRouter()
+  const perguntar = useConfirmar()
   const isMobile = useIsMobile()
   const vpH = useViewportH()
   const [user, setUser] = useState(null)
@@ -530,7 +532,12 @@ export default function NetworkPage() {
   }
 
   async function del(id) {
-    if (!confirm('Apagar esta mensagem?')) return
+    const ok = await perguntar({
+      titulo: 'Apagar esta mensagem?',
+      texto: 'Ela some do canal para todo mundo.',
+      confirmar: 'Apagar',
+    })
+    if (!ok) return
     await api('/api/network/message', { method: 'POST', body: JSON.stringify({ action: 'delete', id }) })
     fetchFeed(channel, false)
   }
@@ -1418,6 +1425,7 @@ function actBtn(active) {
 
 // ═══════════════ Comentários (bottom sheet / drawer) ═══════════════
 function CommentsSheet({ post, isMobile, api, meId, isOwner, onOpenProfile, onClose, onChanged }) {
+  const perguntar = useConfirmar()
   const [comments, setComments] = useState(null) // null = carregando
   const [text, setText] = useState('')
   const [replyTo, setReplyTo] = useState(null)    // {id, name}
@@ -1449,7 +1457,12 @@ function CommentsSheet({ post, isMobile, api, meId, isOwner, onOpenProfile, onCl
     await api('/api/network/comments', { method: 'POST', body: JSON.stringify({ action: 'like', id: c.id }) })
   }
   async function delComment(c) {
-    if (!confirm('Excluir este comentário?')) return
+    const ok = await perguntar({
+      titulo: 'Excluir este comentário?',
+      alvo: (c.text || '').slice(0, 90),
+      confirmar: 'Excluir',
+    })
+    if (!ok) return
     await api('/api/network/comments', { method: 'POST', body: JSON.stringify({ action: 'delete', id: c.id }) })
     await load(); onChanged && onChanged()
   }
@@ -1668,6 +1681,7 @@ function SocialProfileTop({ p, onOpenImage }) {
 
 // ═══════════════ Perfil (drawer) ═══════════════
 function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, canVerify, onModerated, social, onOpenImage, isFreeMember }) {
+  const perguntar = useConfirmar()
   const p = view.data
   const [bio, setBio] = useState(p?.bio || '')
   const [insta, setInsta] = useState(p?.instagram || '')
@@ -1735,7 +1749,14 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
     setModBusy(false); onModerated && onModerated()
   }
   async function doBan() {
-    if (!confirm('Remover este usuário do Network? Ele perde o acesso à comunidade.')) return
+    const ok = await perguntar({
+      titulo: 'Remover do Network?',
+      alvo: view?.nome || view?.email || '',
+      texto: 'A pessoa perde o acesso à comunidade. Ela continua usando o resto do NexControl normalmente.',
+      confirmar: 'Remover',
+      perigo: true,
+    })
+    if (!ok) return
     setModBusy(true)
     await api('/api/network/profile', { method: 'POST', body: JSON.stringify({ action: 'ban', target_user_id: p.id }) })
     setModBusy(false); onModerated && onModerated()

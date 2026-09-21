@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
+import { useConfirmar } from './v2/Confirmar'
 
 // SO admin/owner — operador NAO dispara (essas notificacoes expoem financeiro).
 const OWNER_EMAIL = 'leofritz180@gmail.com'
@@ -27,6 +28,7 @@ const ITEMS = [
 ]
 
 export default function QuickNotifyPanel({ userEmail }) {
+  const perguntar = useConfirmar()
   const isOwner = String(userEmail || '').toLowerCase() === OWNER_EMAIL
   // Descobre o papel sozinho (nao confia em prop de pagina — /tutorial passa
   // isAdmin fixo). So admin/owner ve o painel. Padrao seguro anti-deadlock:
@@ -80,7 +82,13 @@ export default function QuickNotifyPanel({ userEmail }) {
 
   // Disparo em massa pra TODOS admins (so owner)
   async function triggerMass(type, label) {
-    if (!confirm('Disparar "' + label + '" para TODOS os admins com atividade na semana?')) return
+    const ok = await perguntar({
+      titulo: 'Disparar este aviso?',
+      alvo: label,
+      texto: 'Vai para TODOS os admins com atividade na semana. Não dá pra cancelar depois de enviado.',
+      confirmar: 'Disparar',
+    })
+    if (!ok) return
     setBusy('mass_' + type)
     setToast(null)
     try {

@@ -224,12 +224,14 @@ function PainelIlustrado({ semMovimento }) {
 // ── BOTÃO PRINCIPAL ──────────────────────────────────────────────────────
 // É `type="submit"` de propósito (o AcaoBtn do bento é type="button" e não
 // serviria aqui): quem envia o formulário é este botão, como antes.
-export function BotaoAuth({ carregando, textoCarregando, children }) {
+// tipo/onClick existem pro /invite: no estado "conta criada" o botao leva
+// pro login e nao esta dentro de nenhum form — submit ali nao faria nada.
+export function BotaoAuth({ carregando, textoCarregando, children, onClick, tipo = 'submit' }) {
   const semMovimento = useReducedMotion()
   const parado = carregando || semMovimento
   return (
     <motion.button
-      type="submit" disabled={carregando} className="nxa-branco"
+      type={tipo} onClick={onClick} disabled={carregando} className="nxa-branco"
       whileHover={parado ? undefined : { y: -2, boxShadow: '0 14px 32px rgba(229,57,31,0.36)' }}
       whileTap={parado ? undefined : { scale: 0.985 }}
       style={{

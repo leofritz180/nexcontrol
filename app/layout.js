@@ -2,10 +2,14 @@ import './globals.css'
 import { Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import MotionGate from '../components/MotionGate'
+// Avisos (toasts) do V2: provider + portal fixo. Import estático de propósito —
+// com dynamic/ssr:false os children parariam de ser renderizados no servidor.
+import { ProvedorDeAvisos } from '../components/v2/Avisos'
 const DynamicBackground = dynamic(() => import('../components/DynamicBackground'), { ssr: false })
 const SubscriptionGate = dynamic(() => import('../components/SubscriptionGate'), { ssr: false })
 const OperatorLimitGate = dynamic(() => import('../components/OperatorLimitGate'), { ssr: false })
-const GlobalLoadingScreen = dynamic(() => import('../components/branding/GlobalLoadingScreen'), { ssr: false })
+// Tela de abertura: o switch escolhe entre a antiga (escura) e a do V2 (clara)
+const TelaDeAbertura = dynamic(() => import('../components/branding/LoadingScreenSwitch'), { ssr: false })
 const InstallPrompt = dynamic(() => import('../components/InstallPrompt'), { ssr: false })
 const PresencePing = dynamic(() => import('../components/PresencePing'), { ssr: false })
 const UpdatesBell = dynamic(() => import('../components/UpdatesBell'), { ssr: false })
@@ -109,14 +113,16 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <MotionGate>
-          <Suspense fallback={null}><GlobalLoadingScreen/></Suspense>
-          <Suspense fallback={null}><SubscriptionGate><OperatorLimitGate>{children}</OperatorLimitGate></SubscriptionGate></Suspense>
-          <Suspense fallback={null}><InstallPrompt/></Suspense>
-          <Suspense fallback={null}><PresencePing/></Suspense>
-          <Suspense fallback={null}><UpdatesBell/></Suspense>
-          <Suspense fallback={null}><VoiceCommandPanel/></Suspense>
-          <Suspense fallback={null}><DesignMode/></Suspense>
-          <Suspense fallback={null}><DataCorrectionModal/></Suspense>
+          <ProvedorDeAvisos>
+            <Suspense fallback={null}><TelaDeAbertura/></Suspense>
+            <Suspense fallback={null}><SubscriptionGate><OperatorLimitGate>{children}</OperatorLimitGate></SubscriptionGate></Suspense>
+            <Suspense fallback={null}><InstallPrompt/></Suspense>
+            <Suspense fallback={null}><PresencePing/></Suspense>
+            <Suspense fallback={null}><UpdatesBell/></Suspense>
+            <Suspense fallback={null}><VoiceCommandPanel/></Suspense>
+            <Suspense fallback={null}><DesignMode/></Suspense>
+            <Suspense fallback={null}><DataCorrectionModal/></Suspense>
+          </ProvedorDeAvisos>
         </MotionGate>
       </body>
     </html>

@@ -8,6 +8,7 @@ const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false })
 const QuickNotifyPanel = dynamic(() => import('./QuickNotifyPanel'), { ssr: false })
 const VoiceAnnounceCard = dynamic(() => import('./VoiceAnnounceCard'), { ssr: false })
 const RedesignHeader = dynamic(() => import('./RedesignHeader'), { ssr: false })
+const DockPilula = dynamic(() => import('./v2/DockPilula'), { ssr: false })
 const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
 const BettifyPromo = dynamic(() => import('./BettifyPromo'), { ssr: false })
 const NetworkLaunchBanner = dynamic(() => import('./NetworkLaunchBanner'), { ssr: false })
@@ -34,6 +35,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
         userId={userId}
         tenantId={tenantId}
       />
+      <DockPilula ativo={isNex2(userEmail)} />
       <div style={{ marginLeft: isRedesign(userEmail) ? 76 : 248 }} className="app-content">
         {/* Loja Proxy e Network: sem cabeçalho vermelho — imersão total (chat/loja) */}
         {isRedesign(userEmail) && !isNex2(userEmail) && pathname !== '/proxy' && pathname !== '/network' && <RedesignHeader />}

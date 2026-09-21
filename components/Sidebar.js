@@ -183,13 +183,29 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         style={{ display:'flex', alignItems:'center', padding:'22px 22px 28px', textDecoration:'none' }}>
         {nex2 ? (
           <span style={{ display:'flex', alignItems:'center', gap:10 }}>
-            <img className="nx-logo-mark" src="/brand/nex-mark.png" alt="NexControl" width={38} height={38}
-              style={{ width:38, height:38, objectFit:'contain', flexShrink:0 }} />
+            <span className="nx-logo-mark" style={{ position:'relative', display:'inline-flex', flexShrink:0 }}>
+              <img src="/brand/nex-mark.png" alt="NexControl" width={38} height={38}
+                style={{ width:38, height:38, objectFit:'contain', display:'block' }} />
+              {/* ponto no canto = versao 2.0, quando o rail esta recolhido */}
+              <span aria-hidden style={{
+                position:'absolute', top:-1, right:-1, width:9, height:9, borderRadius:'50%',
+                background:'linear-gradient(135deg, #ff7a4d, #e5391f)',
+                border:'2px solid #131317',
+              }} />
+            </span>
             <span className="nx-logo-full" style={{ display:'none', alignItems:'center', gap:13 }}>
               <img src="/brand/nex-mark.png" alt="" width={46} height={46}
                 style={{ width:46, height:46, objectFit:'contain', flexShrink:0 }} />
               <span style={{ display:'flex', flexDirection:'column', lineHeight:1 }}>
-                <span style={{ fontSize:27, fontWeight:800, letterSpacing:'0.01em', color:'var(--t1)' }}>NEX</span>
+                <span style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <span style={{ fontSize:27, fontWeight:800, letterSpacing:'0.01em', color:'var(--t1)' }}>NEX</span>
+                  <span className="nx-selo-20" style={{
+                    fontSize:9.5, fontWeight:900, letterSpacing:'0.06em', color:'#fff',
+                    padding:'3px 7px', borderRadius:20, lineHeight:1,
+                    background:'linear-gradient(135deg, #ff7a4d, #e5391f)',
+                    boxShadow:'0 4px 12px rgba(229,57,31,0.38)',
+                  }}>2.0</span>
+                </span>
                 <span style={{ fontSize:9.5, fontWeight:500, letterSpacing:'0.44em', color:'var(--t2)', marginTop:4 }}>CONTROL</span>
               </span>
             </span>

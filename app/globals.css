@@ -1796,15 +1796,36 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   border: none !important;
   border-bottom: none !important;
 }
+/* A pílula branca agora é um elemento só, que DESLIZA entre as abas
+   (components/v2/DockPilula.js). O botão ativo fica transparente e só
+   inverte a cor do texto — quem pinta o fundo é a pílula, por baixo. */
+.nx-bento .tabs-scroll { position: relative; }
+.nx-bento .tabs-scroll > .nx-dock-pilula {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: transform .34s cubic-bezier(.33,1,.68,1), width .34s cubic-bezier(.33,1,.68,1), opacity .2s ease;
+  will-change: transform, width;
+}
+.nx-bento .tabs-scroll button { position: relative; z-index: 1; }
 .nx-bento .tabs-scroll button[data-active="true"] {
-  background: #ffffff !important;
+  background: transparent !important;
   color: #15151a !important;
   font-weight: 800 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+  box-shadow: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-bento .tabs-scroll > .nx-dock-pilula { transition: none; }
 }
 .nx-bento .tabs-scroll button[data-active="true"] svg { color: #15151a !important; }
 .nx-bento .tabs-scroll button:hover { background: rgba(255,255,255,0.10) !important; }
-.nx-bento .tabs-scroll button[data-active="true"]:hover { background: #ffffff !important; }
+.nx-bento .tabs-scroll button[data-active="true"]:hover { background: transparent !important; }
 /* o sublinhado animado não faz sentido no dock */
 .nx-bento .tabs-scroll > div[style*="position: absolute"] { display: none !important; }
 
@@ -1892,7 +1913,8 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   }
   .nx-bento .sb-rd:not(:hover) > div > a:first-child { padding: 20px 0 18px !important; }
   /* marca reduzida: um pouco maior e com brilho sutil */
-  .nx-bento .sb-rd .nx-logo-mark { width: 42px !important; height: 42px !important; filter: drop-shadow(0 0 10px rgba(196,240,66,0.28)); }
+  .nx-bento .sb-rd .nx-logo-mark img { width: 42px !important; height: 42px !important; }
+  .nx-bento .sb-rd .nx-logo-mark { filter: drop-shadow(0 0 10px rgba(196,240,66,0.28)); }
   /* logo completa: destaque real */
   .nx-bento .sb-rd .nx-logo-full { filter: drop-shadow(0 0 14px rgba(196,240,66,0.22)); }
   /* transição suave entre os dois estados */

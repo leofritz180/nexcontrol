@@ -8,6 +8,7 @@ import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 import { DEMO_COSTS, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || '?'
@@ -153,9 +154,15 @@ export default function CustosPage() {
   if (loading) return (
     <main style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
+        {/* No V2 o esqueleto tem a forma dos cards, então o layout não pula
+            quando os dados chegam. Fora dele, segue o spinner de sempre. */}
+        {isNex2(user?.email) ? (
+          <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
+        ) : (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
           <div className="spinner" style={{ width: 28, height: 28, borderTopColor: 'var(--brand-bright)' }} />
         </div>
+        )}
       </AppLayout>
     </main>
   )

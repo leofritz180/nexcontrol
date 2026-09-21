@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import RedesBento from '../../components/modules/RedesBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
@@ -210,8 +211,15 @@ function AlertCard({ alert, i }) {
 }
 
 /* ── Drawer Panel ── */
-function DrawerPanel({ rede, onClose, allRedes }) {
-  if (!rede) return null
+// A guarda fica NESTE invólucro, que não tem hook nenhum. Antes ela vinha
+// antes de três useMemo dentro do próprio painel: a contagem de hooks mudava
+// se "rede" virasse nulo com o painel montado (React #300).
+function DrawerPanel(props) {
+  if (!props.rede) return null
+  return <PainelDaRede {...props} />
+}
+
+function PainelDaRede({ rede, onClose, allRedes }) {
 
   const lucroPorRemessa = rede.remessaCount > 0 ? rede.lucroFinal / rede.remessaCount : 0
   const lucroPorDepositante = rede.depositantes > 0 ? rede.lucroFinal / rede.depositantes : 0
@@ -879,9 +887,13 @@ export default function RedesPage() {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(145deg, var(--surface), var(--surface))' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          {isNex2(user?.email) ? (
+            <div style={{ width: 'min(1200px, 92vw)' }}><ModuloEsqueleto cards={4} /></div>
+          ) : (<>
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             style={{ width: 32, height: 32, border: '3px solid rgba(229,57,53,0.2)', borderTopColor: '#e53935', borderRadius: '50%' }} />
           <p style={{ fontSize: 13, color: 'var(--t3)' }}>Carregando sistema estrategico...</p>
+          </>)}
         </motion.div>
       </div>
     )

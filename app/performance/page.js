@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import PerformanceBento from '../../components/modules/PerformanceBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
@@ -512,7 +513,9 @@ export default function PerformancePage() {
             )
           })()}
 
-          {loading ? (
+          {loading && isNex2(user?.email) ? (
+            <ModuloEsqueleto cards={4} />
+          ) : loading ? (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
               <motion.div
                 animate={{ rotate: 360 }}

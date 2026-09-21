@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import OperadoresBento from '../../components/modules/OperadoresBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import BettifySponsor from '../../components/BettifySponsor'
@@ -1041,8 +1042,14 @@ export default function OperadoresPage() {
     return (
       <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, var(--surface), var(--surface))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          {/* No V2 o esqueleto ja tem a forma dos cards: o conteudo nao
+              "pula" quando os dados chegam. */}
+          {isNex2(user?.email) ? (
+            <div style={{ width: 'min(1100px, 92vw)' }}><ModuloEsqueleto cards={3} /></div>
+          ) : (<>
           <div className="spinner" style={{ width: 28, height: 28 }} />
           <p style={{ fontSize: 13, color: 'var(--t3)' }}>Carregando...</p>
+          </>)}
         </motion.div>
       </div>
     )

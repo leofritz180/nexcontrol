@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Rosca, FATIAS } from '../ui/bento'
+import { Rosca, FATIAS, NumeroTexto } from '../ui/bento'
 
 const RED = '#e5391f', RED2 = '#ff7a4d'
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
@@ -195,7 +195,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
           <Card blob={['var(--profit-dim)', 'var(--profit-border)']} style={{ minHeight: 148 }}>
             <Chip bg="var(--profit-dim)"><Ico d={<><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>} c="var(--profit)" /></Chip>
-            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}>{money0(lucroPeriodo != null ? lucroPeriodo : lucroTotal)}</p>
+            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}><NumeroTexto delay={0.15}>{money0(lucroPeriodo != null ? lucroPeriodo : lucroTotal)}</NumeroTexto></p>
             <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>{lucroPeriodo != null ? rotuloPeriodo : 'lucro final acumulado'}</p>
           </Card>
         </motion.div>
@@ -203,7 +203,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.06 }}>
           <Card blob={[RED2, RED]} style={{ minHeight: 148 }}>
             <Chip bg={RED}><Ico d={<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /></>} c="#fff" /></Chip>
-            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}>{int(fechadas.length)}</p>
+            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}><NumeroTexto delay={0.22}>{int(fechadas.length)}</NumeroTexto></p>
             <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>metas fechadas</p>
           </Card>
         </motion.div>
@@ -211,7 +211,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.12 }}>
           <Card style={{ minHeight: 148 }}>
             <Chip bg="var(--fill-2)"><Ico d={<><path d="M3 3v18h18" /><path d="M7 15l3-3 4 4 5-6" /></>} c={S.t2} /></Chip>
-            <p style={{ fontSize: 27, fontWeight: 900, color: lucroHoje >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}>{money0(lucroHoje)}</p>
+            <p style={{ fontSize: 27, fontWeight: 900, color: lucroHoje >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}><NumeroTexto delay={0.29}>{money0(lucroHoje)}</NumeroTexto></p>
             <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>lucro de hoje</p>
           </Card>
         </motion.div>

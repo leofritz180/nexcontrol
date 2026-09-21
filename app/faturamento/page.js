@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import FaturamentoBento from '../../components/modules/FaturamentoBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
@@ -387,9 +388,13 @@ export default function FaturamentoPage() {
   if(loading) return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
+      {isNex2(user?.email) ? (
+        <div style={{maxWidth:1380,margin:'0 auto',padding:'32px 28px'}}><ModuloEsqueleto cards={4}/></div>
+      ) : (
       <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'60vh'}}>
         <div className="spinner" style={{width:28,height:28,borderTopColor:'var(--brand-bright)'}}/>
       </div>
+      )}
       </AppLayout>
     </main>
   )

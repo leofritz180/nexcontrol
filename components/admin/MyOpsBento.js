@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { NX, brl, fmt0, Panel, Strip, Bar, Eyebrow, Sub, Valor, Num, Pill, rise } from '../ui/nex'
+import { NumeroTexto } from '../ui/bento'
 
 const RED = '#e5391f', RED2 = '#ff7a4d', LIME = '#c4f042'
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
@@ -204,7 +205,7 @@ export default function MyOpsBento({
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 7 }}>
                     <span style={{ fontFamily: MONO, fontSize: 11.5, color: 'var(--t3)' }}>{feitas}/{alvo} contas</span>
-                    <span style={{ fontFamily: MONO, fontSize: 14, fontWeight: 900, color: liq >= 0 ? 'var(--profit)' : 'var(--loss)' }}>{money0(liq)}</span>
+                    <span style={{ fontFamily: MONO, fontSize: 14, fontWeight: 900, color: liq >= 0 ? 'var(--profit)' : 'var(--loss)' }}><NumeroTexto delay={0.15}>{money0(liq)}</NumeroTexto></span>
                   </div>
                   <Bar pct={prog} color={pronta ? 'var(--profit)' : parada ? 'var(--loss)' : RED} height={8} />
                   <p style={{ fontSize: 11, color: 'var(--t4)', margin: '8px 0 0' }}>{prog}% concluída</p>
@@ -240,7 +241,7 @@ export default function MyOpsBento({
                         </span>
                         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.titulo || m.rede || 'Meta'}</span>
                       </span>
-                      <span style={{ fontFamily: MONO, fontSize: 13, fontWeight: 800, color: liq >= 0 ? 'var(--profit)' : 'var(--loss)', flexShrink: 0 }}>{money0(liq)}</span>
+                      <span style={{ fontFamily: MONO, fontSize: 13, fontWeight: 800, color: liq >= 0 ? 'var(--profit)' : 'var(--loss)', flexShrink: 0 }}><NumeroTexto delay={0.15}>{money0(liq)}</NumeroTexto></span>
                     </motion.div>
                   )
                 })}

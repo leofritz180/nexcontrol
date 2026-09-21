@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { isRedesign } from '../lib/redesign'
+import { isNex2 } from '../lib/theme-v2'
 const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false })
 const QuickNotifyPanel = dynamic(() => import('./QuickNotifyPanel'), { ssr: false })
 const VoiceAnnounceCard = dynamic(() => import('./VoiceAnnounceCard'), { ssr: false })
@@ -35,7 +36,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       />
       <div style={{ marginLeft: isRedesign(userEmail) ? 76 : 248 }} className="app-content">
         {/* Loja Proxy e Network: sem cabeçalho vermelho — imersão total (chat/loja) */}
-        {isRedesign(userEmail) && pathname !== '/proxy' && pathname !== '/network' && <RedesignHeader />}
+        {isRedesign(userEmail) && !isNex2(userEmail) && pathname !== '/proxy' && pathname !== '/network' && <RedesignHeader />}
         {/* /network: sem wrapper animado (o transform quebraria o position:fixed do chat mobile) */}
         {pathname === '/network' ? (
           children

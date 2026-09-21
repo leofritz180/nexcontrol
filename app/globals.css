@@ -1540,14 +1540,62 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 
 /* ═════════════════════════════════════════════════════════════════════════
    VISUAL V2 — "BENTO CLARO" (.nx-bento, gated por conta em lib/theme-v2.js)
-   Entra junto com .nx-light, que remapeia os TOKENS. As cores agora vêm dos
-   tokens (o /admin e /operator foram tokenizados), então esta camada só
-   cuida de FORMA: raio, sombra e superfície. Nada de layout ou função.
+   Paleta IDÊNTICA à prévia /design-v2. Como todos os módulos leem os tokens,
+   redefini-los aqui muda o app inteiro de uma vez — sem tocar em tela nenhuma.
+   Só cor, raio e sombra. Nenhuma regra de layout ou função é alterada.
    ═════════════════════════════════════════════════════════════════════════ */
 
-.nx-bento body { background: #eff0f3 !important; }
+.nx-bento {
+  /* fundos — iguais ao design-v2 */
+  --void: #f0f0f3;
+  --base: #f0f0f3;
+  --surface: #ffffff;
+  --raised: #fafafa;
+  --overlay: #ffffff;
+  --float: #ffffff;
+  --sidebar: #131317;
+  --sb-bg: #131317;
+  /* texto */
+  --t1: #15151a;
+  --t2: #6c6c78;
+  --t3: #9b9ba6;
+  --t4: #b6b6c0;
+  /* linhas e preenchimentos */
+  --b1: rgba(0,0,0,0.07);
+  --b2: rgba(0,0,0,0.10);
+  --b3: rgba(0,0,0,0.14);
+  --fill-1: rgba(0,0,0,0.025);
+  --fill-2: rgba(0,0,0,0.045);
+  --fill-3: rgba(0,0,0,0.07);
+  --muted: var(--fill-2);
+  --input: #ffffff;
+  --border-token: var(--b1);
+  /* marca — laranja-vermelho da referência */
+  --brand:        #e5391f;
+  --brand-bright: #e5391f;
+  --brand-dim:    rgba(229,57,31,0.09);
+  --brand-glow:   rgba(229,57,31,0.16);
+  --brand-border: rgba(229,57,31,0.26);
+  /* lucro — verde-limão da referência (fundo pastel, texto legível) */
+  --profit:        #3f9b1e;
+  --profit-dim:    #e3f7c6;
+  --profit-border: #bfe895;
+  --profit-glow:   rgba(143,209,79,0.20);
+  --success:       #3f9b1e;
+  /* prejuízo */
+  --loss:        #dc2626;
+  --loss-dim:    #fde8e4;
+  --loss-border: rgba(220,38,38,0.22);
+  --loss-glow:   rgba(220,38,38,0.12);
+  /* avisos sem âmbar/azul: tudo na família da marca */
+  --warn: #c2410c; --warn-dim: #fdeade; --warn-border: rgba(194,65,12,0.22);
+  --info: #6c6c78; --info-dim: rgba(0,0,0,0.05); --info-border: rgba(0,0,0,0.12);
+  color-scheme: light;
+}
+.nx-bento body { background: #f0f0f3 !important; color: var(--t1); }
 
-/* Cartões: cantos mais redondos, sombra suave, sem borda dura */
+/* ── cartões bento: cantos grandes + sombra suave ── */
+.nx-bento [style*="border-radius: 10px"],
 .nx-bento [style*="border-radius: 12px"],
 .nx-bento [style*="border-radius: 14px"],
 .nx-bento [style*="border-radius: 16px"] { border-radius: 20px !important; }
@@ -1555,28 +1603,34 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 .nx-bento [style*="border-radius: 20px"],
 .nx-bento [style*="border-radius: 22px"] { border-radius: 24px !important; }
 
-/* Superfície de card = branco puro sobre o cinza do fundo */
 .nx-bento [style*="var(--surface)"],
 .nx-bento [style*="var(--raised)"] {
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05) !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 26px rgba(0,0,0,0.05) !important;
 }
 
-/* Sidebar branca */
+/* ── RAIL escuro flutuante (como na referência) ── */
 .nx-bento .sidebar, .nx-bento aside {
-  background: #ffffff !important;
-  border-right: 1px solid rgba(15,17,21,0.07) !important;
+  background: #131317 !important;
+  border-right: none !important;
+  border-radius: 0 26px 26px 0 !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,0.22) !important;
 }
+/* ícones e textos do rail continuam claros sobre o preto */
+.nx-bento .sidebar *, .nx-bento aside * { border-color: rgba(255,255,255,0.1) !important; }
+.nx-bento .sidebar svg, .nx-bento aside svg { color: rgba(255,255,255,0.65); }
 
-/* Botões e inputs arredondados */
-.nx-bento .btn, .nx-bento button { border-radius: 13px !important; }
+/* ── botões e inputs arredondados ── */
+.nx-bento .btn, .nx-bento button { border-radius: 14px !important; }
+.nx-bento .btn-brand { background: linear-gradient(135deg, #ff7a4d, #e5391f) !important; box-shadow: 0 10px 26px rgba(229,57,31,0.28) !important; }
 .nx-bento input, .nx-bento select, .nx-bento textarea {
-  background: #ffffff !important; border-radius: 12px !important;
+  background: #ffffff !important; border: 1px solid var(--b2) !important;
+  color: var(--t1) !important; border-radius: 12px !important;
 }
 
-/* Brilhos do tema escuro não fazem sentido no claro */
+/* ── o que era brilho do modo escuro some no claro ── */
 .nx-bento .lp-ambient, .nx-bento .depth-bg, .nx-bento .bg-flow { display: none !important; }
-.nx-bento [style*="radial-gradient"][style*="blur"] { opacity: 0.25 !important; }
+.nx-bento [style*="radial-gradient"][style*="blur"] { opacity: 0.2 !important; }
 
-/* Scrollbar clara */
-.nx-bento ::-webkit-scrollbar-thumb { background: rgba(15,17,21,0.18); }
+/* ── scrollbar clara ── */
+.nx-bento ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 8px; }
 .nx-bento ::-webkit-scrollbar-track { background: transparent; }

@@ -158,7 +158,7 @@ export function Campo({
     <Envelope rotulo={rotulo} obrigatorio={obrigatorio} erro={erro} ajuda={ajuda} para={idCampo}>
       <div onMouseDown={focarPeloPai(ref)} style={estiloCaixa({ foco, erro, desabilitado, semMovimento, extra: style })}>
         {icone && <span style={{ color: foco ? 'var(--brand)' : 'var(--t4)', display: 'inline-flex', flexShrink: 0, transition: semMovimento ? 'none' : 'color 160ms ease' }}><Ico d={icone} s={16} /></span>}
-        <input
+        <input className="nx-campo-ctl"
           ref={ref} id={idCampo} name={nome} type={tipoReal} inputMode={modoReal}
           value={valor ?? ''} placeholder={placeholder} disabled={desabilitado}
           autoFocus={autoFoco} required={obrigatorio}
@@ -195,7 +195,7 @@ export function CampoMoeda({
     <Envelope rotulo={rotulo} obrigatorio={obrigatorio} erro={erro} ajuda={ajuda} para={idCampo}>
       <div onMouseDown={focarPeloPai(ref)} style={estiloCaixa({ foco, erro, desabilitado, semMovimento, extra: style })}>
         <span aria-hidden style={{ flexShrink: 0, fontFamily: MONO, fontSize: 13, fontWeight: 800, color: foco ? 'var(--brand)' : 'var(--t4)', transition: semMovimento ? 'none' : 'color 160ms ease' }}>R$</span>
-        <input
+        <input className="nx-campo-ctl"
           ref={ref} id={idCampo} name={nome} type="text" inputMode="decimal"
           value={valor ?? ''} placeholder={placeholder} disabled={desabilitado}
           autoFocus={autoFoco} required={obrigatorio}
@@ -228,7 +228,7 @@ export function Selecao({
     <Envelope rotulo={rotulo} obrigatorio={obrigatorio} erro={erro} ajuda={ajuda} para={idCampo}>
       <div style={{ ...estiloCaixa({ foco, erro, desabilitado, semMovimento, extra: style }), position: 'relative', cursor: desabilitado ? 'not-allowed' : 'pointer' }}>
         {icone && <span style={{ color: foco ? 'var(--brand)' : 'var(--t4)', display: 'inline-flex', flexShrink: 0 }}><Ico d={icone} s={16} /></span>}
-        <select
+        <select className="nx-campo-ctl"
           id={idCampo} name={nome} value={valor ?? ''} disabled={desabilitado} required={obrigatorio}
           aria-invalid={!!erro || undefined}
           onChange={(e) => aoMudar && aoMudar(e.target.value, e)}
@@ -261,7 +261,7 @@ export function Area({
   return (
     <Envelope rotulo={rotulo} obrigatorio={obrigatorio} erro={erro} ajuda={ajuda} para={idCampo}>
       <div onMouseDown={focarPeloPai(ref)} style={estiloCaixa({ foco, erro, desabilitado, semMovimento, extra: { alignItems: 'stretch', padding: '11px 14px', minHeight: alturaMin, ...style } })}>
-        <textarea
+        <textarea className="nx-campo-ctl"
           ref={ref} id={idCampo} name={nome} value={valor ?? ''} placeholder={placeholder}
           disabled={desabilitado} required={obrigatorio} autoFocus={autoFoco}
           aria-invalid={!!erro || undefined}

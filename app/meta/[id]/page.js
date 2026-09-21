@@ -842,10 +842,12 @@ export default function MetaPage() {
 
   const pctAcerto = remessas.length>0?Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100):0
 
+  // Tons do aviso pos-remessa. Use tinta clara (os *-dim do tema), nao
+  // gradiente escuro: no bento o cartao fica sobre superficie branca.
   const fbCfg = {
-    good: { bg: 'linear-gradient(145deg, #0a1a12, var(--surface))', border: 'rgba(209,250,229,0.3)', color: 'var(--profit)', iconPath: 'M20 6L9 17l-5-5' },
-    warn: { bg: 'linear-gradient(145deg, #1a1608, #14120a)', border: 'var(--b3)', color: 'var(--t1)', iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' },
-    critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: 'var(--loss)', iconPath: 'M18 6L6 18M6 6l12 12' },
+    good:     { bg: 'var(--profit-dim)', border: 'var(--profit-border)', color: 'var(--profit)', iconPath: 'M20 6L9 17l-5-5' },
+    warn:     { bg: 'var(--warn-dim)',   border: 'var(--warn-border)',   color: 'var(--warn)',   iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z' },
+    critical: { bg: 'var(--loss-dim)',   border: 'var(--loss-border)',   color: 'var(--loss)',   iconPath: 'M18 6L6 18M6 6l12 12' },
   }
 
   // EXPERIENCIA PREMIUM — dois niveis de liberacao:

@@ -160,7 +160,7 @@ export default function RemessaConsole({
               </p>
             ) : (
               <div>
-                <Campo rotulo={tipo === 'redeposito' ? 'Contas' : 'Contas *'} valor={contas} aoMudar={setContas} placeholder="5" inputMode="numeric" mono obrigatorio={tipo !== 'redeposito'} />
+                <Campo rotulo="Contas" valor={contas} aoMudar={setContas} placeholder="5" inputMode="numeric" mono obrigatorio={tipo !== 'redeposito'} />
                 <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
                   {[3, 5, 10, 15, 20].map(n => {
                     const on = Number(contas) === n
@@ -179,11 +179,11 @@ export default function RemessaConsole({
           <Coluna n="2" titulo="Valores">
             {tipo !== 'bonus' && (
               <div>
-                <CampoMoeda rotulo="Depósito *" valor={dep} aoMudar={setDep} placeholder="Ex: 1055" obrigatorio />
+                <CampoMoeda rotulo="Depósito" valor={dep} aoMudar={setDep} placeholder="Ex: 1055" obrigatorio />
                 <div style={{ marginTop: 8 }}><DepositCaptureButton metaId={metaId} onTotal={(t) => setDep(String(t))} compact /></div>
               </div>
             )}
-            <CampoMoeda rotulo={tipo === 'bonus' ? 'Valor do bônus (saque) *' : 'Saque *'} valor={saq} aoMudar={setSaq} placeholder="Ex: 941" obrigatorio />
+            <CampoMoeda rotulo={tipo === 'bonus' ? 'Valor do bônus (saque)' : 'Saque'} obrigatorio valor={saq} aoMudar={setSaq} placeholder="Ex: 941" obrigatorio />
             {mostrarBau && <CampoMoeda rotulo="Baú" valor={bau} aoMudar={setBau} placeholder="Ex: 50" />}
 
             <div>

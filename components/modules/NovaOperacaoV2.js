@@ -88,7 +88,7 @@ export default function NovaOperacaoV2({
               <motion.div key="p0" custom={dir} variants={varia} initial="entra" animate="fica" exit="sai" transition={trans}>
                 <Titulo sub="Em qual plataforma e em qual rede a operação vai rodar.">Onde vai operar</Titulo>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                  <Campo rotulo="Plataforma *" valor={plataforma} aoMudar={setPlataforma} placeholder="Nome da plataforma" autoFoco />
+                  <Campo rotulo="Plataforma" obrigatorio valor={plataforma} aoMudar={setPlataforma} placeholder="Nome da plataforma" autoFoco />
                   <div>
                     <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 8px' }}>Rede *</p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
@@ -109,7 +109,7 @@ export default function NovaOperacaoV2({
                       })}
                     </div>
                   </div>
-                  <Campo rotulo="Título *" valor={titulo} aoMudar={setTitulo} placeholder="Ex: Meta Abril" ajuda="Como ela vai aparecer no painel e no histórico." />
+                  <Campo rotulo="Título" obrigatorio valor={titulo} aoMudar={setTitulo} placeholder="Ex: Meta Abril" ajuda="Como ela vai aparecer no painel e no histórico." />
                 </div>
               </motion.div>
             )}
@@ -119,7 +119,7 @@ export default function NovaOperacaoV2({
                 <Titulo sub="Quantas contas a meta vai processar e como o resultado é pago.">Quanto vai operar</Titulo>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 14, alignItems: 'end' }}>
-                    <Campo rotulo="Contas *" valor={contas} aoMudar={setContas} inputMode="numeric" mono placeholder="10" autoFoco />
+                    <Campo rotulo="Contas" obrigatorio valor={contas} aoMudar={setContas} inputMode="numeric" mono placeholder="10" autoFoco />
                     <div>
                       <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 8px' }}>Seleção rápida</p>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>

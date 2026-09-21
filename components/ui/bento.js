@@ -168,7 +168,10 @@ export function Lista({ titulo, linhas, vazio = 'Nada por aqui ainda.', delay = 
               {r.s && <p style={{ fontSize: 11, color: 'var(--t4)', margin: '2px 0 0' }}>{r.s}</p>}
             </span>
           </span>
-          <span style={{ flexShrink: 0, fontFamily: MONO, fontSize: 13.5, fontWeight: 800, color: r.vc || 'var(--t1)' }}>{r.v}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            <span style={{ fontFamily: MONO, fontSize: 13.5, fontWeight: 800, color: r.vc || 'var(--t1)' }}>{r.v}</span>
+            {r.acao}
+          </span>
         </motion.div>
       ))}
     </BCard>

@@ -400,13 +400,15 @@ export default function FaturamentoPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{maxWidth:1380,margin:'0 auto',padding:'32px 28px'}}>
-        {isNex2(user?.email) ? (
+        {/* V2: o bento e a cara nova da Visao Geral. Abas, filtros, editor de
+            meta, Apresentacao e Atualizar continuam todos no ar. */}
+        {isNex2(user?.email) && tab==='overview' && (
           <FaturamentoBento
             stats={stats} chartData={chartData}
             operadores={operators?.length || 0}
             redes={new Set(metas.filter(m=>m.rede).map(m=>m.rede)).size}
           />
-        ) : (<>
+        )}
         {/* Header — clean */}
         <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:16,marginBottom:28}}>
           <div>
@@ -459,7 +461,7 @@ export default function FaturamentoPage() {
         <Filters operators={operators} redes={redesList} filters={filters} setFilters={setFilters}/>
 
         {/* ═══ OVERVIEW ═══ */}
-        {tab==='overview' && (<div key="ov" className="tab-content">
+        {tab==='overview' && !isNex2(user?.email) && (<div key="ov" className="tab-content">
 
           {/* ── HERO + KPIs side by side ── */}
           <div data-tour="fat-kpis" className="g-side" style={{display:'grid',gridTemplateColumns:'1.6fr 1fr',gap:16,marginBottom:24}}>
@@ -969,7 +971,6 @@ export default function FaturamentoPage() {
             </div>
           </div>
         )}
-      </>)}
       </div>
       <RouteTour tourId="faturamento" />
       </AppLayout>

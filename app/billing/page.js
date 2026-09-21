@@ -504,7 +504,7 @@ export default function BillingPage() {
             style={{
               position:'relative', overflow:'hidden',
               padding:'20px 22px', borderRadius:16, marginBottom:22,
-              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              background:'var(--surface)',
               backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
               border:'1px solid rgba(209,250,229,0.14)',
               boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 32px rgba(209,250,229,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',

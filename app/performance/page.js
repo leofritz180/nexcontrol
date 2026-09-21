@@ -940,7 +940,7 @@ export default function PerformancePage() {
                           key={m.id}
                           style={{
                             padding: '20px', borderRadius: 14,
-                            background: 'var(--surface)', border: '1px solid var(--b1)',
+                            background: 'rgba(0,0,0,0.55)', border: '1px solid var(--b1)',
                             transition: 'border-color 0.2s ease',
                           }}
                         >

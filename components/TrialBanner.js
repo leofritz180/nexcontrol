@@ -121,7 +121,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
           style={{
             position: 'relative', zIndex: 1,
             width: '100%', maxWidth: 480,
-            background: 'linear-gradient(155deg, rgba(14,20,35,0.95), rgba(8,12,22,0.95))',
+            background: 'var(--surface)',
             borderRadius: 24, overflow: 'hidden',
             border: '1px solid rgba(239,68,68,0.18)',
             boxShadow: '0 0 0 1px rgba(255,255,255,0.02), 0 30px 70px rgba(0,0,0,0.6), 0 0 80px rgba(239,68,68,0.12)',

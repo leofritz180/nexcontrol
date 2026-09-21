@@ -88,7 +88,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
           onClick={e => e.stopPropagation()}
           style={{
             width: '100%', maxWidth: 440, borderRadius: 24, overflow: 'hidden',
-            background: 'rgba(15,24,41,0.75)',
+            background: 'var(--surface)',
             backdropFilter: 'blur(40px) saturate(160%)',
             WebkitBackdropFilter: 'blur(40px) saturate(160%)',
             border: '1px solid var(--b1)',
@@ -224,7 +224,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 <div style={{ marginBottom: 16 }}>
                   <div style={{
                     padding: '10px 12px', borderRadius: 10, marginBottom: 8,
-                    background: 'rgba(4,8,16,0.6)', border: '1px solid var(--b1)',
+                    background: 'var(--surface)', border: '1px solid var(--b1)',
                     fontSize: 10, fontFamily: 'var(--mono)', color: '#64748B',
                     wordBreak: 'break-all', maxHeight: 56, overflowY: 'auto', textAlign: 'left',
                   }}>

@@ -93,8 +93,17 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
   }, [fechadas])
 
   const W = 680, H = 190
-  const maxV = Math.max(1, ...serie.map(s => s.v)) * 1.2
-  const pts = serie.map((s, i) => [(i * W) / 6, H - (s.v / maxV) * H])
+  // A escala precisa dar conta de PREJUIZO: com metas fechadas no negativo, um
+  // maximo simples jogava a linha pra fora do quadro. Aqui o zero sempre entra
+  // na faixa e a curva fica presa dentro da altura.
+  const vals = serie.map(s => s.v)
+  const hi = Math.max(0, ...vals), lo = Math.min(0, ...vals)
+  const folga = ((hi - lo) || 1) * 0.15
+  const topo = hi + folga, base = lo - folga
+  const yDe = v => H - ((v - base) / (topo - base)) * H
+  const pts = serie.map((s, i) => [(i * W) / 6, yDe(s.v)])
+  const yZero = yDe(0)
+  const temNegativo = lo < 0
 
   // metas abertas com progresso
   const emAndamento = useMemo(() => abertas.slice(0, 5).map(m => {
@@ -210,10 +219,14 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
             </div>
             <div style={{ position: 'relative', marginTop: 30 }}>
               <svg viewBox={`0 0 ${W} ${H + 8}`} style={{ width: '100%', height: 'auto', overflow: 'visible', display: 'block' }}>
-                <path d={curva(pts)} fill="none" stroke={RED} strokeWidth="4" strokeLinecap="round" />
+                {/* linha do zero: so aparece quando ha prejuizo na semana */}
+                {temNegativo && (
+                  <line x1="0" y1={yZero} x2={W} y2={yZero} stroke="var(--b2)" strokeWidth="1.5" strokeDasharray="5 5" />
+                )}
+                <path d={curva(pts)} fill="none" stroke={RED} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-                {serie.map((s, i) => s.v > 0 && (
+                {serie.map((s, i) => s.v !== 0 && (
                   <span key={i} style={{ position: 'absolute', left: `${(i / 6) * 100}%`, top: `${(pts[i][1] / (H + 8)) * 100}%`, transform: 'translate(-50%,-150%)', background: 'var(--t1)', color: 'var(--surface)', fontFamily: MONO, fontSize: 10.5, fontWeight: 800, padding: '3px 8px', borderRadius: 20, whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>{money0(s.v)}</span>
                 ))}
               </div>

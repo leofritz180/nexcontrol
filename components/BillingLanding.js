@@ -201,7 +201,7 @@ export default function BillingLanding() {
                       transition={{ duration:0.5, ease:[0.16,1.2,0.3,1] }}
                       style={{
                         padding:'10px 12px', borderRadius:14,
-                        background:'rgba(20,30,48,0.85)',
+                        background:'var(--surface)',
                         backdropFilter:'blur(24px) saturate(160%)', WebkitBackdropFilter:'blur(24px) saturate(160%)',
                         border:'1px solid rgba(209,250,229,0.22)',
                         boxShadow:'0 8px 24px rgba(0,0,0,0.4), 0 0 20px rgba(209,250,229,0.1)',

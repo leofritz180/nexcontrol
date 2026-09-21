@@ -73,7 +73,7 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
   }
 
   const card = {
-    background: 'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+    background: 'var(--surface)',
     border: '1px solid var(--b2)', borderRadius: 16,
     boxShadow: '0 8px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
   }

@@ -23,7 +23,7 @@ export default function ContaMaeCard({
     <div style={{
       position: 'relative',
       borderRadius: 14,
-      background: 'linear-gradient(180deg, rgba(15,15,15,0.85), rgba(8,8,8,0.85))',
+      background: 'var(--surface)',
       border: '1px solid var(--b1)',
       padding: compact ? '14px 16px' : '18px 20px',
       overflow: 'hidden',
@@ -216,7 +216,7 @@ export function ContaMaeView({ link, login, senha }) {
     <div style={{
       position: 'relative',
       borderRadius: 14,
-      background: 'linear-gradient(180deg, rgba(15,15,15,0.85), rgba(8,8,8,0.85))',
+      background: 'var(--surface)',
       border: '1px solid var(--b1)',
       padding: '18px 20px',
       overflow: 'hidden',

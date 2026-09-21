@@ -13,7 +13,7 @@ export default function AdminError({ error, reset }) {
     }}>
       <div style={{
         maxWidth: 520, width: '100%', padding: 32, borderRadius: 20,
-        background: 'linear-gradient(145deg, rgba(14,22,38,0.85), rgba(8,14,26,0.85))',
+        background: 'var(--surface)',
         border: '1px solid rgba(239,68,68,0.25)',
         boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(239,68,68,0.08)',
       }}>
@@ -34,7 +34,7 @@ export default function AdminError({ error, reset }) {
         </div>
         <div style={{
           padding: 14, borderRadius: 10, marginBottom: 18,
-          background: 'rgba(4,8,16,0.7)', border: '1px solid var(--b1)',
+          background: 'var(--surface)', border: '1px solid var(--b1)',
           fontSize: 11, fontFamily: 'var(--mono, monospace)', color: 'var(--loss)',
           maxHeight: 140, overflowY: 'auto',
         }}>

@@ -142,7 +142,7 @@ export default function TopRedesPerformance({ metas = [], embedded = false }) {
                 position: 'absolute', bottom: -8, left: '50%', transform: 'translate(-50%,100%)',
                 whiteSpace: 'nowrap', zIndex: 5, pointerEvents: 'none',
                 padding: '7px 11px', borderRadius: 9,
-                background: 'rgba(10,10,10,0.96)', border: '1px solid var(--b1)',
+                background: 'var(--surface)', border: '1px solid var(--b1)',
                 boxShadow: '0 10px 28px rgba(0,0,0,0.6)',
               }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>

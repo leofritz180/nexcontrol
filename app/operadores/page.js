@@ -1065,21 +1065,26 @@ export default function OperadoresPage() {
 
         <OperatorLimitBanner tenantId={profile?.tenant_id} />
 
-        {isNex2(user?.email) ? (
+        {/* V2: o bento e a cara nova da aba Ranking. Todas as outras abas
+            (Equipe, Folha/Configuracoes, Equipes) continuam como eram. */}
+        {isNex2(user?.email) && tab === 'ranking' && (
           <OperadoresBento
             ranking={ranking}
             ativos={(activeOperators||[]).length}
+            convidar={() => setTab('equipe')}
             onAbrir={(o)=>setSelectedOp(o)}
           />
-        ) : (<>
+        )}
 
-        {/* Hero — clean */}
+        {/* Hero — clean (no V2 quem da o cabecalho e o bento) */}
+        {!isNex2(user?.email) && (
         <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Operadores</h1>
           <p style={{ fontSize:13, color:'var(--t3)', margin:0, fontWeight:400 }}>
             Ranking, performance, folha de pagamento e configuracoes
           </p>
         </motion.div>
+        )}
 
         {/* Tabs — underline minimalista */}
         <motion.div {...fadeUp(1)} data-tour="ops-tabs" style={{
@@ -1102,7 +1107,7 @@ export default function OperadoresPage() {
         </motion.div>
 
         {/* ═══════════ TAB 1: RANKING ═══════════ */}
-        {tab === 'ranking' && (
+        {tab === 'ranking' && !isNex2(user?.email) && (
           <motion.div key="ranking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
 
             {/* KPIs */}
@@ -1300,7 +1305,7 @@ export default function OperadoresPage() {
             <motion.div {...fadeUp(3)} style={{
               position:'relative', overflow:'hidden',
               padding:'22px 24px', borderRadius:18,
-              background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
+              background:'var(--surface)',
               backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
               border:'1px solid var(--b3)',
               boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
@@ -1379,7 +1384,7 @@ export default function OperadoresPage() {
               style={{
                 position:'relative', overflow:'hidden',
                 padding: '20px 22px', marginBottom: 24,
-                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                background:'var(--surface)',
                 backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
                 border: '1px solid var(--b2)',
                 borderRadius: 16,
@@ -1995,7 +2000,6 @@ export default function OperadoresPage() {
             )}
           </motion.div>
         )}
-        </>)}
       </div>
 
       {/* Operator Drawer */}

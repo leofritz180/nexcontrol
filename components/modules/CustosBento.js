@@ -38,9 +38,9 @@ export default function CustosBento({ kpis, chartData, custos = [], typeMap = {}
           dados={(chartData || []).map(d => ({ l: d.ct?.label || d.type, v: d.total, txt: money0(d.total), dot: d.ct?.color || RED }))}
         />
         <Lista
-          titulo="Últimos lançamentos"
+          titulo={`Lançamentos (${(custos || []).length})`}
           vazio="Nenhum custo lançado ainda."
-          linhas={(custos || []).slice(0, 8).map(c => {
+          linhas={(custos || []).map(c => {
             const t = typeMap[c.type] || {}
             return {
               k: c.id,
@@ -49,6 +49,14 @@ export default function CustosBento({ kpis, chartData, custos = [], typeMap = {}
               t: t.label || c.type || 'Custo',
               s: `${c.date || ''}${c.note ? ' · ' + c.note : ''}`,
               v: money0(c.amount), vc: 'var(--loss)',
+              acao: onRemover ? (
+                <button type="button" title="Excluir custo" onClick={(e) => { e.stopPropagation(); onRemover(c.id) }}
+                  style={{ width: 30, height: 30, borderRadius: 10, border: '1px solid var(--b1)', background: 'var(--surface)', color: 'var(--t3)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit', transition: 'all .16s ease' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--loss-dim)'; e.currentTarget.style.color = 'var(--loss)'; e.currentTarget.style.borderColor = 'var(--loss-border)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--t3)'; e.currentTarget.style.borderColor = 'var(--b1)' }}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" /></svg>
+                </button>
+              ) : null,
             }
           })}
         />

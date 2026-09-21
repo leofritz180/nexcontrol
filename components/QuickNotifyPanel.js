@@ -145,7 +145,7 @@ export default function QuickNotifyPanel({ userEmail }) {
             style={{
               position: 'fixed', bottom: 72, right: 22, zIndex: 202,
               width: 360, maxHeight: '70vh',
-              background: 'rgba(15,15,15,0.96)',
+              background: 'var(--surface)',
               backdropFilter: 'blur(20px)',
               border: '1px solid var(--b1)',
               borderRadius: 16,

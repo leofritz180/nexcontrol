@@ -876,8 +876,12 @@ export default function OperatorPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}>
 
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
+          {/* V2: o bento troca o cabecalho e os cards de leitura. O modal de
+              nova meta, os estilos e o reveal continuam montados pra todos. */}
           {isNex2(user?.email) ? (
-            <OperatorBento nome={getName(profile)} stats={stats} metas={metas} onAbrirMeta={(id)=>router.push('/meta/'+id)} />
+            <OperatorBento nome={getName(profile)} stats={stats} metas={metas}
+              onNovaMeta={() => setShowForm(true)}
+              onAbrirMeta={(id)=>router.push('/meta/'+id)} />
           ) : (<>
 
           {/* Reveal modal animado — só dispara depois do loading, com contas reais */}
@@ -927,6 +931,7 @@ export default function OperatorPage() {
               </button>
             </div>
           </div>
+          </>)}
 
           {/* ── RESPONSIVE STYLES (always rendered) ── */}
           <style>{`
@@ -1269,6 +1274,7 @@ export default function OperatorPage() {
             )}
           </AnimatePresence>
 
+          {!isNex2(user?.email) && (<>
           {/* ══ DEMO MODE ══ */}
           {isDemo ? (
             <DemoOperatorDashboard onCreateMeta={() => setShowForm(true)} onExitDemo={() => { exitDemoMode(user?.id); load() }} />

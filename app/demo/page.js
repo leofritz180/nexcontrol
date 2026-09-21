@@ -103,7 +103,7 @@ export default function DemoPage() {
       <div style={{
         padding: '16px 24px 0', borderBottom: '1px solid var(--b1)',
         position: 'sticky', top: 38, zIndex: 30,
-        background: 'rgba(4,7,14,0.85)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+        background: 'var(--surface)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
       }}>
         <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 10 }}>
           {[
@@ -415,7 +415,7 @@ function HeroCard({ G }) {
           { l: 'Custos', v: G.custosTotal, c: 'var(--loss)' },
           { l: 'Contas', v: G.totalContas, c: 'rgba(255,255,255,0.78)', raw: true },
         ].map(x => (
-          <div key={x.l} style={{ padding: '10px 12px', background: 'rgba(4,7,14,0.4)', borderRadius: 10, border: '1px solid var(--b1)' }}>
+          <div key={x.l} style={{ padding: '10px 12px', background: 'var(--surface)', borderRadius: 10, border: '1px solid var(--b1)' }}>
             <p style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, margin: '0 0 3px' }}>{x.l}</p>
             <p style={{ fontSize: 14, fontWeight: 800, color: x.c, fontFamily: 'var(--mono)', margin: 0 }}>
               {x.raw ? x.v : `R$ ${fmt(x.v)}`}
@@ -572,7 +572,7 @@ function CtaBottom() {
 /* ═══ Styles ═══ */
 const cardStyle = {
   padding: 18, borderRadius: 16,
-  background: 'rgba(12,18,32,0.65)',
+  background: 'var(--surface)',
   backdropFilter: 'blur(20px) saturate(160%)',
   WebkitBackdropFilter: 'blur(20px) saturate(160%)',
   border: '1px solid var(--b1)',

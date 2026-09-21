@@ -148,7 +148,7 @@ export default function TutorialPage() {
           transition={{ duration: 0.5, delay: 0.1, ease }}
           style={{
             borderRadius: 20, overflow: 'hidden', position: 'relative',
-            background: 'rgba(15, 24, 41, 0.6)',
+            background: 'var(--surface)',
             backdropFilter: 'blur(40px) saturate(160%)',
             WebkitBackdropFilter: 'blur(40px) saturate(160%)',
             border: '1px solid var(--b2)',
@@ -197,7 +197,7 @@ export default function TutorialPage() {
           transition={{ duration: 0.5, delay: 0.25, ease }}
           style={{
             borderRadius: 20, overflow: 'hidden',
-            background: 'rgba(15, 24, 41, 0.5)',
+            background: 'var(--surface)',
             backdropFilter: 'blur(30px) saturate(150%)',
             WebkitBackdropFilter: 'blur(30px) saturate(150%)',
             border: '1px solid var(--b1)',
@@ -383,7 +383,7 @@ export default function TutorialPage() {
           transition={{ duration: 0.5, delay: 0.35, ease }}
           style={{
             borderRadius: 20, overflow: 'hidden', marginTop: 24,
-            background: 'rgba(15, 24, 41, 0.5)',
+            background: 'var(--surface)',
             backdropFilter: 'blur(30px) saturate(150%)',
             WebkitBackdropFilter: 'blur(30px) saturate(150%)',
             border: '1px solid var(--b2)',

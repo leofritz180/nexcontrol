@@ -168,6 +168,7 @@ export default function CustosPage() {
           {isNex2(user?.email) ? (
             <CustosBento
               kpis={kpis} chartData={chartData} custos={displayCosts} typeMap={typeMap}
+              onRemover={isDemo ? null : handleDelete}
               onNovo={() => setShowModal(true)}
             />
           ) : (<>
@@ -220,7 +221,7 @@ export default function CustosPage() {
               style={{
                 position:'relative', overflow:'hidden',
                 padding: '20px 22px', borderRadius: 14,
-                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                background:'var(--surface)',
                 backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
                 border: '1px solid var(--b1)',
                 boxShadow: '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
@@ -297,7 +298,7 @@ export default function CustosPage() {
               style={{
                 position:'relative', overflow:'hidden',
                 padding: '20px 22px', borderRadius: 14,
-                background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
+                background:'var(--surface)',
                 backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
                 border: '1px solid var(--b1)',
                 boxShadow: '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',

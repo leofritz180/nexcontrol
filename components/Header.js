@@ -19,7 +19,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
   return (<>
     <header style={{
       position: 'sticky', top: 0, zIndex: 200, height: 52,
-      background: 'rgba(5,7,15,0.88)',
+      background: 'var(--surface)',
       backdropFilter: 'blur(12px)',
       WebkitBackdropFilter: 'blur(12px)',
       borderBottom: '1px solid var(--b1)',

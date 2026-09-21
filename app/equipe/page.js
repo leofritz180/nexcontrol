@@ -313,7 +313,7 @@ export default function EquipePage() {
 
   const team = data?.leader?.team || profile?.team || ''
   const Kpi = ({ label, value, isCurrency, color }) => (
-    <div style={{ padding: '16px 18px', borderRadius: 14, background: 'linear-gradient(145deg, var(--surface), rgba(8,12,22,0.8))', border: '1px solid var(--b1)' }}>
+    <div style={{ padding: '16px 18px', borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--b1)' }}>
       <p style={{ fontSize: 10.5, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, margin: '0 0 8px' }}>{label}</p>
       <p style={{ fontSize: 24, fontWeight: 800, color: color || 'var(--t1)', margin: 0, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>
         {isCurrency ? `R$ ${fmt(value)}` : value}
@@ -373,7 +373,7 @@ export default function EquipePage() {
                 return (
                   <motion.div key={op.id} {...fadeUp(idx, 0.1)} style={{
                     display: 'flex', alignItems: 'center', gap: 14, padding: '16px 18px', borderRadius: 14,
-                    background: 'linear-gradient(145deg, var(--surface), rgba(8,12,22,0.8))', border: '1px solid var(--b1)',
+                    background: 'var(--surface)', border: '1px solid var(--b1)',
                   }}>
                     <div style={{ width: 30, height: 30, borderRadius: 9, flexShrink: 0, background: 'var(--fill-2)', border: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 900, color: 'var(--t2)', fontFamily: 'var(--mono, monospace)' }}>{idx + 1}</div>
                     <div style={{ width: 42, height: 42, borderRadius: 13, flexShrink: 0, background: isProfit ? 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.05))' : 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(239,68,68,0.05))', border: `1.5px solid ${isProfit ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, fontWeight: 800, color: 'var(--t1)' }}>{getInitial(op)}</div>

@@ -713,7 +713,7 @@ function PixCard({ payment, copied, onCopy, amount, planLabel }) {
         <div style={{ position: 'relative' }}>
           <div style={{
             padding: '12px 44px 12px 14px', borderRadius: 10,
-            background: 'rgba(4,8,16,0.7)', border: '1px solid var(--b1)',
+            background: 'var(--surface)', border: '1px solid var(--b1)',
             fontSize: 11, fontFamily: 'var(--mono)', color: 'var(--t3)',
             wordBreak: 'break-all', maxHeight: 70, overflowY: 'auto',
           }}>
@@ -802,7 +802,7 @@ function ErrorCard({ error, onRetry }) {
 
 const cardStyle = {
   padding: 32, borderRadius: 22,
-  background: 'rgba(15, 24, 41, 0.78)',
+  background: 'var(--surface)',
   backdropFilter: 'blur(30px) saturate(160%)',
   WebkitBackdropFilter: 'blur(30px) saturate(160%)',
   border: '1px solid var(--b1)',

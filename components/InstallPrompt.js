@@ -99,7 +99,7 @@ function PhoneMockup() {
               style={{
                 position: 'absolute', top: 6, left: 6, right: 6, zIndex: 10,
                 padding: '9px 10px', borderRadius: 14,
-                background: 'rgba(14,18,28,0.95)', border: '1px solid var(--b1)',
+                background: 'var(--surface)', border: '1px solid var(--b1)',
                 boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}>

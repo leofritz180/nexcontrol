@@ -2218,7 +2218,7 @@ export default function AdminPage() {
                       position:'relative', overflow:'hidden',
                       width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 40px)', overflowY:'auto',
                       padding:32, borderRadius:22,
-                      background:'linear-gradient(160deg, rgba(16,20,30,0.95), rgba(8,11,20,0.98))',
+                      background:'var(--surface)',
                       backdropFilter:'blur(30px) saturate(160%)', WebkitBackdropFilter:'blur(30px) saturate(160%)',
                       border:'1px solid rgba(229,57,53,0.1)',
                       boxShadow:'0 40px 100px rgba(0,0,0,0.75), 0 0 60px rgba(229,57,53,0.08), inset 0 1px 0 rgba(255,255,255,0.05)',
@@ -3096,7 +3096,7 @@ export default function AdminPage() {
                 initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35, delay:0.1 }}
                 style={{
                   marginTop: 32, padding: 28, borderRadius: 20,
-                  background: 'var(--surface)',
+                  background: 'rgba(0,0,0,0.55)',
                   border: '1px solid var(--b1)',
                   boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.4)',
                   position: 'relative', overflow: 'hidden',

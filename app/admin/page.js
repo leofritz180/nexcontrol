@@ -1889,7 +1889,7 @@ export default function AdminPage() {
                   {l:'Lucro mês', v:lucroMes, c:col(lucroMes), money:true, sign:true},
                   {l:'Lucro médio / meta', v:lucroMedioMeta, c:col(lucroMedioMeta), money:true, sign:true},
                   {l:'Contas processadas', v:contasProc, c:'#e53935'},
-                  {l:'Remessas', v:myRem.length, c:'rgba(255,255,255,0.8)'},
+                  {l:'Remessas', v:myRem.length, c:'var(--t1)'},
                   {l:'Taxa de acerto', v:taxaAcerto, c:'var(--profit)', suffix:'%'},
                   {l:'ROI médio', v:roiMedio, c:col(roiMedio), suffix:'%', sign:true},
                 ]

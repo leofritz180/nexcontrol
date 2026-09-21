@@ -1827,3 +1827,59 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 }
 .nx-bento .tabs-scroll * { animation: none !important; }
 .nx-bento .tabs-scroll button { transition: background .18s ease, color .18s ease !important; transform: none !important; }
+
+/* ── V2 · TRADUZ O ESTILO "ERA ESCURA" PARA O BENTO CLARO ──────────────────
+   Os blocos antigos usam gradiente escuro + sombra pesada + glow radial —
+   artefatos do tema preto que no claro parecem sujos/amadores. Aqui eles
+   viram superfície branca lisa, sombra suave e cantos grandes. Só aparência. */
+
+/* gradientes de card viram branco liso */
+.nx-bento [style*="linear-gradient(150deg"],
+.nx-bento [style*="linear-gradient(145deg, var(--raised)"],
+.nx-bento [style*="linear-gradient(145deg,var(--raised)"],
+.nx-bento [style*="linear-gradient(180deg, var(--raised)"] {
+  background: var(--surface) !important;
+  border: 1px solid var(--b1) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 10px 28px rgba(0,0,0,0.055) !important;
+}
+
+/* glows radiais desfocados eram do modo escuro — somem no claro */
+.nx-bento [style*="radial-gradient(circle"][style*="filter: blur"],
+.nx-bento [style*="radial-gradient(circle"][style*="filter:blur"] { display: none !important; }
+
+/* filetes de topo com rgba colorido ficam discretos */
+.nx-bento [style*="height: 1px"][style*="linear-gradient(90deg"],
+.nx-bento [style*="height:1"][style*="linear-gradient(90deg"] { opacity: 0.35 !important; }
+
+/* números gigantes da era escura: um pouco menores e mais elegantes no claro */
+.nx-bento [style*="font-size: 54px"] { font-size: 42px !important; letter-spacing: -0.04em !important; }
+
+/* tiras de chips/KPI: vira grade bento com respiro */
+.nx-bento [style*="gridTemplateColumns"][style*="minmax(135px"],
+.nx-bento [style*="grid-template-columns"][style*="minmax(135px"] {
+  gap: 10px !important; background: transparent !important; border: none !important;
+}
+.nx-bento [style*="minmax(135px"] > div,
+.nx-bento [style*="minmax(165px"] > div {
+  border-radius: 18px !important;
+  border: 1px solid var(--b1) !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.035) !important;
+}
+
+/* ── V2 · LOGO com presença no rail expandido ── */
+@media (min-width: 769px) {
+  /* área do logo ganha respiro e uma divisória sutil */
+  .nx-bento .sb-rd > div > a:first-child {
+    padding: 20px 16px 18px !important;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .nx-bento .sb-rd:not(:hover) > div > a:first-child { padding: 20px 0 18px !important; }
+  /* marca reduzida: um pouco maior e com brilho sutil */
+  .nx-bento .sb-rd .nx-logo-mark { width: 42px !important; height: 42px !important; filter: drop-shadow(0 0 10px rgba(196,240,66,0.28)); }
+  /* logo completa: destaque real */
+  .nx-bento .sb-rd .nx-logo-full { filter: drop-shadow(0 0 14px rgba(196,240,66,0.22)); }
+  /* transição suave entre os dois estados */
+  .nx-bento .sb-rd .nx-logo-mark, .nx-bento .sb-rd .nx-logo-full { transition: opacity .2s ease; }
+}

@@ -93,7 +93,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
         transition={{ duration: 0.25 }}
         style={{
           position: 'fixed', inset: 0, zIndex: 10000,
-          background: 'rgba(4,8,16,0.78)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
+          background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
         }}
         onClick={() => { if (!t.trialExpired) { setShow(false); setDismissed(true) } }}

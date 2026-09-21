@@ -89,7 +89,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
           onClick={dismiss}
           style={{
             position: 'fixed', inset: 0, zIndex: 3000,
-            background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(4px)',
+            background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(4px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: 16,
           }}

@@ -159,7 +159,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
-      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'flex-end' }}>
+      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'flex-end' }}>
       <motion.div
         initial={{ x: 420, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 420, opacity: 0 }}
         transition={{ duration: 0.3, ease }}
@@ -603,7 +603,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
 
       {/* ── Confirmation Modal ── */}
       {showConfirm && pendingModel && (
-        <div style={{ position:'fixed', inset:0, zIndex:10000, background:'rgba(2,4,8,0.9)', backdropFilter:'blur(12px)', display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}
+        <div style={{ position:'fixed', inset:0, zIndex:10000, background:'rgba(17,19,24,0.55)', backdropFilter:'blur(12px)', display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}
           onClick={() => { setShowConfirm(false); setPendingModel(null) }}>
           <div onClick={e => e.stopPropagation()} style={{
             width:'100%', maxWidth:480, padding:28, borderRadius:20,
@@ -2018,7 +2018,7 @@ export default function OperadoresPage() {
             onClick={() => !removing && setRemoveConfirmOp(null)}
             style={{
               position: 'fixed', inset: 0, zIndex: 10000,
-              background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(16px)',
+              background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(16px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
             }}
           >

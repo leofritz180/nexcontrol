@@ -303,7 +303,7 @@ export default function LoginPage() {
             onClick={() => setShowForgot(false)}
             style={{
               position: 'fixed', inset: 0, zIndex: 50,
-              background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)',
+              background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(6px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               padding: 20,
             }}

@@ -427,7 +427,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         {mobileOpen && (<>
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
             onClick={()=>setMobileOpen(false)}
-            style={{ position:'fixed', inset:0, zIndex:240, background:'rgba(0,0,0,0.6)' }}/>
+            style={{ position:'fixed', inset:0, zIndex:240, background:'rgba(17,19,24,0.55)' }}/>
           <motion.aside
             initial={{x:-260}} animate={{x:0}} exit={{x:-260}}
             transition={{ duration:0.25, ease:[0.33,1,0.68,1] }}

@@ -214,7 +214,7 @@ export default function InstallPrompt() {
           onClick={e => { if (e.target === e.currentTarget) dismiss() }}
           style={{
             position: 'fixed', inset: 0, zIndex: 99998,
-            background: 'rgba(2,4,8,0.85)',
+            background: 'rgba(17,19,24,0.55)',
             backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: 16,

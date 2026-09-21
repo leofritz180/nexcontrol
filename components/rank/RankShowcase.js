@@ -76,7 +76,7 @@ export default function RankShowcase({ contas, mode = 'inline', open = false, on
           transition={{ duration: 0.25 }} onClick={onClose}
           style={{
             position: 'fixed', inset: 0, zIndex: 9998,
-            background: 'rgba(0,0,0,0.92)',
+            background: 'rgba(17,19,24,0.55)',
             backdropFilter: 'blur(28px) saturate(140%)', WebkitBackdropFilter: 'blur(28px) saturate(140%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: 20, overflowY: 'auto',

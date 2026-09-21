@@ -77,7 +77,7 @@ function CreateMetaModal({ leaderId, operators, onClose, onCreated }) {
   const lbl = { display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--t3)', margin: '0 0 6px' }
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <motion.div onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
         style={{ width: '100%', maxWidth: 460, maxHeight: '90vh', overflowY: 'auto', background: 'var(--surface)', border: '1px solid var(--b2)', borderRadius: 18, padding: 24 }}>
         <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px' }}>Nova meta</h3>
@@ -159,7 +159,7 @@ function CostModal({ leaderId, onClose, onSaved }) {
   const lbl = { display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--t3)', margin: '0 0 6px' }
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <motion.div onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
         style={{ width: '100%', maxWidth: 420, background: 'var(--surface)', border: '1px solid var(--b2)', borderRadius: 18, padding: 24 }}>
         <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px' }}>Novo custo</h3>

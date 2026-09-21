@@ -112,7 +112,9 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
     if (onRefresh) onRefresh()
   }
 
-  const card = { background: 'var(--surface)', border: '1px solid var(--b1)', borderRadius: 14 }
+  // Dentro da folha do modal os blocos ficam um tom abaixo da superficie,
+  // senao sumiriam contra ela. Vale nos dois temas por usar token.
+  const card = { background: 'var(--fill-1)', border: '1px solid var(--b1)', borderRadius: 16 }
   const infoCards = [
     { l: 'Rede', v: meta.rede || '—', c: 'var(--loss)' },
     { l: 'Plataforma', v: meta.plataforma || '—', c: 'var(--t1)' },
@@ -131,8 +133,8 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
   const iconMap = { meta_created:'plus', meta_finalized:'flag', meta_closed:'check', meta_status_changed:'refresh', meta_reactivated:'refresh', remessa_created:'dollar', remessa_edited:'flag' }
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(4,8,16,0.92)', backdropFilter: 'blur(16px)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 24px', overflowY: 'auto' }}>
-      <motion.div onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.3, ease }} style={{ width: '100%', maxWidth: 900 }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(14px)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 24px', overflowY: 'auto' }}>
+      <motion.div onClick={e => e.stopPropagation()} initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.3, ease }} style={{ width: '100%', maxWidth: 940, maxHeight: '92vh', overflowY: 'auto', background: 'var(--surface)', border: '1px solid var(--b1)', borderRadius: 26, padding: 28, boxShadow: '0 1px 2px rgba(0,0,0,0.05), 0 30px 80px rgba(0,0,0,0.20)' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>

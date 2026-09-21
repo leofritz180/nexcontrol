@@ -285,7 +285,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0, zIndex: 9998,
-          background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)',
+          background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(6px)',
         }}
       />
       <motion.div

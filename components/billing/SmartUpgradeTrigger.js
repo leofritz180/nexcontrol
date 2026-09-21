@@ -71,7 +71,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
             onClick={close}
             style={{
               position: 'fixed', inset: 0, zIndex: 9991,
-              background: 'rgba(0,0,0,0.85)',
+              background: 'rgba(17,19,24,0.55)',
               backdropFilter: 'blur(20px) saturate(140%)',
               WebkitBackdropFilter: 'blur(20px) saturate(140%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',

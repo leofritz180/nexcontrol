@@ -78,7 +78,7 @@ export default function PhoneGate() {
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9300,
-      background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+      background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflowY: 'auto',
     }}>
       <motion.div

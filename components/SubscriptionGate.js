@@ -149,7 +149,7 @@ export default function SubscriptionGate({ children }) {
     // ── OPERADOR: nunca vê lucro nem tela de pagamento. Só orienta a falar com o admin. ──
     if (isOperator) {
       return (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.96)', backdropFilter: 'blur(24px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(24px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{
             position: 'relative', maxWidth: 440, width: '100%', textAlign: 'center',
             background: 'var(--surface)', border: '1px solid var(--b1)',
@@ -182,7 +182,7 @@ export default function SubscriptionGate({ children }) {
     return (
       <div style={{
         position: 'fixed', inset: 0, zIndex: 9999,
-        background: 'rgba(0,0,0,0.96)', backdropFilter: 'blur(24px)',
+        background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(24px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
       }}>
         {/* HUD grid sutil */}

@@ -118,7 +118,7 @@ export function ProUpgradeModal({ onClose, feature }) {
       onClick={e => { if(e.target===e.currentTarget) onClose() }}
       style={{
         position:'fixed', inset:0, zIndex:10000,
-        background:'rgba(0,0,0,0.85)', backdropFilter:'blur(8px)',
+        background:'rgba(17,19,24,0.55)', backdropFilter:'blur(8px)',
         display:'flex', alignItems:'center', justifyContent:'center', padding:24,
       }}>
       <motion.div

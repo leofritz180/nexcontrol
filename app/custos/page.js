@@ -506,7 +506,7 @@ export default function CustosPage() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
               onClick={() => { if (!saving) setShowModal(false) }}
-              style={{ position: 'fixed', inset: 0, zIndex: 9000, background: 'rgba(2,4,8,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+              style={{ position: 'fixed', inset: 0, zIndex: 9000, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}

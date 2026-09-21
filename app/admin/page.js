@@ -157,7 +157,7 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      style={{ position:'fixed',inset:0,background:'rgba(2,4,8,0.9)',backdropFilter:'blur(16px)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:24 }}>
+      style={{ position:'fixed',inset:0,background:'rgba(17,19,24,0.55)',backdropFilter:'blur(16px)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:24 }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -1312,7 +1312,7 @@ export default function AdminPage() {
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          style={{position:'fixed',inset:0,zIndex:1000,background:'rgba(4,8,16,0.92)',backdropFilter:'blur(16px)',display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'40px 24px',overflowY:'auto'}}>
+          style={{position:'fixed',inset:0,zIndex:1000,background:'rgba(17,19,24,0.55)',backdropFilter:'blur(16px)',display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'40px 24px',overflowY:'auto'}}>
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -2207,7 +2207,7 @@ export default function AdminPage() {
                   <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
-                    style={{ position:'fixed', inset:0, zIndex:9000, background:'rgba(2,4,8,0.85)', backdropFilter:'blur(8px)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}
+                    style={{ position:'fixed', inset:0, zIndex:9000, background:'rgba(17,19,24,0.55)', backdropFilter:'blur(14px)', display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}
                     onClick={e => { if (e.target === e.currentTarget) setMyShowForm(false) }}
                   >
                   <motion.div
@@ -2217,17 +2217,16 @@ export default function AdminPage() {
                     style={{
                       position:'relative', overflow:'hidden',
                       width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 40px)', overflowY:'auto',
-                      padding:32, borderRadius:22,
+                      padding:32, borderRadius:26,
                       background:'var(--surface)',
-                      backdropFilter:'blur(30px) saturate(160%)', WebkitBackdropFilter:'blur(30px) saturate(160%)',
-                      border:'1px solid rgba(229,57,53,0.1)',
-                      boxShadow:'0 40px 100px rgba(0,0,0,0.75), 0 0 60px rgba(229,57,53,0.08), inset 0 1px 0 rgba(255,255,255,0.05)',
+                      border:'1px solid var(--b1)',
+                      boxShadow:'0 1px 2px rgba(0,0,0,0.05), 0 30px 80px rgba(0,0,0,0.20)',
                     }}
                   >
                     {/* Top highlight glow */}
-                    <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(229,57,53,0.45), transparent)', pointerEvents:'none' }}/>
+                    <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, var(--brand), transparent)', opacity:0.35, pointerEvents:'none' }}/>
                     {/* Ambient orb */}
-                    <div style={{ position:'absolute', top:-80, right:-80, width:280, height:280, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.08), transparent 60%)', filter:'blur(40px)', pointerEvents:'none' }}/>
+                    <div style={{ position:'absolute', top:-80, right:-80, width:280, height:280, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,31,0.10), transparent 62%)', filter:'blur(36px)', pointerEvents:'none' }}/>
 
                     {/* Header */}
                     <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:28 }}>
@@ -2638,9 +2637,11 @@ export default function AdminPage() {
               userName={getName(profile)}
               onExitDemo={() => { exitDemoMode(user?.id); init() }}
             />
-          ) : isNex2(user?.email) ? (
-            /* ══ VISUAL V2 (bento) — só para as contas liberadas em lib/theme-v2 ══ */
-            <>
+          ) : (<>
+          {/* No V2 o bento substitui SO o topo (meta do dia, hero, KPIs, funil).
+              Resumo estrategico, Metodos, Previsao, feed de atividade e o
+              sistema de ranks continuam logo abaixo, pra todo mundo. */}
+          {isNex2(user?.email) ? (
               <AdminBento
                 nome={getName(profile)}
                 global={global}
@@ -2652,7 +2653,6 @@ export default function AdminPage() {
                 onAbrirMeta={(id) => router.push('/meta/' + id)}
                 onSaveGoal={saveDailyGoal}
               />
-            </>
           ) : (<>
           {/* ── META DO DIA (card gamificado, igual pra todos) ── */}
           <DailyGoalCard data={dailyGoal} onSave={saveDailyGoal} />
@@ -2851,6 +2851,7 @@ export default function AdminPage() {
               {renderInsights()}
             </div>
           )}
+          </>)}
 
           {/* Resumo estrategico — clean, sem orb e sem badges pesados */}
           {strategicSummary && (strategicSummary.bestRede || strategicSummary.worstRede || strategicSummary.topOp) && (

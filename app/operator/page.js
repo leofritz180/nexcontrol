@@ -963,7 +963,7 @@ export default function OperatorPage() {
                 transition={{ duration: 0.25 }}
                 style={{
                   position: 'fixed', inset: 0, zIndex: 9000,
-                  background: 'rgba(2,4,8,0.85)', backdropFilter: 'blur(8px)',
+                  background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(8px)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
                 }}
                 onClick={e => { if (e.target === e.currentTarget) setShowForm(false) }}

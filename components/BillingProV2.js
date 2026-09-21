@@ -512,7 +512,7 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
 
       {/* ═══ POPUP · MONTAR EQUIPE (quantidade de operadores) ═══ */}
       {teamOpen && (
-        <div onClick={() => setTeamOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+        <div onClick={() => setTeamOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
           <motion.div initial={{ opacity: 0, scale: 0.96, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.25, ease }}
             onClick={e => e.stopPropagation()}
             style={{ position: 'relative', width: '100%', maxWidth: 440, background: 'var(--surface)', border: `1px solid ${BRAND}38`, borderRadius: 20, padding: '30px 28px', boxShadow: `0 30px 80px rgba(0,0,0,0.6), 0 0 60px ${BRAND}14` }}>

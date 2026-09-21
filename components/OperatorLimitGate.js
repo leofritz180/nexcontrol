@@ -71,7 +71,7 @@ export default function OperatorLimitGate({ children }) {
       {children}
       <div style={{
         position: 'fixed', inset: 0, zIndex: 9998,
-        background: 'rgba(0,0,0,0.96)', backdropFilter: 'blur(20px)',
+        background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(20px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
       }}>
         {/* HUD grid */}

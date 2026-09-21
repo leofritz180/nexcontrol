@@ -53,7 +53,7 @@ export default function DataCorrectionModal() {
       <motion.div
         key="dc-overlay"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        style={{ position: 'fixed', inset: 0, zIndex: 9500, background: 'rgba(2,4,8,0.82)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+        style={{ position: 'fixed', inset: 0, zIndex: 9500, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 18 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 12 }}

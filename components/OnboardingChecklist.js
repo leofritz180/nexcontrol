@@ -93,7 +93,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
             transition={{ duration: 0.4 }}
             style={{
               position: 'fixed', inset: 0, zIndex: 9995,
-              background: 'rgba(0,0,0,0.85)',
+              background: 'rgba(17,19,24,0.55)',
               backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               padding: 24,

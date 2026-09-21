@@ -91,7 +91,7 @@ export default function FirstMetaWizard({ show, user, tenantId, onCreated }) {
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9200,
-      background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
+      background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: 16, overflowY: 'auto',
     }}>

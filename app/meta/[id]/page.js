@@ -9,6 +9,8 @@ import { supabase } from '../../../lib/supabase/client'
 import { notifyRemessaCreated } from '../../../lib/notify'
 import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
 import { ContaMaeView } from '../../../components/ContaMaeCard'
+import MetaStepper from '../../../components/modules/MetaStepper'
+import { isNex2 } from '../../../lib/theme-v2'
 import { SLOTS } from '../../../lib/slots-data'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
@@ -114,7 +116,7 @@ function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, bauAcumRemessas =
   }
 
   return (
-    <div style={{position:'fixed',inset:0,zIndex:10000,background:'rgba(4,8,16,0.92)',backdropFilter:'blur(16px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}} onClick={onClose}>
+    <div style={{position:'fixed',inset:0,zIndex:10000,background:'rgba(17,19,24,0.55)',backdropFilter:'blur(16px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}} onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:520,background:'var(--surface)',borderRadius:24,border:'1px solid var(--b3)',boxShadow:'0 40px 80px rgba(0,0,0,0.6)',animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',overflow:'hidden'}}>
         {/* Header */}
         <div style={{padding:'24px 28px',background:'linear-gradient(135deg,var(--fill-3),transparent)',borderBottom:'1px solid var(--b1)'}}>
@@ -260,7 +262,7 @@ function EditMetaModal({ meta, userId, onClose, onSaved, contasMinimo }) {
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(4,8,16,0.92)', backdropFilter: 'blur(16px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+      style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(16px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
       onClick={onClose}
     >
       <motion.div
@@ -903,7 +905,7 @@ export default function MetaPage() {
             // canReactivate: tanto meta finalizada quanto fechada podem ser reabertas
             const canReactivate = isFinalizada || isFechada
             const isAdminUser = profile?.role === 'admin' || leaderAllowed
-            const statusC = isFechada ? 'var(--profit)' : isFinalizada ? 'rgba(255,255,255,0.78)' : '#e53935'
+            const statusC = isFechada ? 'var(--profit)' : isFinalizada ? 'var(--t1)' : '#e53935'
             const statusL = isFechada ? 'FECHADA' : isFinalizada ? 'FINALIZADA' : 'AO VIVO'
             return (
               <motion.div
@@ -1007,6 +1009,18 @@ export default function MetaPage() {
             )
           })()}
         </div>
+
+        {/* ── Ciclo da meta: criada -> operando -> finalizada -> fechada ── */}
+        {isNex2(user?.email) && meta && (
+          <MetaStepper
+            criada={meta.created_at}
+            remessas={remessas.length}
+            finalizada={meta.status === 'finalizada'}
+            fechada={meta.status_fechamento === 'fechada'}
+            contasFeitas={remessas.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)}
+            contasAlvo={Number(meta.quantidade_contas || 0)}
+          />
+        )}
 
         {/* ── Conta mae (credenciais salvas) ── */}
         {meta && (meta.conta_link || meta.conta_login || meta.conta_senha) && (
@@ -1940,7 +1954,7 @@ export default function MetaPage() {
 
       {/* Edit Remessa Modal */}
       {editRem && (
-        <div style={{position:'fixed',inset:0,zIndex:10000,background:'rgba(4,8,16,0.9)',backdropFilter:'blur(12px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}} onClick={()=>setEditRem(null)}>
+        <div style={{position:'fixed',inset:0,zIndex:10000,background:'rgba(17,19,24,0.55)',backdropFilter:'blur(12px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}} onClick={()=>setEditRem(null)}>
           <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:400,background:'var(--surface)',borderRadius:20,border:'1px solid var(--b2)',boxShadow:'0 40px 80px rgba(0,0,0,0.5)',animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',padding:28}}>
             <h3 style={{fontSize:16,fontWeight:800,color:'var(--t1)',margin:'0 0 4px'}}>Editar remessa</h3>
             <p className="t-small" style={{marginBottom:20}}>{editRem.titulo} · Anterior: D: R$ {fmt(editRem.deposito)} / S: R$ {fmt(editRem.saque)} / BAU: R$ {fmt(editRem.bau)}</p>
@@ -2254,7 +2268,7 @@ export default function MetaPage() {
             return (
               <motion.div key="finale-v2"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}
-                style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+                style={{ position: 'fixed', inset: 0, zIndex: 10000, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
                 onClick={e => { if (e.target === e.currentTarget) goPanel() }}>
                 <div style={{ position: 'absolute', top: '28%', left: '50%', transform: 'translateX(-50%)', width: 620, height: 420, borderRadius: '50%', background: `radial-gradient(ellipse, rgba(${glowF},0.16), transparent 70%)`, filter: 'blur(60px)', pointerEvents: 'none' }} />
                 <motion.div

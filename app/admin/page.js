@@ -1940,7 +1940,7 @@ export default function AdminPage() {
               const activeCardV2 = (m,i) => {
                 const liq=metaLiqV(m); const prog=metaProg(m); const nRem=myRem.filter(r=>r.meta_id===m.id).length
                 const done=prog>=100; const near=prog>=75 && prog<100
-                const status = done?{l:'Concluída',c:'var(--profit)'}:near?{l:'Quase lá',c:'#FCD34D'}:{l:'Em andamento',c:'#e5391f'}
+                const status = done?{l:'Concluída',c:'var(--profit)'}:near?{l:'Quase lá',c:'#ff7a4d'}:{l:'Em andamento',c:'#e5391f'}
                 const pc = col(liq)
                 return (
                   <motion.div key={m.id} {...fadeUp(i)} whileHover={{y:-4,borderColor:`${pc}35`,boxShadow:`0 16px 40px rgba(0,0,0,0.5),0 0 30px ${pc}12`,transition:{duration:0.2}}}
@@ -2041,7 +2041,7 @@ export default function AdminPage() {
                   )}
 
                   <section style={{marginBottom:28}}>
-                    {v2head('Insights da operação', null, '#FCD34D')}
+                    {v2head('Insights da operação', null, '#ff7a4d')}
                     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12}}>
                       {insights.map((it,i)=>(
                         <motion.div key={i} {...fadeUp(i)}

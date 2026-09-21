@@ -90,7 +90,7 @@ export default function PremiacoesPage() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
           <div style={{ width: 46, height: 46, borderRadius: 13, background: 'rgba(245,184,60,0.12)', border: '1px solid rgba(245,184,60,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#f5b83c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15a4 4 0 004-4V5H8v6a4 4 0 004 4zm0 0v4m-4 0h8M8 5H5a2 2 0 000 4h.5M16 5h3a2 2 0 010 4h-.5" /></svg>
+            <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#ff7a4d" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15a4 4 0 004-4V5H8v6a4 4 0 004 4zm0 0v4m-4 0h8M8 5H5a2 2 0 000 4h.5M16 5h3a2 2 0 010 4h-.5" /></svg>
           </div>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>Premiações</h1>
@@ -132,7 +132,7 @@ export default function PremiacoesPage() {
                   {/* trilho */}
                   <div style={{ position: 'absolute', left: `${50 / N}%`, right: `${50 / N}%`, top: 13, height: 3, borderRadius: 3, background: 'var(--fill-3)' }} />
                   <motion.div initial={{ width: 0 }} animate={{ width: `calc(${Math.max(0, roadPos * 100 - 50 / N)}% )` }} transition={{ duration: 1.3, ease }}
-                    style={{ position: 'absolute', left: `${50 / N}%`, top: 13, height: 3, borderRadius: 3, background: 'linear-gradient(90deg, #f5b83c, #ffd98a)', boxShadow: '0 0 10px rgba(245,184,60,0.7)' }} />
+                    style={{ position: 'absolute', left: `${50 / N}%`, top: 13, height: 3, borderRadius: 3, background: 'linear-gradient(90deg, #ff7a4d, #ffd98a)', boxShadow: '0 0 10px rgba(245,184,60,0.7)' }} />
                   {/* nós */}
                   <div style={{ position: 'relative', display: 'flex' }}>
                     {items.map((p, i) => {
@@ -141,7 +141,7 @@ export default function PremiacoesPage() {
                         <div key={p.id} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, minWidth: 0 }}>
                           <div style={{ position: 'relative', width: 28, height: 28 }}>
                             {isNext && <motion.span aria-hidden animate={{ scale: [1, 1.5], opacity: [0.6, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }} style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: p.color }} />}
-                            <div style={{ position: 'relative', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: p.unlocked ? 'linear-gradient(135deg, #f5b83c, #d99422)' : '#12141c', border: `2px solid ${p.unlocked ? '#ffd98a' : isNext ? p.color : 'var(--t4)'}`, boxShadow: p.unlocked ? '0 0 12px rgba(245,184,60,0.6)' : 'none' }}>
+                            <div style={{ position: 'relative', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: p.unlocked ? 'linear-gradient(135deg, #ff7a4d, #d99422)' : '#12141c', border: `2px solid ${p.unlocked ? '#ffd98a' : isNext ? p.color : 'var(--t4)'}`, boxShadow: p.unlocked ? '0 0 12px rgba(245,184,60,0.6)' : 'none' }}>
                               {p.unlocked
                                 ? <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#3a2600" strokeWidth={3.2} strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 : <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={isNext ? p.color : 'var(--t4)'} strokeWidth={2.4} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>}

@@ -984,7 +984,10 @@ function TagPill({ tag, color, small = true }) {
 // Paleta de etiqueta: e ESCOLHA do usuario, entao precisa ser variada. O
 // que nao pode e ter duas iguais — o roxo virou laranja na limpeza de cores
 // e ficou repetido com a marca.
-const TAG_COLORS = ['#e5391f', '#22C55E', '#ff7a4d', '#15151a', '#f5b83c', '#f97316', '#14b8a6', '#f5f5f5']
+// Oito cores DISTINTAS entre si (e escolha do usuario pra etiqueta), todas
+// dentro ou vizinhas da paleta. As varreduras de cor ja criaram duplicata
+// aqui duas vezes: se mexer de novo, confira que nao ha repetida.
+const TAG_COLORS = ['#e5391f', '#3f9b1e', '#ff7a4d', '#15151a', '#82828d', '#b87333', '#1e8e63', '#f5f5f5']
 function ColorSwatches({ value, onChange }) {
   return (
     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>

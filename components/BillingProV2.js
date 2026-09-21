@@ -70,7 +70,12 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
   // Dados da assinatura ativa (topo, igual a pagina antiga)
   const daysLeft = expiresAt ? Math.max(0, Math.ceil((new Date(expiresAt) - new Date()) / 86400000)) : 0
   const expiresShort = expiresAt ? new Date(expiresAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
-  const daysColor = daysLeft <= 7 ? BRAND : daysLeft <= 15 ? '#FCD34D' : PROFIT
+  // #ff7a4d era ambar, fora da paleta — virou o laranja da marca.
+  const daysColor = daysLeft <= 7 ? BRAND : daysLeft <= 15 ? '#ff7a4d' : PROFIT
+  // Conta cortesia/vitalicia (a data e la em 2099): mostrar "26765 dias" e
+  // um botao "Renovar · R$ 373,78/mes" em cima dela e absurdo, e o botao
+  // solido ainda convida a um pagamento que nao faz sentido nenhum.
+  const vitalicio = daysLeft > 3650
   const newTotalOps = currentOps + addExtra
   const addPrice = calculatePrice(Math.max(1, newTotalOps))
   const addCostNow = Number((addExtra * addPrice.opUnitPrice).toFixed(2)) // delta: só os operadores novos
@@ -139,22 +144,39 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: PROFIT }} />
               <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 9.5, fontWeight: 800, color: PROFIT, letterSpacing: '0.16em', textTransform: 'uppercase' }}>Assinatura ativa</span>
             </div>
-            <h3 style={{ fontSize: 26, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.025em', margin: '0 0 8px', position: 'relative' }}>Renove a qualquer momento.</h3>
-            <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '0 0 22px', lineHeight: 1.5, position: 'relative' }}>O tempo restante é somado ao novo período — você nunca perde dias.</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--b1)', borderRadius: 13, overflow: 'hidden', border: '1px solid var(--b1)', marginBottom: 20, position: 'relative' }}>
-              <div style={{ background: 'var(--fill-1)', padding: '16px 18px' }}>
-                <p style={{ fontFamily: 'var(--mono,monospace)', fontSize: 9.5, fontWeight: 700, color: 'var(--t4)', margin: '0 0 7px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Tempo restante</p>
-                <p style={{ margin: 0, display: 'flex', alignItems: 'baseline', gap: 7 }}>
-                  <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 40, fontWeight: 900, lineHeight: 0.9, color: daysColor, letterSpacing: '-0.04em' }}>{daysLeft}</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t3)' }}>dia{daysLeft !== 1 ? 's' : ''}</span>
-                </p>
+            <h3 style={{ fontSize: 26, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.025em', margin: '0 0 8px', position: 'relative' }}>
+              {vitalicio ? 'Seu acesso não vence.' : 'Renove a qualquer momento.'}
+            </h3>
+            <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '0 0 22px', lineHeight: 1.5, position: 'relative' }}>
+              {vitalicio
+                ? 'Esta conta é cortesia e não tem cobrança recorrente. Operadores extras continuam disponíveis abaixo.'
+                : 'O tempo restante é somado ao novo período — você nunca perde dias.'}
+            </p>
+            {vitalicio ? (
+              <div style={{ background: 'var(--fill-1)', borderRadius: 13, border: '1px solid var(--b1)', padding: '18px 20px', marginBottom: 20, position: 'relative' }}>
+                <p style={{ fontFamily: 'var(--mono,monospace)', fontSize: 9.5, fontWeight: 700, color: 'var(--t4)', margin: '0 0 7px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Seu acesso</p>
+                <p style={{ fontSize: 24, fontWeight: 900, color: PROFIT, margin: 0, letterSpacing: '-0.03em' }}>Vitalício</p>
+                <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '6px 0 0' }}>Sem data de vencimento e sem cobrança. Você não precisa renovar nada.</p>
               </div>
-              <div style={{ background: 'var(--fill-1)', padding: '16px 18px' }}>
-                <p style={{ fontFamily: 'var(--mono,monospace)', fontSize: 9.5, fontWeight: 700, color: 'var(--t4)', margin: '0 0 7px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Vence em</p>
-                <p style={{ fontSize: 19, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>{expiresShort}</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--b1)', borderRadius: 13, overflow: 'hidden', border: '1px solid var(--b1)', marginBottom: 20, position: 'relative' }}>
+                <div style={{ background: 'var(--fill-1)', padding: '16px 18px' }}>
+                  <p style={{ fontFamily: 'var(--mono,monospace)', fontSize: 9.5, fontWeight: 700, color: 'var(--t4)', margin: '0 0 7px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Tempo restante</p>
+                  <p style={{ margin: 0, display: 'flex', alignItems: 'baseline', gap: 7 }}>
+                    <span style={{ fontFamily: 'var(--mono,monospace)', fontSize: 40, fontWeight: 900, lineHeight: 0.9, color: daysColor, letterSpacing: '-0.04em' }}>{daysLeft}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t3)' }}>dia{daysLeft !== 1 ? 's' : ''}</span>
+                  </p>
+                </div>
+                <div style={{ background: 'var(--fill-1)', padding: '16px 18px' }}>
+                  <p style={{ fontFamily: 'var(--mono,monospace)', fontSize: 9.5, fontWeight: 700, color: 'var(--t4)', margin: '0 0 7px', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Vence em</p>
+                  <p style={{ fontSize: 19, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>{expiresShort}</p>
+                </div>
               </div>
-            </div>
-            <div style={{ position: 'relative' }}><Btn label={`Renovar · R$ ${fmt(currentPrice)}/mês`} onClick={() => onStart(currentOps, true)} variant="solid" /></div>
+            )}
+            {/* Na conta vitalicia o botao continua no ar (nada sai do produto),
+                mas deixa de ser o CTA solido — nao pode convidar a um pagamento
+                que nao faz sentido. */}
+            <div style={{ position: 'relative' }}><Btn label={`Renovar · R$ ${fmt(currentPrice)}/mês`} onClick={() => onStart(currentOps, true)} variant={vitalicio ? 'ghost' : 'solid'} /></div>
           </div>
 
           {/* Adicionar operadores */}

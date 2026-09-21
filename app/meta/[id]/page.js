@@ -1601,7 +1601,7 @@ export default function MetaPage() {
             const porConta = contasN>0 ? prev.diff/contasN : 0
             const roi = depN>0 ? (prev.diff/depN)*100 : 0
             const hasInput = !!(dep || saq || (isApenasBauMeta && bauR))
-            const col = prev.diff>0 ? 'var(--profit)' : prev.diff<0 ? 'var(--loss)' : '#FCD34D'
+            const col = prev.diff>0 ? 'var(--profit)' : prev.diff<0 ? 'var(--loss)' : '#ff7a4d'
             // Slots: usa os favoritos do tenant (na ordem dele) OU o catalogo completo
             // (preferidos primeiro) — sempre visivel, sem precisar pre-selecionar.
             const slotList = (tenantSlots && tenantSlots.length > 0)
@@ -2467,7 +2467,7 @@ export default function MetaPage() {
                     {[
                       { l: 'Lucro/conta', v: `${avgFinal >= 0 ? '+' : '−'}R$ ${fmt(Math.abs(avgFinal))}`, c: avgFinal >= 0 ? 'var(--profit)' : 'var(--loss)' },
                       { l: 'ROI', v: `${roi >= 0 ? '+' : '−'}${Math.abs(roi).toFixed(0)}%`, c: roi >= 0 ? 'var(--profit)' : 'var(--loss)' },
-                      { l: 'Taxa de acerto', v: `${taxaAcerto}%`, c: taxaAcerto >= 60 ? 'var(--profit)' : taxaAcerto >= 40 ? '#FCD34D' : 'var(--loss)' },
+                      { l: 'Taxa de acerto', v: `${taxaAcerto}%`, c: taxaAcerto >= 60 ? 'var(--profit)' : taxaAcerto >= 40 ? '#ff7a4d' : 'var(--loss)' },
                     ].map((s, i) => (
                       <div key={i} style={{ background: 'var(--surface)', padding: '12px 6px' }}>
                         <p style={{ fontFamily: 'var(--mono)', fontSize: 15, fontWeight: 800, color: s.c, margin: 0 }}>{s.v}</p>

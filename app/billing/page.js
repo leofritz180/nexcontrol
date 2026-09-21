@@ -166,7 +166,7 @@ export default function BillingPage() {
           const isWarning = daysLeft <= 15 && !isUrgent
 
           // Cor do destaque dos dias
-          const daysColor = isUrgent ? '#e5391f' : isWarning ? '#FCD34D' : 'var(--profit)'
+          const daysColor = isUrgent ? '#e5391f' : isWarning ? '#ff7a4d' : 'var(--profit)'
 
           return (
             <motion.div

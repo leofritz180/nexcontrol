@@ -2,6 +2,7 @@
 import { useEffect } from 'react'
 import { supabase } from '../lib/supabase/client'
 import { isRedesign } from '../lib/redesign'
+import { isNex2 } from '../lib/theme-v2'
 
 // ── Interruptor do REDESIGN (gated por email — ver lib/redesign.js) ──
 // Adiciona a classe `nx-redesign` no <html> SÓ pras contas liberadas. Todo o
@@ -27,9 +28,13 @@ export default function DesignMode() {
         document.documentElement.classList.toggle('nx-redesign', on)
         // Paleta de verde água (#7FFFD4) — só na conta de teste leofritz178
         document.documentElement.classList.toggle('nx-aqua', aqua)
-        // Modo claro só pra quem tem redesign; persiste a escolha (localStorage)
-        let light = false
-        if (on) { try { light = localStorage.getItem('nx_theme') === 'light' } catch {} }
+        // VISUAL V2 (bento claro) — gated por conta em lib/theme-v2.js.
+        // Pra essas contas o claro é forçado e entra a camada bento.
+        const nex2 = isNex2(email)
+        document.documentElement.classList.toggle('nx-bento', nex2)
+        // Modo claro: forçado no V2; senão respeita a escolha salva
+        let light = nex2
+        if (!nex2 && on) { try { light = localStorage.getItem('nx_theme') === 'light' } catch {} }
         document.documentElement.classList.toggle('nx-light', light)
       } catch {}
       if (on) ensureFont()

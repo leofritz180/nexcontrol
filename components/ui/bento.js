@@ -567,11 +567,20 @@ export function Sparkline({ rotulo, valor, serie = [], cor = RED, nota, delay = 
   ])
   const d = caminhoSuave(pts)
 
+  // A curva era position:absolute com bottom:0 — mas o pai posicionado nao e
+  // o CARD, e o <div relative> que o BCard poe em volta dos filhos, cuja
+  // altura e a do texto. Resultado: ela se ancorava no fim do texto e pintava
+  // POR CIMA da legenda ("lucro das metas fechadas no periodo" saia riscado
+  // de vermelho). Agora ela vem depois do texto, no fluxo normal, com margem
+  // negativa pra sangrar ate a borda. Nao tem como sobrepor nada.
   return (
     <BCard pad={22} delay={delay} style={{ minHeight: altura }}>
+      <Eyebrow>{rotulo}</Eyebrow>
+      <NumeroTexto delay={delay + 0.1} style={{ ...TIPO.numero, color: 'var(--t1)', display: 'block', marginTop: 14 }}>{valor}</NumeroTexto>
+      {nota && <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '4px 0 0' }}>{nota}</p>}
       {d && (
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden
-          style={{ position: 'absolute', left: 0, right: 0, bottom: 0, width: '100%', height: '46%', pointerEvents: 'none' }}>
+          style={{ display: 'block', width: 'calc(100% + 44px)', height: 58, marginLeft: -22, marginRight: -22, marginTop: 16, marginBottom: -22, pointerEvents: 'none' }}>
           <defs>
             <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={cor} stopOpacity="0.20" />
@@ -585,9 +594,6 @@ export function Sparkline({ rotulo, valor, serie = [], cor = RED, nota, delay = 
             transition={{ duration: 1.1, delay: delay + 0.15, ease: [0.33, 1, 0.68, 1] }} />
         </svg>
       )}
-      <Eyebrow>{rotulo}</Eyebrow>
-      <NumeroTexto delay={delay + 0.1} style={{ ...TIPO.numero, color: 'var(--t1)', display: 'block', marginTop: 14 }}>{valor}</NumeroTexto>
-      {nota && <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '4px 0 0' }}>{nota}</p>}
     </BCard>
   )
 }

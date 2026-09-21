@@ -6,7 +6,9 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
-    "lint:undef": "eslint --ext .js,.jsx app components lib"
+    "lint:undef": "eslint --ext .js,.jsx app components lib",
+    "check:contraste": "node scripts/contraste.mjs",
+    "check": "npm run lint:undef && npm run check:contraste"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.448",

@@ -8,6 +8,7 @@ const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false })
 const QuickNotifyPanel = dynamic(() => import('./QuickNotifyPanel'), { ssr: false })
 const VoiceAnnounceCard = dynamic(() => import('./VoiceAnnounceCard'), { ssr: false })
 const RedesignHeader = dynamic(() => import('./RedesignHeader'), { ssr: false })
+const TopBarV2 = dynamic(() => import('./v2/TopBarV2'), { ssr: false })
 const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
 const BettifyPromo = dynamic(() => import('./BettifyPromo'), { ssr: false })
 const NetworkLaunchBanner = dynamic(() => import('./NetworkLaunchBanner'), { ssr: false })
@@ -37,6 +38,9 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       <div style={{ marginLeft: isRedesign(userEmail) ? 76 : 248 }} className="app-content">
         {/* Loja Proxy e Network: sem cabeçalho vermelho — imersão total (chat/loja) */}
         {isRedesign(userEmail) && !isNex2(userEmail) && pathname !== '/proxy' && pathname !== '/network' && <RedesignHeader />}
+        {isNex2(userEmail) && pathname !== '/proxy' && pathname !== '/network' && (
+          <div style={{ padding: '0 24px' }}><TopBarV2 isAdmin={isAdmin} /></div>
+        )}
         {/* /network: sem wrapper animado (o transform quebraria o position:fixed do chat mobile) */}
         {pathname === '/network' ? (
           children

@@ -318,7 +318,10 @@ export function Pilulas({
                   ? <span style={{ position: 'absolute', inset: 0, borderRadius: 999, background: PRETO_ATIVO, zIndex: -1 }} />
                   : <motion.span layoutId={`pilula-${grupo}`} transition={MOLA} style={{ position: 'absolute', inset: 0, borderRadius: 999, background: PRETO_ATIVO, zIndex: -1 }} />
               )}
-              <span style={{ color: ativo ? '#fff' : 'var(--t2)' }}>{o.l}</span>
+              {/* nx-fica-branco: o preto da pílula está num IRMÃO absoluto, então
+                  a tradução do tema claro não enxerga e apagaria este branco. */}
+              <span className={ativo ? 'nx-fica-branco' : undefined}
+                style={{ color: ativo ? '#fff' : 'var(--t2)' }}>{o.l}</span>
             </motion.button>
           )
         })}

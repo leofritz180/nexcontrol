@@ -174,12 +174,13 @@ export function Tira({ itens }) {
 }
 
 // barras horizontais (distribuição)
-export function Barras({ titulo, dados, delay = 0.16 }) {
+export function Barras({ titulo, sub, dados, delay = 0.16 }) {
   dados = lista(dados)
   const max = Math.max(1, ...dados.map(d => d.v))
   return (
     <BCard pad={24} delay={delay}>
-      <p style={{ fontSize: 16.5, fontWeight: 800, color: 'var(--t1)', margin: '0 0 18px', letterSpacing: '-0.02em' }}>{titulo}</p>
+      <p style={{ fontSize: 16.5, fontWeight: 800, color: 'var(--t1)', margin: sub ? '0 0 3px' : '0 0 18px', letterSpacing: '-0.02em' }}>{titulo}</p>
+      {sub && <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 18px' }}>{sub}</p>}
       {dados.length === 0 && <Vazio titulo="Sem dados no período" texto="Assim que houver movimento, o gráfico aparece aqui." icone={<><path d="M3 3v18h18" /><path d="M7 15l3-3 4 4 5-6" /></>} />}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {dados.map((d, i) => (

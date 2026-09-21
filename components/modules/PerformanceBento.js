@@ -1,6 +1,6 @@
 'use client'
 // PERFORMANCE — visual 2.0 (operador vê o próprio desempenho, sem financeiro do admin).
-import { ModuleHeader, Hero, Tira, Lista, money0, int, RED } from '../ui/bento'
+import { ModuleHeader, Hero, Lista, int } from '../ui/bento'
 
 export default function PerformanceBento({ nome, resumo = {}, metasRecentes = [], onAbrirMeta }) {
   const r = resumo
@@ -17,12 +17,10 @@ export default function PerformanceBento({ nome, resumo = {}, metasRecentes = []
         extras={[{ l: 'Taxa de acerto', v: `${int(r.taxa)}%`, c: Number(r.taxa) >= 50 ? 'var(--profit)' : 'var(--t1)' }]}
       />
 
-      <Tira itens={[
-        { l: 'Metas fechadas', v: int(r.metasFechadas) },
-        { l: 'Remessas', v: int(r.remessas) },
-        { l: 'Depositantes', v: int(r.depositantes) },
-        { l: 'Taxa de acerto', v: `${int(r.taxa)}%`, c: Number(r.taxa) >= 50 ? 'var(--profit)' : 'var(--t1)' },
-      ]} />
+      {/* A tira que existia aqui repetia os QUATRO numeros do heroi logo acima
+          — depositantes no numerao, metas e remessas na legenda, taxa no chip.
+          Dado repetido nao e reforco, e ruido: o olho le duas vezes pra
+          descobrir que e a mesma coisa. */}
 
       <Lista
         titulo="Últimas metas"

@@ -20,7 +20,9 @@ const RED = '#e5391f', RED2 = '#ff7a4d'
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
 const money = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const money0 = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
-const int = v => Number(v || 0).toLocaleString('pt-BR')
+// mesma regra do kit: sem maximumFractionDigits o toLocaleString mantem ate
+// 3 casas e uma porcentagem sai como "82,143%"
+const int = v => Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
 
 // tons que funcionam no claro e no escuro (via tokens já existentes)
 const S = {
@@ -439,7 +441,11 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
             titulo={melhorOp.nome || melhorOp.email?.split('@')[0] || 'Operador'}
             valor={money0(melhorOp.lucroFinal)}
             avatar={String(melhorOp.nome || melhorOp.email || '?').slice(0, 2).toUpperCase()}
-            nota={`${int(melhorOp.closedCount || 0)} metas fechadas · ${int(melhorOp.totalDepositantes || melhorOp.totalDeposit || 0)} depositantes`}
+            // Os campos sao `metasFechadas` e `depositantesFinalizados` (veja o
+            // ranking em app/admin/page.js). Estava lendo closedCount e
+            // totalDepositantes, que nao existem nesse objeto: o card mostrava
+            // "R$ 27.009" ao lado de "0 metas fechadas · 0 depositantes".
+            nota={`${int(melhorOp.metasFechadas || 0)} metas fechadas · ${int(melhorOp.depositantesFinalizados || 0)} depositantes`}
             onClick={onVerMetas}
             delay={0.3}
           />

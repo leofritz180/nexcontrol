@@ -399,22 +399,44 @@ export default function FaturamentoPage() {
     </main>
   )
 
+  // No V2 da Visao geral o bento e a pagina inteira: o titulo antigo sai e os
+  // botoes vao pro cabecalho dele. Sao os MESMOS handlers.
+  const v2Overview = isNex2(user?.email) && tab === 'overview'
+  const btnSecundario = {
+    padding: '9px 16px', fontSize: 12.5, fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
+    background: 'var(--surface)', border: '1px solid var(--b1)', borderRadius: 30,
+    color: 'var(--t2)', transition: 'all 0.15s',
+  }
+  const acoesFaturamento = (
+    <div style={{ display: 'flex', gap: 8 }}>
+      <button type="button" onClick={() => setShowShowcase(true)} style={btnSecundario}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--b2)'; e.currentTarget.style.color = 'var(--t1)' }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--b1)'; e.currentTarget.style.color = 'var(--t2)' }}>
+        Apresentação
+      </button>
+      <button type="button" onClick={loadAll} style={btnSecundario}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--b2)'; e.currentTarget.style.color = 'var(--t1)' }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--b1)'; e.currentTarget.style.color = 'var(--t2)' }}>
+        Atualizar
+      </button>
+    </div>
+  )
+
   return (
     <main style={{minHeight:'100vh',position:'relative',zIndex:1}}>
       {showShowcase && <ProfitShowcase stats={stats} goalData={goalData} operators={operators} metas={metas} onClose={()=>setShowShowcase(false)}/>}
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{maxWidth:1380,margin:'0 auto',padding:'32px 28px'}}>
-        {/* V2: o bento e a cara nova da Visao Geral. Abas, filtros, editor de
-            meta, Apresentacao e Atualizar continuam todos no ar. */}
-        {isNex2(user?.email) && tab==='overview' && (
-          <FaturamentoBento
-            stats={stats} chartData={chartData}
-            operadores={operators?.length || 0}
-            redes={new Set(metas.filter(m=>m.rede).map(m=>m.rede)).size}
-          />
-        )}
+        {/* V2 na Visao geral: o bento E a pagina. Antes ele era desenhado por
+            CIMA do layout antigo, e logo abaixo vinham de novo o titulo
+            "Faturamento / Painel financeiro", os botoes e a barra de filtros
+            — duas paginas empilhadas. Agora o titulo antigo some e os botoes
+            e os filtros entram DENTRO do bento. Nenhuma funcao sai do ar:
+            Apresentacao, Atualizar e todos os filtros continuam os mesmos
+            elementos, so que no lugar certo. */}
         {/* Header — clean */}
+        {!v2Overview && (
         <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:16,marginBottom:28}}>
           <div>
             <h1 style={{ fontSize:28, fontWeight:600, color:'var(--t1)', letterSpacing:'-0.03em', margin:'0 0 6px' }}>Faturamento</h1>
@@ -439,6 +461,7 @@ export default function FaturamentoPage() {
             </button>
           </div>
         </div>
+        )}
 
         {/* Demo Banner */}
         {demoMode && (
@@ -462,8 +485,18 @@ export default function FaturamentoPage() {
           ))}
         </div>
 
-        {/* Filters */}
-        <Filters operators={operators} redes={redesList} filters={filters} setFilters={setFilters}/>
+        {/* Filters — no V2 da Visao geral eles vao pra dentro do bento */}
+        {!v2Overview && <Filters operators={operators} redes={redesList} filters={filters} setFilters={setFilters}/>}
+
+        {v2Overview && (
+          <FaturamentoBento
+            stats={stats} chartData={chartData}
+            operadores={operators?.length || 0}
+            redes={new Set(metas.filter(m=>m.rede).map(m=>m.rede)).size}
+            acoes={acoesFaturamento}
+            filtros={<Filters operators={operators} redes={redesList} filters={filters} setFilters={setFilters}/>}
+          />
+        )}
 
         {/* ═══ OVERVIEW ═══ */}
         {tab==='overview' && !isNex2(user?.email) && (<div key="ov" className="tab-content">

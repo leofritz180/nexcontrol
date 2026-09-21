@@ -250,6 +250,26 @@ html.nx-aqua:not(.nx-light) {
 .nx-light .nx-on-red .nx-red-txt:not(#_):not(#_),
 .nx-light .nx-on-red .nx-red-txt:not(#_):not(#_) * { color: #fff !important; }
 
+/* A planilha do /planejamento tem 1480px de largura minima e rola na
+   horizontal. Sem barra visivel, a tabela so parecia CORTADA na borda do
+   card — ninguem descobre que da pra rolar. Aqui ela fica fina mas visivel,
+   e a ultima coluna ganha um respiro pra nao encostar no canto. */
+.nx-bento .pl-tabela { scrollbar-width: thin; padding-bottom: 2px; }
+.nx-bento .pl-tabela::-webkit-scrollbar { height: 9px; }
+.nx-bento .pl-tabela::-webkit-scrollbar-track { background: var(--fill-1); border-radius: 9px; }
+.nx-bento .pl-tabela::-webkit-scrollbar-thumb { background: var(--fill-3); border-radius: 9px; }
+.nx-bento .pl-tabela::-webkit-scrollbar-thumb:hover { background: var(--t4); }
+.nx-bento .pl-tabela table { padding-right: 8px; }
+
+/* 6b) ESCOTILHA GERAL: texto que DEVE continuar branco no claro.
+   A regra 2 acima decide olhando o style do PRÓPRIO elemento. Quando o fundo
+   escuro vem de um IRMÃO — uma pílula preta que desliza por baixo do rótulo,
+   por exemplo — ela não tem como saber e apaga o texto: branco vira quase
+   preto sobre preto. Já aconteceu duas vezes (pílulas de período e filtros
+   do /planejamento). Quem estiver nessa situação marca a classe. */
+.nx-light .nx-fica-branco:not(#_):not(#_),
+.nx-light .nx-fica-branco:not(#_):not(#_) * { color: #fff !important; }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; background: var(--base); }
 a { color: inherit; text-decoration: none; }
@@ -2272,12 +2292,24 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     max-width: 100% !important; width: 100% !important;
     margin: 0 !important; border-radius: 22px 22px 0 0 !important;
     padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) !important;
-    justify-content: space-around !important;
     box-shadow: 0 -8px 28px rgba(0,0,0,0.22) !important;
+    /* rola na horizontal em vez de espremer */
+    justify-content: flex-start !important;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
   }
+  /* Antes cada aba era flex:1 com ellipsis: em 390px as seis viravam
+     "Visão ...", "Minha o...", "Metas &...". Nome cortado nao e nome.
+     Agora cada uma fica do tamanho do seu texto e a barra rola. */
   .nx-bento .tabs-scroll button {
-    flex: 1; min-width: 0; padding: 9px 6px !important; font-size: 11px !important;
-    text-overflow: ellipsis; overflow: hidden;
+    flex: 0 0 auto; padding: 9px 13px !important; font-size: 11.5px !important;
+    white-space: nowrap; scroll-snap-align: center;
+  }
+  /* sinal de que tem mais coisa a direita */
+  .nx-bento .tabs-scroll::after {
+    content: ''; position: sticky; right: 0; flex: 0 0 26px; align-self: stretch;
+    margin-right: -9px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, #15151a);
   }
   /* a pilula deslizante nao cabe numa barra de ponta a ponta */
   .nx-bento .tabs-scroll > .nx-dock-pilula { display: none !important; }

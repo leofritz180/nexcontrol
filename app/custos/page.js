@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import CustosBento from '../../components/modules/CustosBento'
+import { opDayISO } from '../../lib/opday'
 import { isNex2 } from '../../lib/theme-v2'
 import { useConfirmar } from '../../components/v2/Confirmar'
 import { useAviso } from '../../components/v2/Avisos'
@@ -15,13 +16,9 @@ import { ModuloEsqueleto } from '../../components/ui/bento'
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const getName = p => p?.nome || p?.email?.split('@')[0] || '?'
 
-// Dia operacional (vira as 5h, horario local/BRT) em 'YYYY-MM-DD'. Subtrai 5h e usa
-// a data local — assim um custo lancado de madrugada (ate 4:59) cai no dia anterior,
-// igual a regra das metas no /admin. Corrige tambem o bug antigo de salvar em UTC.
-const opDayISO = (d = new Date()) => {
-  const x = new Date(new Date(d).getTime() - 5 * 3600 * 1000)
-  return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`
-}
+// O dia operacional vira as 5h — um custo lancado de madrugada (ate 4:59) cai
+// no dia anterior, igual a regra das metas. Era a TERCEIRA copia da mesma
+// funcao no projeto; agora todas leem de lib/opday.js.
 
 const COST_TYPES = [
   { id: 'proxy', label: 'Proxy', icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', color: 'var(--t1)' },

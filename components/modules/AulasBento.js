@@ -16,14 +16,18 @@ import { motion } from 'framer-motion'
 import { ModuleHeader, AcaoBtn, Tira, BCard, Vazio, Ico, MONO, RED, RED2, int } from '../ui/bento'
 import { Campo } from '../ui/campo'
 
-// Gradientes das capas sem imagem. São os mesmos da tela antiga — arte.
+// Capa de curso sem imagem. Eram seis gradientes herdados da tela antiga —
+// azul-marinho, ROXO, verde-garrafa, marrom — que num painel preto/branco/
+// vermelho pareciam de outro produto. Agora é uma família só: grafite
+// escuro com uma brasa da marca entrando de um canto diferente em cada uma.
+// Continuam seis e continuam distinguíveis, mas pertencem à casa.
 const ARTES = [
-  'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)',
-  'linear-gradient(135deg, #2d1b3d, #44194d, #1a1a2e)',
-  'linear-gradient(135deg, #1a2a1a, #1b3d2d, #0f604d)',
-  'linear-gradient(135deg, #3d2a1a, #4d3319, #2e1a0f)',
-  'linear-gradient(135deg, #1a1a3d, #2d194d, #0f1a60)',
-  'linear-gradient(135deg, #3d1a1a, #4d1919, #2e0f0f)',
+  'radial-gradient(120% 130% at 12% 8%, rgba(229,57,31,0.42) 0%, transparent 58%), linear-gradient(150deg, #24242c, #131317)',
+  'radial-gradient(120% 130% at 88% 12%, rgba(255,122,77,0.38) 0%, transparent 58%), linear-gradient(150deg, #202028, #101014)',
+  'radial-gradient(130% 120% at 50% 100%, rgba(229,57,31,0.34) 0%, transparent 60%), linear-gradient(150deg, #26262e, #151519)',
+  'radial-gradient(120% 130% at 8% 92%, rgba(255,122,77,0.34) 0%, transparent 56%), linear-gradient(150deg, #1e1e25, #0e0e12)',
+  'radial-gradient(140% 120% at 92% 88%, rgba(229,57,31,0.38) 0%, transparent 62%), linear-gradient(150deg, #22222a, #121216)',
+  'radial-gradient(110% 140% at 50% 0%, rgba(255,122,77,0.30) 0%, transparent 55%), linear-gradient(150deg, #28282f, #16161b)',
 ]
 
 // O id do curso é UUID (string): `id % 6` daria NaN e a capa ficaria sem

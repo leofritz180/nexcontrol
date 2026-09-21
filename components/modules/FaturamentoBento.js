@@ -2,7 +2,7 @@
 // FATURAMENTO — visual 2.0. Só apresentação; dados vêm do /faturamento.
 import { ModuleHeader, Hero, Tira, Barras, Lista, BCard, money0, int, RED, RED2 } from '../ui/bento'
 
-export default function FaturamentoBento({ stats, chartData = [], operadores = 0, redes = 0, periodo, onPeriodo }) {
+export default function FaturamentoBento({ stats, chartData = [], operadores = 0, redes = 0, periodo, onPeriodo, acoes, filtros }) {
   const s = stats || {}
   const pos = Number(s.lucroFinal) >= 0
   const serie = (chartData || []).slice(-12)
@@ -12,7 +12,12 @@ export default function FaturamentoBento({ stats, chartData = [], operadores = 0
       <ModuleHeader
         titulo="Faturamento"
         sub={`${int(s.fechadas)} metas fechadas · ${int(s.total)} remessas no período`}
+        acao={acoes}
       />
+
+      {/* Os filtros vêm logo abaixo do título, não soltos no fim da página:
+          eles mandam em TUDO que vem depois. */}
+      {filtros}
 
       <Hero
         rotulo="Lucro final do período"
@@ -38,12 +43,19 @@ export default function FaturamentoBento({ stats, chartData = [], operadores = 0
       <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.35fr 1fr', gap: 14 }}>
         <Barras
           titulo="Evolução do faturamento"
-          dados={serie.map(d => ({
-            l: d.label || d.key || '—',
-            v: Math.abs(Number(d.value ?? d.liq ?? d.total ?? 0)),
-            txt: money0(d.value ?? d.liq ?? d.total ?? 0),
-            dot: Number(d.value ?? d.liq ?? d.total ?? 0) >= 0 ? undefined : 'var(--loss)',
-          }))}
+          // O /faturamento monta {name, lucro, prejuizo, liquido}. Aqui se lia
+          // d.label e d.value — nomes que não existem nesse objeto. Resultado:
+          // 12 barras zeradas, com "—" no lugar da data, numa conta com 414
+          // metas fechadas. Os outros nomes ficam como reserva.
+          dados={serie.map(d => {
+            const v = Number(d.liquido ?? d.value ?? d.liq ?? d.total ?? 0)
+            return {
+              l: d.name ?? d.label ?? d.key ?? '—',
+              v: Math.abs(v),
+              txt: money0(v),
+              dot: v >= 0 ? undefined : 'var(--loss)',
+            }
+          })}
         />
         <BCard pad={24} delay={0.22}>
           <p style={{ fontSize: 16.5, fontWeight: 800, color: 'var(--t1)', margin: '0 0 6px', letterSpacing: '-0.02em' }}>Resumo do período</p>

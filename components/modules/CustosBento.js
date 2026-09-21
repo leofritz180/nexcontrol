@@ -15,7 +15,10 @@ export default function CustosBento({ kpis, chartData, custos = [], typeMap = {}
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       <ModuleHeader
         titulo="Custos"
-        sub={`${custos.length} lançamento${custos.length === 1 ? '' : 's'} · média de ${money0(k.mediaDia)} por dia`}
+        // O heroi fala do MES CORRENTE; a lista e o grafico mostram TUDO. Sem
+        // dizer isso, "Custo do mes R$ 0" ao lado de um detalhamento de
+        // R$ 4.330 parecia erro de conta.
+        sub={`${custos.length} lançamento${custos.length === 1 ? '' : 's'} no total · ${money0(k.mediaDia)} por dia neste mês`}
         acao={<AcaoBtn onClick={onNovo} icon={<path d="M12 5v14M5 12h14" />}>Novo custo</AcaoBtn>}
       />
 
@@ -44,6 +47,7 @@ export default function CustosBento({ kpis, chartData, custos = [], typeMap = {}
       <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 14, alignItems: 'start' }}>
         <Barras
           titulo="Para onde vai o dinheiro"
+          sub="somando todos os lançamentos, não só os deste mês"
           // sem `dot`: as barras usam a rampa da marca, igual ao /redes. As
           // cores por tipo vinham do tema escuro antigo — Proxy saía como uma
           // barra PRETA e SMS como uma bolinha verde de lucro, dentro de um

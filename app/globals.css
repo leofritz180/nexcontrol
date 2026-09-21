@@ -1942,3 +1942,38 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 @media (max-width: 768px) {
   .nx-bento .nx-logo-full { display: flex !important; }
 }
+
+/* ── V2 · CORREÇÃO: rail ENCOSTADO (continuidade com o fundo) ──────────────
+   O rail flutuante (descolado + arredondado nos 4 lados) criava uma faixa
+   preta entre o recorte e a página, quebrando a continuidade. Na referência
+   ele é rente à borda, altura total e arredondado só do lado direito. */
+@media (min-width: 769px) {
+  .nx-bento .sb-rd {
+    left: 0 !important; top: 0 !important; bottom: 0 !important;
+    height: 100% !important;
+    border-radius: 0 26px 26px 0 !important;
+    box-shadow: none !important;
+  }
+  /* conteúdo encosta exatamente na largura do rail — sem faixa no meio */
+  .nx-bento .app-content { margin-left: 64px !important; }
+  .nx-bento .sb-rd:hover { border-radius: 0 26px 26px 0 !important; }
+
+  /* o recorte agora encosta de fato na borda direita do rail */
+  .nx-bento .sb-rd nav { padding-right: 0 !important; }
+  .nx-bento .sb-rd nav a[style*="var(--raised)"] {
+    margin-right: 0 !important;
+    padding-right: 16px !important;
+    border-radius: 18px 0 0 18px !important;
+  }
+  /* raio dos cantos côncavos alinhado ao do recorte */
+  .nx-bento .sb-rd nav a[style*="var(--raised)"]::before,
+  .nx-bento .sb-rd nav a[style*="var(--raised)"]::after { width: 16px; height: 16px; }
+  .nx-bento .sb-rd nav a[style*="var(--raised)"]::before {
+    -webkit-mask: radial-gradient(circle 16px at 0 0, transparent 98%, #000 100%);
+            mask: radial-gradient(circle 16px at 0 0, transparent 98%, #000 100%);
+  }
+  .nx-bento .sb-rd nav a[style*="var(--raised)"]::after {
+    -webkit-mask: radial-gradient(circle 16px at 0 100%, transparent 98%, #000 100%);
+            mask: radial-gradient(circle 16px at 0 100%, transparent 98%, #000 100%);
+  }
+}

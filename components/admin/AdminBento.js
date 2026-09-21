@@ -139,6 +139,21 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
   const dias30 = useMemo(() => ultimosDias(30), [porDia])
   const dias10 = useMemo(() => ultimosDias(10), [porDia])
 
+  // Curva dos 14 dias que vai DENTRO do card do lucro. Mesmos dados do
+  // Sparkline da linha 2 — nao inventa numero nenhum, só dá corpo ao card.
+  const curva14 = useMemo(() => {
+    const L = 300, A = 54
+    const v = dias14.map(d => d.v)
+    if (!v.length) return null
+    const alto = Math.max(0, ...v), baixo = Math.min(0, ...v)
+    const faixa = (alto - baixo) || 1
+    const pts = v.map((n, i) => [
+      v.length > 1 ? (i * L) / (v.length - 1) : 0,
+      A - ((n - baixo) / faixa) * (A - 8) - 4,
+    ])
+    return { L, A, d: curva(pts) }
+  }, [dias14])
+
   // mes corrente contra o anterior, pelo mesmo criterio de data
   const { mesAtual, mesPassado } = useMemo(() => {
     const agora = new Date()
@@ -268,14 +283,69 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         </div>
       )}
 
-      {/* LINHA 1 — 4 cards */}
-      <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+      {/* LINHA 1 — O LUCRO É A ÂNCORA DA TELA.
+          Antes ele era um quarto da linha, do mesmo tamanho de "metas
+          fechadas" — sendo o número que define o negócio. Agora ocupa quase
+          o dobro e é o único bloco PRETO do painel: num bento todo branco,
+          uma superfície escura vira o ponto de fixação do olho sem precisar
+          de cor nova nem de mais tamanho de fonte. O vermelho continua
+          reservado pra "Meta do dia", então os dois não brigam.
+          A curva de 14 dias ao fundo são os mesmos dados da linha 2. */}
+      <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: '1.9fr 1fr 1fr 1.3fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <Card blob={['var(--profit-dim)', 'var(--profit-border)']} style={{ minHeight: 148 }}>
-            <Chip bg="var(--profit-dim)"><Ico d={<><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>} c="var(--profit)" /></Chip>
-            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}><NumeroTexto delay={0.15}>{money0(lucroPeriodo != null ? lucroPeriodo : lucroTotal)}</NumeroTexto></p>
-            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>{lucroPeriodo != null ? rotuloPeriodo : 'lucro final acumulado'}</p>
-          </Card>
+          <motion.div
+            whileHover={{ y: -5, boxShadow: '0 10px 22px rgba(0,0,0,0.16), 0 28px 60px rgba(0,0,0,0.26)' }}
+            transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+            style={{
+              position: 'relative', overflow: 'hidden', minHeight: 148, height: '100%',
+              borderRadius: 24, padding: '22px 24px',
+              background: 'linear-gradient(140deg, #23232b 0%, #15151a 58%, #101014 100%)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.06), 0 18px 44px rgba(0,0,0,0.20)',
+            }}>
+            {/* brilho de lucro no canto — verde quando positivo, vermelho quando não */}
+            <div aria-hidden style={{
+              position: 'absolute', top: -70, right: -50, width: 280, height: 220, borderRadius: '50%',
+              background: (lucroPeriodo != null ? lucroPeriodo : lucroTotal) >= 0
+                ? 'radial-gradient(circle, rgba(126,224,138,0.20), transparent 68%)'
+                : 'radial-gradient(circle, rgba(255,107,107,0.20), transparent 68%)',
+              pointerEvents: 'none',
+            }} />
+            {/* a curva dos 14 dias, sangrando até as bordas */}
+            {curva14?.d && (
+              <svg viewBox={`0 0 ${curva14.L} ${curva14.A}`} preserveAspectRatio="none" aria-hidden
+                style={{ position: 'absolute', left: 0, right: 0, bottom: 0, width: '100%', height: 62, pointerEvents: 'none' }}>
+                <defs>
+                  <linearGradient id="abLucroFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#7ee08a" stopOpacity="0.22" />
+                    <stop offset="100%" stopColor="#7ee08a" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <motion.path d={`${curva14.d} L${curva14.L},${curva14.A} L0,${curva14.A} Z`} fill="url(#abLucroFill)"
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, delay: 0.45 }} />
+                <motion.path d={curva14.d} fill="none" stroke="#7ee08a" strokeOpacity="0.55" strokeWidth="2"
+                  strokeLinecap="round" vectorEffect="non-scaling-stroke"
+                  initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+                  transition={{ duration: 1.2, delay: 0.3, ease: [0.33, 1, 0.68, 1] }} />
+              </svg>
+            )}
+
+            <div style={{ position: 'relative' }}>
+              <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#8f8f9c', margin: 0, fontFamily: MONO }}>
+                Lucro final
+              </p>
+              <p style={{
+                fontSize: 44, fontWeight: 900, margin: '10px 0 0', letterSpacing: '-0.045em', lineHeight: 1,
+                fontFamily: MONO,
+                color: (lucroPeriodo != null ? lucroPeriodo : lucroTotal) >= 0 ? '#7ee08a' : '#ff8a7a',
+              }}>
+                <NumeroTexto delay={0.15}>{money0(lucroPeriodo != null ? lucroPeriodo : lucroTotal)}</NumeroTexto>
+              </p>
+              <p style={{ fontSize: 12.5, color: '#a0a0ac', margin: '8px 0 0' }}>
+                {lucroPeriodo != null ? rotuloPeriodo : 'lucro final acumulado'}
+              </p>
+            </div>
+          </motion.div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.06 }}>

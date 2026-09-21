@@ -21,13 +21,18 @@ import { Campo } from '../ui/campo'
 // vermelho pareciam de outro produto. Agora é uma família só: grafite
 // escuro com uma brasa da marca entrando de um canto diferente em cada uma.
 // Continuam seis e continuam distinguíveis, mas pertencem à casa.
+//
+// 155deg e nao 150deg de proposito: o globals.css tem uma regra que casa por
+// SUBSTRING com `linear-gradient(150deg` e troca o fundo por branco liso (ela
+// existe pra limpar os cards do tema escuro antigo). Com 150 as capas saiam
+// brancas.
 const ARTES = [
-  'radial-gradient(120% 130% at 12% 8%, rgba(229,57,31,0.42) 0%, transparent 58%), linear-gradient(150deg, #24242c, #131317)',
-  'radial-gradient(120% 130% at 88% 12%, rgba(255,122,77,0.38) 0%, transparent 58%), linear-gradient(150deg, #202028, #101014)',
-  'radial-gradient(130% 120% at 50% 100%, rgba(229,57,31,0.34) 0%, transparent 60%), linear-gradient(150deg, #26262e, #151519)',
-  'radial-gradient(120% 130% at 8% 92%, rgba(255,122,77,0.34) 0%, transparent 56%), linear-gradient(150deg, #1e1e25, #0e0e12)',
-  'radial-gradient(140% 120% at 92% 88%, rgba(229,57,31,0.38) 0%, transparent 62%), linear-gradient(150deg, #22222a, #121216)',
-  'radial-gradient(110% 140% at 50% 0%, rgba(255,122,77,0.30) 0%, transparent 55%), linear-gradient(150deg, #28282f, #16161b)',
+  'radial-gradient(120% 130% at 12% 8%, rgba(229,57,31,0.42) 0%, transparent 58%), linear-gradient(155deg, #24242c, #131317)',
+  'radial-gradient(120% 130% at 88% 12%, rgba(255,122,77,0.38) 0%, transparent 58%), linear-gradient(155deg, #202028, #101014)',
+  'radial-gradient(130% 120% at 50% 100%, rgba(229,57,31,0.34) 0%, transparent 60%), linear-gradient(155deg, #26262e, #151519)',
+  'radial-gradient(120% 130% at 8% 92%, rgba(255,122,77,0.34) 0%, transparent 56%), linear-gradient(155deg, #1e1e25, #0e0e12)',
+  'radial-gradient(140% 120% at 92% 88%, rgba(229,57,31,0.38) 0%, transparent 62%), linear-gradient(155deg, #22222a, #121216)',
+  'radial-gradient(110% 140% at 50% 0%, rgba(255,122,77,0.30) 0%, transparent 55%), linear-gradient(155deg, #28282f, #16161b)',
 ]
 
 // O id do curso é UUID (string): `id % 6` daria NaN e a capa ficaria sem

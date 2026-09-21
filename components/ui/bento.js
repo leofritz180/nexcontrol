@@ -84,12 +84,36 @@ export function ModuleHeader({ titulo, sub, acao }) {
   )
 }
 
+// Botão de ação com ripple: a onda nasce no ponto exato do clique, o que
+// dá a sensação de que o botão respondeu ao dedo, não ao evento.
 export function AcaoBtn({ children, onClick, icon }) {
+  const semMovimento = useReducedMotion()
+  const [ondas, setOndas] = useState([])
+
+  function clicou(e) {
+    if (!semMovimento) {
+      const r = e.currentTarget.getBoundingClientRect()
+      const id = Date.now() + Math.random()
+      setOndas(o => [...o, { id, x: e.clientX - r.left, y: e.clientY - r.top }])
+      // 600ms é a duração da animação; depois a onda não serve pra nada
+      setTimeout(() => setOndas(o => o.filter(w => w.id !== id)), 600)
+    }
+    onClick?.(e)
+  }
+
   return (
-    <motion.button type="button" onClick={onClick}
+    <motion.button type="button" onClick={clicou}
       whileHover={{ y: -2, boxShadow: '0 14px 32px rgba(229,57,31,0.36)' }} whileTap={{ scale: 0.97 }}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
-      {icon && <Ico d={icon} s={16} />}{children}
+      style={{ position: 'relative', overflow: 'hidden', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
+      {ondas.map(w => (
+        <motion.span key={w.id} aria-hidden
+          initial={{ opacity: 0.5, scale: 0 }} animate={{ opacity: 0, scale: 1 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          style={{ position: 'absolute', left: w.x, top: w.y, width: 240, height: 240, marginLeft: -120, marginTop: -120, borderRadius: '50%', background: 'rgba(255,255,255,0.45)', pointerEvents: 'none' }} />
+      ))}
+      <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        {icon && <Ico d={icon} s={16} />}{children}
+      </span>
     </motion.button>
   )
 }
@@ -153,7 +177,7 @@ export function Barras({ titulo, dados, delay = 0.16 }) {
               </span>
               <NumeroTexto delay={delay + i * 0.06} style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: d.c || 'var(--t1)' }}>{d.txt}</NumeroTexto>
             </div>
-            <div style={{ height: 18, borderRadius: 9, background: 'var(--fill-1)', overflow: 'hidden' }}>
+            <div title={`${d.l}: ${d.txt}`} style={{ height: 18, borderRadius: 9, background: 'var(--fill-1)', overflow: 'hidden', cursor: 'default' }}>
               <motion.div initial={{ width: 0 }} animate={{ width: `${Math.max(2, (d.v / max) * 100)}%` }}
                 transition={{ duration: 0.9, delay: delay + i * 0.06, ease: [0.33, 1, 0.68, 1] }}
                 style={{ height: '100%', borderRadius: 9, background: d.dot || `linear-gradient(90deg, ${RED2}, ${RED})` }} />
@@ -175,7 +199,10 @@ export function Lista({ titulo, linhas, vazio = 'Nada por aqui ainda.', delay = 
       </div>
       {linhas.length === 0 && <Vazio titulo={vazio} icone={<><path d="M8 6h13M8 12h13M8 18h13" /><circle cx="3.5" cy="6" r="1" /><circle cx="3.5" cy="12" r="1" /><circle cx="3.5" cy="18" r="1" /></>} />}
       {linhas.map((r, i) => (
-        <motion.div key={r.k || i} whileHover={r.onClick ? { x: 3 } : undefined} onClick={r.onClick}
+        <motion.div key={r.k || i} layout
+          initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.32, delay: Math.min(i * 0.03, 0.3), ease: [0.33, 1, 0.68, 1] }}
+          whileHover={r.onClick ? { x: 3 } : undefined} onClick={r.onClick}
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '12px 0', borderBottom: i < linhas.length - 1 ? '1px solid var(--b1)' : 'none', cursor: r.onClick ? 'pointer' : 'default' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 11, minWidth: 0 }}>
             {r.avatar && (

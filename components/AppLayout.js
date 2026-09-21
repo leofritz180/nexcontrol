@@ -13,16 +13,19 @@ const DockPilula = dynamic(() => import('./v2/DockPilula'), { ssr: false })
 const BemVindo20 = dynamic(() => import('./v2/BemVindo20'), { ssr: false })
 const PaletaComandos = dynamic(() => import('./v2/PaletaComandos'), { ssr: false })
 const Atalhos = dynamic(() => import('./v2/Atalhos'), { ssr: false })
+const RailSelo = dynamic(() => import('./v2/RailSelo'), { ssr: false })
 const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
 const BettifyPromo = dynamic(() => import('./BettifyPromo'), { ssr: false })
 const NetworkLaunchBanner = dynamic(() => import('./NetworkLaunchBanner'), { ssr: false })
 const NetworkDock = dynamic(() => import('./NetworkDock'), { ssr: false })
 const PhoneGate = dynamic(() => import('./PhoneGate'), { ssr: false })
 
+// A saída é mais curta que a entrada de propósito: o olho perdoa um corte
+// rápido no que está saindo, mas estranha o que entra apressado.
 const pageVariants = {
-  initial: { opacity: 0, y: 14 },
-  enter: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.33, 1, 0.68, 1] } },
-  exit: { opacity: 0, y: -8, transition: { duration: 0.2, ease: 'easeIn' } },
+  initial: { opacity: 0, y: 16, filter: 'blur(3px)' },
+  enter: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.42, ease: [0.33, 1, 0.68, 1] } },
+  exit: { opacity: 0, y: -10, filter: 'blur(2px)', transition: { duration: 0.16, ease: 'easeIn' } },
 }
 
 export default function AppLayout({ children, userName, userEmail, isAdmin, tenant, subscription, userId, tenantId }) {
@@ -42,6 +45,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
         tenantId={tenantId}
       />
       <DockPilula ativo={isNex2(userEmail)} />
+      <RailSelo ativo={isNex2(userEmail)} />
       <BemVindo20 email={userEmail} ativo={isNex2(userEmail)} />
       <PaletaComandos ativo={isNex2(userEmail)} isAdmin={isAdmin} {...dadosPaleta} />
       <Atalhos ativo={isNex2(userEmail)} isAdmin={isAdmin} aoNovaMeta={dadosPaleta.aoNovaMeta} />

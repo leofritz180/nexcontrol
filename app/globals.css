@@ -1883,3 +1883,53 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   /* transição suave entre os dois estados */
   .nx-bento .sb-rd .nx-logo-mark, .nx-bento .sb-rd .nx-logo-full { transition: opacity .2s ease; }
 }
+
+/* ── V2 · NOTCH do item ativo (efeito da referência) ───────────────────────
+   O item selecionado deixa de ser um "chip" e passa a ser um RECORTE: a cor
+   da página invade o rail, encostando na borda direita, e o preto curva pra
+   dentro com dois cantos CÔNCAVOS (acima e abaixo). Feito com mask radial —
+   sem imagem, sem JS. */
+@media (min-width: 769px) {
+  /* o item ativo encosta exatamente na borda direita do rail
+     (-12px cancela o padding do nav; não ultrapassa, então nada é cortado) */
+  .nx-bento .sb-rd nav a[style*="var(--raised)"] {
+    position: relative;
+    background: #f0f0f3 !important;      /* mesma cor do fundo da página */
+    color: #15151a !important;
+    border-radius: 20px 0 0 20px !important;
+    margin-right: -12px !important;
+    padding-right: 22px !important;
+    box-shadow: none !important;
+    z-index: 3;
+  }
+  .nx-bento .sb-rd nav a[style*="var(--raised)"] svg[stroke="currentColor"] { color: #15151a !important; }
+  .nx-bento .sb-rd nav a[style*="var(--raised)"] .sb-label { color: #15151a !important; font-weight: 700 !important; }
+
+  /* cantos côncavos: quadradinho da cor da página com um quarto de disco
+     recortado — dá a curva que "puxa" o preto pra dentro */
+  .nx-bento .sb-rd nav a[style*="var(--raised)"]::before,
+  .nx-bento .sb-rd nav a[style*="var(--raised)"]::after {
+    content: ''; position: absolute; right: 0;
+    width: 14px; height: 14px; background: #f0f0f3;
+    pointer-events: none;
+  }
+  /* acima: recorta o disco do canto superior-esquerdo */
+  .nx-bento .sb-rd nav a[style*="var(--raised)"]::before {
+    bottom: 100%; top: auto; left: auto; transform: none;
+    -webkit-mask: radial-gradient(circle 14px at 0 0, transparent 98%, #000 100%);
+            mask: radial-gradient(circle 14px at 0 0, transparent 98%, #000 100%);
+  }
+  /* abaixo: espelhado */
+  .nx-bento .sb-rd nav a[style*="var(--raised)"]::after {
+    top: 100%;
+    -webkit-mask: radial-gradient(circle 14px at 0 100%, transparent 98%, #000 100%);
+            mask: radial-gradient(circle 14px at 0 100%, transparent 98%, #000 100%);
+  }
+
+  /* o recorte precisa poder encostar na borda: nada de corte horizontal */
+  .nx-bento .sb-rd { overflow-x: visible !important; }
+  .nx-bento .sb-rd nav { overflow: visible !important; }
+
+  /* movimento premium: o item desliza pra direita ao ser selecionado */
+  .nx-bento .sb-rd nav a { transition: background .24s cubic-bezier(.33,1,.68,1), color .2s ease, padding .24s cubic-bezier(.33,1,.68,1), margin .24s cubic-bezier(.33,1,.68,1) !important; }
+}

@@ -48,20 +48,26 @@ function curva(pts) {
   return d
 }
 
-function Card({ children, style, pad = 22, blob }) {
+function Card({ children, style, pad = 22, blob, onClick }) {
   return (
-    <div style={{ ...S.card, padding: pad, ...style }}>
-      {blob && <Blob c1={blob[0]} c2={blob[1]} />}
+    <motion.div
+      whileHover={{ y: -5, boxShadow: '0 6px 14px rgba(0,0,0,0.06), 0 20px 46px rgba(0,0,0,0.11)' }}
+      whileTap={onClick ? { scale: 0.99 } : undefined}
+      transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+      onClick={onClick}
+      style={{ ...S.card, padding: pad, cursor: onClick ? 'pointer' : 'default', ...style }}>
+      {blob && <motion.div variants={{}} style={{ position: 'absolute', inset: 0 }}><Blob c1={blob[0]} c2={blob[1]} /></motion.div>}
       <div style={{ position: 'relative' }}>{children}</div>
-    </div>
+    </motion.div>
   )
 }
 function Chip({ bg, children }) {
   return <span style={{ width: 40, height: 40, borderRadius: 13, background: bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{children}</span>
 }
 
-export default function AdminBento({ nome, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, insight }) {
-  const [semana, setSemana] = useState('lucro')
+export default function AdminBento({ nome, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, onSaveGoal }) {
+  const [editGoal, setEditGoal] = useState(false)
+  const [goalVal, setGoalVal] = useState('')
 
   const lucroHoje = (g?.lucroHoje || 0) - (g?.custosHoje || 0)
   const lucroTotal = (g?.lucroFinalTotal || 0) - (g?.custosTotal || 0)
@@ -105,9 +111,9 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
           <h1 style={{ fontSize: 26, fontWeight: 800, color: S.t1, margin: 0, letterSpacing: '-0.03em' }}>Olá, {nome || 'admin'}</h1>
           <p style={{ fontSize: 13.5, color: S.t3, margin: '3px 0 0' }}>{abertas.length} meta{abertas.length === 1 ? '' : 's'} em andamento · {equipeOn} operador{equipeOn === 1 ? '' : 'es'}</p>
         </div>
-        <button type="button" onClick={onNovaMeta} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
+        <motion.button type="button" onClick={onNovaMeta} whileHover={{ y: -2, boxShadow: '0 14px 32px rgba(229,57,31,0.38)' }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
           <Ico d={<path d="M12 5v14M5 12h14" />} s={16} /> Nova meta
-        </button>
+        </motion.button>
       </div>
 
       {/* LINHA 1 — 4 cards */}
@@ -144,19 +150,46 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
               <path d="M0,116 C52,86 92,138 140,110 C170,92 186,98 200,92 L200,140 L0,140 Z" fill="#fff" opacity="0.4" />
             </svg>
             <div style={{ position: 'relative' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                <div style={{ minWidth: 0 }}>
                   <p style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.02em' }}>Meta do dia</p>
-                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', margin: '3px 0 0' }}>{alvo > 0 ? `${money0(feito)} de ${money0(alvo)}` : 'defina sua meta'}</p>
+                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', margin: '3px 0 0' }}>{alvo > 0 ? `${money0(feito)} de ${money0(alvo)}` : 'ainda não definida'}</p>
                 </div>
-                {alvo > 0 && <span style={{ fontFamily: MONO, fontSize: 18, fontWeight: 900, color: '#fff' }}>{pctDia}%</span>}
+                {alvo > 0 && !editGoal && (
+                  <button type="button" onClick={() => { setGoalVal(String(alvo)); setEditGoal(true) }} title="Alterar meta"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.18)', border: 'none', borderRadius: 20, padding: '4px 10px', cursor: 'pointer', fontFamily: MONO, fontSize: 15, fontWeight: 900, color: '#fff' }}>
+                    {pctDia}%
+                  </button>
+                )}
               </div>
-              <div style={{ marginTop: 20, height: 8, borderRadius: 5, background: 'rgba(255,255,255,0.32)', overflow: 'hidden' }}>
-                <motion.div initial={{ width: 0 }} animate={{ width: `${pctDia}%` }} transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }} style={{ height: '100%', borderRadius: 5, background: '#fff' }} />
-              </div>
-              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.82)', margin: '10px 0 0' }}>
-                {alvo > 0 ? (feito >= alvo ? 'meta batida hoje' : `faltam ${money0(alvo - feito)}`) : 'toque em Meta do dia abaixo'}
-              </p>
+
+              {editGoal ? (
+                <div style={{ marginTop: 16, display: 'flex', gap: 7 }}>
+                  <input autoFocus value={goalVal} inputMode="numeric"
+                    onChange={e => setGoalVal(e.target.value.replace(/D/g, '').slice(0, 7))}
+                    onKeyDown={e => { if (e.key === 'Enter' && onSaveGoal) { onSaveGoal(Number(goalVal) || null); setEditGoal(false) } }}
+                    placeholder="ex: 5000"
+                    style={{ flex: 1, minWidth: 0, padding: '9px 12px', borderRadius: 11, border: 'none', outline: 'none', fontFamily: MONO, fontSize: 14, fontWeight: 800, color: '#15151a' }} />
+                  <button type="button" onClick={() => { if (onSaveGoal) onSaveGoal(Number(goalVal) || null); setEditGoal(false) }}
+                    style={{ padding: '0 14px', borderRadius: 11, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5, fontWeight: 800, background: '#fff', color: '#c2310f' }}>Salvar</button>
+                </div>
+              ) : (
+                <>
+                  <div style={{ marginTop: 20, height: 8, borderRadius: 5, background: 'rgba(255,255,255,0.32)', overflow: 'hidden' }}>
+                    <motion.div initial={{ width: 0 }} animate={{ width: `${pctDia}%` }} transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }} style={{ height: '100%', borderRadius: 5, background: '#fff' }} />
+                  </div>
+                  {alvo > 0 ? (
+                    <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.85)', margin: '10px 0 0' }}>
+                      {feito >= alvo ? 'meta batida hoje' : `faltam ${money0(alvo - feito)}`}{dailyGoal?.streak > 1 ? ` · ${dailyGoal.streak} dias seguidos` : ''}
+                    </p>
+                  ) : (
+                    <button type="button" onClick={() => { setGoalVal(''); setEditGoal(true) }}
+                      style={{ marginTop: 12, padding: '9px 16px', borderRadius: 11, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5, fontWeight: 800, background: '#fff', color: '#c2310f' }}>
+                      Definir meta →
+                    </button>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </motion.div>
@@ -231,7 +264,9 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
                 const dias = m.criada ? Math.floor((Date.now() - new Date(m.criada).getTime()) / 86400000) : 0
                 const parada = dias > 15
                 return (
-                  <div key={m.id} onClick={() => onAbrirMeta && onAbrirMeta(m.id)} style={{ cursor: onAbrirMeta ? 'pointer' : 'default' }}>
+                  <motion.div key={m.id} onClick={() => onAbrirMeta && onAbrirMeta(m.id)}
+                whileHover={{ x: 3 }} transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                style={{ cursor: onAbrirMeta ? 'pointer' : 'default', borderRadius: 10, padding: '2px 4px', margin: '0 -4px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7, gap: 10 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
                         <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: S.t1 }}>{m.rede}</span>
@@ -243,7 +278,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
                       <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, 20 + i * 15)}%` }} transition={{ duration: 0.9, ease: [0.33, 1, 0.68, 1] }}
                         style={{ height: '100%', borderRadius: 4, background: parada ? 'var(--loss)' : `linear-gradient(90deg, ${RED2}, ${RED})` }} />
                     </div>
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>

@@ -114,7 +114,7 @@ export default function QuickNotifyPanel({ userEmail }) {
     <>
       {/* Floating button (esquerda do mic, right:184) */}
       <button
-        type="button"
+ className="nx-dock-item"        type="button"
         onClick={() => setOpen(o => !o)}
         aria-label="Notificacoes rapidas"
         title="Disparar notificacao"

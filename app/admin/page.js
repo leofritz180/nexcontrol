@@ -2632,10 +2632,8 @@ export default function AdminPage() {
                 onNovaMeta={() => { setTab('myops'); setTimeout(() => setMyShowForm(true), 300) }}
                 onVerMetas={() => setTab('myops')}
                 onAbrirMeta={(id) => router.push('/meta/' + id)}
+                onSaveGoal={saveDailyGoal}
               />
-              <div style={{ marginTop: 16 }}>
-                <DailyGoalCard data={dailyGoal} onSave={saveDailyGoal} />
-              </div>
             </>
           ) : (<>
           {/* ── META DO DIA (card gamificado, igual pra todos) ── */}

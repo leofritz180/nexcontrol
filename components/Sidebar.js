@@ -5,6 +5,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 import Logo from './Logo'
+import { isNex2 } from '../lib/theme-v2'
+import { iconV2 } from '../lib/icons-v2'
 import { isRedesign } from '../lib/redesign'
 import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription } from '../lib/pushClient'
 import ProfileModal from './ProfileModal'
@@ -50,6 +52,7 @@ const OP_NAV = [
 ]
 
 export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscription, userId, tenantId }) {
+  const nex2 = isNex2(userEmail)
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -185,7 +188,15 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       {/* ── Logo ── */}
       <Link href={isAdmin?'/admin':'/operator'} onClick={()=>setMobileOpen(false)}
         style={{ display:'flex', alignItems:'center', padding:'22px 22px 28px', textDecoration:'none' }}>
-        <Logo size={0.875} style={{ gap:10 }}/>
+        {nex2 ? (
+          <span style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <img src="/brand/nex-v2.png" alt="NexControl" width={34} height={34}
+              style={{ width:34, height:34, objectFit:'contain', borderRadius:10, flexShrink:0 }} />
+            <span className="sb-label" style={{ fontSize:16, fontWeight:800, letterSpacing:'-0.03em', color:'#fff', whiteSpace:'nowrap' }}>
+              Nex<span style={{ color:'#c4f042' }}>Control</span>
+            </span>
+          </span>
+        ) : <Logo size={0.875} style={{ gap:10 }}/>}
       </Link>
 
       {/* ── Nav agrupada por tema ── */}
@@ -224,7 +235,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                   style={{ flexShrink:0, objectFit:'contain', filter:'drop-shadow(0 0 6px rgba(255,107,0,0.55))' }} />
               ) : (
                 <svg className="sb-ico" width={redesign?20:15} height={redesign?20:15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={redesign?1.9:1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity: redesign ? (active?1:0.85) : (active?0.9:0.45) }}>
-                  <path d={item.icon}/>
+                  <path d={nex2 ? iconV2(item.href, item.icon) : item.icon}/>
                 </svg>
               )}
               <span className="sb-label">{item.label}</span>

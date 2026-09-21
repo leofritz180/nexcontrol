@@ -542,7 +542,7 @@ export default function VoiceCommandPanel({ userEmail }) {
     <>
       {/* Floating mic button */}
       <button
-        type="button"
+ className="nx-dock-item"        type="button"
         onClick={() => {
           setListening(prev => {
             const next = !prev

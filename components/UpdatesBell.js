@@ -87,7 +87,7 @@ export default function UpdatesBell() {
     <>
       {/* Sino flutuante — posicao fixed bottom-right (acima do FAB do tour) */}
       <motion.button
-        onClick={openPanel}
+ className="nx-dock-item"        onClick={openPanel}
         initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
         aria-label="Atualizações do sistema"

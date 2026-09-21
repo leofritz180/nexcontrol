@@ -36,8 +36,11 @@ export default function RedesBento({ kpis, redesData = [], onAbrir }) {
       <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 14 }}>
         <BCard pad={24} delay={0.14}>
           <p style={{ fontSize: 16.5, fontWeight: 800, color: 'var(--t1)', margin: '0 0 3px', letterSpacing: '-0.02em' }}>Concentração do lucro</p>
-          <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 20px' }}>quanto cada rede representa do que entrou</p>
-          <Rosca dados={fatias} centro={money0(somaFatias)} rotulo="de lucro" formata={money0} delay={0.2} />
+          {/* A rosca soma SO as redes positivas, o hero soma todas. A diferenca
+              e o prejuizo das negativas — dois totais na mesma tela sem nada
+              explicando parecia erro de conta. */}
+          <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 20px' }}>quanto cada rede que deu lucro representa</p>
+          <Rosca dados={fatias} centro={money0(somaFatias)} rotulo="só das positivas" formata={money0} delay={0.2} />
         </BCard>
         <BCard pad={24} delay={0.18}>
           <p style={{ fontSize: 16.5, fontWeight: 800, color: 'var(--t1)', margin: '0 0 3px', letterSpacing: '-0.02em' }}>Redes no lucro</p>

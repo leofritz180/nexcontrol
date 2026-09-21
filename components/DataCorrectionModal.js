@@ -60,7 +60,7 @@ export default function DataCorrectionModal() {
           transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
           style={{
             position: 'relative', width: '100%', maxWidth: 440, padding: 28, borderRadius: 20,
-            background: 'linear-gradient(165deg, #0c1410, #070a08)',
+            background: 'rgba(19,195,107,0.10)',
             border: '1px solid rgba(34,197,94,0.18)',
             boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 60px rgba(34,197,94,0.08)',
           }}
@@ -72,30 +72,30 @@ export default function DataCorrectionModal() {
             <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
           </div>
 
-          <h2 style={{ fontSize: 19, fontWeight: 800, color: '#fff', textAlign: 'center', margin: '0 0 10px', letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontSize: 19, fontWeight: 800, color: 'var(--t1)', textAlign: 'center', margin: '0 0 10px', letterSpacing: '-0.02em' }}>
             Ajuste disponível nos seus dados
           </h2>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.62)', textAlign: 'center', lineHeight: 1.55, margin: '0 0 18px' }}>
-            Corrigimos um detalhe: quando uma remessa era <b style={{ color: 'rgba(255,255,255,0.85)' }}>editada</b>, o valor do <b style={{ color: 'rgba(255,255,255,0.85)' }}>baú</b> não era somado de novo ao resultado. Por isso algumas remessas suas ficaram com resultado menor que o real.
+          <p style={{ fontSize: 13, color: 'var(--t2)', textAlign: 'center', lineHeight: 1.55, margin: '0 0 18px' }}>
+            Corrigimos um detalhe: quando uma remessa era <b style={{ color: 'var(--t1)' }}>editada</b>, o valor do <b style={{ color: 'var(--t1)' }}>baú</b> não era somado de novo ao resultado. Por isso algumas remessas suas ficaram com resultado menor que o real.
           </p>
 
           {/* Diferenca */}
           <div style={{ borderRadius: 14, padding: '16px 18px', marginBottom: 18, textAlign: 'center', background: 'rgba(34,197,94,0.07)', border: '1px solid rgba(34,197,94,0.22)' }}>
-            <p style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', margin: '0 0 6px' }}>Diferença encontrada</p>
-            <p style={{ fontFamily: 'var(--mono)', fontSize: 30, fontWeight: 900, color: '#22C55E', margin: 0, letterSpacing: '-0.02em' }}>+R$ {fmt(info.delta)}</p>
-            <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)', margin: '4px 0 0' }}>{info.count} remessa{info.count !== 1 ? 's' : ''} afetada{info.count !== 1 ? 's' : ''}</p>
+            <p style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 6px' }}>Diferença encontrada</p>
+            <p style={{ fontFamily: 'var(--mono)', fontSize: 30, fontWeight: 900, color: 'var(--profit)', margin: 0, letterSpacing: '-0.02em' }}>+R$ {fmt(info.delta)}</p>
+            <p style={{ fontSize: 11.5, color: 'var(--t3)', margin: '4px 0 0' }}>{info.count} remessa{info.count !== 1 ? 's' : ''} afetada{info.count !== 1 ? 's' : ''}</p>
           </div>
 
           {doneMsg ? (
-            <p style={{ fontSize: 13, fontWeight: 600, color: '#22C55E', textAlign: 'center', padding: '12px 0' }}>{doneMsg}</p>
+            <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--profit)', textAlign: 'center', padding: '12px 0' }}>{doneMsg}</p>
           ) : (
             <>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', textAlign: 'center', margin: '0 0 16px' }}>
+              <p style={{ fontSize: 12, color: 'var(--t3)', textAlign: 'center', margin: '0 0 16px' }}>
                 Você decide se quer aplicar essa correção no seu painel.
               </p>
               <div style={{ display: 'flex', gap: 10 }}>
                 <button onClick={() => resolve('dismiss')} disabled={!!busy}
-                  style={{ flex: 1, padding: '13px', borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: busy ? 'default' : 'pointer', fontFamily: 'inherit', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)', opacity: busy === 'apply' ? 0.4 : 1 }}>
+                  style={{ flex: 1, padding: '13px', borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: busy ? 'default' : 'pointer', fontFamily: 'inherit', background: 'var(--fill-2)', color: 'var(--t2)', border: '1px solid var(--b1)', opacity: busy === 'apply' ? 0.4 : 1 }}>
                   {busy === 'dismiss' ? 'Salvando...' : 'Manter como está'}
                 </button>
                 <button onClick={() => resolve('apply')} disabled={!!busy}

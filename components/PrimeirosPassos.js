@@ -32,7 +32,7 @@ export default function PrimeirosPassos({ onCreateMeta, userName }) {
       icon: TimeIco,
       titulo: 'Cadastre sua equipe',
       desc: 'Cada operador registra as remessas dele e você acompanha tudo ao vivo — sem cobrar print no grupo.',
-      acao: <Link href="/operadores" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none' }}>
+      acao: <Link href="/operadores" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: 'var(--t1)', textDecoration: 'none' }}>
         Ir para Operadores
         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </Link>,
@@ -41,7 +41,7 @@ export default function PrimeirosPassos({ onCreateMeta, userName }) {
       icon: CelIco,
       titulo: 'Instale no celular',
       desc: 'Receba no push quando a meta bater, quando algo sair do padrão e o que a equipe registrar.',
-      acao: <Link href="/tutorial" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.75)', textDecoration: 'none' }}>
+      acao: <Link href="/tutorial" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: 'var(--t1)', textDecoration: 'none' }}>
         Ver como instalar
         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </Link>,
@@ -53,7 +53,7 @@ export default function PrimeirosPassos({ onCreateMeta, userName }) {
       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
       style={{
         position: 'relative', overflow: 'hidden', borderRadius: 16, marginBottom: 24,
-        background: '#000', border: '1px solid rgba(255,255,255,0.09)',
+        background: 'var(--surface)', border: '1px solid var(--b1)',
         boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 18px 44px rgba(0,0,0,0.5)',
         padding: '26px 26px 22px',
       }}
@@ -61,7 +61,7 @@ export default function PrimeirosPassos({ onCreateMeta, userName }) {
       <div aria-hidden style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(225,29,29,0.7), transparent)' }} />
 
       <div style={{ marginBottom: 22 }}>
-        <p style={{ fontSize: 10.5, fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#ff6b6b', margin: '0 0 8px' }}>Primeiros passos</p>
+        <p style={{ fontSize: 10.5, fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--loss)', margin: '0 0 8px' }}>Primeiros passos</p>
         <h2 style={{ fontSize: 21, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.02em', margin: '0 0 6px' }}>
           {userName ? `${userName}, sua operação começa aqui.` : 'Sua operação começa aqui.'}
         </h2>
@@ -84,9 +84,9 @@ export default function PrimeirosPassos({ onCreateMeta, userName }) {
                 width: 32, height: 32, borderRadius: 9, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: p.destaque ? 'rgba(225,29,29,0.16)' : 'rgba(255,255,255,0.04)',
                 border: `1px solid ${p.destaque ? 'rgba(225,29,29,0.3)' : 'rgba(255,255,255,0.08)'}`,
-                color: p.destaque ? '#ff6b6b' : 'rgba(255,255,255,0.7)',
+                color: p.destaque ? 'var(--loss)' : 'rgba(255,255,255,0.7)',
               }}>{p.icon}</span>
-              <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 11, fontWeight: 800, color: p.destaque ? '#ff6b6b' : 'var(--t4)' }}>0{i + 1}</span>
+              <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 11, fontWeight: 800, color: p.destaque ? 'var(--loss)' : 'var(--t4)' }}>0{i + 1}</span>
             </div>
             <h3 style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--t1)', margin: '0 0 6px', letterSpacing: '-0.01em' }}>{p.titulo}</h3>
             <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 16px', lineHeight: 1.55, flex: 1 }}>{p.desc}</p>

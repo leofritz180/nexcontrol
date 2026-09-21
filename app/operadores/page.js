@@ -3,6 +3,8 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
+import OperadoresBento from '../../components/modules/OperadoresBento'
+import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import BettifySponsor from '../../components/BettifySponsor'
 import OperatorLimitBanner from '../../components/OperatorLimitBanner'
@@ -39,7 +41,7 @@ function calcScore(op) {
 function getBadge(op) {
   if (op.winRate >= 70 && op.closedCount >= 3) return { text: 'Top performer', color: 'var(--profit)' }
   if (op.trend === 'up' && op.closedCount >= 3) return { text: 'Em alta', color: 'var(--profit)' }
-  if (op.trend === 'down' && op.closedCount >= 3) return { text: 'Oscilando', color: 'rgba(255,255,255,0.78)' }
+  if (op.trend === 'down' && op.closedCount >= 3) return { text: 'Oscilando', color: 'var(--t1)' }
   return null
 }
 
@@ -72,7 +74,7 @@ function KpiCard({ label, value, suffix, i, isCurrency, dynamicColor }) {
       style={{
         padding: '18px 20px', position: 'relative',
         background: 'var(--surface)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: '1px solid var(--b1)',
         borderRadius: 12,
         boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
         transition: 'border-color 0.2s ease',
@@ -94,7 +96,7 @@ function PerfBar({ value, max, delay = 0 }) {
   const pct = max > 0 ? Math.min((Math.abs(value) / max) * 100, 100) : 0
   const color = value >= 0 ? 'var(--profit)' : 'var(--loss)'
   return (
-    <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.05)', overflow: 'hidden', flex: 1 }}>
+    <div style={{ height: 4, borderRadius: 2, background: 'var(--fill-2)', overflow: 'hidden', flex: 1 }}>
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${pct}%` }}
@@ -149,7 +151,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
 
   let recommendation = null
   if (winRate >= 60 && lucroFinal > 0) recommendation = { text: 'Aumentar volume', desc: 'Boa consistencia. Escalar pode aumentar retorno.', color: 'var(--profit)' }
-  else if (winRate < 45 && opClosed.length > 3) recommendation = { text: 'Reduzir exposicao', desc: 'Revisar redes e estrategia.', color: 'rgba(255,255,255,0.78)' }
+  else if (winRate < 45 && opClosed.length > 3) recommendation = { text: 'Reduzir exposicao', desc: 'Revisar redes e estrategia.', color: 'var(--t1)' }
   else if (lucroFinal < 0) recommendation = { text: 'Pausar e revisar', desc: 'Resultado negativo.', color: 'var(--loss)' }
 
   return (
@@ -164,7 +166,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         style={{
           width: '100%', maxWidth: 420, height: '100%', overflowY: 'auto',
           background: 'linear-gradient(180deg, var(--surface), var(--surface))',
-          borderLeft: '1px solid rgba(255,255,255,0.06)',
+          borderLeft: '1px solid var(--b1)',
           padding: '32px 26px',
         }}>
 
@@ -179,14 +181,14 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
               fontSize: 22, fontWeight: 800, color: '#fff',
             }}>{getInitial(op)}</div>
             <div>
-              <h3 style={{ fontSize: 17, fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>{getName(op)}</h3>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: 0 }}>{op.email}</p>
+              <h3 style={{ fontSize: 17, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px' }}>{getName(op)}</h3>
+              <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>{op.email}</p>
             </div>
           </div>
           <button onClick={onClose} style={{
-            width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)',
-            background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: 'rgba(255,255,255,0.4)',
+            width: 32, height: 32, borderRadius: 8, border: '1px solid var(--b1)',
+            background: 'var(--fill-2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'var(--t3)',
           }}>
             <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
@@ -194,7 +196,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
 
         {/* Lucro destaque */}
         <div style={{ marginBottom: 24, padding: '20px', borderRadius: 14, background: lucroFinal >= 0 ? 'rgba(209,250,229,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${lucroFinal >= 0 ? 'rgba(209,250,229,0.12)' : 'rgba(239,68,68,0.12)'}` }}>
-          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Lucro final</p>
+          <p style={{ fontSize: 10, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>Lucro final</p>
           <p style={{ fontSize: 32, fontWeight: 800, color: lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)', margin: 0, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.03em' }}>
             {lucroFinal >= 0 ? '+' : ''}R$ {fmt(lucroFinal)}
           </p>
@@ -204,14 +206,14 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 24 }}>
           {[
             { label: 'Acerto', value: `${winRate.toFixed(0)}%`, color: winRate >= 50 ? 'var(--profit)' : 'var(--loss)' },
-            { label: 'Depositantes', value: totalDeposit, color: 'rgba(255,255,255,0.6)' },
-            { label: 'Remessas', value: opRemessas.length, color: 'rgba(255,255,255,0.6)' },
-            { label: 'Metas', value: opClosed.length, color: 'rgba(255,255,255,0.6)' },
+            { label: 'Depositantes', value: totalDeposit, color: 'var(--t2)' },
+            { label: 'Remessas', value: opRemessas.length, color: 'var(--t2)' },
+            { label: 'Metas', value: opClosed.length, color: 'var(--t2)' },
             { label: 'Lucro/remessa', value: `R$${fmt(lucroPerRemessa)}`, color: lucroPerRemessa >= 0 ? 'var(--profit)' : 'var(--loss)' },
             { label: 'Tendencia', value: op.trend === 'up' ? 'Alta' : op.trend === 'down' ? 'Queda' : 'Estavel', color: op.trend === 'up' ? 'var(--profit)' : op.trend === 'down' ? 'var(--loss)' : 'rgba(255,255,255,0.4)' },
           ].map((s, i) => (
-            <div key={i} style={{ padding: '12px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
-              <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 5px' }}>{s.label}</p>
+            <div key={i} style={{ padding: '12px 14px', borderRadius: 12, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
+              <p style={{ fontSize: 9, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 5px' }}>{s.label}</p>
               <p style={{ fontSize: 14, fontWeight: 700, color: s.color, margin: 0, fontFamily: 'var(--mono, monospace)' }}>{s.value}</p>
             </div>
           ))}
@@ -219,7 +221,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
 
         {/* Weekly Evolution */}
         <div style={{ marginBottom: 24 }}>
-          <p style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Evolucao semanal</p>
+          <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Evolucao semanal</p>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 50 }}>
             {weeklyProfit.map((v, i) => {
               const maxW = Math.max(...weeklyProfit.map(Math.abs), 1)
@@ -229,7 +231,7 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
                   <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }}
                     transition={{ duration: 0.6, delay: i * 0.08, ease }}
                     style={{ width: '100%', maxWidth: 20, borderRadius: 3, minHeight: 2, background: v >= 0 ? 'var(--profit)' : 'var(--loss)' }} />
-                  <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)' }}>S{i + 1}</span>
+                  <span style={{ fontSize: 8, color: 'var(--t4)' }}>S{i + 1}</span>
                 </div>
               )
             })}
@@ -240,13 +242,13 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)' }}>Insights</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>Insights</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {insights.map((ins, i) => (
               <div key={i} style={{
-                padding: '9px 12px', borderRadius: 8, fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.4,
-                background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
+                padding: '9px 12px', borderRadius: 8, fontSize: 12, color: 'var(--t2)', lineHeight: 1.4,
+                background: 'var(--fill-1)', border: '1px solid var(--b1)',
               }}>{ins.text}</div>
             ))}
           </div>
@@ -255,16 +257,16 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
         {/* Recommendation */}
         {recommendation && (
           <div style={{ padding: '16px 18px', borderRadius: 12, marginBottom: 24, background: `${recommendation.color}08`, border: `1px solid ${recommendation.color}18` }}>
-            <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 6px' }}>Recomendacao</p>
+            <p style={{ fontSize: 9, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 6px' }}>Recomendacao</p>
             <p style={{ fontSize: 14, fontWeight: 700, color: recommendation.color, margin: '0 0 3px' }}>{recommendation.text}</p>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: 0 }}>{recommendation.desc}</p>
+            <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>{recommendation.desc}</p>
           </div>
         )}
 
         {/* History */}
         {recentMetas.length > 0 && (
           <div>
-            <p style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Historico</p>
+            <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>Historico</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               {recentMetas.map(m => {
                 const lf = Number(m.lucro_final || 0)
@@ -272,11 +274,11 @@ function OperatorDrawer({ op, onClose, allMetas, allRemessas }) {
                   <div key={m.id} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '9px 12px', borderRadius: 8,
-                    background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
+                    background: 'var(--fill-1)', border: '1px solid var(--b1)',
                   }}>
                     <div>
-                      <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', margin: 0 }}>{m.rede || 'Rede'}</p>
-                      <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', margin: 0 }}>{m.created_at ? new Date(m.created_at).toLocaleDateString('pt-BR') : ''}</p>
+                      <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--t3)', margin: 0 }}>{m.rede || 'Rede'}</p>
+                      <p style={{ fontSize: 9, color: 'var(--t4)', margin: 0 }}>{m.created_at ? new Date(m.created_at).toLocaleDateString('pt-BR') : ''}</p>
                     </div>
                     <p style={{ fontSize: 13, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: lf >= 0 ? 'var(--profit)' : 'var(--loss)' }}>
                       {lf >= 0 ? '+' : ''}R$ {fmt(lf)}
@@ -418,9 +420,9 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
               <span style={{
                 fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
                 padding: '2px 8px', borderRadius: 5,
-                background: 'rgba(255,255,255,0.04)',
+                background: 'var(--fill-2)',
                 color: lucroPerConta >= 0 ? 'var(--profit)' : 'var(--loss)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                border: '1px solid var(--b1)',
               }}>
                 R$ {fmt(lucroPerConta)}/conta
               </span>
@@ -446,7 +448,7 @@ function RankingCard({ op, idx, maxLucro, onClick }) {
       </div>
 
       {/* Performance bar */}
-      <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.035)', overflow: 'hidden', position: 'relative' }}>
+      <div style={{ height: 5, borderRadius: 3, background: 'var(--fill-1)', overflow: 'hidden', position: 'relative' }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${maxLucro > 0 ? Math.min((Math.abs(op.lucroFinal) / maxLucro) * 100, 100) : 0}%` }}
@@ -484,20 +486,20 @@ function InviteCard({ inv, onCopy, onDelete }) {
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', margin: '0 0 3px', fontFamily: 'var(--mono, monospace)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--t3)', margin: '0 0 3px', fontFamily: 'var(--mono, monospace)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {inv.token}
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{createdAt}</span>
+          <span style={{ fontSize: 10, color: 'var(--t4)' }}>{createdAt}</span>
           {used && <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--profit)', padding: '1px 6px', borderRadius: 4, background: 'rgba(209,250,229,0.1)' }}>Usado</span>}
-          {!used && <span style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.78)', padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.1)' }}>Pendente</span>}
+          {!used && <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--t1)', padding: '1px 6px', borderRadius: 4, background: 'var(--fill-3)' }}>Pendente</span>}
         </div>
       </div>
       {!used && (
         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           <button onClick={() => { navigator.clipboard.writeText(link); onCopy() }} style={{
-            padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 8, border: '1px solid rgba(255,255,255,0.2)',
-            background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.78)', cursor: 'pointer', transition: 'all 0.2s',
+            padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 8, border: '1px solid var(--b3)',
+            background: 'var(--fill-3)', color: 'var(--t1)', cursor: 'pointer', transition: 'all 0.2s',
           }}>Copiar</button>
           <button onClick={() => onDelete(inv.id)} style={{
             padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 8, border: '1px solid rgba(239,68,68,0.2)',
@@ -554,11 +556,11 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
   const isDivisao = currentModel === 'divisao_resultado'
 
   return (
-    <div style={{ padding:'22px 20px', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.05)', borderRadius:14 }}>
+    <div style={{ padding:'22px 20px', background:'var(--fill-1)', border:'1px solid var(--b1)', borderRadius:14 }}>
       <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
         <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <span style={{ fontSize:14, fontWeight:700, color:'#fff' }}>Pagamento de operadores</span>
-        {isDivisao && <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.78)', border:'1px solid rgba(255,255,255,0.2)' }}>SPLIT {tenant?.operator_payment_value || 50}%</span>}
+        <span style={{ fontSize:14, fontWeight:700, color:'var(--t1)' }}>Pagamento de operadores</span>
+        {isDivisao && <span style={{ fontSize:9, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'var(--fill-3)', color:'var(--t1)', border:'1px solid var(--b3)' }}>SPLIT {tenant?.operator_payment_value || 50}%</span>}
       </div>
 
       {/* Model selector */}
@@ -582,7 +584,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
 
       {/* Current value editor */}
       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-        <label style={{ fontSize:11, fontWeight:600, color:'rgba(255,255,255,0.4)', flexShrink:0 }}>
+        <label style={{ fontSize:11, fontWeight:600, color:'var(--t3)', flexShrink:0 }}>
           {activeInfo?.valueLabel || 'Valor'}
         </label>
         <input className="input" type="number" step="0.01" min="0"
@@ -594,7 +596,7 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
 
       {/* Divisao info */}
       {isDivisao && (
-        <div style={{ marginTop:12, padding:'10px 14px', borderRadius:10, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)', fontSize:11, color:'rgba(255,255,255,0.7)', lineHeight:1.5 }}>
+        <div style={{ marginTop:12, padding:'10px 14px', borderRadius:10, background:'var(--fill-2)', border:'1px solid var(--b1)', fontSize:11, color:'var(--t2)', lineHeight:1.5 }}>
           Lucro e prejuizo serao divididos: operador recebe {tenant?.operator_payment_value || 50}%, admin fica com {100 - (tenant?.operator_payment_value || 50)}%. Valido para novas metas.
         </div>
       )}
@@ -606,26 +608,26 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
           <div onClick={e => e.stopPropagation()} style={{
             width:'100%', maxWidth:480, padding:28, borderRadius:20,
             background:'linear-gradient(160deg, var(--surface), var(--surface))',
-            border:'1px solid rgba(255,255,255,0.08)',
+            border:'1px solid var(--b1)',
             boxShadow:'0 40px 100px rgba(0,0,0,0.7)',
           }}>
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
-              <div style={{ width:40, height:40, borderRadius:12, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <div style={{ width:40, height:40, borderRadius:12, background:'var(--fill-3)', border:'1px solid var(--b3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               </div>
               <div>
-                <h3 style={{ fontSize:16, fontWeight:800, color:'#F1F5F9', margin:'0 0 2px' }}>Confirmar alteracao de modelo</h3>
+                <h3 style={{ fontSize:16, fontWeight:800, color:'var(--t1)', margin:'0 0 2px' }}>Confirmar alteracao de modelo</h3>
                 <p style={{ fontSize:12, color:'var(--t3)', margin:0 }}>Esta acao vale apenas para novas metas</p>
               </div>
             </div>
 
             {/* Summary */}
-            <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, padding:16, marginBottom:16 }}>
+            <div style={{ background:'var(--fill-1)', border:'1px solid var(--b1)', borderRadius:12, padding:16, marginBottom:16 }}>
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
                 <span style={{ fontSize:11, color:'#64748B' }}>Modelo atual</span>
                 <span style={{ fontSize:12, fontWeight:600, color:'var(--t3)' }}>{MODELS.find(m=>m.key===currentModel)?.label}</span>
               </div>
-              <div style={{ width:'100%', height:1, background:'rgba(255,255,255,0.04)', margin:'0 0 10px' }} />
+              <div style={{ width:'100%', height:1, background:'var(--fill-2)', margin:'0 0 10px' }} />
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
                 <span style={{ fontSize:11, color:'#64748B' }}>Novo modelo</span>
                 <span style={{ fontSize:12, fontWeight:700, color: pendingModel === 'divisao_resultado' ? 'rgba(255,255,255,0.78)' : 'var(--profit)' }}>{MODELS.find(m=>m.key===pendingModel)?.label}</span>
@@ -657,14 +659,14 @@ function PaymentModelConfig({ tenant, setTenant, profileTenantId }) {
 
             <div style={{ display:'flex', gap:10 }}>
               <button type="button" onClick={() => { setShowConfirm(false); setPendingModel(null) }}
-                style={{ flex:1, padding:'12px', borderRadius:10, border:'1px solid rgba(255,255,255,0.08)', background:'transparent', color:'var(--t3)', fontSize:13, fontWeight:600, cursor:'pointer' }}>
+                style={{ flex:1, padding:'12px', borderRadius:10, border:'1px solid var(--b1)', background:'transparent', color:'var(--t3)', fontSize:13, fontWeight:600, cursor:'pointer' }}>
                 Cancelar
               </button>
               <button type="button" onClick={confirmChange} disabled={saving || !pendingValue || Number(pendingValue) <= 0}
                 style={{
                   flex:2, padding:'12px', borderRadius:10, border:'none', cursor:'pointer',
                   background: pendingModel === 'divisao_resultado' ? 'linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,255,255,0.78))' : 'var(--profit)',
-                  color:'#fff', fontSize:13, fontWeight:700,
+                  color:'var(--t1)', fontSize:13, fontWeight:700,
                   opacity: saving || !pendingValue || Number(pendingValue) <= 0 ? 0.5 : 1,
                 }}>
                 {saving ? 'Salvando...' : 'Confirmar alteracao'}
@@ -1040,7 +1042,7 @@ export default function OperadoresPage() {
       <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, var(--surface), var(--surface))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Carregando...</p>
+          <p style={{ fontSize: 13, color: 'var(--t3)' }}>Carregando...</p>
         </motion.div>
       </div>
     )
@@ -1062,6 +1064,14 @@ export default function OperadoresPage() {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
 
         <OperatorLimitBanner tenantId={profile?.tenant_id} />
+
+        {isNex2(user?.email) ? (
+          <OperadoresBento
+            ranking={ranking}
+            ativos={(activeOperators||[]).length}
+            onAbrir={(o)=>setSelectedOp(o)}
+          />
+        ) : (<>
 
         {/* Hero — clean */}
         <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
@@ -1130,8 +1140,8 @@ export default function OperadoresPage() {
 
             {/* Ranking list */}
             {ranking.length === 0 && !isDemo ? (
-              <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)', marginBottom: 28 }}>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)' }}>Nenhuma meta fechada ainda.</p>
+              <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--fill-1)', borderRadius: 14, border: '1px solid var(--b1)', marginBottom: 28 }}>
+                <p style={{ fontSize: 14, color: 'var(--t4)' }}>Nenhuma meta fechada ainda.</p>
               </div>
             ) : ranking.length === 0 && isDemo ? (
               <div style={{ marginBottom: 32 }}>
@@ -1203,9 +1213,9 @@ export default function OperadoresPage() {
                                 <span style={{
                                   fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
                                   padding: '2px 8px', borderRadius: 5,
-                                  background: 'rgba(255,255,255,0.04)',
+                                  background: 'var(--fill-2)',
                                   color: op.lucroPerConta >= 0 ? 'var(--profit)' : 'var(--loss)',
-                                  border: '1px solid rgba(255,255,255,0.08)',
+                                  border: '1px solid var(--b1)',
                                 }}>R$ {fmt(op.lucroPerConta)}/conta</span>
                               )}
                             </div>
@@ -1220,7 +1230,7 @@ export default function OperadoresPage() {
                             <p style={{ fontSize: 10, color: 'var(--t4)', margin: '4px 0 0', fontWeight: 500 }}>{op.totalDeposit} depositantes</p>
                           </div>
                         </div>
-                        <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.035)', overflow: 'hidden' }}>
+                        <div style={{ height: 5, borderRadius: 3, background: 'var(--fill-1)', overflow: 'hidden' }}>
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${demoMaxLucro > 0 ? Math.min((Math.abs(op.lucroFinal) / demoMaxLucro) * 100, 100) : 0}%` }}
@@ -1244,7 +1254,7 @@ export default function OperadoresPage() {
                   <RankingCard key={op.id} op={op} idx={idx} maxLucro={maxLucro} onClick={() => setSelectedOp(op)} />
                 ))}
                 {teamsEnabled && teamFilter !== 'all' && rankingShown.length === 0 && (
-                  <div style={{ padding: '36px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid var(--b1)' }}>
+                  <div style={{ padding: '36px 20px', textAlign: 'center', background: 'var(--fill-1)', borderRadius: 14, border: '1px solid var(--b1)' }}>
                     <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Nenhum operador com meta fechada na equipe {teamFilter}.</p>
                   </div>
                 )}
@@ -1271,7 +1281,7 @@ export default function OperadoresPage() {
                   </span>
                 </div>
                 {weeklyRankingShown.length === 0 ? (
-                  <div style={{ padding: '32px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid var(--b1)' }}>
+                  <div style={{ padding: '32px 20px', textAlign: 'center', background: 'var(--fill-1)', borderRadius: 14, border: '1px solid var(--b1)' }}>
                     <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>Nenhuma meta fechada nesta semana ainda.</p>
                   </div>
                 ) : (
@@ -1292,16 +1302,16 @@ export default function OperadoresPage() {
               padding:'22px 24px', borderRadius:18,
               background:'linear-gradient(145deg, rgba(14,22,38,0.75), rgba(8,14,26,0.75))',
               backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-              border:'1px solid rgba(255,255,255,0.18)',
+              border:'1px solid var(--b3)',
               boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
             }}>
-              <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)', pointerEvents:'none' }}/>
-              <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', background:'radial-gradient(circle, rgba(255,255,255,0.14), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, var(--fill-3), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', background:'radial-gradient(circle, var(--fill-3), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
 
               <div style={{ position:'relative', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                 <div style={{
                   width:36, height:36, borderRadius:10,
-                  background:'rgba(255,255,255,0.14)', border:'1px solid rgba(255,255,255,0.32)',
+                  background:'var(--fill-3)', border:'1px solid var(--b3)',
                   display:'flex', alignItems:'center', justifyContent:'center',
                   boxShadow:'0 0 16px rgba(255,255,255,0.2)',
                 }}>
@@ -1311,13 +1321,13 @@ export default function OperadoresPage() {
                   <p style={{ fontSize:14, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Radar da equipe</p>
                   <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Inteligencia de gestao em tempo real</p>
                 </div>
-                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:6, background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.2)' }}>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:6, background:'var(--fill-3)', border:'1px solid var(--b3)' }}>
                   <motion.div
                     animate={{ boxShadow:['0 0 0 0 rgba(255,255,255,0.5)','0 0 0 5px rgba(255,255,255,0)','0 0 0 0 rgba(255,255,255,0)'] }}
                     transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                    style={{ width:5, height:5, borderRadius:'50%', background:'rgba(255,255,255,0.78)' }}
+                    style={{ width:5, height:5, borderRadius:'50%', background:'var(--t1)' }}
                   />
-                  <span style={{ fontSize:9, color:'rgba(255,255,255,0.78)', fontWeight:800, letterSpacing:'0.08em' }}>{insights.length} SINAIS</span>
+                  <span style={{ fontSize:9, color:'var(--t1)', fontWeight:800, letterSpacing:'0.08em' }}>{insights.length} SINAIS</span>
                 </div>
               </div>
 
@@ -1348,7 +1358,7 @@ export default function OperadoresPage() {
                           <div style={{ width:5, height:5, borderRadius:'50%', background:c }}/>
                         )}
                       </div>
-                      <p style={{ fontSize: 12, color: '#E2E8F0', margin: 0, fontWeight:600, lineHeight:1.45 }}>{ins.text}</p>
+                      <p style={{ fontSize: 12, color: 'var(--t1)', margin: 0, fontWeight:600, lineHeight:1.45 }}>{ins.text}</p>
                     </motion.div>
                   )
                 })}
@@ -1371,30 +1381,30 @@ export default function OperadoresPage() {
                 padding: '20px 22px', marginBottom: 24,
                 background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
                 backdropFilter:'blur(18px) saturate(150%)', WebkitBackdropFilter:'blur(18px) saturate(150%)',
-                border: '1px solid rgba(255,255,255,0.15)',
+                border: '1px solid var(--b2)',
                 borderRadius: 16,
                 boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 32px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
               }}>
-              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, var(--fill-3), transparent)', pointerEvents:'none' }}/>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent:'space-between', gap:12, marginBottom: 16, flexWrap:'wrap' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                   <div style={{
                     width:34, height:34, borderRadius:10,
-                    background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.3)',
+                    background:'var(--fill-3)', border:'1px solid var(--b3)',
                     display:'flex', alignItems:'center', justifyContent:'center',
                     boxShadow:'0 0 14px rgba(255,255,255,0.18)',
                   }}>
                     <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.2" strokeLinecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
                   </div>
                   <div>
-                    <p style={{ fontSize: 14, fontWeight: 800, color: '#fff', margin:0, letterSpacing:'-0.01em' }}>Convites para operadores</p>
+                    <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Convites para operadores</p>
                     <p style={{ fontSize:11, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Gere links unicos para cada novo membro da equipe</p>
                   </div>
                 </div>
                 {invites.length > 0 && (
                   <div style={{ display:'flex', alignItems:'baseline', gap:4 }}>
-                    <span style={{ fontSize:18, fontWeight:900, color:'rgba(255,255,255,0.78)', fontFamily:'var(--mono)', letterSpacing:'-0.02em' }}>{invites.length}</span>
+                    <span style={{ fontSize:18, fontWeight:900, color:'var(--t1)', fontFamily:'var(--mono)', letterSpacing:'-0.02em' }}>{invites.length}</span>
                     <span style={{ fontSize:10, color:'var(--t4)', fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase' }}>pendente{invites.length>1?'s':''}</span>
                   </div>
                 )}
@@ -1409,7 +1419,7 @@ export default function OperadoresPage() {
                     padding: '11px 22px', fontSize: 13, fontWeight: 800, fontFamily:'inherit',
                     background: invSaving ? 'rgba(209,250,229,0.2)' : 'linear-gradient(145deg, var(--profit), #00a06d)',
                     border: 'none',
-                    borderRadius: 11, color: '#fff', cursor: invSaving?'not-allowed':'pointer',
+                    borderRadius: 11, color: 'var(--t1)', cursor: invSaving?'not-allowed':'pointer',
                     display: 'flex', alignItems: 'center', gap: 8,
                     boxShadow: invSaving ? 'none' : '0 6px 20px rgba(209,250,229,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
                     opacity: invSaving ? 0.7 : 1,
@@ -1420,7 +1430,7 @@ export default function OperadoresPage() {
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                        style={{ width:13, height:13, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', borderTopColor:'#fff' }}
+                        style={{ width:13, height:13, borderRadius:'50%', border:'2px solid var(--b3)', borderTopColor:'#fff' }}
                       />
                       Gerando link...
                     </>
@@ -1463,13 +1473,13 @@ export default function OperadoresPage() {
             <div data-tour="ops-equipe" style={{ marginBottom: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Equipe ({isDemo && !activeOperators.length ? DEMO_OPERATORS.length : activeOperators.length})</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>Equipe ({isDemo && !activeOperators.length ? DEMO_OPERATORS.length : activeOperators.length})</span>
               </div>
             </div>
 
             {activeOperators.length === 0 && !isDemo ? (
-              <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(255,255,255,0.02)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.05)' }}>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>Nenhum operador na equipe.</p>
+              <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--fill-1)', borderRadius: 14, border: '1px solid var(--b1)' }}>
+                <p style={{ fontSize: 14, color: 'var(--t3)' }}>Nenhum operador na equipe.</p>
               </div>
             ) : activeOperators.length === 0 && isDemo ? (
               <div>
@@ -1480,7 +1490,7 @@ export default function OperadoresPage() {
                     return (
                       <motion.div key={op.id} {...fadeUp(idx, 0.04)} style={{
                         display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px',
-                        background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+                        background: 'var(--fill-1)', border: '1px solid var(--b1)',
                         borderRadius: 14,
                       }}>
                         <div style={{
@@ -1492,13 +1502,13 @@ export default function OperadoresPage() {
                         }}>{getInitial(op)}</div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                            <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0 }}>{getName(op)}</p>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>{getName(op)}</p>
                             <span style={{
                               fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
                               color: 'var(--t3)', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
                             }}>Operador</span>
                           </div>
-                          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.email}</p>
+                          <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>{op.email}</p>
                         </div>
                         <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
                           <div style={{ width: 6, height: 6, borderRadius: '50%', background: isActiveOp ? 'var(--profit)' : 'rgba(255,255,255,0.15)' }} />
@@ -1510,7 +1520,7 @@ export default function OperadoresPage() {
                           <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)' }}>
                             {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
                           </p>
-                          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasFechadas + op.metasAtivas} metas</p>
+                          <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>{op.metasFechadas + op.metasAtivas} metas</p>
                         </div>
                       </motion.div>
                     )
@@ -1526,7 +1536,7 @@ export default function OperadoresPage() {
                       onClick={() => setSelectedOp(op)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 14, padding: '16px 20px',
-                        background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+                        background: 'var(--fill-1)', border: '1px solid var(--b1)',
                         borderRadius: 14, cursor: 'pointer', transition: 'all 0.25s ease',
                       }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}
@@ -1544,13 +1554,13 @@ export default function OperadoresPage() {
                       {/* Name + email */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                          <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
                           <span style={{
                             fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
                             color: 'var(--t3)', background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.12)',
                           }}>Operador</span>
                         </div>
-                        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.email}</p>
+                        <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>{op.email}</p>
                       </div>
 
                       {/* Status */}
@@ -1569,7 +1579,7 @@ export default function OperadoresPage() {
                         <p style={{ fontSize: 15, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)' }}>
                           {op.lucroFinal >= 0 ? '+' : ''}R$ {fmt(op.lucroFinal)}
                         </p>
-                        <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)', margin: 0 }}>{op.metasCount} metas</p>
+                        <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0 }}>{op.metasCount} metas</p>
                       </div>
 
                       {/* Remover operador */}
@@ -1581,7 +1591,7 @@ export default function OperadoresPage() {
                           width: 32, height: 32, borderRadius: 8,
                           background: 'rgba(239,68,68,0.04)',
                           border: '1px solid rgba(239,68,68,0.12)',
-                          color: 'rgba(239,68,68,0.6)',
+                          color: 'var(--loss)',
                           cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                           transition: 'all 0.15s',
                         }}
@@ -1607,7 +1617,7 @@ export default function OperadoresPage() {
                     <path d="M12 8v4M12 16h.01"/>
                     <circle cx="12" cy="12" r="10"/>
                   </svg>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontFamily: 'var(--mono, monospace)' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontFamily: 'var(--mono, monospace)' }}>
                     Removidos da equipe ({removedOperatorStats.length})
                   </span>
                 </div>
@@ -1617,8 +1627,8 @@ export default function OperadoresPage() {
                       onClick={() => setSelectedOp(op)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px',
-                        background: 'rgba(255,255,255,0.012)',
-                        border: '1px dashed rgba(255,255,255,0.06)',
+                        background: 'var(--fill-1)',
+                        border: '1px dashed var(--b1)',
                         borderRadius: 12, cursor: 'pointer',
                         opacity: 0.7, transition: 'all 0.2s',
                       }}
@@ -1627,29 +1637,29 @@ export default function OperadoresPage() {
                     >
                       <div style={{
                         width: 34, height: 34, borderRadius: 10,
-                        background: 'rgba(255,255,255,0.02)',
-                        border: '1px solid rgba(255,255,255,0.06)',
+                        background: 'var(--fill-1)',
+                        border: '1px solid var(--b1)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.4)', flexShrink: 0,
+                        fontSize: 13, fontWeight: 700, color: 'var(--t3)', flexShrink: 0,
                       }}>{getInitial(op)}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                          <p style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.65)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
+                          <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--t2)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getName(op)}</p>
                           <span style={{
                             fontSize: 8.5, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
                             color: 'rgba(239,68,68,0.7)', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.15)',
                             letterSpacing: '0.1em', textTransform: 'uppercase',
                           }}>Removido</span>
                         </div>
-                        <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>
+                        <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>
                           {op.email} · removido em {op.removed_from_tenant_at ? new Date(op.removed_from_tenant_at).toLocaleDateString('pt-BR') : '—'}
                         </p>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: 'rgba(209,250,229,0.55)' }}>
+                        <p style={{ fontSize: 13, fontWeight: 700, margin: 0, fontFamily: 'var(--mono, monospace)', color: 'var(--t1)' }}>
                           R$ {fmt(op.lucroFinal)}
                         </p>
-                        <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.28)', margin: 0 }}>{op.closedCount} metas · preservado</p>
+                        <p style={{ fontSize: 9, color: 'var(--t4)', margin: 0 }}>{op.closedCount} metas · preservado</p>
                       </div>
                       <button
                         type="button"
@@ -1677,7 +1687,7 @@ export default function OperadoresPage() {
                     {reactivateMsg}
                   </p>
                 )}
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 10, fontStyle: 'italic', lineHeight: 1.5 }}>
+                <p style={{ fontSize: 10, color: 'var(--t4)', marginTop: 10, fontStyle: 'italic', lineHeight: 1.5 }}>
                   Lucros e metas desses operadores continuam computados no total da plataforma. O histórico fica preservado. Reativar exige uma vaga paga livre no seu plano.
                 </p>
               </div>
@@ -1754,7 +1764,7 @@ export default function OperadoresPage() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid var(--b1)' }}>
                         <div style={{
                           display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
-                          padding: '12px 20px', background: 'rgba(255,255,255,0.03)',
+                          padding: '12px 20px', background: 'var(--fill-1)',
                           borderBottom: '1px solid var(--b1)',
                         }}>
                           {['Operador', 'Metas', 'Deps', 'Lucro', 'A pagar'].map(h => (
@@ -1814,7 +1824,7 @@ export default function OperadoresPage() {
                 {/* Header row */}
                 <div style={{
                   display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px 120px',
-                  padding: '12px 20px', background: 'rgba(255,255,255,0.03)',
+                  padding: '12px 20px', background: 'var(--fill-1)',
                   borderBottom: '1px solid var(--b1)',
                 }}>
                   {['Operador', 'Metas', 'Deps', 'Lucro', 'A pagar'].map(h => (
@@ -1896,12 +1906,12 @@ export default function OperadoresPage() {
           <motion.div key="config" data-tour="ops-config" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
 
             {/* Modelo de operacao padrao */}
-            <div style={{ padding: '22px 20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14, marginBottom: 16 }}>
+            <div style={{ padding: '22px 20px', background: 'var(--fill-1)', border: '1px solid var(--b1)', borderRadius: 14, marginBottom: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Modelo de operacao padrao</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>Modelo de operacao padrao</span>
               </div>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: '0 0 14px' }}>Pode ser alterado por meta</p>
+              <p style={{ fontSize: 11, color: 'var(--t4)', margin: '0 0 14px' }}>Pode ser alterado por meta</p>
               <div style={{ display: 'flex', gap: 10 }}>
                 {[
                   { key: 'salario_bau', label: 'Salario + Bau', desc: 'Com contrato de plataforma' },
@@ -1931,13 +1941,13 @@ export default function OperadoresPage() {
 
             {/* Slots favoritos — apenas PRO */}
             {sub?.status === 'active' && (!sub.expires_at || new Date(sub.expires_at) > new Date()) ? (
-            <div style={{ padding: '22px 20px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 14, marginTop: 16 }}>
+            <div style={{ padding: '22px 20px', background: 'var(--fill-1)', border: '1px solid var(--b1)', borderRadius: 14, marginTop: 16 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                 <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Slots favoritos</span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>Slots favoritos</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: 0 }}>Selecione os slots mais usados na sua operacao</p>
+                <p style={{ fontSize: 11, color: 'var(--t4)', margin: 0 }}>Selecione os slots mais usados na sua operacao</p>
                 <span style={{ fontSize: 11, fontWeight: 700, color: (tenant?.favorite_slots || []).length > 0 ? 'var(--profit)' : 'var(--t4)', display: 'flex', alignItems: 'center', gap: 5 }}>
                   {(tenant?.favorite_slots || []).length > 0 && <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
                   {(tenant?.favorite_slots || []).length} selecionado{(tenant?.favorite_slots || []).length !== 1 ? 's' : ''}
@@ -1985,6 +1995,7 @@ export default function OperadoresPage() {
             )}
           </motion.div>
         )}
+        </>)}
       </div>
 
       {/* Operator Drawer */}
@@ -2015,8 +2026,8 @@ export default function OperadoresPage() {
               onClick={e => e.stopPropagation()}
               style={{
                 width: '100%', maxWidth: 440,
-                background: 'linear-gradient(180deg, var(--raised), #050505)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'var(--surface)',
+                border: '1px solid var(--b1)',
                 borderRadius: 18, padding: 28,
                 boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(239,68,68,0.05), 0 0 0 1px rgba(239,68,68,0.04)',
               }}
@@ -2046,7 +2057,7 @@ export default function OperadoresPage() {
                   }}>
                     — Remover operador
                   </div>
-                  <h3 style={{ fontSize: 17, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.015em' }}>
+                  <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--t1)', margin: 0, letterSpacing: '-0.015em' }}>
                     Tem certeza?
                   </h3>
                 </div>
@@ -2054,23 +2065,23 @@ export default function OperadoresPage() {
 
               {/* Operador info */}
               <div style={{
-                background: 'rgba(255,255,255,0.025)',
-                border: '1px solid rgba(255,255,255,0.05)',
+                background: 'var(--fill-1)',
+                border: '1px solid var(--b1)',
                 borderRadius: 10, padding: '12px 14px', marginBottom: 18,
                 display: 'flex', alignItems: 'center', gap: 12,
               }}>
                 <div style={{
                   width: 32, height: 32, borderRadius: 8,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  background: 'var(--fill-2)',
+                  border: '1px solid var(--b1)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 13, fontWeight: 700, color: '#fff', flexShrink: 0,
+                  fontSize: 13, fontWeight: 700, color: 'var(--t1)', flexShrink: 0,
                 }}>{getInitial(removeConfirmOp)}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {getName(removeConfirmOp)}
                   </p>
-                  <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>
+                  <p style={{ fontSize: 10.5, color: 'var(--t3)', margin: 0, fontFamily: 'var(--mono, monospace)' }}>
                     {removeConfirmOp.email}
                   </p>
                 </div>
@@ -2078,7 +2089,7 @@ export default function OperadoresPage() {
 
               {/* O que acontece */}
               <div style={{ marginBottom: 22 }}>
-                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)', margin: '0 0 10px', lineHeight: 1.55 }}>
+                <p style={{ fontSize: 12.5, color: 'var(--t2)', margin: '0 0 10px', lineHeight: 1.55 }}>
                   Ao remover este operador da equipe:
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -2097,7 +2108,7 @@ export default function OperadoresPage() {
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: 9, fontWeight: 800, flexShrink: 0, marginTop: 1,
                       }}>{item.icon}</span>
-                      <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.5 }}>
+                      <p style={{ fontSize: 11.5, color: 'var(--t2)', margin: 0, lineHeight: 1.5 }}>
                         {item.text}
                       </p>
                     </div>
@@ -2122,9 +2133,9 @@ export default function OperadoresPage() {
                   disabled={removing}
                   style={{
                     flex: 1, padding: '11px', borderRadius: 9,
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    color: 'rgba(255,255,255,0.65)',
+                    background: 'var(--fill-1)',
+                    border: '1px solid var(--b1)',
+                    color: 'var(--t2)',
                     fontSize: 13, fontWeight: 600, cursor: removing ? 'not-allowed' : 'pointer',
                   }}
                 >Cancelar</button>
@@ -2135,7 +2146,7 @@ export default function OperadoresPage() {
                     flex: 1.4, padding: '11px', borderRadius: 9,
                     background: removing ? 'rgba(239,68,68,0.15)' : 'var(--loss)',
                     border: 'none',
-                    color: '#fff',
+                    color: 'var(--t1)',
                     fontSize: 13, fontWeight: 700, cursor: removing ? 'not-allowed' : 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   }}

@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import CustosBento from '../../components/modules/CustosBento'
+import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
@@ -19,11 +21,11 @@ const opDayISO = (d = new Date()) => {
 }
 
 const COST_TYPES = [
-  { id: 'proxy', label: 'Proxy', icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', color: 'rgba(255,255,255,0.78)' },
+  { id: 'proxy', label: 'Proxy', icon: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z', color: 'var(--t1)' },
   { id: 'sms', label: 'SMS', icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z', color: 'var(--profit)' },
   { id: 'instagram', label: 'Postagem Instagram', icon: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5z', color: '#E53935' },
-  { id: 'bot', label: 'Bot / Automacao', icon: 'M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a2 2 0 010 4h-1a7 7 0 01-7 7h-2a7 7 0 01-7-7H4a2 2 0 010-4h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z', color: 'rgba(255,255,255,0.78)' },
-  { id: 'vps', label: 'VPS / Servidor', icon: 'M22 12H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11zM6 16h.01M10 16h.01', color: 'rgba(255,255,255,0.78)' },
+  { id: 'bot', label: 'Bot / Automacao', icon: 'M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a2 2 0 010 4h-1a7 7 0 01-7 7h-2a7 7 0 01-7-7H4a2 2 0 010-4h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z', color: 'var(--t1)' },
+  { id: 'vps', label: 'VPS / Servidor', icon: 'M22 12H2M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11zM6 16h.01M10 16h.01', color: 'var(--t1)' },
   { id: 'outros', label: 'Outros', icon: 'M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6', color: 'var(--t3)' },
 ]
 
@@ -163,6 +165,13 @@ export default function CustosPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
 
+          {isNex2(user?.email) ? (
+            <CustosBento
+              kpis={kpis} chartData={chartData} custos={displayCosts} typeMap={typeMap}
+              onNovo={() => setShowModal(true)}
+            />
+          ) : (<>
+
           {/* Hero — clean */}
           <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:28 }}>
             <div>
@@ -177,7 +186,7 @@ export default function CustosPage() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '10px 18px', borderRadius: 8, border: 'none', fontFamily:'inherit',
-                background: 'rgba(255,255,255,0.78)', color: '#fff', fontSize: 13, fontWeight: 500,
+                background: 'var(--t1)', color: 'var(--t1)', fontSize: 13, fontWeight: 500,
                 cursor: 'pointer', transition:'background 0.15s ease',
               }}
               onMouseEnter={e=>{ e.currentTarget.style.background = '#2563eb' }}
@@ -213,7 +222,7 @@ export default function CustosPage() {
                 padding: '20px 22px', borderRadius: 14,
                 background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
                 backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
-                border: '1px solid rgba(255,255,255,0.06)',
+                border: '1px solid var(--b1)',
                 boxShadow: '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}
             >
@@ -290,13 +299,13 @@ export default function CustosPage() {
                 padding: '20px 22px', borderRadius: 14,
                 background:'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
                 backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
-                border: '1px solid rgba(255,255,255,0.06)',
+                border: '1px solid var(--b1)',
                 boxShadow: '0 4px 18px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}
             >
-              <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:'rgba(255,255,255,0.78)', boxShadow:'0 0 8px rgba(255,255,255,0.78)' }}/>
+              <div style={{ position:'absolute', left:0, top:'22%', bottom:'22%', width:2, borderRadius:'0 2px 2px 0', background:'var(--t1)', boxShadow:'0 0 8px rgba(255,255,255,0.78)' }}/>
               <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Custo do mes</p>
-              <p style={{ fontSize: 28, fontWeight: 900, color: 'rgba(255,255,255,0.78)', fontFamily: 'var(--mono)', letterSpacing: '-0.025em', margin: 0, textShadow:'0 0 18px rgba(255,255,255,0.22)' }}>
+              <p style={{ fontSize: 28, fontWeight: 900, color: 'var(--t1)', fontFamily: 'var(--mono)', letterSpacing: '-0.025em', margin: 0, textShadow:'0 0 18px rgba(255,255,255,0.22)' }}>
                 R$ {fmt(kpis.custoMes)}
               </p>
               <p style={{ fontSize: 11, marginTop: 8, margin: '8px 0 0', color: 'var(--t4)', fontWeight: 500 }}>
@@ -340,7 +349,7 @@ export default function CustosPage() {
                     {/* label */}
                     <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t2)', minWidth: 110, flexShrink: 0 }}>{item.ct.label}</span>
                     {/* bar */}
-                    <div style={{ flex: 1, height: 22, background: 'rgba(255,255,255,0.03)', borderRadius: 6, overflow: 'hidden', position: 'relative' }}>
+                    <div style={{ flex: 1, height: 22, background: 'var(--fill-1)', borderRadius: 6, overflow: 'hidden', position: 'relative' }}>
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${item.pct}%` }}
@@ -484,6 +493,7 @@ export default function CustosPage() {
               </div>
             )}
           </div>
+          </>)}
         </div>
 
         {/* Add Cost Modal */}
@@ -505,7 +515,7 @@ export default function CustosPage() {
                 onClick={e => e.stopPropagation()}
                 style={{
                   width: '100%', maxWidth: 480, maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto',
-                  background: 'linear-gradient(160deg, var(--surface), var(--surface))', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 22,
+                  background: 'linear-gradient(160deg, var(--surface), var(--surface))', border: '1px solid var(--b1)', borderRadius: 22,
                   padding: '32px', boxShadow: '0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.03)',
                   position: 'relative',
                 }}
@@ -556,7 +566,7 @@ export default function CustosPage() {
                       <p style={{ fontSize:11, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Registre um gasto operacional</p>
                     </div>
                   </div>
-                  <button onClick={() => setShowModal(false)} style={{ width: 34, height: 34, borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--t3)', transition: 'all 0.15s' }}
+                  <button onClick={() => setShowModal(false)} style={{ width: 34, height: 34, borderRadius: 10, border: '1px solid var(--b1)', background: 'var(--fill-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--t3)', transition: 'all 0.15s' }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.1)'; e.currentTarget.style.color = 'var(--loss)' }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--t3)' }}
                   >
@@ -611,7 +621,7 @@ export default function CustosPage() {
                     style={{
                       width: '100%', padding: '14px 14px 14px 52px',
                       fontSize: 22, fontWeight: 700, fontFamily: 'var(--mono)', letterSpacing: '-0.01em',
-                      borderRadius: 10, background: 'rgba(255,255,255,0.03)',
+                      borderRadius: 10, background: 'var(--fill-1)',
                       border: '1px solid var(--b2)', color: 'var(--t1)',
                     }}
                   />
@@ -624,7 +634,7 @@ export default function CustosPage() {
                   value={formDate}
                   onChange={e => setFormDate(e.target.value)}
                   className="input"
-                  style={{ width: '100%', padding: '12px 14px', fontSize: 13, borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--b2)', color: 'var(--t1)', marginBottom: 16 }}
+                  style={{ width: '100%', padding: '12px 14px', fontSize: 13, borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b2)', color: 'var(--t1)', marginBottom: 16 }}
                 />
 
                 {/* Note */}
@@ -635,7 +645,7 @@ export default function CustosPage() {
                   placeholder="Descricao do custo..."
                   rows={3}
                   className="input"
-                  style={{ width: '100%', padding: '12px 14px', fontSize: 13, borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--b2)', color: 'var(--t1)', resize: 'vertical', marginBottom: 24 }}
+                  style={{ width: '100%', padding: '12px 14px', fontSize: 13, borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b2)', color: 'var(--t1)', resize: 'vertical', marginBottom: 24 }}
                 />
 
                 {/* Submit premium */}
@@ -647,7 +657,7 @@ export default function CustosPage() {
                   style={{
                     width: '100%', padding: '14px 22px', borderRadius: 12, border: 'none', fontFamily:'inherit',
                     background: saving || !formAmount || Number(formAmount) <= 0 ? 'rgba(229,57,53,0.35)' : 'linear-gradient(145deg, #e53935, #c62828)',
-                    color: '#fff', fontSize: 14, fontWeight: 800,
+                    color: 'var(--t1)', fontSize: 14, fontWeight: 800,
                     cursor: saving || !formAmount || Number(formAmount) <= 0 ? 'not-allowed' : 'pointer',
                     opacity: saving || !formAmount || Number(formAmount) <= 0 ? 0.6 : 1,
                     boxShadow: saving || !formAmount || Number(formAmount) <= 0 ? 'none' : '0 6px 22px rgba(229,57,53,0.4), 0 0 30px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.15)',
@@ -658,7 +668,7 @@ export default function CustosPage() {
                   {saving ? (
                     <>
                       <motion.div animate={{ rotate:360 }} transition={{ duration:0.7, repeat:Infinity, ease:'linear' }}
-                        style={{ width:14, height:14, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', borderTopColor:'#fff' }}/>
+                        style={{ width:14, height:14, borderRadius:'50%', border:'2px solid var(--b3)', borderTopColor:'#fff' }}/>
                       Salvando...
                     </>
                   ) : (

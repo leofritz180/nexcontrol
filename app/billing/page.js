@@ -95,7 +95,7 @@ export default function BillingPage() {
           transition={{duration:0.5, ease:[0.33,1,0.68,1]}}
           style={{ position:'relative', textAlign:'center', marginBottom:36 }}>
           {/* Ambient glow */}
-          <div style={{ position:'absolute', top:'-10%', left:'20%', right:'20%', height:260, borderRadius:'50%', background:'radial-gradient(ellipse, rgba(255,255,255,0.12), transparent 65%)', filter:'blur(50px)', pointerEvents:'none', zIndex:-1 }}/>
+          <div style={{ position:'absolute', top:'-10%', left:'20%', right:'20%', height:260, borderRadius:'50%', background:'radial-gradient(ellipse, var(--fill-3), transparent 65%)', filter:'blur(50px)', pointerEvents:'none', zIndex:-1 }}/>
           <div style={{ position:'absolute', top:'10%', right:'15%', width:180, height:180, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.08), transparent 65%)', filter:'blur(40px)', pointerEvents:'none', zIndex:-1 }}/>
 
           {/* Status badge */}
@@ -128,14 +128,14 @@ export default function BillingPage() {
             transition={{duration:0.5, delay:0.15, ease:[0.33,1,0.68,1]}}
             style={{ fontSize:38, fontWeight:900, color:'var(--t1)', letterSpacing:'-0.035em', marginBottom:12, lineHeight:1.1 }}>
             Escale sua operacao<br/>
-            <span style={{ background:'linear-gradient(135deg, rgba(255,255,255,0.78), var(--profit))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>com estrutura profissional</span>
+            <span style={{ background:'linear-gradient(135deg, var(--t1), var(--profit))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>com estrutura profissional</span>
           </motion.h1>
 
           <motion.p
             initial={{opacity:0}} animate={{opacity:1}}
             transition={{duration:0.5, delay:0.25}}
             style={{ fontSize:15, color:'var(--t2)', maxWidth:520, margin:'0 auto 18px', lineHeight:1.55 }}>
-            Pague apenas pelo que precisa. <strong style={{ color:'var(--t1)' }}>Comece sozinho</strong> ou <strong style={{ color:'rgba(255,255,255,0.78)' }}>escale com operadores</strong> e economize ate 25% com descontos progressivos.
+            Pague apenas pelo que precisa. <strong style={{ color:'var(--t1)' }}>Comece sozinho</strong> ou <strong style={{ color:'var(--t1)' }}>escale com operadores</strong> e economize ate 25% com descontos progressivos.
           </motion.p>
 
           {/* Trust indicators */}
@@ -178,8 +178,8 @@ export default function BillingPage() {
               <div style={{
                 position: 'relative', overflow: 'hidden',
                 borderRadius: 20, marginBottom: 14,
-                background: 'linear-gradient(180deg, #0d0d0d 0%, #050505 100%)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'var(--surface)',
+                border: '1px solid var(--b1)',
                 boxShadow: '0 24px 60px rgba(0,0,0,0.6), 0 0 80px rgba(229,57,53,0.08), inset 0 1px 0 rgba(255,255,255,0.04)',
               }}>
                 {/* Glow vermelho no canto direito */}
@@ -209,14 +209,14 @@ export default function BillingPage() {
                     />
                     <span style={{
                       fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 800,
-                      color: '#10B981', letterSpacing: '0.18em', textTransform: 'uppercase',
+                      color: 'var(--profit)', letterSpacing: '0.18em', textTransform: 'uppercase',
                     }}>Assinatura ativa</span>
                   </div>
 
                   {/* Headline serif */}
                   <h3 style={{
                     fontFamily: 'var(--font-serif, "Instrument Serif", "Times New Roman", serif)',
-                    fontSize: 36, fontWeight: 400, color: '#fff',
+                    fontSize: 36, fontWeight: 400, color: 'var(--t1)',
                     letterSpacing: '-0.025em', lineHeight: 1.05,
                     margin: '0 0 10px',
                   }}>
@@ -224,25 +224,25 @@ export default function BillingPage() {
                   </h3>
 
                   <p style={{
-                    fontSize: 13.5, color: 'rgba(255,255,255,0.6)',
+                    fontSize: 13.5, color: 'var(--t2)',
                     margin: '0 0 26px', fontWeight: 400, lineHeight: 1.5, maxWidth: 480,
                   }}>
-                    O tempo restante é somado ao novo período. Trimestral, semestral e anual com até <strong style={{ color: '#fff', fontWeight: 700 }}>25% de desconto</strong>.
+                    O tempo restante é somado ao novo período. Trimestral, semestral e anual com até <strong style={{ color: 'var(--t1)', fontWeight: 700 }}>25% de desconto</strong>.
                   </p>
 
                   {/* HERO STATS — números grandes, destaque visual */}
                   <div style={{
                     display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
-                    background: 'rgba(255,255,255,0.025)',
+                    background: 'var(--fill-1)',
                     borderRadius: 14, padding: '20px 24px',
-                    border: '1px solid rgba(255,255,255,0.06)',
+                    border: '1px solid var(--b1)',
                     marginBottom: 22,
                   }}>
                     {/* Dias restantes — DESTAQUE PRINCIPAL */}
                     <div>
                       <p style={{
                         fontFamily: 'var(--mono, monospace)',
-                        fontSize: 9.5, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                        fontSize: 9.5, fontWeight: 700, color: 'var(--t3)',
                         margin: '0 0 8px', letterSpacing: '0.2em', textTransform: 'uppercase',
                       }}>Tempo restante</p>
                       <p style={{ margin: 0, display: 'flex', alignItems: 'baseline', gap: 8 }}>
@@ -254,27 +254,27 @@ export default function BillingPage() {
                           textShadow: '0 0 32px ' + daysColor + '40',
                         }}>{daysLeft}</span>
                         <span style={{
-                          fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.55)',
+                          fontSize: 13, fontWeight: 600, color: 'var(--t2)',
                         }}>dia{daysLeft !== 1 ? 's' : ''}</span>
                       </p>
                     </div>
 
                     {/* Vencimento — secundario */}
                     <div style={{
-                      borderLeft: '1px solid rgba(255,255,255,0.08)',
+                      borderLeft: '1px solid var(--b1)',
                       paddingLeft: 24,
                     }}>
                       <p style={{
                         fontFamily: 'var(--mono, monospace)',
-                        fontSize: 9.5, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                        fontSize: 9.5, fontWeight: 700, color: 'var(--t3)',
                         margin: '0 0 8px', letterSpacing: '0.2em', textTransform: 'uppercase',
                       }}>Vence em</p>
                       <p style={{
-                        fontSize: 22, fontWeight: 700, color: '#fff',
+                        fontSize: 22, fontWeight: 700, color: 'var(--t1)',
                         margin: '0 0 2px', letterSpacing: '-0.02em', lineHeight: 1,
                       }}>{expiresShort}</p>
                       <p style={{
-                        fontSize: 11, color: 'rgba(255,255,255,0.45)',
+                        fontSize: 11, color: 'var(--t3)',
                         margin: '6px 0 0', fontWeight: 500,
                       }}>{expires.toLocaleDateString('pt-BR', { weekday: 'long' })}</p>
                     </div>
@@ -305,7 +305,7 @@ export default function BillingPage() {
                     </span>
                     <span style={{
                       fontFamily: 'var(--mono, monospace)',
-                      fontSize: 14, color: 'rgba(255,255,255,0.95)', fontWeight: 800,
+                      fontSize: 14, color: 'var(--t1)', fontWeight: 800,
                       letterSpacing: '-0.01em',
                       padding: '3px 10px', borderRadius: 7,
                       background: 'rgba(0,0,0,0.22)',
@@ -315,7 +315,7 @@ export default function BillingPage() {
                   </motion.button>
 
                   <p style={{
-                    fontSize: 10.5, color: 'rgba(255,255,255,0.4)',
+                    fontSize: 10.5, color: 'var(--t3)',
                     textAlign: 'center', margin: '14px 0 0',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   }}>
@@ -330,8 +330,8 @@ export default function BillingPage() {
               {/* DETALHES — card compacto preto */}
               <div style={{
                 position: 'relative', borderRadius: 16,
-                background: 'linear-gradient(180deg, var(--raised) 0%, #050505 100%)',
-                border: '1px solid rgba(255,255,255,0.06)',
+                background: 'var(--surface)',
+                border: '1px solid var(--b1)',
                 padding: '20px 28px',
                 boxShadow: '0 8px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
@@ -339,34 +339,34 @@ export default function BillingPage() {
                   <div>
                     <p style={{
                       fontFamily: 'var(--mono, monospace)',
-                      fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                      fontSize: 9, fontWeight: 700, color: 'var(--t3)',
                       margin: '0 0 6px', letterSpacing: '0.18em', textTransform: 'uppercase',
                     }}>Status</p>
                     <p style={{ display: 'inline-flex', alignItems: 'center', gap: 7, margin: 0 }}>
                       <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px rgba(16,185,129,0.6)' }}/>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Ativa</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>Ativa</span>
                     </p>
                   </div>
-                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.06)', paddingLeft: 24 }}>
+                  <div style={{ borderLeft: '1px solid var(--b1)', paddingLeft: 24 }}>
                     <p style={{
                       fontFamily: 'var(--mono, monospace)',
-                      fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                      fontSize: 9, fontWeight: 700, color: 'var(--t3)',
                       margin: '0 0 6px', letterSpacing: '0.18em', textTransform: 'uppercase',
                     }}>Pagando</p>
                     <p style={{ display: 'flex', alignItems: 'baseline', gap: 3, margin: 0 }}>
-                      <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: '#fff', letterSpacing: '-0.015em' }}>R$ {fmt(currentPrice.total)}</span>
-                      <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>/mês</span>
+                      <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.015em' }}>R$ {fmt(currentPrice.total)}</span>
+                      <span style={{ fontSize: 10.5, color: 'var(--t3)', fontWeight: 500 }}>/mês</span>
                     </p>
                   </div>
-                  <div style={{ borderLeft: '1px solid rgba(255,255,255,0.06)', paddingLeft: 24 }}>
+                  <div style={{ borderLeft: '1px solid var(--b1)', paddingLeft: 24 }}>
                     <p style={{
                       fontFamily: 'var(--mono, monospace)',
-                      fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
+                      fontSize: 9, fontWeight: 700, color: 'var(--t3)',
                       margin: '0 0 6px', letterSpacing: '0.18em', textTransform: 'uppercase',
                     }}>Operadores</p>
                     <p style={{ display: 'flex', alignItems: 'baseline', gap: 5, margin: 0 }}>
-                      <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>{operators.length}</span>
-                      <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>ativo{operators.length !== 1 ? 's' : ''}</span>
+                      <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 18, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.02em' }}>{operators.length}</span>
+                      <span style={{ fontSize: 10.5, color: 'var(--t3)', fontWeight: 500 }}>ativo{operators.length !== 1 ? 's' : ''}</span>
                     </p>
                   </div>
                 </div>
@@ -447,7 +447,7 @@ export default function BillingPage() {
             <div style={{
               position:'absolute', top:-1, right:-1, padding:'6px 14px', borderRadius:'0 20px 0 12px',
               background:'linear-gradient(135deg, rgba(255,255,255,0.78), #1d4ed8)',
-              fontSize:9, fontWeight:900, color:'white', letterSpacing:'0.1em',
+              fontSize:9, fontWeight:900, color:'var(--t1)', letterSpacing:'0.1em',
               boxShadow:'0 4px 14px rgba(255,255,255,0.4)',
               display:'flex', alignItems:'center', gap:5,
             }}>
@@ -455,12 +455,12 @@ export default function BillingPage() {
               RECOMENDADO
             </div>
 
-            <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)' }}/>
+            <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, var(--fill-3), transparent)' }}/>
 
             <div style={{padding:'26px 24px'}}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
                 <div>
-                  <p style={{ fontSize:9, fontWeight:800, color:'rgba(255,255,255,0.78)', margin:'0 0 4px', letterSpacing:'0.12em', textTransform:'uppercase' }}>Para escalar</p>
+                  <p style={{ fontSize:9, fontWeight:800, color:'var(--t1)', margin:'0 0 4px', letterSpacing:'0.12em', textTransform:'uppercase' }}>Para escalar</p>
                   <h3 style={{fontSize:18,fontWeight:900,color:'var(--t1)',margin:0, letterSpacing:'-0.02em'}}>Admin + Operadores</h3>
                 </div>
                 {opQty>0 && (
@@ -545,7 +545,7 @@ export default function BillingPage() {
                       transition:'all 0.25s',
                     }}>
                     {isActive && (
-                      <div style={{ position:'absolute', top:-4, left:'50%', transform:'translateX(-50%)', padding:'2px 8px', borderRadius:'0 0 6px 6px', background:'var(--profit)', fontSize:7, fontWeight:900, color:'white', letterSpacing:'0.08em' }}>
+                      <div style={{ position:'absolute', top:-4, left:'50%', transform:'translateX(-50%)', padding:'2px 8px', borderRadius:'0 0 6px 6px', background:'var(--profit)', fontSize:7, fontWeight:900, color:'var(--t1)', letterSpacing:'0.08em' }}>
                         ATIVO
                       </div>
                     )}
@@ -564,7 +564,7 @@ export default function BillingPage() {
         {/* ── OPERATOR SELECTOR + SUMMARY (only when operators selected) ── */}
         {opQty > 0 && (
           <div className="a3" style={{borderRadius:22,overflow:'hidden',background:'var(--surface)',border:'1px solid var(--brand-border)',boxShadow:'0 0 40px rgba(255,255,255,0.06)',marginBottom:24}}>
-            <div style={{padding:'24px 28px',background:'linear-gradient(135deg,rgba(255,255,255,0.08),transparent)',borderBottom:'1px solid var(--b1)'}}>
+            <div style={{padding:'24px 28px',background:'linear-gradient(135deg,var(--fill-3),transparent)',borderBottom:'1px solid var(--b1)'}}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                 <div>
                   <h2 style={{fontSize:16,fontWeight:800,color:'var(--t1)',margin:'0 0 4px'}}>Quantidade de operadores</h2>
@@ -591,7 +591,7 @@ export default function BillingPage() {
                 </div>
               )}
               {price.nextTier && (
-                <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px',borderRadius:10,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',marginBottom:14}}>
+                <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px',borderRadius:10,background:'var(--fill-2)',border:'1px solid var(--b1)',marginBottom:14}}>
                   <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                   <span style={{fontSize:12,color:'var(--t2)'}}>+{price.nextTierOps - opQty} op{price.nextTierOps-opQty>1?'s':''} para <strong style={{color:'var(--brand-bright)'}}>{price.nextTierDiscount}% desconto</strong></span>
                 </div>
@@ -649,7 +649,7 @@ export default function BillingPage() {
             </button>
             <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,marginTop:12}}>
               <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              <span style={{fontSize:10,color:'rgba(209,250,229,0.5)',fontWeight:600}}>Pagamento seguro via Pix · Ativacao instantanea</span>
+              <span style={{fontSize:10,color:'var(--t1)',fontWeight:600}}>Pagamento seguro via Pix · Ativacao instantanea</span>
             </div>
           </div>
         )}
@@ -662,7 +662,7 @@ export default function BillingPage() {
           const extraCost = Math.round((newPrice.total - currentPrice.total) * 100) / 100
           return (
           <div className="a4" style={{borderRadius:22,overflow:'hidden',background:'var(--surface)',border:'1px solid var(--brand-border)',boxShadow:'0 0 30px rgba(255,255,255,0.05)',marginBottom:32}}>
-            <div style={{padding:'22px 28px',background:'linear-gradient(135deg,rgba(255,255,255,0.08),transparent)',borderBottom:'1px solid var(--b1)'}}>
+            <div style={{padding:'22px 28px',background:'linear-gradient(135deg,var(--fill-3),transparent)',borderBottom:'1px solid var(--b1)'}}>
               <div style={{display:'flex',alignItems:'center',gap:10}}>
                 <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
                 <div>
@@ -692,7 +692,7 @@ export default function BillingPage() {
                 const extraOnlyCost = Math.round(extraOps * newPrice.opUnitPrice * 100) / 100
                 return (<>
                 {/* Cost breakdown */}
-                <div style={{padding:'14px 16px',borderRadius:14,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',marginBottom:16}}>
+                <div style={{padding:'14px 16px',borderRadius:14,background:'var(--fill-2)',border:'1px solid var(--b1)',marginBottom:16}}>
                   <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
                     <span style={{fontSize:12,color:'var(--t2)'}}>{extraOps} novo{extraOps>1?'s':''} operador{extraOps>1?'es':''} x R$ {fmt(newPrice.opUnitPrice)}</span>
                     <span className="t-num" style={{fontSize:13,fontWeight:700,color:'var(--brand-bright)'}}>R$ {fmt(extraOnlyCost)}</span>
@@ -747,8 +747,8 @@ export default function BillingPage() {
             <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
               {operators.map(op=>(
                 <div key={op.id} style={{display:'flex',alignItems:'center',gap:5,padding:'5px 10px 5px 5px',borderRadius:8,background:'var(--raised)',border:'1px solid var(--b1)'}}>
-                  <div style={{width:22,height:22,borderRadius:6,background:'linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.2))',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    <span style={{fontSize:9,fontWeight:800,color:'white'}}>{getName(op)[0].toUpperCase()}</span>
+                  <div style={{width:22,height:22,borderRadius:6,background:'linear-gradient(135deg,var(--fill-3),rgba(255,255,255,0.2))',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <span style={{fontSize:9,fontWeight:800,color:'var(--t1)'}}>{getName(op)[0].toUpperCase()}</span>
                   </div>
                   <span style={{fontSize:11,fontWeight:600,color:'var(--t2)'}}>{getName(op)}</span>
                 </div>

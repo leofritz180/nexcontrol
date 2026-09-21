@@ -95,8 +95,8 @@ export default function TutorialPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
             <div style={{
               width: 44, height: 44, borderRadius: 13,
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.1))',
-              border: '1px solid rgba(255,255,255,0.25)',
+              background: 'linear-gradient(135deg, var(--fill-3), rgba(255,255,255,0.1))',
+              border: '1px solid var(--b3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="1.5" strokeLinecap="round">
@@ -123,7 +123,7 @@ export default function TutorialPage() {
                 {completedCount}/{STEPS.length}
               </span>
             </div>
-            <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 99, overflow: 'hidden' }}>
+            <div style={{ height: 6, background: 'var(--fill-2)', borderRadius: 99, overflow: 'hidden' }}>
               <motion.div
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
@@ -151,13 +151,13 @@ export default function TutorialPage() {
             background: 'rgba(15, 24, 41, 0.6)',
             backdropFilter: 'blur(40px) saturate(160%)',
             WebkitBackdropFilter: 'blur(40px) saturate(160%)',
-            border: '1px solid rgba(255,255,255,0.15)',
+            border: '1px solid var(--b2)',
             boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.06)',
             marginBottom: 24,
           }}
         >
           {/* YouTube embed */}
-          <div style={{ position: 'relative', background: '#000', aspectRatio: '16/9' }}>
+          <div style={{ position: 'relative', background: 'var(--surface)', aspectRatio: '16/9' }}>
             <iframe
               src="https://www.youtube.com/embed/Zi5b-nuB_Yw?rel=0&modestbranding=1"
               title="Video aula NexControl"
@@ -182,7 +182,7 @@ export default function TutorialPage() {
             </div>
             <div style={{
               padding: '4px 12px', borderRadius: 99,
-              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+              background: 'var(--fill-3)', border: '1px solid var(--b3)',
               fontSize: 10, fontWeight: 700, color: 'var(--brand-bright)', letterSpacing: '0.06em',
             }}>
               EXCLUSIVO ADMIN
@@ -200,7 +200,7 @@ export default function TutorialPage() {
             background: 'rgba(15, 24, 41, 0.5)',
             backdropFilter: 'blur(30px) saturate(150%)',
             WebkitBackdropFilter: 'blur(30px) saturate(150%)',
-            border: '1px solid rgba(255,255,255,0.07)',
+            border: '1px solid var(--b1)',
             boxShadow: '0 12px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
             padding: '24px 28px',
           }}
@@ -235,7 +235,7 @@ export default function TutorialPage() {
                 whileTap={{ scale: 0.96 }}
                 style={{
                   fontSize: 11, fontWeight: 600, color: 'var(--t3)',
-                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'var(--fill-2)', border: '1px solid var(--b1)',
                   borderRadius: 8, padding: '6px 12px', cursor: 'pointer',
                   transition: 'all 0.2s',
                 }}
@@ -367,7 +367,7 @@ export default function TutorialPage() {
                   <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--profit)', margin: '0 0 2px' }}>
                     Voce esta pronto para usar o NexControl!
                   </p>
-                  <p style={{ fontSize: 12, color: 'rgba(209,250,229,0.6)', margin: 0 }}>
+                  <p style={{ fontSize: 12, color: 'var(--t1)', margin: 0 }}>
                     Todas as etapas foram concluidas. Bom trabalho!
                   </p>
                 </div>
@@ -386,7 +386,7 @@ export default function TutorialPage() {
             background: 'rgba(15, 24, 41, 0.5)',
             backdropFilter: 'blur(30px) saturate(150%)',
             WebkitBackdropFilter: 'blur(30px) saturate(150%)',
-            border: '1px solid rgba(255,255,255,0.12)',
+            border: '1px solid var(--b2)',
             boxShadow: '0 12px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)',
             padding: '24px 28px',
           }}
@@ -403,7 +403,7 @@ export default function TutorialPage() {
               transition={{ duration: 2.5, repeat: Infinity }}
               style={{
                 width: 38, height: 38, borderRadius: 11,
-                background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+                background: 'var(--fill-3)', border: '1px solid var(--b3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}
             >
@@ -441,20 +441,20 @@ export default function TutorialPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.4 + i * 0.05, ease }}
                 whileHover={{
-                  background: 'rgba(255,255,255,0.05)',
+                  background: 'var(--fill-2)',
                   x: 4,
                   transition: { duration: 0.15 },
                 }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 14,
                   padding: '12px 14px', borderRadius: 12,
-                  border: '1px solid rgba(255,255,255,0.03)',
+                  border: '1px solid var(--b1)',
                   transition: 'border-color 0.2s',
                 }}
               >
                 <span style={{
                   width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-                  background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
+                  background: 'var(--fill-3)', border: '1px solid var(--b2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 11, fontWeight: 700, fontFamily: 'var(--mono)', color: 'var(--warn)',
                 }}>
@@ -470,7 +470,7 @@ export default function TutorialPage() {
           {/* Note */}
           <div style={{
             marginTop: 16, padding: '12px 16px', borderRadius: 10,
-            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+            background: 'var(--fill-2)', border: '1px solid var(--b1)',
             display: 'flex', alignItems: 'center', gap: 10,
           }}>
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="1.5" strokeLinecap="round" style={{ flexShrink: 0 }}>
@@ -478,7 +478,7 @@ export default function TutorialPage() {
               <line x1="12" y1="16" x2="12" y2="12" />
               <line x1="12" y1="8" x2="12.01" y2="8" />
             </svg>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+            <span style={{ fontSize: 12, color: 'var(--t2)', lineHeight: 1.5 }}>
               As notificacoes ajudam voce a acompanhar atualizacoes importantes da operacao em tempo real.
             </span>
           </div>
@@ -499,7 +499,7 @@ export default function TutorialPage() {
             <motion.a
               key={link.href}
               href={link.href}
-              whileHover={{ y: -2, borderColor: 'rgba(255,255,255,0.12)', boxShadow: '0 8px 24px rgba(0,0,0,0.25)' }}
+              whileHover={{ y: -2, borderColor: 'var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.25)' }}
               whileTap={{ scale: 0.97 }}
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,

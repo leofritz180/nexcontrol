@@ -14,9 +14,9 @@ export default function TermosPage() {
       atualizado="3 de setembro de 2026"
     >
       <Secao n={1} titulo="O que é a NexControl">
-        A NexControl é uma plataforma online (SaaS) de <strong style={{ color: '#fff' }}>gestão de operações</strong>: registro
+        A NexControl é uma plataforma online (SaaS) de <strong style={{ color: 'var(--t1)' }}>gestão de operações</strong>: registro
         e acompanhamento de metas, remessas, depósitos, saques, custos, operadores e resultados, com relatórios,
-        alertas automáticos e notificações. É uma <strong style={{ color: '#fff' }}>ferramenta de organização e controle</strong> —
+        alertas automáticos e notificações. É uma <strong style={{ color: 'var(--t1)' }}>ferramenta de organização e controle</strong> —
         não executa operações por você, não intermedia pagamentos de terceiros e não gerencia dinheiro dos usuários.
       </Secao>
 
@@ -46,8 +46,8 @@ export default function TermosPage() {
           Você pode cancelar quando quiser: como a renovação é manual, basta não renovar — não há multa nem burocracia.
         </p>
         <p style={{ margin: '12px 0 0' }}>
-          Conforme o <strong style={{ color: '#fff' }}>art. 49 do Código de Defesa do Consumidor</strong>, você pode desistir
-          da contratação em até <strong style={{ color: '#fff' }}>7 (sete) dias corridos</strong> contados do pagamento, com
+          Conforme o <strong style={{ color: 'var(--t1)' }}>art. 49 do Código de Defesa do Consumidor</strong>, você pode desistir
+          da contratação em até <strong style={{ color: 'var(--t1)' }}>7 (sete) dias corridos</strong> contados do pagamento, com
           devolução integral do valor. Basta solicitar pelos canais de contato ao final desta página.
         </p>
       </Secao>
@@ -70,8 +70,8 @@ export default function TermosPage() {
 
       <Secao n={7} titulo="Limitação de responsabilidade">
         <p style={{ margin: 0 }}>
-          A NexControl é uma <strong style={{ color: '#fff' }}>ferramenta de gestão e organização de dados</strong>.
-          Ela <strong style={{ color: '#fff' }}>não promete, não garante e não projeta resultado financeiro</strong> de
+          A NexControl é uma <strong style={{ color: 'var(--t1)' }}>ferramenta de gestão e organização de dados</strong>.
+          Ela <strong style={{ color: 'var(--t1)' }}>não promete, não garante e não projeta resultado financeiro</strong> de
           qualquer natureza. Os números exibidos são cálculos feitos a partir das informações que você mesmo registra.
         </p>
         <p style={{ margin: '12px 0 0' }}>
@@ -84,7 +84,7 @@ export default function TermosPage() {
       <Secao n={8} titulo="Propriedade intelectual">
         A marca NexControl, o software, o design, os textos e os materiais da plataforma (incluindo aulas e artes de
         premiação) são de nossa propriedade. Você recebe uma licença de uso pessoal, limitada, não exclusiva e
-        intransferível enquanto a assinatura estiver ativa. Os <strong style={{ color: '#fff' }}>dados da sua operação
+        intransferível enquanto a assinatura estiver ativa. Os <strong style={{ color: 'var(--t1)' }}>dados da sua operação
         continuam sendo seus</strong>.
       </Secao>
 
@@ -107,9 +107,9 @@ export default function TermosPage() {
 
       <Secao n={12} titulo="Privacidade">
         O tratamento dos seus dados pessoais está descrito na nossa{' '}
-        <a href="/privacidade" style={{ color: '#ff6b6b', textDecoration: 'none' }}>Política de Privacidade</a>,
+        <a href="/privacidade" style={{ color: 'var(--loss)', textDecoration: 'none' }}>Política de Privacidade</a>,
         que faz parte integrante destes Termos. Dúvidas podem ser enviadas para{' '}
-        <a href={`mailto:${CONTATO.email}`} style={{ color: '#ff6b6b', textDecoration: 'none' }}>{CONTATO.email}</a>.
+        <a href={`mailto:${CONTATO.email}`} style={{ color: 'var(--loss)', textDecoration: 'none' }}>{CONTATO.email}</a>.
       </Secao>
     </LegalLayout>
   )

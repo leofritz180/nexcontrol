@@ -46,8 +46,8 @@ export default function MetodosKpiCard({ lucroCpa = 0, onGoToTab }) {
   const consolidado = Number(lucroCpa || 0) + liquidoMetodos
 
   const cardBase = {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--fill-1)',
+    border: '1px solid var(--b1)',
     borderRadius: 14,
     padding: '16px 20px',
   }

@@ -114,8 +114,8 @@ export default function SignupPage() {
     width: '100%', fontSize: 14, fontWeight: 400,
     padding: '12px 14px', borderRadius: 8, outline: 'none',
     color: 'var(--t1)',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--fill-1)',
+    border: '1px solid var(--b1)',
     transition: 'border-color 0.15s, background 0.15s',
   }
   const inputFocus = {
@@ -170,7 +170,7 @@ export default function SignupPage() {
       }} />
       <div aria-hidden style={{
         position: 'fixed', top: 0, right: 0, width: '40vw', height: '100vh', pointerEvents: 'none',
-        background: 'radial-gradient(ellipse at 100% 50%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 30%, transparent 60%)',
+        background: 'radial-gradient(ellipse at 100% 50%, var(--fill-2) 0%, rgba(255,255,255,0.01) 30%, transparent 60%)',
         filter: 'blur(40px)',
       }} />
 
@@ -307,7 +307,7 @@ export default function SignupPage() {
               padding: '12px 20px', marginTop: 4, fontSize: 14, fontWeight: 600, fontFamily: 'inherit',
               borderRadius: 8, border: 'none',
               cursor: loading ? 'not-allowed' : 'pointer',
-              color: 'white',
+              color: 'var(--t1)',
               background: loading ? 'rgba(229,57,53,0.5)' : '#e53935',
               transition: 'background 0.15s',
               opacity: loading ? 0.7 : 1,
@@ -320,7 +320,7 @@ export default function SignupPage() {
                 <motion.div
                   style={{
                     width: 14, height: 14, borderRadius: '50%',
-                    border: '2px solid rgba(255,255,255,0.3)',
+                    border: '2px solid var(--b3)',
                     borderTopColor: 'white', flexShrink: 0,
                   }}
                   animate={{ rotate: 360 }}

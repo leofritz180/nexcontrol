@@ -15,8 +15,8 @@ const RED = '#e11d1d', MINT = 'var(--profit)', LOSS = 'var(--loss)'
 const T1 = '#F5F5F5', T2 = 'rgba(255,255,255,0.62)', T3 = 'rgba(255,255,255,0.42)', T4 = 'rgba(255,255,255,0.26)'
 
 const shell = {
-  borderRadius: 18, background: '#000',
-  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 18, background: 'var(--surface)',
+  border: '1px solid var(--b1)',
   boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 18px 50px rgba(0,0,0,0.5)',
 }
 
@@ -70,7 +70,7 @@ function MonthChart({ series }) {
           return (
             <div key={s.month} onMouseEnter={() => setHov(i)} onMouseLeave={() => setHov(null)} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', height: '100%', position: 'relative', cursor: 'default' }}>
               {isHov && (
-                <div style={{ position: 'absolute', bottom: h + 10, left: '50%', transform: 'translateX(-50%)', padding: '6px 10px', borderRadius: 8, background: '#141416', border: '1px solid rgba(255,255,255,0.1)', whiteSpace: 'nowrap', zIndex: 2, boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+                <div style={{ position: 'absolute', bottom: h + 10, left: '50%', transform: 'translateX(-50%)', padding: '6px 10px', borderRadius: 8, background: 'var(--surface)', border: '1px solid var(--b1)', whiteSpace: 'nowrap', zIndex: 2, boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
                   <span style={{ fontFamily: 'var(--mono)', fontSize: 11.5, fontWeight: 800, color: T1 }}>R$ {fmt(s.revenue)}</span>
                 </div>
               )}
@@ -81,7 +81,7 @@ function MonthChart({ series }) {
         })}
       </div>
       <div style={{ display: 'flex', gap: 6, marginTop: 8, padding: '0 2px' }}>
-        {series.map((s, i) => <span key={s.month} style={{ flex: 1, textAlign: 'center', fontSize: 9.5, fontFamily: 'var(--mono)', color: i === series.length - 1 ? '#ff6b6b' : T4, fontWeight: i === series.length - 1 ? 800 : 500 }}>{MESES[Number(s.month.slice(5, 7)) - 1]}</span>)}
+        {series.map((s, i) => <span key={s.month} style={{ flex: 1, textAlign: 'center', fontSize: 9.5, fontFamily: 'var(--mono)', color: i === series.length - 1 ? 'var(--loss)' : T4, fontWeight: i === series.length - 1 ? 800 : 500 }}>{MESES[Number(s.month.slice(5, 7)) - 1]}</span>)}
       </div>
       {prev && prev.revenue > 0 && (
         <Hint>Mês atual (parcial) vs. anterior: <strong style={{ color: last.revenue >= prev.revenue ? MINT : LOSS }}>{last.revenue >= prev.revenue ? '+' : ''}{Math.round(((last.revenue - prev.revenue) / prev.revenue) * 100)}%</strong> · o anterior fechou em R$ {fmt(prev.revenue)}</Hint>
@@ -111,7 +111,7 @@ function Funnel({ f, active }) {
               <span style={{ fontSize: 12, color: s.hi ? T1 : T2, fontWeight: s.hi ? 800 : 500 }}>{s.l}</span>
               <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 800, color: s.hi ? MINT : T1 }}>{fmt0(s.v)}{conv != null && <span style={{ color: T4, fontWeight: 600, marginLeft: 7 }}>{conv}%</span>}</span>
             </div>
-            <div style={{ height: 6, borderRadius: 4, background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+            <div style={{ height: 6, borderRadius: 4, background: 'var(--fill-2)', overflow: 'hidden' }}>
               <motion.div initial={{ width: 0 }} animate={{ width: `${Math.max(pct, 1.5)}%` }} transition={{ duration: 0.8, delay: i * 0.08, ease: [0.33, 1, 0.68, 1] }}
                 style={{ height: '100%', borderRadius: 4, background: s.hi ? `linear-gradient(90deg, ${MINT}, #7ff0ae)` : `linear-gradient(90deg, ${RED}, #ff5b56)`, opacity: s.hi ? 1 : 0.55 + (0.45 * (1 - i / steps.length)) }} />
             </div>
@@ -169,7 +169,7 @@ export default function OwnerExecutive({ kpis, funnel, monthSeries, activity, sa
       </div>
 
       {/* NÍVEL 2: RITMO DE CAIXA + SAÚDE DA BASE */}
-      <div className="ox-row2" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.06)' }}>
+      <div className="ox-row2" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--b1)', background: 'var(--fill-2)' }}>
         {[
           { l: 'Hoje', v: <Money v={k.revenueToday} size={19} />, hint: 'receita do dia (BRT)' },
           { l: 'Ontem', v: <Money v={k.revenueYesterday} size={19} />, hint: 'dia anterior fechado' },
@@ -179,7 +179,7 @@ export default function OwnerExecutive({ kpis, funnel, monthSeries, activity, sa
           { l: 'LTV por cliente', v: <Money v={k.ltv} size={19} />, hint: 'ticket mensal ÷ churn' },
           { l: 'Pagantes com equipe', v: <Int v={teamPct} size={19} suffix="%" />, hint: `${k.payingWithTeam || 0} de ${k.activeSubs || 0} têm operador` },
         ].map((c, i) => (
-          <div key={i} style={{ padding: '16px 18px', background: '#000' }}>
+          <div key={i} style={{ padding: '16px 18px', background: 'var(--surface)' }}>
             <p style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: T3, margin: '0 0 8px' }}>{c.l}</p>
             <div>{c.v}</div>
             <p style={{ fontSize: 10.5, color: T4, margin: '6px 0 0' }}>{c.hint}</p>

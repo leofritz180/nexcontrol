@@ -47,7 +47,7 @@ export default function Logo({
             marginTop: -(auraPx / 2),
             marginLeft: -(auraPx / 2),
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 50%, transparent 70%)',
+            background: 'radial-gradient(circle, var(--fill-3) 0%, rgba(255,255,255,0.02) 50%, transparent 70%)',
             pointerEvents: 'none',
             animation: 'breathe 4s ease-in-out infinite',
             willChange: 'transform, opacity',

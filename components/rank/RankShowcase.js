@@ -90,8 +90,8 @@ export default function RankShowcase({ contas, mode = 'inline', open = false, on
             onClick={e => e.stopPropagation()}
             style={{
               maxWidth: 1100, width: '100%', maxHeight: '92vh', overflowY: 'auto',
-              background: '#000', borderRadius: 20,
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'var(--surface)', borderRadius: 20,
+              border: '1px solid var(--b1)',
               boxShadow: '0 40px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06)',
               padding: 28,
             }}
@@ -100,8 +100,8 @@ export default function RankShowcase({ contas, mode = 'inline', open = false, on
               style={{
                 position: 'absolute', top: 16, right: 16,
                 width: 36, height: 36, borderRadius: 10, zIndex: 2,
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'var(--fill-2)',
+                border: '1px solid var(--b1)',
                 cursor: 'pointer', color: 'var(--t2)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
@@ -181,7 +181,7 @@ function Staircase({ contas, currentTier, hoverTier, setHoverTier, selectedTier,
       position: 'relative',
       borderRadius: 16,
       background: 'linear-gradient(180deg, rgba(20,18,28,0.4) 0%, rgba(0,0,0,0.5) 100%)',
-      border: '1px solid rgba(255,255,255,0.06)',
+      border: '1px solid var(--b1)',
       boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04), 0 12px 40px rgba(0,0,0,0.4)',
       overflow: 'hidden',
     }}>
@@ -224,7 +224,7 @@ function Staircase({ contas, currentTier, hoverTier, setHoverTier, selectedTier,
       {/* Base line — chão */}
       <div aria-hidden style={{
         position: 'absolute', left: 24, right: 24, bottom: 12, height: 1,
-        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.12), rgba(255,255,255,0.18), rgba(255,255,255,0.12), transparent)',
+        background: 'linear-gradient(90deg, transparent, var(--fill-3), rgba(255,255,255,0.18), rgba(255,255,255,0.12), transparent)',
         boxShadow: '0 0 8px rgba(255,255,255,0.08)',
       }}/>
 
@@ -371,7 +371,7 @@ function PillarEmblem({ rank, size, active, isApex, isCurrent }) {
       {/* Reflexo top-left */}
       <div aria-hidden style={{
         position: 'absolute', inset: 0,
-        background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.3) 0%, transparent 55%)',
+        background: 'radial-gradient(circle at 30% 20%, var(--fill-3) 0%, transparent 55%)',
         pointerEvents: 'none',
       }}/>
       {active && <ShinePass duration={2} interval={4.5} color="rgba(255,255,255,0.4)" />}
@@ -446,7 +446,7 @@ function PillarColumn({ rank, height, active, isApex, isCurrent, isAchieved }) {
       width: isApex ? 36 : 26,
       height,
       borderRadius: '8px 8px 4px 4px',
-      background: 'rgba(255,255,255,0.025)',
+      background: 'var(--fill-1)',
       border: `1px solid rgba(${rgb},${active ? 0.45 : 0.18})`,
       overflow: 'hidden',
       boxShadow: active

@@ -88,7 +88,7 @@ export default function PremiacoesPage() {
           <>
             {/* ═══ HERO PREMIUM: faturamento + roadmap ═══ */}
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
-              style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, padding: '26px 30px 30px', marginBottom: 30, background: 'radial-gradient(120% 140% at 0% 0%, rgba(245,184,60,0.16), transparent 45%), radial-gradient(120% 140% at 100% 20%, rgba(245,120,60,0.12), transparent 50%), linear-gradient(160deg, #1a140a, #0a0a0e)', border: '1px solid rgba(245,184,60,0.28)', boxShadow: '0 24px 60px rgba(0,0,0,0.5), 0 0 60px rgba(245,184,60,0.08)' }}>
+              style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, padding: '26px 30px 30px', marginBottom: 30, background: 'rgba(195,129,19,0.10)', border: '1px solid rgba(245,184,60,0.28)', boxShadow: '0 24px 60px rgba(0,0,0,0.5), 0 0 60px rgba(245,184,60,0.08)' }}>
               {/* brilho topo */}
               <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1.5, background: 'linear-gradient(90deg, transparent, rgba(245,184,60,0.7), transparent)' }} />
               {/* blob */}
@@ -97,11 +97,11 @@ export default function PremiacoesPage() {
 
               <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap', marginBottom: 28 }}>
                 <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '0.2em', color: '#f5b83c', textTransform: 'uppercase', marginBottom: 6 }}>Seu faturamento</div>
-                  <div style={{ fontSize: 44, fontWeight: 900, color: '#fff', fontFamily: 'var(--mono)', letterSpacing: '-0.03em', lineHeight: 1, textShadow: '0 2px 20px rgba(245,184,60,0.25)' }}>{fmt(faturamento)}</div>
+                  <div style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '0.2em', color: 'var(--warn)', textTransform: 'uppercase', marginBottom: 6 }}>Seu faturamento</div>
+                  <div style={{ fontSize: 44, fontWeight: 900, color: 'var(--t1)', fontFamily: 'var(--mono)', letterSpacing: '-0.03em', lineHeight: 1, textShadow: '0 2px 20px rgba(245,184,60,0.25)' }}>{fmt(faturamento)}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 30, fontWeight: 900, color: '#f5b83c', fontFamily: 'var(--mono)', lineHeight: 1 }}>{conquistados}<span style={{ fontSize: 18, color: 'rgba(255,255,255,0.5)' }}>/{items.length}</span></div>
+                  <div style={{ fontSize: 30, fontWeight: 900, color: 'var(--warn)', fontFamily: 'var(--mono)', lineHeight: 1 }}>{conquistados}<span style={{ fontSize: 18, color: 'var(--t3)' }}>/{items.length}</span></div>
                   <div style={{ fontSize: 11, color: 'var(--t3)', marginTop: 4, letterSpacing: '0.04em' }}>quadros conquistados</div>
                 </div>
               </div>
@@ -110,7 +110,7 @@ export default function PremiacoesPage() {
               <div style={{ position: 'relative', overflowX: 'auto', paddingBottom: 4 }}>
                 <div style={{ position: 'relative', minWidth: 520 }}>
                   {/* trilho */}
-                  <div style={{ position: 'absolute', left: `${50 / N}%`, right: `${50 / N}%`, top: 13, height: 3, borderRadius: 3, background: 'rgba(255,255,255,0.1)' }} />
+                  <div style={{ position: 'absolute', left: `${50 / N}%`, right: `${50 / N}%`, top: 13, height: 3, borderRadius: 3, background: 'var(--fill-3)' }} />
                   <motion.div initial={{ width: 0 }} animate={{ width: `calc(${Math.max(0, roadPos * 100 - 50 / N)}% )` }} transition={{ duration: 1.3, ease }}
                     style={{ position: 'absolute', left: `${50 / N}%`, top: 13, height: 3, borderRadius: 3, background: 'linear-gradient(90deg, #f5b83c, #ffd98a)', boxShadow: '0 0 10px rgba(245,184,60,0.7)' }} />
                   {/* nós */}
@@ -121,7 +121,7 @@ export default function PremiacoesPage() {
                         <div key={p.id} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, minWidth: 0 }}>
                           <div style={{ position: 'relative', width: 28, height: 28 }}>
                             {isNext && <motion.span aria-hidden animate={{ scale: [1, 1.5], opacity: [0.6, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }} style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: p.color }} />}
-                            <div style={{ position: 'relative', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: p.unlocked ? 'linear-gradient(135deg, #f5b83c, #d99422)' : '#12141c', border: `2px solid ${p.unlocked ? '#ffd98a' : isNext ? p.color : 'rgba(255,255,255,0.18)'}`, boxShadow: p.unlocked ? '0 0 12px rgba(245,184,60,0.6)' : 'none' }}>
+                            <div style={{ position: 'relative', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: p.unlocked ? 'linear-gradient(135deg, #f5b83c, #d99422)' : '#12141c', border: `2px solid ${p.unlocked ? '#ffd98a' : isNext ? p.color : 'var(--t4)'}`, boxShadow: p.unlocked ? '0 0 12px rgba(245,184,60,0.6)' : 'none' }}>
                               {p.unlocked
                                 ? <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#3a2600" strokeWidth={3.2} strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 : <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={isNext ? p.color : 'var(--t4)'} strokeWidth={2.4} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>}
@@ -137,10 +137,10 @@ export default function PremiacoesPage() {
 
               {next && (
                 <p style={{ position: 'relative', fontSize: 12.5, color: 'var(--t2)', marginTop: 20, textAlign: 'center' }}>
-                  Próximo: <strong style={{ color: next.color }}>{next.label}</strong> — faltam <strong style={{ color: '#fff', fontFamily: 'var(--mono)' }}>{fmt(next.value - faturamento)}</strong>
+                  Próximo: <strong style={{ color: next.color }}>{next.label}</strong> — faltam <strong style={{ color: 'var(--t1)', fontFamily: 'var(--mono)' }}>{fmt(next.value - faturamento)}</strong>
                 </p>
               )}
-              {!next && <p style={{ position: 'relative', fontSize: 13.5, fontWeight: 700, color: '#f5b83c', marginTop: 20, textAlign: 'center' }}>🎉 Lenda absoluta — você conquistou todos os quadros!</p>}
+              {!next && <p style={{ position: 'relative', fontSize: 13.5, fontWeight: 700, color: 'var(--warn)', marginTop: 20, textAlign: 'center' }}>🎉 Lenda absoluta — você conquistou todos os quadros!</p>}
             </motion.div>
 
             {/* GRADE */}
@@ -176,7 +176,7 @@ function QuadroCard({ p, faturamento, isNext, delay }) {
         {/* brilho passando (só conquistado) */}
         {unlocked && (
           <motion.span aria-hidden animate={{ x: ['-130%', '340%'] }} transition={{ duration: 3.4, repeat: Infinity, ease: 'linear', repeatDelay: 2.2 }}
-            style={{ position: 'absolute', top: 0, left: 0, width: '28%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)', transform: 'skewX(-18deg)', pointerEvents: 'none' }} />
+            style={{ position: 'absolute', top: 0, left: 0, width: '28%', height: '100%', background: 'linear-gradient(90deg, transparent, var(--fill-3), transparent)', transform: 'skewX(-18deg)', pointerEvents: 'none' }} />
         )}
 
         {/* tier (topo esq) */}
@@ -193,10 +193,10 @@ function QuadroCard({ p, faturamento, isNext, delay }) {
         {!unlocked && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '26px 12px 11px', background: 'linear-gradient(0deg, rgba(4,7,12,0.94) 30%, transparent)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>faltam</span>
-              <span style={{ fontSize: 12.5, color: '#fff', fontWeight: 800, fontFamily: 'var(--mono)' }}>{fmt(falta)}</span>
+              <span style={{ fontSize: 11, color: 'var(--t1)', fontWeight: 600 }}>faltam</span>
+              <span style={{ fontSize: 12.5, color: 'var(--t1)', fontWeight: 800, fontFamily: 'var(--mono)' }}>{fmt(falta)}</span>
             </div>
-            <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.14)', overflow: 'hidden' }}>
+            <div style={{ height: 5, borderRadius: 3, background: 'var(--fill-3)', overflow: 'hidden' }}>
               <motion.div initial={{ width: 0 }} animate={{ width: `${pctToThis}%` }} transition={{ duration: 1.1, ease }} style={{ height: '100%', borderRadius: 3, background: `linear-gradient(90deg, ${p.color}, #fff)` }} />
             </div>
           </div>
@@ -216,7 +216,7 @@ function QuadroCard({ p, faturamento, isNext, delay }) {
               <a href={artPath(p, '30x40')} download style={dlBtn(p.color)}><DownloadIcon /> 30×40</a>
             </div>
           ) : (
-            <div style={{ fontSize: 12, color: 'var(--t3)', textAlign: 'center', padding: '9px 0', borderRadius: 9, background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.12)' }}>🎉 Conquistado! Arte em breve.</div>
+            <div style={{ fontSize: 12, color: 'var(--t3)', textAlign: 'center', padding: '9px 0', borderRadius: 9, background: 'var(--fill-1)', border: '1px dashed var(--b2)' }}>🎉 Conquistado! Arte em breve.</div>
           )
         ) : (
           <p style={{ fontSize: 11.5, color: 'var(--t4)', margin: 0 }}>Desbloqueie ao atingir <strong style={{ color: 'var(--t3)', fontFamily: 'var(--mono)' }}>{fmt(p.value)}</strong> de faturamento.</p>
@@ -227,7 +227,7 @@ function QuadroCard({ p, faturamento, isNext, delay }) {
 }
 
 function dlBtn(color) {
-  return { flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, textDecoration: 'none', fontSize: 12.5, fontWeight: 800, color: '#fff', background: color, border: 'none', cursor: 'pointer' }
+  return { flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px', borderRadius: 10, textDecoration: 'none', fontSize: 12.5, fontWeight: 800, color: 'var(--t1)', background: color, border: 'none', cursor: 'pointer' }
 }
 function DownloadIcon() {
   return <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>

@@ -65,8 +65,8 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
   const Chip = ({ children }) => (
     <span style={{
       display: 'inline-block', fontSize: 12, fontWeight: 600, color: 'var(--t1)',
-      padding: '4px 9px', borderRadius: 7, background: 'rgba(255,255,255,0.04)',
-      border: '1px solid rgba(255,255,255,0.08)', fontFamily: 'var(--mono)',
+      padding: '4px 9px', borderRadius: 7, background: 'var(--fill-2)',
+      border: '1px solid var(--b1)', fontFamily: 'var(--mono)',
       whiteSpace: 'nowrap',
     }}>"{children}"</span>
   )
@@ -103,7 +103,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
             style={{
               position: 'relative', width: '100%', maxWidth: 540, maxHeight: '88vh', overflowY: 'auto',
               background: 'var(--surface)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              border: '1px solid var(--b1)',
               borderRadius: 18,
               boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.05), inset -1px 0 0 rgba(255,255,255,0.05), 0 24px 70px rgba(0,0,0,0.7), 0 0 40px rgba(255,255,255,0.03)',
               padding: '30px 28px 26px',
@@ -112,7 +112,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
             {/* Fechar */}
             <button type="button" onClick={dismiss} aria-label="Fechar" style={{
               position: 'absolute', top: 16, right: 16, width: 28, height: 28, borderRadius: 7,
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+              background: 'var(--fill-2)', border: '1px solid var(--b1)',
               color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0,
             }}>
               <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -132,7 +132,7 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em', color: '#e53935', textTransform: 'uppercase' }}>Novidade</span>
-                  <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.06)', color: 'var(--t2)', letterSpacing: '0.05em' }}>BETA</span>
+                  <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 4, background: 'var(--fill-2)', color: 'var(--t2)', letterSpacing: '0.05em' }}>BETA</span>
                 </div>
                 <h2 style={{ fontFamily: 'var(--font-display, Georgia), serif', fontWeight: 400, fontSize: 30, lineHeight: 1.1, letterSpacing: '-0.02em', color: 'var(--t1)', margin: '2px 0 0' }}>
                   Comando de Voz
@@ -148,14 +148,14 @@ export default function VoiceAnnounceCard({ userEmail, isAdmin }) {
             {/* Como ativar */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', marginBottom: 20,
-              background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10,
+              background: 'var(--fill-1)', border: '1px solid var(--b1)', borderRadius: 10,
             }}>
               <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                 <rect x="9" y="2" width="6" height="12" rx="3" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" />
               </svg>
-              <p style={{ fontSize: 13, lineHeight: 1.5, color: '#D4D4D8', margin: 0 }}>
+              <p style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--t2)', margin: 0 }}>
                 Toque no <strong style={{ color: 'var(--t1)' }}>microfone</strong> no canto inferior direito da tela
-                <span style={{ color: 'var(--t3)' }}> (ou tecla </span><kbd style={{ fontSize: 11, padding: '1px 5px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', fontFamily: 'var(--mono)' }}>F3</kbd><span style={{ color: 'var(--t3)' }}> no computador)</span> e fale.
+                <span style={{ color: 'var(--t3)' }}> (ou tecla </span><kbd style={{ fontSize: 11, padding: '1px 5px', borderRadius: 4, background: 'var(--fill-3)', border: '1px solid var(--b2)', fontFamily: 'var(--mono)' }}>F3</kbd><span style={{ color: 'var(--t3)' }}> no computador)</span> e fale.
               </p>
             </div>
 

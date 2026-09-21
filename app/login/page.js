@@ -105,7 +105,7 @@ export default function LoginPage() {
       }} />
       <div aria-hidden style={{
         position: 'fixed', top: 0, right: 0, width: '40vw', height: '100vh', pointerEvents: 'none',
-        background: 'radial-gradient(ellipse at 100% 50%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 30%, transparent 60%)',
+        background: 'radial-gradient(ellipse at 100% 50%, var(--fill-2) 0%, rgba(255,255,255,0.01) 30%, transparent 60%)',
         filter: 'blur(40px)',
       }} />
 
@@ -162,8 +162,8 @@ export default function LoginPage() {
                 width: '100%', fontSize: 14, fontWeight: 400,
                 padding: '12px 14px', borderRadius: 8, outline: 'none',
                 color: 'var(--t1)',
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'var(--fill-1)',
+                border: '1px solid var(--b1)',
                 transition: 'border-color 0.15s, background 0.15s',
               }}
               onFocus={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
@@ -185,8 +185,8 @@ export default function LoginPage() {
                   width: '100%', fontSize: 14, fontWeight: 400,
                   padding: '12px 14px', paddingRight: 42, borderRadius: 8, outline: 'none',
                   color: 'var(--t1)',
-                  background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'var(--fill-1)',
+                  border: '1px solid var(--b1)',
                   transition: 'border-color 0.15s, background 0.15s',
                 }}
                 onFocus={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
@@ -261,7 +261,7 @@ export default function LoginPage() {
               padding: '12px 20px', marginTop: 4, fontSize: 14, fontWeight: 600, fontFamily: 'inherit',
               borderRadius: 8, border: 'none',
               cursor: loading ? 'not-allowed' : 'pointer',
-              color: 'white',
+              color: 'var(--t1)',
               background: loading ? 'rgba(229,57,53,0.5)' : '#e53935',
               transition: 'background 0.15s, transform 0.1s',
               opacity: loading ? 0.7 : 1,
@@ -274,7 +274,7 @@ export default function LoginPage() {
                 <motion.div
                   style={{
                     width: 14, height: 14, borderRadius: '50%',
-                    border: '2px solid rgba(255,255,255,0.3)',
+                    border: '2px solid var(--b3)',
                     borderTopColor: 'white', flexShrink: 0,
                   }}
                   animate={{ rotate: 360 }}
@@ -317,7 +317,7 @@ export default function LoginPage() {
               style={{
                 width: '100%', maxWidth: 380,
                 background: 'var(--raised)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                border: '1px solid var(--b1)',
                 borderRadius: 14, padding: 28,
               }}
             >
@@ -343,8 +343,8 @@ export default function LoginPage() {
                     width: '100%', fontSize: 14, fontWeight: 400,
                     padding: '12px 14px', borderRadius: 8, outline: 'none',
                     color: 'var(--t1)',
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'var(--fill-1)',
+                    border: '1px solid var(--b1)',
                     transition: 'border-color 0.15s, background 0.15s',
                   }}
                   onFocus={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
@@ -371,7 +371,7 @@ export default function LoginPage() {
                       style={{
                         padding: '12px 14px', borderRadius: 8,
                         background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.25)',
-                        fontSize: 12, color: '#10B981', lineHeight: 1.5,
+                        fontSize: 12, color: 'var(--profit)', lineHeight: 1.5,
                       }}>
                       {forgotMsg}
                     </motion.div>
@@ -385,7 +385,7 @@ export default function LoginPage() {
                     style={{
                       flex: 1, padding: '11px 16px', fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
                       borderRadius: 8, cursor: 'pointer', color: 'var(--t2)',
-                      background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+                      background: 'transparent', border: '1px solid var(--b1)',
                       transition: 'background 0.15s, color 0.15s',
                     }}
                     onMouseEnter={e => { e.currentTarget.style.color = 'var(--t1)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
@@ -400,7 +400,7 @@ export default function LoginPage() {
                         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                         padding: '11px 16px', fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
                         borderRadius: 8, border: 'none', cursor: forgotLoading ? 'not-allowed' : 'pointer',
-                        color: 'white',
+                        color: 'var(--t1)',
                         background: forgotLoading ? 'rgba(229,57,53,0.5)' : '#e53935',
                         transition: 'background 0.15s', opacity: forgotLoading ? 0.7 : 1,
                       }}
@@ -410,7 +410,7 @@ export default function LoginPage() {
                       {forgotLoading ? (
                         <>
                           <motion.div style={{ width: 12, height: 12, borderRadius: '50%',
-                            border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white' }}
+                            border: '2px solid var(--b3)', borderTopColor: 'white' }}
                             animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} />
                           Enviando
                         </>

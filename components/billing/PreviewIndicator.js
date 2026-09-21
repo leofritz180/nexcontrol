@@ -52,15 +52,15 @@ export default function PreviewIndicator({ onTriggerSmart }) {
         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
         style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff4444' }}
       />
-      <span style={{ fontSize: 10, fontWeight: 900, color: '#ff6b6b', letterSpacing: '0.16em', textTransform: 'uppercase', fontFamily: 'var(--mono)' }}>
+      <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--loss)', letterSpacing: '0.16em', textTransform: 'uppercase', fontFamily: 'var(--mono)' }}>
         PREVIEW · VARIANT B
       </span>
       {onTriggerSmart && (
         <button type="button" onClick={() => { clearTriggers(); onTriggerSmart() }}
           style={{
             fontSize: 10, fontWeight: 700, padding: '4px 8px', borderRadius: 6,
-            background: 'rgba(255,255,255,0.06)', color: 'var(--t1)',
-            border: '1px solid rgba(255,255,255,0.12)',
+            background: 'var(--fill-2)', color: 'var(--t1)',
+            border: '1px solid var(--b2)',
             cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '0.04em',
           }}>
           Smart trigger
@@ -70,7 +70,7 @@ export default function PreviewIndicator({ onTriggerSmart }) {
         style={{
           fontSize: 10, fontWeight: 700, padding: '4px 8px', borderRadius: 6,
           background: 'transparent', color: 'var(--t3)',
-          border: '1px solid rgba(255,255,255,0.12)',
+          border: '1px solid var(--b2)',
           cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '0.04em',
         }}>
         Sair preview

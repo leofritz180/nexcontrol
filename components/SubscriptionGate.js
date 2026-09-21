@@ -152,26 +152,26 @@ export default function SubscriptionGate({ children }) {
         <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.96)', backdropFilter: 'blur(24px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{
             position: 'relative', maxWidth: 440, width: '100%', textAlign: 'center',
-            background: 'linear-gradient(180deg, var(--raised), #050505)', border: '1px solid rgba(255,255,255,0.08)',
+            background: 'var(--surface)', border: '1px solid var(--b1)',
             borderRadius: 20, padding: '40px 36px', boxShadow: '0 40px 100px rgba(0,0,0,0.7)',
             animation: 'scale-in 0.35s cubic-bezier(0.33,1,0.68,1) both',
           }}>
-            <div style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-              <span style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.5)' }}/>
+            <div style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, fontWeight: 600, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'var(--t3)', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+              <span style={{ width: 24, height: 1, background: 'var(--t2)' }}/>
               Acesso pausado
-              <span style={{ width: 24, height: 1, background: 'rgba(255,255,255,0.5)' }}/>
+              <span style={{ width: 24, height: 1, background: 'var(--t2)' }}/>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
-              <div style={{ width: 60, height: 60, borderRadius: 16, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 60, height: 60, borderRadius: 16, background: 'var(--fill-2)', border: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
             </div>
-            <h2 style={{ fontSize: 24, fontWeight: 700, color: '#fafafa', letterSpacing: '-0.02em', marginBottom: 10, lineHeight: 1.2 }}>Acesso da equipe pausado.</h2>
-            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.62)', marginBottom: 26, lineHeight: 1.55, fontWeight: 300 }}>
-              A assinatura da sua operação está pendente. <strong style={{ color: '#fff', fontWeight: 600 }}>Fale com o administrador</strong> da sua equipe pra regularizar e liberar seu acesso. Seus dados continuam salvos.
+            <h2 style={{ fontSize: 24, fontWeight: 700, color: 'var(--t1)', letterSpacing: '-0.02em', marginBottom: 10, lineHeight: 1.2 }}>Acesso da equipe pausado.</h2>
+            <p style={{ fontSize: 13.5, color: 'var(--t2)', marginBottom: 26, lineHeight: 1.55, fontWeight: 300 }}>
+              A assinatura da sua operação está pendente. <strong style={{ color: 'var(--t1)', fontWeight: 600 }}>Fale com o administrador</strong> da sua equipe pra regularizar e liberar seu acesso. Seus dados continuam salvos.
             </p>
             <button onClick={async () => { await supabase.auth.signOut(); router.push('/login') }}
-              style={{ display: 'block', width: '100%', padding: 12, borderRadius: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>
+              style={{ display: 'block', width: '100%', padding: 12, borderRadius: 10, background: 'var(--fill-2)', border: '1px solid var(--b2)', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>
               Sair da conta
             </button>
           </div>
@@ -203,8 +203,8 @@ export default function SubscriptionGate({ children }) {
 
         <div style={{
           position: 'relative', maxWidth: 480, width: '100%', textAlign: 'center',
-          background: 'linear-gradient(180deg, var(--raised), #050505)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--surface)',
+          border: '1px solid var(--b1)',
           borderRadius: 20, padding: '40px 36px',
           boxShadow: isExpired
             ? '0 0 0 1px rgba(16,185,129,0.04), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(16,185,129,0.05)'
@@ -227,13 +227,13 @@ export default function SubscriptionGate({ children }) {
 
           {/* Title — Instrument Serif feel */}
           <h2 style={{
-            fontSize: 26, fontWeight: 700, color: '#fafafa',
+            fontSize: 26, fontWeight: 700, color: 'var(--t1)',
             letterSpacing: '-0.02em', marginBottom: 10, lineHeight: 1.15,
           }}>
             {isExpired ? 'Sua mensalidade venceu.' : 'Acesso bloqueado.'}
           </h2>
 
-          <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.62)', marginBottom: 28, lineHeight: 1.55, fontWeight: 300 }}>
+          <p style={{ fontSize: 13.5, color: 'var(--t2)', marginBottom: 28, lineHeight: 1.55, fontWeight: 300 }}>
             {isExpired
               ? 'Renove em segundos via PIX e retome o controle de onde parou.'
               : 'Ative sua assinatura via PIX pra começar a usar a NexControl.'}
@@ -243,28 +243,28 @@ export default function SubscriptionGate({ children }) {
           {isExpired && (stats.metas > 0 || stats.ops > 0 || stats.lucro > 0) && (
             <div style={{
               display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1,
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--fill-2)',
+              border: '1px solid var(--b1)',
               borderRadius: 12, padding: 1, marginBottom: 24, overflow: 'hidden',
             }}>
-              <div style={{ padding: '14px 8px', background: '#050505' }}>
-                <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Metas</div>
-                <div style={{ fontSize: 18, fontWeight: 800, color: '#fafafa', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{stats.metas}</div>
+              <div style={{ padding: '14px 8px', background: 'var(--surface)' }}>
+                <div style={{ fontSize: 8.5, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Metas</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{stats.metas}</div>
               </div>
-              <div style={{ padding: '14px 8px', background: '#050505' }}>
-                <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Operadores</div>
-                <div style={{ fontSize: 18, fontWeight: 800, color: '#fafafa', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{stats.ops}</div>
+              <div style={{ padding: '14px 8px', background: 'var(--surface)' }}>
+                <div style={{ fontSize: 8.5, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Operadores</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{stats.ops}</div>
               </div>
-              <div style={{ padding: '14px 8px', background: '#050505' }}>
-                <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Lucro acum.</div>
-                <div style={{ fontSize: 14, fontWeight: 800, color: '#6ee7b7', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>R$ {fmtBR(stats.lucro)}</div>
+              <div style={{ padding: '14px 8px', background: 'var(--surface)' }}>
+                <div style={{ fontSize: 8.5, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Lucro acum.</div>
+                <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--profit)', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>R$ {fmtBR(stats.lucro)}</div>
               </div>
             </div>
           )}
 
           {isExpired && (
             <p style={{
-              fontSize: 11, color: 'rgba(255,255,255,0.42)',
+              fontSize: 11, color: 'var(--t3)',
               marginBottom: 22, fontStyle: 'italic',
               letterSpacing: '0.005em',
             }}>
@@ -286,7 +286,7 @@ export default function SubscriptionGate({ children }) {
             {isExpired ? 'Renovar agora' : 'Desbloquear acesso'}
           </button>
 
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.42)', marginTop: 14, letterSpacing: '0.01em' }}>
+          <p style={{ fontSize: 11, color: 'var(--t3)', marginTop: 14, letterSpacing: '0.01em' }}>
             {isExpired
               ? <>PIX instantâneo · a partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 59,90/mês</strong></>
               : <>A partir de <strong style={{ color: '#e53935', fontWeight: 700 }}>R$ 59,90/mês</strong></>}
@@ -297,7 +297,7 @@ export default function SubscriptionGate({ children }) {
             style={{
               display:'block', width:'100%', marginTop: 18, padding: 8,
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 11, color: 'rgba(255,255,255,0.32)', textAlign: 'center',
+              fontSize: 11, color: 'var(--t4)', textAlign: 'center',
               letterSpacing: '0.02em',
             }}
           >

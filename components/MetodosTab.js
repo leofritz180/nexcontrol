@@ -127,8 +127,8 @@ export default function MetodosTab() {
   }, [items])
 
   const card = {
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    background: 'var(--fill-1)',
+    border: '1px solid var(--b1)',
     borderRadius: 14,
   }
 
@@ -150,7 +150,7 @@ export default function MetodosTab() {
           style={{
             padding: '11px 20px', fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
             borderRadius: 8, border: 'none', cursor: 'pointer',
-            color: 'white', background: showForm ? 'rgba(100,100,100,0.4)' : '#e53935',
+            color: 'var(--t1)', background: showForm ? 'rgba(100,100,100,0.4)' : '#e53935',
             transition: 'background 0.15s',
           }}
         >
@@ -171,7 +171,7 @@ export default function MetodosTab() {
                 <div>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>Modalidade</label>
                   <select value={form.modalidade} onChange={e => setForm({ ...form, modalidade: e.target.value })}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 14, color: 'var(--t1)', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', outline: 'none', fontFamily: 'inherit' }}>
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 14, color: 'var(--t1)', background: 'var(--fill-1)', border: '1px solid var(--b1)', outline: 'none', fontFamily: 'inherit' }}>
                     {MODALIDADES.map(m => <option key={m.id} value={m.id} style={{ background: 'var(--raised)' }}>{m.label}</option>)}
                   </select>
                 </div>
@@ -200,14 +200,14 @@ export default function MetodosTab() {
                 <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>Valor (R$)</label>
                 <input type="text" inputMode="decimal" placeholder="0,00" value={form.valor}
                   onChange={e => setForm({ ...form, valor: e.target.value })} required autoFocus
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 14, color: 'var(--t1)', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', outline: 'none', fontFamily: 'var(--mono)' }} />
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 14, color: 'var(--t1)', background: 'var(--fill-1)', border: '1px solid var(--b1)', outline: 'none', fontFamily: 'var(--mono)' }} />
               </div>
 
               <div>
                 <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 6 }}>Descricao (opcional)</label>
                 <input type="text" maxLength={280} placeholder="Detalhes do registro" value={form.descricao}
                   onChange={e => setForm({ ...form, descricao: e.target.value })}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 14, color: 'var(--t1)', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.1)', outline: 'none', fontFamily: 'inherit' }} />
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 14, color: 'var(--t1)', background: 'var(--fill-1)', border: '1px solid var(--b1)', outline: 'none', fontFamily: 'inherit' }} />
               </div>
 
               {error && (
@@ -215,7 +215,7 @@ export default function MetodosTab() {
               )}
 
               <button type="submit" disabled={saving}
-                style={{ padding: '12px 20px', fontSize: 14, fontWeight: 600, fontFamily: 'inherit', borderRadius: 8, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', color: 'white', background: saving ? 'rgba(229,57,53,0.5)' : '#e53935', transition: 'background 0.15s' }}>
+                style={{ padding: '12px 20px', fontSize: 14, fontWeight: 600, fontFamily: 'inherit', borderRadius: 8, border: 'none', cursor: saving ? 'not-allowed' : 'pointer', color: 'var(--t1)', background: saving ? 'rgba(229,57,53,0.5)' : '#e53935', transition: 'background 0.15s' }}>
                 {saving ? 'Salvando...' : 'Salvar registro'}
               </button>
             </form>
@@ -226,7 +226,7 @@ export default function MetodosTab() {
       {/* KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         {[
-          { label: 'Lucro do mes', value: stats.lucroMes, color: '#10B981' },
+          { label: 'Lucro do mes', value: stats.lucroMes, color: 'var(--profit)' },
           { label: 'Prejuizo do mes', value: stats.prejuizoMes, color: 'var(--loss)' },
           { label: 'Liquido do mes', value: stats.liquidoMes, color: stats.liquidoMes >= 0 ? 'var(--profit)' : 'var(--loss)', signed: true },
         ].map((k, i) => (
@@ -248,7 +248,7 @@ export default function MetodosTab() {
               .map(([k, v]) => ({ k, ...v, liquido: v.lucro - v.prejuizo }))
               .sort((a, b) => b.liquido - a.liquido)
               .map(row => (
-                <div key={row.k} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 10px', borderRadius: 6, background: 'rgba(255,255,255,0.015)' }}>
+                <div key={row.k} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 10px', borderRadius: 6, background: 'var(--fill-1)' }}>
                   <span style={{ fontSize: 12, color: 'var(--t1)', fontWeight: 600, flex: 1 }}>{modLabel(row.k)}</span>
                   <span style={{ fontSize: 11, color: 'var(--t4)' }}>{row.count} reg</span>
                   <span style={{ fontSize: 12, fontWeight: 700, fontFamily: 'var(--mono)', color: row.liquido >= 0 ? '#10B981' : 'var(--loss)', minWidth: 110, textAlign: 'right' }}>
@@ -277,7 +277,7 @@ export default function MetodosTab() {
             {items.map(it => {
               const isLucro = it.tipo === 'lucro'
               return (
-                <div key={it.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <div key={it.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: isLucro ? '#10B981' : 'var(--loss)', flexShrink: 0 }} />
                   <span style={{ fontSize: 12, color: 'var(--t1)', fontWeight: 600, minWidth: 130 }}>{modLabel(it.modalidade)}</span>
                   <span style={{ fontSize: 11, color: 'var(--t3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.descricao || '—'}</span>

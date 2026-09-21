@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import OperatorBento from '../../components/modules/OperatorBento'
+import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
@@ -101,7 +103,7 @@ function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
       style={{
         padding: 22,
         borderRadius: 16,
-        background: 'linear-gradient(145deg, var(--fill-1), rgba(255,255,255,0.01))',
+        background: 'linear-gradient(145deg, var(--fill-1), var(--fill-1))',
         border: '1px solid var(--b1)',
         boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
         cursor: 'default',
@@ -743,7 +745,7 @@ export default function OperatorPage() {
   if (!loading && profile && !profile.tenant_id && profile.removed_from_tenant_id) {
     return (
       <main style={{
-        minHeight: '100vh', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        minHeight: '100vh', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: 24, position: 'relative', overflow: 'hidden',
       }}>
         {/* HUD grid sutil */}
@@ -762,7 +764,7 @@ export default function OperatorPage() {
 
         <div style={{
           position: 'relative', maxWidth: 500, width: '100%', textAlign: 'center',
-          background: 'linear-gradient(180deg, var(--raised), #050505)',
+          background: 'var(--surface)',
           border: '1px solid var(--b1)',
           borderRadius: 20, padding: '44px 38px',
           boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(229,57,53,0.06), 0 0 0 1px rgba(229,57,53,0.04)',
@@ -797,7 +799,7 @@ export default function OperatorPage() {
 
           {/* Title */}
           <h2 style={{
-            fontSize: 26, fontWeight: 700, color: '#fafafa',
+            fontSize: 26, fontWeight: 700, color: 'var(--t1)',
             letterSpacing: '-0.02em', marginBottom: 10, lineHeight: 1.15,
           }}>
             Você não faz parte de<br/>nenhuma equipe.
@@ -874,6 +876,9 @@ export default function OperatorPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}>
 
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
+          {isNex2(user?.email) ? (
+            <OperatorBento nome={getName(profile)} stats={stats} metas={metas} onAbrirMeta={(id)=>router.push('/meta/'+id)} />
+          ) : (<>
 
           {/* Reveal modal animado — só dispara depois do loading, com contas reais */}
           <RankReveal userId={user?.id} contas={stats.totalDepositantes} name={getName(profile)} ready={!loading && !!profile} forceApex={isApexLocked(user?.email || profile?.email)} />
@@ -1023,7 +1028,7 @@ export default function OperatorPage() {
                             boxSizing: 'border-box',
                           }}
                         >
-                          <span style={rede === MULTI_REDE ? { color: '#34d399', fontWeight: 700 } : undefined}>{rede === MULTI_REDE ? 'Múltiplas redes' : (rede || 'Selecione a rede')}</span>
+                          <span style={rede === MULTI_REDE ? { color: 'var(--profit)', fontWeight: 700 } : undefined}>{rede === MULTI_REDE ? 'Múltiplas redes' : (rede || 'Selecione a rede')}</span>
                           <IconDown open={redeOpen} />
                         </button>
                         {redeOpen && (
@@ -1042,7 +1047,7 @@ export default function OperatorPage() {
                               style={{
                                 width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 14px',
                                 border: 'none', borderRadius: 9, textAlign: 'left', cursor: 'pointer',
-                                fontSize: 13, fontWeight: 700, color: '#34d399',
+                                fontSize: 13, fontWeight: 700, color: 'var(--profit)',
                                 background: rede === MULTI_REDE ? 'rgba(16,185,129,0.18)' : 'transparent',
                                 marginBottom: 4, transition: 'background 0.12s',
                               }}
@@ -1231,7 +1236,7 @@ export default function OperatorPage() {
                       style={{
                         width: '100%', padding: '14px 24px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                        fontSize: 14, fontWeight: 700, color: '#fff',
+                        fontSize: 14, fontWeight: 700, color: 'var(--t1)',
                         background: (saving || !titulo.trim() || !plataforma.trim() || !rede) ? 'rgba(229,57,53,0.4)' : '#e53935',
                         border: 'none', borderRadius: 11, cursor: (saving || !titulo.trim() || !plataforma.trim() || !rede) ? 'not-allowed' : 'pointer',
                         boxShadow: '0 2px 12px rgba(229,57,53,0.25)',
@@ -1460,7 +1465,7 @@ export default function OperatorPage() {
                           style={{
                             width: '100%', padding: '14px 28px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                            fontSize: 14, fontWeight: 700, color: '#fff',
+                            fontSize: 14, fontWeight: 700, color: 'var(--t1)',
                             background: 'var(--profit)', border: 'none', borderRadius: 11,
                             cursor: 'pointer', boxShadow: '0 4px 16px rgba(209,250,229,0.3)',
                             transition: 'all 0.2s ease',
@@ -1731,6 +1736,7 @@ export default function OperatorPage() {
           </div>
           </>
           )}
+          </>)}
         </div>
         <RouteTour tourId="operator" />
       </AppLayout>

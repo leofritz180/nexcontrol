@@ -21,8 +21,8 @@ const REDE_COLORS = {
 const getRedeColor = r => REDE_COLORS[r] || REDE_COLORS.DEFAULT
 
 const STATUSES = [
-  { key: 'pendente', label: 'Pendente', color: 'rgba(255,255,255,0.78)', bg: 'rgba(255,255,255,0.12)', border: 'rgba(255,255,255,0.25)', icon: 'clock' },
-  { key: 'em_andamento', label: 'Em andamento', color: 'rgba(255,255,255,0.78)', bg: 'rgba(255,255,255,0.12)', border: 'rgba(255,255,255,0.25)', icon: 'play' },
+  { key: 'pendente', label: 'Pendente', color: 'var(--t1)', bg: 'rgba(255,255,255,0.12)', border: 'var(--b3)', icon: 'clock' },
+  { key: 'em_andamento', label: 'Em andamento', color: 'var(--t1)', bg: 'rgba(255,255,255,0.12)', border: 'var(--b3)', icon: 'play' },
   { key: 'concluido', label: 'Concluido', color: 'var(--profit)', bg: 'rgba(209,250,229,0.14)', border: 'rgba(209,250,229,0.25)', icon: 'check' },
   { key: 'problema', label: 'Problema', color: 'var(--loss)', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.25)', icon: 'alert' },
 ]
@@ -298,7 +298,7 @@ export default function PlanejamentoPage() {
               { l: 'Lucro parcial', v: `${totalLucroParcial >= 0 ? '+' : ''}R$ ${fmt(totalLucroParcial)}`, c: totalLucroParcial >= 0 ? 'var(--profit)' : 'var(--loss)' },
               { l: 'Lucro total', v: `${totalLucro >= 0 ? '+' : ''}R$ ${fmt(totalLucro)}`, c: totalLucro >= 0 ? 'var(--profit)' : 'var(--loss)' },
             ].map((k, i) => (
-              <div key={k.l} style={{ borderRadius: 10, padding: '16px 18px', background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.04)' }}>
+              <div key={k.l} style={{ borderRadius: 10, padding: '16px 18px', background: 'var(--surface)', border: '1px solid var(--b1)' }}>
                 <p style={{ fontSize: 10, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600, margin: '0 0 6px' }}>{k.l}</p>
                 <p style={{ fontFamily: 'var(--mono)', fontSize: 20, fontWeight: 800, color: k.c, margin: 0, lineHeight: 1 }}>{k.v}</p>
               </div>
@@ -322,7 +322,7 @@ export default function PlanejamentoPage() {
         {/* ═══ TABLE (Desktop) ═══ */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08, ease }}
           className="plan-table-wrap"
-          style={{ borderRadius: 16, overflow: 'hidden', background: 'linear-gradient(145deg, var(--surface), var(--surface))', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 4px 24px rgba(0,0,0,0.35)' }}>
+          style={{ borderRadius: 16, overflow: 'hidden', background: 'linear-gradient(145deg, var(--surface), var(--surface))', border: '1px solid var(--b1)', boxShadow: '0 4px 24px rgba(0,0,0,0.35)' }}>
           <div style={{ overflowX: 'auto', maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1500 }}>
               <thead>
@@ -330,7 +330,7 @@ export default function PlanejamentoPage() {
                   <th style={{ width: 5, padding: 0 }}/>
                   {['REDE', 'DEP', 'AGENTE', 'APOSTAS', 'LINK', 'OPERADOR', 'STATUS', 'OBS', 'PREJ./LUCRO', 'CUSTOS', 'SAL+BAU', 'LUCRO TOTAL', 'L. PARCIAL', ''].map((h, i) => {
                     const isNum = i >= 8 && i <= 12
-                    return <th key={i} style={{ padding: '13px 10px', textAlign: isNum ? 'right' : 'left', fontSize: 10, fontWeight: 700, color: '#475569', letterSpacing: '0.08em', whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{h}</th>
+                    return <th key={i} style={{ padding: '13px 10px', textAlign: isNum ? 'right' : 'left', fontSize: 10, fontWeight: 700, color: '#475569', letterSpacing: '0.08em', whiteSpace: 'nowrap', borderBottom: '1px solid var(--b1)' }}>{h}</th>
                   })}
                 </tr>
               </thead>
@@ -351,7 +351,7 @@ export default function PlanejamentoPage() {
                         transition={{ duration: 0.25, ease }}
                         className="plan-row"
                         style={{
-                          borderBottom: '1px solid rgba(255,255,255,0.035)',
+                          borderBottom: '1px solid var(--b1)',
                           background: st.key === 'concluido' ? 'rgba(209,250,229,0.025)' : st.key === 'problema' ? 'rgba(239,68,68,0.025)' : stripe,
                           opacity: st.key === 'concluido' ? 0.5 : empty ? 0.35 : 1,
                           transition: 'all 0.15s',
@@ -376,7 +376,7 @@ export default function PlanejamentoPage() {
                         </td>
                         {/* Agente */}
                         <td style={{ padding: '6px 8px', minWidth: 100 }} onClick={e => e.stopPropagation()}>
-                          <CellInput value={r.agente} onChange={v => updateField(r.id, 'agente', v)} placeholder="..." style={{ fontWeight: 600, color: '#e2b96f' }} />
+                          <CellInput value={r.agente} onChange={v => updateField(r.id, 'agente', v)} placeholder="..." style={{ fontWeight: 600, color: 'var(--warn)' }} />
                         </td>
                         {/* Apostas */}
                         <td style={{ padding: '6px 8px', minWidth: 80 }} onClick={e => e.stopPropagation()}>
@@ -557,8 +557,8 @@ export default function PlanejamentoPage() {
                   {/* Info */}
                   {(r.agente || r.operator_name) && (
                     <div style={{ display: 'flex', gap: 12, marginBottom: 6, fontSize: 11 }}>
-                      {r.agente && <span style={{ color: '#e2b96f', fontWeight: 600 }}>{r.agente}</span>}
-                      {r.operator_name && <span style={{ color: '#60A5FA' }}>{r.operator_name}</span>}
+                      {r.agente && <span style={{ color: 'var(--warn)', fontWeight: 600 }}>{r.agente}</span>}
+                      {r.operator_name && <span style={{ color: 'var(--t2)' }}>{r.operator_name}</span>}
                     </div>
                   )}
                   {/* Lucro */}
@@ -597,8 +597,8 @@ export default function PlanejamentoPage() {
                           <div><label style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 700 }}>OBS / FALTA</label><CellInput value={r.observacao} onChange={v => updateField(r.id, 'observacao', v)} placeholder="Observacao..." /></div>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                             <div><label style={{ fontSize: 9, color: 'var(--loss)', fontWeight: 700 }}>PREJUIZO</label><CellInput type="number" value={r.prejuizo} onChange={v => updateField(r.id, 'prejuizo', Number(v) || 0)} mono step="0.01" style={{ color: 'var(--loss)' }} /></div>
-                            <div><label style={{ fontSize: 9, color: 'rgba(255,255,255,0.78)', fontWeight: 700 }}>CUSTOS</label><CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ color: 'rgba(255,255,255,0.78)' }} /></div>
-                            <div><label style={{ fontSize: 9, color: 'rgba(255,255,255,0.78)', fontWeight: 700 }}>SAL+BAU</label><CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ color: 'rgba(255,255,255,0.78)' }} /></div>
+                            <div><label style={{ fontSize: 9, color: 'var(--t1)', fontWeight: 700 }}>CUSTOS</label><CellInput type="number" value={r.custos} onChange={v => updateField(r.id, 'custos', Number(v) || 0)} mono step="0.01" style={{ color: 'var(--t1)' }} /></div>
+                            <div><label style={{ fontSize: 9, color: 'var(--t1)', fontWeight: 700 }}>SAL+BAU</label><CellInput type="number" value={r.salario_bau} onChange={v => updateField(r.id, 'salario_bau', Number(v) || 0)} mono step="0.01" style={{ color: 'var(--t1)' }} /></div>
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 4 }}>
                             <button onClick={() => deleteRow(r.id)} style={{ fontSize: 11, color: 'var(--loss)', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontWeight: 600 }}>Excluir</button>

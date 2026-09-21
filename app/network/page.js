@@ -78,9 +78,9 @@ function fmtRel(iso) {
 function rankTier(rank) {
   const map = {
     'Iniciante': { key: 'bronze',   label: 'Bronze',   color: '#cd7f32' },
-    'Avançado':  { key: 'prata',    label: 'Prata',    color: '#c4cdd6' },
-    'Mestre':    { key: 'ouro',     label: 'Ouro',     color: '#f5b83c' },
-    'Elite':     { key: 'diamante', label: 'Diamante', color: '#5ac8fa' },
+    'Avançado':  { key: 'prata',    label: 'Prata',    color: 'var(--t2)' },
+    'Mestre':    { key: 'ouro',     label: 'Ouro',     color: 'var(--warn)' },
+    'Elite':     { key: 'diamante', label: 'Diamante', color: 'var(--t2)' },
     'APEX':      { key: 'apex',     label: 'Apex',     color: '#ff4d4f' },
   }
   return map[rank] || map['Iniciante']
@@ -94,7 +94,7 @@ function fmtMoney(n) {
 // ── Selo (mapeado pra paleta NexControl: vermelho/verde/branco/muted) ──
 function badgeStyle(tone) {
   const map = {
-    red:   { bg: 'rgba(229,57,53,0.14)', bd: 'rgba(229,57,53,0.4)',  fg: '#ff6b6b' },
+    red:   { bg: 'rgba(229,57,53,0.14)', bd: 'rgba(229,57,53,0.4)',  fg: 'var(--loss)' },
     green: { bg: 'rgba(34,197,94,0.12)',  bd: 'rgba(34,197,94,0.38)', fg: '#4ade80' },
     gold:  { bg: 'rgba(255,255,255,0.1)', bd: 'rgba(255,255,255,0.28)', fg: '#f5f5f5' },
     blue:  { bg: 'rgba(229,57,53,0.12)',  bd: 'rgba(229,57,53,0.36)', fg: '#ff7a7a' },
@@ -118,14 +118,14 @@ function Avatar({ name, color, size = 38, online, src }) {
   return (
     <div style={{ position: 'relative', flexShrink: 0, width: size, height: size }}>
       {src ? (
-        <img src={src} alt="" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', display: 'block', border: '1px solid rgba(255,255,255,0.14)', boxShadow: '0 2px 10px rgba(0,0,0,0.4)' }} />
+        <img src={src} alt="" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', display: 'block', border: '1px solid var(--b2)', boxShadow: '0 2px 10px rgba(0,0,0,0.4)' }} />
       ) : (
         <div style={{
           width: size, height: size, borderRadius: '50%',
           background: `linear-gradient(135deg, ${color}, ${color}bb)`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: size * 0.42, fontWeight: 800, color: '#fff',
-          boxShadow: `0 2px 10px ${color}44`, border: '1px solid rgba(255,255,255,0.14)',
+          boxShadow: `0 2px 10px ${color}44`, border: '1px solid var(--b2)',
         }}>{initial}</div>
       )}
       {online && <span style={{ position: 'absolute', bottom: 0, right: 0, width: size * 0.28, height: size * 0.28, borderRadius: '50%', background: MINT, border: '2px solid #0a0a0a' }} />}
@@ -149,7 +149,7 @@ function VeteranoBadge({ small }) {
 function renderMentions(text) {
   return String(text || '').split(/(@[\p{L}\p{N}_]+)/u).map((p, i) =>
     (p.startsWith('@') && p.length > 1)
-      ? <strong key={i} style={{ color: '#ff8a8a', fontWeight: 700 }}>{p}</strong>
+      ? <strong key={i} style={{ color: 'var(--loss)', fontWeight: 700 }}>{p}</strong>
       : p)
 }
 function useIsMobile() {
@@ -567,7 +567,7 @@ export default function NetworkPage() {
           <div style={{ width: 60, height: 60, borderRadius: 17, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
             <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
           </div>
-          <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 900, color: '#F1F5F9' }}>O Network é exclusivo do PRO</h2>
+          <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 900, color: 'var(--t1)' }}>O Network é exclusivo do PRO</h2>
           <p style={{ margin: '0 0 20px', fontSize: 13.5, color: 'var(--t3)', maxWidth: 340, lineHeight: 1.5 }}>A comunidade dos admins da NexControl — troque experiência, dúvidas e oportunidades com quem também opera. Assine o PRO pra entrar.</p>
           <button onClick={() => router.push('/billing-mp?renewal=1')} className="btn btn-brand btn-lg" style={{ padding: '13px 28px', fontWeight: 800 }}>Assinar PRO e entrar</button>
         </div>
@@ -596,7 +596,7 @@ export default function NetworkPage() {
       {isFreeMember && !isMobile && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', marginBottom: 12, borderRadius: 12, background: 'linear-gradient(90deg, rgba(229,57,53,0.10), rgba(229,57,53,0.03))', border: '1px solid rgba(229,57,53,0.22)' }}>
           <span style={{ fontSize: 12.5, color: 'var(--t2)', lineHeight: 1.4 }}>
-            Você está no <strong style={{ color: '#fff' }}>Network grátis</strong> — a comunidade é sua pra sempre. Pra ter o painel completo (metas, lucro em tempo real, equipe), assine o PRO.
+            Você está no <strong style={{ color: 'var(--t1)' }}>Network grátis</strong> — a comunidade é sua pra sempre. Pra ter o painel completo (metas, lucro em tempo real, equipe), assine o PRO.
           </span>
           <button type="button" onClick={() => router.push('/billing-mp')} className="btn btn-brand btn-sm" style={{ marginLeft: 'auto', whiteSpace: 'nowrap', fontWeight: 800 }}>Desbloquear painel</button>
         </div>
@@ -612,7 +612,7 @@ export default function NetworkPage() {
         display: 'flex', gap: 0,
         height: 'calc(100vh - 96px)', minHeight: 480,
         borderRadius: 18, overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.07)',
+        border: '1px solid var(--b1)',
         background: 'linear-gradient(180deg, rgba(12,18,32,0.5), rgba(4,7,14,0.6))',
         backdropFilter: 'blur(12px)',
       }}>
@@ -624,12 +624,12 @@ export default function NetworkPage() {
         {/* ── COL 2: chat ── */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, background: 'rgba(4,7,14,0.35)' }}>
           {/* header (mobile: left padding p/ nao colar no hamburguer do app; nome troca canal) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: isMobile ? 'calc(11px + env(safe-area-inset-top)) 12px 11px 56px' : '13px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, background: isMobile ? 'rgba(8,12,22,0.6)' : 'transparent' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: isMobile ? 'calc(11px + env(safe-area-inset-top)) 12px 11px 56px' : '13px 16px', borderBottom: '1px solid var(--b1)', flexShrink: 0, background: isMobile ? 'rgba(8,12,22,0.6)' : 'transparent' }}>
             <button type="button" onClick={() => { if (isMobile) setMobilePanel('channels') }} disabled={!isMobile}
               style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', padding: 0, cursor: isMobile ? 'pointer' : 'default', textAlign: 'left' }}>
               <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>{channelEmoji(channel)}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ margin: 0, fontSize: 14.5, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ margin: 0, fontSize: 14.5, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {activeChan?.name || 'Network'}
                   {isMobile && <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth={2.4} strokeLinecap="round" style={{ flexShrink: 0 }}><polyline points="6 9 12 15 18 9" /></svg>}
                 </p>
@@ -657,7 +657,7 @@ export default function NetworkPage() {
               {loadingOlder && (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, color: 'var(--t3)' }}>
-                    <span style={{ width: 13, height: 13, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)', borderTopColor: RED, animation: 'spin 0.8s linear infinite' }} />
+                    <span style={{ width: 13, height: 13, borderRadius: '50%', border: '2px solid var(--b2)', borderTopColor: RED, animation: 'spin 0.8s linear infinite' }} />
                     carregando…
                   </span>
                 </div>
@@ -692,12 +692,12 @@ export default function NetworkPage() {
             {showJump && (
               <button onClick={jumpToBottom} title="Ir para o fim" style={{
                 position: 'absolute', bottom: 14, right: 16, width: 42, height: 42, borderRadius: '50%',
-                background: '#0d1220', border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer',
+                background: 'var(--surface)', border: '1px solid var(--b2)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(0,0,0,0.55)', zIndex: 5,
               }}>
                 <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--t1)" strokeWidth={2} strokeLinecap="round"><polyline points="6 9 12 15 18 9" /></svg>
                 {unseenCount > 0 && (
-                  <span style={{ position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, padding: '0 5px', borderRadius: 9, background: RED, color: '#fff', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #0d1220' }}>{unseenCount > 9 ? '9+' : unseenCount}</span>
+                  <span style={{ position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, padding: '0 5px', borderRadius: 9, background: RED, color: 'var(--t1)', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #0d1220' }}>{unseenCount > 9 ? '9+' : unseenCount}</span>
                 )}
               </button>
             )}
@@ -713,7 +713,7 @@ export default function NetworkPage() {
           {replyTo && canPostHere && !data.me?.mute?.muted && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px 8px 14px', margin: '0 12px', borderLeft: `3px solid ${RED}`, background: 'rgba(229,57,53,0.06)', borderRadius: '0 8px 8px 0', flexShrink: 0 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, fontWeight: 800, color: '#ff8a8a' }}>Respondendo a {replyTo.name}</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--loss)' }}>Respondendo a {replyTo.name}</div>
                 <div style={{ fontSize: 12, color: 'var(--t3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{replyTo.text}</div>
               </div>
               <button onClick={() => setReplyTo(null)} title="Cancelar resposta" style={{ ...iconBtn, width: 26, height: 26 }}>
@@ -793,7 +793,7 @@ export default function NetworkPage() {
             <motion.img initial={{ scale: 0.94 }} animate={{ scale: 1 }} exit={{ scale: 0.96 }} src={lightbox.image} alt=""
               onClick={(e) => e.stopPropagation()}
               style={{ maxWidth: '100%', maxHeight: '92vh', borderRadius: 12, objectFit: 'contain', boxShadow: '0 20px 80px rgba(0,0,0,0.7)' }} />
-            <button onClick={() => setLightbox(null)} aria-label="Fechar" style={{ position: 'fixed', top: 16, right: 16, width: 40, height: 40, borderRadius: 11, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <button onClick={() => setLightbox(null)} aria-label="Fechar" style={{ position: 'fixed', top: 16, right: 16, width: 40, height: 40, borderRadius: 11, background: 'var(--fill-3)', border: '1px solid var(--b3)', color: 'var(--t1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
             </button>
           </motion.div>
@@ -841,10 +841,10 @@ function Shell({ children, profile, user, tenant, sub, bare }) {
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
             </div>
             <div>
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#F1F5F9', letterSpacing: '-0.03em' }}>Network</h1>
+              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.03em' }}>Network</h1>
               <p style={{ margin: '1px 0 0', fontSize: 12, color: 'var(--t3)' }}>Comunidade dos admins da NexControl</p>
             </div>
-            <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: '#ff7a7a', padding: '3px 8px', borderRadius: 5, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.3)' }}>BETA</span>
+            <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--loss)', padding: '3px 8px', borderRadius: 5, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.3)' }}>BETA</span>
           </div>
           {children}
         </div>
@@ -867,17 +867,17 @@ function clientFakeOnline() {
 }
 const TEASER_MSGS = [
   { name: 'Rafael Torres', text: 'alguém operando WE hoje? tá com boa retenção?', mine: false, color: '#3b82f6' },
-  { name: 'João PH', text: 'bom dia comunidade 🔥 semana começando forte demais', mine: false, color: '#22C55E' },
+  { name: 'João PH', text: 'bom dia comunidade 🔥 semana começando forte demais', mine: false, color: 'var(--profit)' },
   { name: 'Você', text: 'salve galera, cheguei agora', mine: true, color: '#e53935' },
-  { name: 'Marcos Lima', text: 'fechei 14 metas essa semana, tmj 🚀', mine: false, color: '#f59e0b' },
+  { name: 'Marcos Lima', text: 'fechei 14 metas essa semana, tmj 🚀', mine: false, color: 'var(--warn)' },
   { name: 'Bruno CPA', text: 'alguém usando as proxy da bettify? tá voando aqui', mine: false, color: '#a855f7' },
-  { name: 'Pedro Alves', text: 'quem tá on agora?', mine: false, color: '#14b8a6' },
+  { name: 'Pedro Alves', text: 'quem tá on agora?', mine: false, color: 'var(--profit)' },
 ]
 function TeaserView({ isMobile, vpH, onSubscribe }) {
   const [online] = useState(() => clientFakeOnline())
   const boxStyle = isMobile
     ? { height: vpH ? vpH + 'px' : '100dvh', width: '100%' }
-    : { height: 'calc(100vh - 96px)', minHeight: 480, borderRadius: 18, border: '1px solid rgba(255,255,255,0.07)' }
+    : { height: 'calc(100vh - 96px)', minHeight: 480, borderRadius: 18, border: '1px solid var(--b1)' }
   return (
     <div style={{ position: 'relative', overflow: 'hidden', background: 'rgba(4,7,14,0.6)', ...boxStyle }}>
       <div style={{ filter: 'blur(5px)', opacity: 0.5, padding: '20px 14px', pointerEvents: 'none', userSelect: 'none' }}>
@@ -885,8 +885,8 @@ function TeaserView({ isMobile, vpH, onSubscribe }) {
           <div key={i} style={{ display: 'flex', justifyContent: m.mine ? 'flex-end' : 'flex-start', padding: '6px 4px' }}>
             <div style={{ maxWidth: '78%', display: 'flex', flexDirection: 'column', alignItems: m.mine ? 'flex-end' : 'flex-start' }}>
               {!m.mine && <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: '#fff' }}>{m.name[0]}</div>
-                <span style={{ fontSize: 12.5, fontWeight: 800, color: '#F1F5F9' }}>{m.name}</span>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: 'var(--t1)' }}>{m.name[0]}</div>
+                <span style={{ fontSize: 12.5, fontWeight: 800, color: 'var(--t1)' }}>{m.name}</span>
               </div>}
               <div style={{ marginLeft: m.mine ? 0 : 36, background: m.mine ? 'rgba(229,57,53,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${m.mine ? 'rgba(229,57,53,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: m.mine ? '15px 15px 5px 15px' : '15px 15px 15px 5px', padding: '9px 13px', fontSize: 13.5, color: 'var(--t1)' }}>{m.text}</div>
             </div>
@@ -896,15 +896,15 @@ function TeaserView({ isMobile, vpH, onSubscribe }) {
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 28, background: 'radial-gradient(circle at center, rgba(4,7,14,0.5), rgba(4,7,14,0.9))' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '6px 13px', borderRadius: 99, background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.35)', marginBottom: 18 }}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: MINT, boxShadow: `0 0 8px ${MINT}` }} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#4ade80' }}>{online} admins online agora</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--profit)' }}>{online} admins online agora</span>
         </div>
         <div style={{ width: 60, height: 60, borderRadius: 17, background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
         </div>
-        <h2 style={{ margin: '0 0 8px', fontSize: 21, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>A comunidade tá acontecendo 🔥</h2>
-        <p style={{ margin: '0 0 22px', fontSize: 13.5, color: 'rgba(255,255,255,0.7)', maxWidth: 330, lineHeight: 1.55 }}>Os admins da NexControl estão trocando experiência, dúvidas e oportunidades em tempo real. <strong style={{ color: '#fff' }}>Assine o PRO</strong> pra desbloquear e entrar.</p>
+        <h2 style={{ margin: '0 0 8px', fontSize: 21, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.02em' }}>A comunidade tá acontecendo 🔥</h2>
+        <p style={{ margin: '0 0 22px', fontSize: 13.5, color: 'var(--t2)', maxWidth: 330, lineHeight: 1.55 }}>Os admins da NexControl estão trocando experiência, dúvidas e oportunidades em tempo real. <strong style={{ color: 'var(--t1)' }}>Assine o PRO</strong> pra desbloquear e entrar.</p>
         <button onClick={onSubscribe} className="btn btn-brand btn-lg" style={{ padding: '14px 30px', fontWeight: 800, fontSize: 14.5 }}>Assinar PRO e entrar →</button>
-        <p style={{ marginTop: 12, fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>👑 os primeiros 100 a entrar ganham o selo Veterano</p>
+        <p style={{ marginTop: 12, fontSize: 11, color: 'var(--t3)' }}>👑 os primeiros 100 a entrar ganham o selo Veterano</p>
       </div>
     </div>
   )
@@ -935,7 +935,7 @@ function ChannelList({ channels, active, onSelect, online = [], onlineCount, emb
         })}
       </div>
       {!embedded && (
-        <div style={{ padding: '10px 14px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 7 }}>
+        <div style={{ padding: '10px 14px', borderTop: '1px solid var(--b1)', display: 'flex', alignItems: 'center', gap: 7 }}>
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: MINT, boxShadow: `0 0 8px ${MINT}` }} />
           <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>{onlineCount ?? online.length} online</span>
         </div>
@@ -950,7 +950,7 @@ function PinnedBar({ msg, isOwner, onUnpin }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 16px', background: 'rgba(229,57,53,0.06)', borderBottom: '1px solid rgba(229,57,53,0.18)', flexShrink: 0 }}>
       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" /></svg>
       <p style={{ margin: 0, flex: 1, fontSize: 12, color: 'var(--t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        <strong style={{ color: '#ff8a8a', fontWeight: 700 }}>Fixado:</strong> {msg.text}
+        <strong style={{ color: 'var(--loss)', fontWeight: 700 }}>Fixado:</strong> {msg.text}
       </p>
       {isOwner && <button onClick={onUnpin} style={{ ...iconBtn, width: 24, height: 24 }} title="Desafixar">
         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -978,7 +978,7 @@ const TAG_COLORS = ['#e53935', '#22C55E', '#3b82f6', '#a855f7', '#f5b83c', '#f97
 function ColorSwatches({ value, onChange }) {
   return (
     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
-      <button type="button" onClick={() => onChange(null)} title="Padrão" style={{ width: 24, height: 24, borderRadius: 6, border: `2px solid ${!value ? '#fff' : 'rgba(255,255,255,0.2)'}`, background: 'rgba(255,255,255,0.08)', cursor: 'pointer', fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>—</button>
+      <button type="button" onClick={() => onChange(null)} title="Padrão" style={{ width: 24, height: 24, borderRadius: 6, border: `2px solid ${!value ? '#fff' : 'rgba(255,255,255,0.2)'}`, background: 'var(--fill-3)', cursor: 'pointer', fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>—</button>
       {TAG_COLORS.map(c => (
         <button key={c} type="button" onClick={() => onChange(c)} style={{ width: 24, height: 24, borderRadius: 6, border: `2px solid ${value === c ? '#fff' : 'transparent'}`, background: c, cursor: 'pointer', padding: 0 }} />
       ))}
@@ -996,7 +996,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
   if (system) {
     return (
       <div style={{ textAlign: 'center', padding: '6px 16px', margin: '4px 0' }}>
-        <span style={{ fontSize: 11.5, color: 'var(--t3)', fontStyle: 'italic', background: 'rgba(255,255,255,0.04)', padding: '5px 12px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.06)' }}>{m.text}</span>
+        <span style={{ fontSize: 11.5, color: 'var(--t3)', fontStyle: 'italic', background: 'var(--fill-2)', padding: '5px 12px', borderRadius: 20, border: '1px solid var(--b1)' }}>{m.text}</span>
       </div>
     )
   }
@@ -1025,8 +1025,8 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
         <div style={{ paddingLeft: mine ? 0 : INDENT, width: '100%', display: 'flex', flexDirection: 'column', alignItems: mine ? 'flex-end' : 'flex-start' }}>
         <div style={{ background: bubbleBg, border: `1px solid ${bubbleBd}`, borderRadius: radius, padding: m.image ? 4 : '8px 12px', overflow: 'hidden', maxWidth: '100%' }}>
           {m.reply && (
-            <div style={{ borderLeft: '3px solid #ff8a8a', background: 'rgba(255,255,255,0.05)', borderRadius: '0 7px 7px 0', padding: '4px 8px', margin: m.image ? '4px 4px 2px' : '0 0 6px', maxWidth: '100%' }}>
-              <div style={{ fontSize: 10.5, fontWeight: 800, color: '#ff8a8a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.reply.name}</div>
+            <div style={{ borderLeft: '3px solid #ff8a8a', background: 'var(--fill-2)', borderRadius: '0 7px 7px 0', padding: '4px 8px', margin: m.image ? '4px 4px 2px' : '0 0 6px', maxWidth: '100%' }}>
+              <div style={{ fontSize: 10.5, fontWeight: 800, color: 'var(--loss)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.reply.name}</div>
               <div style={{ fontSize: 11.5, color: 'var(--t3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}>
                 {m.reply.hasImage && <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M21 15l-5-5L5 21" /><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /></svg>}
                 {m.reply.text || (m.reply.hasImage ? 'Foto' : '')}
@@ -1066,7 +1066,7 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
 
       {/* toolbar hover */}
       {hover && (
-        <div style={{ position: 'absolute', top: -4, [mine ? 'left' : 'right']: 46, display: 'flex', gap: 2, background: '#0d1220', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 3, boxShadow: '0 6px 18px rgba(0,0,0,0.5)', zIndex: 6 }}>
+        <div style={{ position: 'absolute', top: -4, [mine ? 'left' : 'right']: 46, display: 'flex', gap: 2, background: 'var(--surface)', border: '1px solid var(--b1)', borderRadius: 8, padding: 3, boxShadow: '0 6px 18px rgba(0,0,0,0.5)', zIndex: 6 }}>
           <button onClick={() => setPicker(p => !p)} style={miniBtn} title="Reagir">😀</button>
           <button onClick={onReply} style={miniBtn} title="Responder">
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" /></svg>
@@ -1080,13 +1080,13 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
           {isOwner && !m.author?.system && <button onClick={onSeen} style={miniBtn} title="Quem visualizou">
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" /><circle cx="12" cy="12" r="3" /></svg>
           </button>}
-          {(m.mine || isOwner) && <button onClick={onDelete} style={{ ...miniBtn, color: '#ff6b6b' }} title="Apagar">
+          {(m.mine || isOwner) && <button onClick={onDelete} style={{ ...miniBtn, color: 'var(--loss)' }} title="Apagar">
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
           </button>}
         </div>
       )}
       {picker && (
-        <div style={{ position: 'absolute', top: 26, [mine ? 'left' : 'right']: 46, display: 'flex', gap: 3, background: '#0d1220', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, padding: 5, boxShadow: '0 8px 22px rgba(0,0,0,0.55)', zIndex: 7 }}>
+        <div style={{ position: 'absolute', top: 26, [mine ? 'left' : 'right']: 46, display: 'flex', gap: 3, background: 'var(--surface)', border: '1px solid var(--b2)', borderRadius: 10, padding: 5, boxShadow: '0 8px 22px rgba(0,0,0,0.55)', zIndex: 7 }}>
           {REACTIONS.map(e => <button key={e} onClick={() => { onReact(m.id, e); setPicker(false) }} style={{ ...miniBtn, fontSize: 17 }}>{e}</button>)}
         </div>
       )}
@@ -1157,7 +1157,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
   if (muted?.muted) {
     const untilStr = muted.permanent ? 'permanentemente' : ('até ' + new Date(muted.until).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }))
     return (
-      <div style={{ padding: '14px 16px calc(14px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(229,57,53,0.25)', flexShrink: 0, background: 'rgba(229,57,53,0.07)', display: 'flex', alignItems: 'center', gap: 10, color: '#ff9a9a', fontSize: 12.5, lineHeight: 1.4 }}>
+      <div style={{ padding: '14px 16px calc(14px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(229,57,53,0.25)', flexShrink: 0, background: 'rgba(229,57,53,0.07)', display: 'flex', alignItems: 'center', gap: 10, color: 'var(--loss)', fontSize: 12.5, lineHeight: 1.4 }}>
         <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M18.36 6.64A9 9 0 0 1 20.77 15" /><path d="M6.16 6.16a9 9 0 1 0 12.68 12.68" /><line x1="2" y1="2" x2="22" y2="22" /></svg>
         <div>Você está silenciado {untilStr}.{muted.reason ? <><br /><span style={{ color: 'var(--t3)' }}>Motivo: {muted.reason}</span></> : null}</div>
       </div>
@@ -1167,7 +1167,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
   // Avisos (só owner): quem não pode postar vê aviso read-only
   if (!canPost) {
     return (
-      <div style={{ padding: '16px 16px calc(16px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--t3)', fontSize: 12.5 }}>
+      <div style={{ padding: '16px 16px calc(16px + env(safe-area-inset-bottom))', borderTop: '1px solid var(--b1)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--t3)', fontSize: 12.5 }}>
         <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
         Somente o admin master pode enviar avisos.
       </div>
@@ -1176,25 +1176,25 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
 
   const canSend = !sending && (requireImg ? !!img : (!!text.trim() || !!img))
   return (
-    <div style={{ padding: '12px 14px calc(14px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+    <div style={{ padding: '12px 14px calc(14px + env(safe-area-inset-bottom))', borderTop: '1px solid var(--b1)', flexShrink: 0 }}>
       {editing && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7, fontSize: 11, color: 'var(--t3)' }}>
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
           Editando mensagem
-          <button onClick={cancelEdit} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>cancelar</button>
+          <button onClick={cancelEdit} style={{ background: 'none', border: 'none', color: 'var(--loss)', cursor: 'pointer', fontSize: 11, fontWeight: 700 }}>cancelar</button>
         </div>
       )}
       {/* preview da foto */}
       {img && (
         <div style={{ display: 'inline-block', position: 'relative', marginBottom: 8 }}>
-          <img src={img} alt="" style={{ height: 76, borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', display: 'block' }} />
-          <button onClick={() => setImg(null)} style={{ position: 'absolute', top: -7, right: -7, width: 22, height: 22, borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', background: '#0d1220', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <img src={img} alt="" style={{ height: 76, borderRadius: 10, border: '1px solid var(--b2)', display: 'block' }} />
+          <button onClick={() => setImg(null)} style={{ position: 'absolute', top: -7, right: -7, width: 22, height: 22, borderRadius: '50%', border: '1px solid var(--b3)', background: 'var(--surface)', color: 'var(--t1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>
         </div>
       )}
       {requireImg && !img && (
-        <div style={{ fontSize: 11, color: '#ff9e6b', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ fontSize: 11, color: 'var(--loss)', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 6 }}>
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M21 15l-5-5L5 21" /><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /></svg>
           Neste canal a foto é obrigatória — anexe uma imagem.
         </div>
@@ -1209,13 +1209,13 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           {imgBusy
-            ? <span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', borderTopColor: RED, animation: 'nx-spin 0.8s linear infinite' }} />
+            ? <span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid var(--b3)', borderTopColor: RED, animation: 'nx-spin 0.8s linear infinite' }} />
             : <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke={img ? '#ff8a8a' : 'var(--t3)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 15l-5-5L5 21" /><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /></svg>}
         </button>
         <div style={{ flex: 1, position: 'relative' }}>
           {/* dropdown de @mencao */}
           {mentionList.length > 0 && (
-            <div style={{ position: 'absolute', bottom: 'calc(100% + 6px)', left: 0, right: 0, background: '#0d1220', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: 5, boxShadow: '0 8px 24px rgba(0,0,0,0.55)', zIndex: 8, maxHeight: 200, overflowY: 'auto' }}>
+            <div style={{ position: 'absolute', bottom: 'calc(100% + 6px)', left: 0, right: 0, background: 'var(--surface)', border: '1px solid var(--b2)', borderRadius: 12, padding: 5, boxShadow: '0 8px 24px rgba(0,0,0,0.55)', zIndex: 8, maxHeight: 200, overflowY: 'auto' }}>
               <div style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--t4)', textTransform: 'uppercase', padding: '4px 8px 6px' }}>Mencionar</div>
               {mentionList.map(m => (
                 <button key={m.id} onMouseDown={e => { e.preventDefault(); pickMention(m) }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '7px 8px', borderRadius: 8, background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}
@@ -1226,7 +1226,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ff8a8a" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /></svg>
                       </span>
                       <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                        <span style={{ fontSize: 13, fontWeight: 800, color: '#ff8a8a' }}>@todos</span>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--loss)' }}>@todos</span>
                         <span style={{ fontSize: 10.5, color: 'var(--t4)' }}>notifica todo mundo</span>
                       </span>
                     </>
@@ -1244,7 +1244,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
             rows={1} placeholder={requireImg ? 'Legenda da foto (opcional)...' : 'Escreva uma mensagem... use @ para mencionar'}
             style={{
               width: '100%', resize: 'none', maxHeight: 120, minHeight: 44, padding: '12px 14px',
-              borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 12, background: 'var(--fill-2)', border: '1px solid var(--b1)',
               color: 'var(--t1)', fontSize: 13.5, fontFamily: 'inherit', lineHeight: 1.5, outline: 'none',
             }}
             onInput={e => { e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px' }}
@@ -1277,7 +1277,7 @@ function RightPanel({ data, onOpenProfile, meId, embedded, onShowMembers, onShow
           <Avatar name={data.me.name} color={data.me.color} src={data.me.avatar} size={38} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ margin: 0, fontSize: 8.5, fontWeight: 800, color: 'var(--t4)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Meu perfil público</p>
-            <p style={{ margin: '2px 0 0', fontSize: 13, fontWeight: 700, color: '#F1F5F9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{data.me.name}</p>
+            <p style={{ margin: '2px 0 0', fontSize: 13, fontWeight: 700, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{data.me.name}</p>
           </div>
           <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth={2} strokeLinecap="round"><polyline points="9 18 15 12 9 6" /></svg>
         </button>
@@ -1304,13 +1304,13 @@ function RightPanel({ data, onOpenProfile, meId, embedded, onShowMembers, onShow
             <span style={{ width: 20, textAlign: 'center', fontSize: 11, fontWeight: 800, fontFamily: 'var(--mono)', color: i === 0 ? '#ffd24a' : i === 1 ? '#cbd5e1' : i === 2 ? '#e08a5b' : 'var(--t4)' }}>{i + 1}</span>
             <Avatar name={t.name} color={t.color} src={t.avatar} size={26} />
             <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: 'var(--t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>{t.name}</span>
-            <span style={{ fontSize: 11, fontWeight: 800, color: '#ff8a8a', fontFamily: 'var(--mono)' }}>{t.score}</span>
+            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--loss)', fontFamily: 'var(--mono)' }}>{t.score}</span>
           </button>
         ))}
       </div>
 
       {/* ações */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 18, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 18, paddingTop: 14, borderTop: '1px solid var(--b1)' }}>
         <button onClick={onShowMembers} style={panelBtn}>
           <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
           Ver todos os membros
@@ -1337,7 +1337,7 @@ function ResultadoPost({ m, meId, isOwner, onReact, onOpenProfile, onOpenComment
   const canDelete = m.mine || isOwner
   return (
     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease }}
-      style={{ background: 'rgba(12,18,32,0.55)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 18, overflow: 'hidden', marginBottom: 18, boxShadow: '0 8px 30px rgba(0,0,0,0.35)' }}>
+      style={{ background: 'rgba(12,18,32,0.55)', border: '1px solid var(--b1)', borderRadius: 18, overflow: 'hidden', marginBottom: 18, boxShadow: '0 8px 30px rgba(0,0,0,0.35)' }}>
       {/* header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '12px 14px' }}>
         <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', flexShrink: 0, borderRadius: '50%', boxShadow: `0 0 0 2px ${tier.color}55, 0 0 14px ${tier.color}44` }}>
@@ -1345,7 +1345,7 @@ function ResultadoPost({ m, meId, isOwner, onReact, onOpenProfile, onOpenComment
         </button>
         <div style={{ flex: 1, minWidth: 0 }}>
           <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, maxWidth: '100%' }}>
-            <span style={{ fontSize: 14, fontWeight: 800, color: '#F1F5F9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
+            <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
             {a.verified && <VerifiedBadge size={14} />}
             {a.tag && <TagPill tag={a.tag} color={a.tagColor} />}
           </button>
@@ -1363,7 +1363,7 @@ function ResultadoPost({ m, meId, isOwner, onReact, onOpenProfile, onOpenComment
       </div>
       {/* imagem */}
       {m.image && (
-        <button onClick={onOpenImage} style={{ display: 'block', width: '100%', border: 'none', padding: 0, background: '#05070c', cursor: 'zoom-in' }}>
+        <button onClick={onOpenImage} style={{ display: 'block', width: '100%', border: 'none', padding: 0, background: 'var(--surface)', cursor: 'zoom-in' }}>
           <img src={m.image} alt="" style={{ width: '100%', maxHeight: 560, objectFit: 'cover', display: 'block' }} />
         </button>
       )}
@@ -1380,7 +1380,7 @@ function ResultadoPost({ m, meId, isOwner, onReact, onOpenProfile, onOpenComment
         </button>
       </div>
       {/* curtidas */}
-      {likeR.count > 0 && <div style={{ padding: '0 14px', fontSize: 13, fontWeight: 800, color: '#F1F5F9' }}>{fmtNum(likeR.count)} {likeR.count === 1 ? 'curtida' : 'curtidas'}</div>}
+      {likeR.count > 0 && <div style={{ padding: '0 14px', fontSize: 13, fontWeight: 800, color: 'var(--t1)' }}>{fmtNum(likeR.count)} {likeR.count === 1 ? 'curtida' : 'curtidas'}</div>}
       {/* legenda */}
       {m.text && (
         <div style={{ padding: '4px 14px 2px', fontSize: 13.5, color: 'var(--t1)', lineHeight: 1.5 }}>
@@ -1462,7 +1462,7 @@ function CommentsSheet({ post, isMobile, api, meId, isOwner, onOpenProfile, onCl
     <>
       <div style={{ flex: 1, overflowY: 'auto', padding: '4px 4px 8px', WebkitOverflowScrolling: 'touch' }}>
         {comments === null ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: 30 }}><span style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)', borderTopColor: RED, animation: 'spin 0.8s linear infinite' }} /></div>
+          <div style={{ display: 'flex', justifyContent: 'center', padding: 30 }}><span style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid var(--b2)', borderTopColor: RED, animation: 'spin 0.8s linear infinite' }} /></div>
         ) : roots.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--t4)', fontSize: 13 }}>Nenhum comentário ainda.<br />Seja o primeiro a comentar.</div>
         ) : roots.map(c => (
@@ -1477,16 +1477,16 @@ function CommentsSheet({ post, isMobile, api, meId, isOwner, onOpenProfile, onCl
         ))}
       </div>
       {replyTo && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 14px', fontSize: 12, color: 'var(--t3)', background: 'rgba(255,255,255,0.03)' }}>
-          <span>Respondendo a <strong style={{ color: '#ff8a8a' }}>{replyTo.name}</strong></span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 14px', fontSize: 12, color: 'var(--t3)', background: 'var(--fill-1)' }}>
+          <span>Respondendo a <strong style={{ color: 'var(--loss)' }}>{replyTo.name}</strong></span>
           <button onClick={() => setReplyTo(null)} style={{ background: 'none', border: 'none', color: 'var(--t4)', cursor: 'pointer', fontSize: 12 }}>cancelar</button>
         </div>
       )}
-      <div style={{ display: 'flex', gap: 9, alignItems: 'flex-end', padding: '10px 12px calc(10px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ display: 'flex', gap: 9, alignItems: 'flex-end', padding: '10px 12px calc(10px + env(safe-area-inset-bottom))', borderTop: '1px solid var(--b1)' }}>
         <textarea ref={inputRef} value={text} onChange={e => setText(e.target.value.slice(0, 600))} rows={1}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit() } }}
           placeholder="Adicione um comentário…"
-          style={{ flex: 1, resize: 'none', maxHeight: 110, minHeight: 42, padding: '11px 13px', borderRadius: 12, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--t1)', fontSize: 13.5, fontFamily: 'inherit', lineHeight: 1.45, outline: 'none' }} />
+          style={{ flex: 1, resize: 'none', maxHeight: 110, minHeight: 42, padding: '11px 13px', borderRadius: 12, background: 'var(--fill-2)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 13.5, fontFamily: 'inherit', lineHeight: 1.45, outline: 'none' }} />
         <button onClick={submit} disabled={!text.trim() || busy} style={{ width: 42, height: 42, borderRadius: 12, flexShrink: 0, border: 'none', background: text.trim() && !busy ? RED : 'rgba(255,255,255,0.08)', cursor: text.trim() && !busy ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={text.trim() && !busy ? '#fff' : 'var(--t4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
         </button>
@@ -1500,10 +1500,10 @@ function CommentsSheet({ post, isMobile, api, meId, isOwner, onOpenProfile, onCl
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
           style={{ position: 'fixed', inset: 0, zIndex: 10600, background: 'rgba(0,0,0,0.6)' }} />
         <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ duration: 0.28, ease }}
-          style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 10601, height: '78vh', background: 'linear-gradient(180deg, #0b1120, #060a12)', borderRadius: '18px 18px 0 0', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderBottom: '1px solid rgba(255,255,255,0.06)', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: 6, left: '50%', transform: 'translateX(-50%)', width: 38, height: 4, borderRadius: 3, background: 'rgba(255,255,255,0.18)' }} />
-            <span style={{ fontSize: 13.5, fontWeight: 800, color: '#F1F5F9', marginTop: 4 }}>Comentários</span>
+          style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 10601, height: '78vh', background: 'var(--surface)', borderRadius: '18px 18px 0 0', border: '1px solid var(--b1)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 14px', borderBottom: '1px solid var(--b1)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 6, left: '50%', transform: 'translateX(-50%)', width: 38, height: 4, borderRadius: 3, background: 'var(--fill-3)' }} />
+            <span style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--t1)', marginTop: 4 }}>Comentários</span>
             <button onClick={onClose} style={{ position: 'absolute', right: 10, top: 8, ...iconBtn, width: 30, height: 30 }}>
               <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
             </button>
@@ -1518,9 +1518,9 @@ function CommentsSheet({ post, isMobile, api, meId, isOwner, onOpenProfile, onCl
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
         style={{ position: 'fixed', inset: 0, zIndex: 10600, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)' }} />
       <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ duration: 0.26, ease }}
-        style={{ position: 'fixed', top: 0, bottom: 0, right: 0, width: 420, maxWidth: '90vw', zIndex: 10601, background: 'linear-gradient(180deg, #0b1120, #060a12)', borderLeft: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <span style={{ fontSize: 14, fontWeight: 800, color: '#F1F5F9' }}>Comentários</span>
+        style={{ position: 'fixed', top: 0, bottom: 0, right: 0, width: 420, maxWidth: '90vw', zIndex: 10601, background: 'var(--surface)', borderLeft: '1px solid var(--b1)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid var(--b1)' }}>
+          <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)' }}>Comentários</span>
           <button onClick={onClose} style={{ ...iconBtn, width: 30, height: 30 }}>
             <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>
@@ -1590,7 +1590,7 @@ function SocialProfileTop({ p, onOpenImage }) {
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 14 }}>
-          <h2 style={{ margin: 0, fontSize: 21, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{p.name}</h2>
+          <h2 style={{ margin: 0, fontSize: 21, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.02em' }}>{p.name}</h2>
           {p.verified && <VerifiedBadge size={20} />}
         </div>
         {p.instagram && <div style={{ fontSize: 12.5, color: 'var(--t3)', marginTop: 2 }}>@{p.instagram}</div>}
@@ -1612,7 +1612,7 @@ function SocialProfileTop({ p, onOpenImage }) {
       {/* RANKING ATUAL — mesmo sistema animado do dashboard (15 tiers por depositantes) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '2px 0 10px' }}>
         <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--t4)', textTransform: 'uppercase' }}>Ranking atual</span>
-        <span style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(255,255,255,0.12), transparent)' }} />
+        <span style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, var(--fill-3), transparent)' }} />
       </div>
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} style={{ marginBottom: 18 }}>
         <RankProgress contas={p.depositantes || 0} name={p.name} compact forceApex={!!p.apexLocked} />
@@ -1622,7 +1622,7 @@ function SocialProfileTop({ p, onOpenImage }) {
       <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase', margin: '2px 0 8px' }}>Estatísticas</div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
         {stats.map(s => (
-          <div key={s.label} style={{ padding: '12px 8px', borderRadius: 12, textAlign: 'center', background: 'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <div key={s.label} style={{ padding: '12px 8px', borderRadius: 12, textAlign: 'center', background: 'linear-gradient(180deg, var(--fill-2), rgba(255,255,255,0.02))', border: '1px solid var(--b1)' }}>
             <div style={{ fontSize: 15, fontWeight: 900, color: s.accent ? '#ff8a8a' : '#F1F5F9', fontFamily: 'var(--mono)', letterSpacing: '-0.02em' }}>{s.value}</div>
             <div style={{ fontSize: 8.5, fontWeight: 800, letterSpacing: '0.06em', color: 'var(--t4)', textTransform: 'uppercase', marginTop: 4 }}>{s.label}</div>
           </div>
@@ -1655,7 +1655,7 @@ function SocialProfileTop({ p, onOpenImage }) {
           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase', margin: '4px 0 8px' }}>Resultados</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 3, marginBottom: 4, borderRadius: 12, overflow: 'hidden' }}>
             {gallery.map(g => (
-              <button key={g.id} onClick={() => onOpenImage && onOpenImage(g.image)} style={{ padding: 0, border: 'none', cursor: 'zoom-in', aspectRatio: '1', background: '#05070c', overflow: 'hidden' }}>
+              <button key={g.id} onClick={() => onOpenImage && onOpenImage(g.image)} style={{ padding: 0, border: 'none', cursor: 'zoom-in', aspectRatio: '1', background: 'var(--surface)', overflow: 'hidden' }}>
                 <img src={g.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               </button>
             ))}
@@ -1756,7 +1756,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
         ...(isMobile
           ? { left: 0, right: 0, bottom: 0, maxHeight: '86vh', borderRadius: '20px 20px 0 0' }
           : { top: 0, bottom: 0, right: 0, width: 380 }),
-        background: 'linear-gradient(180deg, #0d1424, #060a12)',
+        background: 'var(--surface)',
         borderLeft: isMobile ? 'none' : '1px solid rgba(255,255,255,0.1)',
         boxShadow: '-20px 0 60px rgba(0,0,0,0.6)', overflowY: 'auto',
       }}>
@@ -1774,7 +1774,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: 18 }}>
                 <Avatar name={p.name} color={p.color} src={p.avatar} size={78} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginTop: 12 }}>
-                  <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>{p.name}</h2>
+                  <h2 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.02em' }}>{p.name}</h2>
                   {p.verified && <VerifiedBadge size={20} />}
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: 7 }}>
@@ -1784,7 +1784,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                 <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center', marginTop: 8 }}>
                   {p.badges.filter(b => b.key !== 'verificado' && b.key !== 'pioneiro').map(b => <Badge key={b.key} label={b.label} tone={b.tone} />)}
                 </div>
-                {p.instagram && <a href={`https://instagram.com/${p.instagram}`} target="_blank" rel="noreferrer" style={{ marginTop: 10, fontSize: 12, color: '#ff8a8a', textDecoration: 'none', fontWeight: 600 }}>@{p.instagram}</a>}
+                {p.instagram && <a href={`https://instagram.com/${p.instagram}`} target="_blank" rel="noreferrer" style={{ marginTop: 10, fontSize: 12, color: 'var(--loss)', textDecoration: 'none', fontWeight: 600 }}>@{p.instagram}</a>}
                 {p.bio && <p style={{ margin: '10px 0 0', fontSize: 12.5, color: 'var(--t3)', lineHeight: 1.5, maxWidth: 300 }}>{p.bio}</p>}
               </div>
 
@@ -1801,7 +1801,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
 
           {/* moderação (owner define tag; owner/darkzin dão verificado) — nunca no owner */}
           {!view.isMe && !isOwnerTarget && !p.fake && (canVerify || isOwnerUser) && (
-            <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--b1)', display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: 'var(--t4)', textTransform: 'uppercase' }}>Moderação</div>
               {canVerify && (
                 <button onClick={() => setVerified(!p.verified)} disabled={modBusy} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px', borderRadius: 10, cursor: 'pointer', fontWeight: 700, fontSize: 13, border: `1px solid ${p.verified ? 'rgba(255,107,107,0.35)' : 'rgba(56,151,240,0.4)'}`, background: p.verified ? 'rgba(255,107,107,0.1)' : 'rgba(56,151,240,0.12)', color: p.verified ? '#ff8a8a' : '#5aa9f5' }}>
@@ -1826,7 +1826,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                   <label style={lbl}>Tag do usuário (aparece no chat)</label>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <input value={tagInput} onChange={e => setTagInput(e.target.value.slice(0, 24))} placeholder="ex: MENTOR, VIP, PARCEIRO" style={inp} />
-                    <button onClick={saveTag} disabled={modBusy} style={{ padding: '0 16px', borderRadius: 9, border: 'none', background: RED, color: '#fff', fontWeight: 800, fontSize: 12.5, cursor: 'pointer', flexShrink: 0 }}>Salvar</button>
+                    <button onClick={saveTag} disabled={modBusy} style={{ padding: '0 16px', borderRadius: 9, border: 'none', background: RED, color: 'var(--t1)', fontWeight: 800, fontSize: 12.5, cursor: 'pointer', flexShrink: 0 }}>Salvar</button>
                   </div>
                   <ColorSwatches value={tagColor} onChange={setTagColor} />
                   {tagInput.trim() && <div style={{ marginTop: 8 }}>Prévia: <TagPill tag={tagInput.trim()} color={tagColor} /></div>}
@@ -1838,11 +1838,11 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                   <label style={lbl}>Silenciar (castigo de fala)</label>
                   {p.mute?.muted ? (
                     <div style={{ padding: '10px 12px', borderRadius: 9, background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.25)' }}>
-                      <div style={{ fontSize: 12, color: '#ff9a9a', fontWeight: 700 }}>
+                      <div style={{ fontSize: 12, color: 'var(--loss)', fontWeight: 700 }}>
                         Silenciado {p.mute.permanent ? 'permanentemente' : ('até ' + new Date(p.mute.until).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }))}
                       </div>
                       {p.mute.reason && <div style={{ fontSize: 11, color: 'var(--t3)', marginTop: 3 }}>Motivo: {p.mute.reason}</div>}
-                      <button onClick={doUnmute} disabled={modBusy} style={{ marginTop: 8, padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Remover silêncio</button>
+                      <button onClick={doUnmute} disabled={modBusy} style={{ marginTop: 8, padding: '7px 12px', borderRadius: 8, border: '1px solid var(--b2)', background: 'var(--fill-2)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>Remover silêncio</button>
                     </div>
                   ) : (
                     <>
@@ -1851,7 +1851,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                         {[{ l: '1h', m: 60 }, { l: '6h', m: 360 }, { l: '24h', m: 1440 }, { l: '7 dias', m: 10080 }].map(d => (
                           <button key={d.l} onClick={() => doMute({ minutes: d.m })} disabled={modBusy} style={muteBtn}>{d.l}</button>
                         ))}
-                        <button onClick={() => doMute({ permanent: true })} disabled={modBusy} style={{ ...muteBtn, borderColor: 'rgba(229,57,53,0.4)', color: '#ff8a8a' }}>Permanente</button>
+                        <button onClick={() => doMute({ permanent: true })} disabled={modBusy} style={{ ...muteBtn, borderColor: 'rgba(229,57,53,0.4)', color: 'var(--loss)' }}>Permanente</button>
                       </div>
                     </>
                   )}
@@ -1860,12 +1860,12 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
               {isOwnerUser && (
                 <div>
                   <label style={lbl}>Acesso ao Network</label>
-                  {p.banned && <div style={{ fontSize: 12, color: '#ff9a9a', fontWeight: 700, marginBottom: 8 }}>Este usuário está banido do Network.</div>}
+                  {p.banned && <div style={{ fontSize: 12, color: 'var(--loss)', fontWeight: 700, marginBottom: 8 }}>Este usuário está banido do Network.</div>}
                   <button onClick={p.banned ? doUnban : doBan} disabled={modBusy} style={{
                     width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px', borderRadius: 10, cursor: 'pointer', fontWeight: 700, fontSize: 13,
                     border: p.banned ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(229,57,53,0.4)',
                     background: p.banned ? 'rgba(34,197,94,0.1)' : 'rgba(229,57,53,0.1)',
-                    color: p.banned ? '#4ade80' : '#ff6b6b',
+                    color: p.banned ? '#4ade80' : 'var(--loss)',
                   }}>
                     {p.banned ? (
                       <>
@@ -1886,12 +1886,12 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
 
           {/* editar (so o proprio) */}
           {view.isMe && (
-            <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--b1)' }}>
               {!edit ? (
-                <button onClick={() => setEdit(true)} className="btn" style={{ width: '100%', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--t1)', fontWeight: 700, padding: '11px', borderRadius: 10, fontSize: 13 }}>Editar meu perfil</button>
+                <button onClick={() => setEdit(true)} className="btn" style={{ width: '100%', justifyContent: 'center', background: 'var(--fill-2)', border: '1px solid var(--b2)', color: 'var(--t1)', fontWeight: 700, padding: '11px', borderRadius: 10, fontSize: 13 }}>Editar meu perfil</button>
               ) : isFreeMember ? (
                 /* Membro FREE: personalizar perfil e' exclusivo PRO (trava tambem no servidor) */
-                <div style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', padding: '24px 18px 18px', borderRadius: 16, background: 'linear-gradient(180deg, #101010, #070707)', border: '1px solid rgba(229,57,53,0.3)', boxShadow: '0 0 0 1px rgba(229,57,53,0.06), 0 18px 50px rgba(0,0,0,0.55), 0 0 60px rgba(229,57,53,0.07)' }}>
+                <div style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', padding: '24px 18px 18px', borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(229,57,53,0.3)', boxShadow: '0 0 0 1px rgba(229,57,53,0.06), 0 18px 50px rgba(0,0,0,0.55), 0 0 60px rgba(229,57,53,0.07)' }}>
                   {/* linha de brilho no topo */}
                   <div style={{ position: 'absolute', top: 0, left: '16%', right: '16%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.65), transparent)' }} />
                   {/* glow ambiente */}
@@ -1899,24 +1899,24 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
 
                   {/* selo verificado em destaque */}
                   <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
-                    <div style={{ width: 58, height: 58, borderRadius: 17, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 28px rgba(0,0,0,0.5)' }}>
+                    <div style={{ width: 58, height: 58, borderRadius: 17, background: 'var(--fill-2)', border: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 28px rgba(0,0,0,0.5)' }}>
                       <VerifiedBadge size={30} />
                     </div>
                   </div>
 
-                  <div style={{ position: 'relative', fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 21, fontWeight: 400, letterSpacing: '-0.02em', color: '#fafafa', marginBottom: 4 }}>Desbloqueie seu perfil PRO.</div>
+                  <div style={{ position: 'relative', fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 21, fontWeight: 400, letterSpacing: '-0.02em', color: 'var(--t1)', marginBottom: 4 }}>Desbloqueie seu perfil PRO.</div>
                   <p style={{ position: 'relative', margin: '0 0 16px', fontSize: 12, color: 'var(--t3)', lineHeight: 1.5 }}>Sua identidade na comunidade — e a operação completa na dashboard.</p>
 
                   {/* beneficios */}
                   <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 9, textAlign: 'left', margin: '0 0 16px' }}>
                     {[
-                      [<span key="v" style={{ display: 'inline-flex', verticalAlign: 'middle' }}><VerifiedBadge size={13} /></span>, <>Foto, <strong style={{ color: '#fff' }}>@</strong>, bio e tags no perfil — elegível ao <strong style={{ color: '#fff' }}>verificado</strong></>],
-                      ['📊', <>Metas e remessas com <strong style={{ color: '#fff' }}>lucro em tempo real</strong></>],
-                      ['👥', <>Gestão completa de <strong style={{ color: '#fff' }}>operadores e equipe</strong></>],
-                      ['💰', <>Faturamento, custos e <strong style={{ color: '#fff' }}>planejamento da operação</strong></>],
+                      [<span key="v" style={{ display: 'inline-flex', verticalAlign: 'middle' }}><VerifiedBadge size={13} /></span>, <>Foto, <strong style={{ color: 'var(--t1)' }}>@</strong>, bio e tags no perfil — elegível ao <strong style={{ color: 'var(--t1)' }}>verificado</strong></>],
+                      ['📊', <>Metas e remessas com <strong style={{ color: 'var(--t1)' }}>lucro em tempo real</strong></>],
+                      ['👥', <>Gestão completa de <strong style={{ color: 'var(--t1)' }}>operadores e equipe</strong></>],
+                      ['💰', <>Faturamento, custos e <strong style={{ color: 'var(--t1)' }}>planejamento da operação</strong></>],
                     ].map(([ic, txt], i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
-                        <div style={{ flexShrink: 0, width: 24, height: 24, borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>{ic}</div>
+                        <div style={{ flexShrink: 0, width: 24, height: 24, borderRadius: 8, background: 'var(--fill-2)', border: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>{ic}</div>
                         <span style={{ fontSize: 12, color: 'var(--t2)', lineHeight: 1.45, paddingTop: 3 }}>{txt}</span>
                       </div>
                     ))}
@@ -1933,7 +1933,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                     <Avatar name={p.name} color={p.color} src={editAvatar} size={56} />
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                       <input ref={avatarRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={onAvatarFile} style={{ display: 'none' }} />
-                      <button onClick={() => avatarRef.current?.click()} disabled={avatarBusy} style={{ padding: '8px 14px', borderRadius: 9, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.06)', color: 'var(--t1)', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}>{avatarBusy ? 'Processando...' : (editAvatar ? 'Trocar foto' : 'Adicionar foto')}</button>
+                      <button onClick={() => avatarRef.current?.click()} disabled={avatarBusy} style={{ padding: '8px 14px', borderRadius: 9, border: '1px solid var(--b2)', background: 'var(--fill-2)', color: 'var(--t1)', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}>{avatarBusy ? 'Processando...' : (editAvatar ? 'Trocar foto' : 'Adicionar foto')}</button>
                       {editAvatar && <button onClick={() => setAvatarData(null)} style={{ padding: '8px 12px', borderRadius: 9, border: 'none', background: 'none', color: '#ff8a8a', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}>Remover</button>}
                     </div>
                   </div>
@@ -1947,7 +1947,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                   </div>
                   {/* OWNER: personaliza a propria tag (texto + cor) */}
                   {isOwnerUser && (
-                    <div style={{ paddingTop: 4, borderTop: '1px dashed rgba(255,255,255,0.1)' }}>
+                    <div style={{ paddingTop: 4, borderTop: '1px dashed var(--b1)' }}>
                       <label style={lbl}>Minha tag (aparece ao lado do meu nome)</label>
                       <input value={tagInput} onChange={e => setTagInput(e.target.value.slice(0, 24))} placeholder="ex: OWNER, FUNDADOR, MENTOR" style={inp} />
                       <ColorSwatches value={tagColor} onChange={setTagColor} />
@@ -1955,8 +1955,8 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                     </div>
                   )}
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={save} disabled={saving} style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: RED, color: '#fff', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>{saving ? 'Salvando...' : 'Salvar'}</button>
-                    <button onClick={() => setEdit(false)} style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'var(--t3)', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>Cancelar</button>
+                    <button onClick={save} disabled={saving} style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: RED, color: 'var(--t1)', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>{saving ? 'Salvando...' : 'Salvar'}</button>
+                    <button onClick={() => setEdit(false)} style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t3)', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>Cancelar</button>
                   </div>
                 </div>
               )}
@@ -1977,7 +1977,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
 }
 function Stat({ label, value, accent }) {
   return (
-    <div style={{ padding: '11px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ padding: '11px 12px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
       <div style={{ fontSize: 8.5, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--t4)', textTransform: 'uppercase', marginBottom: 4 }}>{label}</div>
       <div style={{ fontSize: 16, fontWeight: 900, color: accent ? '#ff8a8a' : '#F1F5F9', fontFamily: 'var(--mono)', letterSpacing: '-0.01em' }}>{value}</div>
     </div>
@@ -1992,9 +1992,9 @@ function MobileSheet({ children, onClose, side, title }) {
         style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'rgba(0,0,0,0.6)' }} />
       <motion.div initial={{ x: side === 'left' ? '-100%' : '100%' }} animate={{ x: 0 }} exit={{ x: side === 'left' ? '-100%' : '100%' }}
         transition={{ duration: 0.26, ease }}
-        style={{ position: 'fixed', top: 0, bottom: 0, [side]: 0, width: 280, maxWidth: '85vw', zIndex: 9999, background: 'linear-gradient(180deg, #0b1120, #060a12)', borderRight: side === 'left' ? '1px solid rgba(255,255,255,0.1)' : 'none', borderLeft: side === 'right' ? '1px solid rgba(255,255,255,0.1)' : 'none', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <span style={{ fontSize: 13, fontWeight: 800, color: '#F1F5F9' }}>{title}</span>
+        style={{ position: 'fixed', top: 0, bottom: 0, [side]: 0, width: 280, maxWidth: '85vw', zIndex: 9999, background: 'var(--surface)', borderRight: side === 'left' ? '1px solid rgba(255,255,255,0.1)' : 'none', borderLeft: side === 'right' ? '1px solid rgba(255,255,255,0.1)' : 'none', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid var(--b1)' }}>
+          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--t1)' }}>{title}</span>
           <button onClick={onClose} style={iconBtn}><svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>{children}</div>
@@ -2008,13 +2008,13 @@ function CenterMsg({ title, text, spin, icon }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 240, textAlign: 'center', padding: 30, color: 'var(--t3)' }}>
       {spin ? (
-        <div style={{ width: 30, height: 30, borderRadius: '50%', border: '2.5px solid rgba(255,255,255,0.1)', borderTopColor: RED, animation: 'nx-spin 0.8s linear infinite', marginBottom: 14 }} />
+        <div style={{ width: 30, height: 30, borderRadius: '50%', border: '2.5px solid var(--b1)', borderTopColor: RED, animation: 'nx-spin 0.8s linear infinite', marginBottom: 14 }} />
       ) : icon === 'lock' ? (
         <div style={{ width: 54, height: 54, borderRadius: 15, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
           <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
         </div>
       ) : null}
-      {title && <p style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800, color: '#F1F5F9' }}>{title}</p>}
+      {title && <p style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800, color: 'var(--t1)' }}>{title}</p>}
       <p style={{ margin: 0, fontSize: 13, maxWidth: 300, lineHeight: 1.5 }}>{text}</p>
       <style jsx global>{`@keyframes nx-spin { to { transform: rotate(360deg); } }`}</style>
     </div>
@@ -2026,7 +2026,7 @@ function EmptyChat({ name }) {
       <div style={{ width: 60, height: 60, borderRadius: 18, background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
         <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={1.8} strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
       </div>
-      <p style={{ margin: '0 0 5px', fontSize: 15, fontWeight: 800, color: '#F1F5F9' }}>Comece a conversa</p>
+      <p style={{ margin: '0 0 5px', fontSize: 15, fontWeight: 800, color: 'var(--t1)' }}>Comece a conversa</p>
       <p style={{ margin: 0, fontSize: 12.5, color: 'var(--t3)', maxWidth: 280, lineHeight: 1.5 }}>Seja o primeiro a mandar uma mensagem em <strong>{name}</strong>. Troque experiências com outros admins.</p>
     </div>
   )
@@ -2037,7 +2037,7 @@ function UnreadDivider() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 18px', margin: '2px 0' }}>
       <span style={{ flex: 1, height: 1, background: 'rgba(229,57,53,0.35)' }} />
-      <span style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.1em', color: '#ff8a8a', textTransform: 'uppercase' }}>Mensagens novas</span>
+      <span style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--loss)', textTransform: 'uppercase' }}>Mensagens novas</span>
       <span style={{ flex: 1, height: 1, background: 'rgba(229,57,53,0.35)' }} />
     </div>
   )
@@ -2061,9 +2061,9 @@ function SeenModal({ msg, isMobile, api, onOpenProfile, onClose }) {
   const preview = msg.text ? (msg.text.length > 60 ? msg.text.slice(0, 60) + '…' : msg.text) : (msg.image ? '📷 Foto' : '')
   return (
     <Modal title={data ? `Visualizado por ${data.count}` : 'Visualizações'} isMobile={isMobile} onClose={onClose}>
-      {preview && <div style={{ fontSize: 12, color: 'var(--t3)', padding: '2px 2px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 10 }}>“{preview}”</div>}
+      {preview && <div style={{ fontSize: 12, color: 'var(--t3)', padding: '2px 2px 12px', borderBottom: '1px solid var(--b1)', marginBottom: 10 }}>“{preview}”</div>}
       {data === null ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><span style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.15)', borderTopColor: RED, animation: 'spin 0.8s linear infinite' }} /></div>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}><span style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid var(--b2)', borderTopColor: RED, animation: 'spin 0.8s linear infinite' }} /></div>
       ) : data.seen.length === 0 ? (
         <p style={{ fontSize: 12.5, color: 'var(--t4)', padding: '18px 4px', textAlign: 'center' }}>Ninguém visualizou ainda.</p>
       ) : (
@@ -2091,13 +2091,13 @@ function Modal({ title, onClose, isMobile, children }) {
         transition={{ duration: 0.26, ease }} onClick={e => e.stopPropagation()}
         style={{
           position: 'fixed', zIndex: 10001, display: 'flex', flexDirection: 'column',
-          background: 'linear-gradient(180deg, #0d1424, #060a12)', boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+          background: 'var(--surface)', boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
           ...(isMobile
-            ? { left: 0, right: 0, bottom: 0, maxHeight: '80vh', borderRadius: '20px 20px 0 0', border: '1px solid rgba(255,255,255,0.1)' }
-            : { top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 420, maxWidth: '92vw', maxHeight: '80vh', borderRadius: 16, border: '1px solid rgba(255,255,255,0.1)' }),
+            ? { left: 0, right: 0, bottom: 0, maxHeight: '80vh', borderRadius: '20px 20px 0 0', border: '1px solid var(--b1)' }
+            : { top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 420, maxWidth: '92vw', maxHeight: '80vh', borderRadius: 16, border: '1px solid var(--b1)' }),
         }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
-          <span style={{ fontSize: 14, fontWeight: 800, color: '#F1F5F9' }}>{title}</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid var(--b1)', flexShrink: 0 }}>
+          <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)' }}>{title}</span>
           <button onClick={onClose} style={iconBtn}><svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px 18px' }}>{children}</div>
@@ -2131,10 +2131,10 @@ function ModLogModal({ isMobile, api, onClose }) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {state.log.map((r, i) => (
-            <div key={i} style={{ padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div key={i} style={{ padding: '10px 12px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                <span style={{ fontSize: 12.5, fontWeight: 700, color: '#F1F5F9' }}>
-                  <span style={{ color: '#ff8a8a' }}>{actionLabel(r.action)}</span> {r.target_name || '—'}
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--t1)' }}>
+                  <span style={{ color: 'var(--loss)' }}>{actionLabel(r.action)}</span> {r.target_name || '—'}
                 </span>
                 <span style={{ fontSize: 10.5, color: 'var(--t4)', flexShrink: 0 }}>{fmtRel(r.created_at)}</span>
               </div>
@@ -2149,10 +2149,10 @@ function ModLogModal({ isMobile, api, onClose }) {
 }
 
 // ═══════════════ estilos compartilhados ═══════════════
-const iconBtn = { width: 32, height: 32, borderRadius: 9, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }
+const iconBtn = { width: 32, height: 32, borderRadius: 9, border: '1px solid var(--b1)', background: 'var(--fill-2)', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }
 const miniBtn = { width: 28, height: 28, borderRadius: 7, border: 'none', background: 'transparent', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }
 const rowBtn = { display: 'flex', alignItems: 'center', gap: 9, padding: '6px 8px', borderRadius: 9, background: 'transparent', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }
-const panelBtn = { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--t2)', cursor: 'pointer', width: '100%', fontSize: 12.5, fontWeight: 700 }
+const panelBtn = { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 12px', borderRadius: 10, background: 'var(--fill-2)', border: '1px solid var(--b1)', color: 'var(--t2)', cursor: 'pointer', width: '100%', fontSize: 12.5, fontWeight: 700 }
 const lbl = { display: 'block', fontSize: 10.5, fontWeight: 700, color: 'var(--t3)', marginBottom: 4, letterSpacing: '0.04em' }
-const muteBtn = { padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }
-const inp = { width: '100%', padding: '9px 11px', borderRadius: 9, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'inherit', outline: 'none', resize: 'none' }
+const muteBtn = { padding: '7px 12px', borderRadius: 8, border: '1px solid var(--b2)', background: 'var(--fill-2)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }
+const inp = { width: '100%', padding: '9px 11px', borderRadius: 9, background: 'var(--fill-2)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'inherit', outline: 'none', resize: 'none' }

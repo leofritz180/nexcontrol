@@ -208,7 +208,7 @@ function SectionTitle({ children, size = 40 }) {
   return (
     <h2 style={{
       fontFamily: 'var(--font-serif, "Instrument Serif", serif)',
-      fontSize: size, fontWeight: 400, color: '#fff',
+      fontSize: size, fontWeight: 400, color: 'var(--t1)',
       letterSpacing: '-0.025em', lineHeight: 1.05,
       margin: '0 0 16px',
     }}>{children}</h2>
@@ -220,12 +220,12 @@ function LockedHero() {
   return (
     <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-        style={{ maxWidth: 480, borderRadius: 20, background: 'linear-gradient(180deg, var(--raised), #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: '64px 36px', textAlign: 'center' }}>
-        <div style={{ width: 64, height: 64, borderRadius: 16, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+        style={{ maxWidth: 480, borderRadius: 20, background: 'var(--surface)', border: '1px solid var(--b1)', padding: '64px 36px', textAlign: 'center' }}>
+        <div style={{ width: 64, height: 64, borderRadius: 16, background: 'var(--fill-2)', border: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
           <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.6" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
         </div>
-        <h2 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 32, fontWeight: 400, color: '#fff', margin: '0 0 12px', letterSpacing: '-0.02em' }}>Programa em ativação</h2>
-        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', margin: '0 auto', maxWidth: 360, lineHeight: 1.6 }}>Liberação acontece automaticamente nas próximas horas. Volte em breve.</p>
+        <h2 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 32, fontWeight: 400, color: 'var(--t1)', margin: '0 0 12px', letterSpacing: '-0.02em' }}>Programa em ativação</h2>
+        <p style={{ fontSize: 14, color: 'var(--t2)', margin: '0 auto', maxWidth: 360, lineHeight: 1.6 }}>Liberação acontece automaticamente nas próximas horas. Volte em breve.</p>
       </motion.div>
     </div>
   )
@@ -318,12 +318,12 @@ function HeroFullBleed({ rate, totals, link, code }) {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
             padding: '7px 16px', borderRadius: 999,
-            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+            background: 'var(--fill-2)', border: '1px solid var(--b1)',
             marginBottom: 28, backdropFilter: 'blur(8px)',
           }}>
           <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2, repeat: Infinity }}
             style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
-          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10.5, color: 'rgba(255,255,255,0.78)', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10.5, color: 'var(--t1)', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
             Programa de Afiliados · {Math.round(rate * 100)}% de comissão
           </span>
         </motion.div>
@@ -333,7 +333,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1, ease }}
           style={{
             fontFamily: 'var(--font-serif, "Instrument Serif", serif)',
-            fontSize: 112, fontWeight: 400, color: '#fff',
+            fontSize: 112, fontWeight: 400, color: 'var(--t1)',
             letterSpacing: '-0.045em', lineHeight: 0.9,
             margin: '0 0 28px', maxWidth: 1000,
           }}>
@@ -351,11 +351,11 @@ function HeroFullBleed({ rate, totals, link, code }) {
         <motion.p
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25, ease }}
           style={{
-            fontSize: 19, color: 'rgba(255,255,255,0.65)',
+            fontSize: 19, color: 'var(--t2)',
             maxWidth: 620, margin: '0 0 40px',
             lineHeight: 1.5, fontWeight: 300,
           }}>
-          Indique clientes pro NexControl, ganhe <strong style={{ color: '#fff', fontWeight: 500 }}>{Math.round(rate * 100)}%</strong> de comissão em cada assinatura. Direto na sua chave PIX, sem burocracia.
+          Indique clientes pro NexControl, ganhe <strong style={{ color: 'var(--t1)', fontWeight: 500 }}>{Math.round(rate * 100)}%</strong> de comissão em cada assinatura. Direto na sua chave PIX, sem burocracia.
         </motion.p>
 
         {/* CTAs duplos */}
@@ -375,12 +375,12 @@ function HeroFullBleed({ rate, totals, link, code }) {
           <motion.button onClick={copyLink} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
             style={{
               padding: '16px 24px', borderRadius: 12, cursor: 'pointer',
-              background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              color: '#fff', fontSize: 14.5, fontWeight: 600, fontFamily: 'inherit',
+              background: 'var(--fill-2)', backdropFilter: 'blur(8px)',
+              border: '1px solid var(--b2)',
+              color: 'var(--t1)', fontSize: 14.5, fontWeight: 600, fontFamily: 'inherit',
               display: 'inline-flex', alignItems: 'center', gap: 10,
             }}>
-            {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style={{ color: '#10B981' }}>Copiado</span></>)
+            {copied ? (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg><span style={{ color: 'var(--profit)' }}>Copiado</span></>)
               : (<><svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar link</>)}
           </motion.button>
         </motion.div>
@@ -390,14 +390,14 @@ function HeroFullBleed({ rate, totals, link, code }) {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 12,
             padding: '10px 14px', borderRadius: 10,
-            background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)',
+            background: 'rgba(0,0,0,0.4)', border: '1px solid var(--b1)',
             backdropFilter: 'blur(8px)', marginBottom: 80,
             maxWidth: '100%', overflow: 'hidden',
           }}>
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 12, color: 'rgba(255,255,255,0.78)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link}</span>
-          <span style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
-          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.1em', flexShrink: 0 }}>
+          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 12, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link}</span>
+          <span style={{ width: 1, height: 14, background: 'var(--fill-3)', flexShrink: 0 }} />
+          <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.1em', flexShrink: 0 }}>
             <span style={{ color: 'var(--profit)' }}>{code}</span>
           </span>
         </motion.div>
@@ -408,16 +408,16 @@ function HeroFullBleed({ rate, totals, link, code }) {
           className="aff-grid-3"
           style={{
             display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1,
-            background: 'rgba(255,255,255,0.06)', borderRadius: 16, overflow: 'hidden',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'var(--fill-2)', borderRadius: 16, overflow: 'hidden',
+            border: '1px solid var(--b1)',
           }}>
           {[
             { l: 'Indicados', v: totals.totalIndicados || 0, prefix: '', suffix: '', dec: 0, c: '#fff' },
             { l: 'Comissão acumulada', v: totals.totalComissao || 0, prefix: 'R$ ', suffix: '', dec: 2, c: 'var(--profit)' },
             { l: 'A receber', v: totals.pendente || 0, prefix: 'R$ ', suffix: '', dec: 2, c: 'var(--loss)' },
           ].map((k, i) => (
-            <div key={k.l} style={{ background: '#050505', padding: '24px 28px' }}>
-              <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 8px' }}>{k.l}</p>
+            <div key={k.l} style={{ background: 'var(--surface)', padding: '24px 28px' }}>
+              <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, color: 'var(--t3)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 8px' }}>{k.l}</p>
               <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 32, fontWeight: 800, color: k.c, margin: 0, letterSpacing: '-0.025em', lineHeight: 1 }}>
                 <CountUp value={k.v} prefix={k.prefix} suffix={k.suffix} decimals={k.dec} />
               </p>
@@ -431,7 +431,7 @@ function HeroFullBleed({ rate, totals, link, code }) {
           style={{
             position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-            color: 'rgba(255,255,255,0.35)',
+            color: 'var(--t3)',
           }}>
           <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}>Explorar</span>
           <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -462,9 +462,9 @@ function ActivityMarquee({ referrals }) {
   return (
     <div style={{
       position: 'relative', overflow: 'hidden',
-      borderTop: '1px solid rgba(255,255,255,0.06)',
-      borderBottom: '1px solid rgba(255,255,255,0.06)',
-      background: 'rgba(255,255,255,0.015)',
+      borderTop: '1px solid var(--b1)',
+      borderBottom: '1px solid var(--b1)',
+      background: 'var(--fill-1)',
       padding: '16px 0',
     }}>
       <div className="aff-marquee" style={{
@@ -475,16 +475,16 @@ function ActivityMarquee({ referrals }) {
         {doubled.map((item, i) => (
           <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px rgba(16,185,129,0.6)' }} />
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>
-              <strong style={{ color: '#fff', fontWeight: 700 }}>{item.name}</strong> {item.action} <span style={{ color: 'rgba(255,255,255,0.35)' }}>· {item.when}</span>
+            <span style={{ fontSize: 12, color: 'var(--t2)' }}>
+              <strong style={{ color: 'var(--t1)', fontWeight: 700 }}>{item.name}</strong> {item.action} <span style={{ color: 'var(--t3)' }}>· {item.when}</span>
             </span>
-            <span style={{ color: 'rgba(255,255,255,0.15)' }}>•</span>
+            <span style={{ color: 'var(--t4)' }}>•</span>
           </div>
         ))}
       </div>
       {/* Fade laterais */}
-      <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 80, background: 'linear-gradient(90deg, #050505, transparent)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 80, background: 'linear-gradient(-90deg, #050505, transparent)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 80, background: 'var(--surface)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: 80, background: 'var(--surface)', pointerEvents: 'none' }} />
     </div>
   )
 }
@@ -517,7 +517,7 @@ function HowItWorks({ rate }) {
     <div>
       <SectionEyebrow>Em 3 passos</SectionEyebrow>
       <SectionTitle size={56}>Simples assim.</SectionTitle>
-      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 56px', lineHeight: 1.55 }}>
+      <p style={{ fontSize: 16, color: 'var(--t2)', maxWidth: 600, margin: '0 0 56px', lineHeight: 1.55 }}>
         Sem código complicado, sem cadastro burocrático. Tudo funciona em segundo plano.
       </p>
 
@@ -527,7 +527,7 @@ function HowItWorks({ rate }) {
         <div style={{
           position: 'absolute', left: 39, top: 30, bottom: 30,
           width: 1,
-          background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.18), rgba(255,255,255,0.18), transparent)',
+          background: 'linear-gradient(180deg, transparent, var(--fill-3), rgba(255,255,255,0.18), transparent)',
         }} />
 
         {steps.map((s, i) => (
@@ -553,7 +553,7 @@ function HowItWorks({ rate }) {
             <div style={{
               position: 'absolute', left: -61, top: 14,
               width: 11, height: 11, borderRadius: '50%',
-              background: '#050505',
+              background: 'var(--surface)',
               border: `1.5px solid ${s.accent}`,
               boxShadow: `0 0 0 4px #050505, 0 0 16px ${s.accent}66`,
             }} />
@@ -561,11 +561,11 @@ function HowItWorks({ rate }) {
             {/* Conteúdo do step */}
             <h3 style={{
               fontFamily: 'var(--font-serif, serif)', fontSize: 32, fontWeight: 400,
-              color: '#fff', margin: '0 0 10px',
+              color: 'var(--t1)', margin: '0 0 10px',
               letterSpacing: '-0.02em', lineHeight: 1.1,
             }}>{s.title}</h3>
 
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.58)', margin: 0, lineHeight: 1.6, maxWidth: 560 }}>{s.desc}</p>
+            <p style={{ fontSize: 15, color: 'var(--t2)', margin: 0, lineHeight: 1.6, maxWidth: 560 }}>{s.desc}</p>
 
             {/* Step 3: cards de contato */}
             {s.contact && (
@@ -574,16 +574,16 @@ function HowItWorks({ rate }) {
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 10,
                     padding: '12px 16px', borderRadius: 11,
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                    color: '#fff', textDecoration: 'none', fontSize: 13, fontWeight: 600,
+                    background: 'var(--fill-2)', border: '1px solid var(--b1)',
+                    color: 'var(--t1)', textDecoration: 'none', fontSize: 13, fontWeight: 600,
                     transition: 'all 0.18s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
                   <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                   <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.15 }}>
-                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.1em' }}>INSTAGRAM</span>
-                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, color: '#fff' }}>@nexcontrol_ofc</span>
+                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, color: 'var(--t3)', letterSpacing: '0.1em' }}>INSTAGRAM</span>
+                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, color: 'var(--t1)' }}>@nexcontrol_ofc</span>
                   </span>
                 </a>
                 <a href="https://wa.me/5532998348889" target="_blank" rel="noopener noreferrer"
@@ -591,15 +591,15 @@ function HowItWorks({ rate }) {
                     display: 'inline-flex', alignItems: 'center', gap: 10,
                     padding: '12px 16px', borderRadius: 11,
                     background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.24)',
-                    color: '#fff', textDecoration: 'none', fontSize: 13, fontWeight: 600,
+                    color: 'var(--t1)', textDecoration: 'none', fontSize: 13, fontWeight: 600,
                     transition: 'all 0.18s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.14)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(16,185,129,0.08)' }}>
                   <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="1.8" strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                   <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.15 }}>
-                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, color: 'rgba(16,185,129,0.7)', letterSpacing: '0.1em' }}>WHATSAPP</span>
-                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, color: '#fff' }}>(32) 99834-8889</span>
+                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9, color: 'var(--profit)', letterSpacing: '0.1em' }}>WHATSAPP</span>
+                    <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 13, color: 'var(--t1)' }}>(32) 99834-8889</span>
                   </span>
                 </a>
               </div>
@@ -629,7 +629,7 @@ function WithdrawalCode({ code }) {
     <div>
       <SectionEyebrow>Seu código de afiliado</SectionEyebrow>
       <SectionTitle size={56}>Único. Pessoal. Intransferível.</SectionTitle>
-      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 640, margin: '0 0 36px', lineHeight: 1.55 }}>
+      <p style={{ fontSize: 16, color: 'var(--t2)', maxWidth: 640, margin: '0 0 36px', lineHeight: 1.55 }}>
         Este código identifica você como dono da conta. Use ele pra solicitar seu pagamento — só assim a gente confirma que é você que está pedindo, e não outra pessoa.
       </p>
 
@@ -639,20 +639,20 @@ function WithdrawalCode({ code }) {
         style={{
           position: 'relative', overflow: 'hidden',
           padding: '40px 36px', borderRadius: 22,
-          background: 'linear-gradient(180deg, #0d0d0d, #050505)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--surface)',
+          border: '1px solid var(--b1)',
           boxShadow: '0 30px 80px rgba(0,0,0,0.55)',
         }}>
         {/* Glow top */}
-        <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)' }} />
+        <div style={{ position: 'absolute', top: 0, left: '20%', right: '20%', height: 1, background: 'linear-gradient(90deg, transparent, var(--fill-3), transparent)' }} />
         {/* Lateral glow sutil */}
-        <div style={{ position: 'absolute', top: '-30%', right: '-15%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,0.04), transparent 60%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '-30%', right: '-15%', width: 350, height: 350, borderRadius: '50%', background: 'radial-gradient(circle, var(--fill-2), transparent 60%)', filter: 'blur(50px)', pointerEvents: 'none' }} />
 
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
 
           {/* Esquerda — código + ações */}
           <div style={{ flex: '1 1 380px' }}>
-            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.22em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>
               Código de recebimento
             </p>
 
@@ -660,7 +660,7 @@ function WithdrawalCode({ code }) {
               <p style={{
                 fontFamily: 'var(--mono, monospace)',
                 fontSize: 48, fontWeight: 800,
-                color: '#fff',
+                color: 'var(--t1)',
                 margin: 0, letterSpacing: '-0.025em', lineHeight: 1,
                 textShadow: revealed ? '0 0 40px rgba(255,255,255,0.15)' : 'none',
                 transition: 'all 0.3s',
@@ -672,7 +672,7 @@ function WithdrawalCode({ code }) {
                 <button onClick={() => setRevealed(v => !v)} type="button"
                   style={{
                     padding: '10px 12px', borderRadius: 10, cursor: 'pointer',
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'var(--fill-2)', border: '1px solid var(--b1)',
                     color: revealed ? 'var(--loss)' : 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
                     display: 'inline-flex', alignItems: 'center', gap: 6,
                   }}>
@@ -697,14 +697,14 @@ function WithdrawalCode({ code }) {
               </div>
             </div>
 
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.6, maxWidth: 420 }}>
-              <strong style={{ color: '#fff' }}>Mantenha sigilo.</strong> Esse código é a sua chave de identificação. Qualquer pessoa com ele pode tentar resgatar suas comissões em seu nome.
+            <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0, lineHeight: 1.6, maxWidth: 420 }}>
+              <strong style={{ color: 'var(--t1)' }}>Mantenha sigilo.</strong> Esse código é a sua chave de identificação. Qualquer pessoa com ele pode tentar resgatar suas comissões em seu nome.
             </p>
           </div>
 
           {/* Direita — instruções de saque */}
-          <div style={{ flex: '0 1 320px', padding: '22px 24px', borderRadius: 14, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>
+          <div style={{ flex: '0 1 320px', padding: '22px 24px', borderRadius: 14, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>
               Como solicitar
             </p>
             <ol style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 11 }}>
@@ -714,7 +714,7 @@ function WithdrawalCode({ code }) {
                 'Confirme dados pra receber via PIX, banco ou outro meio',
                 'Pagamento sai em até 24 horas',
               ].map((t, i) => (
-                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 12.5, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 12.5, color: 'var(--t2)', lineHeight: 1.5 }}>
                   <span style={{ flexShrink: 0, fontFamily: 'var(--mono, monospace)', fontSize: 10.5, fontWeight: 800, color: 'var(--loss)', minWidth: 18 }}>{i + 1}.</span>
                   <span>{t}</span>
                 </li>
@@ -738,7 +738,7 @@ function CalculatorMega({ rate }) {
     <div>
       <SectionEyebrow>Calculadora</SectionEyebrow>
       <SectionTitle size={56}>Quanto você pode ganhar?</SectionTitle>
-      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 40px', lineHeight: 1.55 }}>
+      <p style={{ fontSize: 16, color: 'var(--t2)', maxWidth: 600, margin: '0 0 40px', lineHeight: 1.55 }}>
         Mova o controle e veja em tempo real. Cada indicado pagante = comissão na sua conta.
       </p>
 
@@ -749,57 +749,57 @@ function CalculatorMega({ rate }) {
         style={{
           display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 0,
           borderRadius: 22, overflow: 'hidden',
-          background: 'linear-gradient(180deg, #0d0d0d, #050505)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--surface)',
+          border: '1px solid var(--b1)',
           boxShadow: '0 30px 80px rgba(0,0,0,0.5)',
         }}>
 
         {/* Controle */}
-        <div style={{ padding: '40px 36px', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
-          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 18px' }}>Indicados pagantes</p>
+        <div style={{ padding: '40px 36px', borderRight: '1px solid var(--b1)' }}>
+          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 18px' }}>Indicados pagantes</p>
 
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 30 }}>
-            <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 72, fontWeight: 800, color: '#fff', letterSpacing: '-0.04em', lineHeight: 0.9 }}>{n}</span>
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>pessoas</span>
+            <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 72, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.04em', lineHeight: 0.9 }}>{n}</span>
+            <span style={{ fontSize: 14, color: 'var(--t3)' }}>pessoas</span>
           </div>
 
           <input type="range" min="1" max="100" value={n} onChange={e => setN(Number(e.target.value))}
             style={{ width: '100%', accentColor: '#e53935', cursor: 'pointer' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 8, fontFamily: 'var(--mono, monospace)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--t4)', marginTop: 8, fontFamily: 'var(--mono, monospace)' }}>
             <span>1</span><span>25</span><span>50</span><span>75</span><span>100</span>
           </div>
 
-          <div style={{ marginTop: 28, padding: '14px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.5 }}>
-              Cálculo baseado em ticket médio de <strong style={{ color: '#fff' }}>R$ {fmt(ticket)}</strong>/mês × <strong style={{ color: '#fff' }}>{Math.round(rate * 100)}% de comissão</strong>.
+          <div style={{ marginTop: 28, padding: '14px 16px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
+            <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0, lineHeight: 1.5 }}>
+              Cálculo baseado em ticket médio de <strong style={{ color: 'var(--t1)' }}>R$ {fmt(ticket)}</strong>/mês × <strong style={{ color: 'var(--t1)' }}>{Math.round(rate * 100)}% de comissão</strong>.
             </p>
           </div>
         </div>
 
         {/* Resultados */}
-        <div style={{ position: 'relative', padding: '40px 36px', background: 'linear-gradient(135deg, rgba(229,57,53,0.05), rgba(229,57,53,0)) , #050505' }}>
+        <div style={{ position: 'relative', padding: '40px 36px', background: 'var(--surface)' }}>
           <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.15), transparent 70%)', filter: 'blur(40px)' }} />
 
           <div style={{ position: 'relative' }}>
-            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>Sua comissão</p>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>Sua comissão</p>
 
             <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 64, fontWeight: 800, color: 'var(--profit)', margin: 0, letterSpacing: '-0.035em', lineHeight: 0.95, textShadow: '0 0 60px rgba(209,250,229,0.3)' }}>
               R$ <CountUp value={earnings} decimals={2} duration={0.6} />
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 30 }}>
-              <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: '0 0 4px', letterSpacing: '0.06em' }}>POR INDICADO</p>
-                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: '#fff', margin: 0 }}>R$ {fmt(ticket * rate)}</p>
+              <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
+                <p style={{ fontSize: 10, color: 'var(--t3)', margin: '0 0 4px', letterSpacing: '0.06em' }}>POR INDICADO</p>
+                <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>R$ {fmt(ticket * rate)}</p>
               </div>
-              <div style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', margin: '0 0 4px', letterSpacing: '0.06em' }}>SE INDICAR 100</p>
+              <div style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
+                <p style={{ fontSize: 10, color: 'var(--t3)', margin: '0 0 4px', letterSpacing: '0.06em' }}>SE INDICAR 100</p>
                 <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: 'var(--profit)', margin: 0 }}>R$ {fmt(100 * ticket * rate)}</p>
               </div>
             </div>
 
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', margin: '20px 0 0', lineHeight: 1.55 }}>
-              <strong style={{ color: 'rgba(255,255,255,0.6)' }}>Realidade:</strong> tickets reais variam de R$ 39 (Solo) a R$ 219+ (Admin + operadores). Quem indica conta grande, ganha proporcionalmente mais.
+            <p style={{ fontSize: 11, color: 'var(--t3)', margin: '20px 0 0', lineHeight: 1.55 }}>
+              <strong style={{ color: 'var(--t2)' }}>Realidade:</strong> tickets reais variam de R$ 39 (Solo) a R$ 219+ (Admin + operadores). Quem indica conta grande, ganha proporcionalmente mais.
             </p>
           </div>
         </div>
@@ -828,10 +828,10 @@ function KPISection({ totals }) {
             transition={{ duration: 0.4, delay: i * 0.08, ease }}
             style={{
               padding: '26px 24px', borderRadius: 16,
-              background: 'linear-gradient(180deg, var(--raised), #050505)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--surface)',
+              border: '1px solid var(--b1)',
             }}>
-            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 10px' }}>{k.l}</p>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 10px' }}>{k.l}</p>
             <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 28, fontWeight: 800, color: k.c, margin: 0, letterSpacing: '-0.025em', lineHeight: 1 }}>
               <CountUp value={k.v} prefix={k.prefix} decimals={k.dec} />
             </p>
@@ -881,7 +881,7 @@ function ShareKitImersive({ link, userName }) {
     <div>
       <SectionEyebrow>Kit de divulgação</SectionEyebrow>
       <SectionTitle size={56}>Copie. Cole. Envie.</SectionTitle>
-      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 40px', lineHeight: 1.55 }}>
+      <p style={{ fontSize: 16, color: 'var(--t2)', maxWidth: 600, margin: '0 0 40px', lineHeight: 1.55 }}>
         Mensagens prontas pensadas pra cada canal. Sem precisar inventar nada.
       </p>
 
@@ -895,8 +895,8 @@ function ShareKitImersive({ link, userName }) {
         }}>
 
         {/* Tabs + Preview */}
-        <div style={{ borderRadius: 18, background: 'linear-gradient(180deg, var(--raised), #050505)', border: '1px solid rgba(255,255,255,0.06)', padding: 28 }}>
-          <div style={{ display: 'flex', gap: 4, marginBottom: 18, padding: 4, background: 'rgba(255,255,255,0.03)', borderRadius: 11, border: '1px solid rgba(255,255,255,0.05)', overflowX: 'auto' }}>
+        <div style={{ borderRadius: 18, background: 'var(--surface)', border: '1px solid var(--b1)', padding: 28 }}>
+          <div style={{ display: 'flex', gap: 4, marginBottom: 18, padding: 4, background: 'var(--fill-1)', borderRadius: 11, border: '1px solid var(--b1)', overflowX: 'auto' }}>
             {Object.entries(TEMPLATES).map(([k, v]) => {
               const active = k === tab
               return (
@@ -915,8 +915,8 @@ function ShareKitImersive({ link, userName }) {
             })}
           </div>
 
-          <div style={{ padding: 20, borderRadius: 12, background: '#050505', border: '1px solid rgba(255,255,255,0.06)', minHeight: 220 }}>
-            <p style={{ fontSize: 13.5, color: '#CBD5E1', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{TEMPLATES[tab].text}</p>
+          <div style={{ padding: 20, borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--b1)', minHeight: 220 }}>
+            <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{TEMPLATES[tab].text}</p>
           </div>
 
           <motion.button onClick={copyTpl} whileTap={{ scale: 0.97 }}
@@ -948,8 +948,8 @@ function PhoneMockup({ text, channel }) {
       width: '100%', maxWidth: 320,
       aspectRatio: '9/19.5',
       borderRadius: 38,
-      background: 'linear-gradient(180deg, #1a1a1a, #050505)',
-      border: '1px solid rgba(255,255,255,0.08)',
+      background: 'var(--surface)',
+      border: '1px solid var(--b1)',
       padding: 8,
       boxShadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(229,57,53,0.08)',
       margin: '0 auto',
@@ -957,7 +957,7 @@ function PhoneMockup({ text, channel }) {
       {/* Notch */}
       <div style={{
         position: 'absolute', top: 18, left: '50%', transform: 'translateX(-50%)',
-        width: 100, height: 24, borderRadius: 12, background: '#000', zIndex: 2,
+        width: 100, height: 24, borderRadius: 12, background: 'var(--surface)', zIndex: 2,
       }} />
       {/* Tela */}
       <div style={{
@@ -966,14 +966,14 @@ function PhoneMockup({ text, channel }) {
         display: 'flex', flexDirection: 'column',
       }}>
         {/* Header phone */}
-        <div style={{ padding: '42px 16px 12px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ padding: '42px 16px 12px', borderBottom: '1px solid var(--b1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(145deg, #e53935, #c62828)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <span style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>V</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--t1)' }}>V</span>
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: '#fff', margin: 0 }}>Você</p>
-              <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.45)', margin: '1px 0 0' }}>online · agora</p>
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Você</p>
+              <p style={{ fontSize: 9, color: 'var(--t3)', margin: '1px 0 0' }}>online · agora</p>
             </div>
           </div>
         </div>
@@ -986,8 +986,8 @@ function PhoneMockup({ text, channel }) {
             borderRadius: '14px 14px 4px 14px',
             background: isWhats ? '#005c4b' : 'linear-gradient(135deg, #1d4ed8, #1e3a8a)',
           }}>
-            <p style={{ fontSize: 10.5, color: '#fff', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.4 }}>{text}</p>
-            <p style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)', margin: '4px 0 0', textAlign: 'right' }}>20:30 ✓✓</p>
+            <p style={{ fontSize: 10.5, color: 'var(--t1)', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.4 }}>{text}</p>
+            <p style={{ fontSize: 8, color: 'var(--t2)', margin: '4px 0 0', textAlign: 'right' }}>20:30 ✓✓</p>
           </div>
         </div>
       </div>
@@ -1024,7 +1024,7 @@ function PixSection({ data, userEmail, onRefresh }) {
     <div>
       <SectionEyebrow>Onde você recebe</SectionEyebrow>
       <SectionTitle size={56}>Sua chave PIX.</SectionTitle>
-      <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 0 40px', lineHeight: 1.55 }}>
+      <p style={{ fontSize: 16, color: 'var(--t2)', maxWidth: 600, margin: '0 0 40px', lineHeight: 1.55 }}>
         {hasPix ? 'Tudo pronto. Comissões cairão direto na chave abaixo.' : 'Cadastre uma chave pra que suas comissões possam ser enviadas.'}
       </p>
 
@@ -1039,11 +1039,11 @@ function PixSection({ data, userEmail, onRefresh }) {
         {/* Form */}
         <div style={{
           padding: 32, borderRadius: 18,
-          background: 'linear-gradient(180deg, var(--raised), #050505)',
+          background: 'var(--surface)',
           border: '1px solid ' + (hasPix ? 'rgba(16,185,129,0.22)' : 'rgba(229,57,53,0.25)'),
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
-            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: 0 }}>Chave atual</p>
+            <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: 0 }}>Chave atual</p>
             <span style={{
               fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 800, padding: '5px 10px', borderRadius: 6,
               background: hasPix ? 'rgba(16,185,129,0.12)' : 'rgba(229,57,53,0.12)',
@@ -1055,7 +1055,7 @@ function PixSection({ data, userEmail, onRefresh }) {
 
           <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
             <select value={pixType} onChange={e => setPixType(e.target.value)}
-              style={{ padding: '14px 14px', borderRadius: 11, background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 13, fontFamily: 'inherit', cursor: 'pointer', outline: 'none' }}>
+              style={{ padding: '14px 14px', borderRadius: 11, background: 'rgba(0,0,0,0.5)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'inherit', cursor: 'pointer', outline: 'none' }}>
               <option value="cpf">CPF</option>
               <option value="email">E-mail</option>
               <option value="phone">Telefone</option>
@@ -1063,7 +1063,7 @@ function PixSection({ data, userEmail, onRefresh }) {
             </select>
             <input value={pixKey} onChange={e => setPixKey(e.target.value)}
               placeholder={pixType === 'cpf' ? '000.000.000-00' : pixType === 'email' ? 'voce@email.com' : pixType === 'phone' ? '+55 31 99999-9999' : 'chave aleatória'}
-              style={{ flex: 1, padding: '14px 14px', borderRadius: 11, background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.08)', color: '#fff', fontSize: 13, fontFamily: 'var(--mono, monospace)', outline: 'none' }} />
+              style={{ flex: 1, padding: '14px 14px', borderRadius: 11, background: 'rgba(0,0,0,0.5)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'var(--mono, monospace)', outline: 'none' }} />
           </div>
 
           <button onClick={save} disabled={saving || !pixKey.trim()}
@@ -1082,10 +1082,10 @@ function PixSection({ data, userEmail, onRefresh }) {
         {/* Info card */}
         <div style={{
           padding: 28, borderRadius: 18,
-          background: 'linear-gradient(180deg, var(--raised), #050505)',
-          border: '1px solid rgba(255,255,255,0.06)',
+          background: 'var(--surface)',
+          border: '1px solid var(--b1)',
         }}>
-          <h4 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 20, fontWeight: 400, color: '#fff', margin: '0 0 14px', letterSpacing: '-0.015em' }}>Como funciona</h4>
+          <h4 style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 20, fontWeight: 400, color: 'var(--t1)', margin: '0 0 14px', letterSpacing: '-0.015em' }}>Como funciona</h4>
           <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
               'Comissão aparece em "A receber"',
@@ -1093,7 +1093,7 @@ function PixSection({ data, userEmail, onRefresh }) {
               'Você recebe push aqui quando for pago',
               'Chave pode ser alterada a qualquer momento',
             ].map((t, i) => (
-              <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+              <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12.5, color: 'var(--t2)', lineHeight: 1.5 }}>
                 <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="3" strokeLinecap="round" style={{ flexShrink: 0, marginTop: 4 }}><polyline points="20 6 9 17 4 12"/></svg>
                 {t}
               </li>
@@ -1112,7 +1112,7 @@ function ReferralsAndTop({ referrals }) {
       <div>
         <SectionEyebrow>Seus indicados</SectionEyebrow>
         <SectionTitle size={56}>Esperando o primeiro.</SectionTitle>
-        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.55)', maxWidth: 540, margin: '0 0 28px', lineHeight: 1.55 }}>
+        <p style={{ fontSize: 16, color: 'var(--t2)', maxWidth: 540, margin: '0 0 28px', lineHeight: 1.55 }}>
           Compartilhe seu link com 3 pessoas hoje. Sério: literalmente 3 mensagens no WhatsApp.
         </p>
       </div>
@@ -1130,8 +1130,8 @@ function ReferralsAndTop({ referrals }) {
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
         transition={{ duration: 0.5, ease }}
         style={{
-          borderRadius: 18, background: 'linear-gradient(180deg, var(--raised), #050505)',
-          border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden', marginTop: 28,
+          borderRadius: 18, background: 'var(--surface)',
+          border: '1px solid var(--b1)', overflow: 'hidden', marginTop: 28,
         }}>
         <AnimatePresence initial={false}>
           {referrals.map((r, i) => (
@@ -1140,19 +1140,19 @@ function ReferralsAndTop({ referrals }) {
               transition={{ duration: 0.3, ease }}
               style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '18px 24px', borderBottom: i < referrals.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
               <div style={{ width: 42, height: 42, borderRadius: 11, background: 'linear-gradient(145deg, rgba(229,57,53,0.2), rgba(229,57,53,0.04))', border: '1px solid rgba(229,57,53,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>{(r.tenant_name || '?')[0].toUpperCase()}</span>
+                <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)' }}>{(r.tenant_name || '?')[0].toUpperCase()}</span>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.tenant_name}</p>
-                <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.tenant_name}</p>
+                <p style={{ fontSize: 11, color: 'var(--t3)', margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   {r.email && <span>{r.email}</span>}
                   <StatusBadge status={r.subscription_status} />
-                  {r.payments_count > 0 && <span style={{ color: 'rgba(255,255,255,0.55)' }}>· {r.payments_count} pagto(s)</span>}
+                  {r.payments_count > 0 && <span style={{ color: 'var(--t2)' }}>· {r.payments_count} pagto(s)</span>}
                 </p>
               </div>
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 18, fontWeight: 800, color: 'var(--profit)', margin: 0, letterSpacing: '-0.015em' }}>+R$ {fmt(r.commission)}</p>
-                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', margin: '2px 0 0' }}>de R$ {fmt(r.generated)}</p>
+                <p style={{ fontSize: 10, color: 'var(--t3)', margin: '2px 0 0' }}>de R$ {fmt(r.generated)}</p>
               </div>
             </motion.div>
           ))}
@@ -1161,12 +1161,12 @@ function ReferralsAndTop({ referrals }) {
 
       {withComm.length > 0 && (
         <div style={{ marginTop: 32 }}>
-          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>🏆 Seu top 5</p>
+          <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700, margin: '0 0 14px' }}>🏆 Seu top 5</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {withComm.map((r, i) => (
-              <div key={r.tenant_id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', borderRadius: 11, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <div key={r.tenant_id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px', borderRadius: 11, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
                 <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 16, fontWeight: 800, color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'rgba(255,255,255,0.35)', minWidth: 32 }}>#{i + 1}</span>
-                <p style={{ flex: 1, fontSize: 13.5, fontWeight: 600, color: '#fff', margin: 0 }}>{r.tenant_name}</p>
+                <p style={{ flex: 1, fontSize: 13.5, fontWeight: 600, color: 'var(--t1)', margin: 0 }}>{r.tenant_name}</p>
                 <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 14, fontWeight: 800, color: 'var(--profit)', margin: 0 }}>R$ {fmt(r.commission)}</p>
               </div>
             ))}
@@ -1213,14 +1213,14 @@ function FAQImersive({ rate }) {
       <motion.div
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
         transition={{ duration: 0.5, ease }}
-        style={{ marginTop: 32, borderRadius: 18, background: 'linear-gradient(180deg, var(--raised), #050505)', border: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+        style={{ marginTop: 32, borderRadius: 18, background: 'var(--surface)', border: '1px solid var(--b1)', overflow: 'hidden' }}>
         {items.map((item, i) => {
           const isOpen = open === i
           return (
             <div key={i} style={{ borderBottom: i < items.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
               <button type="button" onClick={() => setOpen(isOpen ? -1 : i)}
                 style={{ width: '100%', padding: '22px 26px', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textAlign: 'left', fontFamily: 'inherit' }}>
-                <span style={{ fontSize: 15, fontWeight: 600, color: '#fff', paddingRight: 16 }}>{item.q}</span>
+                <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--t1)', paddingRight: 16 }}>{item.q}</span>
                 <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.22, ease }} style={{ flexShrink: 0 }}>
                   <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </motion.div>
@@ -1231,7 +1231,7 @@ function FAQImersive({ rate }) {
                     initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.28, ease }}
                     style={{ overflow: 'hidden' }}>
-                    <p style={{ padding: '0 26px 22px', fontSize: 14, color: 'rgba(255,255,255,0.62)', margin: 0, lineHeight: 1.65 }}>{item.a}</p>
+                    <p style={{ padding: '0 26px 22px', fontSize: 14, color: 'var(--t2)', margin: 0, lineHeight: 1.65 }}>{item.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1253,7 +1253,7 @@ function FinalCTA({ link, rate }) {
     <section style={{
       position: 'relative', overflow: 'hidden',
       padding: '100px 28px 120px',
-      borderTop: '1px solid rgba(255,255,255,0.05)',
+      borderTop: '1px solid var(--b1)',
       textAlign: 'center',
     }}>
       <div style={{
@@ -1272,12 +1272,12 @@ function FinalCTA({ link, rate }) {
         </p>
         <h2 style={{
           fontFamily: 'var(--font-serif, serif)', fontSize: 72, fontWeight: 400,
-          color: '#fff', margin: '0 0 24px', letterSpacing: '-0.035em', lineHeight: 0.95,
+          color: 'var(--t1)', margin: '0 0 24px', letterSpacing: '-0.035em', lineHeight: 0.95,
         }}>
           {Math.round(rate * 100)}% de comissão.<br/>
           <span style={{ background: 'linear-gradient(90deg, #fff, var(--loss))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontStyle: 'italic' }}>Sua, sem trabalho.</span>
         </h2>
-        <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', margin: '0 0 36px', lineHeight: 1.55 }}>
+        <p style={{ fontSize: 16, color: 'var(--t2)', margin: '0 0 36px', lineHeight: 1.55 }}>
           Pega seu link, manda no grupo, espera o pagamento entrar.
         </p>
         <motion.button onClick={copyLink} whileHover={{ scale: 1.04, boxShadow: '0 20px 60px rgba(229,57,53,0.6)' }} whileTap={{ scale: 0.97 }}

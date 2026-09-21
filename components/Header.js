@@ -22,7 +22,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
       background: 'rgba(5,7,15,0.88)',
       backdropFilter: 'blur(12px)',
       WebkitBackdropFilter: 'blur(12px)',
-      borderBottom: '1px solid rgba(255,255,255,0.06)',
+      borderBottom: '1px solid var(--b1)',
     }}>
       <div style={{
         maxWidth: 1380, margin: '0 auto', padding: '0 28px',
@@ -72,7 +72,7 @@ export default function Header({ userName, userEmail, isAdmin, tenant, subscript
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '4px 10px 4px 4px', borderRadius: 8,
-            background: 'rgba(255,255,255,0.04)',
+            background: 'var(--fill-2)',
           }}>
             <div style={{
               width: 24, height: 24, borderRadius: 6,

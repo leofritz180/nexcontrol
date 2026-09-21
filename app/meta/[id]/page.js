@@ -115,9 +115,9 @@ function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, bauAcumRemessas =
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:10000,background:'rgba(4,8,16,0.92)',backdropFilter:'blur(16px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:520,background:'var(--surface)',borderRadius:24,border:'1px solid rgba(255,255,255,0.2)',boxShadow:'0 40px 80px rgba(0,0,0,0.6)',animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',overflow:'hidden'}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:'100%',maxWidth:520,background:'var(--surface)',borderRadius:24,border:'1px solid var(--b3)',boxShadow:'0 40px 80px rgba(0,0,0,0.6)',animation:'scale-in 0.3s cubic-bezier(0.33,1,0.68,1) both',overflow:'hidden'}}>
         {/* Header */}
-        <div style={{padding:'24px 28px',background:'linear-gradient(135deg,rgba(255,255,255,0.1),transparent)',borderBottom:'1px solid var(--b1)'}}>
+        <div style={{padding:'24px 28px',background:'linear-gradient(135deg,var(--fill-3),transparent)',borderBottom:'1px solid var(--b1)'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
             <div style={{display:'flex',alignItems:'center',gap:12}}>
               <div style={{width:40,height:40,borderRadius:12,background:'var(--profit-dim)',border:'1px solid var(--profit-border)',display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -267,11 +267,11 @@ function EditMetaModal({ meta, userId, onClose, onSaved, contasMinimo }) {
         initial={{ opacity: 0, scale: 0.96, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 10 }}
         transition={{ duration: 0.28, ease: [0.33,1,0.68,1] }}
         onClick={e => e.stopPropagation()}
-        style={{ width: '100%', maxWidth: 520, background: 'var(--surface)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.2)', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', overflow: 'hidden' }}
+        style={{ width: '100%', maxWidth: 520, background: 'var(--surface)', borderRadius: 20, border: '1px solid var(--b3)', boxShadow: '0 40px 80px rgba(0,0,0,0.6)', overflow: 'hidden' }}
       >
         <div style={{ padding: '22px 26px', borderBottom: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 38, height: 38, borderRadius: 10, background: 'var(--fill-3)', border: '1px solid var(--b3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </div>
             <div>
@@ -315,7 +315,7 @@ function EditMetaModal({ meta, userId, onClose, onSaved, contasMinimo }) {
           </div>
 
           {err && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderRadius: 10, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', fontSize: 12, color: '#fca5a5' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderRadius: 10, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.18)', fontSize: 12, color: 'var(--loss)' }}>
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               {err}
             </div>
@@ -362,7 +362,7 @@ function KPI({ label, value, color, small=false, accent }) {
         position:'relative', overflow:'hidden',
         background:'linear-gradient(180deg, var(--raised), var(--surface))',
         backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
-        border:'1px solid rgba(255,255,255,0.06)',
+        border:'1px solid var(--b1)',
         borderRadius:14, padding:small?'12px 14px':'18px 20px',
         boxShadow:'0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
         cursor:'default', transition:'all 0.25s ease',
@@ -822,7 +822,7 @@ export default function MetaPage() {
 
   const fbCfg = {
     good: { bg: 'linear-gradient(145deg, #0a1a12, var(--surface))', border: 'rgba(209,250,229,0.3)', color: 'var(--profit)', iconPath: 'M20 6L9 17l-5-5' },
-    warn: { bg: 'linear-gradient(145deg, #1a1608, #14120a)', border: 'rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.78)', iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' },
+    warn: { bg: 'linear-gradient(145deg, #1a1608, #14120a)', border: 'var(--b3)', color: 'var(--t1)', iconPath: 'M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z' },
     critical: { bg: 'linear-gradient(145deg, #1a0a0a, #140c0c)', border: 'rgba(239,68,68,0.3)', color: 'var(--loss)', iconPath: 'M18 6L6 18M6 6l12 12' },
   }
 
@@ -870,11 +870,11 @@ export default function MetaPage() {
               </svg>
               <div style={{ flex:1 }}>
                 <p style={{ fontSize: 14, fontWeight: 700, color: c.color, margin: '0 0 4px' }}>{feedback.title}</p>
-                <p style={{ fontSize: 12, color: '#CBD5E1', margin: 0, lineHeight: 1.5 }}>{feedback.text}</p>
+                <p style={{ fontSize: 12, color: 'var(--t2)', margin: 0, lineHeight: 1.5 }}>{feedback.text}</p>
                 {feedback.insight && (
-                  <div style={{ marginTop:8, padding:'6px 10px', borderRadius:8, background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)', display:'flex', alignItems:'center', gap:6 }}>
+                  <div style={{ marginTop:8, padding:'6px 10px', borderRadius:8, background:'var(--fill-2)', border:'1px solid var(--b2)', display:'flex', alignItems:'center', gap:6 }}>
                     <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/></svg>
-                    <span style={{ fontSize:10, color:'#c4b5fd', fontWeight:500 }}>{feedback.insight}</span>
+                    <span style={{ fontSize:10, color:'var(--t2)', fontWeight:500 }}>{feedback.insight}</span>
                   </div>
                 )}
               </div>
@@ -952,19 +952,19 @@ export default function MetaPage() {
                         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
                         <span style={{ fontSize:11, color:'var(--t3)', fontFamily:'var(--mono)', fontWeight:600 }}>{meta?.quantidade_contas||0} contas</span>
                       </div>
-                      <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
+                      <div style={{ width:1, height:10, background:'var(--fill-3)' }}/>
                       <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2.2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                         <span style={{ fontSize:11, color:'var(--t3)', fontFamily:'var(--mono)', fontWeight:600 }}>{remessas.length} remessas</span>
                       </div>
-                      <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
+                      <div style={{ width:1, height:10, background:'var(--fill-3)' }}/>
                       <div style={{ display:'flex', alignItems:'center', gap:6 }}>
                         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={pctAcerto>=70?'var(--profit)':pctAcerto>=50?'rgba(255,255,255,0.78)':'var(--loss)'} strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                         <span style={{ fontSize:11, color: pctAcerto>=70?'var(--profit)':pctAcerto>=50?'rgba(255,255,255,0.78)':'var(--loss)', fontFamily:'var(--mono)', fontWeight:700 }}>{pctAcerto}% acerto</span>
                       </div>
                       {meta?.rede && (<>
-                        <div style={{ width:1, height:10, background:'rgba(255,255,255,0.08)' }}/>
-                        <span style={{ fontSize:10, padding:'2px 8px', borderRadius:5, background:'rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.78)', border:'1px solid rgba(255,255,255,0.22)', fontWeight:700, letterSpacing:'0.05em', fontFamily:'var(--mono)' }}>{meta.rede}</span>
+                        <div style={{ width:1, height:10, background:'var(--fill-3)' }}/>
+                        <span style={{ fontSize:10, padding:'2px 8px', borderRadius:5, background:'var(--fill-3)', color:'var(--t1)', border:'1px solid var(--b3)', fontWeight:700, letterSpacing:'0.05em', fontFamily:'var(--mono)' }}>{meta.rede}</span>
                       </>)}
                     </div>
                   </div>
@@ -975,9 +975,9 @@ export default function MetaPage() {
                         onClick={()=>setShowEdit(true)}
                         whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }}
                         style={{
-                          padding:'10px 16px', borderRadius:11, border:'1px solid rgba(255,255,255,0.08)', cursor:'pointer',
+                          padding:'10px 16px', borderRadius:11, border:'1px solid var(--b1)', cursor:'pointer',
                           fontSize:12, fontWeight:700, fontFamily:'inherit',
-                          background:'rgba(255,255,255,0.03)', color:'var(--t2)',
+                          background:'var(--fill-1)', color:'var(--t2)',
                           display:'flex', alignItems:'center', gap:7,
                         }} title={isFechada ? 'Editar lucro/ajustes (admin)' : 'Editar meta'}>
                         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -990,7 +990,7 @@ export default function MetaPage() {
                       whileTap={{ scale:0.97 }}
                       style={{
                         padding:'10px 18px', borderRadius:11, border:'none', cursor:'pointer',
-                        fontSize:12, fontWeight:800, fontFamily:'inherit', color:'#fff',
+                        fontSize:12, fontWeight:800, fontFamily:'inherit', color:'var(--t1)',
                         background: canReactivate
                           ? 'linear-gradient(145deg, var(--profit), #00a06d)'
                           : 'linear-gradient(145deg, #e53935, #c62828)',
@@ -1317,7 +1317,7 @@ export default function MetaPage() {
 
                 {/* Previsao — apenas para metas ativas (nao fechadas) */}
                 {meta?.status_fechamento !== 'fechada' && contasRestantes > 0 ? (
-                  <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ padding: '14px 16px', borderRadius: 12, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
                     <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--t4)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Estimativa final</p>
                     <p style={{ fontSize: 15, fontWeight: 700, color: previsaoFinal >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '0 0 4px', fontFamily: 'var(--mono, monospace)', opacity: 0.7 }}>
                       {previsaoFinal >= 0 ? '+' : ''}R$ {fmt(previsaoFinal)}
@@ -1327,7 +1327,7 @@ export default function MetaPage() {
                     </p>
                   </div>
                 ) : (
-                  <div style={{ padding: '14px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ padding: '14px 16px', borderRadius: 12, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
                     <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--t4)', margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Media por conta</p>
                     <p style={{ fontSize: 15, fontWeight: 700, color: avgPerConta >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '0 0 4px', fontFamily: 'var(--mono, monospace)' }}>
                       R$ {fmt(avgPerConta)}
@@ -1343,7 +1343,7 @@ export default function MetaPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                 <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>Insights da operacao</span>
-                <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.78)', background: 'rgba(255,255,255,0.1)', padding: '2px 7px', borderRadius: 5 }}>AI</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--t1)', background: 'var(--fill-3)', padding: '2px 7px', borderRadius: 5 }}>AI</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {insights.map((ins, i) => {
@@ -1423,7 +1423,7 @@ export default function MetaPage() {
               </div>
 
               {/* Progress bar — mais espessa com gradient + shimmer */}
-              <div style={{ position:'relative', width:'100%', height:10, borderRadius:5, background:'rgba(255,255,255,0.05)', overflow:'hidden', border:'1px solid rgba(255,255,255,0.04)' }}>
+              <div style={{ position:'relative', width:'100%', height:10, borderRadius:5, background:'var(--fill-2)', overflow:'hidden', border:'1px solid var(--b1)' }}>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${pctExact}%` }}
@@ -1445,7 +1445,7 @@ export default function MetaPage() {
                   {/* Shimmer overlay */}
                   <div style={{
                     position:'absolute', inset:0,
-                    background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
+                    background:'linear-gradient(90deg, transparent, var(--fill-3), transparent)',
                     animation:'metaProgShimmer 2.2s ease-in-out infinite',
                     backgroundSize:'200% 100%',
                   }}/>
@@ -1505,7 +1505,7 @@ export default function MetaPage() {
                 </div>
                 <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'4px 10px', borderRadius:99, background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.28)' }}>
                   <motion.span animate={{ opacity:[1,0.3,1] }} transition={{ duration:1.6, repeat:Infinity }} style={{ width:6, height:6, borderRadius:'50%', background:'#22C55E' }}/>
-                  <span style={{ fontFamily:'var(--mono)', fontSize:9, fontWeight:800, color:'#22C55E', letterSpacing:'0.12em' }}>AO VIVO</span>
+                  <span style={{ fontFamily:'var(--mono)', fontSize:9, fontWeight:800, color:'var(--profit)', letterSpacing:'0.12em' }}>AO VIVO</span>
                 </div>
               </div>
 
@@ -1534,7 +1534,7 @@ export default function MetaPage() {
                           <div style={{ position:'relative', height:84 }}>
                             <img src={s.image} alt={s.name} loading="lazy" style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }} onError={e=>{ e.currentTarget.style.opacity=0 }}/>
                             <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.7))', pointerEvents:'none' }}/>
-                            {s.provider && <span style={{ position:'absolute', top:6, left:6, fontSize:7.5, fontWeight:800, padding:'2px 5px', borderRadius:4, background:'rgba(0,0,0,0.55)', color:'#fff', textTransform:'uppercase', letterSpacing:'0.04em' }}>{s.provider}</span>}
+                            {s.provider && <span style={{ position:'absolute', top:6, left:6, fontSize:7.5, fontWeight:800, padding:'2px 5px', borderRadius:4, background:'rgba(0,0,0,0.55)', color:'var(--t1)', textTransform:'uppercase', letterSpacing:'0.04em' }}>{s.provider}</span>}
                             {active && <div style={{ position:'absolute', top:6, right:6, width:20, height:20, borderRadius:'50%', background:'var(--profit)', display:'flex', alignItems:'center', justifyContent:'center' }}><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#012b1c" strokeWidth="3.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>}
                           </div>
                           <div style={{ padding:'7px 8px' }}>
@@ -1578,9 +1578,9 @@ export default function MetaPage() {
                             {comprovantes.map((item, ci) => { const f = normFoto(item); return (
                               <div key={ci} style={{ position:'relative' }}>
                                 <a href={f.url} target="_blank" rel="noreferrer"><img src={f.url} alt={`comprovante ${ci+1}`} style={{ width:64, height:64, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/></a>
-                                {f.ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:7.5, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2, letterSpacing:'-0.02em' }}>{fmtFotoTs(f.ts)}</span>}
+                                {f.ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'var(--t1)', fontSize:7.5, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2, letterSpacing:'-0.02em' }}>{fmtFotoTs(f.ts)}</span>}
                                 <button type="button" onClick={()=>setComprovantes(prev=>prev.filter((_,i)=>i!==ci))} title="Remover"
-                                  style={{ position:'absolute', top:-6, right:-6, width:18, height:18, borderRadius:'50%', border:'1px solid var(--b2)', background:'#1a1a1a', color:'var(--loss)', cursor:'pointer', fontSize:11, lineHeight:'1', display:'flex', alignItems:'center', justifyContent:'center', padding:0 }}>×</button>
+                                  style={{ position:'absolute', top:-6, right:-6, width:18, height:18, borderRadius:'50%', border:'1px solid var(--b2)', background:'var(--surface)', color:'var(--loss)', cursor:'pointer', fontSize:11, lineHeight:'1', display:'flex', alignItems:'center', justifyContent:'center', padding:0 }}>×</button>
                               </div>
                             )})}
                           </div>
@@ -1721,7 +1721,7 @@ export default function MetaPage() {
                       </span>
                     </div>
                   ) : (
-                    <div style={{ padding:'8px 14px', borderRadius:8, background:'rgba(255,255,255,0.02)', border:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'center', minHeight:38 }}>
+                    <div style={{ padding:'8px 14px', borderRadius:8, background:'var(--fill-1)', border:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'center', minHeight:38 }}>
                       <span style={{ fontSize:10, color:'var(--t4)' }}>Resultado</span>
                     </div>
                   )}
@@ -1734,7 +1734,7 @@ export default function MetaPage() {
                   <div className="g-form" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
                     <div>
                       <label className="t-label" style={{ display:'block', marginBottom:4, fontSize:8 }}>STATUS</label>
-                      <div style={{ display:'flex', gap:2, background:'rgba(255,255,255,0.02)', borderRadius:7, padding:2, border:'1px solid var(--b1)' }}>
+                      <div style={{ display:'flex', gap:2, background:'var(--fill-1)', borderRadius:7, padding:2, border:'1px solid var(--b1)' }}>
                         {[
                           { k:'normal', l:'Normal', c:'var(--profit)' },
                           { k:'saque_pendente', l:'Pendente', c:'rgba(255,255,255,0.78)' },
@@ -1878,7 +1878,7 @@ export default function MetaPage() {
                             )}
                           </div>
                           <p className="t-small">{r.tipo==='conta_mae'?'Conta Mãe':r.tipo==='redeposito'?'Redepósito':r.tipo==='bonus'?'Bônus':r.tipo} · {new Date(r.created_at).toLocaleString('pt-BR')}</p>
-                          {r.slot_name && <span style={{ display:'inline-block', marginTop:3, padding:'2px 8px', borderRadius:6, fontSize:9, fontWeight:600, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'var(--info)' }}>{r.slot_name}</span>}
+                          {r.slot_name && <span style={{ display:'inline-block', marginTop:3, padding:'2px 8px', borderRadius:6, fontSize:9, fontWeight:600, background:'var(--fill-3)', border:'1px solid var(--b3)', color:'var(--info)' }}>{r.slot_name}</span>}
                           {r.observacoes && <p style={{ fontSize:11, color:'var(--t4)', margin:'4px 0 0', fontStyle:'italic' }}>{r.observacoes}</p>}
                         </div>
                         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
@@ -1922,7 +1922,7 @@ export default function MetaPage() {
                               {fotos.map((item, fi) => { const f = normFoto(item); const ts = f.ts || r.created_at; return (
                                 <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{ position:'relative', display:'block' }}>
                                   <img src={f.url} alt={`comprovante ${fi+1}`} style={{ width:72, height:72, objectFit:'cover', borderRadius:6, border:'1px solid var(--b2)', display:'block' }}/>
-                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fmtFotoTs(ts)}</span>}
+                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'var(--t1)', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fmtFotoTs(ts)}</span>}
                                 </a>
                               )})}
                             </div>
@@ -2311,7 +2311,7 @@ export default function MetaPage() {
                     <button type="button" onClick={netShareState === 'idle' ? compartilharNoNetwork : (netShareState === 'done' ? () => { setShowFinalePopup(false); router.push('/network?c=resultados') } : undefined)} disabled={netShareState === 'sharing'}
                       style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9, width: '100%', padding: '13px', borderRadius: 13, cursor: netShareState === 'sharing' ? 'default' : 'pointer', fontSize: 14, fontWeight: 800, fontFamily: 'inherit', color: netShareState === 'done' ? '#4ade80' : '#fff', background: netShareState === 'done' ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.06)', border: `1px solid ${netShareState === 'done' ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.14)'}` }}>
                       {netShareState === 'sharing' ? (
-                        <><span style={{ width: 15, height: 15, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.25)', borderTopColor: '#fff', animation: 'spin 0.8s linear infinite' }} /> Compartilhando…</>
+                        <><span style={{ width: 15, height: 15, borderRadius: '50%', border: '2px solid var(--b3)', borderTopColor: '#fff', animation: 'spin 0.8s linear infinite' }} /> Compartilhando…</>
                       ) : netShareState === 'done' ? (
                         <><svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Compartilhado — ver no Network</>
                       ) : (
@@ -2344,10 +2344,10 @@ export default function MetaPage() {
                 initial={{ opacity:0, scale:0.96, y:20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.97 }}
                 transition={{ duration:0.5, delay:T.card, ease:[0.33,1,0.68,1] }}
                 onClick={e => e.stopPropagation()}
-                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:28, background:'linear-gradient(160deg, var(--surface), var(--surface))', border:'1px solid rgba(255,255,255,0.06)', boxShadow:`0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(${glowColor},0.04), inset 0 1px 0 rgba(255,255,255,0.03)` }}
+                style={{ width:'100%', maxWidth:580, maxHeight:'calc(100dvh - 32px)', overflowY:'auto', borderRadius:28, background:'linear-gradient(160deg, var(--surface), var(--surface))', border:'1px solid var(--b1)', boxShadow:`0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(${glowColor},0.04), inset 0 1px 0 rgba(255,255,255,0.03)` }}
               >
                 {/* Header */}
-                <div style={{ padding:'40px 32px 28px', textAlign:'center', borderBottom:'1px solid rgba(255,255,255,0.04)', background:`linear-gradient(180deg, rgba(${glowColor},0.05), transparent)`, position:'relative', overflow:'hidden' }}>
+                <div style={{ padding:'40px 32px 28px', textAlign:'center', borderBottom:'1px solid var(--b1)', background:`linear-gradient(180deg, rgba(${glowColor},0.05), transparent)`, position:'relative', overflow:'hidden' }}>
                   <div style={{ position:'absolute', top:-50, left:'50%', marginLeft:-120, width:240, height:140, borderRadius:'50%', background:`radial-gradient(circle, rgba(${glowColor},0.1), transparent 70%)`, pointerEvents:'none' }} />
 
                   {/* Check icon with pulse */}
@@ -2367,7 +2367,7 @@ export default function MetaPage() {
                     />
                   </motion.div>
 
-                  <motion.h2 initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:T.header+0.1, duration:0.45, ease:[0.33,1,0.68,1]}} style={{ fontSize:26, fontWeight:900, color:'#fff', margin:'0 0 8px', letterSpacing:'-0.03em' }}>
+                  <motion.h2 initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:T.header+0.1, duration:0.45, ease:[0.33,1,0.68,1]}} style={{ fontSize:26, fontWeight:900, color:'var(--t1)', margin:'0 0 8px', letterSpacing:'-0.03em' }}>
                     Operacao concluida
                   </motion.h2>
                   <motion.p initial={{opacity:0}} animate={{opacity:1}} transition={{delay:T.header+0.2, duration:0.4}} style={{ fontSize:14, color:'var(--t3)', margin:0 }}>
@@ -2391,7 +2391,7 @@ export default function MetaPage() {
                     <motion.div
                       initial={{left:'-100%'}} animate={{left:'200%'}}
                       transition={{delay:T.result+0.3, duration:0.8, ease:'easeInOut'}}
-                      style={{ position:'absolute', top:0, width:'40%', height:'100%', background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent)', pointerEvents:'none' }}
+                      style={{ position:'absolute', top:0, width:'40%', height:'100%', background:'linear-gradient(90deg, transparent, var(--fill-2), transparent)', pointerEvents:'none' }}
                     />
                     <p style={{ fontSize:10, color:'var(--t4)', textTransform:'uppercase', letterSpacing:'0.08em', margin:'0 0 10px', fontWeight:600 }}>Resultado da meta</p>
                     <motion.p
@@ -2415,7 +2415,7 @@ export default function MetaPage() {
                       { l:'Media/remessa', v:`R$ ${fmt(Math.abs(avgPerRemessa))}`, c:avgPerRemessa>=0?'var(--profit)':'var(--t2)' },
                     ].map(({l,v,c},i) => (
                       <motion.div key={l} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:T.metrics+i*0.08, duration:0.4, ease:[0.33,1,0.68,1]}}
-                        style={{ padding:'14px 16px', borderRadius:14, background:'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008))', border:'1px solid rgba(255,255,255,0.05)', textAlign:'center', cursor:'default', transition:'all 0.25s ease' }}
+                        style={{ padding:'14px 16px', borderRadius:14, background:'linear-gradient(145deg, var(--fill-1), rgba(255,255,255,0.008))', border:'1px solid var(--b1)', textAlign:'center', cursor:'default', transition:'all 0.25s ease' }}
                         onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px) scale(1.02)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'; e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.3)' }}
                         onMouseLeave={e => { e.currentTarget.style.transform='none'; e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'; e.currentTarget.style.boxShadow='none' }}
                       >
@@ -2430,12 +2430,12 @@ export default function MetaPage() {
                     <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                       <span style={{ fontSize:13, fontWeight:700, color:'var(--t1)' }}>Analise da operacao</span>
-                      <span style={{ fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.78)', background:'rgba(255,255,255,0.1)', padding:'2px 7px', borderRadius:5 }}>AI</span>
+                      <span style={{ fontSize:9, fontWeight:700, color:'var(--t1)', background:'var(--fill-3)', padding:'2px 7px', borderRadius:5 }}>AI</span>
                     </div>
                     <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                       {insights.map((ins,i) => (
                         <motion.div key={i} initial={{opacity:0,x:-14}} animate={{opacity:1,x:0}} transition={{delay:T.insights+0.1+i*0.12, duration:0.4, ease:[0.33,1,0.68,1]}}
-                          style={{ display:'flex', alignItems:'center', gap:12, padding:'13px 16px', borderRadius:12, background:'linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008))', border:'1px solid rgba(255,255,255,0.05)', cursor:'default', transition:'all 0.25s ease' }}
+                          style={{ display:'flex', alignItems:'center', gap:12, padding:'13px 16px', borderRadius:12, background:'linear-gradient(145deg, var(--fill-1), rgba(255,255,255,0.008))', border:'1px solid var(--b1)', cursor:'default', transition:'all 0.25s ease' }}
                           onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'; e.currentTarget.style.transform='translateX(3px)' }}
                           onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.05)'; e.currentTarget.style.transform='none' }}
                         >
@@ -2447,7 +2447,7 @@ export default function MetaPage() {
                   </motion.div>
 
                   {/* Melhorias */}
-                  <motion.div initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:T.improve, duration:0.45}} style={{ padding:'18px 20px', borderRadius:16, background:'linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))', border:'1px solid rgba(255,255,255,0.12)', marginBottom:28 }}>
+                  <motion.div initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:T.improve, duration:0.45}} style={{ padding:'18px 20px', borderRadius:16, background:'linear-gradient(145deg, var(--fill-2), rgba(255,255,255,0.01))', border:'1px solid var(--b2)', marginBottom:28 }}>
                     <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--warn)" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
                       <span style={{ fontSize:13, fontWeight:700, color:'var(--warn)' }}>Proxima meta</span>

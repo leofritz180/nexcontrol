@@ -110,7 +110,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
 
               <div style={{
                 position: 'relative',
-                background: 'linear-gradient(145deg, var(--raised) 0%, #050505 100%)',
+                background: 'var(--surface)',
                 borderRadius: 19, padding: '32px 28px',
                 overflow: 'hidden',
               }}>
@@ -131,8 +131,8 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
                   style={{
                     position: 'absolute', top: 14, right: 14,
                     width: 28, height: 28, borderRadius: 8,
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'var(--fill-2)',
+                    border: '1px solid var(--b1)',
                     color: 'var(--t3)', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
@@ -221,7 +221,7 @@ export default function SmartUpgradeTrigger({ trigger = 'first_meta', active, te
                     transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
                     style={{
                       position: 'absolute', top: 0, left: 0, width: '50%', height: '100%',
-                      background: 'linear-gradient(105deg, transparent, rgba(255,255,255,0.3), transparent)',
+                      background: 'linear-gradient(105deg, transparent, var(--fill-3), transparent)',
                     }}
                   />
                   <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>

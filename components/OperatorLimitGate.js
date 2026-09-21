@@ -93,7 +93,7 @@ export default function OperatorLimitGate({ children }) {
           transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
           style={{
             position: 'relative', maxWidth: 520, width: '100%', textAlign: 'center',
-            background: 'linear-gradient(180deg, var(--raised), #050505)',
+            background: 'var(--surface)',
             border: '1px solid rgba(239,68,68,0.22)',
             borderRadius: 20, padding: '44px 36px',
             boxShadow: '0 0 0 1px rgba(239,68,68,0.06), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(239,68,68,0.08)',
@@ -131,20 +131,20 @@ export default function OperatorLimitGate({ children }) {
 
           <h2 style={{
             fontFamily: 'var(--font-serif, "Instrument Serif", serif)',
-            fontSize: 30, fontWeight: 400, color: '#fafafa',
+            fontSize: 30, fontWeight: 400, color: 'var(--t1)',
             letterSpacing: '-0.02em', marginBottom: 12, lineHeight: 1.1,
           }}>
             Limite de operadores excedido.
           </h2>
 
           <p style={{
-            fontSize: 14, color: 'rgba(255,255,255,0.65)',
+            fontSize: 14, color: 'var(--t2)',
             margin: '0 0 8px', lineHeight: 1.55, fontWeight: 300,
           }}>
-            Você tem <strong style={{ color: '#fff', fontWeight: 600 }}>{status.current} operador{status.current !== 1 ? 'es' : ''}</strong> cadastrado{status.current !== 1 ? 's' : ''} mas seu plano cobre <strong style={{ color: '#fff', fontWeight: 600 }}>{status.limit}</strong>.
+            Você tem <strong style={{ color: 'var(--t1)', fontWeight: 600 }}>{status.current} operador{status.current !== 1 ? 'es' : ''}</strong> cadastrado{status.current !== 1 ? 's' : ''} mas seu plano cobre <strong style={{ color: 'var(--t1)', fontWeight: 600 }}>{status.limit}</strong>.
           </p>
           <p style={{
-            fontSize: 14, color: 'rgba(255,255,255,0.65)',
+            fontSize: 14, color: 'var(--t2)',
             margin: '0 0 28px', lineHeight: 1.55, fontWeight: 300,
           }}>
             Pra continuar usando o painel, <strong style={{ color: 'var(--loss)', fontWeight: 700 }}>remova {status.excess} operador{status.excess !== 1 ? 'es' : ''}</strong> ou faça upgrade do plano.
@@ -153,20 +153,20 @@ export default function OperatorLimitGate({ children }) {
           {/* Stats visuais */}
           <div style={{
             display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1,
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'var(--fill-2)',
+            border: '1px solid var(--b1)',
             borderRadius: 12, padding: 1, marginBottom: 26, overflow: 'hidden',
           }}>
-            <div style={{ padding: '14px 8px', background: '#050505' }}>
-              <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Plano</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#fafafa', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{status.limit}</div>
+            <div style={{ padding: '14px 8px', background: 'var(--surface)' }}>
+              <div style={{ fontSize: 8.5, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Plano</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--t1)', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{status.limit}</div>
             </div>
-            <div style={{ padding: '14px 8px', background: '#050505' }}>
-              <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Atual</div>
+            <div style={{ padding: '14px 8px', background: 'var(--surface)' }}>
+              <div style={{ fontSize: 8.5, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Atual</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--loss)', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{status.current}</div>
             </div>
-            <div style={{ padding: '14px 8px', background: '#050505' }}>
-              <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Excesso</div>
+            <div style={{ padding: '14px 8px', background: 'var(--surface)' }}>
+              <div style={{ fontSize: 8.5, color: 'var(--t3)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6, fontFamily: 'var(--mono, monospace)' }}>Excesso</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--loss)', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>+{status.excess}</div>
             </div>
           </div>
@@ -189,8 +189,8 @@ export default function OperatorLimitGate({ children }) {
               style={{
                 flex: 1, minWidth: 160,
                 padding: '14px 22px', borderRadius: 12, cursor: 'pointer',
-                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.14)',
-                color: '#fff', fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit',
+                background: 'var(--fill-2)', border: '1px solid var(--b2)',
+                color: 'var(--t1)', fontSize: 13.5, fontWeight: 700, fontFamily: 'inherit',
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               }}>
               <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
@@ -198,8 +198,8 @@ export default function OperatorLimitGate({ children }) {
             </button>
           </div>
 
-          <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.4)', margin: '20px 0 0', lineHeight: 1.55 }}>
-            <strong style={{ color: 'rgba(255,255,255,0.6)' }}>Sem perda de dados:</strong> remover operador preserva metas, remessas e lucro do histórico. Operador só perde acesso ao painel.
+          <p style={{ fontSize: 10.5, color: 'var(--t3)', margin: '20px 0 0', lineHeight: 1.55 }}>
+            <strong style={{ color: 'var(--t2)' }}>Sem perda de dados:</strong> remover operador preserva metas, remessas e lucro do histórico. Operador só perde acesso ao painel.
           </p>
         </motion.div>
       </div>

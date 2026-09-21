@@ -39,7 +39,7 @@ export function ProfitCinematicVideo({
 
   return (
     <AbsoluteFill style={{
-      background:'#000',
+      background:'var(--surface)',
       transform:`scale(${zoom})`,
       opacity: masterFade,
     }}>

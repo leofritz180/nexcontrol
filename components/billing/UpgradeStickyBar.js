@@ -138,7 +138,7 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
                   transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                   style={{
                     position: 'absolute', top: 0, left: 0, width: '50%', height: '100%',
-                    background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.28) 50%, transparent 70%)',
+                    background: 'linear-gradient(105deg, transparent 30%, var(--fill-3) 50%, transparent 70%)',
                     pointerEvents: 'none',
                   }}
                 />
@@ -153,8 +153,8 @@ export default function UpgradeStickyBar({ tenant, sub, user, profile }) {
                 <button type="button" onClick={handleDismiss} aria-label="Dispensar"
                   style={{
                     width: 30, height: 30, borderRadius: 8,
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'var(--fill-2)',
+                    border: '1px solid var(--b1)',
                     color: 'var(--t3)', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,

@@ -59,6 +59,7 @@ import RankBadge from '../../components/rank/RankBadge'
 import DailyGoalCard from '../../components/DailyGoalCard'
 import PrimeirosPassos from '../../components/PrimeirosPassos'
 import AdminBento from '../../components/admin/AdminBento'
+import MyOpsBento from '../../components/admin/MyOpsBento'
 import { isNex2 } from '../../lib/theme-v2'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
@@ -284,7 +285,7 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
                 <p className="t-label" style={{ marginBottom:2 }}>Pagar a {getName(operador)}</p>
                 <p className="t-small">{payModel === 'percentual' ? `${payValue}% do lucro` : `${deps} deps × R$ ${fmt(payValue)}`}</p>
               </div>
-              <p className="t-num" style={{ fontSize:18, fontWeight:700, color:'#60a5fa' }}>R$ {fmt(pgtoOp)}</p>
+              <p className="t-num" style={{ fontSize:18, fontWeight:700, color:'var(--t2)' }}>R$ {fmt(pgtoOp)}</p>
             </div>
           ) : null}
 
@@ -519,7 +520,7 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
             { l:'Depositantes totais', v:String(g.totalContas), tour:'kpi-depositantes' },
           ].map((kpi, i) => (
             <motion.div key={i} data-tour={kpi.tour} initial={{ opacity:0, x:16 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.35, delay:0.15+i*0.07, ease }}
-              style={{ flex:1, padding:'16px 20px', borderRadius:14, background:'linear-gradient(145deg, var(--fill-1), rgba(255,255,255,0.01))', border:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              style={{ flex:1, padding:'16px 20px', borderRadius:14, background:'linear-gradient(145deg, var(--fill-1), var(--fill-1))', border:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
               <span style={{ fontSize:12, color:'var(--t3)', fontWeight:500 }}>{kpi.l}</span>
               <span style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)' }}>{kpi.v}</span>
             </motion.div>
@@ -1485,7 +1486,7 @@ export default function AdminPage() {
                                     {fotos.map((item,fi)=>{ const f=nF(item); const ts=f.ts||r.created_at; return (
                                       <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{position:'relative',display:'block'}}>
                                         <img src={f.url} alt={`comprovante ${fi+1}`} style={{width:72,height:72,objectFit:'cover',borderRadius:6,border:'1px solid var(--b2)',display:'block'}}/>
-                                        {ts && !f.burned && <span style={{position:'absolute',bottom:2,left:2,padding:'1px 4px',borderRadius:4,background:'rgba(229,57,53,0.92)',color:'#fff',fontSize:8,fontWeight:800,fontFamily:'var(--mono, monospace)',lineHeight:1.2}}>{fTs(ts)}</span>}
+                                        {ts && !f.burned && <span style={{position:'absolute',bottom:2,left:2,padding:'1px 4px',borderRadius:4,background:'rgba(229,57,53,0.92)',color:'var(--t1)',fontSize:8,fontWeight:800,fontFamily:'var(--mono, monospace)',lineHeight:1.2}}>{fTs(ts)}</span>}
                                       </a>
                                     )})}
                                   </div>
@@ -1865,7 +1866,7 @@ export default function AdminPage() {
                         <p style={{fontSize:12,color:'var(--t3)',margin:'12px 0 0',fontWeight:500}}>{sg(lucroMes)}{f$(lucroMes)} este mês · {sg(lucroSemana)}{f$(lucroSemana)} na semana</p>
                       </div>
                       <motion.button onClick={()=>setMyShowForm(!myShowForm)} whileHover={{scale:1.03}} whileTap={{scale:0.96}}
-                        style={{padding:'13px 24px',borderRadius:13,border:'none',cursor:'pointer',fontSize:13.5,fontWeight:800,fontFamily:'inherit',display:'flex',alignItems:'center',gap:8,color:'#fff',background: myShowForm?'rgba(255,255,255,0.06)':'linear-gradient(145deg,#e53935,#c62828)',boxShadow: myShowForm?'none':'0 8px 26px rgba(229,57,53,0.45),inset 0 1px 0 rgba(255,255,255,0.18)'}}>
+                        style={{padding:'13px 24px',borderRadius:13,border:'none',cursor:'pointer',fontSize:13.5,fontWeight:800,fontFamily:'inherit',display:'flex',alignItems:'center',gap:8,color:'var(--t1)',background: myShowForm?'rgba(255,255,255,0.06)':'linear-gradient(145deg,#e53935,#c62828)',boxShadow: myShowForm?'none':'0 8px 26px rgba(229,57,53,0.45),inset 0 1px 0 rgba(255,255,255,0.18)'}}>
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round">{myShowForm?<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>:<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>}</svg>
                         {myShowForm?'Fechar':'Nova meta'}
                       </motion.button>
@@ -2077,7 +2078,20 @@ export default function AdminPage() {
                 />
 
                 {/* ░░ MYOPS V2 — hero premium (somente leofritz178) ░░ */}
-                {isV2 && renderHeroV2()}
+                {isNex2(user?.email) ? (
+                  <MyOpsBento
+                    nome={getName(profile)}
+                    ativas={ativas} fechadas={fechadas}
+                    myRemCount={myRem.length} contasProc={contasProc}
+                    lucroTotal={myLiq} lucroHoje={lucroHoje} lucroSemana={lucroSemana} lucroMes={lucroMes}
+                    taxaAcerto={taxaAcerto} roiMedio={roiMedio} lucroMedioMeta={lucroMedioMeta}
+                    melhorMeta={melhorMeta} piorMeta={piorMeta} melhorRede={melhorRede}
+                    metaProg={metaProg} metaLiqV={metaLiqV} metaContasDone={metaContasDone}
+                    showForm={myShowForm}
+                    onToggleForm={()=>setMyShowForm(!myShowForm)}
+                    onAbrirMeta={(id)=>router.push('/meta/'+id)}
+                  />
+                ) : (isV2 && renderHeroV2())}
                 {/* Hero da aba — header executivo (default) */}
                 {!isV2 && (
                 <motion.div
@@ -2260,7 +2274,7 @@ export default function AdminPage() {
                                 <button type="button" onClick={()=>{setMyRede(MULTI_REDE);setMyRedeOpen(false)}}
                                   onMouseEnter={e=>{if(myRede!==MULTI_REDE)e.currentTarget.style.background='rgba(16,185,129,0.12)'}}
                                   onMouseLeave={e=>{e.currentTarget.style.background=myRede===MULTI_REDE?'rgba(16,185,129,0.18)':'transparent'}}
-                                  style={{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'9px 14px',border:'none',borderRadius:9,textAlign:'left',cursor:'pointer',fontSize:13,fontWeight:700,color:'#34d399',background:myRede===MULTI_REDE?'rgba(16,185,129,0.18)':'transparent',marginBottom:4}}>
+                                  style={{width:'100%',display:'flex',alignItems:'center',gap:8,padding:'9px 14px',border:'none',borderRadius:9,textAlign:'left',cursor:'pointer',fontSize:13,fontWeight:700,color:'var(--profit)',background:myRede===MULTI_REDE?'rgba(16,185,129,0.18)':'transparent',marginBottom:4}}>
                                   <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="6.5" r="2.5"/><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
                                   Múltiplas redes
                                 </button>
@@ -2364,7 +2378,7 @@ export default function AdminPage() {
                           style={{
                             position:'relative', overflow:'hidden',
                             padding:'16px 18px', borderRadius:13,
-                            background:'linear-gradient(145deg, var(--fill-2), rgba(255,255,255,0.01))',
+                            background:'linear-gradient(145deg, var(--fill-2), var(--fill-1))',
                             border:'1px solid var(--b3)',
                             boxShadow:'0 4px 16px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.04)',
                           }}>
@@ -2394,7 +2408,7 @@ export default function AdminPage() {
                               return tips.map((tip,i) => (
                                 <div key={i} style={{display:'flex',alignItems:'center',gap:8}}>
                                   <div style={{width:5, height:5, borderRadius:'50%', background:tip.dot, flexShrink:0, boxShadow:`0 0 6px ${tip.dot}`}}/>
-                                  <span style={{fontSize:11, color:'#CBD5E1', lineHeight:1.45}}>{tip.t}</span>
+                                  <span style={{fontSize:11, color:'var(--t2)', lineHeight:1.45}}>{tip.t}</span>
                                 </div>
                               ))
                             })()}
@@ -2436,7 +2450,7 @@ export default function AdminPage() {
                         whileTap={mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede ? {} : {scale:0.97}}
                         style={{
                           width:'100%', padding:'16px 24px', borderRadius:14, border:'none', cursor:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?'not-allowed':'pointer',
-                          fontSize:15, fontWeight:800, color:'#fff', fontFamily:'inherit',
+                          fontSize:15, fontWeight:800, color:'var(--t1)', fontFamily:'inherit',
                           background:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?'rgba(229,57,53,0.35)':'linear-gradient(145deg, #e53935, #c62828)',
                           boxShadow:(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)?'none':'0 8px 28px rgba(229,57,53,0.45), 0 0 40px rgba(229,57,53,0.15), inset 0 1px 0 rgba(255,255,255,0.18)',
                           display:'flex', alignItems:'center', justifyContent:'center', gap:10,
@@ -2469,7 +2483,7 @@ export default function AdminPage() {
                 </AnimatePresence>
 
                 {/* ░░ MYOPS V2 — operações + insights + timeline (somente leofritz178) ░░ */}
-                {isV2 && renderMyOpsListV2()}
+                {!isNex2(user?.email) && isV2 && renderMyOpsListV2()}
                 {/* Lista de metas (default) */}
                 {!isV2 && (
                 <div data-tour="myops-list" style={{display:'flex',flexDirection:'column',gap:10}}>
@@ -3082,7 +3096,7 @@ export default function AdminPage() {
                 initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35, delay:0.1 }}
                 style={{
                   marginTop: 32, padding: 28, borderRadius: 20,
-                  background: '#000',
+                  background: 'var(--surface)',
                   border: '1px solid var(--b1)',
                   boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.4)',
                   position: 'relative', overflow: 'hidden',
@@ -3303,7 +3317,7 @@ export default function AdminPage() {
                             background:`${c}08`, border:`1px solid ${c}14`,
                           }}>
                           <div style={{ width:6, height:6, borderRadius:'50%', background:c, flexShrink:0, boxShadow:`0 0 8px ${c}` }}/>
-                          <span style={{ fontSize:12, color:'#E2E8F0', lineHeight:1.45, fontWeight:600 }}>{ins.text}</span>
+                          <span style={{ fontSize:12, color:'var(--t1)', lineHeight:1.45, fontWeight:600 }}>{ins.text}</span>
                         </motion.div>
                       )
                     })}
@@ -3605,8 +3619,8 @@ export default function AdminPage() {
                           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
                             <motion.div
                               whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(255,255,255,0.3)' }}
-                              style={{ width:30, height:30, borderRadius:8, background:'linear-gradient(135deg,var(--fill-3),rgba(255,255,255,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
-                              <span style={{ fontSize:12, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
+                              style={{ width:30, height:30, borderRadius:8, background:'linear-gradient(135deg,var(--fill-3),var(--fill-3))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
+                              <span style={{ fontSize:12, fontWeight:800, color:'var(--t1)' }}>{getName(op)[0].toUpperCase()}</span>
                             </motion.div>
                             <p style={{ fontSize:16, fontWeight:800, color:isTop?medal:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>{getName(op)}</p>
                             <RankBadge contas={op.depositantesFinalizados} size="xs" />
@@ -3761,7 +3775,7 @@ export default function AdminPage() {
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
                           <span style={{fontSize:18,fontWeight:900,color:isTop?'#FFD700':'var(--t1)'}}>{r.rede}</span>
-                          {isTop&&<span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:99,background:'rgba(255,215,0,0.15)',color:'#FFD700',border:'1px solid rgba(255,215,0,0.25)'}}>TOP</span>}
+                          {isTop&&<span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:99,background:'rgba(255,215,0,0.15)',color:'var(--warn)',border:'1px solid rgba(255,215,0,0.25)'}}>TOP</span>}
                           <span className="t-small">{r.nMetas} meta{r.nMetas!==1?'s':''}</span>
                         </div>
                         <div style={{height:4,background:'var(--fill-2)',borderRadius:99,overflow:'hidden'}}>
@@ -4002,8 +4016,8 @@ export default function AdminPage() {
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                         <motion.div
                           whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(255,255,255,0.3)' }}
-                          style={{ width:32, height:32, borderRadius:9, background:'linear-gradient(135deg,var(--fill-3),rgba(255,255,255,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
-                          <span style={{ fontSize:12, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
+                          style={{ width:32, height:32, borderRadius:9, background:'linear-gradient(135deg,var(--fill-3),var(--fill-3))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
+                          <span style={{ fontSize:12, fontWeight:800, color:'var(--t1)' }}>{getName(op)[0].toUpperCase()}</span>
                         </motion.div>
                         <div>
                           <p style={{ fontSize:13, fontWeight:600, color:'var(--t1)', margin:0 }}>{getName(op)}</p>
@@ -4046,7 +4060,7 @@ export default function AdminPage() {
                 </div>
                 <h2 style={{
                   fontFamily: 'var(--font-serif, "Instrument Serif", serif)',
-                  fontSize: 42, fontWeight: 400, color: '#fff',
+                  fontSize: 42, fontWeight: 400, color: 'var(--t1)',
                   letterSpacing: '-0.025em', lineHeight: 1.05,
                   margin: '0 0 8px',
                 }}>Ranking.</h2>
@@ -4076,7 +4090,7 @@ export default function AdminPage() {
                 </div>
                 <h3 style={{
                   fontFamily: 'var(--font-serif, serif)',
-                  fontSize: 28, fontWeight: 400, color: '#fff',
+                  fontSize: 28, fontWeight: 400, color: 'var(--t1)',
                   letterSpacing: '-0.02em', margin: '0 0 18px',
                 }}>O caminho completo.</h3>
               </div>
@@ -4282,8 +4296,8 @@ export default function AdminPage() {
             boxShadow:`0 12px 40px rgba(0,0,0,0.4), 0 0 20px ${notification.pos?'rgba(209,250,229,0.1)':'rgba(239,68,68,0.1)'}`,
             display:'flex', alignItems:'center', gap:12,
           }}>
-            <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,var(--fill-3),rgba(255,255,255,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-              <span style={{fontSize:13,fontWeight:800,color:'white'}}>{notification.op[0]?.toUpperCase()}</span>
+            <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,var(--fill-3),var(--fill-3))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <span style={{fontSize:13,fontWeight:800,color:'var(--t1)'}}>{notification.op[0]?.toUpperCase()}</span>
             </div>
             <div style={{flex:1,minWidth:0}}>
               <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>

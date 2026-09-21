@@ -81,7 +81,7 @@ export default function BillingLanding() {
         ].map(({icon,t,d},i) => (
           <motion.div key={i} {...fadeUp(i*0.04)}
             whileHover={{ y:-3, transition:{duration:0.2} }}
-            style={{ padding:'20px 18px', borderRadius:12, background:'linear-gradient(145deg, var(--surface), var(--surface))', border:'1px solid rgba(255,255,255,0.04)', boxShadow:'0 4px 16px rgba(0,0,0,0.25)' }}>
+            style={{ padding:'20px 18px', borderRadius:12, background:'linear-gradient(145deg, var(--surface), var(--surface))', border:'1px solid var(--b1)', boxShadow:'0 4px 16px rgba(0,0,0,0.25)' }}>
             <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#ff4444" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom:10, opacity:0.7 }}>
               <path d={icon}/>
             </svg>
@@ -114,7 +114,7 @@ export default function BillingLanding() {
               <span style={{ background:'linear-gradient(135deg, var(--profit), #4ADE80)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>em tempo real</span>
             </h2>
             <p style={{ fontSize:15, color:'var(--t2)', lineHeight:1.6, margin:'0 0 28px' }}>
-              Cada remessa registrada vira uma <strong style={{ color:'#fff' }}>notificação instantânea</strong> no seu celular. Você acompanha tudo ao vivo — <strong style={{ color:'var(--profit)' }}>operador, rede e lucro</strong>.
+              Cada remessa registrada vira uma <strong style={{ color:'var(--t1)' }}>notificação instantânea</strong> no seu celular. Você acompanha tudo ao vivo — <strong style={{ color:'var(--profit)' }}>operador, rede e lucro</strong>.
             </p>
 
             {[
@@ -148,19 +148,19 @@ export default function BillingLanding() {
                 padding:'14px 12px 18px',
                 background:'linear-gradient(160deg, rgba(14,22,38,0.95) 0%, rgba(8,12,20,0.95) 50%, rgba(4,7,14,0.95) 100%)',
                 backdropFilter:'blur(30px) saturate(160%)', WebkitBackdropFilter:'blur(30px) saturate(160%)',
-                border:'1px solid rgba(255,255,255,0.08)',
+                border:'1px solid var(--b1)',
                 boxShadow:`0 50px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(229,57,53,0.04), inset 0 1px 0 rgba(255,255,255,0.06), 0 0 ${flash?'80':'40'}px rgba(209,250,229,${flash?'0.18':'0.05'})`,
                 position:'relative', transform:'rotateX(3deg)',
                 transition:'box-shadow 0.6s ease',
               }}>
               {/* Subtle top speaker */}
-              <div style={{ width:60, height:5, borderRadius:3, background:'rgba(255,255,255,0.06)', margin:'0 auto 10px' }}/>
+              <div style={{ width:60, height:5, borderRadius:3, background:'var(--fill-2)', margin:'0 auto 10px' }}/>
 
               {/* Screen */}
               <div style={{
                 borderRadius:26, overflow:'hidden', position:'relative', minHeight:440,
-                background:'linear-gradient(180deg, #0a0f1c 0%, #060a14 100%)',
-                border:'1px solid rgba(255,255,255,0.04)',
+                background:'var(--surface)',
+                border:'1px solid var(--b1)',
               }}>
                 {/* Top flash overlay quando chega notificacao */}
                 <AnimatePresence>
@@ -171,24 +171,24 @@ export default function BillingLanding() {
                 </AnimatePresence>
 
                 {/* Header NexControl */}
-                <div style={{ padding:'12px 14px 8px', borderBottom:'1px solid rgba(255,255,255,0.04)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                <div style={{ padding:'12px 14px 8px', borderBottom:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:7 }}>
                     <div style={{ width:18, height:18, borderRadius:5, background:'linear-gradient(145deg, #e53935, #c62828)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 0 10px rgba(229,57,53,0.35)' }}>
                       <NexIcon size={9}/>
                     </div>
                     <div>
-                      <p style={{ fontSize:10, fontWeight:800, color:'#F1F5F9', margin:0, letterSpacing:'-0.01em' }}>NexControl</p>
+                      <p style={{ fontSize:10, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>NexControl</p>
                       <div style={{ display:'flex', alignItems:'center', gap:4, marginTop:1 }}>
                         <motion.div
                           animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.6)','0 0 0 3px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}
                           transition={{ duration:1.6, repeat:Infinity, ease:'easeInOut' }}
                           style={{ width:4, height:4, borderRadius:'50%', background:'var(--profit)' }}
                         />
-                        <span style={{ fontSize:7, color:'rgba(209,250,229,0.8)', fontWeight:700, letterSpacing:'0.08em' }}>TEMPO REAL</span>
+                        <span style={{ fontSize:7, color:'var(--t1)', fontWeight:700, letterSpacing:'0.08em' }}>TEMPO REAL</span>
                       </div>
                     </div>
                   </div>
-                  <span style={{ fontSize:7, color:'rgba(255,255,255,0.3)', fontFamily:'var(--mono)' }}>{new Date().getHours().toString().padStart(2,'0')}:{new Date().getMinutes().toString().padStart(2,'0')}</span>
+                  <span style={{ fontSize:7, color:'var(--t4)', fontFamily:'var(--mono)' }}>{new Date().getHours().toString().padStart(2,'0')}:{new Date().getMinutes().toString().padStart(2,'0')}</span>
                 </div>
 
                 {/* Notification slide from top */}
@@ -210,13 +210,13 @@ export default function BillingLanding() {
                         <div style={{ width:16, height:16, borderRadius:4, background:'linear-gradient(145deg, #e53935, #c62828)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                           <NexIcon size={8}/>
                         </div>
-                        <span style={{ fontSize:8, fontWeight:800, color:'#F1F5F9', letterSpacing:'-0.01em' }}>NexControl</span>
-                        <span style={{ fontSize:7, color:'rgba(209,250,229,0.9)', fontWeight:700, marginLeft:'auto' }}>agora</span>
+                        <span style={{ fontSize:8, fontWeight:800, color:'var(--t1)', letterSpacing:'-0.01em' }}>NexControl</span>
+                        <span style={{ fontSize:7, color:'var(--t1)', fontWeight:700, marginLeft:'auto' }}>agora</span>
                       </div>
-                      <p style={{ fontSize:10, fontWeight:700, color:'#F1F5F9', margin:'0 0 2px', paddingLeft:23 }}>
+                      <p style={{ fontSize:10, fontWeight:700, color:'var(--t1)', margin:'0 0 2px', paddingLeft:23 }}>
                         {FEED_DATA[idx % FEED_DATA.length].rede} · {FEED_DATA[idx % FEED_DATA.length].name}
                       </p>
-                      <p style={{ fontSize:8, color:'rgba(255,255,255,0.55)', margin:0, paddingLeft:23 }}>
+                      <p style={{ fontSize:8, color:'var(--t2)', margin:0, paddingLeft:23 }}>
                         <span style={{ color: FEED_DATA[idx % FEED_DATA.length].pos ? 'var(--profit)' : 'var(--loss)', fontWeight:800, fontSize:10 }}>
                           {FEED_DATA[idx % FEED_DATA.length].pos?'+':'-'}R$ {FEED_DATA[idx % FEED_DATA.length].value},00
                         </span> {FEED_DATA[idx % FEED_DATA.length].pos ? 'lucro' : 'prejuizo'}
@@ -240,7 +240,7 @@ export default function BillingLanding() {
                       transition:'box-shadow 0.4s',
                     }}>
                     <div style={{ position:'absolute', top:0, left:'20%', right:'20%', height:1, background:'linear-gradient(90deg, transparent, rgba(209,250,229,0.4), transparent)' }}/>
-                    <p style={{ fontSize:8, color:'rgba(255,255,255,0.45)', margin:'0 0 5px', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }}>Lucro de hoje</p>
+                    <p style={{ fontSize:8, color:'var(--t3)', margin:'0 0 5px', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }}>Lucro de hoje</p>
                     <motion.p
                       animate={flash?{ textShadow:['0 0 10px rgba(209,250,229,0.25)','0 0 28px rgba(209,250,229,0.55)','0 0 10px rgba(209,250,229,0.25)'] }:{}}
                       transition={{duration:0.8}}
@@ -251,14 +251,14 @@ export default function BillingLanding() {
                       }}>
                       +R$ {total.toLocaleString('pt-BR')}
                     </motion.p>
-                    <p style={{ fontSize:8, color:'rgba(209,250,229,0.75)', margin:'5px 0 0', fontWeight:600 }}>
+                    <p style={{ fontSize:8, color:'var(--t1)', margin:'5px 0 0', fontWeight:600 }}>
                       ↑ atualizado ha 2s
                     </p>
                   </motion.div>
 
                   {/* Feed header */}
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
-                    <span style={{ fontSize:8, fontWeight:800, color:'rgba(255,255,255,0.55)', letterSpacing:'0.1em', textTransform:'uppercase' }}>Atividade ao vivo</span>
+                    <span style={{ fontSize:8, fontWeight:800, color:'var(--t2)', letterSpacing:'0.1em', textTransform:'uppercase' }}>Atividade ao vivo</span>
                     <motion.div
                       animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.5)','0 0 0 4px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}
                       transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
@@ -289,8 +289,8 @@ export default function BillingLanding() {
                               {item.rede}
                             </div>
                             <div style={{ minWidth:0 }}>
-                              <p style={{ fontSize:9, fontWeight:700, color:'#F1F5F9', margin:0, letterSpacing:'-0.01em' }}>{item.rede} · {item.name}</p>
-                              <p style={{ fontSize:7, color:'rgba(255,255,255,0.35)', margin:0, fontFamily:'var(--mono)' }}>{item.t}</p>
+                              <p style={{ fontSize:9, fontWeight:700, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>{item.rede} · {item.name}</p>
+                              <p style={{ fontSize:7, color:'var(--t3)', margin:0, fontFamily:'var(--mono)' }}>{item.t}</p>
                             </div>
                           </div>
                           <span style={{
@@ -307,10 +307,10 @@ export default function BillingLanding() {
               </div>
 
               {/* Bottom home indicator */}
-              <div style={{ width:90, height:4, borderRadius:2, background:'rgba(255,255,255,0.1)', margin:'12px auto 0' }}/>
+              <div style={{ width:90, height:4, borderRadius:2, background:'var(--fill-3)', margin:'12px auto 0' }}/>
 
               {/* Top glossy */}
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:'40%', borderRadius:'36px 36px 0 0', background:'linear-gradient(180deg, rgba(255,255,255,0.035), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:'40%', borderRadius:'36px 36px 0 0', background:'linear-gradient(180deg, var(--fill-1), transparent)', pointerEvents:'none' }}/>
 
               {/* External red glow glow bleed */}
               <div style={{ position:'absolute', top:'40%', left:-30, width:60, height:120, borderRadius:'50%', background:'radial-gradient(circle, rgba(229,57,53,0.18), transparent 65%)', filter:'blur(24px)', pointerEvents:'none' }}/>
@@ -331,7 +331,7 @@ export default function BillingLanding() {
           {q:'Visual premium e controle real. Minha equipe toda usa.', n:'L. Santos'},
         ].map(({q,n},i) => (
           <motion.div key={i} {...fadeUp(i*0.08)}
-            style={{ padding:'22px 20px', borderRadius:12, background:'linear-gradient(145deg, var(--surface), var(--surface))', border:'1px solid rgba(255,255,255,0.04)' }}>
+            style={{ padding:'22px 20px', borderRadius:12, background:'linear-gradient(145deg, var(--surface), var(--surface))', border:'1px solid var(--b1)' }}>
             <p style={{ fontSize:12, color:'var(--t2)', lineHeight:1.6, margin:'0 0 14px', fontStyle:'italic' }}>"{q}"</p>
             <div style={{ display:'flex', alignItems:'center', gap:8 }}>
               <div style={{ width:24, height:24, borderRadius:6, background:'var(--raised)', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -357,7 +357,7 @@ export default function BillingLanding() {
             </svg>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#e53935', letterSpacing: '0.06em' }}>EXCLUSIVO PRO</span>
           </div>
-          <h2 style={{ fontSize: 24, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', marginBottom: 8 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.03em', marginBottom: 8 }}>
             +{SLOTS.length} slots premium liberados no PRO
           </h2>
           <p style={{ fontSize: 13, color: 'var(--t3)', maxWidth: 420, margin: '0 auto', lineHeight: 1.5 }}>
@@ -389,14 +389,14 @@ export default function BillingLanding() {
             const blurVar = 7 + (slot.id % 4)
             return (
               <motion.div key={slot.id} {...fadeUp(0.1 + i * 0.06)} style={{
-                background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(229,57,53,0.06)',
+                background: 'var(--fill-1)', border: '1px solid rgba(229,57,53,0.06)',
                 borderRadius: 14, overflow: 'hidden', position: 'relative',
               }}>
                 {/* Shimmer */}
                 <div style={{ position: 'absolute', inset: 0, zIndex: 5, pointerEvents: 'none', overflow: 'hidden', borderRadius: 14 }}>
                   <div style={{
                     position: 'absolute', top: 0, left: '-100%', width: '60%', height: '100%',
-                    background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.03) 48%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.03) 52%, transparent 60%)',
+                    background: 'linear-gradient(105deg, transparent 40%, var(--fill-1) 48%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.03) 52%, transparent 60%)',
                     animation: `shine ${6 + i}s ease-in-out infinite`,
                     animationDelay: `${i * 0.8}s`,
                   }} />
@@ -415,8 +415,8 @@ export default function BillingLanding() {
                   {/* Badges */}
                   <span style={{
                     position: 'absolute', top: 7, left: 7, zIndex: 3, padding: '3px 7px', borderRadius: 5,
-                    background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.08)',
-                    fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase',
+                    background: 'rgba(0,0,0,0.45)', border: '1px solid var(--b1)',
+                    fontSize: 8, fontWeight: 700, color: 'var(--t2)', textTransform: 'uppercase',
                   }}>{slot.provider.toUpperCase()}</span>
                   <span style={{
                     position: 'absolute', top: 7, right: 7, zIndex: 3, padding: '3px 7px', borderRadius: 5,

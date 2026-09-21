@@ -308,8 +308,8 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
             transform: isCenter ? 'translate(-50%, -50%)' : 'none',
             width: 360,
             maxWidth: 'calc(100vw - 32px)',
-            background: 'linear-gradient(180deg, var(--raised), #050505)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'var(--surface)',
+            border: '1px solid var(--b1)',
             borderRadius: 14,
             padding: '20px 22px',
             boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(229,57,53,0.04), 0 0 60px rgba(229,57,53,0.08)',
@@ -342,9 +342,9 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
               aria-label="Pular tutorial"
               style={{
                 width: 24, height: 24, borderRadius: 6,
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                color: 'rgba(255,255,255,0.5)',
+                background: 'var(--fill-2)',
+                border: '1px solid var(--b1)',
+                color: 'var(--t3)',
                 cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
@@ -359,7 +359,7 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
           {/* Progress bar */}
           <div style={{
             height: 2,
-            background: 'rgba(255,255,255,0.06)',
+            background: 'var(--fill-2)',
             borderRadius: 1,
             overflow: 'hidden',
             marginBottom: 16,
@@ -380,7 +380,7 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
           <h3 style={{
             fontSize: 16,
             fontWeight: 700,
-            color: '#fafafa',
+            color: 'var(--t1)',
             margin: '0 0 8px',
             letterSpacing: '-0.012em',
             lineHeight: 1.25,
@@ -389,7 +389,7 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
           {/* Description */}
           <p style={{
             fontSize: 12.5,
-            color: 'rgba(255,255,255,0.7)',
+            color: 'var(--t2)',
             margin: '0 0 18px',
             lineHeight: 1.55,
             fontWeight: 400,
@@ -402,9 +402,9 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
                 onClick={prev}
                 style={{
                   padding: '8px 14px', borderRadius: 8,
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  color: 'rgba(255,255,255,0.7)',
+                  background: 'var(--fill-1)',
+                  border: '1px solid var(--b1)',
+                  color: 'var(--t2)',
                   fontSize: 12, fontWeight: 600, cursor: 'pointer',
                 }}
               >‹ Voltar</button>
@@ -427,7 +427,7 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
                 padding: '9px 18px', borderRadius: 8,
                 background: '#10B981',
                 border: 'none',
-                color: '#fff',
+                color: 'var(--t1)',
                 fontSize: 12.5, fontWeight: 700, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
                 boxShadow: '0 4px 14px rgba(16,185,129,0.25)',

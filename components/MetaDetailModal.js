@@ -51,15 +51,15 @@ function SalaryPanel({ meta, liqCalc, tenantOpModel, leaderId, onSaved }) {
   }
 
   const lbl = { display: 'block', marginBottom: 6, fontSize: 10, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.08em' }
-  const inp = { width: '100%', padding: '10px 12px', fontSize: 14, borderRadius: 10, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.14)', color: '#fff', fontFamily: 'inherit' }
+  const inp = { width: '100%', padding: '10px 12px', fontSize: 14, borderRadius: 10, background: 'var(--fill-2)', border: '1px solid var(--b2)', color: 'var(--t1)', fontFamily: 'inherit' }
 
   return (
-    <div style={{ marginTop: 20, padding: '20px 22px', background: 'var(--surface, #0c1322)', border: `1px solid ${fechada ? 'var(--b1)' : 'rgba(239,68,68,0.3)'}`, borderRadius: 16 }}>
+    <div style={{ marginTop: 20, padding: '20px 22px', background: 'var(--surface)', border: `1px solid ${fechada ? 'var(--b1)' : 'rgba(239,68,68,0.3)'}`, borderRadius: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>{apenasBau ? 'Baú e custos' : 'Salário e custos'}</span>
         {isActive && <span style={{ fontSize: 11, color: 'var(--t4)', marginLeft: 4 }}>Pré-configure para fechamento automático</span>}
-        {isFinalizedNotClosed && <span style={{ fontSize: 10, fontWeight: 600, color: '#ffd166', marginLeft: 4 }}>Operador finalizou — defina valores e feche</span>}
+        {isFinalizedNotClosed && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--warn)', marginLeft: 4 }}>Operador finalizou — defina valores e feche</span>}
         {fechada && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--profit, #10b981)', marginLeft: 4 }}>Meta fechada — ajuste se necessário</span>}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: apenasBau ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
@@ -80,7 +80,7 @@ function SalaryPanel({ meta, liqCalc, tenantOpModel, leaderId, onSaved }) {
         </span>
       </div>
       <button type="button" onClick={save} disabled={saving}
-        style={{ width: '100%', padding: '12px', borderRadius: 11, border: 'none', cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: isFinalizedNotClosed ? 'linear-gradient(180deg, var(--profit, #10b981), #00a06d)' : 'linear-gradient(180deg, #ef4444, #c62828)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: saving ? 0.7 : 1 }}>
+        style={{ width: '100%', padding: '12px', borderRadius: 11, border: 'none', cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: 'var(--t1)', background: isFinalizedNotClosed ? 'linear-gradient(180deg, var(--profit, #10b981), #00a06d)' : 'linear-gradient(180deg, #ef4444, #c62828)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: saving ? 0.7 : 1 }}>
         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         {saving ? 'Salvando...' : isActive ? 'Salvar configuração' : isFinalizedNotClosed ? 'Salvar e fechar meta' : 'Salvar ajustes'}
       </button>
@@ -112,9 +112,9 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
     if (onRefresh) onRefresh()
   }
 
-  const card = { background: 'var(--surface, #0c1322)', border: '1px solid var(--b1)', borderRadius: 14 }
+  const card = { background: 'var(--surface)', border: '1px solid var(--b1)', borderRadius: 14 }
   const infoCards = [
-    { l: 'Rede', v: meta.rede || '—', c: '#ff6b6b' },
+    { l: 'Rede', v: meta.rede || '—', c: 'var(--loss)' },
     { l: 'Plataforma', v: meta.plataforma || '—', c: 'var(--t1)' },
     { l: 'Operador', v: getName(op), c: '#7aa2ff' },
     { l: 'Contas', v: meta.quantidade_contas || 0, c: '#ffd166' },
@@ -144,12 +144,12 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {isOwnMeta && onOperate && !fechada && (
-              <button type="button" onClick={onOperate} title="Operar (lançar remessa)" style={{ padding: '0 14px', height: 36, borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.12)', color: '#ffb3b3', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, fontFamily: 'inherit' }}>Operar</button>
+              <button type="button" onClick={onOperate} title="Operar (lançar remessa)" style={{ padding: '0 14px', height: 36, borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.12)', color: 'var(--loss)', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, fontFamily: 'inherit' }}>Operar</button>
             )}
             <button type="button" onClick={delMeta} title="Excluir meta" style={{ width: 36, height: 36, borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--loss, #ef4444)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </button>
-            <button type="button" onClick={onClose} style={{ width: 36, height: 36, borderRadius: 10, border: '1px solid var(--b2, rgba(255,255,255,0.14))', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <button type="button" onClick={onClose} style={{ width: 36, height: 36, borderRadius: 10, border: '1px solid var(--b2, var(--b2))', background: 'var(--fill-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
@@ -199,7 +199,7 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
                             <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--t1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.titulo || `Remessa ${remessas.length-i}`}</p>
                             {isLatest && <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: pos?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.12)', color: pos?'var(--profit, #10b981)':'var(--loss, #ef4444)' }}>{pos?'LUCRO':'PREJUÍZO'}</span>}
-                            {r.slot_name && <span style={{ fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#7aa2ff' }}>{r.slot_name}</span>}
+                            {r.slot_name && <span style={{ fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4, background: 'var(--fill-3)', border: '1px solid var(--b3)', color: 'var(--t2)' }}>{r.slot_name}</span>}
                           </div>
                           <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>{r.tipo} · D: R$ {fmt(r.deposito)} · S: R$ {fmt(r.saque)}</p>
                         </div>
@@ -217,8 +217,8 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingLeft: 40 }}>
                               {fotos.map((item, fi) => { const f = nF(item); const ts = f.ts || r.created_at; return (
                                 <a key={fi} href={f.url} target="_blank" rel="noreferrer" title={`Comprovante ${fi+1}`} style={{ position:'relative', display:'block' }}>
-                                  <img src={f.url} alt={`comprovante ${fi+1}`} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--b2, rgba(255,255,255,0.14))', display: 'block' }}/>
-                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'#fff', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fTs(ts)}</span>}
+                                  <img src={f.url} alt={`comprovante ${fi+1}`} style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--b2, var(--b2))', display: 'block' }}/>
+                                  {ts && !f.burned && <span style={{ position:'absolute', bottom:2, left:2, padding:'1px 4px', borderRadius:4, background:'rgba(229,57,53,0.92)', color:'var(--t1)', fontSize:8, fontWeight:800, fontFamily:'var(--mono, monospace)', lineHeight:1.2 }}>{fTs(ts)}</span>}
                                 </a>
                               )})}
                             </div>
@@ -241,7 +241,7 @@ export default function MetaDetailModal({ meta, remessas = [], logs = [], operat
                   {logs.map((log, i) => {
                     const logOp = operators.find(o => o.id === log.operator_id)
                     const ic = iconMap[log.action] || 'circle'
-                    const lc = log.action==='meta_closed'?'var(--profit, #10b981)':log.action==='remessa_created'?'#7aa2ff':log.action==='meta_created'?'#ff6b6b':'#ffd166'
+                    const lc = log.action==='meta_closed'?'var(--profit, #10b981)':log.action==='remessa_created'?'#7aa2ff':log.action==='meta_created'?'var(--loss)':'#ffd166'
                     return (
                       <div key={log.id} style={{ display: 'flex', gap: 12, paddingBottom: 16, position: 'relative' }}>
                         {i < logs.length-1 && <div style={{ position: 'absolute', left: 13, top: 28, bottom: 0, width: 1, background: 'var(--b1)' }}/>}

@@ -79,7 +79,7 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
 
           <div style={{
             position: 'relative',
-            background: 'linear-gradient(145deg, var(--raised) 0%, #050505 100%)',
+            background: 'var(--surface)',
             borderRadius: 17,
             padding: '20px 22px',
             overflow: 'hidden',
@@ -104,8 +104,8 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
               style={{
                 position: 'absolute', top: 12, right: 12,
                 width: 26, height: 26, borderRadius: 6,
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'var(--fill-2)',
+                border: '1px solid var(--b1)',
                 color: 'var(--t3)', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 0.2s, color 0.2s',
@@ -131,7 +131,7 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
                 }}
               />
               <span style={{
-                fontSize: 10, fontWeight: 900, color: '#ff6b6b',
+                fontSize: 10, fontWeight: 900, color: 'var(--loss)',
                 letterSpacing: '0.2em', textTransform: 'uppercase',
                 fontFamily: 'var(--mono)',
               }}>
@@ -198,7 +198,7 @@ export default function DemoModeCard({ userId, onExit, delay = 3000 }) {
                 transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                 style={{
                   position: 'absolute', top: 0, left: 0, width: '50%', height: '100%',
-                  background: 'linear-gradient(105deg, transparent, rgba(255,255,255,0.25), transparent)',
+                  background: 'linear-gradient(105deg, transparent, var(--fill-3), transparent)',
                   pointerEvents: 'none',
                 }}
               />

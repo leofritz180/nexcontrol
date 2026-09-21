@@ -56,7 +56,7 @@ export default function BettifyTips() {
           ))}
         </div>
         <button type="button" onClick={() => router.push('/proxy')}
-          style={{ padding: '9px 16px', borderRadius: 9, fontSize: 12.5, fontWeight: 800, background: '#FF6B00', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 6px 18px rgba(255,107,0,0.3)', flexShrink: 0 }}>
+          style={{ padding: '9px 16px', borderRadius: 9, fontSize: 12.5, fontWeight: 800, background: '#FF6B00', border: 'none', color: 'var(--t1)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 6px 18px rgba(255,107,0,0.3)', flexShrink: 0 }}>
           Ver na Loja
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
         </button>

@@ -23,7 +23,7 @@ function Spinner() {
 /* ── Progress Bar ── */
 function ProgressBar({ percent, height = 8 }) {
   return (
-    <div style={{ width: '100%', height, borderRadius: height / 2, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+    <div style={{ width: '100%', height, borderRadius: height / 2, background: 'var(--fill-2)', overflow: 'hidden' }}>
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${percent}%` }}
@@ -130,7 +130,7 @@ export default function CourseDetailPage() {
         <motion.div {...fadeUp(0)} style={{
           padding: '32px 28px', borderRadius: 18, marginBottom: 24, position: 'relative', overflow: 'hidden',
           background: `linear-gradient(145deg, rgba(255,255,255,0.12), var(--surface) 60%)`,
-          border: '1px solid rgba(255,255,255,0.18)',
+          border: '1px solid var(--b3)',
         }}>
           {course?.thumb_url && (
             <div style={{ position: 'absolute', inset: 0, opacity: 0.1, backgroundImage: `url(${course.thumb_url})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
@@ -138,7 +138,7 @@ export default function CourseDetailPage() {
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
               {course?.category && (
-                <span style={{ fontSize: 10, fontWeight: 700, color: AMBER, background: 'rgba(255,255,255,0.15)', padding: '3px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{course.category}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: AMBER, background: 'var(--fill-3)', padding: '3px 10px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{course.category}</span>
               )}
               <span style={{ fontSize: 10, color: 'var(--t3)' }}>{totalLessons} aulas</span>
             </div>

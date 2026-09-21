@@ -57,7 +57,7 @@ export default function RankBadge({ contas, size = 'sm', showName = true, showTi
         {/* Inner shine top-left */}
         <span aria-hidden style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25) 0%, transparent 55%)',
+          background: 'radial-gradient(circle at 30% 20%, var(--fill-3) 0%, transparent 55%)',
         }}/>
         <RankIcon name={current.icon} size={dims.icon} color={textColor} />
         {isApex && (

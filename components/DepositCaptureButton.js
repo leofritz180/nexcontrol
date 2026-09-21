@@ -150,7 +150,7 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
       </div>
 
       {cfgOpen && (
-        <div style={{ marginTop: 8, padding: '14px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', maxWidth: 470 }}>
+        <div style={{ marginTop: 8, padding: '14px 14px', borderRadius: 12, background: 'var(--fill-1)', border: '1px solid var(--b1)', maxWidth: 470 }}>
           <div style={{ fontSize: 12.5, fontWeight: 800, color: 'var(--t1)', marginBottom: 4 }}>Sua extensão, pronta pra usar</div>
           <div style={{ fontSize: 11.5, color: 'var(--t3)', lineHeight: 1.55, marginBottom: 11 }}>
             Baixe o arquivo <b style={{ color: 'var(--t1)' }}>já com a sua chave embutida</b> (não precisa editar nada). Descompacte e adicione a pasta no bot em <b style={{ color: 'var(--t1)' }}>“Adicionar Extensão”</b>. É só uma vez — vale pra todas as abas e remessas.
@@ -166,9 +166,9 @@ export default function DepositCaptureButton({ metaId, onTotal, compact }) {
             <summary style={{ fontSize: 11, color: 'var(--t4)', cursor: 'pointer' }}>Prefiro colar a chave manualmente</summary>
             <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
               <input readOnly value={captureKey || 'gerando...'} onFocus={e => e.target.select()}
-                style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: '#0a0a0a', color: '#d1fae5', fontFamily: 'var(--mono, monospace)', fontSize: 12 }} />
+                style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid var(--b2)', background: 'var(--raised)', color: 'var(--t1)', fontFamily: 'var(--mono, monospace)', fontSize: 12 }} />
               <button type="button" onClick={copyKey} disabled={!captureKey}
-                style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: 'rgba(255,255,255,0.1)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+                style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: 'var(--fill-3)', color: 'var(--t1)', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
                 {copied ? 'Copiado!' : 'Copiar'}
               </button>
             </div>

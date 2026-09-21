@@ -91,7 +91,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
             background: 'rgba(15,24,41,0.75)',
             backdropFilter: 'blur(40px) saturate(160%)',
             WebkitBackdropFilter: 'blur(40px) saturate(160%)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            border: '1px solid var(--b1)',
             boxShadow: '0 40px 80px rgba(0,0,0,0.55), 0 0 60px rgba(229,57,53,0.12), inset 0 1px 0 rgba(255,255,255,0.07)',
             animation: 'pix-card-in 0.35s cubic-bezier(0.33,1,0.68,1) both',
             position: 'relative',
@@ -101,9 +101,9 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
           <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,53,0.35), transparent)' }}/>
 
           {/* Header */}
-          <div style={{ padding: '22px 24px 18px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ padding: '22px 24px 18px', borderBottom: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <div style={{ minWidth: 0 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 800, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Pagamento via Pix</h2>
+              <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Pagamento via Pix</h2>
               <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {planName || 'NexControl'} · <strong style={{ color: '#e53935', fontFamily: 'var(--mono)' }}>R$ {fmt(amount)}</strong>
               </p>
@@ -113,7 +113,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
               aria-label="Fechar"
               style={{
                 width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+                background: 'var(--fill-1)', border: '1px solid var(--b1)',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: 'var(--t3)', transition: 'all 0.2s',
               }}
@@ -134,7 +134,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                   <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(229,57,53,0.1)', border: '1px solid rgba(229,57,53,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
                     <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                   </div>
-                  <p style={{ fontSize: 15, color: '#E2E8F0', margin: '0 0 6px', fontWeight: 600, lineHeight: 1.4 }}>
+                  <p style={{ fontSize: 15, color: 'var(--t1)', margin: '0 0 6px', fontWeight: 600, lineHeight: 1.4 }}>
                     Pague em poucos segundos
                   </p>
                   <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0, lineHeight: 1.5 }}>
@@ -160,7 +160,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, marginTop: 16, padding: '8px 14px', borderRadius: 10, background: 'rgba(209,250,229,0.04)', border: '1px solid rgba(209,250,229,0.1)' }}>
                   <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  <span style={{ fontSize: 11, color: 'rgba(209,250,229,0.75)', fontWeight: 600, letterSpacing: '0.02em' }}>
+                  <span style={{ fontSize: 11, color: 'var(--t1)', fontWeight: 600, letterSpacing: '0.02em' }}>
                     Pagamento 100% seguro via Mercado Pago
                   </span>
                 </div>
@@ -173,22 +173,22 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 {/* Skeleton do QR */}
                 <div style={{
                   width: 220, height: 220, borderRadius: 14, margin: '0 auto 18px',
-                  background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%)',
+                  background: 'linear-gradient(90deg, var(--fill-2) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%)',
                   backgroundSize: '200% 100%',
                   animation: 'pix-shimmer 1.4s ease-in-out infinite',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  border: '1px solid var(--b1)',
                 }}/>
                 {/* Skeleton da linha de código */}
                 <div style={{ height: 42, borderRadius: 10, marginBottom: 18,
-                  background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%)',
+                  background: 'linear-gradient(90deg, var(--fill-2) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%)',
                   backgroundSize: '200% 100%', animation: 'pix-shimmer 1.4s ease-in-out infinite',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  border: '1px solid var(--b1)',
                 }}/>
                 {/* Botao disabled */}
                 <div style={{
                   width: '100%', padding: '14px 24px', borderRadius: 13, textAlign: 'center',
                   background: 'rgba(229,57,53,0.12)', border: '1px solid rgba(229,57,53,0.2)',
-                  color: '#FCA5A5', fontSize: 14, fontWeight: 700,
+                  color: 'var(--loss)', fontSize: 14, fontWeight: 700,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                 }}>
                   <div style={{
@@ -224,7 +224,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 <div style={{ marginBottom: 16 }}>
                   <div style={{
                     padding: '10px 12px', borderRadius: 10, marginBottom: 8,
-                    background: 'rgba(4,8,16,0.6)', border: '1px solid rgba(255,255,255,0.06)',
+                    background: 'rgba(4,8,16,0.6)', border: '1px solid var(--b1)',
                     fontSize: 10, fontFamily: 'var(--mono)', color: '#64748B',
                     wordBreak: 'break-all', maxHeight: 56, overflowY: 'auto', textAlign: 'left',
                   }}>
@@ -262,14 +262,14 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 {/* Status aguardando */}
                 <div style={{
                   padding: '10px 14px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)',
+                  background: 'var(--fill-2)', border: '1px solid var(--b2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 }}>
                   <div style={{
-                    width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.78)',
+                    width: 8, height: 8, borderRadius: '50%', background: 'var(--t1)',
                     animation: 'pix-ping 1.6s ease-in-out infinite',
                   }}/>
-                  <span style={{ fontSize: 12, color: '#FCD34D', fontWeight: 600, letterSpacing: '0.02em' }}>
+                  <span style={{ fontSize: 12, color: 'var(--warn)', fontWeight: 600, letterSpacing: '0.02em' }}>
                     ⏳ Aguardando pagamento...
                   </span>
                 </div>
@@ -312,7 +312,7 @@ export default function PixPayment({ tenantId, userId, userName, userEmail, amou
                 }}>
                   <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
-                <p style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9', margin: '0 0 6px' }}>
+                <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', margin: '0 0 6px' }}>
                   Erro ao gerar pagamento
                 </p>
                 <p style={{ fontSize: 13, color: 'var(--t3)', margin: '0 0 22px' }}>

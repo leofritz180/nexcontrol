@@ -124,7 +124,7 @@ export default function QuickNotifyPanel({ userEmail }) {
           cursor: 'pointer',
           background: open ? '#10B981' : 'rgba(20,20,20,0.95)',
           border: '1px solid ' + (open ? '#10B981' : 'rgba(255,255,255,0.1)'),
-          color: 'white',
+          color: 'var(--t1)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 6px 18px rgba(0,0,0,0.4)',
           transition: 'all 0.2s',
@@ -147,16 +147,16 @@ export default function QuickNotifyPanel({ userEmail }) {
               width: 360, maxHeight: '70vh',
               background: 'rgba(15,15,15,0.96)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              border: '1px solid var(--b1)',
               borderRadius: 16,
               boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
               overflow: 'hidden',
               display: 'flex', flexDirection: 'column',
             }}
           >
-            <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--b1)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9' }}>Notificacao rapida</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Notificacao rapida</span>
                 <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,53,0.15)', color: '#e53935', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
               </div>
               <p style={{ fontSize: 11, color: '#64748B', margin: 0 }}>
@@ -169,7 +169,7 @@ export default function QuickNotifyPanel({ userEmail }) {
                 padding: '10px 16px', fontSize: 11, fontWeight: 600,
                 background: toast.ok ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
                 color: toast.ok ? '#10B981' : 'var(--loss)',
-                borderBottom: '1px solid rgba(255,255,255,0.04)',
+                borderBottom: '1px solid var(--b1)',
               }}>
                 {toast.ok ? '✓' : '⚠'} {toast.msg}
               </div>
@@ -192,11 +192,11 @@ export default function QuickNotifyPanel({ userEmail }) {
                       onMouseEnter={e => { if (!busy) e.currentTarget.style.background = 'rgba(229,57,53,0.06)' }}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#F1F5F9' }}>{it.label}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)' }}>{it.label}</div>
                         <div style={{ fontSize: 11, color: '#64748B' }}>so admins com atividade na semana</div>
                       </div>
                       {busy === 'mass_' + it.type ? (
-                        <motion.div style={{ width: 14, height: 14, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.2)', borderTopColor:'#e53935' }}
+                        <motion.div style={{ width: 14, height: 14, borderRadius:'50%', border:'2px solid var(--b3)', borderTopColor:'#e53935' }}
                           animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} />
                       ) : (
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -227,11 +227,11 @@ export default function QuickNotifyPanel({ userEmail }) {
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#F1F5F9', marginBottom: 2 }}>{it.label}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', marginBottom: 2 }}>{it.label}</div>
                         <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.4 }}>{it.desc}</div>
                       </div>
                       {busy === it.type ? (
-                        <motion.div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', borderTopColor: '#10B981', flexShrink: 0 }}
+                        <motion.div style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--b3)', borderTopColor: '#10B981', flexShrink: 0 }}
                           animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} />
                       ) : (
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>

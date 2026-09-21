@@ -11,7 +11,7 @@ import { motion } from 'framer-motion'
 
 // ── tokens ──
 export const NX = {
-  red: '#e11d1d', redSoft: '#ff6b6b', redDeep: '#b01611',
+  red: '#e11d1d', redSoft: 'var(--loss)', redDeep: '#b01611',
   mint: 'var(--profit)', loss: 'var(--loss)',
   t1: '#F5F5F5', t2: 'rgba(255,255,255,0.62)', t3: 'rgba(255,255,255,0.42)', t4: 'rgba(255,255,255,0.26)',
   line: 'rgba(255,255,255,0.08)', lineSoft: 'rgba(255,255,255,0.05)',

@@ -75,7 +75,7 @@ export default function GlobalLoadingScreen() {
               fontSize: 18,
               fontWeight: 800,
               letterSpacing: '-0.02em',
-              color: '#F1F5F9',
+              color: 'var(--t1)',
               lineHeight: 1,
             }}>
               Nex<span style={{ color: '#e53935' }}>Control</span>

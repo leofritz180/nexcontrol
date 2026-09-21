@@ -107,8 +107,8 @@ export default function FirstMetaWizard({ show, user, tenantId, onCreated }) {
         transition={{ duration: 0.4, ease }}
         style={{
           position: 'relative', width: '100%', maxWidth: 460, margin: 'auto',
-          background: 'linear-gradient(180deg, #0b0b0b, #050505)',
-          border: '1px solid rgba(255,255,255,0.08)', borderRadius: 22,
+          background: 'var(--surface)',
+          border: '1px solid var(--b1)', borderRadius: 22,
           boxShadow: '0 40px 120px rgba(0,0,0,0.7)', overflow: 'hidden',
         }}>
         {/* linha de brilho no topo */}
@@ -138,13 +138,13 @@ export default function FirstMetaWizard({ show, user, tenantId, onCreated }) {
 
               <h2 style={{
                 fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 30, fontWeight: 400,
-                color: '#fafafa', letterSpacing: '-0.02em', lineHeight: 1.12, margin: '0 0 12px',
+                color: 'var(--t1)', letterSpacing: '-0.02em', lineHeight: 1.12, margin: '0 0 12px',
               }}>Vamos criar sua primeira meta.</h2>
 
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: '0 0 22px', fontWeight: 300 }}>
-                Uma <strong style={{ color: '#fff', fontWeight: 600 }}>meta</strong> é o objetivo de depósitos numa rede.
+              <p style={{ fontSize: 14, color: 'var(--t2)', lineHeight: 1.6, margin: '0 0 22px', fontWeight: 300 }}>
+                Uma <strong style={{ color: 'var(--t1)', fontWeight: 600 }}>meta</strong> é o objetivo de depósitos numa rede.
                 Assim que você cria a primeira, o NexControl começa a calcular seu
-                <strong style={{ color: '#fff', fontWeight: 600 }}> lucro real</strong>, por operador, em tempo real. Leva 2 minutos.
+                <strong style={{ color: 'var(--t1)', fontWeight: 600 }}> lucro real</strong>, por operador, em tempo real. Leva 2 minutos.
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 26 }}>
@@ -161,8 +161,8 @@ export default function FirstMetaWizard({ show, user, tenantId, onCreated }) {
                       fontSize: 11, fontWeight: 800, color: 'var(--profit, #d1fae5)', fontFamily: 'var(--mono, monospace)',
                     }}>{i + 1}</div>
                     <div>
-                      <div style={{ fontSize: 13.5, fontWeight: 600, color: '#f0f0f0', marginBottom: 1 }}>{t}</div>
-                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.45 }}>{d}</div>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--t1)', marginBottom: 1 }}>{t}</div>
+                      <div style={{ fontSize: 12, color: 'var(--t3)', lineHeight: 1.45 }}>{d}</div>
                     </div>
                   </div>
                 ))}
@@ -182,7 +182,7 @@ export default function FirstMetaWizard({ show, user, tenantId, onCreated }) {
 
               <h2 style={{
                 fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 26, fontWeight: 400,
-                color: '#fafafa', letterSpacing: '-0.02em', lineHeight: 1.15, margin: '2px 0 20px',
+                color: 'var(--t1)', letterSpacing: '-0.02em', lineHeight: 1.15, margin: '2px 0 20px',
               }}>Configure sua meta.</h2>
 
               {/* REDE */}
@@ -271,15 +271,15 @@ const btnPrimary = {
 }
 const btnGhost = {
   width: '100%', padding: '11px 20px', marginTop: 8, borderRadius: 12,
-  background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.45)',
+  background: 'transparent', border: 'none', color: 'var(--t3)',
   fontSize: 13, fontWeight: 500, fontFamily: 'inherit', cursor: 'pointer',
 }
 const labelStyle = {
   display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em',
-  textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: 9,
+  textTransform: 'uppercase', color: 'var(--t3)', marginBottom: 9,
 }
 const inputStyle = {
   width: '100%', padding: '12px 14px', borderRadius: 11, marginBottom: 0,
-  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-  color: '#fafafa', fontSize: 14, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+  background: 'var(--fill-2)', border: '1px solid var(--b1)',
+  color: 'var(--t1)', fontSize: 14, fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
 }

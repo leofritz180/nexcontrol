@@ -60,25 +60,25 @@ export default function DemoPage() {
       {/* ═══ Banner fixo de demo ═══ */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 40,
-        background: 'linear-gradient(90deg, rgba(255,255,255,0.14), rgba(229,57,53,0.14))',
+        background: 'linear-gradient(90deg, var(--fill-3), rgba(229,57,53,0.14))',
         backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.22)',
+        borderBottom: '1px solid var(--b3)',
         padding: '10px 20px',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, flexWrap: 'wrap',
       }}>
         <motion.div
           animate={{ boxShadow: ['0 0 0 0 rgba(255,255,255,0.55)', '0 0 0 6px rgba(255,255,255,0)', '0 0 0 0 rgba(255,255,255,0)'] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ width: 7, height: 7, borderRadius: '50%', background: 'rgba(255,255,255,0.78)', flexShrink: 0 }}
+          style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--t1)', flexShrink: 0 }}
         />
-        <span style={{ fontSize: 12, color: '#FCD34D', fontWeight: 700, letterSpacing: '0.04em', textAlign: 'center' }}>
+        <span style={{ fontSize: 12, color: 'var(--warn)', fontWeight: 700, letterSpacing: '0.04em', textAlign: 'center' }}>
           Modo demonstração — dados simulados
         </span>
       </div>
 
       {/* ═══ Header ═══ */}
       <header style={{
-        padding: '22px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)',
+        padding: '22px 24px', borderBottom: '1px solid var(--b1)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
       }}>
         <Logo size={1.2} />
@@ -101,7 +101,7 @@ export default function DemoPage() {
 
       {/* ═══ Tabs ═══ */}
       <div style={{
-        padding: '16px 24px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
+        padding: '16px 24px 0', borderBottom: '1px solid var(--b1)',
         position: 'sticky', top: 38, zIndex: 30,
         background: 'rgba(4,7,14,0.85)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
       }}>
@@ -228,7 +228,7 @@ function TabOperadores() {
                 {i + 1}
               </div>
               <div style={{ flex: 1, minWidth: 140 }}>
-                <p style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9', margin: '0 0 3px' }}>{op.nome}</p>
+                <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', margin: '0 0 3px' }}>{op.nome}</p>
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 11, color: 'var(--t3)' }}>{op.metasFechadas} fechadas · {op.metasAtivas} ativas</span>
                   <span style={{ fontSize: 11, color: 'var(--profit)', fontWeight: 700 }}>{op.winRate}% vitória</span>
@@ -262,12 +262,12 @@ function TabRedes() {
         {DEMO_REDES_RANKING.map((r, i) => (
           <motion.div key={r.rede} {...fade(i)} style={cardStyle}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.78)', fontSize: 13, fontWeight: 800, flexShrink: 0, fontFamily: 'var(--mono)' }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'var(--fill-3)', border: '1px solid var(--b3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--t1)', fontSize: 13, fontWeight: 800, flexShrink: 0, fontFamily: 'var(--mono)' }}>
                 {r.rede}
               </div>
               <div style={{ flex: 1, minWidth: 140 }}>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 6 }}>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>Rede {r.rede}</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Rede {r.rede}</p>
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 6, background: r.score >= 70 ? 'rgba(209,250,229,0.15)' : r.score >= 50 ? 'rgba(255,255,255,0.15)' : 'rgba(239,68,68,0.15)', color: r.score >= 70 ? 'var(--profit)' : r.score >= 50 ? 'rgba(255,255,255,0.78)' : 'var(--loss)', fontWeight: 800 }}>
                     Score {r.score}
                   </span>
@@ -333,7 +333,7 @@ function TabCustos() {
             return (
               <div key={type}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#E2E8F0', textTransform: 'capitalize' }}>{type}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', textTransform: 'capitalize' }}>{type}</span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--loss)', fontFamily: 'var(--mono)' }}>R$ {fmt(amount)}</span>
                 </div>
                 <div style={{ height: 6, background: 'rgba(239,68,68,0.1)', borderRadius: 3, overflow: 'hidden' }}>
@@ -372,7 +372,7 @@ function TabMetas() {
                   <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={isClosed ? 'var(--profit)' : 'rgba(255,255,255,0.78)'} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                 </div>
                 <div style={{ flex: 1, minWidth: 160 }}>
-                  <p style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9', margin: '0 0 3px' }}>{m.titulo}</p>
+                  <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', margin: '0 0 3px' }}>{m.titulo}</p>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 11, color: 'var(--t3)' }}>{m.operador?.nome}</span>
                     <span style={{ fontSize: 11, color: '#64748B' }}>·</span>
@@ -415,7 +415,7 @@ function HeroCard({ G }) {
           { l: 'Custos', v: G.custosTotal, c: 'var(--loss)' },
           { l: 'Contas', v: G.totalContas, c: 'rgba(255,255,255,0.78)', raw: true },
         ].map(x => (
-          <div key={x.l} style={{ padding: '10px 12px', background: 'rgba(4,7,14,0.4)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)' }}>
+          <div key={x.l} style={{ padding: '10px 12px', background: 'rgba(4,7,14,0.4)', borderRadius: 10, border: '1px solid var(--b1)' }}>
             <p style={{ fontSize: 9, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, margin: '0 0 3px' }}>{x.l}</p>
             <p style={{ fontSize: 14, fontWeight: 800, color: x.c, fontFamily: 'var(--mono)', margin: 0 }}>
               {x.raw ? x.v : `R$ ${fmt(x.v)}`}
@@ -431,7 +431,7 @@ function ChartCard({ chartData, maxChart }) {
   return (
     <motion.div {...fade(1)} style={{ ...cardStyle, padding: 22, marginBottom: 22 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: 0 }}>Receita diária</p>
+        <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Receita diária</p>
         <span style={{ fontSize: 10, color: '#64748B', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Últimos 30 dias</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 130 }}>
@@ -460,7 +460,7 @@ function ChartCard({ chartData, maxChart }) {
 function InsightsCard() {
   return (
     <motion.div {...fade(2)} style={{ ...cardStyle, padding: 22 }}>
-      <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
         Inteligência da operação
       </p>
@@ -468,7 +468,7 @@ function InsightsCard() {
         {DEMO_INSIGHTS.slice(0, 5).map((ins, i) => (
           <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: ins.type === 'profit' ? 'var(--profit)' : ins.type === 'critical' ? 'var(--loss)' : 'rgba(255,255,255,0.78)', flexShrink: 0, marginTop: 6 }}/>
-            <p style={{ fontSize: 12, color: '#CBD5E1', margin: 0, lineHeight: 1.5 }}>{ins.text}</p>
+            <p style={{ fontSize: 12, color: 'var(--t2)', margin: 0, lineHeight: 1.5 }}>{ins.text}</p>
           </div>
         ))}
       </div>
@@ -479,7 +479,7 @@ function InsightsCard() {
 function ActivityCard() {
   return (
     <motion.div {...fade(3)} style={{ ...cardStyle, padding: 22 }}>
-      <p style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+      <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
         <motion.div
           animate={{ boxShadow: ['0 0 0 0 rgba(209,250,229,0)', '0 0 0 4px rgba(209,250,229,0.2)', '0 0 0 0 rgba(209,250,229,0)'] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -490,7 +490,7 @@ function ActivityCard() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {DEMO_ACTIVITY.slice(0, 5).map((a, i) => (
           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 4 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-            <p style={{ fontSize: 12, color: '#CBD5E1', margin: 0, flex: 1 }}>{a.text}</p>
+            <p style={{ fontSize: 12, color: 'var(--t2)', margin: 0, flex: 1 }}>{a.text}</p>
             <span style={{ fontSize: 10, color: '#64748B', fontFamily: 'var(--mono)', flexShrink: 0 }}>{relativeTime(a.at)}</span>
           </div>
         ))}
@@ -514,7 +514,7 @@ function Kpi({ label, value, color, big }) {
 function SectionTitle({ title, subtitle }) {
   return (
     <div style={{ marginBottom: 20 }}>
-      <h2 style={{ fontSize: 22, fontWeight: 800, color: '#F1F5F9', margin: '0 0 4px', letterSpacing: '-0.02em' }}>{title}</h2>
+      <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px', letterSpacing: '-0.02em' }}>{title}</h2>
       <p style={{ fontSize: 13, color: 'var(--t3)', margin: 0 }}>{subtitle}</p>
     </div>
   )
@@ -543,7 +543,7 @@ function CtaBottom() {
         border: '1px solid rgba(229,57,53,0.2)',
       }}
     >
-      <h3 style={{ fontSize: 24, fontWeight: 900, color: '#F1F5F9', margin: '0 0 8px', letterSpacing: '-0.02em' }}>
+      <h3 style={{ fontSize: 24, fontWeight: 900, color: 'var(--t1)', margin: '0 0 8px', letterSpacing: '-0.02em' }}>
         Pronto para operar de verdade?
       </h3>
       <p style={{ fontSize: 14, color: 'var(--t3)', margin: '0 0 22px' }}>
@@ -575,7 +575,7 @@ const cardStyle = {
   background: 'rgba(12,18,32,0.65)',
   backdropFilter: 'blur(20px) saturate(160%)',
   WebkitBackdropFilter: 'blur(20px) saturate(160%)',
-  border: '1px solid rgba(255,255,255,0.06)',
+  border: '1px solid var(--b1)',
   boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
 }
 

@@ -89,13 +89,13 @@ export default function OperatorLimitBanner({ tenantId, variant = 'default' }) {
               margin: '0 0 4px',
             }}>Limite excedido</p>
             <p style={{
-              fontSize: 14, color: '#fff', fontWeight: 700,
+              fontSize: 14, color: 'var(--t1)', fontWeight: 700,
               margin: '0 0 4px', letterSpacing: '-0.01em',
             }}>
-              Você tem <strong style={{ color: '#fef2f2', fontWeight: 800 }}>{status.current} operador{status.current !== 1 ? 'es' : ''}</strong> cadastrado{status.current !== 1 ? 's' : ''} mas seu plano cobre <strong style={{ color: '#fef2f2', fontWeight: 800 }}>{status.limit}</strong>.
+              Você tem <strong style={{ color: 'var(--t1)', fontWeight: 800 }}>{status.current} operador{status.current !== 1 ? 'es' : ''}</strong> cadastrado{status.current !== 1 ? 's' : ''} mas seu plano cobre <strong style={{ color: 'var(--t1)', fontWeight: 800 }}>{status.limit}</strong>.
             </p>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: 1.5 }}>
-              Remova <strong style={{ color: '#fff' }}>{status.excess}</strong> operador{status.excess !== 1 ? 'es' : ''} ou faça upgrade do plano pra deixar a operação dentro do limite.
+            <p style={{ fontSize: 12, color: 'var(--t2)', margin: 0, lineHeight: 1.5 }}>
+              Remova <strong style={{ color: 'var(--t1)' }}>{status.excess}</strong> operador{status.excess !== 1 ? 'es' : ''} ou faça upgrade do plano pra deixar a operação dentro do limite.
             </p>
           </div>
 
@@ -103,8 +103,8 @@ export default function OperatorLimitBanner({ tenantId, variant = 'default' }) {
           <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
             {pathname !== '/operadores' && (
               <button onClick={onManage} type="button" style={{
-                padding: '10px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.18)', cursor: 'pointer',
-                background: 'rgba(255,255,255,0.05)', color: '#fff',
+                padding: '10px 16px', borderRadius: 10, border: '1px solid var(--b3)', cursor: 'pointer',
+                background: 'var(--fill-2)', color: 'var(--t1)',
                 fontSize: 12.5, fontWeight: 700, fontFamily: 'inherit',
                 display: 'inline-flex', alignItems: 'center', gap: 6,
               }}>

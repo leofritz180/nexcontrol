@@ -558,7 +558,7 @@ export default function VoiceCommandPanel({ userEmail }) {
           cursor: 'pointer',
           background: listening ? '#e53935' : 'rgba(20,20,20,0.95)',
           border: '1px solid ' + (listening ? '#e53935' : 'rgba(255,255,255,0.1)'),
-          color: 'white',
+          color: 'var(--t1)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: listening ? '0 0 0 0 rgba(229,57,53,0.4), 0 6px 18px rgba(0,0,0,0.4)' : '0 6px 18px rgba(0,0,0,0.4)',
           transition: 'all 0.2s',
@@ -593,7 +593,7 @@ export default function VoiceCommandPanel({ userEmail }) {
               width: 360, maxHeight: '75vh',
               background: 'rgba(15,15,15,0.96)',
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.08)',
+              border: '1px solid var(--b1)',
               borderRadius: 16,
               boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
               overflow: 'hidden',
@@ -601,7 +601,7 @@ export default function VoiceCommandPanel({ userEmail }) {
             }}
           >
             {/* Header */}
-            <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--b1)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <div style={{ position: 'relative', width: 8, height: 8 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor }} />
@@ -612,7 +612,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                       style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: statusColor }} />
                   )}
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 700, color: '#F1F5F9' }}>Comandos de Voz</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Comandos de Voz</span>
                 <span style={{ fontSize: 10, color: statusColor, fontWeight: 600, marginLeft: 4 }}>· {statusLabel}</span>
                 <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,53,0.15)', color: '#e53935', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
                 <button
@@ -621,7 +621,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                   aria-label="Fechar"
                   title="Fechar"
                   style={{
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'var(--fill-2)', border: '1px solid var(--b1)',
                     borderRadius: 6, cursor: 'pointer', color: 'var(--t3)',
                     width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: 0, transition: 'all 0.15s',
@@ -635,7 +635,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                 </button>
               </div>
               <p style={{ fontSize: 11, color: '#64748B', margin: 0 }}>
-                <kbd style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'var(--mono)' }}>F3</kbd> ativar · <kbd style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'var(--mono)' }}>Esc</kbd> fechar
+                <kbd style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: 'var(--fill-3)', border: '1px solid var(--b1)', fontFamily: 'var(--mono)' }}>F3</kbd> ativar · <kbd style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: 'var(--fill-3)', border: '1px solid var(--b1)', fontFamily: 'var(--mono)' }}>Esc</kbd> fechar
               </p>
             </div>
 
@@ -648,14 +648,14 @@ export default function VoiceCommandPanel({ userEmail }) {
 
             {/* Transcript em tempo real */}
             {(transcript || interim || lastAction) && (
-              <div style={{ padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.015)' }}>
+              <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--b1)', background: 'var(--fill-1)' }}>
                 {interim && (
                   <div style={{ fontSize: 11, color: 'var(--t3)', fontStyle: 'italic', marginBottom: 2 }}>
                     "{interim}"...
                   </div>
                 )}
                 {transcript && (
-                  <div style={{ fontSize: 11, color: '#F1F5F9', fontWeight: 600, marginBottom: lastAction ? 4 : 0 }}>
+                  <div style={{ fontSize: 11, color: 'var(--t1)', fontWeight: 600, marginBottom: lastAction ? 4 : 0 }}>
                     Capturado: "{transcript}"
                   </div>
                 )}
@@ -668,7 +668,7 @@ export default function VoiceCommandPanel({ userEmail }) {
             )}
 
             {status === 'listening' && !transcript && !interim && (
-              <div style={{ padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(16,185,129,0.04)', fontSize: 11, color: '#10B981', textAlign: 'center' }}>
+              <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--b1)', background: 'rgba(16,185,129,0.04)', fontSize: 11, color: 'var(--profit)', textAlign: 'center' }}>
                 Microfone ativo · pode falar
               </div>
             )}
@@ -679,7 +679,7 @@ export default function VoiceCommandPanel({ userEmail }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                 {(isAdminLevel ? NAV_COMMANDS : OPERATOR_NAV).map(c => (
                   <div key={c.label} style={{ fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"{c.keys[0]}"</span>
+                    <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"{c.keys[0]}"</span>
                     <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
                   </div>
                 ))}
@@ -691,7 +691,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                     {TAB_COMMANDS.map(c => (
                       <div key={c.tab} style={{ fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                        <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"{c.keys[0]}"</span>
+                        <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"{c.keys[0]}"</span>
                         <span style={{ fontSize: 11, color: '#64748B' }}>— {c.label}</span>
                       </div>
                     ))}
@@ -703,15 +703,15 @@ export default function VoiceCommandPanel({ userEmail }) {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei hoje?"</span>
+                      <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"quanto lucrei hoje?"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — fala o lucro de hoje</span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"quanto lucrei essa semana?"</span>
+                      <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"quanto lucrei essa semana?"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — lucro dos 7 dias</span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"qual meu lucro do mês?"</span>
+                      <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"qual meu lucro do mês?"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — lucro do mês atual</span>
                     </div>
                   </div>
@@ -723,15 +723,15 @@ export default function VoiceCommandPanel({ userEmail }) {
                   <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Acoes rapidas</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"lucro 150"</span>
+                      <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"lucro 150"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — abre Metodos com R$ 150</span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"prejuizo 80"</span>
+                      <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"prejuizo 80"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — idem prejuizo</span>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-                      <span style={{ color: '#F1F5F9', fontWeight: 600 }}>"novo metodo"</span>
+                      <span style={{ color: 'var(--t1)', fontWeight: 600 }}>"novo metodo"</span>
                       <span style={{ fontSize: 11, color: '#64748B' }}> — abre form vazio</span>
                     </div>
                   </div>

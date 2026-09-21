@@ -110,7 +110,7 @@ export default function RedesignFunnel({ items = [], legacy = false }) {
                   padding: '12px 16px',
                 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                  <span className="nx-red-txt" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.04em', color: 'rgba(255,255,255,0.78)', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span className="nx-red-txt" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.04em', color: 'var(--t1)', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {it.label}
                   </span>
                   {highlight ? (
@@ -131,7 +131,7 @@ export default function RedesignFunnel({ items = [], legacy = false }) {
                     </span>
                   )}
                 </div>
-                <p className="nx-red-txt" style={{ margin: '5px 0 0', fontFamily: 'var(--mono)', fontSize: highlight ? 24 : 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', lineHeight: 1, whiteSpace: 'nowrap' }}>
+                <p className="nx-red-txt" style={{ margin: '5px 0 0', fontFamily: 'var(--mono)', fontSize: highlight ? 24 : 20, fontWeight: 700, color: 'var(--t1)', letterSpacing: '-0.02em', lineHeight: 1, whiteSpace: 'nowrap' }}>
                   {it.prefix || ''}<CountUp value={it.value} currency={it.currency} />{it.suffix || ''}
                 </p>
               </motion.div>
@@ -142,7 +142,7 @@ export default function RedesignFunnel({ items = [], legacy = false }) {
                   <div style={{ width: 1, height: 9, background: 'rgba(229,57,53,0.35)' }} />
                   <span style={{
                     fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono)',
-                    color: '#ff6b6b', background: 'rgba(229,57,53,0.10)',
+                    color: 'var(--loss)', background: 'rgba(229,57,53,0.10)',
                     border: '1px solid rgba(229,57,53,0.25)', borderRadius: 5,
                     padding: '2px 7px', lineHeight: 1.2, letterSpacing: '0.02em',
                   }}>

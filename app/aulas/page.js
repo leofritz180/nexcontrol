@@ -58,9 +58,9 @@ function HeroBanner({ course, onWatch, onDetails }) {
         <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.4 }}
           style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
           <span style={{ fontSize: 10, fontWeight: 900, padding: '4px 12px', borderRadius: 4, background: RED, color: '#fff', letterSpacing: '0.1em', boxShadow: `0 2px 12px ${RED}40` }}>VIP</span>
-          {course.category && <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 10px', borderRadius: 4, background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}>{course.category}</span>}
+          {course.category && <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 10px', borderRadius: 4, background: 'var(--fill-3)', color: 'var(--t2)' }}>{course.category}</span>}
           {course.lesson_count > 0 && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'rgba(255,255,255,0.45)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--t3)' }}>
               <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /></svg>
               {course.lesson_count} aulas
             </span>
@@ -68,13 +68,13 @@ function HeroBanner({ course, onWatch, onDetails }) {
         </motion.div>
 
         <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.5 }}
-          style={{ fontSize: 44, fontWeight: 900, color: '#fff', margin: '0 0 14px', letterSpacing: '-0.03em', lineHeight: 1.08, textShadow: '0 4px 30px rgba(0,0,0,0.6)' }}>
+          style={{ fontSize: 44, fontWeight: 900, color: 'var(--t1)', margin: '0 0 14px', letterSpacing: '-0.03em', lineHeight: 1.08, textShadow: '0 4px 30px rgba(0,0,0,0.6)' }}>
           {course.title}
         </motion.h1>
 
         {course.description && (
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.4 }}
-            style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)', margin: '0 0 28px', lineHeight: 1.6, maxWidth: 480 }}>
+            style={{ fontSize: 15, color: 'var(--t3)', margin: '0 0 28px', lineHeight: 1.6, maxWidth: 480 }}>
             {course.description}
           </motion.p>
         )}
@@ -95,13 +95,13 @@ function HeroBanner({ course, onWatch, onDetails }) {
             Assistir agora
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.04, background: 'rgba(255,255,255,0.14)' }}
+            whileHover={{ scale: 1.04, background: 'var(--fill-3)' }}
             whileTap={{ scale: 0.96 }}
             onClick={e => { e.stopPropagation(); onDetails() }}
             style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '14px 24px', borderRadius: 8,
-              background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
-              cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.9)',
+              background: 'var(--fill-3)', border: '1px solid var(--b2)',
+              cursor: 'pointer', fontSize: 13, fontWeight: 600, color: 'var(--t1)',
             }}
           >
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
@@ -128,14 +128,14 @@ function CategoryRow({ title, courses, progress, delay = 0, icon }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, padding: '0 4px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {icon && <span style={{ fontSize: 15 }}>{icon}</span>}
-          <h2 style={{ fontSize: 18, fontWeight: 800, color: '#F1F5F9', margin: 0, letterSpacing: '-0.01em' }}>{title}</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>{title}</h2>
         </div>
         <div style={{ display: 'flex', gap: 4 }}>
-          <button onClick={() => scroll(-1)} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--t3)', transition: 'background 0.15s' }}
+          <button onClick={() => scroll(-1)} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--b1)', background: 'var(--fill-1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--t3)', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6" /></svg>
           </button>
-          <button onClick={() => scroll(1)} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--t3)', transition: 'background 0.15s' }}
+          <button onClick={() => scroll(1)} style={{ width: 30, height: 30, borderRadius: 8, border: '1px solid var(--b1)', background: 'var(--fill-1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--t3)', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6" /></svg>
           </button>
@@ -169,7 +169,7 @@ function CourseCard({ course, progress: prog, index = 0 }) {
       style={{
         flexShrink: 0, width: 280, borderRadius: 10, overflow: 'hidden',
         cursor: 'pointer', scrollSnapAlign: 'start', position: 'relative',
-        background: '#0c1220',
+        background: 'var(--surface)',
         border: `1px solid ${hov ? 'rgba(229,57,53,0.25)' : 'rgba(255,255,255,0.04)'}`,
         boxShadow: hov ? '0 16px 48px rgba(229,57,53,0.08), 0 0 0 1px rgba(229,57,53,0.12)' : '0 4px 16px rgba(0,0,0,0.3)',
         transform: hov ? 'scale(1.04) translateY(-4px)' : 'scale(1)',
@@ -183,17 +183,17 @@ function CourseCard({ course, progress: prog, index = 0 }) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, rgba(12,18,32,0.85) 0%, transparent 50%)', zIndex: 1 }} />
         {/* Badges */}
         <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 4, zIndex: 3 }}>
-          {course.tags?.includes('novo') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: RED, color: '#fff', letterSpacing: '0.06em' }}>NOVO</span>}
-          {course.tags?.includes('popular') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: 'var(--profit)', color: '#fff', letterSpacing: '0.06em' }}>POPULAR</span>}
+          {course.tags?.includes('novo') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: RED, color: 'var(--t1)', letterSpacing: '0.06em' }}>NOVO</span>}
+          {course.tags?.includes('popular') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: 'var(--profit)', color: 'var(--t1)', letterSpacing: '0.06em' }}>POPULAR</span>}
           {course.tags?.includes('vip') && <span style={{ fontSize: 7, fontWeight: 800, padding: '2px 6px', borderRadius: 3, background: AMBER, color: '#000', letterSpacing: '0.06em' }}>VIP</span>}
         </div>
         {/* Title + info overlaid on thumbnail */}
         <div style={{ position: 'absolute', bottom: 10, left: 12, right: 12, zIndex: 3 }}>
-          <p style={{ fontSize: 14, fontWeight: 800, color: '#fff', margin: '0 0 3px', textShadow: '0 1px 8px rgba(0,0,0,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.title || 'Sem titulo'}</p>
+          <p style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)', margin: '0 0 3px', textShadow: '0 1px 8px rgba(0,0,0,0.5)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.title || 'Sem titulo'}</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            {course.category && <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)' }}>{course.category}</span>}
-            {course.lesson_count > 0 && <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)' }}>{course.lesson_count} aulas</span>}
-            {course.total_duration > 0 && <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)' }}>{course.total_duration}min</span>}
+            {course.category && <span style={{ fontSize: 9, color: 'var(--t3)' }}>{course.category}</span>}
+            {course.lesson_count > 0 && <span style={{ fontSize: 9, color: 'var(--t3)' }}>{course.lesson_count} aulas</span>}
+            {course.total_duration > 0 && <span style={{ fontSize: 9, color: 'var(--t3)' }}>{course.total_duration}min</span>}
           </div>
         </div>
         {/* Play overlay */}
@@ -213,7 +213,7 @@ function CourseCard({ course, progress: prog, index = 0 }) {
       {/* Minimal info below (description only, title is on thumb now) */}
       {course.description && (
         <div style={{ padding: '10px 12px 12px' }}>
-          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.description}</p>
+          <p style={{ fontSize: 10, color: 'var(--t4)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{course.description}</p>
           {hasProg && <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ fontSize: 9, color: RED, fontWeight: 700 }}>{Math.round(prog)}% concluido</span></div>}
         </div>
       )}
@@ -302,7 +302,7 @@ export default function AulasVipPage() {
         <div style={{ padding: '20px 28px 0', maxWidth: 1400, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <h1 style={{ fontSize: 20, fontWeight: 800, color: '#F1F5F9', margin: 0 }}>AULAS VIP DARKZIN</h1>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>AULAS VIP DARKZIN</h1>
               <span style={{ fontSize: 8, fontWeight: 800, padding: '3px 7px', borderRadius: 4, background: `${RED}20`, color: RED, border: `1px solid ${RED}30`, letterSpacing: '0.08em' }}>VIP</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -310,7 +310,7 @@ export default function AulasVipPage() {
               <div style={{ position: 'relative' }}>
                 <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth="2" strokeLinecap="round" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
                 <input type="text" placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)}
-                  style={{ width: 200, padding: '8px 12px 8px 32px', borderRadius: 7, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', color: 'var(--t1)', fontSize: 12, outline: 'none' }}
+                  style={{ width: 200, padding: '8px 12px 8px 32px', borderRadius: 7, background: 'var(--fill-2)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 12, outline: 'none' }}
                   onFocus={e => e.target.style.borderColor = `${RED}30`} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.06)'} />
               </div>
               {isAdmin && (

@@ -103,7 +103,7 @@ export function AreaChart({ values, labels, height = 240, format = (v) => v }) {
         <div style={{
           position: 'absolute', top: 4, pointerEvents: 'none',
           left: Math.min(Math.max(hover.x - 60, 0), (wrapRef.current?.offsetWidth || 600) - 132),
-          width: 132, background: '#0A0A0A', border: '1px solid rgba(255,255,255,0.12)',
+          width: 132, background: 'var(--raised)', border: '1px solid var(--b2)',
           borderRadius: 8, padding: '8px 10px', boxShadow: '0 8px 28px rgba(0,0,0,0.6)',
         }}>
           <p style={{ margin: 0, fontSize: 10, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>{labels[hover.idx]}</p>
@@ -139,7 +139,7 @@ export function Sparkline({ values, width = 68, height = 22, color = 'rgba(255,2
 export function Bar({ value, tone = 'neutral', delay = 0 }) {
   const bg = tone === 'profit' ? 'var(--profit)' : tone === 'loss' ? 'var(--loss)' : 'rgba(255,255,255,0.42)'
   return (
-    <div style={{ height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+    <div style={{ height: 4, borderRadius: 99, background: 'var(--fill-2)', overflow: 'hidden' }}>
       <motion.div
         initial={{ width: 0 }} animate={{ width: `${Math.max(2, Math.min(100, value))}%` }}
         transition={{ duration: 0.8, delay, ease: [0.33, 1, 0.68, 1] }}

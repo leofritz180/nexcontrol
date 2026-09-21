@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import FaturamentoBento from '../../components/modules/FaturamentoBento'
+import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
@@ -113,7 +115,7 @@ function Filters({ operators, redes, filters, setFilters }) {
                   padding:'7px 12px', borderRadius:8, fontSize:11, fontWeight:700, fontFamily:'inherit',
                   letterSpacing:'0.04em', cursor:'pointer',
                   background: active ? 'rgba(229,57,53,0.14)' : 'rgba(255,255,255,0.03)',
-                  color: active ? '#ff6b6b' : 'var(--t2)',
+                  color: active ? 'var(--loss)' : 'var(--t2)',
                   border: `1px solid ${active ? 'rgba(229,57,53,0.45)' : 'rgba(255,255,255,0.08)'}`,
                   boxShadow: active ? '0 0 14px rgba(229,57,53,0.2)' : 'none',
                   transition: 'all 0.18s',
@@ -125,7 +127,7 @@ function Filters({ operators, redes, filters, setFilters }) {
             )
           })}
         </div>
-        <div style={{ width:1, height:24, background:'rgba(255,255,255,0.08)' }}/>
+        <div style={{ width:1, height:24, background:'var(--fill-3)' }}/>
         <input type="date" className="input" value={filters.dateFrom} onChange={e=>setFilters(f=>({...f,dateFrom:e.target.value, period:''}))} style={{ width:150, padding:'8px 12px', fontSize:12 }}/>
         <input type="date" className="input" value={filters.dateTo} onChange={e=>setFilters(f=>({...f,dateTo:e.target.value, period:''}))} style={{ width:150, padding:'8px 12px', fontSize:12 }}/>
         <select className="input" value={filters.operador} onChange={e=>setFilters(f=>({...f,operador:e.target.value}))} style={{ width:160, padding:'8px 12px', fontSize:12 }}>
@@ -398,6 +400,13 @@ export default function FaturamentoPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{maxWidth:1380,margin:'0 auto',padding:'32px 28px'}}>
+        {isNex2(user?.email) ? (
+          <FaturamentoBento
+            stats={stats} chartData={chartData}
+            operadores={operators?.length || 0}
+            redes={new Set(metas.filter(m=>m.rede).map(m=>m.rede)).size}
+          />
+        ) : (<>
         {/* Header — clean */}
         <div style={{display:'flex',alignItems:'flex-end',justifyContent:'space-between',flexWrap:'wrap',gap:16,marginBottom:28}}>
           <div>
@@ -512,17 +521,17 @@ export default function FaturamentoPage() {
                   </p>
                 )}
 
-                <div style={{display:'flex',alignItems:'center',flexWrap:'wrap',gap:20,marginTop:22,paddingTop:18,borderTop:'1px solid rgba(255,255,255,0.05)'}}>
+                <div style={{display:'flex',alignItems:'center',flexWrap:'wrap',gap:20,marginTop:22,paddingTop:18,borderTop:'1px solid var(--b1)'}}>
                   <div>
                     <p style={{fontSize:9,color:'var(--t4)',marginBottom:3,textTransform:'uppercase',letterSpacing:'0.08em',fontWeight:700}}>Fechadas</p>
                     <p style={{fontFamily:'var(--mono)',fontSize:17,fontWeight:800,color:'var(--t1)',margin:0,letterSpacing:'-0.02em'}}>{stats.fechadas}</p>
                   </div>
-                  <div style={{width:1,height:28,background:'rgba(255,255,255,0.06)'}}/>
+                  <div style={{width:1,height:28,background:'var(--fill-2)'}}/>
                   <div>
                     <p style={{fontSize:9,color:'var(--t4)',marginBottom:3,textTransform:'uppercase',letterSpacing:'0.08em',fontWeight:700}}>Remessas</p>
                     <p style={{fontFamily:'var(--mono)',fontSize:17,fontWeight:800,color:'var(--t1)',margin:0,letterSpacing:'-0.02em'}}>{stats.total}</p>
                   </div>
-                  <div style={{width:1,height:28,background:'rgba(255,255,255,0.06)'}}/>
+                  <div style={{width:1,height:28,background:'var(--fill-2)'}}/>
                   <div>
                     <p style={{fontSize:9,color:'var(--t4)',marginBottom:3,textTransform:'uppercase',letterSpacing:'0.08em',fontWeight:700}}>Operadores</p>
                     <p style={{fontFamily:'var(--mono)',fontSize:17,fontWeight:800,color:'var(--t1)',margin:0,letterSpacing:'-0.02em'}}>{operators.length}</p>
@@ -558,7 +567,7 @@ export default function FaturamentoPage() {
                     <p style={{fontSize:10, color:'var(--t3)', margin:0, fontWeight:700, letterSpacing:'0.04em'}}>{l}</p>
                     <p style={{fontSize:9, color:'var(--t4)', margin:'2px 0 0', fontWeight:500}}>{sub}</p>
                   </div>
-                  <span style={{fontFamily:'var(--mono)', fontSize:17, fontWeight:800, color:'#F1F5F9', letterSpacing:'-0.02em'}}>{v}</span>
+                  <span style={{fontFamily:'var(--mono)', fontSize:17, fontWeight:800, color:'var(--t1)', letterSpacing:'-0.02em'}}>{v}</span>
                 </motion.div>
               ))}
             </div>
@@ -571,14 +580,14 @@ export default function FaturamentoPage() {
               position:'relative', overflow:'hidden', padding:22,
               background:'linear-gradient(145deg, var(--raised), var(--surface))',
               backdropFilter:'blur(20px) saturate(150%)', WebkitBackdropFilter:'blur(20px) saturate(150%)',
-              border:'1px solid rgba(255,255,255,0.14)',
+              border:'1px solid var(--b2)',
               boxShadow:'0 8px 28px rgba(0,0,0,0.4), 0 0 36px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.04)',
             }}>
-              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, var(--fill-3), transparent)', pointerEvents:'none' }}/>
               <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:18}}>
                 <div style={{
                   width:36, height:36, borderRadius:10,
-                  background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.3)',
+                  background:'var(--fill-3)', border:'1px solid var(--b3)',
                   display:'flex', alignItems:'center', justifyContent:'center',
                   boxShadow:'0 0 16px rgba(255,255,255,0.18)',
                 }}>
@@ -588,13 +597,13 @@ export default function FaturamentoPage() {
                   <h3 style={{fontSize:14, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em'}}>Inteligencia da operacao</h3>
                   <p style={{fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500}}>Analise sobre metas fechadas</p>
                 </div>
-                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 9px', borderRadius:6, background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.2)' }}>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 9px', borderRadius:6, background:'var(--fill-3)', border:'1px solid var(--b3)' }}>
                   <motion.div
                     animate={{ boxShadow:['0 0 0 0 rgba(255,255,255,0.5)','0 0 0 4px rgba(255,255,255,0)','0 0 0 0 rgba(255,255,255,0)'] }}
                     transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                    style={{ width:5, height:5, borderRadius:'50%', background:'rgba(255,255,255,0.78)' }}
+                    style={{ width:5, height:5, borderRadius:'50%', background:'var(--t1)' }}
                   />
-                  <span style={{fontSize:9, color:'rgba(255,255,255,0.78)', fontWeight:800, letterSpacing:'0.08em'}}>AO VIVO</span>
+                  <span style={{fontSize:9, color:'var(--t1)', fontWeight:800, letterSpacing:'0.08em'}}>AO VIVO</span>
                 </div>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12}}>
@@ -666,9 +675,9 @@ export default function FaturamentoPage() {
                   onClick={()=>{setEditGoal(!editGoal);setGoalInput(String(goalData.target))}}
                   whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }}
                   style={{
-                    padding:'7px 14px', borderRadius:9, border:'1px solid rgba(255,255,255,0.08)', cursor:'pointer',
+                    padding:'7px 14px', borderRadius:9, border:'1px solid var(--b1)', cursor:'pointer',
                     fontSize:11, fontWeight:700, fontFamily:'inherit',
-                    background:'rgba(255,255,255,0.03)', color:'var(--t2)',
+                    background:'var(--fill-1)', color:'var(--t2)',
                     display:'flex', alignItems:'center', gap:5, transition:'all 0.2s',
                   }}
                   onMouseEnter={e=>{ e.currentTarget.style.background='rgba(209,250,229,0.08)'; e.currentTarget.style.color='var(--profit)'; e.currentTarget.style.borderColor='rgba(209,250,229,0.22)' }}
@@ -732,7 +741,7 @@ export default function FaturamentoPage() {
               <div data-tour="fat-insights" style={{
                 padding:'28px 28px', borderRadius:16,
                 background:'linear-gradient(145deg, var(--surface), var(--surface))',
-                border:'1px solid rgba(255,255,255,0.05)',
+                border:'1px solid var(--b1)',
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
@@ -750,7 +759,7 @@ export default function FaturamentoPage() {
                   {insights.map((ins,i)=>(
                     <div key={i} style={{
                       display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:10,
-                      background:'rgba(255,255,255,0.02)',
+                      background:'var(--fill-1)',
                     }}>
                       <div style={{
                         width:6,height:6,borderRadius:'50%',flexShrink:0,
@@ -766,7 +775,7 @@ export default function FaturamentoPage() {
               <div style={{
                 padding:'28px 28px', borderRadius:16,
                 background:'linear-gradient(145deg, var(--surface), var(--surface))',
-                border:'1px solid rgba(255,255,255,0.05)',
+                border:'1px solid var(--b1)',
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
                 <h3 style={{fontSize:15,fontWeight:700,color:'var(--t1)',margin:'0 0 20px'}}>Alertas e atencao</h3>
@@ -794,7 +803,7 @@ export default function FaturamentoPage() {
 
                 {/* Projection */}
                 {goalData.target>0 && goalData.pct<100 && (
-                  <div style={{marginTop:20,padding:'14px 16px',borderRadius:10,background:'rgba(255,255,255,0.02)',borderTop:'1px solid rgba(255,255,255,0.04)'}}>
+                  <div style={{marginTop:20,padding:'14px 16px',borderRadius:10,background:'var(--fill-1)',borderTop:'1px solid var(--b1)'}}>
                     <p style={{fontSize:10,color:'var(--t4)',marginBottom:6,textTransform:'uppercase',letterSpacing:'0.06em'}}>Projecao</p>
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                       <span style={{fontSize:12,color:'var(--t2)'}}>Meta global ({goalData.pct}%)</span>
@@ -818,10 +827,10 @@ export default function FaturamentoPage() {
               <div><div style={{height:14,width:'55%',background:'rgba(209,250,229,0.08)',borderRadius:3,marginBottom:5}}/><div style={{height:18,width:'40%',background:'rgba(209,250,229,0.06)',borderRadius:3}}/></div>
             </ProLockedCard>
             <ProLockedCard title="Comparativo de operadores" description="Compare a performance de cada operador lado a lado. Taxa de acerto, volume, lucro e velocidade em um so lugar." icon="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0">
-              <div>{[1,2,3].map(i=>(<div key={i} style={{height:10,width:`${75-i*12}%`,background:'rgba(255,255,255,0.04)',borderRadius:3,marginBottom:4}}/>))}</div>
+              <div>{[1,2,3].map(i=>(<div key={i} style={{height:10,width:`${75-i*12}%`,background:'var(--fill-2)',borderRadius:3,marginBottom:4}}/>))}</div>
             </ProLockedCard>
             <ProLockedCard title="Heatmap de performance" description="Mapa visual mostrando os melhores dias e horarios da sua operacao. Identifique padroes e otimize seu tempo." icon="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z">
-              <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2}}>{Array.from({length:14}).map((_,i)=>(<div key={i} style={{width:10,height:10,borderRadius:2,background:'rgba(255,255,255,0.03)'}}/>))}</div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2}}>{Array.from({length:14}).map((_,i)=>(<div key={i} style={{width:10,height:10,borderRadius:2,background:'var(--fill-1)'}}/>))}</div>
             </ProLockedCard>
           </div>}
 
@@ -935,8 +944,8 @@ export default function FaturamentoPage() {
                 return (
                   <div key={r.id} className="data-row a1" style={{animationDelay:`${i*15}ms`,display:'grid',gridTemplateColumns:'1.2fr 0.8fr 0.8fr 1fr 1fr 1fr 0.8fr',gap:8,padding:'12px 20px'}}>
                     <div style={{display:'flex',alignItems:'center',gap:8,minWidth:0}}>
-                      <div style={{width:24,height:24,borderRadius:6,background:'linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                        <span style={{fontSize:9,fontWeight:800,color:'white'}}>{getName(op)[0]?.toUpperCase()}</span>
+                      <div style={{width:24,height:24,borderRadius:6,background:'linear-gradient(135deg,var(--fill-3),rgba(255,255,255,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                        <span style={{fontSize:9,fontWeight:800,color:'var(--t1)'}}>{getName(op)[0]?.toUpperCase()}</span>
                       </div>
                       <span style={{fontSize:12,fontWeight:600,color:'var(--t1)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{getName(op)}</span>
                     </div>
@@ -960,6 +969,7 @@ export default function FaturamentoPage() {
             </div>
           </div>
         )}
+      </>)}
       </div>
       <RouteTour tourId="faturamento" />
       </AppLayout>

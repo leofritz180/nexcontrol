@@ -23,7 +23,7 @@ function Spinner() {
 /* ── Progress Bar ── */
 function ProgressBar({ percent, height = 6 }) {
   return (
-    <div style={{ width: '100%', height, borderRadius: height / 2, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+    <div style={{ width: '100%', height, borderRadius: height / 2, background: 'var(--fill-2)', overflow: 'hidden' }}>
       <motion.div initial={{ width: 0 }} animate={{ width: `${percent}%` }} transition={{ duration: 0.8, ease }}
         style={{ height: '100%', borderRadius: height / 2, background: `linear-gradient(90deg, ${AMBER_DK}, ${AMBER})` }} />
     </div>
@@ -184,7 +184,7 @@ export default function LessonPlayerPage() {
           {/* Video Player */}
           <motion.div {...fadeUp(1)} style={{
             width: '100%', borderRadius: 14, overflow: 'hidden', marginBottom: 20,
-            background: '#000', border: '1px solid var(--b1)',
+            background: 'var(--surface)', border: '1px solid var(--b1)',
             aspectRatio: '16/9', position: 'relative',
           }}>
             {directVideo ? (
@@ -205,7 +205,7 @@ export default function LessonPlayerPage() {
                 {currentLesson?.title || 'Aula'}
               </h1>
               {currentLesson?.duration_min > 0 && (
-                <span style={{ fontSize: 11, color: AMBER, background: 'rgba(255,255,255,0.12)', padding: '3px 10px', borderRadius: 6, fontWeight: 600, fontFamily: 'var(--mono, monospace)', flexShrink: 0 }}>
+                <span style={{ fontSize: 11, color: AMBER, background: 'var(--fill-3)', padding: '3px 10px', borderRadius: 6, fontWeight: 600, fontFamily: 'var(--mono, monospace)', flexShrink: 0 }}>
                   {currentLesson.duration_min}min
                 </span>
               )}

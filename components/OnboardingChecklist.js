@@ -121,7 +121,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
               </motion.div>
               <h2 style={{
                 fontFamily: 'var(--font-display, serif)', fontSize: 48, fontWeight: 400,
-                color: '#FFD700', margin: 0, letterSpacing: '-0.02em',
+                color: 'var(--warn)', margin: 0, letterSpacing: '-0.02em',
                 textShadow: '0 0 24px rgba(255,215,0,0.6)',
               }}>
                 Operador iniciado
@@ -167,7 +167,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
               width: 30, height: 30, borderRadius: 8, flexShrink: 0,
               background: 'rgba(229,57,53,0.2)', border: '1px solid rgba(229,57,53,0.4)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 12, fontWeight: 900, color: '#ff6b6b', fontFamily: 'var(--mono)',
+              fontSize: 12, fontWeight: 900, color: 'var(--loss)', fontFamily: 'var(--mono)',
             }}>
               {progress.completed}/{progress.total}
             </span>
@@ -199,7 +199,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
             />
 
             <div style={{
-              background: 'linear-gradient(180deg, var(--raised) 0%, #050505 100%)',
+              background: 'var(--surface)',
               borderRadius: 15, padding: 18,
               position: 'relative', overflow: 'hidden',
             }}>
@@ -207,7 +207,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, marginBottom: 14 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{
-                    fontSize: 9, fontWeight: 800, color: '#ff6b6b',
+                    fontSize: 9, fontWeight: 800, color: 'var(--loss)',
                     letterSpacing: '0.18em', textTransform: 'uppercase',
                     fontFamily: 'var(--mono)', margin: '0 0 4px',
                   }}>
@@ -224,7 +224,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                   <button type="button" onClick={() => setCollapsed(true)} aria-label="Recolher"
                     style={{
                       width: 24, height: 24, borderRadius: 6,
-                      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                      background: 'var(--fill-2)', border: '1px solid var(--b1)',
                       color: 'var(--t3)', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
@@ -233,7 +233,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                   <button type="button" onClick={handleDismiss} aria-label="Dispensar"
                     style={{
                       width: 24, height: 24, borderRadius: 6,
-                      background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                      background: 'var(--fill-2)', border: '1px solid var(--b1)',
                       color: 'var(--t3)', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
@@ -248,14 +248,14 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                   <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 700, letterSpacing: '0.06em' }}>
                     {progress.completed} de {progress.total}
                   </span>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: '#FFD700', fontFamily: 'var(--mono)', letterSpacing: '0.06em' }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--warn)', fontFamily: 'var(--mono)', letterSpacing: '0.06em' }}>
                     {progress.xpEarned}/{progress.xpTotal} XP
                   </span>
                 </div>
                 <div style={{
                   height: 8, borderRadius: 4, overflow: 'hidden',
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  background: 'var(--fill-2)',
+                  border: '1px solid var(--b1)',
                 }}>
                   <motion.div
                     initial={{ width: 0 }}
@@ -275,7 +275,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                       transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', delay: 1 }}
                       style={{
                         position: 'absolute', top: 0, left: 0, width: '40%', height: '100%',
-                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
+                        background: 'linear-gradient(90deg, transparent, var(--fill-3), transparent)',
                       }}
                     />
                   </motion.div>
@@ -316,7 +316,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                         background: step.done ? 'rgba(31,228,168,0.18)' : isNext ? 'rgba(229,57,53,0.18)' : 'rgba(255,255,255,0.04)',
                         border: `1px solid ${step.done ? 'rgba(31,228,168,0.4)' : isNext ? 'rgba(229,57,53,0.45)' : 'rgba(255,255,255,0.1)'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: step.done ? '#1FE4A8' : isNext ? '#ff6b6b' : 'var(--t3)',
+                        color: step.done ? '#1FE4A8' : isNext ? 'var(--loss)' : 'var(--t3)',
                       }}>
                         {step.done ? (
                           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>

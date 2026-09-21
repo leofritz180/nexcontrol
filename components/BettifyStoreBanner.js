@@ -50,7 +50,7 @@ export default function BettifyStoreBanner({ userEmail }) {
             initial={{ opacity: 0, y: 18, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
             onClick={(e) => e.stopPropagation()}
-            style={{ position: 'relative', width: '96%', maxWidth: 920, borderRadius: 18, overflow: 'hidden', background: '#050505', boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 60px rgba(255,107,0,0.14)', lineHeight: 0 }}
+            style={{ position: 'relative', width: '96%', maxWidth: 920, borderRadius: 18, overflow: 'hidden', background: 'var(--surface)', boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 60px rgba(255,107,0,0.14)', lineHeight: 0 }}
           >
             <img src="/banner-bettify.png" alt="Bettify Proxy integrado na NexControl" style={{ width: '100%', display: 'block' }} />
 
@@ -66,7 +66,7 @@ export default function BettifyStoreBanner({ userEmail }) {
 
             {/* Fechar */}
             <button type="button" onClick={dismiss} aria-label="Fechar"
-              style={{ position: 'absolute', top: 10, right: 10, width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(255,255,255,0.25)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, backdropFilter: 'blur(4px)' }}
+              style={{ position: 'absolute', top: 10, right: 10, width: 34, height: 34, borderRadius: 10, background: 'rgba(0,0,0,0.55)', border: '1px solid var(--b3)', color: 'var(--t1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, backdropFilter: 'blur(4px)' }}
             >
               <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
             </button>

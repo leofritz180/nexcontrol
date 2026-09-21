@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import PerformanceBento from '../../components/modules/PerformanceBento'
+import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { validClosedMetas } from '../../lib/operator-stats'
@@ -137,8 +139,8 @@ function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
 function StatusBadge({ status }) {
   const cfg = {
     ativa: { bg: 'rgba(209,250,229,0.12)', color: 'var(--profit)', border: 'rgba(209,250,229,0.25)', label: 'ATIVA' },
-    finalizada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Finalizada' },
-    fechada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Fechada' },
+    finalizada: { bg: 'rgba(255,255,255,0.12)', color: 'var(--t1)', border: 'var(--b3)', label: 'Finalizada' },
+    fechada: { bg: 'rgba(255,255,255,0.12)', color: 'var(--t1)', border: 'var(--b3)', label: 'Fechada' },
   }
   const c = cfg[status] || cfg.ativa
   return (
@@ -452,6 +454,18 @@ export default function PerformancePage() {
     <main style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}>
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
+          {isNex2(user?.email) ? (
+            <PerformanceBento
+              nome={getName(profile)}
+              resumo={{
+                metasFechadas: (metas||[]).filter(m=>m.status_fechamento==='fechada'&&!m.deleted_at).length,
+                remessas: (remessas||[]).length,
+                depositantes: (metas||[]).filter(m=>m.status_fechamento==='fechada'&&!m.deleted_at).reduce((a,m)=>a+Number(m.quantidade_contas||0),0),
+                taxa: (remessas||[]).length ? Math.round((remessas.filter(r=>Number(r.resultado||0)>=0).length/remessas.length)*100) : 0,
+              }}
+              metasRecentes={stats}
+            />
+          ) : (<>
 
           {/* ── HEADER ── */}
           <motion.div
@@ -543,7 +557,7 @@ export default function PerformancePage() {
                             background: 'rgba(0,0,0,0.55)',
                             backdropFilter: 'blur(8px)',
                             WebkitBackdropFilter: 'blur(8px)',
-                            border: '1px solid rgba(255,255,255,0.08)',
+                            border: '1px solid var(--b1)',
                             boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
                           }}
                         >
@@ -760,18 +774,18 @@ export default function PerformancePage() {
                     {slotStats.length > 1 && slotStats[slotStats.length - 1].perConta < -8 && (
                       <div style={{
                         padding: '16px 20px', borderRadius: 12,
-                        background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.2)',
+                        background: 'var(--fill-2)', border: '1px solid var(--b3)',
                         display: 'flex', alignItems: 'center', gap: 10,
                       }}>
                         <div style={{
                           width: 28, height: 28, borderRadius: 8,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
-                          color: 'rgba(255,255,255,0.78)',
+                          background: 'var(--fill-3)', border: '1px solid var(--b3)',
+                          color: 'var(--t1)',
                         }}>
                           <IconAlert />
                         </div>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>
                           {slotStats[slotStats.length - 1].name}
                         </span>
                         <span style={{ fontSize: 12, color: 'var(--t3)' }}>
@@ -838,15 +852,15 @@ export default function PerformancePage() {
                     {alertas.sp.length > 0 && (
                       <div style={{
                         padding: '20px', borderRadius: 14,
-                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.15)',
+                        background: 'var(--fill-2)', border: '1px solid var(--b2)',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.78)' }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>Saques pendentes</span>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--t1)' }} />
+                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Saques pendentes</span>
                           <span style={{
                             fontSize: 11, fontWeight: 700, fontFamily: 'var(--mono)',
                             padding: '1px 6px', borderRadius: 4,
-                            background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.78)',
+                            background: 'var(--fill-3)', color: 'var(--t1)',
                           }}>
                             {alertas.sp.length}
                           </span>
@@ -884,15 +898,15 @@ export default function PerformancePage() {
                     {alertas.ba.length > 0 && (
                       <div style={{
                         padding: '20px', borderRadius: 14,
-                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.15)',
+                        background: 'var(--fill-2)', border: '1px solid var(--b2)',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.78)' }} />
-                          <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>Bancos em analise</span>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--t1)' }} />
+                          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Bancos em analise</span>
                           <span style={{
                             fontSize: 11, fontWeight: 700, fontFamily: 'var(--mono)',
                             padding: '1px 6px', borderRadius: 4,
-                            background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.78)',
+                            background: 'var(--fill-3)', color: 'var(--t1)',
                           }}>
                             {alertas.ba.length}
                           </span>
@@ -980,6 +994,7 @@ export default function PerformancePage() {
               <div style={{ height: 40 }} />
             </>
           )}
+          </>)}
         </div>
       </AppLayout>
     </main>

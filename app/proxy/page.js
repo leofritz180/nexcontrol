@@ -78,7 +78,7 @@ export default function ProxyPage() {
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
       {ssoEnabled ? (
         /* Loja Bettify embutida — ocupa toda a area de conteudo, ja logada */
-        <div style={{ position: 'relative', width: '100%', height: '100vh', minHeight: 480, background: '#000' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100vh', minHeight: 480, background: 'var(--surface)' }}>
           {iframeErr ? (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: 'var(--surface)', textAlign: 'center', padding: 24 }}>
               <p style={{ color: 'var(--t2)', fontSize: 14, margin: 0 }}>Nao consegui carregar a loja aqui dentro.</p>
@@ -89,19 +89,19 @@ export default function ProxyPage() {
               {(iframeLoading || !iframeUrl) && (
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: 'rgba(0,0,0,0.5)', zIndex: 10 }}>
                   <div className="spinner" style={{ width: 30, height: 30 }} />
-                  <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, margin: 0 }}>Carregando loja...</p>
+                  <p style={{ color: 'var(--t2)', fontSize: 13, margin: 0 }}>Carregando loja...</p>
                 </div>
               )}
               {iframeUrl && (
                 <iframe src={iframeUrl} title="Loja Bettify Proxy" onLoad={() => setIframeLoading(false)}
-                  style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: '#000' }}
+                  style={{ width: '100%', height: '100%', border: 'none', display: 'block', background: 'var(--surface)' }}
                   sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads allow-top-navigation-by-user-activation"
                   referrerPolicy="origin-when-cross-origin"
                   allow="payment; clipboard-write; clipboard-read; fullscreen" />
               )}
               {iframeUrl && (
                 <a href={iframeUrl} target="_blank" rel="noopener noreferrer" title="Abrir em nova aba"
-                  style={{ position: 'absolute', top: 12, right: 12, zIndex: 20, display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 16, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)', color: '#fff', fontSize: 12, fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
+                  style={{ position: 'absolute', top: 12, right: 12, zIndex: 20, display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 16, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)', color: 'var(--t1)', fontSize: 12, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--b3)' }}>
                   <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
                   </svg>

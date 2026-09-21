@@ -40,20 +40,20 @@ function PhoneMockup() {
   return (
     <div style={{
       width: 200, maxWidth: '55vw', aspectRatio: '200/390', margin: '0 auto',
-      background: '#08080c', borderRadius: 28,
-      border: '2.5px solid rgba(255,255,255,0.07)',
+      background: 'var(--surface)', borderRadius: 28,
+      border: '2.5px solid var(--b1)',
       boxShadow: '0 24px 70px rgba(0,0,0,0.7), 0 0 60px rgba(229,57,53,0.03)',
       position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column',
     }}>
       {/* Notch */}
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 7 }}>
-        <div style={{ width: 60, height: 20, borderRadius: 11, background: '#000', border: '1px solid rgba(255,255,255,0.04)' }} />
+        <div style={{ width: 60, height: 20, borderRadius: 11, background: 'var(--surface)', border: '1px solid var(--b1)' }} />
       </div>
       {/* Status */}
       <div style={{ height: 22, padding: '0 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.45)' }}>9:41</span>
+        <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--t3)' }}>9:41</span>
         <div style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          {[3, 5, 7].map((h, i) => <div key={i} style={{ width: 2.5, height: h, borderRadius: 1, background: 'rgba(255,255,255,0.35)' }} />)}
+          {[3, 5, 7].map((h, i) => <div key={i} style={{ width: 2.5, height: h, borderRadius: 1, background: 'var(--t3)' }} />)}
         </div>
       </div>
       {/* Screen */}
@@ -61,17 +61,17 @@ function PhoneMockup() {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
           <img src="/icons/nexcontrol-icon-clean.png" alt="NexControl" width={18} height={18} style={{ width: 18, height: 18, objectFit: 'contain', display: 'block', borderRadius: 5 }}/>
-          <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>NexControl</span>
+          <span style={{ fontSize: 8, fontWeight: 700, color: 'var(--t3)' }}>NexControl</span>
         </div>
         {/* KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5, marginBottom: 10 }}>
           <div style={{ padding: '7px 6px', borderRadius: 8, background: 'rgba(209,250,229,0.06)', border: '1px solid rgba(209,250,229,0.1)' }}>
-            <div style={{ fontSize: 6, color: 'rgba(255,255,255,0.3)', marginBottom: 2 }}>LUCRO</div>
+            <div style={{ fontSize: 6, color: 'var(--t4)', marginBottom: 2 }}>LUCRO</div>
             <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--profit)', fontFamily: 'var(--mono, monospace)' }}>+R$ 1.840</div>
           </div>
-          <div style={{ padding: '7px 6px', borderRadius: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize: 6, color: 'rgba(255,255,255,0.3)', marginBottom: 2 }}>METAS</div>
-            <div style={{ fontSize: 11, fontWeight: 800, color: '#60a5fa', fontFamily: 'var(--mono, monospace)' }}>8</div>
+          <div style={{ padding: '7px 6px', borderRadius: 8, background: 'var(--fill-2)', border: '1px solid var(--b1)' }}>
+            <div style={{ fontSize: 6, color: 'var(--t4)', marginBottom: 2 }}>METAS</div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--t2)', fontFamily: 'var(--mono, monospace)' }}>8</div>
           </div>
         </div>
         {/* Chart */}
@@ -82,9 +82,9 @@ function PhoneMockup() {
         </div>
         {/* List */}
         {[1, 2].map(i => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-            <div style={{ width: 14, height: 14, borderRadius: 4, background: 'rgba(255,255,255,0.04)' }} />
-            <div style={{ flex: 1 }}><div style={{ height: 4, width: `${50 + i * 15}%`, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)' }} /></div>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 0', borderBottom: '1px solid var(--b1)' }}>
+            <div style={{ width: 14, height: 14, borderRadius: 4, background: 'var(--fill-2)' }} />
+            <div style={{ flex: 1 }}><div style={{ height: 4, width: `${50 + i * 15}%`, borderRadius: 1.5, background: 'var(--fill-2)' }} /></div>
             <span style={{ fontSize: 7, fontWeight: 700, color: 'var(--profit)' }}>+R${i * 120 + 90}</span>
           </div>
         ))}
@@ -99,23 +99,23 @@ function PhoneMockup() {
               style={{
                 position: 'absolute', top: 6, left: 6, right: 6, zIndex: 10,
                 padding: '9px 10px', borderRadius: 14,
-                background: 'rgba(14,18,28,0.95)', border: '1px solid rgba(255,255,255,0.07)',
+                background: 'rgba(14,18,28,0.95)', border: '1px solid var(--b1)',
                 boxShadow: '0 10px 30px rgba(0,0,0,0.7)',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}>
               <img src="/icons/nexcontrol-icon-clean.png" alt="NexControl" width={26} height={26} style={{ width: 26, height: 26, objectFit: 'contain', display: 'block', borderRadius: 7, flexShrink: 0 }}/>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 8, fontWeight: 700, color: '#fff', marginBottom: 1 }}>+R$ 320 registrados</div>
-                <div style={{ fontSize: 7, color: 'rgba(255,255,255,0.35)' }}>Meta quase concluida</div>
+                <div style={{ fontSize: 8, fontWeight: 700, color: 'var(--t1)', marginBottom: 1 }}>+R$ 320 registrados</div>
+                <div style={{ fontSize: 7, color: 'var(--t3)' }}>Meta quase concluida</div>
               </div>
-              <span style={{ fontSize: 6, color: 'rgba(255,255,255,0.2)' }}>agora</span>
+              <span style={{ fontSize: 6, color: 'var(--t4)' }}>agora</span>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
       {/* Home */}
       <div style={{ height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 70, height: 3.5, borderRadius: 2, background: 'rgba(255,255,255,0.1)' }} />
+        <div style={{ width: 70, height: 3.5, borderRadius: 2, background: 'var(--fill-3)' }} />
       </div>
     </div>
   )
@@ -132,7 +132,7 @@ function TutorialStep({ number, title, desc, icon, delay = 0 }) {
       transition={{ delay, duration: 0.35, ease }}
       style={{
         display: 'flex', gap: 14, padding: '16px 18px',
-        background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
+        background: 'var(--fill-1)', border: '1px solid var(--b1)',
         borderRadius: 16,
       }}
     >
@@ -149,9 +149,9 @@ function TutorialStep({ number, title, desc, icon, delay = 0 }) {
               <path d={icon} />
             </svg>
           )}
-          <span style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{title}</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>{title}</span>
         </div>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', margin: 0, lineHeight: 1.5 }}>{desc}</p>
+        <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0, lineHeight: 1.5 }}>{desc}</p>
       </div>
     </motion.div>
   )
@@ -234,7 +234,7 @@ export default function InstallPrompt() {
                   width: '100%', maxWidth: 420,
                   maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto',
                   background: 'linear-gradient(170deg, var(--surface), var(--surface))',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  border: '1px solid var(--b1)',
                   borderRadius: 28,
                   boxShadow: '0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(229,57,53,0.03)',
                   position: 'relative',
@@ -246,10 +246,10 @@ export default function InstallPrompt() {
                 <div style={{ padding: '36px 28px 28px', position: 'relative', zIndex: 1 }}>
                   {/* Header */}
                   <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                    <h2 style={{ fontSize: 21, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.25, marginBottom: 8 }}>
+                    <h2 style={{ fontSize: 21, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.03em', lineHeight: 1.25, marginBottom: 8 }}>
                       Transforme o NexControl<br />em um app no seu celular
                     </h2>
-                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5, margin: 0 }}>
+                    <p style={{ fontSize: 13, color: 'var(--t3)', lineHeight: 1.5, margin: 0 }}>
                       Receba alertas em tempo real. Controle total na palma da mao.
                     </p>
                   </div>
@@ -265,9 +265,9 @@ export default function InstallPrompt() {
                       { icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', label: 'Controle continuo' },
                       { icon: 'M13 2L3 14h9l-1 8 10-12h-9l1-8z', label: 'Performance real' },
                     ].map((b, i) => (
-                      <div key={i} style={{ padding: '11px 12px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', gap: 9 }}>
+                      <div key={i} style={{ padding: '11px 12px', borderRadius: 12, background: 'var(--fill-1)', border: '1px solid var(--b1)', display: 'flex', alignItems: 'center', gap: 9 }}>
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.6 }}><path d={b.icon} /></svg>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)', lineHeight: 1.3 }}>{b.label}</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)', lineHeight: 1.3 }}>{b.label}</span>
                       </div>
                     ))}
                   </div>
@@ -289,7 +289,7 @@ export default function InstallPrompt() {
                   </motion.button>
                   <button onClick={dismiss} style={{
                     width: '100%', padding: '11px', borderRadius: 12, fontSize: 13, fontWeight: 500,
-                    border: 'none', cursor: 'pointer', background: 'transparent', color: 'rgba(255,255,255,0.25)',
+                    border: 'none', cursor: 'pointer', background: 'transparent', color: 'var(--t4)',
                   }}>Agora nao</button>
                 </div>
               </motion.div>
@@ -308,7 +308,7 @@ export default function InstallPrompt() {
                   width: '100%', maxWidth: 440,
                   maxHeight: 'calc(100dvh - 32px)', overflowY: 'auto',
                   background: 'linear-gradient(170deg, var(--surface), var(--surface))',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  border: '1px solid var(--b1)',
                   borderRadius: 28,
                   boxShadow: '0 50px 120px rgba(0,0,0,0.8)',
                 }}
@@ -317,17 +317,17 @@ export default function InstallPrompt() {
                   {/* Back + title */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
                     <button onClick={() => setScreen(1)} style={{
-                      width: 34, height: 34, borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)',
-                      background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      cursor: 'pointer', color: 'rgba(255,255,255,0.5)', flexShrink: 0,
+                      width: 34, height: 34, borderRadius: 10, border: '1px solid var(--b1)',
+                      background: 'var(--fill-2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', color: 'var(--t3)', flexShrink: 0,
                     }}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6" /></svg>
                     </button>
                     <div>
-                      <h2 style={{ fontSize: 18, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', margin: '0 0 2px' }}>
+                      <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.02em', margin: '0 0 2px' }}>
                         {isIos ? 'Instalar no iPhone' : isAndroid ? 'Instalar no Android' : 'Como instalar o app'}
                       </h2>
-                      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0 }}>Siga o passo a passo abaixo</p>
+                      <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Siga o passo a passo abaixo</p>
                     </div>
                   </div>
 
@@ -427,7 +427,7 @@ export default function InstallPrompt() {
                     </svg>
                     <div>
                       <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--profit)', margin: '0 0 3px' }}>Dica</p>
-                      <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', margin: 0, lineHeight: 1.5 }}>
+                      <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0, lineHeight: 1.5 }}>
                         Apos instalar, ative as notificacoes para receber alertas de metas, remessas e lucro em tempo real.
                       </p>
                     </div>

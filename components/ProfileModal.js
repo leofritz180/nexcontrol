@@ -93,7 +93,7 @@ export default function ProfileModal({ open, onClose, userId, userEmail, userNam
             {/* capa com gradiente vermelho */}
             <div style={{ height: 88, background: `linear-gradient(135deg, ${BRAND}, #a80000)`, borderRadius: '18px 18px 0 0', position: 'relative' }}>
               <button type="button" onClick={onClose} aria-label="Fechar"
-                style={{ position: 'absolute', top: 12, right: 12, width: 30, height: 30, borderRadius: 8, background: 'rgba(0,0,0,0.28)', border: '1px solid rgba(255,255,255,0.25)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                style={{ position: 'absolute', top: 12, right: 12, width: 30, height: 30, borderRadius: 8, background: 'rgba(0,0,0,0.28)', border: '1px solid var(--b3)', color: 'var(--t1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>
             </div>
@@ -108,7 +108,7 @@ export default function ProfileModal({ open, onClose, userId, userEmail, userNam
                       : <span style={{ fontSize: 34, fontWeight: 700, color: 'var(--t2)' }}>{initial}</span>}
                   </div>
                   <button type="button" onClick={() => fileRef.current?.click()} aria-label="Trocar foto"
-                    style={{ position: 'absolute', bottom: 0, right: 0, width: 30, height: 30, borderRadius: '50%', background: BRAND, border: '2px solid var(--surface)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                    style={{ position: 'absolute', bottom: 0, right: 0, width: 30, height: 30, borderRadius: '50%', background: BRAND, border: '2px solid var(--surface)', color: 'var(--t1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
                   </button>
                   <input ref={fileRef} type="file" accept="image/*" onChange={pickFile} style={{ display: 'none' }} />
@@ -149,7 +149,7 @@ export default function ProfileModal({ open, onClose, userId, userEmail, userNam
               {err && <p style={{ fontSize: 12, color: 'var(--loss)', margin: '12px 0 0' }}>{err}</p>}
 
               <button type="button" onClick={save} disabled={saving}
-                style={{ width: '100%', marginTop: 18, padding: '13px 20px', fontSize: 14, fontWeight: 700, borderRadius: 10, border: 'none', cursor: saving ? 'default' : 'pointer', color: '#fff', background: ok ? '#1f9d57' : BRAND, transition: 'background 0.15s', fontFamily: 'inherit' }}>
+                style={{ width: '100%', marginTop: 18, padding: '13px 20px', fontSize: 14, fontWeight: 700, borderRadius: 10, border: 'none', cursor: saving ? 'default' : 'pointer', color: 'var(--t1)', background: ok ? '#1f9d57' : BRAND, transition: 'background 0.15s', fontFamily: 'inherit' }}>
                 {ok ? '✓ Salvo' : saving ? 'Salvando...' : 'Salvar perfil'}
               </button>
             </div>

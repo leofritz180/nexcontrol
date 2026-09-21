@@ -70,7 +70,7 @@ function CaptureCard({ title, subtitle, accent, deep, total, count, last, floate
         <span style={{ fontSize: 12, fontWeight: 900, letterSpacing: '0.16em', color: accent, fontFamily: 'var(--mono, monospace)' }}>{title}</span>
         <motion.span animate={{ opacity: [1, 0.25, 1] }} transition={{ duration: 1.2, repeat: Infinity }} style={{ width: 7, height: 7, borderRadius: '50%', background: accent, boxShadow: `0 0 10px ${accent}` }} />
       </div>
-      <div style={{ position: 'relative', zIndex: 1, fontSize: 11.5, color: 'rgba(255,255,255,0.45)', marginBottom: 'auto' }}>{subtitle}</div>
+      <div style={{ position: 'relative', zIndex: 1, fontSize: 11.5, color: 'var(--t3)', marginBottom: 'auto' }}>{subtitle}</div>
 
       <div style={{ position: 'relative', zIndex: 1, margin: '24px 0 6px' }}>
         <AnimatedTotal value={total} accent={accent} />
@@ -85,8 +85,8 @@ function CaptureCard({ title, subtitle, accent, deep, total, count, last, floate
           ))}
         </AnimatePresence>
       </div>
-      <div style={{ position: 'relative', zIndex: 1, fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>
-        <b style={{ color: '#fff', fontWeight: 800 }}>{count}</b> {title === 'SAQUES' ? 'saque' : 'depósito'}{count !== 1 ? 's' : ''} capturado{count !== 1 ? 's' : ''}
+      <div style={{ position: 'relative', zIndex: 1, fontSize: 13, color: 'var(--t3)' }}>
+        <b style={{ color: 'var(--t1)', fontWeight: 800 }}>{count}</b> {title === 'SAQUES' ? 'saque' : 'depósito'}{count !== 1 ? 's' : ''} capturado{count !== 1 ? 's' : ''}
       </div>
 
       <div style={{ position: 'relative', zIndex: 1, marginTop: 14, display: 'flex', flexDirection: 'column', gap: 5, minHeight: 40 }}>
@@ -94,7 +94,7 @@ function CaptureCard({ title, subtitle, accent, deep, total, count, last, floate
           {(last || []).slice(0, 3).map((c, i) => (
             <motion.div key={c.order_id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1 - i * 0.22, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
               style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 11px', borderRadius: 9, background: i === 0 ? `${accent}1a` : 'rgba(255,255,255,0.03)', border: `1px solid ${i === 0 ? accent + '40' : 'rgba(255,255,255,0.06)'}` }}>
-              <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--mono, monospace)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 }}>{c.casa || 'PIX'}</span>
+              <span style={{ fontSize: 10.5, color: 'var(--t3)', fontFamily: 'var(--mono, monospace)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 }}>{c.casa || 'PIX'}</span>
               <span style={{ fontSize: 12.5, fontWeight: 800, color: i === 0 ? accent : '#fafafa', fontFamily: 'var(--mono, monospace)' }}>R$ {fmt(c.valor)}</span>
             </motion.div>
           ))}
@@ -125,7 +125,7 @@ function useFloaters(count, last, open) {
 function Stat({ label, value, accent }) {
   return (
     <div style={{ flex: 1, minWidth: 110, textAlign: 'center', padding: '13px 10px' }}>
-      <div style={{ fontSize: 9.5, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', fontWeight: 700, marginBottom: 7, fontFamily: 'var(--mono, monospace)' }}>{label}</div>
+      <div style={{ fontSize: 9.5, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--t3)', fontWeight: 700, marginBottom: 7, fontFamily: 'var(--mono, monospace)' }}>{label}</div>
       <div style={{ fontSize: 24, fontWeight: 800, color: accent || '#fafafa', fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em' }}>{value}</div>
     </div>
   )
@@ -142,7 +142,7 @@ export default function DepositCaptureStage({ open, total, count, max, casas, la
   if (!open) return null
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 10050, background: '#050303', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 10050, background: 'rgba(195,19,19,0.10)', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(255,60,60,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,60,60,0.03) 1px, transparent 1px)', backgroundSize: '46px 46px', maskImage: 'radial-gradient(ellipse at 50% 42%, #000 28%, transparent 78%)' }} />
       <motion.div key={flash} initial={{ opacity: 0.4 }} animate={{ opacity: 0.13 }} transition={{ duration: 1 }}
         style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%,-50%)', width: 900, height: 900, borderRadius: '50%', pointerEvents: 'none', background: `radial-gradient(circle, ${RED}30, transparent 60%)`, filter: 'blur(48px)' }} />
@@ -150,10 +150,10 @@ export default function DepositCaptureStage({ open, total, count, max, casas, la
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 26px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
           <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.2, repeat: Infinity }} style={{ width: 9, height: 9, borderRadius: '50%', background: RED, boxShadow: `0 0 14px ${RED}` }} />
-          <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.22em', color: '#fff', fontFamily: 'var(--mono, monospace)' }}>AO VIVO</span>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.34)', letterSpacing: '0.14em', fontFamily: 'var(--mono, monospace)' }}>· CAPTURA EM TEMPO REAL</span>
+          <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.22em', color: 'var(--t1)', fontFamily: 'var(--mono, monospace)' }}>AO VIVO</span>
+          <span style={{ fontSize: 11, color: 'var(--t4)', letterSpacing: '0.14em', fontFamily: 'var(--mono, monospace)' }}>· CAPTURA EM TEMPO REAL</span>
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--mono, monospace)', letterSpacing: '0.1em' }}>
+        <div style={{ fontSize: 11, color: 'var(--t3)', fontFamily: 'var(--mono, monospace)', letterSpacing: '0.1em' }}>
           <span style={{ fontWeight: 900, color: RED }}>Nex</span>Control
         </div>
       </div>
@@ -163,7 +163,7 @@ export default function DepositCaptureStage({ open, total, count, max, casas, la
         <CaptureCard title="SAQUES" subtitle="somando sozinho a cada saque" accent={GREEN} deep="#04140c" total={saqueTotal || 0} count={saqueCount || 0} last={saqueLast} floaters={saqueFloaters} />
       </div>
 
-      <div style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, margin: '8px auto 0', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden', maxWidth: 680, width: 'calc(100% - 40px)', flexShrink: 0 }}>
+      <div style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, margin: '8px auto 0', background: 'var(--fill-2)', border: '1px solid var(--b1)', borderRadius: 16, overflow: 'hidden', maxWidth: 680, width: 'calc(100% - 40px)', flexShrink: 0 }}>
         <Stat label="Depósitos" value={count} />
         <Stat label="Média dep." value={`R$ ${fmt(media)}`} />
         <Stat label="Maior dep." value={`R$ ${fmt(max)}`} accent={RED} />
@@ -178,7 +178,7 @@ export default function DepositCaptureStage({ open, total, count, max, casas, la
           Finalizar e usar total
         </button>
         <button type="button" onClick={onCancel}
-          style={{ padding: '15px 22px', borderRadius: 13, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.7)', fontSize: 14, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer' }}>
+          style={{ padding: '15px 22px', borderRadius: 13, border: '1px solid var(--b2)', background: 'var(--fill-2)', color: 'var(--t2)', fontSize: 14, fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer' }}>
           Cancelar
         </button>
       </div>

@@ -193,8 +193,8 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
               transition={{ delay: 0.5, duration: 0.5 }}
               style={{
                 padding: '6px 14px', borderRadius: 999,
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'var(--fill-2)',
+                border: '1px solid var(--b2)',
                 fontSize: 10, fontWeight: 800, letterSpacing: '0.16em',
                 color: 'var(--t2)', textTransform: 'uppercase',
               }}
@@ -222,7 +222,7 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
                 transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
                 style={{
                   position: 'absolute', top: 0, left: 0, width: '50%', height: '100%',
-                  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+                  background: 'linear-gradient(90deg, transparent, var(--fill-3), transparent)',
                   pointerEvents: 'none',
                 }}
               />

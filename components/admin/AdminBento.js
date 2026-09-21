@@ -152,12 +152,12 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
             <div style={{ position: 'relative' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                 <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: 16, fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.02em' }}>Meta do dia</p>
-                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', margin: '3px 0 0' }}>{alvo > 0 ? `${money0(feito)} de ${money0(alvo)}` : 'ainda não definida'}</p>
+                  <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>Meta do dia</p>
+                  <p style={{ fontSize: 12, color: 'var(--t1)', margin: '3px 0 0' }}>{alvo > 0 ? `${money0(feito)} de ${money0(alvo)}` : 'ainda não definida'}</p>
                 </div>
                 {alvo > 0 && !editGoal && (
                   <button type="button" onClick={() => { setGoalVal(String(alvo)); setEditGoal(true) }} title="Alterar meta"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.18)', border: 'none', borderRadius: 20, padding: '4px 10px', cursor: 'pointer', fontFamily: MONO, fontSize: 15, fontWeight: 900, color: '#fff' }}>
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.18)', border: 'none', borderRadius: 20, padding: '4px 10px', cursor: 'pointer', fontFamily: MONO, fontSize: 15, fontWeight: 900, color: 'var(--t1)' }}>
                     {pctDia}%
                   </button>
                 )}
@@ -179,7 +179,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
                     <motion.div initial={{ width: 0 }} animate={{ width: `${pctDia}%` }} transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }} style={{ height: '100%', borderRadius: 5, background: '#fff' }} />
                   </div>
                   {alvo > 0 ? (
-                    <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.85)', margin: '10px 0 0' }}>
+                    <p style={{ fontSize: 11.5, color: 'var(--t1)', margin: '10px 0 0' }}>
                       {feito >= alvo ? 'meta batida hoje' : `faltam ${money0(alvo - feito)}`}{dailyGoal?.streak > 1 ? ` · ${dailyGoal.streak} dias seguidos` : ''}
                     </p>
                   ) : (

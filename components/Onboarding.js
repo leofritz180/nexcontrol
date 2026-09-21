@@ -62,7 +62,7 @@ export default function Onboarding() {
         exit={{ opacity:0 }}
         transition={{ duration:0.4 }}
         style={{
-          position:'fixed', inset:0, zIndex:99998, background:'#000',
+          position:'fixed', inset:0, zIndex:99998, background:'var(--surface)',
           display:'flex', alignItems:'center', justifyContent:'center', padding:24,
         }}
       >
@@ -80,7 +80,7 @@ export default function Onboarding() {
             }}>
               <NexIcon size={22}/>
             </div>
-            <p style={{ fontSize:14, color:'rgba(255,255,255,0.35)' }}>Preparando seu painel...</p>
+            <p style={{ fontSize:14, color:'var(--t3)' }}>Preparando seu painel...</p>
           </motion.div>
         )}
 
@@ -124,7 +124,7 @@ export default function Onboarding() {
               <button onClick={finish}
                 style={{
                   padding:'12px 20px', borderRadius:10, fontSize:13, fontWeight:600,
-                  background:'transparent', color:'var(--t3)', border:'1px solid rgba(255,255,255,0.08)',
+                  background:'transparent', color:'var(--t3)', border:'1px solid var(--b1)',
                   cursor:'pointer',
                 }}>
                 Pular

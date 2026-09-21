@@ -7,9 +7,9 @@ const ease = [0.33, 1, 0.68, 1]
 
 const CATEGORY_STYLE = {
   feature: { label: 'Novidade', color: 'var(--profit)', bg: 'rgba(209,250,229,0.08)', border: 'rgba(209,250,229,0.22)' },
-  fix: { label: 'Correção', color: '#FCD34D', bg: 'rgba(252,211,77,0.08)', border: 'rgba(252,211,77,0.22)' },
-  improvement: { label: 'Melhoria', color: '#93C5FD', bg: 'rgba(147,197,253,0.08)', border: 'rgba(147,197,253,0.22)' },
-  important: { label: 'Importante', color: '#fca5a5', bg: 'rgba(252,165,165,0.08)', border: 'rgba(252,165,165,0.22)' },
+  fix: { label: 'Correção', color: 'var(--warn)', bg: 'rgba(252,211,77,0.08)', border: 'rgba(252,211,77,0.22)' },
+  improvement: { label: 'Melhoria', color: 'var(--t2)', bg: 'rgba(147,197,253,0.08)', border: 'rgba(147,197,253,0.22)' },
+  important: { label: 'Importante', color: 'var(--loss)', bg: 'rgba(252,165,165,0.08)', border: 'rgba(252,165,165,0.22)' },
 }
 
 function timeAgo(iso) {
@@ -94,8 +94,8 @@ export default function UpdatesBell() {
         style={{
           position: 'fixed', bottom: 22, right: 76, zIndex: 200,
           width: 42, height: 42, borderRadius: 12,
-          background: 'linear-gradient(180deg, #0f0f0f, #050505)',
-          border: '1px solid rgba(255,255,255,0.1)',
+          background: 'var(--surface)',
+          border: '1px solid var(--b1)',
           color: unread > 0 ? '#e53935' : 'rgba(255,255,255,0.7)',
           cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -140,30 +140,30 @@ export default function UpdatesBell() {
               style={{
                 position: 'fixed', top: 0, right: 0, bottom: 0,
                 width: '100%', maxWidth: 440, zIndex: 202,
-                background: 'linear-gradient(180deg, var(--raised), #050505)',
-                borderLeft: '1px solid rgba(255,255,255,0.06)',
+                background: 'var(--surface)',
+                borderLeft: '1px solid var(--b1)',
                 boxShadow: '-20px 0 60px rgba(0,0,0,0.7)',
                 display: 'flex', flexDirection: 'column',
               }}>
 
               {/* Header */}
-              <div style={{ padding: '24px 24px 18px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ padding: '24px 24px 18px', borderBottom: '1px solid var(--b1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                   <div>
-                    <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.22em', textTransform: 'uppercase', margin: '0 0 4px' }}>O que há de novo</p>
-                    <h3 style={{ fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 26, fontWeight: 400, color: '#fff', margin: 0, letterSpacing: '-0.02em' }}>Atualizações</h3>
+                    <p style={{ fontFamily: 'var(--mono, monospace)', fontSize: 9.5, fontWeight: 700, color: 'var(--t3)', letterSpacing: '0.22em', textTransform: 'uppercase', margin: '0 0 4px' }}>O que há de novo</p>
+                    <h3 style={{ fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 26, fontWeight: 400, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>Atualizações</h3>
                   </div>
                   <button onClick={() => setOpen(false)} type="button"
                     style={{
-                      width: 32, height: 32, borderRadius: 9, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent',
-                      color: 'rgba(255,255,255,0.6)', cursor: 'pointer',
+                      width: 32, height: 32, borderRadius: 9, border: '1px solid var(--b1)', background: 'transparent',
+                      color: 'var(--t2)', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </button>
                 </div>
                 {unread > 0 && (
-                  <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', margin: '4px 0 0' }}>{unread} {unread === 1 ? 'novidade' : 'novidades'}</p>
+                  <p style={{ fontSize: 12, color: 'var(--t2)', margin: '4px 0 0' }}>{unread} {unread === 1 ? 'novidade' : 'novidades'}</p>
                 )}
               </div>
 
@@ -171,11 +171,11 @@ export default function UpdatesBell() {
               <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 32px' }}>
                 {updates.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '40px 12px' }}>
-                    <div style={{ width: 52, height: 52, borderRadius: 13, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 13, background: 'var(--fill-1)', border: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
                       <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
                     </div>
-                    <p style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 18, color: '#fff', margin: '0 0 4px' }}>Tudo em dia</p>
-                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', margin: 0 }}>Nenhuma novidade no momento</p>
+                    <p style={{ fontFamily: 'var(--font-serif, serif)', fontSize: 18, color: 'var(--t1)', margin: '0 0 4px' }}>Tudo em dia</p>
+                    <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Nenhuma novidade no momento</p>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -206,14 +206,14 @@ export default function UpdatesBell() {
                               border: '1px solid ' + cat.border,
                               letterSpacing: '0.08em', textTransform: 'uppercase',
                             }}>{cat.label}</span>
-                            <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'rgba(255,255,255,0.4)', marginLeft: 'auto' }}>{timeAgo(u.created_at)}</span>
+                            <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', marginLeft: 'auto' }}>{timeAgo(u.created_at)}</span>
                           </div>
                           <p style={{
-                            fontSize: 13.5, fontWeight: 700, color: '#fff',
+                            fontSize: 13.5, fontWeight: 700, color: 'var(--t1)',
                             margin: '0 0 4px', letterSpacing: '-0.01em',
                           }}>{u.title}</p>
                           {u.body && (
-                            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{u.body}</p>
+                            <p style={{ fontSize: 12, color: 'var(--t2)', margin: 0, lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{u.body}</p>
                           )}
                         </motion.div>
                       )

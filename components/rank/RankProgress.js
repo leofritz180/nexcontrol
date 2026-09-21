@@ -28,7 +28,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
       style={{
         position: 'relative',
         borderRadius: 20,
-        background: '#000',
+        background: 'var(--surface)',
         padding: 1, // espaço pra GlowBorder
         overflow: 'hidden',
         boxShadow: `0 24px 60px rgba(0,0,0,0.55), 0 0 60px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.12)' : current.glow.replace(/0\.\d+/, '0.12')}`,
@@ -39,7 +39,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
       <div style={{
         position: 'relative',
         borderRadius: 19,
-        background: '#000',
+        background: 'var(--surface)',
         padding: compact ? 22 : 28,
         overflow: 'hidden',
       }}>
@@ -50,7 +50,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
         {/* Glass overlay */}
         <div aria-hidden style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.3) 100%)',
+          background: 'linear-gradient(180deg, var(--fill-2) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.3) 100%)',
         }}/>
 
         {/* Particles only on elite ranks */}
@@ -188,8 +188,8 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
             {/* Bar container com depth */}
             <div style={{
               position: 'relative', height: 12, borderRadius: 7, overflow: 'hidden',
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--fill-1)',
+              border: '1px solid var(--b1)',
               boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.6), inset 0 -1px 0 rgba(255,255,255,0.04)',
             }}>
               <motion.div
@@ -210,7 +210,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
                   transition={{ duration: 2.2, repeat: Infinity, ease: 'linear', delay: 1.6 }}
                   style={{
                     position: 'absolute', top: 0, left: 0, width: '40%', height: '100%',
-                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent)',
+                    background: 'linear-gradient(90deg, transparent, var(--fill-3), transparent)',
                   }}
                 />
                 {/* Pulse no fim */}
@@ -262,7 +262,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
             <ShinePass duration={2.5} interval={4} color="rgba(255,215,0,0.25)" />
             <RankIcon name="apex" size={22} color="#FFD700" />
             <div>
-              <p style={{ fontSize: 13, color: '#FFD700', fontWeight: 800, letterSpacing: '0.06em', margin: 0, textTransform: 'uppercase' }}>
+              <p style={{ fontSize: 13, color: 'var(--warn)', fontWeight: 800, letterSpacing: '0.06em', margin: 0, textTransform: 'uppercase' }}>
                 APEX · TOPO ABSOLUTO
               </p>
               <p style={{ fontSize: 12, color: 'var(--t2)', margin: '2px 0 0' }}>

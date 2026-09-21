@@ -15,16 +15,16 @@ export default function PrivacidadePage() {
     >
       <Secao n={1} titulo="Quem trata os seus dados">
         A NexControl, responsável pela plataforma disponível em nexcpa.com.br, atua como
-        <strong style={{ color: '#fff' }}> controladora</strong> dos dados de cadastro e cobrança, e como
-        <strong style={{ color: '#fff' }}> operadora</strong> dos dados que você registra sobre a sua operação.
+        <strong style={{ color: 'var(--t1)' }}> controladora</strong> dos dados de cadastro e cobrança, e como
+        <strong style={{ color: 'var(--t1)' }}> operadora</strong> dos dados que você registra sobre a sua operação.
         Contato pelos canais no fim desta página.
       </Secao>
 
       <Secao n={2} titulo="Dados que coletamos">
-        <p style={{ margin: 0 }}><strong style={{ color: '#fff' }}>Dados de cadastro:</strong> nome, e-mail, número de WhatsApp e nome da operação.</p>
-        <p style={{ margin: '10px 0 0' }}><strong style={{ color: '#fff' }}>Dados operacionais:</strong> metas, remessas, depósitos, saques, custos, resultados, operadores cadastrados e demais informações que você insere.</p>
-        <p style={{ margin: '10px 0 0' }}><strong style={{ color: '#fff' }}>Dados de cobrança:</strong> registro dos pagamentos (valor, data, status). <strong style={{ color: '#fff' }}>Não recebemos nem armazenamos dados de cartão</strong> — o pagamento é via PIX, processado pelo provedor.</p>
-        <p style={{ margin: '10px 0 0' }}><strong style={{ color: '#fff' }}>Dados técnicos:</strong> registros de acesso, data/hora de login, e informações do dispositivo necessárias ao funcionamento e à segurança.</p>
+        <p style={{ margin: 0 }}><strong style={{ color: 'var(--t1)' }}>Dados de cadastro:</strong> nome, e-mail, número de WhatsApp e nome da operação.</p>
+        <p style={{ margin: '10px 0 0' }}><strong style={{ color: 'var(--t1)' }}>Dados operacionais:</strong> metas, remessas, depósitos, saques, custos, resultados, operadores cadastrados e demais informações que você insere.</p>
+        <p style={{ margin: '10px 0 0' }}><strong style={{ color: 'var(--t1)' }}>Dados de cobrança:</strong> registro dos pagamentos (valor, data, status). <strong style={{ color: 'var(--t1)' }}>Não recebemos nem armazenamos dados de cartão</strong> — o pagamento é via PIX, processado pelo provedor.</p>
+        <p style={{ margin: '10px 0 0' }}><strong style={{ color: 'var(--t1)' }}>Dados técnicos:</strong> registros de acesso, data/hora de login, e informações do dispositivo necessárias ao funcionamento e à segurança.</p>
       </Secao>
 
       <Secao n={3} titulo="Para que usamos">
@@ -39,17 +39,17 @@ export default function PrivacidadePage() {
       </Secao>
 
       <Secao n={4} titulo="Base legal">
-        Tratamos os seus dados com base na <strong style={{ color: '#fff' }}>execução do contrato</strong> (prestar o serviço
-        que você contratou), no <strong style={{ color: '#fff' }}>cumprimento de obrigação legal</strong> (guarda de registros e
-        obrigações fiscais), no <strong style={{ color: '#fff' }}>legítimo interesse</strong> (segurança e melhoria do produto) e no
-        <strong style={{ color: '#fff' }}> consentimento</strong>, quando aplicável — por exemplo, para notificações push, que você
+        Tratamos os seus dados com base na <strong style={{ color: 'var(--t1)' }}>execução do contrato</strong> (prestar o serviço
+        que você contratou), no <strong style={{ color: 'var(--t1)' }}>cumprimento de obrigação legal</strong> (guarda de registros e
+        obrigações fiscais), no <strong style={{ color: 'var(--t1)' }}>legítimo interesse</strong> (segurança e melhoria do produto) e no
+        <strong style={{ color: 'var(--t1)' }}> consentimento</strong>, quando aplicável — por exemplo, para notificações push, que você
         pode desativar a qualquer momento.
       </Secao>
 
       <Secao n={5} titulo="Isolamento entre operações">
-        Cada operação é <strong style={{ color: '#fff' }}>isolada no banco de dados</strong>: um cliente não acessa os dados de
+        Cada operação é <strong style={{ color: 'var(--t1)' }}>isolada no banco de dados</strong>: um cliente não acessa os dados de
         outro. Dentro da sua operação, os operadores têm acesso restrito e
-        <strong style={{ color: '#fff' }}> não visualizam informações financeiras sensíveis</strong> reservadas ao administrador.
+        <strong style={{ color: 'var(--t1)' }}> não visualizam informações financeiras sensíveis</strong> reservadas ao administrador.
       </Secao>
 
       <Secao n={6} titulo="Com quem compartilhamos">
@@ -67,7 +67,7 @@ export default function PrivacidadePage() {
 
       <Secao n={7} titulo="Por quanto tempo guardamos">
         Mantemos os seus dados enquanto a sua conta existir. Se a assinatura vencer, os dados
-        <strong style={{ color: '#fff' }}> permanecem salvos</strong> para que você possa retomar de onde parou. Você pode pedir a
+        <strong style={{ color: 'var(--t1)' }}> permanecem salvos</strong> para que você possa retomar de onde parou. Você pode pedir a
         exclusão a qualquer momento — ressalvados os registros que a lei nos obriga a manter, como os de natureza fiscal.
       </Secao>
 
@@ -82,14 +82,14 @@ export default function PrivacidadePage() {
           'Revogação do consentimento, quando essa for a base legal utilizada.',
         ]} />
         <p style={{ margin: '12px 0 0' }}>
-          Basta escrever para <a href={`mailto:${CONTATO.email}`} style={{ color: '#ff6b6b', textDecoration: 'none' }}>{CONTATO.email}</a>.
+          Basta escrever para <a href={`mailto:${CONTATO.email}`} style={{ color: 'var(--loss)', textDecoration: 'none' }}>{CONTATO.email}</a>.
           Respondemos no prazo legal.
         </p>
       </Secao>
 
       <Secao n={9} titulo="Cookies e armazenamento local">
         Usamos armazenamento local no navegador para manter você conectado e guardar preferências de uso da interface
-        (por exemplo, avisos já vistos). <strong style={{ color: '#fff' }}>Não usamos cookies de publicidade</strong> nem
+        (por exemplo, avisos já vistos). <strong style={{ color: 'var(--t1)' }}>Não usamos cookies de publicidade</strong> nem
         rastreamento para anúncios de terceiros.
       </Secao>
 

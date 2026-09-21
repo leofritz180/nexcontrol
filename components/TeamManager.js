@@ -74,7 +74,7 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
 
   const card = {
     background: 'linear-gradient(145deg, rgba(14,22,38,0.7), rgba(8,14,26,0.7))',
-    border: '1px solid rgba(255,255,255,0.12)', borderRadius: 16,
+    border: '1px solid var(--b2)', borderRadius: 16,
     boxShadow: '0 8px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)',
   }
 
@@ -95,11 +95,11 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
       onChange={e => apply(op.id, e.target.value || null, false)}
       style={{
         padding: '7px 10px', borderRadius: 9, fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
-        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.14)',
-        color: '#fff', cursor: 'pointer', maxWidth: 170,
+        background: 'var(--fill-2)', border: '1px solid var(--b2)',
+        color: 'var(--t1)', cursor: 'pointer', maxWidth: 170,
       }}>
-      <option value="" style={{ background: '#0c1322' }}>Sem equipe</option>
-      {teams.map(t => <option key={t} value={t} style={{ background: '#0c1322' }}>{t}</option>)}
+      <option value="" style={{ background: 'var(--surface)' }}>Sem equipe</option>
+      {teams.map(t => <option key={t} value={t} style={{ background: 'var(--surface)' }}>{t}</option>)}
     </select>
   )
 
@@ -118,7 +118,7 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
           </svg>
         </div>
         <div>
-          <p style={{ fontSize: 15, fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.01em' }}>Equipes</p>
+          <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>Equipes</p>
           <p style={{ fontSize: 11.5, color: 'var(--t4)', margin: '2px 0 0', fontWeight: 500 }}>
             Crie equipes, defina o operador líder e quem faz parte de cada uma
           </p>
@@ -137,7 +137,7 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
             placeholder="Ex.: Shark, Lucas Neves..."
             style={{
               flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 10, fontSize: 13, fontFamily: 'inherit',
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.14)', color: '#fff',
+              background: 'var(--fill-2)', border: '1px solid var(--b2)', color: 'var(--t1)',
             }}/>
           <button type="button" onClick={addTeam}
             style={{
@@ -151,12 +151,12 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
       </div>
 
       {error && (
-        <div style={{ padding: '10px 14px', marginBottom: 14, borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#ff9d9d', fontSize: 12.5, fontWeight: 600 }}>
+        <div style={{ padding: '10px 14px', marginBottom: 14, borderRadius: 10, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: 'var(--loss)', fontSize: 12.5, fontWeight: 600 }}>
           {error}
         </div>
       )}
       {okMsg && (
-        <div style={{ padding: '10px 14px', marginBottom: 14, borderRadius: 10, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: '#7ee2b8', fontSize: 12.5, fontWeight: 600 }}>
+        <div style={{ padding: '10px 14px', marginBottom: 14, borderRadius: 10, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', color: 'var(--profit)', fontSize: 12.5, fontWeight: 600 }}>
           {okMsg}
         </div>
       )}
@@ -178,17 +178,17 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
                   {/* Team header */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={{ fontSize: 16, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em' }}>Equipe {team}</span>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', padding: '3px 9px', borderRadius: 20, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.01em' }}>Equipe {team}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', padding: '3px 9px', borderRadius: 20, background: 'var(--fill-2)', border: '1px solid var(--b1)' }}>
                         {members.length} operador{members.length !== 1 ? 'es' : ''}
                       </span>
                     </div>
                     {leader ? (
-                      <span style={{ fontSize: 11, fontWeight: 700, color: '#ffb3b3', padding: '4px 10px', borderRadius: 20, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--loss)', padding: '4px 10px', borderRadius: 20, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)' }}>
                         Líder: {getName(leader)}
                       </span>
                     ) : (
-                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', padding: '4px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', padding: '4px 10px', borderRadius: 20, background: 'var(--fill-2)', border: '1px solid var(--b1)' }}>
                         Sem líder definido
                       </span>
                     )}
@@ -210,8 +210,8 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
                             <Avatar op={op} leader={isLeader} />
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <span style={{ fontSize: 13.5, fontWeight: 700, color: '#fff' }}>{getName(op)}</span>
-                                {isLeader && <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.06em', color: '#ffb3b3', padding: '2px 7px', borderRadius: 5, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>LÍDER</span>}
+                                <span style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--t1)' }}>{getName(op)}</span>
+                                {isLeader && <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: '0.06em', color: 'var(--loss)', padding: '2px 7px', borderRadius: 5, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>LÍDER</span>}
                               </div>
                               <span style={{ fontSize: 11, color: 'var(--t4)' }}>{op.email}</span>
                             </div>
@@ -236,17 +236,17 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
 
                   {/* Adicionar operador direto nesta equipe */}
                   {unassigned.length > 0 && (
-                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--b1)', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--t3)' }}>Adicionar operador:</span>
                       <select
                         value=""
                         onChange={e => { if (e.target.value) apply(e.target.value, team, false) }}
                         style={{
                           padding: '8px 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, fontFamily: 'inherit',
-                          background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.14)', color: '#fff', cursor: 'pointer',
+                          background: 'var(--fill-2)', border: '1px solid var(--b2)', color: 'var(--t1)', cursor: 'pointer',
                         }}>
-                        <option value="" style={{ background: '#0c1322' }}>Selecione um operador...</option>
-                        {unassigned.map(o => <option key={o.id} value={o.id} style={{ background: '#0c1322' }}>{getName(o)}</option>)}
+                        <option value="" style={{ background: 'var(--surface)' }}>Selecione um operador...</option>
+                        {unassigned.map(o => <option key={o.id} value={o.id} style={{ background: 'var(--surface)' }}>{getName(o)}</option>)}
                       </select>
                     </div>
                   )}
@@ -267,11 +267,11 @@ export default function TeamManager({ operators = [], adminId, onChanged }) {
             {unassigned.map(op => (
               <div key={op.id} style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 11,
-                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+                background: 'var(--fill-1)', border: '1px solid var(--b1)',
               }}>
                 <Avatar op={op} leader={false} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ fontSize: 13.5, fontWeight: 700, color: '#fff', display: 'block' }}>{getName(op)}</span>
+                  <span style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--t1)', display: 'block' }}>{getName(op)}</span>
                   <span style={{ fontSize: 11, color: 'var(--t4)' }}>{op.email}</span>
                 </div>
                 <TeamSelect op={op} />

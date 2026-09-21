@@ -28,13 +28,13 @@ export default function AdminError({ error, reset }) {
             </svg>
           </div>
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 800, color: '#F1F5F9', margin: 0 }}>Ops, algo quebrou</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--t1)', margin: 0 }}>Ops, algo quebrou</h2>
             <p style={{ fontSize: 12, color: 'var(--t3)', margin: '2px 0 0' }}>O painel nao pode carregar esta visualizacao.</p>
           </div>
         </div>
         <div style={{
           padding: 14, borderRadius: 10, marginBottom: 18,
-          background: 'rgba(4,8,16,0.7)', border: '1px solid rgba(255,255,255,0.06)',
+          background: 'rgba(4,8,16,0.7)', border: '1px solid var(--b1)',
           fontSize: 11, fontFamily: 'var(--mono, monospace)', color: 'var(--loss)',
           maxHeight: 140, overflowY: 'auto',
         }}>
@@ -49,9 +49,9 @@ export default function AdminError({ error, reset }) {
             boxShadow: '0 4px 14px rgba(229,57,53,0.35)',
           }}>Tentar novamente</button>
           <button onClick={() => { if (typeof window !== 'undefined') window.location.href = '/login' }} style={{
-            padding: '12px 20px', borderRadius: 11, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer',
+            padding: '12px 20px', borderRadius: 11, border: '1px solid var(--b1)', cursor: 'pointer',
             fontSize: 13, fontWeight: 700, fontFamily: 'inherit', color: 'var(--t3)',
-            background: 'rgba(255,255,255,0.03)',
+            background: 'var(--fill-1)',
           }}>Ir para login</button>
         </div>
       </div>

@@ -86,8 +86,8 @@ export default function PhoneGate() {
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position: 'relative', width: '100%', maxWidth: 400, margin: 'auto', textAlign: 'center',
-          background: 'linear-gradient(180deg, #0b0b0b, #050505)',
-          border: '1px solid rgba(255,255,255,0.09)', borderRadius: 20, padding: '30px 26px 24px',
+          background: 'var(--surface)',
+          border: '1px solid var(--b1)', borderRadius: 20, padding: '30px 26px 24px',
           boxShadow: '0 30px 90px rgba(0,0,0,0.7)', overflow: 'hidden',
         }}>
         <div style={{ position: 'absolute', top: 0, left: '18%', right: '18%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(209,250,229,0.5), transparent)' }} />
@@ -96,9 +96,9 @@ export default function PhoneGate() {
           <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="var(--profit, #d1fae5)" strokeWidth="2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </div>
 
-        <h2 style={{ fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 24, fontWeight: 400, color: '#fafafa', letterSpacing: '-0.02em', margin: '0 0 8px' }}>Confirme seus dados.</h2>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.55, margin: '0 0 18px' }}>
-          Adicione seu <strong style={{ color: '#fff' }}>WhatsApp</strong> pra manter sua conta atualizada e receber avisos importantes da sua operação.
+        <h2 style={{ fontFamily: 'var(--font-serif, "Instrument Serif", serif)', fontSize: 24, fontWeight: 400, color: 'var(--t1)', letterSpacing: '-0.02em', margin: '0 0 8px' }}>Confirme seus dados.</h2>
+        <p style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.55, margin: '0 0 18px' }}>
+          Adicione seu <strong style={{ color: 'var(--t1)' }}>WhatsApp</strong> pra manter sua conta atualizada e receber avisos importantes da sua operação.
         </p>
 
         <input
@@ -108,7 +108,7 @@ export default function PhoneGate() {
           placeholder="(32) 99834-8889"
           style={{
             width: '100%', padding: '13px 15px', borderRadius: 11, boxSizing: 'border-box',
-            background: 'rgba(255,255,255,0.04)', border: `1px solid ${error ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.12)'}`,
+            background: 'var(--fill-2)', border: `1px solid ${error ? 'rgba(239,68,68,0.5)' : 'rgba(255,255,255,0.12)'}`,
             color: '#fafafa', fontSize: 15, textAlign: 'center', fontFamily: 'var(--mono, monospace)', fontWeight: 600, outline: 'none',
           }}
         />
@@ -123,7 +123,7 @@ export default function PhoneGate() {
           {saving ? 'Salvando...' : 'Confirmar número'}
         </button>
         <button type="button" onClick={snooze}
-          style={{ marginTop: 8, width: '100%', padding: '8px', border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.35)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
+          style={{ marginTop: 8, width: '100%', padding: '8px', border: 'none', background: 'transparent', color: 'var(--t3)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
           Confirmar depois
         </button>
       </motion.div>

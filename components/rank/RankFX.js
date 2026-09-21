@@ -53,7 +53,7 @@ export function RankAura({ rank, intensity = 1, className }) {
     return (
       <div aria-hidden className={className} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 'inherit', overflow: 'hidden' }}>
         {/* deep void com gradient roxo profundo */}
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 30%, rgba(180,120,255,0.22) 0%, rgba(60,30,120,0.10) 30%, #000 70%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'var(--surface)' }} />
         {/* nebula púrpura respirando */}
         <motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.95, 0.6] }}
@@ -249,7 +249,7 @@ export function SignatureOverlay({ rank }) {
     return (
       <div aria-hidden style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 'inherit',
-        background: 'repeating-linear-gradient(180deg, rgba(255,255,255,0.0) 0px, rgba(255,255,255,0.025) 1px, transparent 2px, transparent 4px)',
+        background: 'repeating-linear-gradient(180deg, var(--fill-1) 0px, rgba(255,255,255,0.025) 1px, transparent 2px, transparent 4px)',
         opacity: 0.6, mixBlendMode: 'overlay',
       }}/>
     )
@@ -277,7 +277,7 @@ export function SignatureOverlay({ rank }) {
     return (
       <div aria-hidden style={{
         position: 'absolute', inset: 0, pointerEvents: 'none', borderRadius: 'inherit',
-        background: 'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%), linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%)',
+        background: 'linear-gradient(135deg, transparent 40%, var(--fill-3) 50%, transparent 60%), linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%)',
         mixBlendMode: 'overlay',
       }}/>
     )

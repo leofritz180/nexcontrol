@@ -64,8 +64,8 @@ export default function ResetPasswordPage() {
     width: '100%', fontSize: 14, fontWeight: 400,
     padding: '12px 14px', borderRadius: 8, outline: 'none',
     color: 'var(--t1)',
-    background: 'rgba(255,255,255,0.02)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--fill-1)',
+    border: '1px solid var(--b1)',
     transition: 'border-color 0.15s, background 0.15s',
   }
 
@@ -81,7 +81,7 @@ export default function ResetPasswordPage() {
       }} />
       <div aria-hidden style={{
         position: 'fixed', top: 0, right: 0, width: '40vw', height: '100vh', pointerEvents: 'none',
-        background: 'radial-gradient(ellipse at 100% 50%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 30%, transparent 60%)',
+        background: 'radial-gradient(ellipse at 100% 50%, var(--fill-2) 0%, rgba(255,255,255,0.01) 30%, transparent 60%)',
         filter: 'blur(40px)',
       }} />
 
@@ -196,14 +196,14 @@ export default function ResetPasswordPage() {
               style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 padding: '12px 20px', marginTop: 4, fontSize: 14, fontWeight: 600, fontFamily: 'inherit',
                 borderRadius: 8, border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-                color: 'white', background: loading ? 'rgba(229,57,53,0.5)' : '#e53935',
+                color: 'var(--t1)', background: loading ? 'rgba(229,57,53,0.5)' : '#e53935',
                 transition: 'background 0.15s', opacity: loading ? 0.7 : 1 }}
               onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#d32f2f' }}
               onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#e53935' }}>
               {loading ? (
                 <>
                   <motion.div style={{ width: 14, height: 14, borderRadius: '50%',
-                    border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', flexShrink: 0 }}
+                    border: '2px solid var(--b3)', borderTopColor: 'white', flexShrink: 0 }}
                     animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} />
                   Alterando...
                 </>
@@ -217,7 +217,7 @@ export default function ResetPasswordPage() {
             initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
             style={{ textAlign: 'center', padding: '20px 16px', borderRadius: 10,
               background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.25)',
-              color: '#10B981', fontSize: 14 }}>
+              color: 'var(--profit)', fontSize: 14 }}>
             Senha alterada com sucesso.<br />
             <span style={{ fontSize: 12, color: 'var(--t3)' }}>Redirecionando para o login...</span>
           </motion.div>

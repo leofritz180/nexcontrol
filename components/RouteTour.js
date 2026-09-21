@@ -57,7 +57,7 @@ export default function RouteTour({ tourId, steps, autoDelay = 900, disableAuto 
             zIndex: 200,
             width: 42, height: 42,
             borderRadius: 12,
-            background: 'linear-gradient(180deg, #0f0f0f, #050505)',
+            background: 'var(--surface)',
             border: '1px solid rgba(229,57,53,0.25)',
             color: '#e53935',
             cursor: 'pointer',

@@ -23,7 +23,7 @@ export default function TrialChip({ tenant, sub, user, profile }) {
   const colors = {
     low:      { fg: 'var(--profit)', bg: 'rgba(209,250,229,0.10)', border: 'rgba(209,250,229,0.35)' },
     medium:   { fg: '#ff8a47', bg: 'rgba(255,138,71,0.10)',   border: 'rgba(255,138,71,0.40)' },
-    high:     { fg: '#ff6b6b', bg: 'rgba(255,107,107,0.12)',  border: 'rgba(255,107,107,0.45)' },
+    high:     { fg: 'var(--loss)', bg: 'rgba(255,107,107,0.12)',  border: 'rgba(255,107,107,0.45)' },
     critical: { fg: '#ff4444', bg: 'rgba(255,68,68,0.14)',    border: 'rgba(255,68,68,0.55)' },
   }
   const c = colors[urgency] || colors.medium

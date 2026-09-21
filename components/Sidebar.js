@@ -196,8 +196,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               <img src="/brand/nex-mark.png" alt="" width={46} height={46}
                 style={{ width:46, height:46, objectFit:'contain', flexShrink:0 }} />
               <span style={{ display:'flex', flexDirection:'column', lineHeight:1 }}>
-                <span style={{ fontSize:27, fontWeight:800, letterSpacing:'0.01em', color:'#fff' }}>NEX</span>
-                <span style={{ fontSize:9.5, fontWeight:500, letterSpacing:'0.44em', color:'rgba(255,255,255,0.58)', marginTop:4 }}>CONTROL</span>
+                <span style={{ fontSize:27, fontWeight:800, letterSpacing:'0.01em', color:'var(--t1)' }}>NEX</span>
+                <span style={{ fontSize:9.5, fontWeight:500, letterSpacing:'0.44em', color:'var(--t2)', marginTop:4 }}>CONTROL</span>
               </span>
             </span>
           </span>
@@ -247,7 +247,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               {bettify && (
                 <span className="sb-label" style={{
                   marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
-                  background:'rgba(255,107,0,0.18)', color:'#FF8A3D', border:'1px solid rgba(255,107,0,0.4)',
+                  background:'rgba(255,107,0,0.18)', color:'var(--warn)', border:'1px solid rgba(255,107,0,0.4)',
                   letterSpacing:'0.06em',
                 }}>PARCEIRO</span>
               )}
@@ -294,7 +294,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             style={{
               display:'flex', alignItems:'center', justifyContent:'center', gap:8,
               padding:'10px 14px', borderRadius:8, textDecoration:'none',
-              fontSize:12, fontWeight:500, color:'#fff',
+              fontSize:12, fontWeight:500, color:'var(--t1)',
               background:'var(--fill-3)', border:'none',
               transition:'background 0.15s',
             }}

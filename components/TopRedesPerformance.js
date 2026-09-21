@@ -64,8 +64,8 @@ export default function TopRedesPerformance({ metas = [], embedded = false }) {
         // dentro de outro card: sem moldura propria, so divisoria no topo
         marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--b1)',
       } : {
-        background: '#050505',
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--surface)',
+        border: '1px solid var(--b1)',
         borderRadius: 16,
         padding: '22px 24px',
         boxShadow: '0 16px 44px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)',
@@ -84,8 +84,8 @@ export default function TopRedesPerformance({ metas = [], embedded = false }) {
             </svg>
           </div>
           <div>
-            <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.01em' }}>Top Redes Performance</p>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.42)', margin: '2px 0 0' }}>Distribuição do lucro por rede</p>
+            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>Top Redes Performance</p>
+            <p style={{ fontSize: 11, color: 'var(--t3)', margin: '2px 0 0' }}>Distribuição do lucro por rede</p>
           </div>
         </div>
       </div>
@@ -121,8 +121,8 @@ export default function TopRedesPerformance({ metas = [], embedded = false }) {
             position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
             width: SIZE - STROKE * 2 - 6, height: SIZE - STROKE * 2 - 6, borderRadius: '50%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'radial-gradient(circle at 50% 38%, #0c0c0c, #000)',
-            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'var(--surface)',
+            border: '1px solid var(--b1)',
             boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)',
           }}>
             <svg width={42} height={42} viewBox="0 0 24 24" fill="none" stroke="#ff2a2a" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round"
@@ -142,13 +142,13 @@ export default function TopRedesPerformance({ metas = [], embedded = false }) {
                 position: 'absolute', bottom: -8, left: '50%', transform: 'translate(-50%,100%)',
                 whiteSpace: 'nowrap', zIndex: 5, pointerEvents: 'none',
                 padding: '7px 11px', borderRadius: 9,
-                background: 'rgba(10,10,10,0.96)', border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(10,10,10,0.96)', border: '1px solid var(--b1)',
                 boxShadow: '0 10px 28px rgba(0,0,0,0.6)',
               }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}>
                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: segs[hover].color }} />
-                <span style={{ fontSize: 11.5, fontWeight: 700, color: '#fff', fontFamily: 'var(--mono)' }}>{segs[hover].rede}</span>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontFamily: 'var(--mono)' }}>R$ {fmt(segs[hover].lucro)} · {segs[hover].pct.toFixed(0)}%</span>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--t1)', fontFamily: 'var(--mono)' }}>{segs[hover].rede}</span>
+                <span style={{ fontSize: 11, color: 'var(--t2)', fontFamily: 'var(--mono)' }}>R$ {fmt(segs[hover].lucro)} · {segs[hover].pct.toFixed(0)}%</span>
               </span>
             </motion.div>
           )}
@@ -168,9 +168,9 @@ export default function TopRedesPerformance({ metas = [], embedded = false }) {
                 transition: 'background 0.2s',
               }}>
               <span style={{ width: 9, height: 9, borderRadius: '50%', background: s.color, flexShrink: 0, boxShadow: `0 0 8px ${s.color}55` }} />
-              <span style={{ fontSize: 13, fontWeight: 700, color: '#fff', fontFamily: 'var(--mono)', minWidth: 38 }}>{s.rede}</span>
-              <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.92)', fontFamily: 'var(--mono)', textAlign: 'right' }}>+R$ {fmt(s.lucro)}</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--mono)', minWidth: 38, textAlign: 'right' }}>{s.pct.toFixed(0)}%</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', fontFamily: 'var(--mono)', minWidth: 38 }}>{s.rede}</span>
+              <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--t1)', fontFamily: 'var(--mono)', textAlign: 'right' }}>+R$ {fmt(s.lucro)}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--t3)', fontFamily: 'var(--mono)', minWidth: 38, textAlign: 'right' }}>{s.pct.toFixed(0)}%</span>
             </motion.div>
           ))}
         </div>

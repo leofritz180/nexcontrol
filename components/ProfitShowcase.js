@@ -89,7 +89,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
     setExporting(true)
     try {
       const html2canvas = (await import('html2canvas')).default
-      const canvas = await html2canvas(captureRef.current, { backgroundColor:'#000', scale:2, useCORS:true, logging:false, width:1080, height:1920 })
+      const canvas = await html2canvas(captureRef.current, { backgroundColor:'var(--surface)', scale:2, useCORS:true, logging:false, width:1080, height:1920 })
       const link = document.createElement('a')
       const d = new Date()
       link.download = `nexcontrol-resultado-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.png`
@@ -103,7 +103,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
     <motion.div
       initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
       transition={{ duration:0.5 }}
-      style={{ position:'fixed', inset:0, zIndex:10000, background:'#000', overflow:'hidden',
+      style={{ position:'fixed', inset:0, zIndex:10000, background:'var(--surface)', overflow:'hidden',
         display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}
       onClick={e => { if(e.target===e.currentTarget && !printMode) onClose() }}
     >
@@ -133,13 +133,13 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
             <div style={{ width:24, height:24, borderRadius:6, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
               <NexIcon size={10}/>
             </div>
-            <span style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.5)' }}>NexControl</span>
+            <span style={{ fontSize:13, fontWeight:700, color:'var(--t3)' }}>NexControl</span>
           </div>
           <div style={{ display:'flex', gap:8 }}>
-            <button onClick={()=>setPrintMode(true)} style={{ fontSize:11, fontWeight:600, padding:'6px 14px', borderRadius:7, cursor:'pointer', border:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.04)', color:'rgba(255,255,255,0.4)' }}>
+            <button onClick={()=>setPrintMode(true)} style={{ fontSize:11, fontWeight:600, padding:'6px 14px', borderRadius:7, cursor:'pointer', border:'1px solid var(--b1)', background:'var(--fill-2)', color:'var(--t3)' }}>
               Exportar
             </button>
-            <button onClick={onClose} style={{ fontSize:11, fontWeight:600, padding:'6px 14px', borderRadius:7, cursor:'pointer', border:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.04)', color:'rgba(255,255,255,0.4)' }}>
+            <button onClick={onClose} style={{ fontSize:11, fontWeight:600, padding:'6px 14px', borderRadius:7, cursor:'pointer', border:'1px solid var(--b1)', background:'var(--fill-2)', color:'var(--t3)' }}>
               Fechar
             </button>
           </div>
@@ -154,7 +154,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
             style={{ fontSize:11, fontWeight:600, padding:'6px 14px', borderRadius:7, cursor:exporting?'wait':'pointer', border:'none', background:'#e53935', color:'white', opacity:exporting?0.6:1 }}>
             {exporting?'Gerando...':'Baixar imagem'}
           </button>
-          <button onClick={()=>setPrintMode(false)} style={{ fontSize:11, padding:'6px 12px', borderRadius:7, cursor:'pointer', border:'none', background:'rgba(255,255,255,0.06)', color:'rgba(255,255,255,0.3)' }}>
+          <button onClick={()=>setPrintMode(false)} style={{ fontSize:11, padding:'6px 12px', borderRadius:7, cursor:'pointer', border:'none', background:'var(--fill-2)', color:'var(--t4)' }}>
             Voltar
           </button>
         </div>
@@ -180,11 +180,11 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
             </motion.div>
             <div style={{ textAlign:'center' }}>
               <div style={{ display:'flex', justifyContent:'center' }}>
-                <span style={{ fontSize:36, fontWeight:800, color:'rgba(255,255,255,0.6)' }}>Nex</span>
+                <span style={{ fontSize:36, fontWeight:800, color:'var(--t2)' }}>Nex</span>
                 <span style={{ fontSize:36, fontWeight:800, color:'rgba(255,68,68,0.9)' }}>Control</span>
               </div>
               <motion.p initial={{opacity:0}} animate={{opacity:0.2}} transition={{delay:0.5}}
-                style={{ fontSize:11, color:'white', letterSpacing:'0.2em', marginTop:10 }}>
+                style={{ fontSize:11, color:'var(--t1)', letterSpacing:'0.2em', marginTop:10 }}>
                 SISTEMA OPERACIONAL DE RESULTADOS
               </motion.p>
             </div>
@@ -285,14 +285,14 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
               <span style={{ fontSize:58 }}><CountUp value={val} delay={0} duration={2000}/></span>
             </p>
             <motion.p initial={{opacity:0}} animate={{opacity:0.25}} transition={{delay:1.5}}
-              style={{ fontSize:13, color:'white', marginTop:16 }}>
+              style={{ fontSize:13, color:'var(--t1)', marginTop:16 }}>
               {fechadas.length} metas fechadas
             </motion.p>
           </motion.div>
 
           {/* Period switcher */}
           <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:2}}
-            style={{ display:'flex', gap:4, marginTop:40, background:'rgba(255,255,255,0.03)', borderRadius:10, padding:4, border:'1px solid rgba(255,255,255,0.04)' }}>
+            style={{ display:'flex', gap:4, marginTop:40, background:'var(--fill-1)', borderRadius:10, padding:4, border:'1px solid var(--b1)' }}>
             {[['total','Total'],['today','Hoje'],['week','7 dias']].map(([k,l]) => (
               <motion.button key={k} onClick={()=>setMode(k)} whileTap={{scale:0.95}}
                 style={{ fontSize:12, fontWeight:600, padding:'8px 22px', borderRadius:8, cursor:'pointer', border:'none',
@@ -304,7 +304,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
 
           {/* "LUCRO CONFIRMADO" */}
           <motion.p initial={{opacity:0,y:10}} animate={{opacity:0.2,y:0}} transition={{delay:2.5}}
-            style={{ fontSize:13, fontWeight:700, color:'white', letterSpacing:'0.15em', marginTop:32 }}>
+            style={{ fontSize:13, fontWeight:700, color:'var(--t1)', letterSpacing:'0.15em', marginTop:32 }}>
             LUCRO CONFIRMADO
           </motion.p>
         </motion.div>
@@ -314,7 +314,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
       {printMode && (
         <motion.div initial={{opacity:0,scale:0.9}} animate={{opacity:1,scale:1}} transition={{duration:0.5}}
           style={{ display:'flex', flexDirection:'column', alignItems:'center', zIndex:2 }}>
-          <p style={{ fontSize:12, color:'rgba(255,255,255,0.3)', letterSpacing:'0.2em', marginBottom:32, fontWeight:700 }}>
+          <p style={{ fontSize:12, color:'var(--t4)', letterSpacing:'0.2em', marginBottom:32, fontWeight:700 }}>
             RESULTADO DA OPERACAO
           </p>
           <motion.p animate={{scale:[1,1.02,1]}} transition={{duration:4,repeat:Infinity}}
@@ -323,7 +323,7 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
             }}>
             {isPos?'+':'-'}R$<br/><span style={{fontSize:62}}>{fmt(Math.abs(val))}</span>
           </motion.p>
-          <p style={{ fontSize:13, color:'rgba(255,255,255,0.25)', marginTop:16 }}>{fechadas.length} metas fechadas</p>
+          <p style={{ fontSize:13, color:'var(--t4)', marginTop:16 }}>{fechadas.length} metas fechadas</p>
         </motion.div>
       )}
 
@@ -335,9 +335,9 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
             <div style={{ width:28, height:28, borderRadius:7, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
               <NexIcon size={12}/>
             </div>
-            <span style={{ fontSize:14, color:'rgba(255,255,255,0.4)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
+            <span style={{ fontSize:14, color:'var(--t3)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
           </div>
-          <span style={{ fontSize:10, color:'rgba(255,255,255,0.12)', letterSpacing:'0.06em' }}>
+          <span style={{ fontSize:10, color:'var(--t4)', letterSpacing:'0.06em' }}>
             {new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})}
           </span>
         </motion.div>
@@ -352,11 +352,11 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
               <NexIcon size={13}/>
             </div>
             <div>
-              <span style={{ fontSize:16, color:'rgba(255,255,255,0.45)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
-              <p style={{ fontSize:10, color:'rgba(255,255,255,0.15)', margin:'2px 0 0', letterSpacing:'0.08em' }}>Sistema operacional</p>
+              <span style={{ fontSize:16, color:'var(--t3)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
+              <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', letterSpacing:'0.08em' }}>Sistema operacional</p>
             </div>
           </div>
-          <span style={{ fontSize:11, color:'rgba(255,255,255,0.12)' }}>
+          <span style={{ fontSize:11, color:'var(--t4)' }}>
             {new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})}
           </span>
         </motion.div>
@@ -364,11 +364,11 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
 
       {/* Off-screen capture */}
       {printMode && (
-        <div ref={captureRef} style={{ position:'fixed', left:'-9999px', top:0, width:1080, height:1920, background:'#000',
+        <div ref={captureRef} style={{ position:'fixed', left:'-9999px', top:0, width:1080, height:1920, background:'var(--surface)',
           display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', fontFamily:"'Inter',sans-serif", overflow:'hidden' }}>
           <div style={{ position:'absolute', top:'35%', left:'50%', transform:'translate(-50%,-50%)', width:800, height:800, borderRadius:'50%',
             background:`radial-gradient(circle, ${cDim}0.12), ${cDim}0.04) 35%, transparent 60%)`, filter:'blur(100px)' }}/>
-          <p style={{ fontSize:18, color:'rgba(255,255,255,0.3)', letterSpacing:'0.25em', fontWeight:700, marginBottom:80 }}>RESULTADO DA OPERACAO</p>
+          <p style={{ fontSize:18, color:'var(--t4)', letterSpacing:'0.25em', fontWeight:700, marginBottom:80 }}>RESULTADO DA OPERACAO</p>
           <div style={{ position:'relative', width:500, height:300, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center' }}>
             <p style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:72, fontWeight:900, color:c, lineHeight:1, margin:0, textAlign:'center',
               textShadow:`0 0 50px ${cDim}0.4), 0 0 100px ${cDim}0.2)` }}>
@@ -378,16 +378,16 @@ export default function ProfitShowcase({ stats, goalData, operators, metas, onCl
               textShadow:`0 0 50px ${cDim}0.4), 0 0 100px ${cDim}0.2)` }}>
               {fmt(Math.abs(val))}
             </p>
-            <p style={{ fontSize:16, color:'rgba(255,255,255,0.25)', marginTop:16 }}>{fechadas.length} metas fechadas</p>
+            <p style={{ fontSize:16, color:'var(--t4)', marginTop:16 }}>{fechadas.length} metas fechadas</p>
           </div>
           <div style={{ position:'absolute', bottom:80, display:'flex', flexDirection:'column', alignItems:'center', gap:16 }}>
             <div style={{ display:'flex', alignItems:'center', gap:12 }}>
               <div style={{ width:32, height:32, borderRadius:8, background:'#e53935', display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <NexIcon size={14}/>
               </div>
-              <span style={{ fontSize:20, color:'rgba(255,255,255,0.4)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
+              <span style={{ fontSize:20, color:'var(--t3)', fontWeight:700 }}>Nex<span style={{color:'#ff4444'}}>Control</span></span>
             </div>
-            <span style={{ fontSize:14, color:'rgba(255,255,255,0.15)', letterSpacing:'0.08em' }}>
+            <span style={{ fontSize:14, color:'var(--t4)', letterSpacing:'0.08em' }}>
               {new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})}
             </span>
           </div>

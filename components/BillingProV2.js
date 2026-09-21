@@ -455,10 +455,10 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
 
           <Reveal delay={0.1} style={{ display: 'flex', justifyContent: 'center' }}>
             {/* celular */}
-            <div style={{ position: 'relative', width: 290, maxWidth: '100%', borderRadius: 40, padding: 12, background: 'linear-gradient(180deg, #161616, #050505)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 70px rgba(229,57,53,0.08)' }}>
-              <div style={{ position: 'absolute', top: 22, left: '50%', transform: 'translateX(-50%)', width: 90, height: 7, borderRadius: 99, background: 'rgba(255,255,255,0.12)' }} />
-              <div style={{ borderRadius: 30, background: 'linear-gradient(180deg, #0b0b0f, #060608)', padding: '48px 14px 22px', minHeight: 470 }}>
-                <p style={{ textAlign: 'center', fontFamily: 'var(--mono,monospace)', fontSize: 11, color: 'rgba(255,255,255,0.4)', margin: '0 0 18px', letterSpacing: '0.1em' }}>9:41 · NexControl</p>
+            <div style={{ position: 'relative', width: 290, maxWidth: '100%', borderRadius: 40, padding: 12, background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 70px rgba(229,57,53,0.08)' }}>
+              <div style={{ position: 'absolute', top: 22, left: '50%', transform: 'translateX(-50%)', width: 90, height: 7, borderRadius: 99, background: 'var(--fill-3)' }} />
+              <div style={{ borderRadius: 30, background: 'var(--surface)', padding: '48px 14px 22px', minHeight: 470 }}>
+                <p style={{ textAlign: 'center', fontFamily: 'var(--mono,monospace)', fontSize: 11, color: 'var(--t3)', margin: '0 0 18px', letterSpacing: '0.1em' }}>9:41 · NexControl</p>
                 {[
                   { t: 'Meta finalizada', v: '+R$ 1.250', green: true },
                   { t: 'Remessa registrada', v: '+R$ 720', green: true },
@@ -468,15 +468,15 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
                   <motion.div key={i}
                     initial={{ opacity: 0, x: 14 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: 0.15 + i * 0.15, ease }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '12px 13px', borderRadius: 16, marginBottom: 10, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(8px)' }}>
+                    style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '12px 13px', borderRadius: 16, marginBottom: 10, background: 'var(--fill-2)', border: '1px solid var(--b1)', backdropFilter: 'blur(8px)' }}>
                     <div style={{ width: 34, height: 34, borderRadius: 9, flexShrink: 0, background: BRAND, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                       <img src="/icons/nexcontrol-icon-clean.png" alt="" width={22} height={22} style={{ objectFit: 'contain' }} onError={e => { e.currentTarget.style.display = 'none' }} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: 12.5, fontWeight: 700, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.t}</p>
+                      <p style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--t1)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.t}</p>
                       <p style={{ fontFamily: 'var(--mono,monospace)', fontSize: 13, fontWeight: 800, color: n.green ? PROFIT : 'rgba(255,255,255,0.65)', margin: '2px 0 0' }}>{n.v}</p>
                     </div>
-                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', flexShrink: 0 }}>agora</span>
+                    <span style={{ fontSize: 10, color: 'var(--t3)', flexShrink: 0 }}>agora</span>
                   </motion.div>
                 ))}
               </div>
@@ -488,7 +488,7 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
       {/* ═══ 8 · CTA FINAL ═══ */}
       <section style={{ ...SECTION }}>
         <Reveal>
-          <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 26, border: `1px solid ${BRAND}3a`, background: 'linear-gradient(180deg, #120606, var(--surface))', padding: 'clamp(40px, 7vw, 64px) clamp(24px, 5vw, 48px)', textAlign: 'center' }}>
+          <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 26, border: `1px solid ${BRAND}3a`, background: 'rgba(195,19,19,0.10)', padding: 'clamp(40px, 7vw, 64px) clamp(24px, 5vw, 48px)', textAlign: 'center' }}>
             <div style={{ position: 'absolute', top: -90, left: '50%', transform: 'translateX(-50%)', width: 520, height: 320, borderRadius: '50%', background: `radial-gradient(ellipse, ${BRAND}26, transparent 70%)`, filter: 'blur(60px)', pointerEvents: 'none' }} />
             <h2 style={{ position: 'relative', fontSize: 'clamp(30px, 5.5vw, 52px)', fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.035em', lineHeight: 1.04, margin: '0 0 14px' }}>
               Comece a controlar<br />de verdade

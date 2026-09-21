@@ -96,7 +96,7 @@ export default function MinhasProxiesPage() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button type="button" onClick={refresh} style={{ padding: '9px 14px', borderRadius: 9, fontSize: 12, fontWeight: 600, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--b2)', color: 'var(--t2)', cursor: 'pointer' }}>Atualizar</button>
+            <button type="button" onClick={refresh} style={{ padding: '9px 14px', borderRadius: 9, fontSize: 12, fontWeight: 600, background: 'var(--fill-2)', border: '1px solid var(--b2)', color: 'var(--t2)', cursor: 'pointer' }}>Atualizar</button>
             <button type="button" onClick={() => router.push('/proxy')} style={{ padding: '9px 14px', borderRadius: 9, fontSize: 12, fontWeight: 700, background: 'rgba(255,107,0,0.12)', border: '1px solid rgba(255,107,0,0.3)', color: '#FF6B00', cursor: 'pointer' }}>Comprar proxy</button>
           </div>
         </div>
@@ -106,10 +106,10 @@ export default function MinhasProxiesPage() {
         {loading ? (
           <div style={{ padding: 60, textAlign: 'center' }}><div className="spinner" style={{ width: 26, height: 26, margin: '0 auto' }} /></div>
         ) : proxies.length === 0 ? (
-          <div style={{ padding: '64px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: 16, border: '1px dashed var(--b2)' }}>
+          <div style={{ padding: '64px 20px', textAlign: 'center', background: 'var(--fill-1)', borderRadius: 16, border: '1px dashed var(--b2)' }}>
             <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', margin: '0 0 6px' }}>Você ainda não tem proxies</p>
             <p style={{ fontSize: 13, color: 'var(--t3)', margin: '0 0 20px' }}>{err ? 'Não foi possível carregar agora. Tente atualizar.' : 'Compre uma proxy na loja e ela aparece aqui com a giga em tempo real.'}</p>
-            <button type="button" onClick={() => router.push('/proxy')} style={{ padding: '12px 26px', borderRadius: 10, background: '#FF6B00', border: 'none', color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Ir para a Loja Proxy</button>
+            <button type="button" onClick={() => router.push('/proxy')} style={{ padding: '12px 26px', borderRadius: 10, background: '#FF6B00', border: 'none', color: 'var(--t1)', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Ir para a Loja Proxy</button>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -132,7 +132,7 @@ export default function MinhasProxiesPage() {
 
                   {/* proxy line + copiar */}
                   <div onClick={() => copyLine(line, px.id || i)} title="Clique para copiar"
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '11px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--b1)', cursor: 'pointer', marginBottom: 16 }}>
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '11px 14px', borderRadius: 10, background: 'var(--fill-1)', border: '1px solid var(--b1)', cursor: 'pointer', marginBottom: 16 }}>
                     <span style={{ fontFamily: 'var(--mono)', fontSize: 12.5, color: 'var(--t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{line}</span>
                     <span style={{ fontSize: 11, fontWeight: 700, color: copied === (px.id || i) ? MINT : '#FF6B00', flexShrink: 0 }}>{copied === (px.id || i) ? 'copiado!' : 'copiar'}</span>
                   </div>
@@ -148,7 +148,7 @@ export default function MinhasProxiesPage() {
                       <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t2)', margin: 0, fontFamily: 'var(--mono)' }}>{fmtData(total)}</p>
                     </div>
                   </div>
-                  <div style={{ height: 8, borderRadius: 5, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                  <div style={{ height: 8, borderRadius: 5, background: 'var(--fill-2)', overflow: 'hidden' }}>
                     <motion.div initial={{ width: 0 }} animate={{ width: `${pct === null ? 0 : pct}%` }} transition={{ duration: 1, ease }}
                       style={{ height: '100%', borderRadius: 5, background: c }} />
                   </div>

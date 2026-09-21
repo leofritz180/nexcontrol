@@ -16,8 +16,8 @@ function getLevel(days) {
 
 const CFG = {
   green:  { bg:'rgba(209,250,229,0.06)', border:'rgba(209,250,229,0.15)', color:'var(--profit)', rgb:'34,197,94' },
-  yellow: { bg:'rgba(255,255,255,0.08)', border:'rgba(255,255,255,0.2)', color:'var(--warn)', rgb:'245,158,11' },
-  orange: { bg:'rgba(255,255,255,0.12)', border:'rgba(255,255,255,0.25)', color:'rgba(255,255,255,0.78)', rgb:'245,158,11' },
+  yellow: { bg:'rgba(255,255,255,0.08)', border:'var(--b3)', color:'var(--warn)', rgb:'245,158,11' },
+  orange: { bg:'rgba(255,255,255,0.12)', border:'var(--b3)', color:'var(--t1)', rgb:'245,158,11' },
   red:    { bg:'rgba(239,68,68,0.1)', border:'rgba(239,68,68,0.25)', color:'var(--loss)', rgb:'239,68,68' },
 }
 
@@ -141,7 +141,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
                 padding: '7px 16px', borderRadius: 99, marginBottom: 18,
                 background: 'rgba(239,68,68,0.08)',
                 border: '1px solid rgba(239,68,68,0.22)',
-                fontSize: 12, fontWeight: 700, color: '#fca5a5', letterSpacing: '0.02em',
+                fontSize: 12, fontWeight: 700, color: 'var(--loss)', letterSpacing: '0.02em',
               }}
             >
               <motion.svg
@@ -155,10 +155,10 @@ export function ConversionModal({ tenant, subscription, stats }) {
               {badgeLabel}
             </motion.div>
 
-            <h2 style={{ fontSize: 21, fontWeight: 900, color: '#F1F5F9', margin: '0 0 8px', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
+            <h2 style={{ fontSize: 21, fontWeight: 900, color: 'var(--t1)', margin: '0 0 8px', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
               {t.trialExpired ? 'Seu acesso foi interrompido' : 'Seu acesso está prestes a ser interrompido'}
             </h2>
-            <p style={{ fontSize: 13.5, color: '#CBD5E1', margin: '0 0 6px', lineHeight: 1.5 }}>
+            <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: '0 0 6px', lineHeight: 1.5 }}>
               Não perca seus dados, metas e histórico da sua operação
             </p>
             <p style={{ fontSize: 12, color: '#64748B', margin: 0, lineHeight: 1.5 }}>
@@ -175,7 +175,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
                   { l: 'Metas', v: metas, c: '#60A5FA' },
                   { l: 'Remessas', v: remessas, c: 'rgba(255,255,255,0.78)' },
                 ].map(({ l, v, c }) => (
-                  <div key={l} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
+                  <div key={l} style={{ background: 'var(--fill-1)', border: '1px solid var(--b1)', borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
                     <p style={{ fontFamily: 'var(--mono)', fontSize: 14, fontWeight: 800, color: c, margin: '0 0 2px' }}>{v}</p>
                     <p style={{ fontSize: 9, color: '#64748B', letterSpacing: '0.04em', fontWeight: 600, margin: 0 }}>{l}</p>
                   </div>
@@ -186,7 +186,7 @@ export function ConversionModal({ tenant, subscription, stats }) {
 
           {/* Pricing */}
           <div style={{ padding: '18px 32px 0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', padding: '14px 18px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', padding: '14px 18px', borderRadius: 12, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
               <div>
                 <p style={{ fontSize: 11, color: '#64748B', margin: '0 0 2px', fontWeight: 600 }}>A partir de</p>
                 <p style={{ fontSize: 10, color: 'var(--t3)', margin: 0 }}>Menos que 1 operação perdida por dia</p>

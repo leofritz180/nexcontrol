@@ -67,7 +67,7 @@ export function ProLockedCard({ title, description, icon, children }) {
               <div>
                 <div style={{ height:14, width:'75%', background:'rgba(209,250,229,0.08)', borderRadius:4, marginBottom:6 }}/>
                 <div style={{ height:20, width:'55%', background:'rgba(209,250,229,0.06)', borderRadius:4, marginBottom:6 }}/>
-                <div style={{ height:10, width:'45%', background:'rgba(255,255,255,0.04)', borderRadius:3 }}/>
+                <div style={{ height:10, width:'45%', background:'var(--fill-2)', borderRadius:3 }}/>
               </div>
             )}
           </div>

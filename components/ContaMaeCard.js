@@ -24,7 +24,7 @@ export default function ContaMaeCard({
       position: 'relative',
       borderRadius: 14,
       background: 'linear-gradient(180deg, rgba(15,15,15,0.85), rgba(8,8,8,0.85))',
-      border: '1px solid rgba(255,255,255,0.08)',
+      border: '1px solid var(--b1)',
       padding: compact ? '14px 16px' : '18px 20px',
       overflow: 'hidden',
     }}>
@@ -48,24 +48,24 @@ export default function ContaMaeCard({
           </svg>
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 13, fontWeight: 700, color: '#fafafa', margin: '0 0 1px', letterSpacing: '-0.01em' }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 1px', letterSpacing: '-0.01em' }}>
             Conta mãe
           </p>
-          <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.45)', margin: 0, fontWeight: 500 }}>
+          <p style={{ fontSize: 10.5, color: 'var(--t3)', margin: 0, fontWeight: 500 }}>
             Credenciais ficam salvas pra acesso rápido nas remessas
           </p>
         </div>
         <span style={{
-          fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.5)',
+          fontSize: 9, fontWeight: 700, color: 'var(--t3)',
           padding: '3px 8px', borderRadius: 5,
-          background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--fill-2)', border: '1px solid var(--b1)',
           letterSpacing: '0.08em', textTransform: 'uppercase',
         }}>Opcional</span>
       </div>
 
       {/* Link */}
       <div style={{ marginBottom: 10 }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6, fontSize: 10, fontWeight: 600, color: 'var(--t2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
@@ -82,7 +82,7 @@ export default function ContaMaeCard({
           style={{
             width: '100%', padding: '10px 14px', fontSize: 13, fontWeight: 500,
             color: '#fafafa', background: 'rgba(0,0,0,0.4)',
-            border: '1px solid rgba(255,255,255,0.08)', borderRadius: 9,
+            border: '1px solid var(--b1)', borderRadius: 9,
             outline: 'none', boxSizing: 'border-box',
             fontFamily: 'var(--mono)',
             transition: 'border-color 0.18s, box-shadow 0.18s',
@@ -96,7 +96,7 @@ export default function ContaMaeCard({
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {/* Login */}
         <div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6, fontSize: 10, fontWeight: 600, color: 'var(--t2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
@@ -112,7 +112,7 @@ export default function ContaMaeCard({
             style={{
               width: '100%', padding: '10px 14px', fontSize: 13, fontWeight: 500,
               color: '#fafafa', background: 'rgba(0,0,0,0.4)',
-              border: '1px solid rgba(255,255,255,0.08)', borderRadius: 9,
+              border: '1px solid var(--b1)', borderRadius: 9,
               outline: 'none', boxSizing: 'border-box',
               fontFamily: 'var(--mono)',
               transition: 'border-color 0.18s, box-shadow 0.18s',
@@ -124,7 +124,7 @@ export default function ContaMaeCard({
 
         {/* Senha com olhinho */}
         <div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6, fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6, fontSize: 10, fontWeight: 600, color: 'var(--t2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -141,7 +141,7 @@ export default function ContaMaeCard({
               style={{
                 width: '100%', padding: '10px 40px 10px 14px', fontSize: 13, fontWeight: 500,
                 color: '#fafafa', background: 'rgba(0,0,0,0.4)',
-                border: '1px solid rgba(255,255,255,0.08)', borderRadius: 9,
+                border: '1px solid var(--b1)', borderRadius: 9,
                 outline: 'none', boxSizing: 'border-box',
                 fontFamily: 'var(--mono)', letterSpacing: mostrarSenha ? 'normal' : '0.15em',
                 transition: 'border-color 0.18s, box-shadow 0.18s',
@@ -181,11 +181,11 @@ export default function ContaMaeCard({
       </div>
 
       {/* Footer com selo de seguranca */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--b1)' }}>
         <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="rgba(16,185,129,0.7)" strokeWidth="2" strokeLinecap="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        <p style={{ fontSize: 9.5, color: 'rgba(255,255,255,0.4)', margin: 0, fontWeight: 500 }}>
+        <p style={{ fontSize: 9.5, color: 'var(--t3)', margin: 0, fontWeight: 500 }}>
           Acesso restrito ao seu tenant (RLS) · senha mascarada por padrão
         </p>
       </div>
@@ -217,7 +217,7 @@ export function ContaMaeView({ link, login, senha }) {
       position: 'relative',
       borderRadius: 14,
       background: 'linear-gradient(180deg, rgba(15,15,15,0.85), rgba(8,8,8,0.85))',
-      border: '1px solid rgba(255,255,255,0.08)',
+      border: '1px solid var(--b1)',
       padding: '18px 20px',
       overflow: 'hidden',
     }}>
@@ -237,7 +237,7 @@ export function ContaMaeView({ link, login, senha }) {
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
         </div>
-        <p style={{ fontSize: 13, fontWeight: 700, color: '#fafafa', margin: 0, letterSpacing: '-0.01em' }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>
           Conta mãe
         </p>
       </div>
@@ -281,20 +281,20 @@ function CredField({ label, value, displayValue, onCopy, copied, asLink, toggle,
     <div style={{
       display: 'flex', alignItems: 'center', gap: 10,
       padding: '10px 12px', borderRadius: 9,
-      background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)',
+      background: 'rgba(0,0,0,0.4)', border: '1px solid var(--b1)',
     }}>
       <span style={{
-        fontSize: 9.5, fontWeight: 700, color: 'rgba(255,255,255,0.5)',
+        fontSize: 9.5, fontWeight: 700, color: 'var(--t3)',
         textTransform: 'uppercase', letterSpacing: '0.08em', minWidth: 42,
       }}>{label}</span>
       <span style={{
-        flex: 1, fontSize: 13, color: '#fafafa', fontFamily: 'var(--mono)',
+        flex: 1, fontSize: 13, color: 'var(--t1)', fontFamily: 'var(--mono)',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         letterSpacing: (label === 'Senha' && !mostrar) ? '0.15em' : 'normal',
       }}>
         {asLink ? (
           <a href={/^https?:\/\//i.test(value) ? value : `https://${value}`} target="_blank" rel="noopener noreferrer" style={{
-            color: '#fafafa', textDecoration: 'none', borderBottom: '1px dotted rgba(229,57,53,0.4)',
+            color: 'var(--t1)', textDecoration: 'none', borderBottom: '1px dotted rgba(229,57,53,0.4)',
           }}>{value}</a>
         ) : (displayValue ?? value)}
       </span>

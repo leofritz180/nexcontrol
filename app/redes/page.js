@@ -2,6 +2,8 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import RedesBento from '../../components/modules/RedesBento'
+import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
@@ -97,7 +99,7 @@ function ScoreRing({ score, size = 52, strokeWidth = 4 }) {
           fontSize: 14, fontWeight: 800, color, fontFamily: 'var(--mono, monospace)',
           lineHeight: 1, letterSpacing: '-0.02em',
         }}>{Math.round(score)}</span>
-        <span style={{ fontSize: 7, fontWeight: 600, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>score</span>
+        <span style={{ fontSize: 7, fontWeight: 600, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>score</span>
       </div>
     </div>
   )
@@ -116,7 +118,7 @@ function KpiCard({ label, value, prefix, i, isProfit, rawValue, suffix }) {
       style={{
         padding: '18px 20px', position: 'relative',
         background: 'var(--surface)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: '1px solid var(--b1)',
         borderRadius: 12,
         boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04)',
         transition: 'border-color 0.2s ease',
@@ -179,7 +181,7 @@ function AlertCard({ alert, i }) {
       <div style={{
         width: 28, height: 28, borderRadius: 8, flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(255,255,255,0.04)',
+        background: 'var(--fill-2)',
         border: `1px solid ${isDanger ? 'rgba(239,68,68,0.25)' : isInfo ? 'rgba(147,197,253,0.25)' : 'rgba(255,255,255,0.1)'}`,
       }}>
         {isSuccess ? (
@@ -197,7 +199,7 @@ function AlertCard({ alert, i }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
           <p style={{ fontSize: 10, fontWeight: 700, color: accent, margin: 0, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{alert.label}</p>
-          <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 3, background: 'rgba(255,255,255,0.04)', color: 'var(--t3)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+          <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 6px', borderRadius: 3, background: 'var(--fill-2)', color: 'var(--t3)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
             {action}
           </span>
         </div>
@@ -293,7 +295,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
           position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 9999,
           width: '100%', maxWidth: 480,
           background: 'linear-gradient(180deg, var(--surface) 0%, var(--surface) 100%)',
-          borderLeft: '1px solid rgba(255,255,255,0.06)',
+          borderLeft: '1px solid var(--b1)',
           overflowY: 'auto', padding: '28px 24px 40px',
           boxShadow: '-24px 0 80px rgba(0,0,0,0.6)',
         }}
@@ -304,7 +306,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
               <ScoreRing score={rede.score} size={48} strokeWidth={4} />
               <div>
-                <h2 style={{ fontSize: 20, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.02em', marginBottom: 4 }}>{rede.nome}</h2>
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.02em', marginBottom: 4 }}>{rede.nome}</h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{
                     fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 6,
@@ -321,8 +323,8 @@ function DrawerPanel({ rede, onClose, allRedes }) {
             </div>
           </div>
           <button onClick={onClose} style={{
-            width: 36, height: 36, borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)',
-            background: 'rgba(255,255,255,0.04)', color: 'var(--t3)', cursor: 'pointer',
+            width: 36, height: 36, borderRadius: 10, border: '1px solid var(--b1)',
+            background: 'var(--fill-2)', color: 'var(--t3)', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', flexShrink: 0,
           }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#F1F5F9' }}
@@ -340,7 +342,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
             : 'linear-gradient(145deg, rgba(239,68,68,0.1), rgba(239,68,68,0.02))',
           border: `1px solid ${rede.lucroFinal >= 0 ? 'rgba(209,250,229,0.15)' : 'rgba(239,68,68,0.15)'}`,
         }}>
-          <p style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Lucro total da rede</p>
+          <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Lucro total da rede</p>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
             <p style={{
               fontSize: 30, fontWeight: 800, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.03em',
@@ -362,7 +364,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
         {/* Percentile bar */}
         <div style={{
           padding: '14px 18px', borderRadius: 12, marginBottom: 16,
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--fill-1)', border: '1px solid var(--b1)',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--t3)' }}>Percentil entre redes</span>
@@ -370,7 +372,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
               Top {Math.max(1, 100 - percentile)}%
             </span>
           </div>
-          <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.04)', overflow: 'hidden' }}>
+          <div style={{ height: 6, borderRadius: 3, background: 'var(--fill-2)', overflow: 'hidden' }}>
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${percentile}%` }}
@@ -400,7 +402,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
               background: `linear-gradient(145deg, rgba(${m.color},0.06), transparent)`,
               border: `1px solid rgba(${m.color},0.1)`,
             }}>
-              <p style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 5 }}>{m.label}</p>
+              <p style={{ fontSize: 9, fontWeight: 600, color: 'var(--t3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 5 }}>{m.label}</p>
               <p style={{ fontSize: 17, fontWeight: 800, color: `rgb(${m.color})`, fontFamily: 'var(--mono, monospace)', letterSpacing: '-0.02em', margin: 0 }}>{m.value}</p>
             </div>
           ))}
@@ -409,9 +411,9 @@ function DrawerPanel({ rede, onClose, allRedes }) {
         {/* Eficiencia avancada */}
         <div style={{
           padding: '18px', borderRadius: 14, marginBottom: 16,
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--fill-1)', border: '1px solid var(--b1)',
         }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#F1F5F9', marginBottom: 14 }}>Eficiencia avancada</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--t1)', marginBottom: 14 }}>Eficiencia avancada</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
               { label: 'Lucro por remessa', value: lucroPorRemessa, prefix: 'R$ ' },
@@ -436,9 +438,9 @@ function DrawerPanel({ rede, onClose, allRedes }) {
         {/* Evolucao semanal (6 weeks) */}
         <div style={{
           padding: '18px', borderRadius: 14, marginBottom: 16,
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--fill-1)', border: '1px solid var(--b1)',
         }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#F1F5F9', marginBottom: 14 }}>Evolucao semanal (6 semanas)</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--t1)', marginBottom: 14 }}>Evolucao semanal (6 semanas)</p>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 70 }}>
             {weeklyData.map((v, idx) => {
               const maxAbs = Math.max(...weeklyData.map(Math.abs), 1)
@@ -456,7 +458,7 @@ function DrawerPanel({ rede, onClose, allRedes }) {
                     boxShadow: v > 0 ? '0 0 8px rgba(209,250,229,0.1)' : 'none',
                     transition: 'height 0.4s ease',
                   }} />
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', fontWeight: 500 }}>S{idx + 1}</span>
+                  <span style={{ fontSize: 9, color: 'var(--t4)', fontWeight: 500 }}>S{idx + 1}</span>
                 </div>
               )
             })}
@@ -466,9 +468,9 @@ function DrawerPanel({ rede, onClose, allRedes }) {
         {/* Historico recente (metas) */}
         <div style={{
           padding: '18px', borderRadius: 14, marginBottom: 16,
-          background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+          background: 'var(--fill-1)', border: '1px solid var(--b1)',
         }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#F1F5F9', marginBottom: 14 }}>Historico recente ({recentMetas.length} metas)</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--t1)', marginBottom: 14 }}>Historico recente ({recentMetas.length} metas)</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 200, overflowY: 'auto' }}>
             {recentMetas.map((m, idx) => {
               const lucro = Number(m.lucro_final || 0)
@@ -506,8 +508,8 @@ function DrawerPanel({ rede, onClose, allRedes }) {
         {/* AI Recommendation */}
         <div style={{
           padding: '20px', borderRadius: 14,
-          background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))',
-          border: '1px solid rgba(255,255,255,0.15)',
+          background: 'linear-gradient(145deg, var(--fill-3), rgba(255,255,255,0.04))',
+          border: '1px solid var(--b2)',
           boxShadow: '0 0 30px rgba(255,255,255,0.06)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
@@ -515,13 +517,13 @@ function DrawerPanel({ rede, onClose, allRedes }) {
               <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
               <line x1="9" y1="21" x2="15" y2="21" />
             </svg>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#F1F5F9' }}>Insights estrategicos IA</span>
-            <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.78)', background: 'rgba(255,255,255,0.15)', padding: '2px 7px', borderRadius: 5 }}>AI</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--t1)' }}>Insights estrategicos IA</span>
+            <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--t1)', background: 'var(--fill-3)', padding: '2px 7px', borderRadius: 5 }}>AI</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {recommendation.map((rec, idx) => (
               <p key={idx} style={{
-                fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0,
+                fontSize: 13, color: 'var(--t2)', lineHeight: 1.6, margin: 0,
                 paddingLeft: 12,
                 borderLeft: `2px solid ${recType === 'success' ? 'rgba(209,250,229,0.4)' : recType === 'warning' ? 'rgba(255,255,255,0.4)' : recType === 'danger' ? 'rgba(239,68,68,0.4)' : 'rgba(99,102,241,0.4)'}`,
               }}>
@@ -879,7 +881,7 @@ export default function RedesPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             style={{ width: 32, height: 32, border: '3px solid rgba(229,57,53,0.2)', borderTopColor: '#e53935', borderRadius: '50%' }} />
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Carregando sistema estrategico...</p>
+          <p style={{ fontSize: 13, color: 'var(--t3)' }}>Carregando sistema estrategico...</p>
         </motion.div>
       </div>
     )
@@ -891,6 +893,9 @@ export default function RedesPage() {
     <main style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
         <div style={{ padding: '32px 24px 64px', maxWidth: 1140, margin: '0 auto' }}>
+          {isNex2(user?.email) ? (
+            <RedesBento kpis={kpis} redesData={redesData} onAbrir={(r)=>setSelectedRede(r)} />
+          ) : (<>
 
           {/* Hero — clean */}
           <motion.div {...fadeUp(0)} style={{ marginBottom: 28 }}>
@@ -915,7 +920,7 @@ export default function RedesPage() {
                   border: '1px solid rgba(229,57,53,0.15)',
                 }}>
                   <div className="demo-banner-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#e53935', flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{DEMO_BANNER_TEXT}</span>
+                  <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>{DEMO_BANNER_TEXT}</span>
                 </motion.div>
 
                 {/* Demo KPI Cards */}
@@ -932,7 +937,7 @@ export default function RedesPage() {
                     <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                     </svg>
-                    <span style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9' }}>Ranking por Network Score</span>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)' }}>Ranking por Network Score</span>
                     <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4 }}>{DEMO_REDES_RANKING.length} redes</span>
                   </div>
 
@@ -981,7 +986,7 @@ export default function RedesPage() {
                                     fontSize: 11, fontWeight: 800, color: '#64748B', fontFamily: 'var(--mono, monospace)',
                                     minWidth: 24,
                                   }}>#{i + 1}</span>
-                                  <span style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9' }}>{rede.rede}</span>
+                                  <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)' }}>{rede.rede}</span>
                                   {/* Trend badge */}
                                   <span style={{
                                     fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 6,
@@ -1016,8 +1021,8 @@ export default function RedesPage() {
                                   fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
                                   padding: '3px 8px', borderRadius: 6,
                                   color: rede.lucroPerConta >= 0 ? '#60a5fa' : 'var(--loss)',
-                                  background: 'rgba(255,255,255,0.06)',
-                                  border: '1px solid rgba(255,255,255,0.1)',
+                                  background: 'var(--fill-2)',
+                                  border: '1px solid var(--b1)',
                                 }}>
                                   R$ {fmt(rede.lucroPerConta)}/conta
                                 </span>
@@ -1038,7 +1043,7 @@ export default function RedesPage() {
                             </div>
 
                             {/* Performance bar */}
-                            <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.03)', overflow: 'hidden' }}>
+                            <div style={{ height: 4, borderRadius: 2, background: 'var(--fill-1)', overflow: 'hidden' }}>
                               <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${clamp(rede.score, 0, 100)}%` }}
@@ -1077,14 +1082,14 @@ export default function RedesPage() {
             <motion.div {...fadeUp(5)} style={{ marginBottom: 28 }}>
               <div style={{
                 padding: '22px 24px', borderRadius: 16,
-                background: 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(99,102,241,0.04) 50%, rgba(255,255,255,0.01))',
-                border: '1px solid rgba(255,255,255,0.15)',
+                background: 'linear-gradient(145deg, var(--fill-3), rgba(99,102,241,0.04) 50%, rgba(255,255,255,0.01))',
+                border: '1px solid var(--b2)',
                 boxShadow: '0 0 50px rgba(255,255,255,0.06), 0 0 100px rgba(255,255,255,0.03)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                   <div style={{
                     width: 32, height: 32, borderRadius: 10,
-                    background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)',
+                    background: 'var(--fill-3)', border: '1px solid var(--b3)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth={2} strokeLinecap="round">
@@ -1092,8 +1097,8 @@ export default function RedesPage() {
                       <line x1="9" y1="21" x2="15" y2="21" />
                     </svg>
                   </div>
-                  <span style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9' }}>Recomendacoes automaticas</span>
-                  <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.78)', background: 'rgba(255,255,255,0.15)', padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>IA</span>
+                  <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)' }}>Recomendacoes automaticas</span>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--t1)', background: 'var(--fill-3)', padding: '3px 9px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>IA</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {aiRecommendations.map((rec, i) => (
@@ -1115,7 +1120,7 @@ export default function RedesPage() {
                           {rec.type === 'success' ? '\u2191' : rec.type === 'danger' ? '\u2193' : rec.type === 'warning' ? '!' : '\u2192'}
                         </span>
                       </div>
-                      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', fontWeight: 500, lineHeight: 1.55 }}>{rec.text}</span>
+                      <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500, lineHeight: 1.55 }}>{rec.text}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -1131,7 +1136,7 @@ export default function RedesPage() {
                   <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
                   <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
                 </svg>
-                <span style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9' }}>Alertas estrategicos</span>
+                <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)' }}>Alertas estrategicos</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 10 }}>
                 {strategicAlerts.map((alert, i) => (
@@ -1147,14 +1152,14 @@ export default function RedesPage() {
               <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
               </svg>
-              <span style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9' }}>Ranking por Network Score</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)' }}>Ranking por Network Score</span>
               <span style={{ fontSize: 11, color: '#64748B', marginLeft: 4 }}>{redesData.length} rede{redesData.length !== 1 ? 's' : ''}</span>
             </div>
 
             {redesData.length === 0 ? (
               <div style={{
                 padding: '56px 24px', textAlign: 'center', borderRadius: 16,
-                background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+                background: 'var(--fill-1)', border: '1px solid var(--b1)',
               }}>
                 <svg width={44} height={44} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={1.5} strokeLinecap="round" style={{ margin: '0 auto 16px' }}>
                   <circle cx="12" cy="12" r="10" />
@@ -1214,7 +1219,7 @@ export default function RedesPage() {
                                 fontSize: 11, fontWeight: 800, color: '#64748B', fontFamily: 'var(--mono, monospace)',
                                 minWidth: 24,
                               }}>#{i + 1}</span>
-                              <span style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rede.nome}</span>
+                              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rede.nome}</span>
                               {/* Trend badge */}
                               <span style={{
                                 fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 6,
@@ -1270,8 +1275,8 @@ export default function RedesPage() {
                                 fontSize: 10, fontWeight: 700, fontFamily: 'var(--mono, monospace)',
                                 padding: '3px 8px', borderRadius: 6,
                                 color: rede.lucroPorDepositante >= 0 ? '#60a5fa' : 'var(--loss)',
-                                background: 'rgba(255,255,255,0.06)',
-                                border: '1px solid rgba(255,255,255,0.1)',
+                                background: 'var(--fill-2)',
+                                border: '1px solid var(--b1)',
                               }}>
                                 R$ {fmt(rede.lucroPorDepositante)}/dep
                               </span>
@@ -1296,7 +1301,7 @@ export default function RedesPage() {
                         </div>
 
                         {/* Performance bar (animated) */}
-                        <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.03)', overflow: 'hidden' }}>
+                        <div style={{ height: 4, borderRadius: 2, background: 'var(--fill-1)', overflow: 'hidden' }}>
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${clamp(rede.score, 0, 100)}%` }}
@@ -1316,7 +1321,7 @@ export default function RedesPage() {
                         {/* Click hint */}
                         <div style={{
                           position: 'absolute', bottom: 6, right: 14,
-                          fontSize: 9, color: 'rgba(255,255,255,0.12)',
+                          fontSize: 9, color: 'var(--t4)',
                         }}>
                           Clique para analise completa
                         </div>
@@ -1327,6 +1332,7 @@ export default function RedesPage() {
               </div>
             )}
           </motion.div>}
+          </>)}
         </div>
         <RouteTour tourId="redes" />
       </AppLayout>

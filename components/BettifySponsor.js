@@ -12,7 +12,7 @@ export default function BettifySponsor({ pitch = 'Proxies BR residenciais · men
       title="Bettify Proxy — parceiro oficial"
       style={{
         display: 'flex', alignItems: 'center', gap: 11, padding: '10px 14px', borderRadius: 12, cursor: 'pointer',
-        background: 'linear-gradient(135deg, rgba(255,107,0,0.09), rgba(255,255,255,0.012))',
+        background: 'linear-gradient(135deg, rgba(255,107,0,0.09), var(--fill-1))',
         border: '1px solid rgba(255,107,0,0.22)', transition: 'border-color .2s, background .2s',
         ...style,
       }}

@@ -118,7 +118,7 @@ function SlotCard({ slot, index, isPro }) {
             background: `linear-gradient(145deg, #151c2c, ${isAlta ? 'rgba(229,57,53,0.12)' : 'rgba(255,255,255,0.12)'})`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            {!locked && <p style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.15)', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center', padding: '0 12px' }}>{slot.name}</p>}
+            {!locked && <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.04em', textAlign: 'center', padding: '0 12px' }}>{slot.name}</p>}
           </div>
         )}
 
@@ -134,8 +134,8 @@ function SlotCard({ slot, index, isPro }) {
         <div style={{
           position: 'absolute', top: 10, left: 10, zIndex: 4,
           padding: '4px 10px', borderRadius: 7,
-          background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.08)',
-          fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.7)',
+          background: 'rgba(0,0,0,0.45)', border: '1px solid var(--b1)',
+          fontSize: 9, fontWeight: 700, color: 'var(--t2)',
           textTransform: 'uppercase', letterSpacing: '0.04em',
           backdropFilter: 'blur(4px)',
         }}>
@@ -161,7 +161,7 @@ function SlotCard({ slot, index, isPro }) {
           }}>
             <div style={{
               width: 36, height: 36, borderRadius: 10,
-              background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(0,0,0,0.3)', border: '1px solid var(--b1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.8" strokeLinecap="round">
@@ -169,7 +169,7 @@ function SlotCard({ slot, index, isPro }) {
                 <path d="M7 11V7a5 5 0 0110 0v4" />
               </svg>
             </div>
-            <span style={{ fontSize: 8, fontWeight: 600, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.06em' }}>PRO</span>
+            <span style={{ fontSize: 8, fontWeight: 600, color: 'var(--t4)', letterSpacing: '0.06em' }}>PRO</span>
           </div>
         )}
       </div>
@@ -183,11 +183,11 @@ function SlotCard({ slot, index, isPro }) {
           </div>
         ) : (
           <>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.name}</h3>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{slot.name}</h3>
             <Stars count={slot.rating} />
             <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
               {slot.tags.map(tag => (
-                <span key={tag} style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 6, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.45)' }}>{tag}</span>
+                <span key={tag} style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 6, background: 'var(--fill-2)', border: '1px solid var(--b1)', color: 'var(--t3)' }}>{tag}</span>
               ))}
             </div>
           </>
@@ -294,7 +294,7 @@ export default function SlotsPage() {
       <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, var(--surface), var(--surface))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>Carregando...</p>
+          <p style={{ fontSize: 13, color: 'var(--t3)' }}>Carregando...</p>
         </motion.div>
       </div>
     )
@@ -374,17 +374,17 @@ export default function SlotsPage() {
               display: 'flex', gap: 16, marginBottom: 28, flexWrap: 'wrap',
             }}>
               {[
-                { label: 'Total', value: filtered.length, color: 'rgba(255,255,255,0.6)' },
+                { label: 'Total', value: filtered.length, color: 'var(--t2)' },
                 { label: 'Alta performance', value: filtered.filter(s => s.performance === 'alta').length, color: 'var(--profit)' },
-                { label: 'Media', value: filtered.filter(s => s.performance === 'media').length, color: 'rgba(255,255,255,0.78)' },
+                { label: 'Media', value: filtered.filter(s => s.performance === 'media').length, color: 'var(--t1)' },
               ].map((s, i) => (
                 <div key={i} style={{
                   padding: '10px 18px', borderRadius: 10,
-                  background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)',
+                  background: 'var(--fill-1)', border: '1px solid var(--b1)',
                   display: 'flex', alignItems: 'center', gap: 8,
                 }}>
                   <span style={{ fontSize: 18, fontWeight: 800, color: s.color, fontFamily: 'var(--mono, monospace)' }}>{s.value}</span>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{s.label}</span>
+                  <span style={{ fontSize: 11, color: 'var(--t3)' }}>{s.label}</span>
                 </div>
               ))}
             </motion.div>
@@ -412,7 +412,7 @@ export default function SlotsPage() {
 
             {filtered.length === 0 && (
               <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)' }}>Nenhum slot encontrado para este provider.</p>
+                <p style={{ fontSize: 14, color: 'var(--t4)' }}>Nenhum slot encontrado para este provider.</p>
               </div>
             )}
           </>
@@ -421,15 +421,15 @@ export default function SlotsPage() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
             style={{
               textAlign: 'center', padding: '80px 20px',
-              background: 'rgba(255,255,255,0.02)', borderRadius: 16,
-              border: '1px solid rgba(255,255,255,0.05)',
+              background: 'var(--fill-1)', borderRadius: 16,
+              border: '1px solid var(--b1)',
             }}
           >
             <svg width={40} height={40} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" strokeLinecap="round" style={{ marginBottom: 16 }}>
               <path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
-            <p style={{ fontSize: 15, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>Meus Jogos</p>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>Em breve voce podera salvar seus jogos favoritos aqui.</p>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--t3)', marginBottom: 6 }}>Meus Jogos</p>
+            <p style={{ fontSize: 12, color: 'var(--t4)' }}>Em breve voce podera salvar seus jogos favoritos aqui.</p>
           </motion.div>
         )}
       </div>

@@ -2272,6 +2272,21 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   }
   /* a pilula deslizante nao cabe numa barra de ponta a ponta */
   .nx-bento .tabs-scroll > .nx-dock-pilula { display: none !important; }
+
+  /* OS FLUTUANTES SOBEM.
+     No desktop eles ficam num canto vazio. No celular o dock desce e vira a
+     barra de navegacao — e os flutuantes ficavam EM CIMA dela, tapando duas
+     abas. Nao dava nem pra tocar em "Metas & Fechamento". Agora eles sobem
+     acima da barra e da area segura. */
+  .nx-bento .nx-dock-item,
+  .nx-bento button[title="Refazer tour"],
+  .nx-bento [aria-label="Refazer tour desta aba"] {
+    bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+  }
+  /* a bolha do chat sobe junto, um degrau acima */
+  .nx-bento .nx-chat-bolha {
+    bottom: calc(134px + env(safe-area-inset-bottom)) !important;
+  }
   .nx-bento .tabs-scroll button[data-active="true"] {
     background: #ffffff !important; color: #15151a !important;
   }

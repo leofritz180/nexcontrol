@@ -182,7 +182,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
   if (mobile) {
     if (!canEnter) return null // no mobile o upsell já aparece no menu/teaser
     return (
-      <div style={{ position: 'fixed', right: 16, bottom: 84, zIndex: 900 }}>
+      <div className="nx-chat-bolha" style={{ position: 'fixed', right: 16, bottom: 84, zIndex: 900 }}>
         <Bubble open={false} unread={unread} label="Abrir Network" onClick={() => router.push('/network')} />
       </div>
     )
@@ -191,7 +191,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
   // ── Desktop admin SEM PRO: bolha travada (isca de conversão) ──
   if (!canEnter) {
     return (
-      <div style={{ position: 'fixed', right: 20, bottom: 84, zIndex: 900 }}>
+      <div className="nx-chat-bolha" style={{ position: 'fixed', right: 20, bottom: 84, zIndex: 900 }}>
         <AnimatePresence>
           {open && (
             <motion.div initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }}
@@ -227,7 +227,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
 
   // ── Desktop PRO: dock completo ──
   return (
-    <div style={{ position: 'fixed', right: 20, bottom: 84, zIndex: 900 }}>
+    <div className="nx-chat-bolha" style={{ position: 'fixed', right: 20, bottom: 84, zIndex: 900 }}>
       <AnimatePresence>
         {open && (
           <motion.div initial={{ opacity: 0, y: 16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }}

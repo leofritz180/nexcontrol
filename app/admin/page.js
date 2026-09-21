@@ -2652,6 +2652,9 @@ export default function AdminPage() {
                 onVerMetas={() => setTab('myops')}
                 onAbrirMeta={(id) => router.push('/meta/' + id)}
                 onSaveGoal={saveDailyGoal}
+                periodo={heroPeriod}
+                onPeriodo={setHeroPeriod}
+                lucroPeriodo={heroLucro?.value}
               />
           ) : (<>
           {/* ── META DO DIA (card gamificado, igual pra todos) ── */}

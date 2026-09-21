@@ -1087,12 +1087,17 @@ export default function OperadoresPage() {
         )}
 
         {/* Tabs — underline minimalista */}
-        <motion.div {...fadeUp(1)} data-tour="ops-tabs" style={{
+        {/* No V2 a classe tabs-scroll transforma isto no dock flutuante,
+            igual ao do /admin. Fora dele continua o sublinhado de sempre. */}
+        <motion.div {...fadeUp(1)} data-tour="ops-tabs"
+          className={isNex2(user?.email) ? 'tabs-scroll' : undefined}
+          style={{
           display: 'flex', gap: 0, marginBottom: 28,
-          borderBottom: '1px solid var(--b1)',
+          borderBottom: isNex2(user?.email) ? 'none' : '1px solid var(--b1)',
         }}>
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)} data-tour-tab={t.key}
+              data-active={tab === t.key ? 'true' : 'false'}
               style={{
                 padding: '12px 18px', fontSize: 13, fontWeight: 500,
                 border: 'none', background: 'transparent', cursor: 'pointer', fontFamily:'inherit',

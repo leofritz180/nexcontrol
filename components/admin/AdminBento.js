@@ -65,7 +65,10 @@ function Chip({ bg, children }) {
   return <span style={{ width: 40, height: 40, borderRadius: 13, background: bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{children}</span>
 }
 
-export default function AdminBento({ nome, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, onSaveGoal }) {
+// mesmos periodos do painel antigo, pra nao mudar o que o numero significa
+const PERIODOS = [['month','Mês'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d'],['all','Tudo']]
+
+export default function AdminBento({ nome, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, onSaveGoal , periodo, onPeriodo, lucroPeriodo }) {
   const [editGoal, setEditGoal] = useState(false)
   const [goalVal, setGoalVal] = useState('')
 
@@ -77,6 +80,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
 
   // meta do dia
   const alvo = Number(dailyGoal?.target || 0), feito = Number(dailyGoal?.today || 0)
+  const rotuloPeriodo = 'lucro · ' + (PERIODOS.find(x => x[0] === periodo)?.[1] || 'período').toLowerCase()
   const pctDia = alvo > 0 ? Math.min(100, Math.round((feito / alvo) * 100)) : 0
 
   // série da semana: lucro das metas fechadas por dia (7 dias)
@@ -125,13 +129,31 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         </motion.button>
       </div>
 
+      {/* filtro de periodo — manda no primeiro card */}
+      {onPeriodo && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'inline-flex', gap: 3, padding: 4, borderRadius: 30, background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+            {PERIODOS.map(([k, l]) => {
+              const on = periodo === k
+              return (
+                <button key={k} type="button" onClick={() => onPeriodo(k)}
+                  style={{ padding: '7px 15px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 700,
+                    background: on ? '#15151a' : 'transparent', color: on ? '#fff' : 'var(--t3)', transition: 'background .18s ease, color .18s ease' }}>
+                  {l}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* LINHA 1 — 4 cards */}
       <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
           <Card blob={['var(--profit-dim)', 'var(--profit-border)']} style={{ minHeight: 148 }}>
             <Chip bg="var(--profit-dim)"><Ico d={<><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>} c="var(--profit)" /></Chip>
-            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}>{money0(lucroTotal)}</p>
-            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>lucro final acumulado</p>
+            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}>{money0(lucroPeriodo != null ? lucroPeriodo : lucroTotal)}</p>
+            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>{lucroPeriodo != null ? rotuloPeriodo : 'lucro final acumulado'}</p>
           </Card>
         </motion.div>
 

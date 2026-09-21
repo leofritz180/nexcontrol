@@ -2376,7 +2376,23 @@ export default function MetaPage() {
                     const caption = `${isLucro ? '🚀 Fechei mais uma' : '📊 Operação encerrada'}${meta.rede ? ' · ' + meta.rede : ''} — ${isLucro ? '+' : '−'}R$ ${fmt(Math.abs(liqFinal))}`
                     const res = await fetch('/api/network/message', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ action: 'send', channel: 'resultados', text: caption, image: dataUrl }) })
                     if (res.ok) { setNetShareState('done') }
-                    else if (res.status === 403) { setNetShareState('idle'); if (confirm('Compartilhar resultados é um recurso do Network (PRO). Assinar agora?')) router.push('/billing-mp?renewal=1') }
+                    else if (res.status === 403) {
+                      // Nao e exclusao: e um convite. Fica como pergunta (e nao como
+                      // aviso) porque o 'sim' leva pro checkout — um toast info perderia
+                      // essa acao, ja que o botao do aviso e fixo em 'Desfazer'.
+                      // perigo:false troca o icone de lixeira pelo de alerta e o botao
+                      // vermelho de perda pelo da marca.
+                      setNetShareState('idle')
+                      const querPro = await perguntar({
+                        titulo: 'Isso é do Network PRO',
+                        alvo: 'Compartilhar resultados',
+                        texto: 'Publicar o card no canal Resultados faz parte do plano PRO. Quer ver o plano?',
+                        confirmar: 'Ver o PRO',
+                        cancelar: 'Agora não',
+                        perigo: false,
+                      })
+                      if (querPro) router.push('/billing-mp?renewal=1')
+                    }
                     else { const e = await res.json().catch(() => ({})); alert(e.error || 'Não consegui compartilhar agora.'); setNetShareState('idle') }
                   } catch { setNetShareState('idle') }
                 })()

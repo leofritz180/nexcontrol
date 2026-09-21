@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase/client'
 import PlanejamentoBento from '../../components/modules/PlanejamentoBento'
 import { ModuloEsqueleto } from '../../components/ui/bento'
 import { isNex2 } from '../../lib/theme-v2'
+import { useConfirmar } from '../../components/v2/Confirmar'
 
 const OWNER = 'leofritz180@gmail.com'
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -78,6 +79,9 @@ function OperatorAvatar({ name, color }) {
 
 export default function PlanejamentoPage() {
   const router = useRouter()
+  // Hook no topo: a pagina tem um `if (loading) return` mais abaixo, e chamar
+  // hook depois dele quebraria a ordem dos hooks (React #300).
+  const perguntar = useConfirmar()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
@@ -197,7 +201,17 @@ export default function PlanejamentoPage() {
   }
 
   async function deleteRow(id) {
-    if (!confirm('Excluir esta linha?')) return
+    // alvo = rede + agente + quantidade: e como o usuario reconhece a linha na planilha.
+    const linha = rows.find(r => r.id === id)
+    const etiqueta = linha
+      ? [linha.rede, linha.agente, Number(linha.quantidade || 0) ? `${linha.quantidade} contas` : null].filter(Boolean).join(' · ')
+      : ''
+    if (!(await perguntar({
+      titulo: 'Excluir esta linha?',
+      alvo: etiqueta,
+      texto: 'Ela sai do planejamento e nao volta.',
+      confirmar: 'Excluir',
+    }))) return
     await fetch('/api/admin/planilha', {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: user.email, id }),

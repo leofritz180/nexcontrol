@@ -78,6 +78,7 @@ import PreviewIndicator from '../../components/billing/PreviewIndicator'
 import OnboardingChecklist from '../../components/OnboardingChecklist'
 import ContaMaeCard from '../../components/ContaMaeCard'
 import OperatorLimitBanner from '../../components/OperatorLimitBanner'
+import { useConfirmar } from '../../components/v2/Confirmar'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -639,6 +640,9 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
 
 export default function AdminPage() {
   const router = useRouter()
+  // Hook no topo do componente: chamar depois de um return condicional quebraria a
+  // ordem dos hooks (React #300).
+  const perguntar = useConfirmar()
   const [loading,   setLoading]   = useState(true)
   const [operators, setOperators] = useState([])
   const [metas,     setMetas]     = useState([])
@@ -1362,7 +1366,13 @@ export default function AdminPage() {
                       </motion.button>
                     )}
                     <motion.button whileHover={{ scale:1.08 }} whileTap={{ scale:0.92 }} onClick={async()=>{
-                      if(!confirm('Tem certeza que deseja EXCLUIR esta meta e todas as remessas? Esta acao nao pode ser desfeita.')) return
+                      // Mostra o titulo da meta: o confirm nativo nao dizia qual meta ia sumir.
+                      if(!(await perguntar({
+                        titulo:'Excluir a meta inteira?',
+                        alvo:m.titulo||'',
+                        texto:'Todas as remessas dela vao junto. A meta vai para a lixeira e pode ser restaurada de la.',
+                        confirmar:'Excluir tudo',
+                      }))) return
                       await fetch('/api/meta/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({meta_id:m.id})})
                       setFocusMeta(null); loadAll()
                     }} style={{width:36,height:36,borderRadius:10,border:'1px solid var(--loss-border)',background:'rgba(239,68,68,0.06)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'all 0.15s'}}
@@ -1476,7 +1486,13 @@ export default function AdminPage() {
                               </p>
                               <motion.button whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.85 }} onClick={async(ev)=>{
                                 ev.stopPropagation()
-                                if(!confirm('Excluir esta remessa?')) return
+                                // alvo = nome da remessa + valor, pra nao apagar a linha errada da lista.
+                                if(!(await perguntar({
+                                  titulo:'Excluir esta remessa?',
+                                  alvo:`${r.titulo||`Remessa ${focusRem.length-i}`} · R$ ${fmt(Math.abs(Number(r.resultado||0)))}`,
+                                  texto:'O resultado dela sai do acumulado da meta.',
+                                  confirmar:'Excluir',
+                                }))) return
                                 await fetch('/api/remessa/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({remessa_id:r.id})})
                                 openMetaDetail(m)
                               }} style={{width:26,height:26,borderRadius:6,border:'1px solid var(--loss-border)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',flexShrink:0,opacity:0.5,transition:'opacity 0.15s'}}
@@ -4329,7 +4345,13 @@ export default function AdminPage() {
                           whileHover={{ scale:1.04, background:'rgba(239,68,68,0.14)', borderColor:'rgba(239,68,68,0.4)' }}
                           whileTap={{ scale:0.95 }}
                           onClick={async () => {
-                            if (!confirm('Excluir PERMANENTEMENTE esta meta e todas as remessas? Esta acao nao pode ser desfeita.')) return
+                            // Purge: depois daqui nao existe lixeira, entao o texto precisa ser explicito.
+                            if (!(await perguntar({
+                              titulo:'Excluir permanentemente?',
+                              alvo:m.titulo||'',
+                              texto:'A meta e todas as remessas somem de vez. Isso nao tem como desfazer.',
+                              confirmar:'Excluir de vez',
+                            }))) return
                             await fetch('/api/meta/purge', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ meta_id:m.id }) })
                             loadAll()
                           }}

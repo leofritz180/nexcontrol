@@ -9,6 +9,7 @@ import AulasAdminBento, { FormularioCurso } from '../../../components/modules/Au
 import { ModuloEsqueleto } from '../../../components/ui/bento'
 import { Folha } from '../../../components/ui/folha'
 import { isNex2 } from '../../../lib/theme-v2'
+import { useConfirmar } from '../../../components/v2/Confirmar'
 
 const ADMIN_EMAIL = 'leofritz180@gmail.com'
 const AMBER = 'rgba(255,255,255,0.78)'
@@ -211,6 +212,8 @@ function CourseForm({ initial, onSave, onCancel, saving }) {
 ════════════════════════════════════════════ */
 export default function AulasAdminPage() {
   const router = useRouter()
+  // Hook sempre no topo: depois de um return condicional quebraria a ordem dos hooks (React #300).
+  const perguntar = useConfirmar()
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -283,7 +286,20 @@ export default function AulasAdminPage() {
   }
 
   async function deleteCourse(id) {
-    if (!confirm('Deletar este curso e todos os modulos/aulas?')) return
+    // alvo = titulo do curso, pra ficar claro qual arvore inteira vai embora.
+    const curso = courses.find(c => c.id === id)
+    const nMods = modules.filter(m => m.course_id === id).length
+    // Frase no singular/plural certo — 'Os 1 modulos' passaria vergonha na tela do cliente.
+    const detalhe = nMods === 0
+      ? 'O curso esta vazio.'
+      : nMods === 1 ? 'O unico modulo e todas as aulas dele vao junto.'
+      : `Os ${nMods} modulos e todas as aulas deles vao junto.`
+    if (!(await perguntar({
+      titulo: 'Excluir este curso?',
+      alvo: curso?.title || '',
+      texto: `${detalhe} Isso nao tem como desfazer.`,
+      confirmar: 'Excluir curso',
+    }))) return
     // Delete lessons, modules, then course
     const mods = modules.filter(m => m.course_id === id)
     for (const m of mods) {
@@ -315,7 +331,18 @@ export default function AulasAdminPage() {
   }
 
   async function deleteModule(id) {
-    if (!confirm('Deletar este modulo e suas aulas?')) return
+    const mod = modules.find(m => m.id === id)
+    const nAulas = lessons.filter(l => l.module_id === id).length
+    const detalhe = nAulas === 0
+      ? 'Esse modulo ainda nao tem aulas.'
+      : nAulas === 1 ? 'A unica aula do modulo vai junto.'
+      : `Todas as ${nAulas} aulas do modulo vao junto.`
+    if (!(await perguntar({
+      titulo: 'Excluir este modulo?',
+      alvo: mod?.title || '',
+      texto: `${detalhe} Isso nao tem como desfazer.`,
+      confirmar: 'Excluir modulo',
+    }))) return
     await supabase.from('course_lessons').delete().eq('module_id', id)
     await supabase.from('course_modules').delete().eq('id', id)
     setModules(prev => prev.filter(m => m.id !== id))
@@ -352,7 +379,13 @@ export default function AulasAdminPage() {
   }
 
   async function deleteLesson(id) {
-    if (!confirm('Deletar esta aula?')) return
+    const aula = lessons.find(l => l.id === id)
+    if (!(await perguntar({
+      titulo: 'Excluir esta aula?',
+      alvo: aula?.title || '',
+      texto: 'Ela sai do modulo e nao volta. Isso nao tem como desfazer.',
+      confirmar: 'Excluir aula',
+    }))) return
     await supabase.from('course_lessons').delete().eq('id', id)
     setLessons(prev => prev.filter(l => l.id !== id))
   }

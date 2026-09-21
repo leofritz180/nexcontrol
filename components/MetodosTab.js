@@ -2,6 +2,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
+import { useConfirmar } from './v2/Confirmar'
 
 const MODALIDADES = [
   { id: 'metodo_novo',    label: 'Metodo novo' },
@@ -28,6 +29,8 @@ function parseValor(s) {
 }
 
 export default function MetodosTab() {
+  // Hook no topo do componente (React #300).
+  const perguntar = useConfirmar()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -94,7 +97,14 @@ export default function MetodosTab() {
   }
 
   async function remove(id) {
-    if (!confirm('Apagar este registro?')) return
+    // alvo = modalidade + valor, pra nao apagar o registro errado da lista.
+    const reg = items.find(i => i.id === id)
+    if (!(await perguntar({
+      titulo: 'Apagar este registro?',
+      alvo: reg ? `${modLabel(reg.modalidade)} · ${reg.tipo === 'lucro' ? '+' : '-'}R$ ${fmtBRL(reg.valor)}` : '',
+      texto: 'Ele deixa de contar no resultado dos metodos. Isso nao tem como desfazer.',
+      confirmar: 'Apagar',
+    }))) return
     const h = await authHeader()
     await fetch('/api/metodos?id=' + id, { method: 'DELETE', headers: h })
     await load()

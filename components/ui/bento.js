@@ -6,7 +6,7 @@
 // cantos 24px, blob orgânico, sombra suave, entrada animada e hover com mola.
 // Puramente visual — nenhum bloco aqui busca ou grava dados.
 // ─────────────────────────────────────────────────────────────────────────
-import { motion, animate, useReducedMotion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion, AnimatePresence, animate, useReducedMotion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 
 export const RED = '#e5391f', RED2 = '#ff7a4d', LIME = '#c4f042'
@@ -719,9 +719,38 @@ export function Destaque({ rotulo, titulo, valor, nota, avatar, blob = [RED2, RE
 // ── CALENDÁRIO DE CALOR ──────────────────────────────────────────────────
 // 30 dias em quadradinhos, tom por resultado. Mostra o mês inteiro num
 // espaço onde não caberia um gráfico.
+//
+// O cartão promete "passe o mouse pra ver" e antes entregava só o `title`
+// nativo do navegador: precisa de ~1s parado, reinicia a contagem a cada
+// quadrado e some sozinho. Passando o mouse pela grade, parecia que nada
+// acontecia. Agora a leitura é imediata e fica presa ao quadrado.
+//
+// A intensidade é RELATIVA ao melhor dia do período (teto), não a um valor
+// fixo — por isso a legenda embaixo diz qual é esse teto. Sem ela, um
+// prejuízo pequeno ao lado de um dia excepcional parece insignificante.
 export function Calor({ rotulo, dias = [], formata = money0, delay = 0.16 }) {
   const vals = dias.map(d => Number(d.v) || 0)
   const teto = Math.max(1, ...vals.map(Math.abs))
+  const [alvo, setAlvo] = useState(null)
+
+  // mede o quadrado dentro da grade pra ancorar o balão; na primeira linha
+  // ele cai pra baixo, senão sairia por cima do subtítulo
+  function mirar(i, el) {
+    const grade = el.parentElement
+    if (!grade) return
+    const meio = el.offsetLeft + el.offsetWidth / 2
+    const abaixo = el.offsetTop < el.offsetHeight
+    setAlvo({
+      i,
+      x: Math.max(52, Math.min(meio, grade.offsetWidth - 52)),
+      y: abaixo ? el.offsetTop + el.offsetHeight + 8 : el.offsetTop - 8,
+      abaixo,
+    })
+  }
+
+  const atual = alvo ? dias[alvo.i] : null
+  const vAtual = atual ? Number(atual.v) || 0 : 0
+
   return (
     <BCard pad={24} delay={delay}>
       <p style={{ ...TIPO.secao, color: 'var(--t1)', margin: '0 0 3px' }}>{rotulo}</p>
@@ -729,23 +758,80 @@ export function Calor({ rotulo, dias = [], formata = money0, delay = 0.16 }) {
       {dias.length === 0
         ? <Vazio titulo="Sem movimento no período" icone={<><rect x="3" y="4" width="18" height="18" rx="3" /><path d="M16 2v4M8 2v4M3 10h18" /></>} />
         : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(26px, 1fr))', gap: 6 }}>
-            {dias.map((d, i) => {
-              const v = Number(d.v) || 0
-              const f = Math.min(1, Math.abs(v) / teto)
-              const cor = v === 0 ? 'var(--fill-2)'
-                : v > 0 ? `rgba(63,155,30,${0.18 + f * 0.7})`
-                  : `rgba(220,38,38,${0.18 + f * 0.7})`
-              return (
-                <motion.span key={d.d || i}
-                  title={`${d.d || ''} · ${formata(v)}`}
-                  initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: delay + i * 0.012 }}
-                  whileHover={{ scale: 1.18 }}
-                  style={{ aspectRatio: '1', borderRadius: 7, background: cor, cursor: 'default' }} />
-              )
-            })}
-          </div>
+          <>
+            <div
+              onMouseLeave={() => setAlvo(null)}
+              style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(26px, 1fr))', gap: 6 }}>
+              {dias.map((d, i) => {
+                const v = Number(d.v) || 0
+                const f = Math.min(1, Math.abs(v) / teto)
+                const cor = v === 0 ? 'var(--fill-2)'
+                  : v > 0 ? `rgba(63,155,30,${0.18 + f * 0.7})`
+                    : `rgba(220,38,38,${0.18 + f * 0.7})`
+                const aceso = alvo?.i === i
+                return (
+                  <motion.span key={d.d || i}
+                    aria-label={`${d.d || ''}: ${formata(v)}`}
+                    onMouseEnter={e => mirar(i, e.currentTarget)}
+                    // no celular não existe passar o mouse: o toque faz o mesmo
+                    onClick={e => mirar(i, e.currentTarget)}
+                    initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: delay + i * 0.012 }}
+                    whileHover={{ scale: 1.18 }}
+                    style={{
+                      aspectRatio: '1', borderRadius: 7, background: cor, cursor: 'pointer',
+                      boxShadow: aceso ? '0 0 0 2px var(--surface), 0 0 0 3.5px var(--t1)' : 'none',
+                      zIndex: aceso ? 1 : 0,
+                    }} />
+                )
+              })}
+
+              {/* o balão fica DENTRO da grade pra acompanhar o quadrado */}
+              <AnimatePresence>
+                {atual && (
+                  // dois níveis de propósito: o de fora ancora (o Framer
+                  // controla `transform` e apagaria o translate do -50%),
+                  // o de dentro anima.
+                  <div key="balao" style={{
+                    position: 'absolute', left: alvo.x, top: alvo.y,
+                    transform: alvo.abaixo ? 'translateX(-50%)' : 'translate(-50%, -100%)',
+                    pointerEvents: 'none', zIndex: 3,
+                  }}>
+                  <motion.div
+                    initial={{ opacity: 0, y: alvo.abaixo ? -4 : 4, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.1 } }}
+                    transition={{ duration: 0.16, ease: [0.33, 1, 0.68, 1] }}
+                    style={{
+                      background: '#15151a', color: '#ffffff',
+                      borderRadius: 11, padding: '8px 12px', whiteSpace: 'nowrap',
+                      boxShadow: '0 10px 28px rgba(0,0,0,0.26)',
+                    }}>
+                    <span style={{ display: 'block', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: '#a0a0ac', fontFamily: MONO }}>
+                      {atual.d}
+                    </span>
+                    <span style={{
+                      display: 'block', fontSize: 14, fontWeight: 800, letterSpacing: '-0.02em', marginTop: 2,
+                      color: vAtual === 0 ? 'rgba(255,255,255,0.72)' : vAtual > 0 ? '#8fe06a' : '#ff8a7a',
+                    }}>
+                      {vAtual === 0 ? 'sem fechamento' : formata(vAtual)}
+                    </span>
+                  </motion.div>
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* sem isto o tom não quer dizer nada: o verde cheio é o melhor
+                dia DESTE período, não um valor fixo */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 11, color: 'var(--t4)' }}>menos</span>
+              {[0.18, 0.36, 0.54, 0.72, 0.88].map(o => (
+                <span key={o} style={{ width: 11, height: 11, borderRadius: 3, background: `rgba(63,155,30,${o})` }} />
+              ))}
+              <span style={{ fontSize: 11, color: 'var(--t4)' }}>mais · cheio = {formata(teto)}</span>
+            </div>
+          </>
         )}
     </BCard>
   )

@@ -28,14 +28,8 @@ const PRO_EMAILS = new Set([
 ])
 const isProEmail = email => PRO_EMAILS.has(String(email || '').toLowerCase())
 
-// Dia operacional: vira as 5h da manha (horario local/BRT). Um fechamento pertence
-// ao dia D se ocorreu em [D 05:00, D+1 05:00). Subtraindo 5h, a data calendario
-// resultante JA e o dia operacional. Retorna 'YYYY-MM-DD'.
-// Ex.: fechada 24/06 00:00 BRT -> -5h -> 23/06 -> conta no dia 23 (e nao 24).
-function opDayISO(d) {
-  const x = new Date(new Date(d).getTime() - 5 * 3600 * 1000)
-  return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`
-}
+// opDayISO mudou de casa pra lib/opday.js: o calendario de calor do
+// AdminBento precisava do MESMO criterio e estava usando UTC.
 
 // Janela da semana operacional: segunda 05:00 -> proxima segunda 04:59:59 (BRT).
 // end EXCLUSIVO (proxima segunda 05:00).
@@ -79,6 +73,7 @@ import OnboardingChecklist from '../../components/OnboardingChecklist'
 import ContaMaeCard from '../../components/ContaMaeCard'
 import OperatorLimitBanner from '../../components/OperatorLimitBanner'
 import { useConfirmar } from '../../components/v2/Confirmar'
+import { opDayISO } from '../../lib/opday'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const fmtDate = d => d?new Date(d).toLocaleString('pt-BR'):'—'
@@ -2793,7 +2788,7 @@ export default function AdminPage() {
                     if (heroPeriod === 'today') return 'Lucro de hoje'
                     if (heroPeriod === 'yesterday') return 'Lucro de ontem'
                     if (heroPeriod === '7d') return 'Lucro · ultimos 7 dias'
-                    return 'Lucro · ultimos 30 dias'
+                    return 'Lucro · últimos 30 dias'
                   })()}
                 </p>
                 {!redesign && (

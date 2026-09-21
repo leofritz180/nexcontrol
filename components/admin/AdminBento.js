@@ -14,6 +14,7 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor, Podio, Risco, Barras } from '../ui/bento'
+import { opDayISO, ultimosDiasOp } from '../../lib/opday'
 
 const RED = '#e5391f', RED2 = '#ff7a4d'
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
@@ -114,24 +115,22 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
   //    por dia, pra nao varrer as metas tres vezes. O dia usado e o do
   //    fechamento (fechada_em), com created_at de reserva — mesma regra que
   //    a curva da semana ja usava, entao os numeros continuam batendo.
+  // Agrupa pelo DIA OPERACIONAL (vira as 5h), o mesmo criterio do resto do
+  // painel. Antes era `toISOString().slice(0,10)`, que e UTC: o total de
+  // "hoje" no topo e o ultimo quadrado do calendario podiam discordar.
   const porDia = useMemo(() => {
     const mapa = new Map()
     for (const m of fechadas) {
-      const dia = String(m.fechada_em || m.created_at || '').slice(0, 10)
-      if (!dia) continue
+      const quando = m.fechada_em || m.created_at
+      if (!quando) continue
+      const dia = opDayISO(quando)
       mapa.set(dia, (mapa.get(dia) || 0) + Number(m.lucro_final || 0))
     }
     return mapa
   }, [fechadas])
 
   function ultimosDias(n) {
-    const saida = []
-    for (let i = n - 1; i >= 0; i--) {
-      const d = new Date(); d.setDate(d.getDate() - i)
-      const iso = d.toISOString().slice(0, 10)
-      saida.push({ d: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), iso, v: porDia.get(iso) || 0 })
-    }
-    return saida
+    return ultimosDiasOp(n).map(({ iso, rotulo }) => ({ d: rotulo, iso, v: porDia.get(iso) || 0 }))
   }
 
   const dias14 = useMemo(() => ultimosDias(14), [porDia])
@@ -447,7 +446,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         ) : (
           <Destaque rotulo="Destaque da equipe" titulo="Ainda sem ranking" valor="R$ 0" nota="assim que a equipe fechar metas, o destaque aparece" delay={0.3} />
         )}
-        <Calor rotulo="Os ultimos 30 dias" dias={dias30} delay={0.34} />
+        <Calor rotulo="Os últimos 30 dias" dias={dias30} delay={0.34} />
       </div>
 
       {/* LINHA 4b — podio da equipe */}

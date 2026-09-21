@@ -10,6 +10,7 @@ import { notifyRemessaCreated } from '../../../lib/notify'
 import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
 import { ContaMaeView } from '../../../components/ContaMaeCard'
 import MetaStepper from '../../../components/modules/MetaStepper'
+import { MetaHero, MetaKpis, MetaProgresso } from '../../../components/modules/MetaBento'
 import { isNex2 } from '../../../lib/theme-v2'
 import { SLOTS } from '../../../lib/slots-data'
 
@@ -893,6 +894,35 @@ export default function MetaPage() {
       </AnimatePresence>
 
       <div style={{ maxWidth:1380, margin:'0 auto', padding:'32px 28px' }}>
+        {/* V2: cabeçalho em bento. O bloco antigo continua logo abaixo,
+            intacto, para todas as outras contas. */}
+        {isNex2(user?.email) && meta && (() => {
+          const fechadaB = meta.status_fechamento === 'fechada'
+          const finalizadaB = meta.status === 'finalizada' && !fechadaB
+          const adminB = profile?.role === 'admin' || leaderAllowed
+          return (
+            <MetaHero
+              titulo={meta.titulo}
+              rede={meta.rede}
+              plataforma={meta.plataforma}
+              contas={meta.quantidade_contas}
+              observacoes={meta.observacoes}
+              remessas={remessas.length}
+              acerto={pctAcerto}
+              liquido={totais.liq}
+              statusRotulo={fechadaB ? 'Fechada' : finalizadaB ? 'Finalizada' : 'Ativa'}
+              statusCor={fechadaB ? 'var(--profit)' : finalizadaB ? 'var(--t1)' : 'var(--loss)'}
+              podeEditar={!fechadaB || adminB}
+              aoEditar={() => setShowEdit(true)}
+              podeAlternar={true}
+              rotuloAlternar={(finalizadaB || fechadaB) ? 'Reativar meta' : 'Finalizar meta'}
+              aoAlternar={toggleStatus}
+              aoVoltar={() => router.push(homePath)}
+            />
+          )
+        })()}
+
+        {!isNex2(user?.email) && (<>
         {/* Header — cabine de controle */}
         <div className="a1" style={{ marginBottom:24 }}>
           <button onClick={()=>router.push(homePath)} className="btn btn-ghost btn-sm" style={{ display:'inline-flex', alignItems:'center', gap:6, marginBottom:14 }}>
@@ -1009,6 +1039,7 @@ export default function MetaPage() {
             )
           })()}
         </div>
+        </>)}
 
         {/* ── Ciclo da meta: criada -> operando -> finalizada -> fechada ── */}
         {isNex2(user?.email) && meta && (
@@ -1103,6 +1134,16 @@ export default function MetaPage() {
           )
         })()}
 
+        {/* V2: indicadores na tira do kit; o grid antigo segue abaixo. */}
+        {isNex2(user?.email) && (
+          <MetaKpis
+            deposito={totais.d} saque={totais.s}
+            lucro={totais.lucro} prejuizo={totais.prej}
+            bau={totais.bau} mostrarBau={isApenasBauMeta}
+            liquido={totais.liq}
+          />
+        )}
+        {!isNex2(user?.email) && (<>
         {/* KPIs */}
         <div className="g-5" style={{ display:'grid', gridTemplateColumns:`repeat(${isApenasBauMeta ? 6 : 5},1fr)`, gap:14, marginBottom:28 }}>
           <KPI label="Deposito total"    value={`R$ ${fmt(totais.d)}`}   color="var(--t1)" accent="rgba(255,255,255,0.78)"/>
@@ -1145,6 +1186,7 @@ export default function MetaPage() {
             </p>
           </motion.div>
         </div>
+        </>)}
 
         {/* Insights + Previsao + Score */}
         {remessas.length >= 2 && (() => {
@@ -1377,6 +1419,24 @@ export default function MetaPage() {
           )
         })()}
 
+        {/* V2: o progresso vira arco. Mesma conta de antes (contas_remessa
+            somadas contra quantidade_contas) — so a forma muda. */}
+        {isNex2(user?.email) && meta && (() => {
+          const alvoA = Number(meta.quantidade_contas || 0)
+          const feitasA = remessas.reduce((sum, r) => sum + Number(r.contas_remessa || 0), 0)
+          if (alvoA <= 0) return null
+          const pctA = Math.min(Math.round((feitasA / alvoA) * 100), 100)
+          return (
+            <MetaProgresso
+              pct={pctA}
+              feitas={feitasA}
+              alvo={alvoA}
+              restantes={Math.max(0, alvoA - feitasA)}
+            />
+          )
+        })()}
+
+        {!isNex2(user?.email) && (<>
         {/* Progress bar — premium */}
         {meta && (() => {
           const target = Number(meta.quantidade_contas || 0)
@@ -1486,6 +1546,7 @@ export default function MetaPage() {
             </motion.div>
           ) : null
         })()}
+        </>)}
 
         <div style={{ display:'flex', flexDirection:'column', gap:22 }}>
           {/* ══ REGISTRAR REMESSA ══ (escondido p/ líder gerenciando meta de operador) */}

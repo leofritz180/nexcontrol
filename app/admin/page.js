@@ -2073,6 +2073,10 @@ export default function AdminPage() {
                 {/* Reveal animado a cada entrada na aba 'Minha operacao'.
                     O componente so monta quando tab==='myops', entao a cada
                     troca de tab pra ca dispara a animacao. */}
+                {/* V2: desligado por enquanto. "Nova meta" na Visao Geral troca pra
+                    esta aba e abre o formulario 300ms depois; o reveal montava junto
+                    e quebrava o pop-up. Fora do V2 segue igual. */}
+                {!isNex2(user?.email) && (
                 <RankReveal
                   userId={user?.id}
                   contas={myDeps}
@@ -2081,6 +2085,7 @@ export default function AdminPage() {
                   mode="everyVisit"
                   forceApex={apexLocked}
                 />
+                )}
 
                 {/* ░░ MYOPS V2 — hero premium (somente leofritz178) ░░ */}
                 {isNex2(user?.email) ? (

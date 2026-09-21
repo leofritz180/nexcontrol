@@ -134,10 +134,14 @@ const focarPeloPai = (ref) => (e) => {
 // Input de texto. `aoMudar` recebe a STRING já pronta (não o event), porque
 // 99% das telas fazem setX(e.target.value) e isso só gera ruído.
 // `icone` recebe os <path>/<circle> do Ico (mesmo padrão do AcaoBtn do bento).
+// `autoComplete` e `minLength` são repasses diretos pro <input>: o /login e o
+// /signup dependem deles (gerenciador de senha do navegador e o mínimo de 6
+// caracteres da senha). Opcionais — quem não passa não muda em nada.
 export function Campo({
   rotulo, valor, aoMudar, placeholder, icone, sufixo, erro, ajuda,
   tipo = 'text', desabilitado = false, obrigatorio = false, inputMode,
   autoFoco = false, id, nome, mono = false, aoTeclar, aoDesfocar, style,
+  autoComplete, minLength,
 }) {
   const semMovimento = useReducedMotion()
   const [foco, setFoco] = useState(false)
@@ -162,6 +166,7 @@ export function Campo({
           ref={ref} id={idCampo} name={nome} type={tipoReal} inputMode={modoReal}
           value={valor ?? ''} placeholder={placeholder} disabled={desabilitado}
           autoFocus={autoFoco} required={obrigatorio}
+          autoComplete={autoComplete} minLength={minLength}
           aria-invalid={!!erro || undefined}
           onChange={(e) => aoMudar && aoMudar(e.target.value, e)}
           onKeyDown={aoTeclar}

@@ -4,7 +4,7 @@ Uma caixa só: **44px de altura, raio 14, `var(--input)` + borda `var(--b2)`**; 
 
 | Bloco | Props |
 |---|---|
-| `<Campo>` | `rotulo valor aoMudar placeholder icone sufixo erro ajuda tipo desabilitado obrigatorio inputMode autoFoco` (+ `id nome mono aoTeclar aoDesfocar style`) |
+| `<Campo>` | `rotulo valor aoMudar placeholder icone sufixo erro ajuda tipo desabilitado obrigatorio inputMode autoFoco` (+ `id nome mono aoTeclar aoDesfocar style autoComplete minLength`) |
 | `<CampoMoeda>` | igual, com `R$` fixo e valor em mono; sempre `type="text" inputMode="decimal"` |
 | `<Selecao>` | `rotulo valor aoMudar opcoes:[{v,l}] placeholder icone erro ajuda desabilitado obrigatorio` |
 | `<Area>` | `rotulo valor aoMudar placeholder erro ajuda alturaMin(96) desabilitado obrigatorio` |

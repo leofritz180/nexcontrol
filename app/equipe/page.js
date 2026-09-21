@@ -7,6 +7,9 @@ import AppLayout from '../../components/AppLayout'
 import { validClosedMetas } from '../../lib/operator-stats'
 import RankBadge from '../../components/rank/RankBadge'
 import MetaDetailModal from '../../components/MetaDetailModal'
+import EquipeBento, { NovaMetaFolha, NovoCustoFolha } from '../../components/modules/EquipeBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
+import { isNex2 } from '../../lib/theme-v2'
 
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
 const REDES = ['WE','W1','VOY','91','DZ','A8','OKOK','ANJO','XW','EK','DY','777','888','WP','BRA','GAME','ALFA','KK','MK','M9','KF','PU','COROA','MANGA','AA','FP']
@@ -257,6 +260,46 @@ export default function EquipePage() {
     await load(profile?.id)
   }
 
+  // ── Envio dos modais do V2 ──────────────────────────────────────────
+  // Os modais em Folha só coletam texto; a chamada continua aqui, com a
+  // MESMA rota e o MESMO corpo do modal antigo (inclusive os três campos de
+  // conta-mãe, que nunca tiveram input e sempre foram enviados vazios).
+  async function criarMetaEquipe(dados) {
+    try {
+      const res = await fetch('/api/team/create-meta', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leader_id: profile?.id, operator_id: dados.operator_id,
+          titulo: dados.titulo, plataforma: dados.plataforma, rede: dados.rede,
+          quantidade_contas: dados.quantidade_contas, observacoes: dados.observacoes,
+          conta_link: '', conta_login: '', conta_senha: '',
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) return { ok: false, error: json.error || 'Erro ao criar' }
+      setShowCreate(false)
+      if (json.meta?.id) router.push(`/meta/${json.meta.id}`)
+      return { ok: true }
+    } catch (e) { return { ok: false, error: e.message } }
+  }
+
+  async function salvarCustoEquipe(dados) {
+    // parseVal é o mesmo de sempre — o valor gravado não muda de fórmula.
+    const amt = parseVal(dados.amount)
+    if (!amt || amt <= 0) return { ok: false, error: 'Informe um valor válido', campo: 'valor' }
+    try {
+      const res = await fetch('/api/team/cost', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leader_id: profile?.id, action: 'add', type: dados.type, amount: amt, date: dados.date, note: dados.note }),
+      })
+      const json = await res.json()
+      if (!res.ok) return { ok: false, error: json.error || 'Erro ao salvar' }
+      setShowCost(false)
+      await load(profile?.id)
+      return { ok: true }
+    } catch (e) { return { ok: false, error: e.message } }
+  }
+
   async function deleteCost(costId) {
     try {
       await fetch('/api/team/cost', {
@@ -301,6 +344,15 @@ export default function EquipePage() {
   const filteredMetas = metaStatus === 'ativa' ? metasAtivas : metaStatus === 'finalizada' ? metasFinalizadas : metasFechadas
 
   if (loading || !profile) {
+    // No V2 o esqueleto tem a forma dos cards, então o layout não pula
+    // quando os dados chegam. Fora dele, segue o spinner de sempre.
+    if (isNex2(user?.email)) {
+      return (
+        <div style={{ minHeight: '100vh', background: 'var(--surface)' }}>
+          <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
+        </div>
+      )
+    }
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
@@ -323,6 +375,39 @@ export default function EquipePage() {
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={false} userId={user?.id} tenantId={profile?.tenant_id}>
+
+      {/* V2: o mesmo painel em bento. Fora do V2, o bloco antigo segue
+          exatamente como estava — mesmos números, mesmos handlers. */}
+      {isNex2(user?.email) ? (
+        <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
+          <EquipeBento
+            equipe={team}
+            operadores={operators}
+            ranking={ranking}
+            metasAbertas={openMetas}
+            metasAtivas={metasAtivas}
+            metasFinalizadas={metasFinalizadas}
+            metasFechadas={metasFechadas}
+            metasFiltradas={filteredMetas}
+            statusMeta={metaStatus}
+            aoTrocarStatus={setMetaStatus}
+            custos={costs.map(c => ({
+              ...c,
+              rotulo: costLabel(c.type),
+              dataBR: c.date ? new Date(c.date + 'T00:00:00').toLocaleDateString('pt-BR') : '',
+            }))}
+            custosTotal={custosTotal}
+            lucroBruto={lucroBruto}
+            lucroLiquido={teamLucro}
+            depositantes={teamDeps}
+            negado={denied}
+            aoNovaMeta={() => setShowCreate(true)}
+            aoNovoCusto={() => setShowCost(true)}
+            aoRemoverCusto={deleteCost}
+            aoAbrirMeta={openDetail}
+          />
+        </div>
+      ) : (
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
 
         {/* Header */}
@@ -504,23 +589,42 @@ export default function EquipePage() {
         </motion.div>
 
       </div>
+      )}
 
       <AnimatePresence>
-        {showCreate && (
+        {/* V2: os dois formulários na Folha (mesma base de todo modal novo).
+            Mesma validação e mesma rota; o modal antigo segue no outro ramo. */}
+        {showCreate && (isNex2(user?.email) ? (
+          <NovaMetaFolha
+            aberto={showCreate}
+            aoFechar={() => setShowCreate(false)}
+            aoEnviar={criarMetaEquipe}
+            liderId={profile?.id}
+            operadores={operators}
+            redes={REDES}
+          />
+        ) : (
           <CreateMetaModal
             leaderId={profile?.id}
             operators={operators}
             onClose={() => setShowCreate(false)}
             onCreated={(meta) => { setShowCreate(false); if (meta?.id) router.push(`/meta/${meta.id}`) }}
           />
-        )}
-        {showCost && (
+        ))}
+        {showCost && (isNex2(user?.email) ? (
+          <NovoCustoFolha
+            aberto={showCost}
+            aoFechar={() => setShowCost(false)}
+            aoEnviar={salvarCustoEquipe}
+            tipos={COST_TYPES}
+          />
+        ) : (
           <CostModal
             leaderId={profile?.id}
             onClose={() => setShowCost(false)}
             onSaved={async () => { setShowCost(false); await load(profile?.id) }}
           />
-        )}
+        ))}
         {detailMeta && (
           <MetaDetailModal
             meta={detailData?.meta || detailMeta}

@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Rosca, FATIAS, NumeroTexto } from '../ui/bento'
+import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor } from '../ui/bento'
 
 const RED = '#e5391f', RED2 = '#ff7a4d'
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
@@ -109,6 +109,54 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
   const pts = serie.map((s, i) => [(i * W) / 6, yDe(s.v)])
   const yZero = yDe(0)
   const temNegativo = lo < 0
+
+  // ── Lucro por dia: a base de varios cards novos. Uma passada so, indexada
+  //    por dia, pra nao varrer as metas tres vezes. O dia usado e o do
+  //    fechamento (fechada_em), com created_at de reserva — mesma regra que
+  //    a curva da semana ja usava, entao os numeros continuam batendo.
+  const porDia = useMemo(() => {
+    const mapa = new Map()
+    for (const m of fechadas) {
+      const dia = String(m.fechada_em || m.created_at || '').slice(0, 10)
+      if (!dia) continue
+      mapa.set(dia, (mapa.get(dia) || 0) + Number(m.lucro_final || 0))
+    }
+    return mapa
+  }, [fechadas])
+
+  function ultimosDias(n) {
+    const saida = []
+    for (let i = n - 1; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i)
+      const iso = d.toISOString().slice(0, 10)
+      saida.push({ d: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), iso, v: porDia.get(iso) || 0 })
+    }
+    return saida
+  }
+
+  const dias14 = useMemo(() => ultimosDias(14), [porDia])
+  const dias30 = useMemo(() => ultimosDias(30), [porDia])
+  const dias10 = useMemo(() => ultimosDias(10), [porDia])
+
+  // mes corrente contra o anterior, pelo mesmo criterio de data
+  const { mesAtual, mesPassado } = useMemo(() => {
+    const agora = new Date()
+    const chaveAtual = agora.toISOString().slice(0, 7)
+    const ant = new Date(agora.getFullYear(), agora.getMonth() - 1, 1)
+    const chaveAnt = ant.toISOString().slice(0, 7)
+    let a = 0, b = 0
+    for (const [dia, v] of porDia) {
+      if (dia.slice(0, 7) === chaveAtual) a += v
+      else if (dia.slice(0, 7) === chaveAnt) b += v
+    }
+    return { mesAtual: a, mesPassado: b }
+  }, [porDia])
+
+  // melhor operador dos ultimos 7 dias, pelo ranking que a pagina ja monta
+  const melhorOp = useMemo(() => {
+    const ord = [...ranking].sort((x, y) => Number(y.lucroFinal || 0) - Number(x.lucroFinal || 0))
+    return ord[0] || null
+  }, [ranking])
 
   // ── Roscas: onde o lucro se concentra e como as metas estao divididas ──
   const porRede = useMemo(() => {
@@ -269,7 +317,31 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         </motion.div>
       </div>
 
-      {/* LINHA 2 — curva + depositado/sacado */}
+      {/* LINHA 2 — leitura rapida: tendencia, comparacao e constancia */}
+      <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+        <Sparkline
+          rotulo="Ultimos 14 dias"
+          valor={money0(dias14.reduce((a, d) => a + d.v, 0))}
+          serie={dias14.map(d => d.v)}
+          nota="lucro das metas fechadas no periodo"
+          delay={0.18}
+        />
+        <Comparativo
+          rotulo="Este mes"
+          valor={money0(mesAtual)}
+          anterior={mesPassado}
+          rotuloAnterior="mes passado"
+          delay={0.22}
+        />
+        <Sequencia
+          rotulo="Constancia"
+          dias={dias10.map(d => d.v > 0)}
+          nota="dias com meta fechada no positivo, nos ultimos 10"
+          delay={0.26}
+        />
+      </div>
+
+      {/* LINHA 3 — curva + depositado/sacado */}
       <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '2.1fr 1fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.22 }}>
           <Card pad={24}>
@@ -328,7 +400,25 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         </motion.div>
       </div>
 
-      {/* LINHA 3 — roscas: concentracao de lucro e situacao das metas */}
+      {/* LINHA 4 — quem puxou o resultado e o mes dia a dia */}
+      <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 14 }}>
+        {melhorOp ? (
+          <Destaque
+            rotulo="Destaque da equipe"
+            titulo={melhorOp.nome || melhorOp.email?.split('@')[0] || 'Operador'}
+            valor={money0(melhorOp.lucroFinal)}
+            avatar={String(melhorOp.nome || melhorOp.email || '?').slice(0, 2).toUpperCase()}
+            nota={`${int(melhorOp.closedCount || 0)} metas fechadas · ${int(melhorOp.totalDepositantes || melhorOp.totalDeposit || 0)} depositantes`}
+            onClick={onVerMetas}
+            delay={0.3}
+          />
+        ) : (
+          <Destaque rotulo="Destaque da equipe" titulo="Ainda sem ranking" valor="R$ 0" nota="assim que a equipe fechar metas, o destaque aparece" delay={0.3} />
+        )}
+        <Calor rotulo="Os ultimos 30 dias" dias={dias30} delay={0.34} />
+      </div>
+
+      {/* LINHA 5 — roscas: concentracao de lucro e situacao das metas */}
       <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.3 }}>
           <Card pad={24}>
@@ -346,7 +436,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         </motion.div>
       </div>
 
-      {/* LINHA 4 — metas + ranking */}
+      {/* LINHA 6 — metas + ranking */}
       <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '2.1fr 1fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.34 }}>
           <Card pad={24}>

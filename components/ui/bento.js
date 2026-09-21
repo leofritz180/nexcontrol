@@ -492,3 +492,234 @@ export function Tilt({ children, grau = 2.5, brilho = true, style, ...resto }) {
     </motion.div>
   )
 }
+
+// ═════════════════════════════════════════════════════════════════════════
+// CARDS DA 2.0 — os blocos que faltavam pro painel parecer vivo.
+// Todos puramente visuais: recebem número pronto, não calculam nada.
+// ═════════════════════════════════════════════════════════════════════════
+
+// ── SPARKLINE ────────────────────────────────────────────────────────────
+// KPI com a mini-curva dos últimos dias desenhada ATRÁS do número. Dá
+// contexto sem ocupar espaço: o usuário vê o valor e a tendência de uma vez.
+function caminhoSuave(pts) {
+  if (pts.length < 2) return ''
+  let d = `M${pts[0][0]},${pts[0][1]}`
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i], [x1, y1] = pts[i + 1]
+    const cx = (x0 + x1) / 2
+    d += ` C${cx},${y0} ${cx},${y1} ${x1},${y1}`
+  }
+  return d
+}
+
+export function Sparkline({ rotulo, valor, serie = [], cor = RED, nota, delay = 0.06, altura = 150 }) {
+  const id = 'sp' + String(rotulo).replace(/\W/g, '')
+  const W = 260, H = 64
+  const vals = serie.length ? serie.map(Number) : [0]
+  const alto = Math.max(...vals), baixo = Math.min(...vals, 0)
+  const faixa = (alto - baixo) || 1
+  const pts = vals.map((v, i) => [
+    vals.length > 1 ? (i * W) / (vals.length - 1) : 0,
+    H - ((v - baixo) / faixa) * (H - 8) - 4,
+  ])
+  const d = caminhoSuave(pts)
+
+  return (
+    <BCard pad={22} delay={delay} style={{ minHeight: altura }}>
+      {d && (
+        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden
+          style={{ position: 'absolute', left: 0, right: 0, bottom: 0, width: '100%', height: '46%', pointerEvents: 'none' }}>
+          <defs>
+            <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={cor} stopOpacity="0.20" />
+              <stop offset="100%" stopColor={cor} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <motion.path d={`${d} L${W},${H} L0,${H} Z`} fill={`url(#${id})`}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: delay + 0.3 }} />
+          <motion.path d={d} fill="none" stroke={cor} strokeWidth="2.5" strokeLinecap="round" vectorEffect="non-scaling-stroke"
+            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+            transition={{ duration: 1.1, delay: delay + 0.15, ease: [0.33, 1, 0.68, 1] }} />
+        </svg>
+      )}
+      <Eyebrow>{rotulo}</Eyebrow>
+      <NumeroTexto delay={delay + 0.1} style={{ ...TIPO.numero, color: 'var(--t1)', display: 'block', marginTop: 14 }}>{valor}</NumeroTexto>
+      {nota && <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '4px 0 0' }}>{nota}</p>}
+    </BCard>
+  )
+}
+
+// ── COMPARATIVO ──────────────────────────────────────────────────────────
+// Valor de agora contra o de antes, com a seta girando na entrada. O delta
+// é calculado aqui só pra exibição; quem manda são os dois números recebidos.
+export function Comparativo({ rotulo, valor, anterior, rotuloAnterior = 'período anterior', inverter = false, delay = 0.08 }) {
+  const a = Number(anterior) || 0
+  const b = Number(String(valor).replace(/[^\d,-]/g, '').replace(',', '.')) || 0
+  const temBase = a !== 0
+  const pct = temBase ? ((b - a) / Math.abs(a)) * 100 : null
+  const subiu = pct != null && pct >= 0
+  // inverter serve pra métricas onde cair é bom (custo, prejuízo)
+  const bom = inverter ? !subiu : subiu
+  const cor = pct == null ? 'var(--t3)' : bom ? 'var(--profit)' : 'var(--loss)'
+  const fundo = pct == null ? 'var(--fill-1)' : bom ? 'var(--profit-dim)' : 'var(--loss-dim)'
+
+  return (
+    <BCard pad={22} delay={delay}>
+      <Eyebrow>{rotulo}</Eyebrow>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap', marginTop: 12 }}>
+        <NumeroTexto delay={delay + 0.1} style={{ ...TIPO.numero, color: 'var(--t1)' }}>{valor}</NumeroTexto>
+        {pct != null && (
+          <motion.span
+            initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: delay + 0.45, ease: [0.33, 1, 0.68, 1] }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 20,
+              background: fundo, color: cor, fontSize: 11.5, fontWeight: 800, fontFamily: MONO,
+            }}>
+            <motion.span
+              initial={{ rotate: subiu ? 90 : -90 }} animate={{ rotate: 0 }}
+              transition={{ duration: 0.5, delay: delay + 0.5, ease: [0.33, 1, 0.68, 1] }}
+              style={{ display: 'inline-flex' }}>
+              <Ico d={subiu ? <path d="M7 17L17 7M9 7h8v8" /> : <path d="M7 7l10 10M17 9v8H9" />} s={13} c={cor} />
+            </motion.span>
+            {Math.abs(pct).toFixed(1).replace('.', ',')}%
+          </motion.span>
+        )}
+      </div>
+      <p style={{ fontSize: 12, color: 'var(--t4)', margin: '8px 0 0' }}>
+        {temBase ? `contra ${money0(a)} no ${rotuloAnterior}` : `sem base de comparação no ${rotuloAnterior}`}
+      </p>
+    </BCard>
+  )
+}
+
+// ── ARCO ─────────────────────────────────────────────────────────────────
+// Meia-rosca com ponteiro. Irmão do Rosca, pra quando há UMA meta e um
+// progresso, não uma divisão entre partes.
+export function Arco({ rotulo, pct = 0, centro, nota, cor = RED, delay = 0.1, tamanho = 190 }) {
+  const p = Math.max(0, Math.min(100, Number(pct) || 0))
+  const r = tamanho / 2 - 14
+  const meia = Math.PI * r
+  const id = 'ar' + String(rotulo).replace(/\W/g, '')
+  return (
+    <BCard pad={24} delay={delay}>
+      <Eyebrow>{rotulo}</Eyebrow>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 8 }}>
+        <div style={{ position: 'relative', width: tamanho, height: tamanho / 2 + 10 }}>
+          <svg width={tamanho} height={tamanho / 2 + 10} viewBox={`0 0 ${tamanho} ${tamanho / 2 + 10}`}>
+            <defs>
+              <linearGradient id={id} x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor={RED2} /><stop offset="100%" stopColor={cor} />
+              </linearGradient>
+            </defs>
+            <path d={`M14,${tamanho / 2} A${r},${r} 0 0 1 ${tamanho - 14},${tamanho / 2}`}
+              fill="none" stroke="var(--fill-2)" strokeWidth="14" strokeLinecap="round" />
+            <motion.path d={`M14,${tamanho / 2} A${r},${r} 0 0 1 ${tamanho - 14},${tamanho / 2}`}
+              fill="none" stroke={`url(#${id})`} strokeWidth="14" strokeLinecap="round"
+              strokeDasharray={meia}
+              initial={{ strokeDashoffset: meia }}
+              animate={{ strokeDashoffset: meia * (1 - p / 100) }}
+              transition={{ duration: 1.2, delay: delay + 0.15, ease: [0.33, 1, 0.68, 1] }} />
+          </svg>
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 4, textAlign: 'center' }}>
+            <NumeroTexto delay={delay + 0.3} style={{ fontFamily: MONO, fontSize: 30, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.035em' }}>{centro}</NumeroTexto>
+          </div>
+        </div>
+        {nota && <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '10px 0 0', textAlign: 'center' }}>{nota}</p>}
+      </div>
+    </BCard>
+  )
+}
+
+// ── SEQUÊNCIA ────────────────────────────────────────────────────────────
+// "7 dias seguidos no lucro": os dias como bolinhas que acendem em cascata.
+export function Sequencia({ rotulo, dias = [], nota, delay = 0.12 }) {
+  const seguidos = (() => { let n = 0; for (let i = dias.length - 1; i >= 0; i--) { if (dias[i]) n++; else break } return n })()
+  return (
+    <BCard pad={22} delay={delay}>
+      <Eyebrow>{rotulo}</Eyebrow>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, margin: '12px 0 16px' }}>
+        <NumeroTexto delay={delay + 0.1} style={{ ...TIPO.numero, color: 'var(--t1)' }}>{String(seguidos)}</NumeroTexto>
+        <span style={{ fontSize: 13, color: 'var(--t3)', fontWeight: 600 }}>dia{seguidos === 1 ? '' : 's'} seguidos</span>
+      </div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {dias.map((ok, i) => (
+          <motion.span key={i}
+            initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.34, delay: delay + 0.2 + i * 0.045, ease: [0.33, 1, 0.68, 1] }}
+            style={{
+              width: 13, height: 13, borderRadius: '50%',
+              background: ok ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--fill-2)',
+              boxShadow: ok ? '0 2px 6px rgba(229,57,31,0.28)' : 'none',
+            }} />
+        ))}
+      </div>
+      {nota && <p style={{ fontSize: 12, color: 'var(--t4)', margin: '14px 0 0' }}>{nota}</p>}
+    </BCard>
+  )
+}
+
+// ── DESTAQUE ─────────────────────────────────────────────────────────────
+// Card grande com blob, uma frase e um número. Serve pra "melhor operador da
+// semana", "rede que mais cresceu" — o card que conta uma história.
+export function Destaque({ rotulo, titulo, valor, nota, avatar, blob = [RED2, RED], delay = 0.14, onClick }) {
+  return (
+    <BCard pad="26px 28px" blob={blob} delay={delay} onClick={onClick}>
+      <Eyebrow>{rotulo}</Eyebrow>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 14, flexWrap: 'wrap' }}>
+        {avatar && (
+          <motion.span
+            initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, delay: delay + 0.1, ease: [0.33, 1, 0.68, 1] }}
+            style={{
+              width: 52, height: 52, borderRadius: 18, flexShrink: 0,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: '#fff',
+              fontFamily: MONO, fontSize: 18, fontWeight: 900,
+              boxShadow: '0 8px 22px rgba(229,57,31,0.3)',
+            }}>{avatar}</motion.span>
+        )}
+        <div style={{ minWidth: 0 }}>
+          <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>{titulo}</p>
+          <NumeroTexto delay={delay + 0.2} style={{ fontFamily: MONO, fontSize: 24, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.03em', display: 'block', marginTop: 4 }}>{valor}</NumeroTexto>
+        </div>
+      </div>
+      {nota && <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '14px 0 0' }}>{nota}</p>}
+    </BCard>
+  )
+}
+
+// ── CALENDÁRIO DE CALOR ──────────────────────────────────────────────────
+// 30 dias em quadradinhos, tom por resultado. Mostra o mês inteiro num
+// espaço onde não caberia um gráfico.
+export function Calor({ rotulo, dias = [], formata = money0, delay = 0.16 }) {
+  const vals = dias.map(d => Number(d.v) || 0)
+  const teto = Math.max(1, ...vals.map(Math.abs))
+  return (
+    <BCard pad={24} delay={delay}>
+      <p style={{ ...TIPO.secao, color: 'var(--t1)', margin: '0 0 3px' }}>{rotulo}</p>
+      <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 18px' }}>cada quadrado é um dia · passe o mouse pra ver</p>
+      {dias.length === 0
+        ? <Vazio titulo="Sem movimento no período" icone={<><rect x="3" y="4" width="18" height="18" rx="3" /><path d="M16 2v4M8 2v4M3 10h18" /></>} />
+        : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(26px, 1fr))', gap: 6 }}>
+            {dias.map((d, i) => {
+              const v = Number(d.v) || 0
+              const f = Math.min(1, Math.abs(v) / teto)
+              const cor = v === 0 ? 'var(--fill-2)'
+                : v > 0 ? `rgba(63,155,30,${0.18 + f * 0.7})`
+                  : `rgba(220,38,38,${0.18 + f * 0.7})`
+              return (
+                <motion.span key={d.d || i}
+                  title={`${d.d || ''} · ${formata(v)}`}
+                  initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: delay + i * 0.012 }}
+                  whileHover={{ scale: 1.18 }}
+                  style={{ aspectRatio: '1', borderRadius: 7, background: cor, cursor: 'default' }} />
+              )
+            })}
+          </div>
+        )}
+    </BCard>
+  )
+}

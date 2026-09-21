@@ -192,8 +192,14 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
           <span style={{ display:'flex', alignItems:'center', gap:10 }}>
             <img className="nx-logo-mark" src="/brand/nex-mark.png" alt="NexControl" width={38} height={38}
               style={{ width:38, height:38, objectFit:'contain', flexShrink:0 }} />
-            <img className="nx-logo-full" src="/brand/nex-full-light.png" alt="NexControl"
-              style={{ width:190, height:'auto', maxWidth:'100%', objectFit:'contain', flexShrink:0, display:'none' }} />
+            <span className="nx-logo-full" style={{ display:'none', alignItems:'center', gap:13 }}>
+              <img src="/brand/nex-mark.png" alt="" width={46} height={46}
+                style={{ width:46, height:46, objectFit:'contain', flexShrink:0 }} />
+              <span style={{ display:'flex', flexDirection:'column', lineHeight:1 }}>
+                <span style={{ fontSize:27, fontWeight:800, letterSpacing:'0.01em', color:'#fff' }}>NEX</span>
+                <span style={{ fontSize:9.5, fontWeight:500, letterSpacing:'0.44em', color:'rgba(255,255,255,0.58)', marginTop:4 }}>CONTROL</span>
+              </span>
+            </span>
           </span>
         ) : <Logo size={0.875} style={{ gap:10 }}/>}
       </Link>

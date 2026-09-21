@@ -1933,3 +1933,12 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   /* movimento premium: o item desliza pra direita ao ser selecionado */
   .nx-bento .sb-rd nav a { transition: background .24s cubic-bezier(.33,1,.68,1), color .2s ease, padding .24s cubic-bezier(.33,1,.68,1), margin .24s cubic-bezier(.33,1,.68,1) !important; }
 }
+
+/* ── V2 · LOGO expandida: marca PNG + escrita em texto (nitida em qualquer tamanho) ── */
+@media (min-width: 769px) {
+  .nx-bento .sb-rd:hover .nx-logo-full { display: flex !important; }
+  .nx-bento .sb-rd .nx-logo-full img { filter: drop-shadow(0 0 12px rgba(196,240,66,0.30)); }
+}
+@media (max-width: 768px) {
+  .nx-bento .nx-logo-full { display: flex !important; }
+}

@@ -60,6 +60,7 @@ import DailyGoalCard from '../../components/DailyGoalCard'
 import PrimeirosPassos from '../../components/PrimeirosPassos'
 import AdminBento from '../../components/admin/AdminBento'
 import MyOpsBento from '../../components/admin/MyOpsBento'
+import NovaOperacaoV2 from '../../components/modules/NovaOperacaoV2'
 import { isNex2 } from '../../lib/theme-v2'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
@@ -2207,7 +2208,35 @@ export default function AdminPage() {
 
                 {/* Modal Modo Operacao Admin */}
                 <AnimatePresence>
-                {myShowForm && (
+                {/* V2: criacao em tres passos. Mesmo estado, mesmo createMyMeta,
+                    mesma regra de habilitacao; o modal antigo segue no outro ramo. */}
+                {myShowForm && (isNex2(user?.email) ? (
+                  <NovaOperacaoV2
+                    aberto={myShowForm} aoFechar={() => setMyShowForm(false)} aoCriar={createMyMeta}
+                    salvando={mySaving} podeCriar={!(mySaving||!myTitulo.trim()||!myPlat.trim()||!myRede)} papel="admin"
+                    plataforma={myPlat} setPlataforma={setMyPlat} titulo={myTitulo} setTitulo={setMyTitulo}
+                    rede={myRede} setRede={setMyRede} contas={myContas} setContas={setMyContas}
+                    modelo={myOpModel} setModelo={setMyOpModel}
+                    link={myLink} setLink={setMyLink} login={myLogin} setLogin={setMyLogin}
+                    senha={mySenha} setSenha={setMySenha} mostrarSenha={myMostrarSenha} setMostrarSenha={setMyMostrarSenha}
+                    redes={REDES} multiRede={MULTI_REDE}
+                    dicas={(() => {
+                      // as mesmas contas do bloco "Insights da sua operacao" do modal antigo
+                      const tips = []
+                      const fechadas = myMetas.filter(m=>m.status_fechamento==='fechada')
+                      const totalContas = fechadas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
+                      const totalLucro = fechadas.reduce((a,m)=>a+Number(m.lucro_final||0),0)
+                      if (fechadas.length > 0 && totalContas > 0) {
+                        const avg = totalLucro / totalContas
+                        tips.push({ t: `Media geral: R$ ${fmt(Math.abs(avg))}/conta ${avg>=0?'(lucro)':'(prejuizo)'}`, tom: avg>=0?'bom':'ruim' })
+                      }
+                      if (fechadas.length > 0) tips.push({ t: `${fechadas.length} meta${fechadas.length>1?'s':''} fechada${fechadas.length>1?'s':''} · ${totalContas} depositantes processados`, tom: 'neutro' })
+                      const lastMeta = myMetas[0]
+                      if (lastMeta && lastMeta.rede) tips.push({ t: `Ultima rede operada: ${lastMeta.rede}`, tom: 'neutro' })
+                      return tips
+                    })()}
+                  />
+                ) : (
                   <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
@@ -2482,7 +2511,7 @@ export default function AdminPage() {
                     </form>
                   </motion.div>
                   </motion.div>
-                )}
+                ))}
                 </AnimatePresence>
 
                 {/* ░░ MYOPS V2 — operações + insights + timeline (somente leofritz178) ░░ */}

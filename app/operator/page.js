@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import OperatorBento from '../../components/modules/OperatorBento'
+import NovaOperacaoV2 from '../../components/modules/NovaOperacaoV2'
 import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
@@ -955,7 +956,43 @@ export default function OperatorPage() {
 
           {/* ── MODO OPERACAO — Modal fullscreen (always rendered, outside demo conditional) ── */}
           <AnimatePresence>
-            {showForm && (
+            {/* V2: criacao em tres passos. Mesmo estado, mesmo handleCreate,
+                mesma regra de habilitacao; o modal antigo segue no outro ramo. */}
+            {showForm && (isNex2(user?.email) ? (
+              <NovaOperacaoV2
+                aberto={showForm} aoFechar={() => setShowForm(false)} aoCriar={handleCreate}
+                salvando={saving} podeCriar={!(saving || !titulo.trim() || !plataforma.trim() || !rede)} papel="operador"
+                plataforma={plataforma} setPlataforma={setPlataforma} titulo={titulo} setTitulo={setTitulo}
+                rede={rede} setRede={setRede} contas={contas} setContas={setContas} obs={obs} setObs={setObs}
+                link={linkConta} setLink={setLinkConta} login={loginConta} setLogin={setLoginConta}
+                senha={senhaConta} setSenha={setSenhaConta} mostrarSenha={mostrarSenha} setMostrarSenha={setMostrarSenha}
+                redes={REDES} multiRede={MULTI_REDE}
+                dicas={[
+                  { t: 'De R$ 5 a R$ 10 por conta: normal de acontecer', tom: 'neutro' },
+                  { t: 'De R$ 10 a R$ 14 por conta: comeca a comprometer', tom: 'neutro' },
+                  { t: 'Acima de R$ 14 por conta: resultado ruim, atencao', tom: 'ruim' },
+                ]}
+                alertas={(() => {
+                  // as mesmas contas do bloco "Alertas do historico" do modal antigo
+                  const closed = metas.filter(m => m.status_fechamento === 'fechada')
+                  if (closed.length === 0) return []
+                  const alerts = []
+                  const lastMeta = closed[0]
+                  const lastRems = remessas.filter(r => r.meta_id === lastMeta?.id)
+                  let negStreak = 0
+                  for (let i = lastRems.length - 1; i >= 0; i--) {
+                    if (Number(lastRems[i]?.resultado || 0) < 0) negStreak++; else break
+                  }
+                  if (negStreak >= 2) alerts.push(`Ultima meta teve ${negStreak} remessas negativas seguidas`)
+                  const totalContas = closed.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+                  const totalRems = remessas.filter(r => closed.some(m => m.id === r.meta_id))
+                  const totalPrej = totalRems.reduce((a, r) => a + Number(r.prejuizo || 0), 0)
+                  const avgPrejPerConta = totalContas > 0 ? totalPrej / totalContas : 0
+                  if (avgPrejPerConta > 8) alerts.push(`Prejuizo medio acima do ideal: R$ ${fmt(avgPrejPerConta)}/conta`)
+                  return alerts
+                })()}
+              />
+            ) : (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1271,7 +1308,7 @@ export default function OperatorPage() {
                   )}
               </motion.div>
               </motion.div>
-            )}
+            ))}
           </AnimatePresence>
 
           {!isNex2(user?.email) && (<>

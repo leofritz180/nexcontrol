@@ -11,6 +11,11 @@ import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engi
 import { ContaMaeView } from '../../../components/ContaMaeCard'
 import MetaStepper from '../../../components/modules/MetaStepper'
 import { MetaHero, MetaKpis, MetaProgresso } from '../../../components/modules/MetaBento'
+import RemessaConsole from '../../../components/modules/RemessaConsole'
+import FinaleV2 from '../../../components/modules/FinaleV2'
+import FechamentoV2 from '../../../components/modules/FechamentoV2'
+import ConfirmarFinalizacao from '../../../components/modules/ConfirmarFinalizacao'
+import { useBento } from '../../../lib/useBento'
 import { isNex2 } from '../../../lib/theme-v2'
 import { SLOTS } from '../../../lib/slots-data'
 
@@ -90,6 +95,8 @@ function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, bauAcumRemessas =
   const [gastos, setGastos] = useState(String(meta.gastos_operacionais||''))
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
+  // V2: mesma logica, folha nova. O hook fica aqui em cima, antes de qualquer return.
+  const claro = useBento()
 
   const salP = Number(salPlat||0), bauV = isApenasBau ? 0 : Number(bau||0), gastosV = Number(gastos||0)
   const lucroFinal = lucroAcum + salP + bauV
@@ -115,6 +122,17 @@ function AdminCloseModal({ meta, lucroAcum, prejAcum, liqAcum, bauAcumRemessas =
     if(json.error){setErr(json.error);return}
     onSaved()
   }
+
+  // V2: a folha nova recebe o mesmo estado e o mesmo confirm() — so a cena muda.
+  if (claro) return (
+    <FechamentoV2
+      titulo={meta?.titulo} rede={meta?.rede} isApenasBau={isApenasBau}
+      lucroAcum={lucroAcum} prejAcum={prejAcum} bauAcumRemessas={bauAcumRemessas}
+      salPlat={salPlat} setSalPlat={setSalPlat} bau={bau} setBau={setBau} gastos={gastos} setGastos={setGastos}
+      lucroFinal={lucroFinal} prejFinal={prejFinal} resultado={resultado}
+      saving={saving} err={err} aoConfirmar={confirm} aoFechar={onClose}
+    />
+  )
 
   return (
     <div style={{position:'fixed',inset:0,zIndex:10000,background:'rgba(17,19,24,0.55)',backdropFilter:'blur(16px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}} onClick={onClose}>
@@ -397,6 +415,7 @@ export default function MetaPage() {
   // EQUIPES: líder da DS MENTORIA agindo como admin nas metas da SUA equipe
   const [leaderAllowed, setLeaderAllowed] = useState(false)
   const [showFinalePopup, setShowFinalePopup] = useState(false)
+  const [confirmarFim, setConfirmarFim] = useState(false) // V2: confirmacao antes de finalizar (operador)
   const [netShareState, setNetShareState] = useState('idle') // idle | sharing | done — compartilhar resultado no Network
   const [saq,     setSaq]     = useState('')
   const [statusProb, setStatusProb] = useState('normal')
@@ -916,7 +935,12 @@ export default function MetaPage() {
               aoEditar={() => setShowEdit(true)}
               podeAlternar={true}
               rotuloAlternar={(finalizadaB || fechadaB) ? 'Reativar meta' : 'Finalizar meta'}
-              aoAlternar={toggleStatus}
+              aoAlternar={() => {
+                // admin ja cai no modal de fechamento; operador confirma antes
+                const vaiFinalizar = !(finalizadaB || fechadaB)
+                if (vaiFinalizar && !adminB) setConfirmarFim(true)
+                else toggleStatus()
+              }}
               aoVoltar={() => router.push(homePath)}
             />
           )
@@ -1565,6 +1589,26 @@ export default function MetaPage() {
             const slotList = (tenantSlots && tenantSlots.length > 0)
               ? tenantSlots.map(n => SLOT_CATALOG.find(x => x.name === n) || { name:n, image:`/slots/${slotSlug(n)}.webp` })
               : SLOT_CATALOG
+            // V2: console de remessa. Mesmo estado, mesmos handlers, mesma regra de
+            // habilitacao (podeSalvar e a negacao exata do disabled antigo).
+            if (isNex2(user?.email)) return (
+              <RemessaConsole
+                numero={remessas.length + 1} metaId={meta?.id || id}
+                slots={slotList} slotAtivo={selectedSlot} aoEscolherSlot={setSelectedSlot}
+                titulo={tituloR} setTitulo={setTituloR} tipo={tipo} setTipo={setTipo}
+                saldoIni={saldoIni} setSaldoIni={setSaldoIni} contas={contasRemessa} setContas={setContasRemessa}
+                dep={dep} setDep={setDep} saq={saq} setSaq={setSaq} bau={bauR} setBau={setBauR} mostrarBau={isApenasBauMeta}
+                comprovantes={comprovantes} normFoto={normFoto} fmtFotoTs={fmtFotoTs}
+                aoRemoverComprovante={(ci) => setComprovantes(prev => prev.filter((_, i) => i !== ci))}
+                aoAnexar={e => { const fs = Array.from(e.target.files || []); fs.forEach(f => uploadComprovante(f)) }}
+                aoColar={onPasteComprovante} enviandoComprovante={comprovanteUp} erroComprovante={comprovanteErr}
+                status={statusProb} setStatus={setStatusProb} notas={obsRemessa} setNotas={setObsRemessa}
+                temEntrada={hasInput} resultado={prev.diff} porConta={porConta} roi={roi} contasN={contasN} depN={depN}
+                erro={error} salvando={salvando}
+                podeSalvar={!(salvando||!saq||(tipo!=='bonus'&&!dep)||(tipo!=='redeposito'&&tipo!=='bonus'&&tipo!=='conta_mae'&&(!contasRemessa||Number(contasRemessa)<=0)))}
+                aoEnviar={handleAdd}
+              />
+            )
             return (
             <div className="card a2" style={{ padding:0, overflow:'hidden', borderRadius:18, border:'1px solid var(--b2)', background:'linear-gradient(180deg, var(--raised), var(--surface))', boxShadow:'0 24px 60px rgba(0,0,0,0.45)' }}>
               {/* Header */}
@@ -2013,6 +2057,19 @@ export default function MetaPage() {
         </div>
       </div>
 
+      {isNex2(user?.email) && meta && (
+        <ConfirmarFinalizacao
+          aberto={confirmarFim}
+          aoFechar={() => setConfirmarFim(false)}
+          aoConfirmar={async () => { setConfirmarFim(false); await toggleStatus() }}
+          titulo={meta.titulo}
+          remessas={remessas.length}
+          contasFeitas={remessas.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)}
+          contasAlvo={Number(meta.quantidade_contas || 0)}
+          resultado={totais.liq}
+        />
+      )}
+
       {/* Edit Remessa Modal */}
       {editRem && (
         <div style={{position:'fixed',inset:0,zIndex:10000,background:'rgba(17,19,24,0.55)',backdropFilter:'blur(12px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24}} onClick={()=>setEditRem(null)}>
@@ -2326,6 +2383,19 @@ export default function MetaPage() {
             ]
             const cFinal = isLucro ? 'var(--profit)' : 'var(--loss)'
 
+            // V2: cena de finalizacao nova, com os MESMOS numeros e handlers.
+            if (isNex2(user?.email)) return (
+              <FinaleV2
+                papel="admin" titulo={meta.titulo} rede={redeStr} data={dataStr}
+                resultado={liqFinal} totalDep={totalDep} totalSaq={totalSaq}
+                contasDone={contasDone} nContas={nContas} pctConclusao={pctConclusao} taxaAcerto={taxaAcerto}
+                porConta={avgFinal} roi={roi}
+                salario={salario} bau={bauMeta} custos={custos} lucroRemessas={liq}
+                insights={insights} melhorias={melhorias}
+                netShareState={netShareState} aoCompartilhar={compartilharNoNetwork} aoBaixar={baixarCertificado}
+                aoVoltar={goPanel} aoNovaMeta={() => { setShowFinalePopup(false); router.push(homePath) }}
+              />
+            )
             return (
               <motion.div key="finale-v2"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease: 'easeOut' }}
@@ -2403,6 +2473,16 @@ export default function MetaPage() {
             )
           }
 
+          if (isNex2(user?.email)) return (
+            <FinaleV2
+              papel="operador" titulo={meta.titulo} rede={meta.rede} data={new Date().toLocaleDateString('pt-BR')}
+              resultado={liq} totalDep={totalDep} totalSaq={totalSaq}
+              contasDone={contasDone} nContas={nContas} pctConclusao={pctConclusao} taxaAcerto={taxaAcerto}
+              porConta={avgPerConta} roi={totalDep > 0 ? (liq / totalDep) * 100 : 0}
+              insights={insights} melhorias={melhorias}
+              aoVoltar={() => { setShowFinalePopup(false); router.push('/operator') }}
+            />
+          )
           return (
             <motion.div
               key="finale"

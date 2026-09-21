@@ -1719,7 +1719,8 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 }
 
 /* ── V2 · ESPAÇAMENTO: o conteúdo ganha respiro (bento pede ar) ── */
-.nx-bento .app-content > div { padding-top: 4px; }
+/* sem barra superior: o conteudo comeca no topo, so com o respiro do bento */
+.nx-bento .app-content > div { padding-top: 22px; }
 
 /* ── V2 · MENU: cores e estado ativo ───────────────────────────────────────
    Corrige 2 coisas: (1) a regra .nx-redesign svg{color:#D10000} pintava TODO

@@ -427,7 +427,7 @@ export default function FaturamentoPage() {
                 color:'var(--t2)', display:'flex', alignItems:'center', gap:6, transition:'all 0.15s' }}
               onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--b2)';e.currentTarget.style.color='var(--t1)'}}
               onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--b1)';e.currentTarget.style.color='var(--t2)'}}>
-              Apresentacao
+              Apresentação
             </button>
             <button onClick={loadAll}
               style={{ padding:'8px 14px', fontSize:12, fontWeight:500, fontFamily:'inherit', cursor:'pointer',
@@ -455,7 +455,7 @@ export default function FaturamentoPage() {
 
         {/* Tabs */}
         <div className="a2 tabs-scroll" style={{display:'flex',gap:4,marginBottom:24,background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:12,padding:5,width:'fit-content'}}>
-          {[['overview','Visao Geral'],['chart','Evolucao'],['history','Historico']].map(([k,l])=>(
+          {[['overview','Visão geral'],['chart','Evolução'],['history','Histórico']].map(([k,l])=>(
             <button key={k} onClick={()=>setTab(k)} data-active={tab===k?'true':'false'} style={{fontFamily:'Inter,sans-serif',fontSize:12,fontWeight:600,padding:'8px 18px',borderRadius:9,cursor:'pointer',transition:'all 0.15s',background:tab===k?'var(--raised)':'transparent',border:tab===k?'1px solid var(--b2)':'1px solid transparent',color:tab===k?'var(--t1)':'var(--t3)',boxShadow:tab===k?'0 2px 8px rgba(0,0,0,0.3)':''}}>
               {l}
             </button>
@@ -752,7 +752,7 @@ export default function FaturamentoPage() {
                 boxShadow:'0 4px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
               }}>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
-                  <h3 style={{fontSize:15,fontWeight:700,color:'var(--t1)',margin:0}}>Leitura da operacao</h3>
+                  <h3 style={{fontSize:15,fontWeight:700,color:'var(--t1)',margin:0}}>Leitura da operação</h3>
                   <span style={{
                     fontSize:10,fontWeight:700,padding:'4px 12px',borderRadius:6,
                     background: health.level==='good'||health.level==='growing'?'var(--profit-dim)':health.level==='attention'||health.level==='unstable'?'var(--warn-dim)':'var(--loss-dim)',

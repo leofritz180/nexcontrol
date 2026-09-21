@@ -129,7 +129,7 @@ function Capa({ slot, index, isPro, favorito, onFavoritar }) {
             padding: '4px 10px', borderRadius: 8,
             fontSize: 9, fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase',
             ...VEU,
-            color: alta ? '#c4f042' : 'rgba(255,255,255,0.9)',
+            color: alta ? '#a8e06a' : 'rgba(255,255,255,0.9)',
           }}>{rotuloPerf}</span>
 
           {/* Coração: favoritar. Só pra quem enxerga o jogo (PRO). */}

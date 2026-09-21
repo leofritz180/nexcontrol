@@ -1232,10 +1232,10 @@ export default function AdminPage() {
   }, [isBetaUser])
 
   const TABS = [
-    ['overview','Visao geral'],
-    ['myops','Minha operacao'],
+    ['overview','Visão geral'],
+    ['myops','Minha operação'],
     ['operations','Metas & Fechamento'],
-    ...(isBetaUser ? [['metodos','Metodos']] : []),
+    ...(isBetaUser ? [['metodos','Métodos']] : []),
     ['ranking','Ranking'],
     ['trash','Lixeira'],
   ]
@@ -2927,7 +2927,7 @@ export default function AdminPage() {
                 border:'1px solid var(--b1)',
               }}>
               <p style={{ fontSize:11, color:'var(--t3)', margin:'0 0 18px', fontWeight:500, letterSpacing:'0.04em', textTransform:'uppercase' }}>
-                Leitura da operacao
+                Leitura da operação
               </p>
 
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))', gap:32 }}>
@@ -3268,7 +3268,7 @@ export default function AdminPage() {
           // ciano, rosa), a rede recebe um tom da familia da marca de forma
           // deterministica — o mesmo nome sempre cai no mesmo tom, e nenhuma
           // cor de fora da paleta entra.
-          const NET_RAMPA = ['#e5391f', '#ff7a4d', '#c4f042', '#ffb08a', '#8fd14f', '#b6b6c0']
+          const NET_RAMPA = ['#e5391f', '#ff7a4d', '#3f9b1e', '#ffb08a', '#7fc24a', '#b6b6c0']
           function getNC(rede) {
             const n = String(rede || '')
             let h = 0
@@ -3302,7 +3302,7 @@ export default function AdminPage() {
               @keyframes progShimmer { 0% { left:-100%; } 100% { left:200%; } }
             `}</style>
 
-            {/* Leitura da operacao (AI insight) */}
+            {/* Leitura da operação (AI insight) */}
             {filteredMetas.length >= 2 && (() => {
               const aiInsights = []
               // Analyze redes
@@ -3360,7 +3360,7 @@ export default function AdminPage() {
                       <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                     </div>
                     <div style={{ flex:1 }}>
-                      <p style={{ fontSize:13, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Leitura da operacao</p>
+                      <p style={{ fontSize:13, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Leitura da operação</p>
                       <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Analise automatica em tempo real</p>
                     </div>
                     <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:6, background:'rgba(209,250,229,0.08)', border:'1px solid rgba(209,250,229,0.18)' }}>
@@ -3966,7 +3966,7 @@ export default function AdminPage() {
                 <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="var(--brand-bright)" strokeWidth="1.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>
               <div>
-                <h2 className="t-h2" style={{ margin:'0 0 3px' }}>Equipe e Configuracoes</h2>
+                <h2 className="t-h2" style={{ margin:'0 0 3px' }}>Equipe e Configurações</h2>
                 <p className="t-small">Operadores, convites e modelo de operacao</p>
               </div>
             </div>

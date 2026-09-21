@@ -216,11 +216,17 @@ export default function CustosPage() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '10px 18px', borderRadius: 8, border: 'none', fontFamily:'inherit',
-                background: 'var(--t1)', color: 'var(--t1)', fontSize: 13, fontWeight: 500,
+                // era color:'var(--t1)' sobre background:'var(--t1)' — texto da
+                // mesma cor do fundo. Só não sumia porque o CSS do 2.0 repinta.
+                background: 'var(--t1)', color: 'var(--surface)', fontSize: 13, fontWeight: 500,
                 cursor: 'pointer', transition:'background 0.15s ease',
               }}
-              onMouseEnter={e=>{ e.currentTarget.style.background = '#2563eb' }}
-              onMouseLeave={e=>{ e.currentTarget.style.background = 'rgba(255,255,255,0.78)' }}
+              // O hover era AZUL (fora da paleta) e o mouseleave devolvia
+              // rgba(255,255,255,0.78), que não era a cor de origem: depois de UM
+              // hover o botão ficava branco pra sempre. Mesmo defeito que estava
+              // no CTA do PRO na barra lateral.
+              onMouseEnter={e=>{ e.currentTarget.style.background = 'var(--brand)' }}
+              onMouseLeave={e=>{ e.currentTarget.style.background = 'var(--t1)' }}
             >
               <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />

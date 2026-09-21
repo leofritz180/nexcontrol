@@ -348,21 +348,21 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
       {/* LINHA 2 — leitura rapida: tendencia, comparacao e constancia */}
       <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
         <Sparkline
-          rotulo="Ultimos 14 dias"
+          rotulo="Últimos 14 dias"
           valor={money0(dias14.reduce((a, d) => a + d.v, 0))}
           serie={dias14.map(d => d.v)}
-          nota="lucro das metas fechadas no periodo"
+          nota="lucro das metas fechadas no período"
           delay={0.18}
         />
         <Comparativo
-          rotulo="Este mes"
+          rotulo="Este mês"
           valor={money0(mesAtual)}
           anterior={mesPassado}
           rotuloAnterior="mes passado"
           delay={0.22}
         />
         <Sequencia
-          rotulo="Constancia"
+          rotulo="Constância"
           dias={dias10.map(d => d.v > 0)}
           nota="dias com meta fechada no positivo, nos ultimos 10"
           delay={0.26}

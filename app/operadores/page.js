@@ -1063,7 +1063,7 @@ export default function OperadoresPage() {
     { key: 'equipe', label: 'Equipe' },
     ...(teamsEnabled ? [{ key: 'equipes', label: 'Equipes' }] : []),
     { key: 'folha', label: 'Folha de pagamento' },
-    { key: 'config', label: 'Configuracoes' },
+    { key: 'config', label: 'Configurações' },
   ]
 
   return (

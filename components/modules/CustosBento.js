@@ -2,6 +2,13 @@
 // CUSTOS — visual 2.0. Apresentação apenas; recebe dados/handlers do /custos.
 import { ModuleHeader, AcaoBtn, Hero, Tira, Barras, Lista, BCard, money0, money, RED, RED2 } from '../ui/bento'
 
+// A data vem do banco como 'YYYY-MM-DD' e estava indo crua pra tela
+// ("2026-06-10"). Formato de banco não é formato de gente.
+function dataBR(iso) {
+  const p = String(iso || '').slice(0, 10).split('-')
+  return p.length === 3 && p[0].length === 4 ? p[2] + '/' + p[1] + '/' + p[0] : (iso || '')
+}
+
 export default function CustosBento({ kpis, chartData, custos = [], typeMap = {}, onNovo, onRemover }) {
   const k = kpis || {}
   return (
@@ -32,10 +39,16 @@ export default function CustosBento({ kpis, chartData, custos = [], typeMap = {}
         { l: 'Lucro líquido', v: money0(k.lucroLiquido), c: Number(k.lucroLiquido) >= 0 ? 'var(--profit)' : 'var(--loss)' },
       ]} />
 
-      <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 14 }}>
+      {/* alignItems start: sem isso o card das barras estica pra igualar a
+          altura da lista de lançamentos e sobra meio metro de branco */}
+      <div className="bk-2" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 14, alignItems: 'start' }}>
         <Barras
           titulo="Para onde vai o dinheiro"
-          dados={(chartData || []).map(d => ({ l: d.ct?.label || d.type, v: d.total, txt: money0(d.total), dot: d.ct?.color || RED }))}
+          // sem `dot`: as barras usam a rampa da marca, igual ao /redes. As
+          // cores por tipo vinham do tema escuro antigo — Proxy saía como uma
+          // barra PRETA e SMS como uma bolinha verde de lucro, dentro de um
+          // card que fala de despesa.
+          dados={(chartData || []).map(d => ({ l: d.ct?.label || d.type, v: d.total, txt: money0(d.total) }))}
         />
         <Lista
           titulo={`Lançamentos (${(custos || []).length})`}
@@ -47,7 +60,7 @@ export default function CustosBento({ kpis, chartData, custos = [], typeMap = {}
               avatar: String(t.label || c.type || '?').slice(0, 2).toUpperCase(),
               avatarBg: 'var(--loss-dim)', avatarFg: 'var(--loss)',
               t: t.label || c.type || 'Custo',
-              s: `${c.date || ''}${c.note ? ' · ' + c.note : ''}`,
+              s: `${dataBR(c.date)}${c.note ? ' · ' + c.note : ''}`,
               v: money0(c.amount), vc: 'var(--loss)',
               acao: onRemover ? (
                 <button type="button" title="Excluir custo" onClick={(e) => { e.stopPropagation(); onRemover(c.id) }}

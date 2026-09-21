@@ -100,7 +100,7 @@ export function Passos({ itens = [], atual = 0, aoIr }) {
   )
 }
 
-const CORES = [RED, RED2, LIME, '#15151a', '#ffb08a', '#8fd14f']
+const CORES = [RED, RED2, LIME, '#15151a', '#ffb08a', '#7fc24a']
 
 export function Confete({ disparar = false, quantidade = 42, duracao = 1.6 }) {
   const semMovimento = useReducedMotion()

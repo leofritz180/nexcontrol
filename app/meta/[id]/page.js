@@ -1480,7 +1480,14 @@ export default function MetaPage() {
           const pctExact = target > 0 ? (done / target) * 100 : 0
           const remaining = Math.max(0, target - done)
           const isDone = pct >= 100
-          const barC = isDone ? 'var(--profit)' : pct >= 70 ? 'var(--profit)' : pct >= 40 ? 'rgba(255,255,255,0.78)' : '#e53935'
+          // HEX de propósito: logo abaixo o código faz `${barC}14`, `${barC}30`,
+          // `${barC}50` pra derivar transparência. Isso só funciona com hex de 6
+          // dígitos — com `var(--profit)` ou `rgba(...)` o resultado é CSS
+          // inválido e o brilho simplesmente não aparecia. A faixa do meio ainda
+          // era branca (invisível no bento claro) e depois AZUL no gradiente.
+          // Agora: verde = no ritmo, laranja da marca = meio do caminho,
+          // vermelho = atrasado.
+          const barC = (isDone || pct >= 70) ? '#3f9b1e' : pct >= 40 ? '#ff7a4d' : '#dc2626'
           return target > 0 ? (
             <motion.div
               initial={{opacity:0, y:8}} animate={{opacity:1, y:0}}
@@ -1545,8 +1552,8 @@ export default function MetaPage() {
                       : pct >= 70
                       ? 'linear-gradient(90deg, var(--profit), #00a06d)'
                       : pct >= 40
-                      ? 'linear-gradient(90deg, rgba(255,255,255,0.78), #1d4ed8)'
-                      : 'linear-gradient(90deg, #e53935, #c62828)',
+                      ? 'linear-gradient(90deg, #ff9a78, #e5391f)'
+                      : 'linear-gradient(90deg, #ef4444, #b91c1c)',
                     boxShadow: `0 0 12px ${barC}70, inset 0 1px 0 rgba(255,255,255,0.25)`,
                     overflow:'hidden',
                   }}

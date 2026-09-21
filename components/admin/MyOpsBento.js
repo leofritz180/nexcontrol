@@ -10,7 +10,7 @@ import { motion } from 'framer-motion'
 import { NX, brl, fmt0, Panel, Strip, Bar, Eyebrow, Sub, Valor, Num, Pill, rise } from '../ui/nex'
 import { NumeroTexto } from '../ui/bento'
 
-const RED = '#e5391f', RED2 = '#ff7a4d', LIME = '#c4f042'
+const RED = '#e5391f', RED2 = '#ff7a4d', LIME = '#3f9b1e'
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
 const money0 = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
 

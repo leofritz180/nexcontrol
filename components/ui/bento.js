@@ -9,11 +9,14 @@
 import { motion, AnimatePresence, animate, useReducedMotion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 
-export const RED = '#e5391f', RED2 = '#ff7a4d', LIME = '#c4f042'
+export const RED = '#e5391f', RED2 = '#ff7a4d', LIME = '#3f9b1e'
 export const MONO = 'var(--mono, "JetBrains Mono", monospace)'
 export const money = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 export const money0 = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
-export const int = v => Number(v || 0).toLocaleString('pt-BR')
+// maximumFractionDigits: 0 de propósito. Sem isso o toLocaleString mantém
+// até 3 casas e uma taxa de acerto de 82,142857% saía na tela como
+// "82,143% acerto" — precisão falsa e feia numa função chamada `int`.
+export const int = v => Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
 
 // ── SOMBRAS: tres niveis e so. Nada de 0 40px 100px da era escura. ──
 export const SOMBRA = {
@@ -296,7 +299,7 @@ export function Rosca({ dados = [], centro, rotulo, tamanho = 132, espessura = 1
 }
 
 // rampa de cores das fatias — família da marca + lima, sem azul/roxo
-export const FATIAS = ['#e5391f', '#ff7a4d', '#c4f042', '#ffb08a', '#b6b6c0']
+export const FATIAS = ['#e5391f', '#ff7a4d', '#3f9b1e', '#ffb08a', '#b6b6c0']
 
 // ── NUMERO ANIMADO ───────────────────────────────────────────────────────
 // Conta de 0 até o valor na primeira vez e, depois disso, ROLA do valor

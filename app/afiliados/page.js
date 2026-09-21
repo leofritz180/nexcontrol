@@ -1036,7 +1036,7 @@ function PhoneMockup({ text, channel }) {
             maxWidth: '85%',
             padding: '8px 12px',
             borderRadius: '14px 14px 4px 14px',
-            background: isWhats ? '#005c4b' : 'linear-gradient(135deg, #1d4ed8, #1e3a8a)',
+            background: isWhats ? '#005c4b' : 'linear-gradient(135deg, #2a2a33, #15151a)',
           }}>
             <p style={{ fontSize: 10.5, color: 'var(--t1)', margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.4 }}>{text}</p>
             <p style={{ fontSize: 8, color: 'var(--t2)', margin: '4px 0 0', textAlign: 'right' }}>20:30 ✓✓</p>

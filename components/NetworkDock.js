@@ -18,8 +18,16 @@ import { networkEnabled, NETWORK_FREE_FOR_ALL, OWNER_EMAIL } from '../lib/networ
 
 const RED = '#e53935'
 const MINT = '#22C55E'
-const BUBBLE = '#2563eb'      // cor da bolha flutuante (azul — teste de destaque)
-const BUBBLE_DARK = '#1d4ed8'
+// A bolha era AZUL (#2563eb) — um "teste de destaque" que ficou. Azul está
+// fora da paleta (só preto/branco/vermelho da marca/mint) e, com o visual
+// 2.0, ela era a única mancha azul de TODAS as telas, gritando mais que o
+// botão de ação da página.
+//
+// Agora ela é da mesma família dos outros flutuantes e do dock: preto do
+// bento. Quem avisa que tem mensagem nova é o ponto verde, não a bolha
+// inteira — que é o certo, porque a bolha está sempre lá.
+const BUBBLE = '#15151a'
+const BUBBLE_DARK = '#26262e'
 const SEEN_KEY = 'nx_dock_seen_v1'
 const OPEN_KEY = 'nx_dock_open_v1'
 // Telas onde o dock NÃO aparece (imersivas / redundantes).
@@ -280,7 +288,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
 }
 
 // ── estilos/ícones ──
-const bubbleStyle = { position: 'relative', width: 56, height: 56, borderRadius: '50%', border: 'none', cursor: 'pointer', background: `linear-gradient(135deg, ${BUBBLE}, ${BUBBLE_DARK})`, boxShadow: '0 8px 26px rgba(37,99,235,0.5), inset 0 1px 0 rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }
+const bubbleStyle = { position: 'relative', width: 56, height: 56, borderRadius: '50%', border: 'none', cursor: 'pointer', background: `linear-gradient(135deg, ${BUBBLE}, ${BUBBLE_DARK})`, boxShadow: '0 10px 28px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }
 const panelStyle = { width: 340, height: 460, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 120px)', borderRadius: 18, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 24px 70px rgba(0,0,0,0.6)' }
 const dockHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderBottom: '1px solid var(--b1)', background: 'rgba(229,57,53,0.06)', flexShrink: 0 }
 const iconBtn = { width: 28, height: 28, borderRadius: 8, border: 'none', background: 'var(--fill-2)', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }

@@ -217,7 +217,12 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                     fontFamily: 'var(--font-display, serif)', fontSize: 19, fontWeight: 400,
                     color: 'var(--t1)', margin: 0, lineHeight: 1.2, letterSpacing: '-0.01em',
                   }}>
-                    {progress.isComplete ? 'Voce dominou o setup' : `Faltam ${progress.total - progress.completed} passos pro acesso completo`}
+                    {progress.isComplete
+                      ? 'Você dominou o setup'
+                      // "Faltam 1 passos" aparecia sempre que sobrava um só
+                      : (progress.total - progress.completed) === 1
+                        ? 'Falta 1 passo pro acesso completo'
+                        : `Faltam ${progress.total - progress.completed} passos pro acesso completo`}
                   </h3>
                 </div>
                 <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>

@@ -199,7 +199,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
                 style={{
                   position: 'relative', height: '100%', borderRadius: 7,
                   background: bg,
-                  boxShadow: `0 0 16px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.55)' : current.glow}, inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.2)`,
+                  boxShadow: claro ? '0 2px 8px rgba(0,0,0,0.12)' : `0 0 16px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.55)' : current.glow}, inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.2)`,
                   overflow: 'hidden',
                 }}
               >
@@ -279,7 +279,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
               Próximos níveis
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: `repeat(${nextRanks.length}, 1fr)`, gap: 10 }}>
-              {nextRanks.map(r => <NextRankCard key={r.tier} rank={r} />)}
+              {nextRanks.map(r => <NextRankCard key={r.tier} rank={r} claro={claro} />)}
             </div>
           </div>
         )}
@@ -289,7 +289,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
 }
 
 /* Card miniatura do próximo nível com hover refinado */
-function NextRankCard({ rank }) {
+function NextRankCard({ rank, claro }) {
   const [hover, setHover] = useState(false)
   const isPrismatic = rank.primary === 'prismatic'
   const isApex = rank.tier === 15
@@ -307,21 +307,23 @@ function NextRankCard({ rank }) {
         border: `1px solid rgba(${rgb},${hover ? 0.35 : 0.12})`,
         display: 'flex', alignItems: 'center', gap: 10,
         transition: 'background 0.25s, border-color 0.25s',
-        boxShadow: hover ? `0 8px 24px rgba(0,0,0,0.4), 0 0 24px rgba(${rgb},0.18)` : 'none',
+        boxShadow: hover ? (claro ? '0 8px 22px rgba(0,0,0,0.10)' : `0 8px 24px rgba(0,0,0,0.4), 0 0 24px rgba(${rgb},0.18)`) : 'none',
       }}
     >
       {hover && <ShinePass duration={1.4} interval={2.5} color={`rgba(${rgb},0.25)`} />}
       <div style={{
         width: 34, height: 34, borderRadius: 8,
-        background: rankBackground(rank),
+        background: claro ? rankPalette(rank.tier, true).chip : rankBackground(rank),
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
-        boxShadow: hover
+        boxShadow: claro
+          ? (hover ? '0 5px 14px rgba(0,0,0,0.14)' : '0 2px 6px rgba(0,0,0,0.08)')
+          : hover
           ? `0 0 16px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.6)' : rank.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`
           : `0 0 8px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.3)' : rank.glow.replace(/0\.\d+/, '0.3')}, inset 0 1px 0 rgba(255,255,255,0.15)`,
         transition: 'box-shadow 0.25s',
       }}>
-        <RankIcon name={rank.icon} size={17} color={rankTextColor(rank)} />
+        <RankIcon name={rank.icon} size={17} color={claro ? '#ffffff' : rankTextColor(rank)} />
         {isApex && hover && (
           <motion.span
             aria-hidden
@@ -337,8 +339,8 @@ function NextRankCard({ rank }) {
       <div style={{ minWidth: 0, flex: 1 }}>
         <p style={{
           fontSize: 13, fontWeight: 800, margin: 0, lineHeight: 1, letterSpacing: '0.01em',
-          color: isPrismatic ? '#E0E0FF' : rank.primary,
-          textShadow: hover ? `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : rank.glow}` : 'none',
+          color: claro ? rankPalette(rank.tier, true).ink : (isPrismatic ? '#E0E0FF' : rank.primary),
+          textShadow: (hover && !claro) ? `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : rank.glow}` : 'none',
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
           {rank.name}

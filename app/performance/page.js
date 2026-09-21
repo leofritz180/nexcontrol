@@ -554,11 +554,9 @@ export default function PerformancePage() {
                           style={{
                             position: 'relative',
                             padding: 22, borderRadius: 16,
-                            background: 'rgba(0,0,0,0.55)',
-                            backdropFilter: 'blur(8px)',
-                            WebkitBackdropFilter: 'blur(8px)',
+                            background: 'var(--surface)',
                             border: '1px solid var(--b1)',
-                            boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 8px 26px rgba(0,0,0,0.05)',
                           }}
                         >
                           <RankShowcase contas={myDeps} mode="inline" forceApex={apexLocked} />
@@ -940,7 +938,7 @@ export default function PerformancePage() {
                           key={m.id}
                           style={{
                             padding: '20px', borderRadius: 14,
-                            background: 'rgba(0,0,0,0.55)', border: '1px solid var(--b1)',
+                            background: 'var(--surface)', border: '1px solid var(--b1)',
                             transition: 'border-color 0.2s ease',
                           }}
                         >

@@ -118,7 +118,7 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
           onClick={handleClose}
           style={{
             position: 'fixed', inset: 0, zIndex: 99998,
-            background: 'rgba(17,19,24,0.55)',
+            background: 'rgba(12,13,17,0.82)',
             backdropFilter: 'blur(20px) saturate(140%)',
             WebkitBackdropFilter: 'blur(20px) saturate(140%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',

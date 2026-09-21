@@ -1,4 +1,5 @@
 'use client'
+import { useBento } from '../../lib/useBento'
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 
@@ -14,6 +15,10 @@ import { motion } from 'framer-motion'
  *  - density: 'low' | 'normal' | 'high' — nº de partículas
  */
 export default function RankAmbient({ rank, density = 'normal', className }) {
+  // a nebulosa foi feita pro fundo preto; no bento claro nao entra
+  const claroFX = useBento()
+  if (claroFX) return null
+
   const counts = { low: 14, normal: 24, high: 36 }
   const particleCount = counts[density] || counts.normal
 

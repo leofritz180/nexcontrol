@@ -3099,10 +3099,10 @@ export default function AdminPage() {
               <motion.div
                 initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35, delay:0.1 }}
                 style={{
-                  marginTop: 32, padding: 28, borderRadius: 20,
-                  background: 'rgba(0,0,0,0.55)',
+                  marginTop: 32, padding: 28, borderRadius: 24,
+                  background: 'var(--surface)',
                   border: '1px solid var(--b1)',
-                  boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.4)',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 8px 26px rgba(0,0,0,0.05)',
                   position: 'relative', overflow: 'hidden',
                 }}
               >

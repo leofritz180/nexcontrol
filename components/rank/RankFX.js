@@ -1,4 +1,5 @@
 'use client'
+import { useBento } from '../../lib/useBento'
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 
@@ -44,6 +45,10 @@ function ApexStarField() {
    Aura ambiente: glow de fundo refinado por rank
    ─────────────────────────────────────────── */
 export function RankAura({ rank, intensity = 1, className }) {
+  // RankAura e efeito de neon: no bento claro ele vira mancha, entao sai
+  const claroFX = useBento()
+  if (claroFX) return null
+
   if (!rank) return null
   const isApex = rank.tier === 15
   const isSupremo = rank.tier === 14
@@ -133,6 +138,10 @@ export function RankAura({ rank, intensity = 1, className }) {
    Partículas orbitais: usadas em ranks elite
    ─────────────────────────────────────────── */
 export function OrbitalParticles({ rank, count = 4, radius = 80, size = 3, speed = 14 }) {
+  // OrbitalParticles e efeito de neon: no bento claro ele vira mancha, entao sai
+  const claroFX = useBento()
+  if (claroFX) return null
+
   if (!rank) return null
   const isApex = rank.tier === 15
   const isPrismatic = rank.primary === 'prismatic'
@@ -180,6 +189,10 @@ export function OrbitalParticles({ rank, count = 4, radius = 80, size = 3, speed
    Border glow animado (gradient correndo)
    ─────────────────────────────────────────── */
 export function GlowBorder({ rank, thickness = 1, intensity = 1, animate: animateBorder = true }) {
+  // GlowBorder e efeito de neon: no bento claro ele vira mancha, entao sai
+  const claroFX = useBento()
+  if (claroFX) return null
+
   if (!rank) return null
   const rgb = rank.rgb || '255,255,255'
   const isApex = rank.tier === 15
@@ -241,6 +254,10 @@ export function ShinePass({ delay = 0, duration = 3, interval = 6, color = 'rgba
    Texturas overlay por signature
    ─────────────────────────────────────────── */
 export function SignatureOverlay({ rank }) {
+  // SignatureOverlay e efeito de neon: no bento claro ele vira mancha, entao sai
+  const claroFX = useBento()
+  if (claroFX) return null
+
   if (!rank) return null
   const sig = rank.signature
 

@@ -1,16 +1,23 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { getRank, rankBackground, rankTextColor } from '../../lib/rank-system'
+import { getRank, rankBackground, rankTextColor, rankPalette, PRISMATIC_LIGHT } from '../../lib/rank-system'
+import { useBento } from '../../lib/useBento'
 import RankIcon from './RankIcon'
 import { ShinePass } from './RankFX'
 
 /**
  * Badge inline premium pra rank.
  * size: 'xs' (lista compacta), 'sm' (default), 'md', 'lg' (hero)
+ *
+ * Dois acabamentos: no tema escuro segue o original (halo + bisel). No bento
+ * claro o halo vira sombra limpa, a pastilha fica em cor cheia com o ícone
+ * branco e o nome usa o tom "ink" — Prata, Platina e Diamante eram quase
+ * brancos e sumiam na superfície.
  */
 export default function RankBadge({ contas, size = 'sm', showName = true, showTier = false, style, forceApex = false }) {
   const [hover, setHover] = useState(false)
+  const claro = useBento()
   const { current } = getRank(contas, { forceApex })
   const dims = {
     xs: { iconBox: 22, icon: 13, fontSize: 11, pad: '3px 9px',  gap: 6, radius: 6 },
@@ -19,48 +26,60 @@ export default function RankBadge({ contas, size = 'sm', showName = true, showTi
     lg: { iconBox: 50, icon: 28, fontSize: 16, pad: '10px 18px', gap: 12, radius: 12 },
   }[size] || {}
 
-  const bg = rankBackground(current)
-  const textColor = rankTextColor(current)
+  const p = rankPalette(current.tier, claro)
   const isPrismatic = current.primary === 'prismatic'
   const isApex = current.tier === 15
   const rgb = current.rgb || '255,255,255'
 
+  // pastilha do ícone
+  const chipBg = claro
+    ? (p.prismatic ? PRISMATIC_LIGHT : p.chip)
+    : rankBackground(current)
+  const iconColor = claro ? '#ffffff' : rankTextColor(current)
+
   return (
     <motion.span
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      whileHover={{ y: -1 }}
+      whileHover={{ y: claro ? -2 : -1 }}
       transition={{ type: 'spring', damping: 22, stiffness: 280 }}
       style={{
         position: 'relative', display: 'inline-flex', alignItems: 'center', gap: dims.gap,
         padding: dims.pad,
-        borderRadius: dims.radius,
-        background: hover ? `rgba(${rgb},0.10)` : `rgba(${rgb},0.05)`,
-        border: `1px solid rgba(${rgb},${hover ? 0.42 : 0.28})`,
-        boxShadow: hover
-          ? `0 4px 18px rgba(0,0,0,0.4), 0 0 18px rgba(${rgb},0.28), inset 0 1px 0 rgba(255,255,255,0.06)`
-          : `inset 0 1px 0 rgba(255,255,255,0.04)`,
+        borderRadius: claro ? 999 : dims.radius,
+        background: claro ? p.tint : (hover ? `rgba(${rgb},0.10)` : `rgba(${rgb},0.05)`),
+        border: `1px solid ${claro ? p.edge : `rgba(${rgb},${hover ? 0.42 : 0.28})`}`,
+        boxShadow: claro
+          ? (hover ? '0 6px 18px rgba(0,0,0,0.10)' : '0 1px 2px rgba(0,0,0,0.04)')
+          : (hover
+            ? `0 4px 18px rgba(0,0,0,0.4), 0 0 18px rgba(${rgb},0.28), inset 0 1px 0 rgba(255,255,255,0.06)`
+            : `inset 0 1px 0 rgba(255,255,255,0.04)`),
         transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s',
         overflow: 'hidden',
         ...style,
       }}
     >
-      {hover && <ShinePass duration={1.2} interval={2} color={`rgba(${rgb},0.25)`} />}
+      {hover && !claro && <ShinePass duration={1.2} interval={2} color={`rgba(${rgb},0.25)`} />}
       <span style={{
         position: 'relative',
-        width: dims.iconBox, height: dims.iconBox, borderRadius: Math.round(dims.radius * 0.85),
-        background: bg,
+        width: dims.iconBox, height: dims.iconBox, borderRadius: claro ? '50%' : Math.round(dims.radius * 0.85),
+        background: chipBg,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
-        boxShadow: `0 0 ${hover ? 16 : 10}px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : current.glow}, inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.2)`,
+        boxShadow: claro
+          ? (hover ? '0 5px 14px rgba(0,0,0,0.16)' : '0 2px 6px rgba(0,0,0,0.10)')
+          : `0 0 ${hover ? 16 : 10}px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : current.glow}, inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -1px 0 rgba(0,0,0,0.2)`,
+        transition: 'box-shadow 0.2s',
         overflow: 'hidden',
       }}>
-        {/* Inner shine top-left */}
+        {/* brilho superior — no claro é um realce discreto, não um bisel */}
         <span aria-hidden style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: 'radial-gradient(circle at 30% 20%, var(--fill-3) 0%, transparent 55%)',
+          background: claro
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.28), transparent 60%)'
+            : 'radial-gradient(circle at 30% 20%, var(--fill-3) 0%, transparent 55%)',
         }}/>
-        <RankIcon name={current.icon} size={dims.icon} color={textColor} />
-        {isApex && (
+        <RankIcon name={current.icon} size={dims.icon} color={iconColor} />
+        {isApex && !claro && (
           <motion.span
             aria-hidden
             animate={{ rotate: 360 }}
@@ -71,17 +90,29 @@ export default function RankBadge({ contas, size = 'sm', showName = true, showTi
             }}
           />
         )}
+        {/* Apex no claro: um giro de luz suave, sem neon */}
+        {isApex && claro && (
+          <motion.span
+            aria-hidden
+            animate={{ rotate: 360 }}
+            transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
+            style={{
+              position: 'absolute', inset: -2, pointerEvents: 'none',
+              background: 'conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.55) 28deg, transparent 56deg, transparent 360deg)',
+            }}
+          />
+        )}
       </span>
       {showName && (
         <span style={{
           position: 'relative',
           fontSize: dims.fontSize,
-          fontWeight: 800,
+          fontWeight: claro ? 800 : 800,
           letterSpacing: '0.05em',
-          color: isPrismatic ? '#E0E0FF' : current.primary,
+          color: claro ? p.ink : (isPrismatic ? '#E0E0FF' : current.primary),
           textTransform: 'uppercase',
           fontFamily: 'var(--font-sans, Inter)',
-          textShadow: hover ? `0 0 8px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : current.glow}` : 'none',
+          textShadow: (!claro && hover) ? `0 0 8px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : current.glow}` : 'none',
           transition: 'text-shadow 0.2s',
         }}>
           {current.name}{showTier ? ` · ${current.tier}` : ''}

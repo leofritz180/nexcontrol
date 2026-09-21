@@ -1,7 +1,8 @@
 'use client'
+import { useBento } from '../../lib/useBento'
 import { useState, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { RANK_TIERS, getRank, rankBackground, rankTextColor } from '../../lib/rank-system'
+import { RANK_TIERS, getRank, rankBackground, rankTextColor , rankPalette } from '../../lib/rank-system'
 import RankIcon from './RankIcon'
 import { ShinePass, OrbitalParticles } from './RankFX'
 
@@ -120,6 +121,7 @@ export default function RankShowcase({ contas, mode = 'inline', open = false, on
    CURRENT RANK BADGE — destaque no header
    ─────────────────────────────────────────── */
 function CurrentRankBadgeBig({ rank, contas }) {
+  const claroFX = useBento()
   const isPrismatic = rank.primary === 'prismatic'
   const rgb = rank.rgb || '255,255,255'
   return (
@@ -136,7 +138,7 @@ function CurrentRankBadgeBig({ rank, contas }) {
         width: 36, height: 36, borderRadius: 10,
         background: rankBackground(rank),
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: `0 0 16px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.6)' : rank.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
+        boxShadow: claroFX ? '0 3px 10px rgba(0,0,0,0.12)' : `0 0 16px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.6)' : rank.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
       }}>
         <RankIcon name={rank.icon} size={18} color={rankTextColor(rank)} />
       </span>
@@ -146,8 +148,8 @@ function CurrentRankBadgeBig({ rank, contas }) {
         </p>
         <p style={{
           fontSize: 16, fontWeight: 800, margin: '2px 0 0', lineHeight: 1,
-          color: isPrismatic ? '#E0E0FF' : rank.primary, letterSpacing: '0.04em',
-          textShadow: `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : rank.glow}`,
+          color: claroFX ? rankPalette(rank.tier, true).ink : (isPrismatic ? '#E0E0FF' : rank.primary), letterSpacing: '0.04em',
+          textShadow: claroFX ? 'none' : `0 0 10px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : rank.glow}`,
           fontFamily: 'var(--font-display, serif)', fontWeight: 400, fontSize: 20,
         }}>
           {rank.name}
@@ -158,7 +160,7 @@ function CurrentRankBadgeBig({ rank, contas }) {
         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         style={{
           fontSize: 9, fontWeight: 900, padding: '3px 9px', borderRadius: 999,
-          background: `rgba(${rgb},0.22)`, color: isPrismatic ? '#E0E0FF' : rank.primary,
+          background: `rgba(${rgb},0.22)`, color: claroFX ? rankPalette(rank.tier, true).ink : (isPrismatic ? '#E0E0FF' : rank.primary),
           border: `1px solid rgba(${rgb},0.5)`, letterSpacing: '0.16em', textTransform: 'uppercase',
         }}
       >
@@ -242,6 +244,7 @@ function Staircase({ contas, currentTier, hoverTier, setHoverTier, selectedTier,
    PILLAR — coluna individual de cada rank
    ─────────────────────────────────────────── */
 function Pillar({ rank, height, currentTier, isHovered, isSelected, onHover, onUnhover, onClick, contas }) {
+  const claroFX = useBento()
   const isCurrent = currentTier === rank.tier
   const isAchieved = currentTier >= rank.tier
   const isApex = rank.tier === 15
@@ -276,7 +279,7 @@ function Pillar({ rank, height, currentTier, isHovered, isSelected, onHover, onU
         position: 'relative', zIndex: 2,
         fontSize: isApex ? 11 : 9,
         fontWeight: 900,
-        color: isPrismatic ? '#E0E0FF' : (isAchieved || isCurrent || isHovered ? rank.primary : 'var(--t4)'),
+        color: claroFX ? rankPalette(rank.tier, true).ink : isPrismatic ? '#E0E0FF' : (isAchieved || isCurrent || isHovered ? rank.primary : 'var(--t4)'),
         letterSpacing: '0.16em', textTransform: 'uppercase',
         fontFamily: 'var(--mono)',
         marginBottom: 6,
@@ -297,7 +300,7 @@ function Pillar({ rank, height, currentTier, isHovered, isSelected, onHover, onU
             position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
             zIndex: 5,
             fontSize: 8, fontWeight: 900, padding: '3px 8px', borderRadius: 999,
-            background: `rgba(${rgb},0.22)`, color: isPrismatic ? '#E0E0FF' : rank.primary,
+            background: `rgba(${rgb},0.22)`, color: claroFX ? rankPalette(rank.tier, true).ink : (isPrismatic ? '#E0E0FF' : rank.primary),
             border: `1px solid rgba(${rgb},0.55)`,
             letterSpacing: '0.18em', textTransform: 'uppercase',
             boxShadow: `0 0 14px rgba(${rgb},0.5)`,
@@ -317,7 +320,7 @@ function Pillar({ rank, height, currentTier, isHovered, isSelected, onHover, onU
       {/* Tier number */}
       <span style={{
         marginTop: 8, fontSize: 11, fontWeight: 800,
-        color: isCurrent ? (isPrismatic ? '#E0E0FF' : rank.primary) : (isAchieved || isHovered ? 'var(--t1)' : 'var(--t4)'),
+        color: isCurrent ? (claroFX ? rankPalette(rank.tier, true).ink : isPrismatic ? '#E0E0FF' : rank.primary) : (isAchieved || isHovered ? 'var(--t1)' : 'var(--t4)'),
         fontFamily: 'var(--mono)', letterSpacing: '0.04em',
         opacity: isAchieved || isCurrent || isHovered || isElite ? 1 : 0.65,
         transition: 'color 0.25s, opacity 0.25s',
@@ -335,7 +338,7 @@ function Pillar({ rank, height, currentTier, isHovered, isSelected, onHover, onU
       </span>
       <span style={{
         fontSize: 11, fontWeight: 800,
-        color: isCurrent ? (isPrismatic ? '#E0E0FF' : rank.primary) : 'var(--t2)',
+        color: isCurrent ? (claroFX ? rankPalette(rank.tier, true).ink : isPrismatic ? '#E0E0FF' : rank.primary) : 'var(--t2)',
         fontFamily: 'var(--mono)',
       }}>
         {rank.min === 0 ? '0+' : rank.min < 1000 ? `${rank.min}+` : `${(rank.min / 1000).toFixed(rank.min % 1000 === 0 ? 0 : 1).replace('.0', '')}k+`}
@@ -497,6 +500,10 @@ function PillarColumn({ rank, height, active, isApex, isCurrent, isAchieved }) {
 }
 
 function ApexPillarStardust() {
+  // poeira do Apex: cenario espacial so faz sentido no escuro
+  const claroFX = useBento()
+  if (claroFX) return null
+
   const dust = useMemo(() => Array.from({ length: 4 }, (_, i) => ({
     x: 15 + (i * 22) % 70,
     delay: i * 1.1,
@@ -527,6 +534,10 @@ function ApexPillarStardust() {
    CONNECTING ENERGY LINE — entre os topos dos pilares
    ─────────────────────────────────────────── */
 function ConnectingEnergyLine({ highestTier }) {
+  // linha de energia: cenario espacial so faz sentido no escuro
+  const claroFX = useBento()
+  if (claroFX) return null
+
   // Linha SVG que sobe em degraus seguindo PILLAR_HEIGHTS
   // Largura por step: ajustamos pra somar 100% do container
   return null // Por simplicidade visual (e consistência cross-screen), o efeito
@@ -538,6 +549,10 @@ function ConnectingEnergyLine({ highestTier }) {
    STARS BACKGROUND
    ─────────────────────────────────────────── */
 function StaircaseStars() {
+  // estrelas de fundo: cenario espacial so faz sentido no escuro
+  const claroFX = useBento()
+  if (claroFX) return null
+
   const stars = useMemo(() => Array.from({ length: 30 }, (_, i) => {
     const seed = (i * 13 + 7) % 100
     return {
@@ -573,6 +588,7 @@ function StaircaseStars() {
    FOCUS PANEL — detalhe do rank em foco (atual/hover/clicado)
    ─────────────────────────────────────────── */
 function FocusPanel({ rank, contas, currentTier }) {
+  const claroFX = useBento()
   const isPrismatic = rank.primary === 'prismatic'
   const rgb = rank.rgb || '255,255,255'
   const isAchieved = currentTier >= rank.tier
@@ -624,7 +640,7 @@ function FocusPanel({ rank, contas, currentTier }) {
           width: 50, height: 50, borderRadius: 12,
           background: rankBackground(rank),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: `0 0 22px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.55)' : rank.glow}, inset 0 2px 0 rgba(255,255,255,0.28), 0 0 0 1px rgba(255,255,255,0.18)`,
+          boxShadow: claroFX ? '0 3px 10px rgba(0,0,0,0.12)' : `0 0 22px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.55)' : rank.glow}, inset 0 2px 0 rgba(255,255,255,0.28), 0 0 0 1px rgba(255,255,255,0.18)`,
           flexShrink: 0,
         }}>
           <RankIcon name={rank.icon} size={26} color={rankTextColor(rank)} />
@@ -633,14 +649,14 @@ function FocusPanel({ rank, contas, currentTier }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
             <h4 style={{
               fontFamily: 'var(--font-display, serif)', fontSize: 24, fontWeight: 400,
-              color: isPrismatic ? '#E0E0FF' : rank.primary,
+              color: claroFX ? rankPalette(rank.tier, true).ink : (isPrismatic ? '#E0E0FF' : rank.primary),
               margin: 0, letterSpacing: '-0.01em', lineHeight: 1,
-              textShadow: `0 0 14px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : rank.glow}`,
+              textShadow: claroFX ? 'none' : `0 0 14px ${rank.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : rank.glow}`,
             }}>{rank.name}</h4>
             {isCurrent && (
               <span style={{
                 fontSize: 9, fontWeight: 900, padding: '3px 9px', borderRadius: 999,
-                background: `rgba(${rgb},0.22)`, color: isPrismatic ? '#E0E0FF' : rank.primary,
+                background: `rgba(${rgb},0.22)`, color: claroFX ? rankPalette(rank.tier, true).ink : (isPrismatic ? '#E0E0FF' : rank.primary),
                 border: `1px solid rgba(${rgb},0.5)`, letterSpacing: '0.18em', textTransform: 'uppercase',
               }}>VOCÊ</span>
             )}

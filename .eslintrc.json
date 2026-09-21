@@ -14,7 +14,15 @@
   },
   "rules": {
     "no-undef": "error",
-    "react-hooks/rules-of-hooks": "error"
+    "react-hooks/rules-of-hooks": "error",
+    "no-use-before-define": [
+      "warn",
+      {
+        "functions": false,
+        "classes": false,
+        "variables": true
+      }
+    ]
   },
   "plugins": [
     "react-hooks"

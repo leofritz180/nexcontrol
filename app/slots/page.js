@@ -134,8 +134,8 @@ function SlotCard({ slot, index, isPro }) {
         <div style={{
           position: 'absolute', top: 10, left: 10, zIndex: 4,
           padding: '4px 10px', borderRadius: 7,
-          background: 'rgba(0,0,0,0.45)', border: '1px solid var(--b1)',
-          fontSize: 9, fontWeight: 700, color: 'var(--t2)',
+          background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.18)',
+          fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.86)',
           textTransform: 'uppercase', letterSpacing: '0.04em',
           backdropFilter: 'blur(4px)',
         }}>
@@ -164,12 +164,12 @@ function SlotCard({ slot, index, isPro }) {
               background: 'rgba(0,0,0,0.3)', border: '1px solid var(--b1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.8" strokeLinecap="round">
+              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth="1.8" strokeLinecap="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" />
                 <path d="M7 11V7a5 5 0 0110 0v4" />
               </svg>
             </div>
-            <span style={{ fontSize: 8, fontWeight: 600, color: 'var(--t4)', letterSpacing: '0.06em' }}>PRO</span>
+            <span style={{ fontSize: 8, fontWeight: 600, color: 'rgba(255,255,255,0.72)', letterSpacing: '0.06em' }}>PRO</span>
           </div>
         )}
       </div>

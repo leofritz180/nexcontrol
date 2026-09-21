@@ -390,11 +390,11 @@ function HeroFullBleed({ rate, totals, link, code }) {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 12,
             padding: '10px 14px', borderRadius: 10,
-            background: 'rgba(0,0,0,0.4)', border: '1px solid var(--b1)',
+            background: 'var(--fill-2)', border: '1px solid var(--b1)',
             backdropFilter: 'blur(8px)', marginBottom: 80,
             maxWidth: '100%', overflow: 'hidden',
           }}>
-          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="var(--t3)" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 12, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link}</span>
           <span style={{ width: 1, height: 14, background: 'var(--fill-3)', flexShrink: 0 }} />
           <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 10, color: 'var(--t3)', letterSpacing: '0.1em', flexShrink: 0 }}>
@@ -1055,7 +1055,7 @@ function PixSection({ data, userEmail, onRefresh }) {
 
           <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
             <select value={pixType} onChange={e => setPixType(e.target.value)}
-              style={{ padding: '14px 14px', borderRadius: 11, background: 'rgba(0,0,0,0.5)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'inherit', cursor: 'pointer', outline: 'none' }}>
+              style={{ padding: '14px 14px', borderRadius: 11, background: 'var(--input)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'inherit', cursor: 'pointer', outline: 'none' }}>
               <option value="cpf">CPF</option>
               <option value="email">E-mail</option>
               <option value="phone">Telefone</option>
@@ -1063,7 +1063,7 @@ function PixSection({ data, userEmail, onRefresh }) {
             </select>
             <input value={pixKey} onChange={e => setPixKey(e.target.value)}
               placeholder={pixType === 'cpf' ? '000.000.000-00' : pixType === 'email' ? 'voce@email.com' : pixType === 'phone' ? '+55 31 99999-9999' : 'chave aleatória'}
-              style={{ flex: 1, padding: '14px 14px', borderRadius: 11, background: 'rgba(0,0,0,0.5)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'var(--mono, monospace)', outline: 'none' }} />
+              style={{ flex: 1, padding: '14px 14px', borderRadius: 11, background: 'var(--input)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 13, fontFamily: 'var(--mono, monospace)', outline: 'none' }} />
           </div>
 
           <button onClick={save} disabled={saving || !pixKey.trim()}

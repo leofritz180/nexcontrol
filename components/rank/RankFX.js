@@ -44,10 +44,14 @@ function ApexStarField() {
 /* ───────────────────────────────────────────
    Aura ambiente: glow de fundo refinado por rank
    ─────────────────────────────────────────── */
-export function RankAura({ rank, intensity = 1, className }) {
-  // RankAura e efeito de neon: no bento claro ele vira mancha, entao sai
+// RankAura e cenario de neon: fora do tema escuro ele nao entra.
+// O wrapper tem sempre um hook so, entao a contagem nunca muda (React #300).
+export function RankAura(props) {
   const claroFX = useBento()
   if (claroFX) return null
+  return <RankAuraEscuro {...props} />
+}
+function RankAuraEscuro({ rank, intensity = 1, className }) {
 
   if (!rank) return null
   const isApex = rank.tier === 15
@@ -137,10 +141,14 @@ export function RankAura({ rank, intensity = 1, className }) {
 /* ───────────────────────────────────────────
    Partículas orbitais: usadas em ranks elite
    ─────────────────────────────────────────── */
-export function OrbitalParticles({ rank, count = 4, radius = 80, size = 3, speed = 14 }) {
-  // OrbitalParticles e efeito de neon: no bento claro ele vira mancha, entao sai
+// OrbitalParticles e cenario de neon: fora do tema escuro ele nao entra.
+// O wrapper tem sempre um hook so, entao a contagem nunca muda (React #300).
+export function OrbitalParticles(props) {
   const claroFX = useBento()
   if (claroFX) return null
+  return <OrbitalParticlesEscuro {...props} />
+}
+function OrbitalParticlesEscuro({ rank, count = 4, radius = 80, size = 3, speed = 14 }) {
 
   if (!rank) return null
   const isApex = rank.tier === 15
@@ -188,10 +196,14 @@ export function OrbitalParticles({ rank, count = 4, radius = 80, size = 3, speed
 /* ───────────────────────────────────────────
    Border glow animado (gradient correndo)
    ─────────────────────────────────────────── */
-export function GlowBorder({ rank, thickness = 1, intensity = 1, animate: animateBorder = true }) {
-  // GlowBorder e efeito de neon: no bento claro ele vira mancha, entao sai
+// GlowBorder e cenario de neon: fora do tema escuro ele nao entra.
+// O wrapper tem sempre um hook so, entao a contagem nunca muda (React #300).
+export function GlowBorder(props) {
   const claroFX = useBento()
   if (claroFX) return null
+  return <GlowBorderEscuro {...props} />
+}
+function GlowBorderEscuro({ rank, thickness = 1, intensity = 1, animate: animateBorder = true }) {
 
   if (!rank) return null
   const rgb = rank.rgb || '255,255,255'
@@ -253,10 +265,14 @@ export function ShinePass({ delay = 0, duration = 3, interval = 6, color = 'rgba
 /* ───────────────────────────────────────────
    Texturas overlay por signature
    ─────────────────────────────────────────── */
-export function SignatureOverlay({ rank }) {
-  // SignatureOverlay e efeito de neon: no bento claro ele vira mancha, entao sai
+// SignatureOverlay e cenario de neon: fora do tema escuro ele nao entra.
+// O wrapper tem sempre um hook so, entao a contagem nunca muda (React #300).
+export function SignatureOverlay(props) {
   const claroFX = useBento()
   if (claroFX) return null
+  return <SignatureOverlayEscuro {...props} />
+}
+function SignatureOverlayEscuro({ rank }) {
 
   if (!rank) return null
   const sig = rank.signature

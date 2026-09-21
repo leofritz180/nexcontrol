@@ -14,10 +14,14 @@ import { motion } from 'framer-motion'
  *  - rank: rank atual (pra cor do glow ambiente)
  *  - density: 'low' | 'normal' | 'high' — nº de partículas
  */
-export default function RankAmbient({ rank, density = 'normal', className }) {
-  // a nebulosa foi feita pro fundo preto; no bento claro nao entra
+// RankAmbient e cenario de neon: fora do tema escuro ele nao entra.
+// O wrapper tem sempre um hook so, entao a contagem nunca muda (React #300).
+export default function RankAmbient(props) {
   const claroFX = useBento()
   if (claroFX) return null
+  return <RankAmbientEscuro {...props} />
+}
+function RankAmbientEscuro({ rank, density = 'normal', className }) {
 
   const counts = { low: 14, normal: 24, high: 36 }
   const particleCount = counts[density] || counts.normal

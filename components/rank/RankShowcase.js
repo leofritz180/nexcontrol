@@ -499,10 +499,14 @@ function PillarColumn({ rank, height, active, isApex, isCurrent, isAchieved }) {
   )
 }
 
-function ApexPillarStardust() {
-  // poeira do Apex: cenario espacial so faz sentido no escuro
+// ApexPillarStardust e cenario de neon: fora do tema escuro ele nao entra.
+// O wrapper tem sempre um hook so, entao a contagem nunca muda (React #300).
+function ApexPillarStardust(props) {
   const claroFX = useBento()
   if (claroFX) return null
+  return <ApexPillarStardustEscuro {...props} />
+}
+function ApexPillarStardustEscuro() {
 
   const dust = useMemo(() => Array.from({ length: 4 }, (_, i) => ({
     x: 15 + (i * 22) % 70,
@@ -533,10 +537,14 @@ function ApexPillarStardust() {
 /* ───────────────────────────────────────────
    CONNECTING ENERGY LINE — entre os topos dos pilares
    ─────────────────────────────────────────── */
-function ConnectingEnergyLine({ highestTier }) {
-  // linha de energia: cenario espacial so faz sentido no escuro
+// ConnectingEnergyLine e cenario de neon: fora do tema escuro ele nao entra.
+// O wrapper tem sempre um hook so, entao a contagem nunca muda (React #300).
+function ConnectingEnergyLine(props) {
   const claroFX = useBento()
   if (claroFX) return null
+  return <ConnectingEnergyLineEscuro {...props} />
+}
+function ConnectingEnergyLineEscuro({ highestTier }) {
 
   // Linha SVG que sobe em degraus seguindo PILLAR_HEIGHTS
   // Largura por step: ajustamos pra somar 100% do container
@@ -548,10 +556,14 @@ function ConnectingEnergyLine({ highestTier }) {
 /* ───────────────────────────────────────────
    STARS BACKGROUND
    ─────────────────────────────────────────── */
-function StaircaseStars() {
-  // estrelas de fundo: cenario espacial so faz sentido no escuro
+// StaircaseStars e cenario de neon: fora do tema escuro ele nao entra.
+// O wrapper tem sempre um hook so, entao a contagem nunca muda (React #300).
+function StaircaseStars(props) {
   const claroFX = useBento()
   if (claroFX) return null
+  return <StaircaseStarsEscuro {...props} />
+}
+function StaircaseStarsEscuro() {
 
   const stars = useMemo(() => Array.from({ length: 30 }, (_, i) => {
     const seed = (i * 13 + 7) % 100

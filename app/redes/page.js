@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import RedesBento from '../../components/modules/RedesBento'
 import { ModuloEsqueleto } from '../../components/ui/bento'
 import { isNex2 } from '../../lib/theme-v2'
+import { useAlimentarPaleta } from '../../lib/paletaDados'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
@@ -696,6 +697,10 @@ export default function RedesPage() {
 
     return sorted
   }, [metas, remessas])
+
+  // Empresta as redes pra busca do Ctrl+K. Fica AQUI, antes do return de
+  // carregamento: hook depois de return condicional quebra a ordem (React #300).
+  useAlimentarPaleta({ redes: redesData }, [redesData])
 
   /* ── KPIs ── */
   const kpis = useMemo(() => {

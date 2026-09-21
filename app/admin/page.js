@@ -62,6 +62,7 @@ import AdminBento from '../../components/admin/AdminBento'
 import MyOpsBento from '../../components/admin/MyOpsBento'
 import NovaOperacaoV2 from '../../components/modules/NovaOperacaoV2'
 import { isNex2 } from '../../lib/theme-v2'
+import { useAlimentarPaleta } from '../../lib/paletaDados'
 import RankShowcase from '../../components/rank/RankShowcase'
 import RankIcon from '../../components/rank/RankIcon'
 import RankAmbient from '../../components/rank/RankAmbient'
@@ -882,6 +883,12 @@ export default function AdminPage() {
   },[operators,metas,remessas,costs,metodosData])
 
   // Hero card: lucro final por periodo — BRUTO por periodo, custos TOTAIS fixos
+  // Empresta o que ja esta em memoria pra busca do Ctrl+K — sem nova query.
+  useAlimentarPaleta(
+    { metas, operadores: ranking, aoNovaMeta: () => { setTab('myops'); setTimeout(() => setMyShowForm(true), 300) } },
+    [metas, ranking]
+  )
+
   const heroLucro = useMemo(()=>{
     // Lucro atribuido ao dia/mes em que a meta foi CRIADA (created_at), nao ao fechamento.
     // Ex: meta criada 29/06 mas fechada 01/07 conta em junho, nao em julho.

@@ -4,12 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { isRedesign } from '../lib/redesign'
 import { isNex2 } from '../lib/theme-v2'
+import { useDadosDaPaleta } from '../lib/paletaDados'
 const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false })
 const QuickNotifyPanel = dynamic(() => import('./QuickNotifyPanel'), { ssr: false })
 const VoiceAnnounceCard = dynamic(() => import('./VoiceAnnounceCard'), { ssr: false })
 const RedesignHeader = dynamic(() => import('./RedesignHeader'), { ssr: false })
 const DockPilula = dynamic(() => import('./v2/DockPilula'), { ssr: false })
 const BemVindo20 = dynamic(() => import('./v2/BemVindo20'), { ssr: false })
+const PaletaComandos = dynamic(() => import('./v2/PaletaComandos'), { ssr: false })
 const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
 const BettifyPromo = dynamic(() => import('./BettifyPromo'), { ssr: false })
 const NetworkLaunchBanner = dynamic(() => import('./NetworkLaunchBanner'), { ssr: false })
@@ -23,6 +25,8 @@ const pageVariants = {
 }
 
 export default function AppLayout({ children, userName, userEmail, isAdmin, tenant, subscription, userId, tenantId }) {
+  // dados que a pagina atual emprestou pra busca do Ctrl+K
+  const dadosPaleta = useDadosDaPaleta()
   const pathname = usePathname()
 
   return (
@@ -38,6 +42,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       />
       <DockPilula ativo={isNex2(userEmail)} />
       <BemVindo20 email={userEmail} ativo={isNex2(userEmail)} />
+      <PaletaComandos ativo={isNex2(userEmail)} isAdmin={isAdmin} {...dadosPaleta} />
       <div style={{ marginLeft: isRedesign(userEmail) ? 76 : 248 }} className="app-content">
         {/* Loja Proxy e Network: sem cabeçalho vermelho — imersão total (chat/loja) */}
         {isRedesign(userEmail) && !isNex2(userEmail) && pathname !== '/proxy' && pathname !== '/network' && <RedesignHeader />}

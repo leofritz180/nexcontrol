@@ -6,6 +6,9 @@ import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 import { aulasEnabled } from '../../lib/aulas-tenants'
+import AulasBento from '../../components/modules/AulasBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
+import { isNex2 } from '../../lib/theme-v2'
 
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 const ease = [0.33, 1, 0.68, 1]
@@ -269,7 +272,13 @@ export default function AulasVipPage() {
     init()
   }, [router])
 
-  if (loading) return (
+  // No V2 o esqueleto tem a forma dos cards, então o layout não pula quando
+  // os cursos chegam. Fora dele, segue o loader de vídeo de sempre.
+  if (loading) return isNex2(user?.email) ? (
+    <AppLayout userName={profile?.name} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
+    </AppLayout>
+  ) : (
     <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center' }}>
         <motion.div animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }}>
@@ -293,6 +302,23 @@ export default function AulasVipPage() {
 
   return (
     <AppLayout userName={profile?.name} userEmail={user?.email} isAdmin={isAdmin} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
+      {isNex2(user?.email) ? (
+        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 28px' }}>
+          <AulasBento
+            cursos={filtered}
+            progresso={progress}
+            busca={search}
+            onBusca={setSearch}
+            // O herói só aparece sem busca ativa — igual à tela antiga.
+            destaque={search ? null : featured}
+            isAdmin={isAdmin}
+            continuar={continueWatching}
+            categorias={Object.entries(cats)}
+            onAbrirCurso={id => router.push(`/aulas/${id}`)}
+            onGerenciar={() => router.push('/aulas/admin')}
+          />
+        </div>
+      ) : (<>
       {/* Red ambient glows */}
       <div style={{ position: 'fixed', top: '-15%', left: '-10%', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.08), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
       <div style={{ position: 'fixed', bottom: '-10%', right: '-5%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,53,0.05), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0 }} />
@@ -360,6 +386,7 @@ export default function AulasVipPage() {
           </div>
         </div>
       </div>
+      </>)}
       <RouteTour tourId="aulas" />
     </AppLayout>
   )

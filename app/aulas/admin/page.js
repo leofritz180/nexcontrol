@@ -5,6 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../../lib/supabase/client'
 import AppLayout from '../../../components/AppLayout'
 import { aulasEnabled } from '../../../lib/aulas-tenants'
+import AulasAdminBento, { FormularioCurso } from '../../../components/modules/AulasAdminBento'
+import { ModuloEsqueleto } from '../../../components/ui/bento'
+import { Folha } from '../../../components/ui/folha'
+import { isNex2 } from '../../../lib/theme-v2'
 
 const ADMIN_EMAIL = 'leofritz180@gmail.com'
 const AMBER = 'rgba(255,255,255,0.78)'
@@ -369,16 +373,42 @@ export default function AulasAdminPage() {
     }))
   }
 
-  if (loading) return (
+  // No V2 o esqueleto tem a forma dos cards; fora dele, o spinner de sempre.
+  if (loading) return isNex2(user?.email) ? (
+    <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
+      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
+    </AppLayout>
+  ) : (
     <div style={{ minHeight: '100vh', background: 'var(--base)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Spinner />
     </div>
   )
 
   const getName = p => p?.nome || p?.email?.split('@')[0] || 'Admin'
+  const v2 = isNex2(user?.email)
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={true} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
+      {v2 ? (
+        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '32px 28px' }}>
+          <AulasAdminBento
+            cursos={courses} modulos={modules} aulas={lessons}
+            expandido={expandedCourse} onExpandir={setExpandedCourse}
+            onNovoCurso={() => { setEditCourse(null); setShowForm(true) }}
+            onEditarCurso={c => { setEditCourse(c); setShowForm(true) }}
+            onExcluirCurso={deleteCourse}
+            onPublicarCurso={toggleCourseStatus}
+            onNovoModulo={addModule}
+            onSalvarModulo={saveModule}
+            onExcluirModulo={deleteModule}
+            onMoverModulo={moveModule}
+            onNovaAula={addLesson}
+            onSalvarAula={saveLesson}
+            onExcluirAula={deleteLesson}
+            onMoverAula={moveLesson}
+          />
+        </div>
+      ) : (
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
         {/* Header */}
         <motion.div {...fadeUp(0)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
@@ -465,6 +495,23 @@ export default function AulasAdminPage() {
           )
         })}
       </div>
+      )}
+
+      {/* Folha do formulário de curso — FORA do ramo condicional, como manda
+          o padrão do V2. Só o visual novo usa modal; o antigo segue com o
+          painel em linha logo abaixo do cabeçalho. A `key` garante que os
+          campos recarreguem ao trocar de curso sem fechar a folha. */}
+      {v2 && (
+        <Folha aberto={showForm} aoFechar={() => { if (!saving) { setShowForm(false); setEditCourse(null) } }} largura={580}>
+          <FormularioCurso
+            key={editCourse?.id || 'novo'}
+            inicial={editCourse}
+            salvando={saving}
+            onSalvar={saveCourse}
+            onCancelar={() => { setShowForm(false); setEditCourse(null) }}
+          />
+        </Folha>
+      )}
     </AppLayout>
   )
 }

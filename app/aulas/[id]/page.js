@@ -4,6 +4,9 @@ import { useRouter, useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../../lib/supabase/client'
 import AppLayout from '../../../components/AppLayout'
+import AulaBento from '../../../components/modules/AulaBento'
+import { ModuloEsqueleto } from '../../../components/ui/bento'
+import { isNex2 } from '../../../lib/theme-v2'
 
 const AMBER = 'rgba(255,255,255,0.78)'
 const AMBER_DK = '#D97706'
@@ -114,14 +117,50 @@ export default function CourseDetailPage() {
   // Find next incomplete lesson
   const allSorted = modules.flatMap(m => lessons.filter(l => l.module_id === m.id && l.status === 'published').sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)))
   const nextLesson = allSorted.find(l => !progress.has(l.id))
+  // Duração somada das aulas publicadas — só o V2 exibe, mas o cálculo é
+  // barato e fica fora de qualquer ramo condicional.
+  const totalDuracao = allSorted.reduce((s, l) => s + Number(l.duration_min || 0), 0)
+  const rotuloCta = percent > 0 && percent < 100 ? 'Continuar curso' : percent === 100 ? 'Rever curso' : 'Começar agora'
+  // Mesmo destino do botão antigo: próxima não assistida, senão a primeira.
+  function abrirProxima() {
+    if (nextLesson) router.push(`/aulas/${courseId}/${nextLesson.id}`)
+    else if (allSorted.length) router.push(`/aulas/${courseId}/${allSorted[0].id}`)
+  }
 
-  if (loading) return (
+  if (loading) return isNex2(user?.email) ? (
+    <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
+    </AppLayout>
+  ) : (
     <div style={{ minHeight: '100vh', background: 'var(--base)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Spinner />
     </div>
   )
 
   const getName = p => p?.nome || p?.email?.split('@')[0] || 'User'
+
+  if (isNex2(user?.email)) return (
+    <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 28px' }}>
+        <AulaBento
+          curso={course}
+          modulos={modules}
+          aulasPorModulo={modId => lessons.filter(l => l.module_id === modId && l.status === 'published').sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))}
+          concluidas={progress}
+          totalAulas={totalLessons}
+          totalConcluidas={completedLessons}
+          pct={percent}
+          proxima={nextLesson || null}
+          rotuloCta={rotuloCta}
+          duracaoTotal={totalDuracao}
+          expandido={expandedMod}
+          onExpandir={setExpandedMod}
+          onAbrirAula={id => router.push(`/aulas/${courseId}/${id}`)}
+          onContinuar={abrirProxima}
+        />
+      </div>
+    </AppLayout>
+  )
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>

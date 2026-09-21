@@ -4,6 +4,9 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
+import PlanejamentoBento from '../../components/modules/PlanejamentoBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
+import { isNex2 } from '../../lib/theme-v2'
 
 const OWNER = 'leofritz180@gmail.com'
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -203,11 +206,17 @@ export default function PlanejamentoPage() {
     if (expandedId === id) setExpandedId(null)
   }
 
+  // No V2 o esqueleto tem a forma dos cards, então nada pula quando as
+  // linhas chegam. Fora dele, segue o spinner de sempre.
   if (loading) return (
     <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} userId={user?.id} tenantId={profile?.tenant_id}>
+      {isNex2(user?.email) ? (
+        <div style={{ maxWidth: 1800, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
+      ) : (
       <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="spinner" style={{ width: 22, height: 22, borderTopColor: '#e53935' }} />
       </main>
+      )}
     </AppLayout>
   )
 
@@ -243,6 +252,65 @@ export default function PlanejamentoPage() {
   const opColors = ['rgba(255,255,255,0.78)','rgba(255,255,255,0.78)','#ec4899','#06b6d4','#f97316','#84cc16','#f43f5e','#14b8a6']
   const opColorMap = {}
   operators.forEach((op, i) => { opColorMap[op.id] = opColors[i % opColors.length] })
+
+  // ── Ajudantes usados só pelo ramo V2 ──────────────────────────────────
+  // Escolher operador continua sendo DUAS gravações (id + nome), igual ao
+  // <select> antigo — o nome fica desnormalizado na linha de propósito.
+  function escolherOperador(rowId, opId) {
+    const op = operators.find(o => o.id === opId)
+    updateField(rowId, 'operator_id', opId || null)
+    updateField(rowId, 'operator_name', op ? getName(op) : '')
+  }
+
+  function copiarLink(r) {
+    const text = String(r.link || '').trim()
+    if (!text) return
+    try {
+      Promise.resolve(navigator.clipboard.writeText(text))
+        .then(() => { setCopiedLink(r.id); setTimeout(() => setCopiedLink(null), 1500) })
+        .catch(() => {})
+    } catch {}
+  }
+
+  if (isNex2(user?.email)) return (
+    <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} userId={user?.id} tenantId={profile?.tenant_id}>
+      <main style={{ minHeight: '100vh', padding: '32px 28px 80px', maxWidth: 1800, margin: '0 auto' }}>
+        <PlanejamentoBento
+          linhas={filtered}
+          todas={rows}
+          operadores={operators.map(op => ({ id: op.id, nome: getName(op) }))}
+          redes={REDES}
+          statuses={STATUSES}
+          pegarStatus={getStatus}
+          linhaVazia={isRowEmpty}
+          filtro={filter}
+          onFiltro={setFilter}
+          kpis={{
+            operacoes: totalRows,
+            depositantes: totalContas,
+            pctConcluido: pctDone,
+            comPrejuizo: withPrej,
+            prejuizo: totalPrej,
+            salarioBau: totalSalBau,
+            lucroTotal: totalLucro,
+            lucroParcial: totalLucroParcial,
+            problemas,
+          }}
+          saveStatus={saveStatus}
+          copiado={copiedLink}
+          onCopiar={copiarLink}
+          expandido={expandedId}
+          onExpandir={setExpandedId}
+          onCampo={updateField}
+          onOperador={escolherOperador}
+          onCiclarStatus={cycleStatus}
+          onNovaLinha={addRow}
+          onExcluir={deleteRow}
+          onSalvarTudo={refreshAndSave}
+        />
+      </main>
+    </AppLayout>
+  )
 
   return (
     <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} userId={user?.id} tenantId={profile?.tenant_id}>

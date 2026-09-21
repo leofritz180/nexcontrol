@@ -4,3 +4,6 @@ node_modules/
 .env
 
 .vercel
+
+# capturas de tela (contem sessao de login)
+.telas/

@@ -160,7 +160,7 @@ export default function SignupPage() {
           Conta criada
         </h1>
         <p style={{ fontSize: 13.5, color: '#6c6c78', margin: '0 0 26px', lineHeight: 1.55 }}>
-          Verifique seu email para confirmar o cadastro.
+          Verifique seu e-mail para confirmar o cadastro.
         </p>
         <Link href="/login" className="nxa-branco" style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -179,18 +179,18 @@ export default function SignupPage() {
     <AuthSplitV2
       frase="Comece a enxergar o lucro real da operação."
       apoio="Cadastre a operação, lance as metas e as remessas: o painel fecha o dia sozinho, sem planilha."
-      rodape="Conexao segura · Dados criptografados"
+      rodape="Conexão segura · Dados criptografados"
     >
       <h1 style={{ fontSize: 31, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, color: 'var(--t1)', margin: '0 0 8px' }}>
         Criar conta NexControl
       </h1>
       <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: '0 0 28px' }}>
-        Ja tem conta? <LinkAuth href="/login">Entrar</LinkAuth>.
+        Já tem conta? <LinkAuth href="/login">Entrar</LinkAuth>.
       </p>
 
       <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
         <Campo
-          rotulo="Nome da operacao" valor={tenantName} aoMudar={setTenantName}
+          rotulo="Nome da operação" valor={tenantName} aoMudar={setTenantName}
           placeholder="Ex: Minha Empresa" obrigatorio icone={ICO_OPERACAO}
         />
 
@@ -211,7 +211,7 @@ export default function SignupPage() {
 
         <Campo
           rotulo="Senha" tipo={showPass ? 'text' : 'password'} valor={pass} aoMudar={setPass}
-          placeholder="Minimo 6 caracteres" obrigatorio minLength={6} autoComplete="new-password"
+          placeholder="Mínimo 6 caracteres" obrigatorio minLength={6} autoComplete="new-password"
           icone={ICO_SENHA}
           sufixo={<OlhoSenha mostrando={showPass} aoAlternar={() => setShowPass(!showPass)} />}
         />
@@ -230,12 +230,12 @@ export default function SignupPage() {
         </AnimatePresence>
 
         <div style={{ marginTop: 4 }}>
-          <BotaoAuth carregando={loading} textoCarregando="Criando conta...">Criar conta</BotaoAuth>
+          <BotaoAuth carregando={loading} textoCarregando="Criando conta…">Criar conta</BotaoAuth>
         </div>
       </form>
 
       <p style={{ fontSize: 12, color: 'var(--t2)', marginTop: 18, textAlign: 'center' }}>
-        Pagamento via PIX · Ativacao na hora · Cancele quando quiser
+        Pagamento via PIX · Ativação na hora · Cancele quando quiser
       </p>
     </AuthSplitV2>
   )

@@ -39,13 +39,13 @@ export default function LoginPage() {
     e.preventDefault()
     setForgotError(''); setForgotMsg('')
     const em = (forgotEmail || '').trim()
-    if (!em || !em.includes('@')) { setForgotError('Digite um email valido.'); return }
+    if (!em || !em.includes('@')) { setForgotError('Digite um e-mail válido.'); return }
     setForgotLoading(true)
     try {
       const redirectTo = typeof window !== 'undefined' ? (window.location.origin + '/reset-password') : undefined
       const { error: err } = await supabase.auth.resetPasswordForEmail(em, { redirectTo })
       if (err) { setForgotError(translateAuthError(err.message)); setForgotLoading(false); return }
-      setForgotMsg('Se este email estiver cadastrado, voce recebera um link para redefinir a senha nos proximos minutos. Verifique tambem a caixa de spam.')
+      setForgotMsg('Se este e-mail estiver cadastrado, você vai receber um link para redefinir a senha nos próximos minutos. Verifique também a caixa de spam.')
       setForgotLoading(false)
     } catch (e) {
       setForgotError(e?.message || 'Erro ao enviar email. Tente novamente.')
@@ -92,7 +92,7 @@ export default function LoginPage() {
         10000, 'signin'
       )
       if (r.timeout) {
-        setError('Conexao lenta. Tente novamente.')
+        setError('Conexão lenta. Tente novamente.')
         setLoading(false)
         return
       }
@@ -195,14 +195,14 @@ export default function LoginPage() {
     <AuthSplitV2
       frase="Sua operação inteira em uma tela só."
       apoio="Metas, remessas, operadores e o lucro do dia — tudo calculado sozinho, no mesmo lugar."
-      rodape="Conexao segura · Dados criptografados"
+      rodape="Conexão segura · Dados criptografados"
       sobreposicao={modalSenha}
     >
       <h1 style={{ fontSize: 31, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, color: 'var(--t1)', margin: '0 0 8px' }}>
         Entrar no NexControl
       </h1>
       <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: '0 0 30px' }}>
-        Nao tem conta? <LinkAuth href="/signup">Criar conta</LinkAuth>.
+        Não tem conta? <LinkAuth href="/signup">Criar conta</LinkAuth>.
       </p>
 
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -245,7 +245,7 @@ export default function LoginPage() {
         </AnimatePresence>
 
         <div style={{ marginTop: 4 }}>
-          <BotaoAuth carregando={loading} textoCarregando="Autenticando...">Entrar</BotaoAuth>
+          <BotaoAuth carregando={loading} textoCarregando="Autenticando…">Entrar</BotaoAuth>
         </div>
       </form>
     </AuthSplitV2>

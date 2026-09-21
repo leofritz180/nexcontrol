@@ -55,8 +55,8 @@ export default function ResetPasswordPage() {
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
-    if (pass.length < 6) { setError('A senha deve ter no minimo 6 caracteres.'); return }
-    if (pass !== confirm) { setError('As senhas nao coincidem.'); return }
+    if (pass.length < 6) { setError('A senha deve ter no mínimo 6 caracteres.'); return }
+    if (pass !== confirm) { setError('As senhas não coincidem.'); return }
     setLoading(true)
     try {
       const { error: err } = await supabase.auth.updateUser({ password: pass })
@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
     <AuthSplitV2
       frase="Uma senha nova, e a operação continua."
       apoio="Escolha uma senha que só você saiba. Depois de salvar, você volta para o login."
-      rodape="Conexao segura · Dados criptografados"
+      rodape="Conexão segura · Dados criptografados"
     >
       <h1 style={{ fontSize: 31, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.05, color: 'var(--t1)', margin: '0 0 8px' }}>
         Redefinir senha
@@ -132,7 +132,7 @@ export default function ResetPasswordPage() {
             )}
           </AnimatePresence>
 
-          <BotaoAuth carregando={loading} textoCarregando="Alterando...">Salvar nova senha</BotaoAuth>
+          <BotaoAuth carregando={loading} textoCarregando="Alterando…">Salvar nova senha</BotaoAuth>
         </form>
       )}
 

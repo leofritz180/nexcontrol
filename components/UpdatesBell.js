@@ -5,11 +5,13 @@ import { supabase } from '../lib/supabase/client'
 
 const ease = [0.33, 1, 0.68, 1]
 
+// Os tons saem dos tokens do tema: assim valem no claro e no Noir sem
+// duas tabelas. O azul de "Melhoria" saiu pela regra da paleta enxuta.
 const CATEGORY_STYLE = {
-  feature: { label: 'Novidade', color: 'var(--profit)', bg: 'rgba(209,250,229,0.08)', border: 'rgba(209,250,229,0.22)' },
-  fix: { label: 'Correção', color: 'var(--warn)', bg: 'rgba(252,211,77,0.08)', border: 'rgba(252,211,77,0.22)' },
-  improvement: { label: 'Melhoria', color: 'var(--t2)', bg: 'rgba(147,197,253,0.08)', border: 'rgba(147,197,253,0.22)' },
-  important: { label: 'Importante', color: 'var(--loss)', bg: 'rgba(252,165,165,0.08)', border: 'rgba(252,165,165,0.22)' },
+  feature:     { label: 'Novidade',   color: 'var(--profit)', bg: 'var(--profit-dim)', border: 'var(--profit-border)' },
+  fix:         { label: 'Correção',   color: 'var(--warn)',   bg: 'var(--warn-dim)',   border: 'var(--warn-border)' },
+  improvement: { label: 'Melhoria',   color: 'var(--t2)',     bg: 'var(--fill-2)',     border: 'var(--b1)' },
+  important:   { label: 'Importante', color: 'var(--loss)',   bg: 'var(--loss-dim)',   border: 'var(--loss-border)' },
 }
 
 function timeAgo(iso) {
@@ -28,6 +30,8 @@ export default function UpdatesBell() {
   const [updates, setUpdates] = useState([])
   const [unread, setUnread] = useState(0)
   const [loaded, setLoaded] = useState(false)
+  // filtro da central: 'todas' | 'novas' | uma categoria
+  const [filtro, setFiltro] = useState('todas')
   const panelRef = useRef(null)
 
   async function fetchUpdates(uid) {
@@ -78,7 +82,8 @@ export default function UpdatesBell() {
   function openPanel() {
     setOpen(true)
     // Marca como lido apos 2s de visualizacao
-    if (unread > 0) setTimeout(() => { markAllRead() }, 2000)
+    // Antes isto marcava tudo como lido 2s depois de abrir, e a novidade
+    // sumia antes de o usuario ler. Agora quem marca e o botao.
   }
 
   if (!userId || !loaded) return null
@@ -162,14 +167,34 @@ export default function UpdatesBell() {
                     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </button>
                 </div>
-                {unread > 0 && (
-                  <p style={{ fontSize: 12, color: 'var(--t2)', margin: '4px 0 0' }}>{unread} {unread === 1 ? 'novidade' : 'novidades'}</p>
-                )}
+                {/* filtro + marcar todas: antes o painel so listava e marcava
+                    tudo sozinho depois de 2s. */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                    {[['todas', 'Todas'], ['novas', 'Não lidas'], ['feature', 'Novidade'], ['fix', 'Correção'], ['important', 'Importante']].map(([k, l]) => {
+                      const on = filtro === k
+                      return (
+                        <button key={k} type="button" onClick={() => setFiltro(k)}
+                          style={{ padding: '5px 11px', borderRadius: 20, cursor: 'pointer', fontFamily: 'inherit', fontSize: 10.5, fontWeight: 800,
+                            border: on ? 'none' : '1px solid var(--b1)', background: on ? '#15151a' : 'transparent',
+                            color: on ? '#fff' : 'var(--t3)', transition: 'background .15s ease' }}>
+                          {l}{k === 'novas' && unread > 0 ? ` ${unread}` : ''}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {unread > 0 && (
+                    <button type="button" onClick={markAllRead}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 11.5, fontWeight: 700, color: 'var(--t3)', padding: 4, whiteSpace: 'nowrap' }}>
+                      Marcar todas
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Lista */}
               <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 32px' }}>
-                {updates.length === 0 ? (
+                {updates.filter(u => filtro === 'todas' ? true : filtro === 'novas' ? !u.read : u.category === filtro).length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '40px 12px' }}>
                     <div style={{ width: 52, height: 52, borderRadius: 13, background: 'var(--fill-1)', border: '1px solid var(--b1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
                       <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
@@ -179,7 +204,9 @@ export default function UpdatesBell() {
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {updates.map((u, i) => {
+                    {updates
+                      .filter(u => filtro === 'todas' ? true : filtro === 'novas' ? !u.read : u.category === filtro)
+                      .map((u, i) => {
                       const cat = CATEGORY_STYLE[u.category] || CATEGORY_STYLE.feature
                       return (
                         <motion.div key={u.id}

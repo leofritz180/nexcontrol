@@ -2201,3 +2201,74 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 }
 .nx-bento.nx-noir ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.16); }
 
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   V2 · CELULAR
+
+   No desktop a hierarquia e rail (esquerda) + dock (rodape). No celular
+   os dois competiriam pelo mesmo canto, entao o rail vira gaveta (ja era
+   assim) e o DOCK vira a barra de baixo — o padrao que todo mundo espera
+   num app de telefone.
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* o conteudo ocupa a largura toda: sem rail fixo */
+  .nx-bento .app-content { margin-left: 0 !important; padding-bottom: 96px; }
+  .nx-bento .app-content > div { padding-top: 14px; }
+
+  /* dock colado embaixo, de ponta a ponta, respeitando a area segura */
+  .nx-bento .tabs-scroll {
+    left: 0 !important; right: 0 !important; bottom: 0 !important;
+    max-width: 100% !important; width: 100% !important;
+    margin: 0 !important; border-radius: 22px 22px 0 0 !important;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) !important;
+    justify-content: space-around !important;
+    box-shadow: 0 -8px 28px rgba(0,0,0,0.22) !important;
+  }
+  .nx-bento .tabs-scroll button {
+    flex: 1; min-width: 0; padding: 9px 6px !important; font-size: 11px !important;
+    text-overflow: ellipsis; overflow: hidden;
+  }
+  /* a pilula deslizante nao cabe numa barra de ponta a ponta */
+  .nx-bento .tabs-scroll > .nx-dock-pilula { display: none !important; }
+  .nx-bento .tabs-scroll button[data-active="true"] {
+    background: #ffffff !important; color: #15151a !important;
+  }
+
+  /* cards em coluna unica e tira em 2x2 */
+  .nx-bento .bk-tira { grid-template-columns: repeat(2, 1fr) !important; }
+  .nx-bento .ab-r1, .nx-bento .ab-r2, .nx-bento .bk-2,
+  .nx-bento .rc-grid, .nx-bento .fc-grid, .nx-bento .afb-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* numero grande do heroi nao pode estourar a tela */
+  .nx-bento [style*="font-size: 42px"] { font-size: 32px !important; }
+  .nx-bento [style*="font-size: 38px"] { font-size: 30px !important; }
+  .nx-bento [style*="font-size: 34px"] { font-size: 28px !important; }
+
+  /* folhas (modais) ocupam a tela quase toda, coladas embaixo */
+  .nx-bento div[style*="position: fixed"] > div[style*="border-radius: 26px"] {
+    max-height: calc(100dvh - 24px) !important;
+  }
+
+  /* a paleta de comandos desce: 12vh no celular joga ela pro meio */
+  .nx-bento div[style*="padding: 12vh 20px 20px"] { padding: 6vh 12px 12px !important; }
+
+  /* o aviso do atalho G nao faz sentido sem teclado */
+  .nx-bento [aria-hidden] .nx-atalho-g { display: none !important; }
+}
+
+@media (max-width: 480px) {
+  .nx-bento .bk-tira { grid-template-columns: 1fr 1fr !important; }
+  .nx-bento .tabs-scroll button { font-size: 10px !important; padding: 9px 4px !important; }
+  /* no telefone pequeno o hover nao existe: o tilt so atrapalha */
+  .nx-bento [style*="perspective"] > div { transform: none !important; }
+}
+
+/* Tela sensivel ao toque: sem hover, o tilt e o brilho que seguem o cursor
+   nao tem como acontecer — e ficariam presos no ultimo estado. */
+@media (hover: none) {
+  .nx-bento [style*="perspective"] > div { transform: none !important; }
+}
+

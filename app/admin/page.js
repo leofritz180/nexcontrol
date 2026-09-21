@@ -159,7 +159,7 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.35, ease }}
-        className="card" style={{ width:'100%',maxWidth:520,padding:32,boxShadow:'0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.15)',border:'1px solid rgba(255,255,255,0.2)' }}>
+        className="card" style={{ width:'100%',maxWidth:520,padding:32,boxShadow:'0 40px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.15)',border:'1px solid var(--b3)' }}>
         <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24 }}>
           <div style={{ display:'flex',alignItems:'center',gap:14 }}>
             <div style={{ width:42,height:42,borderRadius:12,background:'var(--profit-dim)',border:'1px solid var(--profit-border)',display:'flex',alignItems:'center',justifyContent:'center' }}>
@@ -222,8 +222,8 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
               {['Proxy','SMS','Outros gastos'].map(tipo => (
                 <button key={tipo} type="button" onClick={() => {}} style={{
                   padding:'6px 14px', borderRadius:8, fontSize:11, fontWeight:600, border:'none', cursor:'default',
-                  background:'rgba(255,255,255,0.04)', color:'var(--t3)',
-                  border:'1px solid rgba(255,255,255,0.06)',
+                  background:'var(--fill-2)', color:'var(--t3)',
+                  border:'1px solid var(--b1)',
                 }}>{tipo}</button>
               ))}
             </div>
@@ -246,7 +246,7 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
               </div>
               <p className="t-num" style={{ fontSize:20,fontWeight:800,color:'var(--loss)',margin:0 }}>R$ {fmt(Number(custo||0) + Number(taxa||0))}</p>
             </div>
-            <div style={{ borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:12,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8 }}>
+            <div style={{ borderTop:'1px solid var(--b1)',paddingTop:12,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8 }}>
               <p style={{ fontSize:14,fontWeight:800,color:'var(--t1)',margin:0 }}>Resultado final</p>
               <p className="t-num" style={{ fontSize:28,fontWeight:800,color:lucroFinal>=0?'var(--profit)':'var(--loss)',margin:0 }}>
                 {lucroFinal>=0?'+':''}R$ {fmt(lucroFinal)}
@@ -256,9 +256,9 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
 
           {/* Pagamento do operador / Divisao de resultado */}
           {isDivisao && operador ? (
-            <div style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:12, padding:'18px 22px' }}>
+            <div style={{ background:'var(--fill-2)', border:'1px solid var(--b2)', borderRadius:12, padding:'18px 22px' }}>
               <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
-                <span style={{ fontSize:10, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'rgba(255,255,255,0.12)', color:'rgba(255,255,255,0.78)', border:'1px solid rgba(255,255,255,0.25)' }}>SPLIT {splitPct}%</span>
+                <span style={{ fontSize:10, fontWeight:700, padding:'3px 8px', borderRadius:5, background:'var(--fill-3)', color:'var(--t1)', border:'1px solid var(--b3)' }}>SPLIT {splitPct}%</span>
                 <span style={{ fontSize:11, color:'var(--t3)' }}>Divisao de resultado com {getName(operador)}</span>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
@@ -277,7 +277,7 @@ function ModalFechamento({ meta, remessas, operador, tenantOpModel, payModel, pa
               </div>
             </div>
           ) : pgtoOp > 0 && operador ? (
-            <div style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)', borderRadius:12, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:8 }}>
+            <div style={{ background:'var(--fill-2)', border:'1px solid var(--b2)', borderRadius:12, padding:'14px 18px', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:8 }}>
               <div>
                 <p className="t-label" style={{ marginBottom:2 }}>Pagar a {getName(operador)}</p>
                 <p className="t-small">{payModel === 'percentual' ? `${payValue}% do lucro` : `${deps} deps × R$ ${fmt(payValue)}`}</p>
@@ -437,7 +437,7 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
   }, [])
 
   const insight = DEMO_INSIGHTS[insightIdx]
-  const insightColors = { profit:{ bg:'rgba(209,250,229,0.06)', border:'rgba(209,250,229,0.12)', color:'var(--profit)' }, loss:{ bg:'rgba(239,68,68,0.06)', border:'rgba(239,68,68,0.12)', color:'var(--loss)' }, warn:{ bg:'rgba(255,255,255,0.06)', border:'rgba(255,255,255,0.12)', color:'rgba(255,255,255,0.78)' }, info:{ bg:'rgba(229,57,53,0.06)', border:'rgba(229,57,53,0.12)', color:'#e53935' } }
+  const insightColors = { profit:{ bg:'rgba(209,250,229,0.06)', border:'rgba(209,250,229,0.12)', color:'var(--profit)' }, loss:{ bg:'rgba(239,68,68,0.06)', border:'rgba(239,68,68,0.12)', color:'var(--loss)' }, warn:{ bg:'rgba(255,255,255,0.06)', border:'var(--b2)', color:'var(--t1)' }, info:{ bg:'rgba(229,57,53,0.06)', border:'rgba(229,57,53,0.12)', color:'#e53935' } }
   const ic = insightColors[insight.type]
   const g = DEMO_GLOBAL
 
@@ -486,14 +486,14 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
       {/* Hero + KPIs */}
       <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:24, marginBottom:28 }}>
         <motion.div data-tour="hero-lucro" initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, ease }}
-          style={{ position:'relative', overflow:'hidden', padding:'40px 40px 36px', borderRadius:18, background:'linear-gradient(145deg, var(--surface), var(--surface))', border:'1px solid rgba(255,255,255,0.06)', boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3)' }}>
+          style={{ position:'relative', overflow:'hidden', padding:'40px 40px 36px', borderRadius:18, background:'linear-gradient(145deg, var(--surface), var(--surface))', border:'1px solid var(--b1)', boxShadow:'0 8px 32px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.3)' }}>
           <div style={{ position:'absolute', top:'5%', left:'0%', width:450, height:350, borderRadius:'50%', background:'radial-gradient(circle, rgba(209,250,229,0.08), transparent 60%)', filter:'blur(50px)', pointerEvents:'none' }} />
           <div style={{ position:'relative', zIndex:1 }}>
             <p style={{ fontSize:13, color:'var(--t3)', fontWeight:500, margin:'0 0 28px' }}>Lucro final acumulado</p>
             <motion.div animate={{ textShadow:['0 0 40px rgba(209,250,229,0.15)','0 0 80px rgba(209,250,229,0.25)','0 0 40px rgba(209,250,229,0.15)'] }} transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}>
               <AnimatedNumber value={g.lucroFinalTotal} prefix="+R$ " style={{ fontFamily:'var(--mono)', fontSize:52, fontWeight:900, color:'var(--profit)', lineHeight:1, letterSpacing:'-0.03em', display:'block' }} />
             </motion.div>
-            <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:20, marginTop:24, paddingTop:20, borderTop:'1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display:'flex', alignItems:'center', flexWrap:'wrap', gap:20, marginTop:24, paddingTop:20, borderTop:'1px solid var(--b1)' }}>
               {[
                 { l:'Fechadas', v:g.fechadas },
                 { l:'Status', v:'Positivo', c:'var(--profit)' },
@@ -517,7 +517,7 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
             { l:'Depositantes totais', v:String(g.totalContas), tour:'kpi-depositantes' },
           ].map((kpi, i) => (
             <motion.div key={i} data-tour={kpi.tour} initial={{ opacity:0, x:16 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.35, delay:0.15+i*0.07, ease }}
-              style={{ flex:1, padding:'16px 20px', borderRadius:14, background:'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))', border:'1px solid rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              style={{ flex:1, padding:'16px 20px', borderRadius:14, background:'linear-gradient(145deg, var(--fill-1), rgba(255,255,255,0.01))', border:'1px solid var(--b1)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
               <span style={{ fontSize:12, color:'var(--t3)', fontWeight:500 }}>{kpi.l}</span>
               <span style={{ fontFamily:'var(--mono)', fontSize:16, fontWeight:700, color:'var(--t1)' }}>{kpi.v}</span>
             </motion.div>
@@ -537,7 +537,7 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
           </div>
         </motion.div>
         <motion.div initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35, delay:0.25 }}
-          style={{ padding:22, borderRadius:16, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)' }}>
+          style={{ padding:22, borderRadius:16, background:'var(--fill-2)', border:'1px solid var(--b1)' }}>
           <p style={{ fontSize:11, fontWeight:700, color:'var(--t3)', margin:'0 0 10px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Custos e break-even</p>
           <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
             <div style={{ display:'flex', justifyContent:'space-between' }}><span style={{ fontSize:12, color:'var(--t3)' }}>Custos totais</span><span style={{ fontFamily:'var(--mono)', fontSize:13, fontWeight:700, color:'var(--loss)' }}>R$ {fmt(g.custosTotal)}</span></div>
@@ -551,7 +551,7 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
       <div className="g-side" style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:20, marginBottom:28 }}>
         {/* Ranking operadores */}
         <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4, delay:0.25, ease }}
-          style={{ padding:22, borderRadius:16, background:'var(--surface)', border:'1px solid rgba(255,255,255,0.06)' }}>
+          style={{ padding:22, borderRadius:16, background:'var(--surface)', border:'1px solid var(--b1)' }}>
           <h3 style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 14px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Top operadores</h3>
           {DEMO_OPERATOR_RANKING.map((op, i) => (
             <div key={op.id} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 0', borderBottom:i<DEMO_OPERATOR_RANKING.length-1?'1px solid var(--b1)':'none' }}>
@@ -569,7 +569,7 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
 
         {/* Ranking redes */}
         <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4, delay:0.3, ease }}
-          style={{ padding:22, borderRadius:16, background:'var(--surface)', border:'1px solid rgba(255,255,255,0.06)' }}>
+          style={{ padding:22, borderRadius:16, background:'var(--surface)', border:'1px solid var(--b1)' }}>
           <h3 style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:'0 0 14px', textTransform:'uppercase', letterSpacing:'0.04em' }}>Redes mais lucrativas</h3>
           {DEMO_REDES_RANKING.map((r, i) => (
             <div key={r.rede} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'10px 0', borderBottom:i<DEMO_REDES_RANKING.length-1?'1px solid var(--b1)':'none' }}>
@@ -587,7 +587,7 @@ function DemoAdminDashboard({ onCreateMeta, userName, onExitDemo }) {
 
         {/* Activity feed */}
         <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4, delay:0.35, ease }}
-          style={{ padding:22, borderRadius:16, background:'var(--surface)', border:'1px solid rgba(255,255,255,0.06)' }}>
+          style={{ padding:22, borderRadius:16, background:'var(--surface)', border:'1px solid var(--b1)' }}>
           <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:14 }}>
             <motion.div animate={{ opacity:[0.4,1,0.4] }} transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }} style={{ width:6, height:6, borderRadius:'50%', background:'var(--profit)' }} />
             <h3 style={{ fontSize:13, fontWeight:700, color:'var(--t1)', margin:0 }}>Atividade ao vivo</h3>
@@ -1269,7 +1269,7 @@ export default function AdminPage() {
     if (global.ops > 0) tips.push({ text: `${global.ops} operadores na equipe — ${global.totalRem} remessas registradas`, type: 'info' })
     if (global.breakEvenContas > 0) tips.push({ text: `Break-even: ${global.breakEvenContas} contas com bau por meta pra cobrir custos`, type: 'info' })
     if (tips.length === 0) return null
-    const cfgT = { profit: { bg:'var(--profit-dim)', border:'var(--profit-border)', color:'var(--profit)' }, loss: { bg:'var(--loss-dim)', border:'var(--loss-border)', color:'var(--loss)' }, warn: { bg:'var(--warn-dim)', border:'var(--warn-border)', color:'var(--warn)' }, info: { bg:'rgba(255,255,255,0.06)', border:'rgba(255,255,255,0.12)', color:'var(--info)' } }
+    const cfgT = { profit: { bg:'var(--profit-dim)', border:'var(--profit-border)', color:'var(--profit)' }, loss: { bg:'var(--loss-dim)', border:'var(--loss-border)', color:'var(--loss)' }, warn: { bg:'var(--warn-dim)', border:'var(--warn-border)', color:'var(--warn)' }, info: { bg:'rgba(255,255,255,0.06)', border:'var(--b2)', color:'var(--info)' } }
     const idx = Math.floor(Date.now() / 8000) % tips.length
     const tip = tips[idx]
     const c = cfgT[tip.type]
@@ -1345,7 +1345,7 @@ export default function AdminPage() {
                   <div style={{display:'flex',alignItems:'center',gap:6}}>
                     {(
                       <motion.button whileHover={{ scale:1.08 }} whileTap={{ scale:0.92 }} onClick={()=>router.push(`/meta/${m.id}`)} title="Editar meta (nome / contas)"
-                        style={{width:36,height:36,borderRadius:10,border:'1px solid rgba(255,255,255,0.22)',background:'rgba(255,255,255,0.08)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'all 0.15s'}}
+                        style={{width:36,height:36,borderRadius:10,border:'1px solid var(--b3)',background:'var(--fill-3)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',transition:'all 0.15s'}}
                         onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.15)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.08)'}>
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                       </motion.button>
@@ -1358,7 +1358,7 @@ export default function AdminPage() {
                       onMouseEnter={e=>e.currentTarget.style.background='rgba(239,68,68,0.15)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(239,68,68,0.06)'}>
                       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </motion.button>
-                    <motion.button whileHover={{ scale:1.08 }} whileTap={{ scale:0.92 }} onClick={()=>setFocusMeta(null)} style={{width:36,height:36,borderRadius:10,border:'1px solid var(--b2)',background:'rgba(255,255,255,0.04)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
+                    <motion.button whileHover={{ scale:1.08 }} whileTap={{ scale:0.92 }} onClick={()=>setFocusMeta(null)} style={{width:36,height:36,borderRadius:10,border:'1px solid var(--b2)',background:'var(--fill-2)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>
                       <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </motion.button>
                   </div>
@@ -1452,7 +1452,7 @@ export default function AdminPage() {
                                   <p style={{fontSize:12,fontWeight:600,color:'var(--t1)',margin:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{r.titulo||`Remessa ${focusRem.length-i}`}</p>
                                   {isLatest&&<span style={{fontSize:8,fontWeight:700,padding:'1px 6px',borderRadius:4,background:pos?'rgba(209,250,229,0.15)':'rgba(239,68,68,0.12)',color:pos?'var(--profit)':'var(--loss)'}}>{pos?'LUCRO':'PREJUIZO'}</span>}
                                   {r.slot_name && (
-                                    <span title={`Slot: ${r.slot_name}`} style={{display:'inline-flex',alignItems:'center',gap:3,fontSize:9,fontWeight:600,padding:'1px 6px',borderRadius:4,background:'rgba(255,255,255,0.1)',border:'1px solid rgba(255,255,255,0.2)',color:'var(--info)',maxWidth:140,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+                                    <span title={`Slot: ${r.slot_name}`} style={{display:'inline-flex',alignItems:'center',gap:3,fontSize:9,fontWeight:600,padding:'1px 6px',borderRadius:4,background:'var(--fill-3)',border:'1px solid var(--b3)',color:'var(--info)',maxWidth:140,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
                                       <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{flexShrink:0}}><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                                       {r.slot_name}
                                     </span>
@@ -1712,7 +1712,7 @@ export default function AdminPage() {
             transition={{ type: 'spring', stiffness: 400, damping: 35 }}
             style={{
               position:'absolute', bottom: 5, height: 2, borderRadius: 2,
-              background: 'linear-gradient(90deg, var(--brand-bright), rgba(255,255,255,0.78))',
+              background: 'linear-gradient(90deg, var(--brand-bright), var(--fill-3))',
               boxShadow: '0 0 8px rgba(255,255,255,0.4)',
               zIndex: 2,
             }}
@@ -1829,7 +1829,7 @@ export default function AdminPage() {
                 <div style={{display:'flex',alignItems:'center',gap:10,margin:'0 0 14px'}}>
                   <div style={{width:4,height:18,borderRadius:2,background:accent,boxShadow:`0 0 10px ${accent}`}}/>
                   <h3 style={{fontSize:15,fontWeight:800,color:'var(--t1)',margin:0,letterSpacing:'-0.01em'}}>{title}</h3>
-                  {sub!=null && <span style={{fontSize:11,fontWeight:700,color:'var(--t4)',fontFamily:'var(--mono)',padding:'2px 9px',borderRadius:6,background:'rgba(255,255,255,0.04)',border:'1px solid var(--b1)'}}>{sub}</span>}
+                  {sub!=null && <span style={{fontSize:11,fontWeight:700,color:'var(--t4)',fontFamily:'var(--mono)',padding:'2px 9px',borderRadius:6,background:'var(--fill-2)',border:'1px solid var(--b1)'}}>{sub}</span>}
                 </div>
               )
 
@@ -1845,7 +1845,7 @@ export default function AdminPage() {
                 ]
                 return (
                   <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:0.45,ease}}
-                    style={{position:'relative',overflow:'hidden',borderRadius:20,marginBottom:18,padding:'26px 28px',background:'linear-gradient(150deg, var(--raised), var(--surface))',border:'1px solid rgba(255,255,255,0.07)',boxShadow:'0 18px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)'}}>
+                    style={{position:'relative',overflow:'hidden',borderRadius:20,marginBottom:18,padding:'26px 28px',background:'linear-gradient(150deg, var(--raised), var(--surface))',border:'1px solid var(--b1)',boxShadow:'0 18px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)'}}>
                     <div style={{position:'absolute',top:0,left:'8%',right:'8%',height:1,background:`linear-gradient(90deg,transparent,rgba(${hc},0.5),transparent)`}}/>
                     <div style={{position:'absolute',top:-120,right:-100,width:360,height:360,borderRadius:'50%',background:`radial-gradient(circle,rgba(${hc},0.10),transparent 65%)`,filter:'blur(30px)',pointerEvents:'none'}}/>
                     <div style={{position:'relative',display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:20,flexWrap:'wrap'}}>
@@ -1864,7 +1864,7 @@ export default function AdminPage() {
                         {myShowForm?'Fechar':'Nova meta'}
                       </motion.button>
                     </div>
-                    <div style={{position:'relative',display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(135px,1fr))',gap:1,marginTop:22,borderRadius:14,overflow:'hidden',border:'1px solid rgba(255,255,255,0.06)',background:'rgba(255,255,255,0.05)'}}>
+                    <div style={{position:'relative',display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(135px,1fr))',gap:1,marginTop:22,borderRadius:14,overflow:'hidden',border:'1px solid var(--b1)',background:'var(--fill-2)'}}>
                       {chips.map((s,i)=>(
                         <div key={i} style={{padding:'13px 16px',background:'var(--surface)'}}>
                           <p style={{fontSize:9.5,fontWeight:700,letterSpacing:'0.09em',color:'var(--t4)',textTransform:'uppercase',margin:'0 0 5px'}}>{s.l}</p>
@@ -1891,7 +1891,7 @@ export default function AdminPage() {
                   <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(165px,1fr))',gap:12,marginBottom:22}}>
                     {k.map((it,i)=>(
                       <motion.div key={it.l} {...fadeUp(i)} whileHover={{y:-3,borderColor:`${it.c}30`,boxShadow:`0 14px 34px rgba(0,0,0,0.5),0 0 22px ${it.c}14`,transition:{duration:0.2}}}
-                        style={{position:'relative',overflow:'hidden',background:'linear-gradient(145deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.06)',borderRadius:14,padding:'15px 17px',boxShadow:'0 4px 18px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.04)'}}>
+                        style={{position:'relative',overflow:'hidden',background:'linear-gradient(145deg,var(--raised),var(--surface))',border:'1px solid var(--b1)',borderRadius:14,padding:'15px 17px',boxShadow:'0 4px 18px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.04)'}}>
                         <div style={{position:'absolute',left:0,top:'22%',bottom:'22%',width:2,borderRadius:'0 2px 2px 0',background:it.c,boxShadow:`0 0 8px ${it.c}`}}/>
                         <p style={{fontSize:10,fontWeight:700,letterSpacing:'0.08em',color:'var(--t4)',textTransform:'uppercase',margin:'0 0 9px'}}>{it.l}</p>
                         {it.money?(
@@ -1913,7 +1913,7 @@ export default function AdminPage() {
                 return (
                   <motion.div key={m.id} {...fadeUp(i)} whileHover={{y:-4,borderColor:`${pc}35`,boxShadow:`0 16px 40px rgba(0,0,0,0.5),0 0 30px ${pc}12`,transition:{duration:0.2}}}
                     onClick={()=>router.push(`/meta/${m.id}`)}
-                    style={{cursor:'pointer',position:'relative',overflow:'hidden',borderRadius:16,padding:'18px 20px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.06)',boxShadow:'0 6px 22px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)'}}>
+                    style={{cursor:'pointer',position:'relative',overflow:'hidden',borderRadius:16,padding:'18px 20px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid var(--b1)',boxShadow:'0 6px 22px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)'}}>
                     <div style={{position:'absolute',left:0,top:0,bottom:0,width:3,background:`linear-gradient(180deg,${pc},${pc}55)`,boxShadow:`0 0 12px ${pc}70`}}/>
                     <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:15}}>
                       {redeAvatar(m.rede,pc)}
@@ -1932,7 +1932,7 @@ export default function AdminPage() {
                       <span style={{fontSize:9.5,color:'var(--t4)',fontWeight:700,letterSpacing:'0.07em',textTransform:'uppercase'}}>Progresso</span>
                       <span style={{fontSize:12,fontWeight:800,fontFamily:'var(--mono)',color:status.c}}>{prog}%</span>
                     </div>
-                    <div style={{height:6,borderRadius:4,background:'rgba(255,255,255,0.06)',overflow:'hidden'}}>
+                    <div style={{height:6,borderRadius:4,background:'var(--fill-2)',overflow:'hidden'}}>
                       <motion.div initial={{width:0}} animate={{width:`${prog}%`}} transition={{duration:0.8,ease}} style={{height:'100%',borderRadius:4,background:`linear-gradient(90deg,${status.c}99,${status.c})`,boxShadow:`0 0 10px ${status.c}80`}}/>
                     </div>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:6,marginTop:13,color:pc,fontSize:11.5,fontWeight:800}}>
@@ -1949,7 +1949,7 @@ export default function AdminPage() {
                 return (
                   <motion.div key={m.id} {...fadeUp(i)} whileHover={{y:-3,borderColor:`${pc}30`,boxShadow:`0 12px 30px rgba(0,0,0,0.45),0 0 22px ${pc}10`,transition:{duration:0.2}}}
                     onClick={()=>router.push(`/meta/${m.id}`)}
-                    style={{cursor:'pointer',position:'relative',overflow:'hidden',borderRadius:14,padding:'14px 16px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.05)',boxShadow:'0 4px 16px rgba(0,0,0,0.35)',display:'flex',alignItems:'center',gap:12}}>
+                    style={{cursor:'pointer',position:'relative',overflow:'hidden',borderRadius:14,padding:'14px 16px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid var(--b1)',boxShadow:'0 4px 16px rgba(0,0,0,0.35)',display:'flex',alignItems:'center',gap:12}}>
                     <div style={{position:'absolute',left:0,top:0,bottom:0,width:2.5,background:`${pc}`,opacity:0.7}}/>
                     {redeAvatar(m.rede,pc)}
                     <div style={{flex:1,minWidth:0}}>
@@ -2013,7 +2013,7 @@ export default function AdminPage() {
                     <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12}}>
                       {insights.map((it,i)=>(
                         <motion.div key={i} {...fadeUp(i)}
-                          style={{position:'relative',overflow:'hidden',borderRadius:14,padding:'16px 18px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.06)',boxShadow:'0 6px 22px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)'}}>
+                          style={{position:'relative',overflow:'hidden',borderRadius:14,padding:'16px 18px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid var(--b1)',boxShadow:'0 6px 22px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)'}}>
                           <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${it.c},transparent)`}}/>
                           <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
                             <div style={{width:26,height:26,borderRadius:8,background:`${it.c}14`,border:`1px solid ${it.c}28`,display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -2032,7 +2032,7 @@ export default function AdminPage() {
                   {eventosTop.length>0 && (
                     <section style={{marginBottom:8}}>
                       {v2head('Atividade em tempo real', null, 'var(--profit)')}
-                      <div style={{position:'relative',borderRadius:16,padding:'8px 4px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid rgba(255,255,255,0.06)',boxShadow:'0 6px 22px rgba(0,0,0,0.4)'}}>
+                      <div style={{position:'relative',borderRadius:16,padding:'8px 4px',background:'linear-gradient(150deg,var(--raised),var(--surface))',border:'1px solid var(--b1)',boxShadow:'0 6px 22px rgba(0,0,0,0.4)'}}>
                         {eventosTop.map((e,i)=>{
                           const meta=evMeta[e.kind]||evMeta.remessa
                           const label = e.kind==='remessa'?'Remessa registrada':e.kind==='fechada'?'Operação concluída':'Operação criada'
@@ -2155,7 +2155,7 @@ export default function AdminPage() {
                         position:'relative', overflow:'hidden',
                         background:'linear-gradient(145deg, var(--raised), var(--surface))',
                         backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
-                        border:'1px solid rgba(255,255,255,0.06)',
+                        border:'1px solid var(--b1)',
                         borderRadius:14, padding:'16px 18px',
                         boxShadow:'0 4px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04)',
                         transition: 'all 0.25s ease',
@@ -2225,7 +2225,7 @@ export default function AdminPage() {
                           <p style={{ fontSize:11, color:'var(--t3)', margin:0, fontWeight:500 }}>Configure a meta e inicie em segundos</p>
                         </div>
                       </div>
-                      <button onClick={() => setMyShowForm(false)} style={{ width:34, height:34, borderRadius:10, border:'1px solid rgba(255,255,255,0.08)', background:'rgba(255,255,255,0.02)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'var(--t3)', transition:'all 0.2s' }}
+                      <button onClick={() => setMyShowForm(false)} style={{ width:34, height:34, borderRadius:10, border:'1px solid var(--b1)', background:'var(--fill-1)', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:'var(--t3)', transition:'all 0.2s' }}
                         onMouseEnter={e=>{ e.currentTarget.style.background='rgba(229,57,53,0.1)'; e.currentTarget.style.color='#e53935' }}
                         onMouseLeave={e=>{ e.currentTarget.style.background='rgba(255,255,255,0.02)'; e.currentTarget.style.color='var(--t3)' }}
                       >
@@ -2358,13 +2358,13 @@ export default function AdminPage() {
                           style={{
                             position:'relative', overflow:'hidden',
                             padding:'16px 18px', borderRadius:13,
-                            background:'linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01))',
-                            border:'1px solid rgba(255,255,255,0.18)',
+                            background:'linear-gradient(145deg, var(--fill-2), rgba(255,255,255,0.01))',
+                            border:'1px solid var(--b3)',
                             boxShadow:'0 4px 16px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.04)',
                           }}>
-                          <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)' }}/>
+                          <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:'linear-gradient(90deg, transparent, var(--fill-3), transparent)' }}/>
                           <div style={{display:'flex', alignItems:'center', gap:10, marginBottom:10}}>
-                            <div style={{ width:26, height:26, borderRadius:8, background:'rgba(255,255,255,0.14)', border:'1px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                            <div style={{ width:26, height:26, borderRadius:8, background:'var(--fill-3)', border:'1px solid var(--b3)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                               <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                             </div>
                             <div>
@@ -2444,7 +2444,7 @@ export default function AdminPage() {
                             <motion.div
                               animate={{ rotate: 360 }}
                               transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                              style={{ width:16, height:16, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.25)', borderTopColor:'#fff' }}
+                              style={{ width:16, height:16, borderRadius:'50%', border:'2px solid var(--b3)', borderTopColor:'#fff' }}
                             />
                             <span>Criando meta...</span>
                           </>
@@ -2517,7 +2517,7 @@ export default function AdminPage() {
                           padding:'18px 22px', borderRadius:14,
                           background:'linear-gradient(145deg, var(--raised), var(--surface))',
                           backdropFilter:'blur(16px) saturate(150%)', WebkitBackdropFilter:'blur(16px) saturate(150%)',
-                          border:'1px solid rgba(255,255,255,0.06)',
+                          border:'1px solid var(--b1)',
                           boxShadow:'0 4px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03)',
                           display:'flex', alignItems:'center', gap:16, flexWrap:'wrap',
                         }}>
@@ -2593,7 +2593,7 @@ export default function AdminPage() {
                       background: 'rgba(0,0,0,0.55)',
                       backdropFilter: 'blur(8px)',
                       WebkitBackdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255,255,255,0.08)',
+                      border: '1px solid var(--b1)',
                       boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
                     }}>
                       <RankShowcase contas={myDeps} mode="inline" forceApex={apexLocked} />
@@ -3062,7 +3062,7 @@ export default function AdminPage() {
                 style={{
                   marginTop: 32, padding: 28, borderRadius: 20,
                   background: '#000',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  border: '1px solid var(--b1)',
                   boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 20px 60px rgba(0,0,0,0.4)',
                   position: 'relative', overflow: 'hidden',
                 }}
@@ -3107,8 +3107,8 @@ export default function AdminPage() {
                       <div key={op.id} style={{
                         display:'flex', alignItems:'center', gap:12,
                         padding:'10px 14px', borderRadius:10,
-                        background:'rgba(255,255,255,0.02)',
-                        border:'1px solid rgba(255,255,255,0.06)',
+                        background:'var(--fill-1)',
+                        border:'1px solid var(--b1)',
                       }}>
                         <span style={{ fontSize:11, fontWeight:800, color:'var(--t4)', fontFamily:'var(--mono)', minWidth:18 }}>#{i+1}</span>
                         <span style={{
@@ -3148,10 +3148,10 @@ export default function AdminPage() {
               <div><div style={{height:14,width:'60%',background:'rgba(209,250,229,0.1)',borderRadius:3,marginBottom:6}}/><div style={{height:20,width:'45%',background:'rgba(209,250,229,0.08)',borderRadius:3}}/></div>
             </ProLockedCard>
             <ProLockedCard title="Ranking de redes" description="Descubra as redes mais lucrativas. Veja onde voce esta perdendo dinheiro e onde concentrar pra maximizar performance." icon="M3 4h18M3 8h12M3 12h18M3 16h8M3 20h14">
-              <div>{[1,2,3].map(i=>(<div key={i} style={{height:10,width:`${80-i*15}%`,background:'rgba(255,255,255,0.04)',borderRadius:3,marginBottom:4}}/>))}</div>
+              <div>{[1,2,3].map(i=>(<div key={i} style={{height:10,width:`${80-i*15}%`,background:'var(--fill-2)',borderRadius:3,marginBottom:4}}/>))}</div>
             </ProLockedCard>
             <ProLockedCard title="Alertas estrategicos" description="Decisoes baseadas em dados reais. Detecte queda de performance, operadores inativos e metas em risco antes que virem prejuizo." icon="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5">
-              <div>{[1,2,3].map(i=>(<div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'3px 0'}}><div style={{width:4,height:4,borderRadius:'50%',background:'rgba(255,255,255,0.1)'}}/><div style={{height:8,width:`${60+i*10}%`,background:'rgba(255,255,255,0.03)',borderRadius:2}}/></div>))}</div>
+              <div>{[1,2,3].map(i=>(<div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'3px 0'}}><div style={{width:4,height:4,borderRadius:'50%',background:'var(--fill-3)'}}/><div style={{height:8,width:`${60+i*10}%`,background:'var(--fill-1)',borderRadius:2}}/></div>))}</div>
             </ProLockedCard>
           </div>}
         </>)}
@@ -3242,16 +3242,16 @@ export default function AdminPage() {
                     padding:'18px 22px', borderRadius:16, marginBottom:18,
                     background:'linear-gradient(145deg, var(--raised), var(--surface))',
                     backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-                    border:'1px solid rgba(255,255,255,0.18)',
+                    border:'1px solid var(--b3)',
                     boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
                   }}>
-                  <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)', pointerEvents:'none' }}/>
-                  <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', background:'radial-gradient(circle, rgba(255,255,255,0.12), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
+                  <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, var(--fill-3), transparent)', pointerEvents:'none' }}/>
+                  <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', background:'radial-gradient(circle, var(--fill-3), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
 
                   <div style={{ position:'relative', display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
                     <div style={{
                       width:34, height:34, borderRadius:10,
-                      background:'rgba(255,255,255,0.14)', border:'1px solid rgba(255,255,255,0.32)',
+                      background:'var(--fill-3)', border:'1px solid var(--b3)',
                       display:'flex', alignItems:'center', justifyContent:'center',
                       boxShadow:'0 0 16px rgba(255,255,255,0.2)',
                     }}>
@@ -3306,10 +3306,10 @@ export default function AdminPage() {
               // Total de contas das metas no filtro atual (acompanha período hoje/ontem/tudo)
               const totalContas = filteredMetas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
               const items = [
-                { label:'contas no total', count:totalContas, unit:'conta', c:'#fafafa', bg:'rgba(255,255,255,0.06)', border:'rgba(255,255,255,0.18)' },
+                { label:'contas no total', count:totalContas, unit:'conta', c:'#fafafa', bg:'rgba(255,255,255,0.06)', border:'var(--b3)' },
                 emLucro > 0 && { label:'em lucro', count:emLucro, c:'var(--profit)', bg:'rgba(209,250,229,0.08)', border:'rgba(209,250,229,0.22)' },
                 emPrej > 0 && { label:'em prejuizo', count:emPrej, c:'var(--loss)', bg:'rgba(239,68,68,0.08)', border:'rgba(239,68,68,0.24)', pulse:true },
-                neutras > 0 && { label:'neutras', count:neutras, c:'rgba(255,255,255,0.78)', bg:'rgba(255,255,255,0.08)', border:'rgba(255,255,255,0.22)' },
+                neutras > 0 && { label:'neutras', count:neutras, c:'rgba(255,255,255,0.78)', bg:'rgba(255,255,255,0.08)', border:'var(--b3)' },
                 fechadas > 0 && { label:'concluidas', count:fechadas, c:'var(--t3)', bg:'rgba(148,163,184,0.06)', border:'rgba(148,163,184,0.16)' },
               ].filter(Boolean)
               return (
@@ -3481,7 +3481,7 @@ export default function AdminPage() {
                         }}>{insightText}</p>
                       )}
                       <p style={{fontSize:10, color:'var(--t4)', margin:'5px 0 14px', paddingLeft:15, fontFamily:'var(--mono)'}}>
-                        {opFirst && (<span style={{ color:'rgba(255,255,255,0.55)', fontWeight:600 }}>{opFirst} · </span>)}
+                        {opFirst && (<span style={{ color:'var(--t2)', fontWeight:600 }}>{opFirst} · </span>)}
                         {metaDate} · {remDone} remessa{remDone!==1?'s':''}
                       </p>
                       {/* Progress */}
@@ -3490,14 +3490,14 @@ export default function AdminPage() {
                           <span style={{fontSize:9, color:'var(--t4)', fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase'}}>Progresso</span>
                           <span style={{fontSize:10, fontWeight:700, color:'var(--t2)', fontFamily:'var(--mono)'}}>{depDone}/{totalContas}</span>
                         </div>
-                        <div style={{height:6, background:'rgba(255,255,255,0.05)', borderRadius:99, overflow:'hidden', border:'1px solid rgba(255,255,255,0.04)'}}>
+                        <div style={{height:6, background:'var(--fill-2)', borderRadius:99, overflow:'hidden', border:'1px solid var(--b1)'}}>
                           <motion.div
                             initial={{ width:0 }}
                             animate={{ width:`${progPct}%` }}
                             transition={{ duration:1, delay:Math.min(i*0.04,0.5)+0.2, ease:[0.4,0,0.2,1] }}
                             style={{ height:'100%', borderRadius:99, background:progColor, boxShadow:`0 0 10px ${statusColor}40, inset 0 1px 0 rgba(255,255,255,0.2)`, position:'relative', overflow:'hidden' }}
                           >
-                            {!fechada && <div style={{ position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent)',animation:'progShimmer 2s ease-in-out infinite' }}/>}
+                            {!fechada && <div style={{ position:'absolute',top:0,bottom:0,width:'40%',background:'linear-gradient(90deg,transparent,var(--fill-3),transparent)',animation:'progShimmer 2s ease-in-out infinite' }}/>}
                           </motion.div>
                         </div>
                       </div>
@@ -3584,7 +3584,7 @@ export default function AdminPage() {
                           <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
                             <motion.div
                               whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(255,255,255,0.3)' }}
-                              style={{ width:30, height:30, borderRadius:8, background:'linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
+                              style={{ width:30, height:30, borderRadius:8, background:'linear-gradient(135deg,var(--fill-3),rgba(255,255,255,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
                               <span style={{ fontSize:12, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
                             </motion.div>
                             <p style={{ fontSize:16, fontWeight:800, color:isTop?medal:'var(--t1)', margin:0, letterSpacing:'-0.02em' }}>{getName(op)}</p>
@@ -3702,7 +3702,7 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease }}>
             <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:28 }}>
-              <div style={{ width:44, height:44, borderRadius:12, background:'linear-gradient(135deg,rgba(209,250,229,0.15),rgba(255,255,255,0.1))', border:'1px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <div style={{ width:44, height:44, borderRadius:12, background:'linear-gradient(135deg,rgba(209,250,229,0.15),var(--fill-3))', border:'1px solid var(--profit-border)', display:'flex', alignItems:'center', justifyContent:'center' }}>
                 <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="1.5" strokeLinecap="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
               </div>
               <div>
@@ -3743,7 +3743,7 @@ export default function AdminPage() {
                           {isTop&&<span style={{fontSize:9,fontWeight:700,padding:'2px 8px',borderRadius:99,background:'rgba(255,215,0,0.15)',color:'#FFD700',border:'1px solid rgba(255,215,0,0.25)'}}>TOP</span>}
                           <span className="t-small">{r.nMetas} meta{r.nMetas!==1?'s':''}</span>
                         </div>
-                        <div style={{height:4,background:'rgba(255,255,255,0.05)',borderRadius:99,overflow:'hidden'}}>
+                        <div style={{height:4,background:'var(--fill-2)',borderRadius:99,overflow:'hidden'}}>
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${barW}%` }}
@@ -3981,7 +3981,7 @@ export default function AdminPage() {
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                         <motion.div
                           whileHover={{ scale: 1.1, boxShadow: '0 0 12px rgba(255,255,255,0.3)' }}
-                          style={{ width:32, height:32, borderRadius:9, background:'linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
+                          style={{ width:32, height:32, borderRadius:9, background:'linear-gradient(135deg,var(--fill-3),rgba(255,255,255,0.2))', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, transition:'box-shadow 0.2s' }}>
                           <span style={{ fontSize:12, fontWeight:800, color:'white' }}>{getName(op)[0].toUpperCase()}</span>
                         </motion.div>
                         <div>
@@ -4017,10 +4017,10 @@ export default function AdminPage() {
                 <div style={{
                   fontFamily: 'var(--mono, monospace)',
                   fontSize: 10, fontWeight: 700, letterSpacing: '0.24em',
-                  textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)',
+                  textTransform: 'uppercase', color: 'var(--t3)',
                   marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10,
                 }}>
-                  <span style={{ width: 20, height: 1, background: 'rgba(255,255,255,0.25)' }}/>
+                  <span style={{ width: 20, height: 1, background: 'var(--fill-3)' }}/>
                   Seu progresso
                 </div>
                 <h2 style={{
@@ -4047,10 +4047,10 @@ export default function AdminPage() {
                 <div style={{
                   fontFamily: 'var(--mono, monospace)',
                   fontSize: 10, fontWeight: 700, letterSpacing: '0.24em',
-                  textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)',
+                  textTransform: 'uppercase', color: 'var(--t3)',
                   marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10,
                 }}>
-                  <span style={{ width: 20, height: 1, background: 'rgba(255,255,255,0.25)' }}/>
+                  <span style={{ width: 20, height: 1, background: 'var(--fill-3)' }}/>
                   Todos os tiers
                 </div>
                 <h3 style={{
@@ -4066,7 +4066,7 @@ export default function AdminPage() {
                 background: 'rgba(0,0,0,0.55)',
                 backdropFilter: 'blur(8px)',
                 WebkitBackdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                border: '1px solid var(--b1)',
                 boxShadow: 'inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04), 0 12px 32px rgba(0,0,0,0.5)',
               }}>
                 <RankShowcase contas={myDeps} mode="inline" forceApex={apexLocked} />
@@ -4261,13 +4261,13 @@ export default function AdminPage() {
             boxShadow:`0 12px 40px rgba(0,0,0,0.4), 0 0 20px ${notification.pos?'rgba(209,250,229,0.1)':'rgba(239,68,68,0.1)'}`,
             display:'flex', alignItems:'center', gap:12,
           }}>
-            <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,var(--fill-3),rgba(255,255,255,0.2))',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
               <span style={{fontSize:13,fontWeight:800,color:'white'}}>{notification.op[0]?.toUpperCase()}</span>
             </div>
             <div style={{flex:1,minWidth:0}}>
               <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
                 <span style={{fontSize:13,fontWeight:700,color:'var(--t1)'}}>{notification.op}</span>
-                {notification.rede && <span style={{fontSize:9,fontWeight:700,padding:'2px 6px',borderRadius:5,background:'rgba(255,255,255,0.12)',color:'var(--brand-bright)'}}>{notification.rede}</span>}
+                {notification.rede && <span style={{fontSize:9,fontWeight:700,padding:'2px 6px',borderRadius:5,background:'var(--fill-3)',color:'var(--brand-bright)'}}>{notification.rede}</span>}
               </div>
               <p style={{fontSize:11,color:'var(--t3)',margin:0}}>Nova remessa registrada</p>
             </div>

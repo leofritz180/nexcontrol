@@ -14,7 +14,7 @@ export default function RedesignHeader() {
           height: 74, borderRadius: 16, padding: '0 22px',
           background: '#D10000',
           boxShadow: '0 10px 30px rgba(209,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.14)',
-          border: '1px solid rgba(255,255,255,0.12)',
+          border: '1px solid var(--b2)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
         }}
       >
@@ -24,8 +24,8 @@ export default function RedesignHeader() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
           <ThemeToggle />
-          <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--on-brand)', background: 'rgba(0,0,0,0.22)', border: '1px solid rgba(255,255,255,0.22)', padding: '6px 12px', borderRadius: 9, letterSpacing: '0.03em' }}>PRO</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.2)', padding: '7px 12px', borderRadius: 9 }}>
+          <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--on-brand)', background: 'rgba(0,0,0,0.22)', border: '1px solid var(--b3)', padding: '6px 12px', borderRadius: 9, letterSpacing: '0.03em' }}>PRO</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(0,0,0,0.2)', border: '1px solid var(--b3)', padding: '7px 12px', borderRadius: 9 }}>
             <span style={{ position: 'relative', width: 8, height: 8 }}>
               <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#4ade80' }} />
               <motion.span animate={{ scale: [1, 2.4], opacity: [0.7, 0] }} transition={{ duration: 1.8, repeat: Infinity }} style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#4ade80' }} />

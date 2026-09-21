@@ -259,7 +259,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               {item.network && !netUnread && new Date() < new Date(NETWORK_NEW_UNTIL) && (
                 <span className="sb-label" style={{
                   marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
-                  background:'#e53935', color:'#fff', border:'1px solid rgba(255,255,255,0.25)',
+                  background:'#e53935', color:'#fff', border:'1px solid var(--b3)',
                   letterSpacing:'0.08em', boxShadow:'0 0 10px rgba(229,57,53,0.5)',
                   animation:'notif-pulse 2s ease-in-out infinite',
                 }}>NOVO</span>
@@ -279,7 +279,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               display:'flex', alignItems:'center', justifyContent:'center', gap:8,
               padding:'10px 14px', borderRadius:8, textDecoration:'none',
               fontSize:12, fontWeight:500, color:'#fff',
-              background:'rgba(255,255,255,0.78)', border:'none',
+              background:'var(--fill-3)', border:'none',
               transition:'background 0.15s',
             }}
             onMouseEnter={e=>{e.currentTarget.style.background='#2563eb'}}

@@ -101,8 +101,8 @@ function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
       style={{
         padding: 22,
         borderRadius: 16,
-        background: 'linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
-        border: '1px solid rgba(255,255,255,0.05)',
+        background: 'linear-gradient(145deg, var(--fill-1), rgba(255,255,255,0.01))',
+        border: '1px solid var(--b1)',
         boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
         cursor: 'default',
         position: 'relative',
@@ -137,8 +137,8 @@ function KpiCard({ icon, label, value, sub, prefix, suffix, integer, index }) {
 function StatusBadge({ status }) {
   const cfg = {
     ativa: { bg: 'rgba(209,250,229,0.12)', color: 'var(--profit)', border: 'rgba(209,250,229,0.25)', label: 'ATIVA' },
-    finalizada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Finalizada' },
-    fechada: { bg: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.78)', border: 'rgba(255,255,255,0.25)', label: 'Fechada' },
+    finalizada: { bg: 'rgba(255,255,255,0.12)', color: 'var(--t1)', border: 'var(--b3)', label: 'Finalizada' },
+    fechada: { bg: 'rgba(255,255,255,0.12)', color: 'var(--t1)', border: 'var(--b3)', label: 'Fechada' },
   }
   const c = cfg[status] || cfg.ativa
   return (
@@ -477,7 +477,7 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.2 }}
-            style={{ padding: 22, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
+            style={{ padding: 22, borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--b1)' }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--profit)', animation: 'demoPulse 2s infinite' }} />
@@ -507,7 +507,7 @@ function DemoOperatorDashboard({ onCreateMeta, onExitDemo }) {
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.3 }}
-            style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
+            style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--b1)' }}
           >
             <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 16px' }}>Stats pessoais</h3>
             {[
@@ -763,7 +763,7 @@ export default function OperatorPage() {
         <div style={{
           position: 'relative', maxWidth: 500, width: '100%', textAlign: 'center',
           background: 'linear-gradient(180deg, var(--raised), #050505)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: '1px solid var(--b1)',
           borderRadius: 20, padding: '44px 38px',
           boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(229,57,53,0.06), 0 0 0 1px rgba(229,57,53,0.04)',
         }}>
@@ -803,16 +803,16 @@ export default function OperatorPage() {
             Você não faz parte de<br/>nenhuma equipe.
           </h2>
 
-          <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.62)', marginBottom: 14, lineHeight: 1.55, fontWeight: 300 }}>
+          <p style={{ fontSize: 13.5, color: 'var(--t2)', marginBottom: 14, lineHeight: 1.55, fontWeight: 300 }}>
             O admin do seu time encerrou seu acesso a esta conta em{' '}
-            <strong style={{ color: 'rgba(255,255,255,0.85)' }}>
+            <strong style={{ color: 'var(--t1)' }}>
               {profile.removed_from_tenant_at
                 ? new Date(profile.removed_from_tenant_at).toLocaleDateString('pt-BR')
                 : '—'}
             </strong>.
           </p>
 
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.42)', marginBottom: 28, lineHeight: 1.55, fontStyle: 'italic' }}>
+          <p style={{ fontSize: 12, color: 'var(--t3)', marginBottom: 28, lineHeight: 1.55, fontStyle: 'italic' }}>
             Seu histórico operacional fica preservado com o admin que removeu — nada foi apagado.
           </p>
 
@@ -835,9 +835,9 @@ export default function OperatorPage() {
               onClick={() => router.push('/invite')}
               style={{
                 width: '100%', padding: '11px', borderRadius: 10,
-                background: 'rgba(255,255,255,0.025)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                color: 'rgba(255,255,255,0.72)',
+                background: 'var(--fill-1)',
+                border: '1px solid var(--b1)',
+                color: 'var(--t2)',
                 fontSize: 12.5, fontWeight: 600, cursor: 'pointer',
               }}
             >
@@ -846,7 +846,7 @@ export default function OperatorPage() {
           </div>
 
           {/* Helper text */}
-          <p style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.35)', marginBottom: 16, lineHeight: 1.55, fontFamily: 'var(--mono, monospace)', letterSpacing: '0.02em' }}>
+          <p style={{ fontSize: 10.5, color: 'var(--t3)', marginBottom: 16, lineHeight: 1.55, fontFamily: 'var(--mono, monospace)', letterSpacing: '0.02em' }}>
             Você pode virar admin do seu próprio tenant — começa com 7 dias de trial grátis.
           </p>
 
@@ -855,7 +855,7 @@ export default function OperatorPage() {
             style={{
               display: 'block', width: '100%', padding: 8,
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 11, color: 'rgba(255,255,255,0.32)', textAlign: 'center',
+              fontSize: 11, color: 'var(--t4)', textAlign: 'center',
               letterSpacing: '0.02em',
             }}
           >
@@ -968,7 +968,7 @@ export default function OperatorPage() {
                   width: '100%', maxWidth: 540, maxHeight: 'calc(100dvh - 40px)', overflowY: 'auto',
                   padding: 32, borderRadius: 20,
                   background: 'linear-gradient(160deg, var(--surface), var(--surface))',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  border: '1px solid var(--b1)',
                   boxShadow: '0 40px 100px rgba(0,0,0,0.7)',
                 }}>
                   {/* Header */}
@@ -1157,7 +1157,7 @@ export default function OperatorPage() {
                     />
 
                     {/* Boas praticas */}
-                    <div style={{ padding: '16px 18px', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--b1)' }}>
+                    <div style={{ padding: '16px 18px', borderRadius: 12, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
                         <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>Boas praticas</span>
@@ -1240,7 +1240,7 @@ export default function OperatorPage() {
                     >
                       {saving ? (
                         <>
-                          <div style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
+                          <div style={{ width: 14, height: 14, border: '2px solid var(--b3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
                           Criando...
                         </>
                       ) : (
@@ -1323,7 +1323,7 @@ export default function OperatorPage() {
                   <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', margin: '0 0 2px' }}>Suas metas</h2>
                   <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>Acompanhe o progresso das suas operacoes</p>
                 </div>
-                <div style={{ display: 'flex', gap: 4, background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: 3, border: '1px solid var(--b1)' }}>
+                <div style={{ display: 'flex', gap: 4, background: 'var(--fill-1)', borderRadius: 10, padding: 3, border: '1px solid var(--b1)' }}>
                   {[
                     { k: 'todas', l: 'Todas', c: metas.length },
                     { k: 'ativas', l: 'Ativas', c: metas.filter(m => m.status === 'ativa' || m.status === 'em_andamento').length },
@@ -1571,7 +1571,7 @@ export default function OperatorPage() {
                 data-tour="op-stats"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.1 }}
-                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--b1)' }}
               >
                 <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 16px' }}>Stats pessoais</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -1598,17 +1598,17 @@ export default function OperatorPage() {
                 data-tour="op-ranking"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.16 }}
-                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--b1)' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                  <div style={{ color: 'rgba(255,255,255,0.78)' }}><IconAward /></div>
+                  <div style={{ color: 'var(--t1)' }}><IconAward /></div>
                   <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: 0 }}>Ranking pessoal</h3>
                 </div>
                 <div style={{
                   padding: '14px 16px', borderRadius: 10, background: 'var(--raised)',
                   textAlign: 'center',
                 }}>
-                  <p style={{ fontFamily: 'var(--mono)', fontSize: 28, fontWeight: 800, color: 'rgba(255,255,255,0.78)', margin: '0 0 4px', lineHeight: 1 }}>
+                  <p style={{ fontFamily: 'var(--mono)', fontSize: 28, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px', lineHeight: 1 }}>
                     {perfStats.totalDeps}
                   </p>
                   <p style={{ fontSize: 11, color: 'var(--t3)', margin: 0 }}>depositantes totais</p>
@@ -1620,7 +1620,7 @@ export default function OperatorPage() {
                 data-tour="op-conquistas"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.22 }}
-                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--b1)' }}
               >
                 <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px' }}>Conquistas</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -1635,7 +1635,7 @@ export default function OperatorPage() {
                 data-tour="op-alertas"
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.28 }}
-                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--b1)' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                   <div style={{ color: alertas.total > 0 ? 'rgba(255,255,255,0.78)' : 'var(--t3)' }}><IconAlert /></div>
@@ -1643,8 +1643,8 @@ export default function OperatorPage() {
                   {alertas.total > 0 && (
                     <span style={{
                       fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10,
-                      background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.78)',
-                      border: '1px solid rgba(255,255,255,0.25)',
+                      background: 'var(--fill-3)', color: 'var(--t1)',
+                      border: '1px solid var(--b3)',
                     }}>
                       {alertas.total}
                     </span>
@@ -1658,10 +1658,10 @@ export default function OperatorPage() {
                       <div style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                         padding: '8px 12px', borderRadius: 8,
-                        background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
+                        background: 'var(--fill-3)', border: '1px solid var(--b3)',
                       }}>
-                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.78)', fontWeight: 600 }}>Saque pendente</span>
-                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>{alertas.sp}</span>
+                        <span style={{ fontSize: 12, color: 'var(--t1)', fontWeight: 600 }}>Saque pendente</span>
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>{alertas.sp}</span>
                       </div>
                     )}
                     {alertas.cb > 0 && (
@@ -1678,10 +1678,10 @@ export default function OperatorPage() {
                       <div style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                         padding: '8px 12px', borderRadius: 8,
-                        background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)',
+                        background: 'var(--fill-3)', border: '1px solid var(--b3)',
                       }}>
-                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.78)', fontWeight: 600 }}>Banco em analise</span>
-                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.78)' }}>{alertas.ba}</span>
+                        <span style={{ fontSize: 12, color: 'var(--t1)', fontWeight: 600 }}>Banco em analise</span>
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>{alertas.ba}</span>
                       </div>
                     )}
                   </div>
@@ -1692,7 +1692,7 @@ export default function OperatorPage() {
               <motion.div
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.34 }}
-                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(255,255,255,0.06)' }}
+                style={{ padding: 24, borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--b1)' }}
               >
                 <h3 style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', margin: '0 0 14px' }}>Acoes rapidas</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

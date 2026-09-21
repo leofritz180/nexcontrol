@@ -1568,7 +1568,7 @@ export default function AdminPage() {
 
       <Onboarding/>
       {!loading && shouldShowDemo(metas, user?.id) && (
-        <DemoModeCard userId={user?.id} onExit={() => init()} />
+        <DemoModeCard userId={user?.id} onExit={() => checkAndLoad()} />
       )}
       {/* A/B Variant B: pacote agressivo de conversao (sticky bar + smart trigger) */}
       {billingVariant === 'B' && !loading && (
@@ -2635,7 +2635,7 @@ export default function AdminPage() {
             <DemoAdminDashboard
               onCreateMeta={() => { setTab('myops'); setTimeout(() => setMyShowForm(true), 300) }}
               userName={getName(profile)}
-              onExitDemo={() => { exitDemoMode(user?.id); init() }}
+              onExitDemo={() => { exitDemoMode(user?.id); checkAndLoad() }}
             />
           ) : (<>
           {/* No V2 o bento substitui SO o topo (meta do dia, hero, KPIs, funil).

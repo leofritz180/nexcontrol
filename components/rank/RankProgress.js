@@ -91,7 +91,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
               position: 'relative',
               width: compact ? 76 : 92, height: compact ? 76 : 92,
               borderRadius: 18,
-              background: bg,
+              background: claro ? (isPrismatic ? PRISMATIC_LIGHT : rankPalette(current.tier, true).chip) : bg,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               overflow: 'hidden',
               boxShadow: `
@@ -135,7 +135,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
               </span>
               <span style={{
                 fontSize: 10, fontWeight: 800,
-                color: isPrismatic ? '#E0E0FF' : current.primary,
+                color: tom(current),
                 letterSpacing: '0.12em', fontFamily: 'var(--mono)',
                 padding: '2px 8px', borderRadius: 4,
                 background: `rgba(${rgb},0.10)`,
@@ -156,10 +156,10 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
                   ? 'linear-gradient(135deg, #FFFFFF 0%, #E0E0FF 50%, #FFD700 100%)'
                   : isApex
                     ? 'linear-gradient(135deg, #B478FF 0%, #FFD700 50%, #4FC3F7 100%)'
-                    : `linear-gradient(135deg, ${current.primary} 0%, rgba(255,255,255,0.95) 50%, ${current.primary} 100%)`,
+                    : `linear-gradient(135deg, ${claro ? rankPalette(current.tier, true).ink : current.primary} 0%, ${claro ? rankPalette(current.tier, true).chip : 'rgba(255,255,255,0.95)'} 50%, ${claro ? rankPalette(current.tier, true).ink : current.primary} 100%)`,
                 WebkitBackgroundClip: 'text', backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent', color: 'transparent',
-                filter: `drop-shadow(0 0 18px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : current.glow})`,
+                filter: claro ? 'none' : `drop-shadow(0 0 18px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.5)' : current.glow})`,
               }}
             >
               {current.name}
@@ -182,7 +182,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
               <span style={{ fontSize: 13, color: 'var(--t2)', fontWeight: 500 }}>
                 Próximo:{' '}
                 <span style={{
-                  color: next.primary === 'prismatic' ? '#E0E0FF' : next.primary, fontWeight: 800, letterSpacing: '0.02em',
+                  color: tom(next), fontWeight: 800, letterSpacing: '0.02em',
                   textShadow: `0 0 12px ${next.glow === 'prismatic' ? 'rgba(180,120,255,0.4)' : next.glow}`,
                 }}>{next.name}</span>
               </span>
@@ -204,7 +204,7 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
                 transition={{ duration: 1.6, ease: [0.33, 1, 0.68, 1], delay: 0.3 }}
                 style={{
                   position: 'relative', height: '100%', borderRadius: 7,
-                  background: bg,
+                  background: claro ? (isPrismatic ? PRISMATIC_LIGHT : rankPalette(current.tier, true).chip) : bg,
                   boxShadow: claro ? '0 2px 8px rgba(0,0,0,0.12)' : `0 0 16px ${current.glow === 'prismatic' ? 'rgba(180,120,255,0.55)' : current.glow}, inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.2)`,
                   overflow: 'hidden',
                 }}
@@ -228,9 +228,9 @@ export default function RankProgress({ contas, name = 'Voce', compact = false, f
                     position: 'absolute', right: 0, top: '50%',
                     transform: 'translate(50%, -50%)',
                     width: 18, height: 18, borderRadius: '50%',
-                    background: isPrismatic ? '#FFFFFF' : current.primary,
+                    background: claro ? rankPalette(current.tier, true).ink : (isPrismatic ? '#FFFFFF' : current.primary),
                     boxShadow: `0 0 14px ${current.glow === 'prismatic' ? 'rgba(255,255,255,0.7)' : current.glow}`,
-                    filter: 'blur(2px)',
+                    filter: claro ? 'none' : 'blur(2px)',
                   }}
                 />
               </motion.div>

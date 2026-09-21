@@ -49,6 +49,9 @@ const PUBLICAS = [
   ['/login', 'login'],
   ['/signup', 'cadastro'],
   ['/reset-password', 'redefinir-senha'],
+  // sem token: cai no estado "convite indisponivel", que tambem precisa
+  // estar apresentavel — e a primeira tela que um operador ve
+  ['/invite', 'convite'],
 ]
 const LOGADAS = [
   ['/admin', 'admin-visao-geral'],
@@ -65,6 +68,10 @@ const LOGADAS = [
   ['/minhas-proxies', 'minhas-proxies'],
   ['/aulas', 'aulas'],
   ['/planejamento', 'planejamento'],
+  // /network e /billing ficaram DE FORA da lista por meses. O /network
+  // estava ilegivel em producao e ninguem viu, porque ninguem olhava.
+  ['/network', 'network'],
+  ['/billing', 'assinatura'],
 ]
 
 fs.mkdirSync(PASTA, { recursive: true })

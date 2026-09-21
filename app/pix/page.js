@@ -5,6 +5,9 @@ import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
+import PixBento from '../../components/modules/PixBento'
+import { isNex2 } from '../../lib/theme-v2'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Operador'
 
@@ -183,6 +186,32 @@ export default function PixPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}>
 
       <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
+
+        {/* V2 (bento claro) só pra quem está no rollout. Para todo o resto, o
+            bloco antigo abaixo continua exatamente como sempre foi. */}
+        {isNex2(user?.email) ? (
+          // Esqueleto só na PRIMEIRA carga (ainda sem perfil). Nos refreshes
+          // seguintes o módulo fica na tela e só a lista mostra o carregando —
+          // igual ao comportamento antigo, que nunca sumia com o formulário.
+          (loading && !profile) ? <ModuloEsqueleto cards={4} /> : (
+            <PixBento
+              stats={stats}
+              chaves={filtered}
+              carregandoLista={loading}
+              texto={textarea} aoTexto={setTextarea}
+              banco={banco} aoBanco={setBanco}
+              aoImportar={handleImport} aoArquivo={handleFile}
+              salvando={saving} erro={error} sucesso={success}
+              aoCopiarTodas={copyAllValid} copiadoTodas={copiedAll}
+              aoExportar={exportTxt} aoRemoverInvalidas={handleRemoveInvalidas}
+              busca={search} aoBuscar={setSearch}
+              filtro={filtro} aoFiltrar={setFiltro}
+              aoCopiar={copyToClipboard} copiado={copied} aoExcluir={handleDelete}
+              aoSincronizar={load}
+            />
+          )
+        ) : (<>
+
         {/* Hero — clean */}
         <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:28 }}>
           <div>
@@ -406,6 +435,8 @@ export default function PixPage() {
             </div>
           </div>
         </div>
+
+        </>)}
       </div>
       <RouteTour tourId="pix" />
       </AppLayout>

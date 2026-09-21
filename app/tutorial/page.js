@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
+import TutorialBento from '../../components/modules/TutorialBento'
+import { isNex2 } from '../../lib/theme-v2'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 import { supabase } from '../../lib/supabase/client'
 
 const ease = [0.33, 1, 0.68, 1]
@@ -68,9 +71,27 @@ export default function TutorialPage() {
   const allDone = completedCount === STEPS.length
   const progress = (completedCount / STEPS.length) * 100
 
-  if (loading) return null
-
   const getName = p => p?.nome || p?.email?.split('@')[0] || 'Admin'
+
+  // No V2 o esqueleto tem a forma dos cards, então o layout não pula quando os
+  // dados chegam. Fora dele, segue o comportamento de sempre (nada na tela).
+  if (loading) return isNex2(user?.email) ? (
+    <main style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
+      <AppLayout
+        userName={getName(profile)}
+        userEmail={user?.email}
+        isAdmin={true}
+        tenant={tenant}
+        subscription={sub}
+        userId={user?.id}
+        tenantId={profile?.tenant_id}
+      >
+        <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={3} /></div>
+      </AppLayout>
+    </main>
+  ) : null
+
+  const nex2 = isNex2(user?.email)
 
   return (
     <main style={{ minHeight: '100vh', position: 'relative', zIndex: 1 }}>
@@ -84,7 +105,17 @@ export default function TutorialPage() {
         tenantId={profile?.tenant_id}
       >
 
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px 80px' }}>
+      <div style={{ maxWidth: nex2 ? 1380 : 860, margin: '0 auto', padding: nex2 ? '32px 28px' : '40px 24px 80px' }}>
+
+        {nex2 ? (
+          <TutorialBento
+            passos={STEPS}
+            marcados={checked}
+            onAlternar={toggle}
+            onReiniciar={resetChecklist}
+          />
+        ) : (<>
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -518,6 +549,8 @@ export default function TutorialPage() {
             </motion.a>
           ))}
         </motion.div>
+
+        </>)}
       </div>
       </AppLayout>
     </main>

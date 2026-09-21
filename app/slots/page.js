@@ -7,6 +7,13 @@ import Link from 'next/link'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { PROVIDERS, SLOTS } from '../../lib/slots-data'
+import SlotsBento from '../../components/modules/SlotsBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
+import { isNex2 } from '../../lib/theme-v2'
+
+// Chave do localStorage dos favoritos. A persistência mora AQUI (na página),
+// porque o SlotsBento é componente puro e não pode gravar nada.
+const CHAVE_FAV = 'nex.slots.favoritos'
 
 const ease = [0.33, 1, 0.68, 1]
 const fadeUp = (i, base = 0) => ({
@@ -254,8 +261,28 @@ export default function SlotsPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('catalogo')
   const [filter, setFilter] = useState('all')
+  // ── estado exclusivo do V2 (busca + favoritos) ──
+  const [busca, setBusca] = useState('')
+  const [favoritos, setFavoritos] = useState([])
 
   useEffect(() => { init() }, [])
+
+  // Lê os favoritos uma vez. Fora do init() de propósito: não depende de rede.
+  useEffect(() => {
+    try {
+      const cru = localStorage.getItem(CHAVE_FAV)
+      const lista = cru ? JSON.parse(cru) : []
+      if (Array.isArray(lista)) setFavoritos(lista)
+    } catch {}
+  }, [])
+
+  function alternarFavorito(id) {
+    setFavoritos(prev => {
+      const novo = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+      try { localStorage.setItem(CHAVE_FAV, JSON.stringify(novo)) } catch {}
+      return novo
+    })
+  }
 
   async function init() {
     const { data: s } = await supabase.auth.getSession()
@@ -287,22 +314,54 @@ export default function SlotsPage() {
     return c
   }, [])
 
+  // Lista visível do V2: aba (catálogo/favoritos) + provider + busca.
+  // O `filtered` acima continua servindo o layout antigo, intacto.
+  const listaV2 = useMemo(() => {
+    const q = busca.trim().toLowerCase()
+    let base = SLOTS
+    if (activeTab === 'meus') base = base.filter(s => favoritos.includes(s.id))
+    if (filter !== 'all') base = base.filter(s => s.provider === filter)
+    if (q) base = base.filter(s => s.name.toLowerCase().includes(q) || (s.tags || []).some(t => t.toLowerCase().includes(q)))
+    return base
+  }, [filter, busca, activeTab, favoritos])
+
   const getName = p => p?.nome || p?.email?.split('@')[0] || 'Admin'
+  const nex2 = isNex2(user?.email)
 
   if (loading || !profile) {
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, var(--surface), var(--surface))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, var(--surface), var(--surface))', display: 'flex', alignItems: nex2 ? 'flex-start' : 'center', justifyContent: 'center' }}>
+        {/* No V2 o esqueleto tem a forma dos cards, então o layout não pula
+            quando os dados chegam. Fora dele, segue o spinner de sempre. */}
+        {nex2 ? (
+          <div style={{ width: '100%', maxWidth: 1380, padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
+        ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div className="spinner" style={{ width: 28, height: 28 }} />
           <p style={{ fontSize: 13, color: 'var(--t3)' }}>Carregando...</p>
         </motion.div>
+        )}
       </div>
     )
   }
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 20px' }}>
+      <div style={{ maxWidth: nex2 ? 1380 : 1200, margin: '0 auto', padding: nex2 ? '32px 28px' : '32px 20px' }}>
+
+        {nex2 ? (
+          <SlotsBento
+            slots={listaV2}
+            providers={PROVIDERS}
+            counts={counts}
+            filtro={filter} onFiltro={setFilter}
+            busca={busca} onBusca={setBusca}
+            aba={activeTab} onAba={setActiveTab}
+            isPro={isPro}
+            favoritos={favoritos} onFavoritar={alternarFavorito}
+            totalCatalogo={SLOTS.length}
+          />
+        ) : (<>
 
         {/* Hero — clean */}
         <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
@@ -432,6 +491,8 @@ export default function SlotsPage() {
             <p style={{ fontSize: 12, color: 'var(--t4)' }}>Em breve voce podera salvar seus jogos favoritos aqui.</p>
           </motion.div>
         )}
+
+        </>)}
       </div>
       <RouteTour tourId="slots" />
     </AppLayout>

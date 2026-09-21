@@ -5,6 +5,9 @@ import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import { supabase } from '../../lib/supabase/client'
 import { PREMIACOES, artPath, previewPath, premiacoesEnabled } from '../../lib/premiacoes'
+import PremiacoesBento from '../../components/modules/PremiacoesBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
+import { isNex2 } from '../../lib/theme-v2'
 
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Admin'
 const fmt = n => 'R$ ' + Number(n || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
@@ -39,9 +42,14 @@ export default function PremiacoesPage() {
   }
   useEffect(() => { load() }, [])
 
+  const nex2 = isNex2(user?.email)
+
   if (loading && !profile) return (
-    <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="spinner" style={{ width: 28, height: 28 }} />
+    <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', alignItems: nex2 ? 'flex-start' : 'center', justifyContent: 'center' }}>
+      {/* No V2 o esqueleto tem a forma dos cards; fora dele, o spinner de sempre. */}
+      {nex2
+        ? <div style={{ width: '100%', maxWidth: 1380, padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
+        : <div className="spinner" style={{ width: 28, height: 28 }} />}
     </div>
   )
 
@@ -65,7 +73,19 @@ export default function PremiacoesPage() {
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
-      <div style={{ maxWidth: 1120, margin: '0 auto', padding: '24px 20px 60px' }}>
+      <div style={{ maxWidth: nex2 ? 1380 : 1120, margin: '0 auto', padding: nex2 ? '32px 28px 60px' : '24px 20px 60px' }}>
+
+        {nex2 ? (
+          <PremiacoesBento
+            enabled={enabled}
+            faturamento={faturamento}
+            items={items}
+            conquistados={conquistados}
+            nextIdx={nextIdx}
+            next={next}
+            roadPos={roadPos}
+          />
+        ) : (<>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
@@ -153,6 +173,8 @@ export default function PremiacoesPage() {
             </p>
           </>
         )}
+
+        </>)}
       </div>
     </AppLayout>
   )

@@ -4,6 +4,9 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence, useScroll, useTransform, useInView, useSpring } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
+import AfiliadosBento from '../../components/modules/AfiliadosBento'
+import { isNex2 } from '../../lib/theme-v2'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 import { supabase } from '../../lib/supabase/client'
 
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -46,6 +49,9 @@ export default function AfiliadosPage() {
   const [tenant, setTenant] = useState(null)
   const [data, setData] = useState(null)
   const [globalStats, setGlobalStats] = useState({ totalPaid: 0, activeAffiliates: 0 })
+  // Estado do formulário de chave PIX (só o V2 mostra esse formulário hoje).
+  const [pixSalvando, setPixSalvando] = useState(false)
+  const [pixSalvo, setPixSalvo] = useState(false)
   const emailRef = useRef(null)
 
   async function fetchStats(email) {
@@ -54,6 +60,25 @@ export default function AfiliadosPage() {
       body: JSON.stringify({ email }),
     })
     if (res.ok) setData(await res.json())
+  }
+
+  // Grava a chave PIX do afiliado. Mesma rota e mesmo corpo do bloco PixSection
+  // que já existia neste arquivo — nada de cálculo nem de contrato mudou.
+  async function salvarPix(chave, tipo) {
+    const email = user?.email || emailRef.current
+    if (!email) return
+    setPixSalvando(true)
+    try {
+      const res = await fetch('/api/affiliate/pix', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, pix_key: chave, pix_type: tipo }),
+      })
+      if (res.ok) {
+        setPixSalvo(true)
+        setTimeout(() => setPixSalvo(false), 2000)
+        await fetchStats(email)
+      }
+    } finally { setPixSalvando(false) }
   }
 
   useEffect(() => {
@@ -81,9 +106,15 @@ export default function AfiliadosPage() {
 
   if (loading) return (
     <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} userId={user?.id} tenantId={profile?.tenant_id}>
+      {/* No V2 o esqueleto tem a forma dos cards, então o layout não pula
+          quando os dados chegam. Fora dele, segue o spinner de sempre. */}
+      {isNex2(user?.email) ? (
+        <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}><ModuloEsqueleto cards={4} /></div>
+      ) : (
       <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="spinner" style={{ width: 22, height: 22, borderTopColor: '#e53935' }} />
       </main>
+      )}
     </AppLayout>
   )
 
@@ -96,6 +127,25 @@ export default function AfiliadosPage() {
   return (
     <AppLayout userName={profile?.nome} userEmail={user?.email} isAdmin={true} tenant={tenant} userId={user?.id} tenantId={profile?.tenant_id}>
       <main style={{ position: 'relative', overflow: 'hidden' }}>
+
+        {isNex2(user?.email) ? (
+          <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
+            <AfiliadosBento
+              habilitado={enabled}
+              link={link}
+              codigo={data?.code}
+              taxa={rate}
+              totais={totals}
+              indicados={referrals}
+              nome={profile?.nome}
+              pixChave={data?.pix_key || ''}
+              pixTipo={data?.pix_type || 'email'}
+              pixSalvando={pixSalvando}
+              pixSalvo={pixSalvo}
+              onSalvarPix={salvarPix}
+            />
+          </div>
+        ) : (<>
 
         {!enabled ? <LockedHero /> : (
           <>
@@ -122,6 +172,8 @@ export default function AfiliadosPage() {
             <FinalCTA link={link} rate={rate} />
           </>
         )}
+
+        </>)}
       </main>
       <RouteTour tourId="afiliados" />
 

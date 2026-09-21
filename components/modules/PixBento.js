@@ -227,6 +227,18 @@ export default function PixBento({
             <BCard pad={24} delay={0.18}>
               <Vazio titulo="Carregando chaves..." texto="Buscando a sua carteira de chaves PIX." icone={I_SYNC} />
             </BCard>
+          ) : chaves.length === 0 ? (
+            // Um estado vazio só, com o motivo certo: carteira vazia é
+            // diferente de filtro que não bateu com nada.
+            <BCard pad={24} delay={0.18}>
+              <Vazio
+                icone={I_CARTAO}
+                titulo={Number(s.total) === 0 ? 'Sua carteira está vazia' : 'Nenhuma chave com esse filtro'}
+                texto={Number(s.total) === 0
+                  ? 'Cole as chaves no painel ao lado (ou suba um .txt) e elas aparecem aqui já classificadas por tipo.'
+                  : 'Mude o filtro de tipo ou limpe a busca para ver as outras chaves.'}
+              />
+            </BCard>
           ) : (
             <Lista
               titulo={`${int(chaves.length)} chave(s) encontrada(s)`}
@@ -242,7 +254,8 @@ export default function PixBento({
                   avatar: SIGLA[k.tipo] || 'evp',
                   avatarBg: invalida ? 'var(--loss-dim)' : 'var(--fill-2)',
                   avatarFg: invalida ? 'var(--loss)' : 'var(--t2)',
-                  t: k.chave,
+                  // a chave é identificador: vai em mono, igual era no layout antigo
+                  t: <span style={{ fontFamily: MONO, letterSpacing: '-0.01em' }}>{k.chave}</span>,
                   s: [k.tipo, k.banco, invalida ? 'inválida' : null].filter(Boolean).join(' · '),
                   v: '',
                   acao: (
@@ -261,21 +274,10 @@ export default function PixBento({
             />
           )}
 
-          {!carregandoLista && chaves.length === 0 && Number(s.total) === 0 && (
-            <BCard pad={24} delay={0.22}>
-              <Vazio
-                titulo="Sua carteira está vazia"
-                texto="Cole as chaves no painel ao lado (ou suba um .txt) e elas aparecem aqui já classificadas por tipo."
-                icone={I_CARTAO}
-              />
-            </BCard>
-          )}
         </div>
       </div>
 
-      {/* A chave em si é monoespaçada: é número, não texto corrido. */}
       <style>{`
-        [data-tour="pix-lista"] p { }
         @media (max-width: 1000px) {
           .pix-2 { grid-template-columns: 1fr !important }
           .bk-tira { grid-template-columns: repeat(3, 1fr) !important }

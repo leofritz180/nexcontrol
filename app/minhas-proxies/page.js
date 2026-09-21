@@ -5,6 +5,9 @@ import { motion } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
 import BettifyTips from '../../components/BettifyTips'
 import { supabase } from '../../lib/supabase/client'
+import ProxiesBento from '../../components/modules/ProxiesBento'
+import { isNex2 } from '../../lib/theme-v2'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 
 const ease = [0.33, 1, 0.68, 1]
 const MINT = '#34d399'
@@ -84,6 +87,27 @@ export default function MinhasProxiesPage() {
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
+
+      {/* V2 (bento claro) só pra quem está no rollout; o bloco antigo segue
+          intacto no ramo de baixo pra todos os outros clientes. */}
+      {isNex2(user?.email) ? (
+        <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
+          {loading
+            ? <ModuloEsqueleto cards={4} />
+            : (
+              <ProxiesBento
+                proxies={proxies}
+                erro={err}
+                copiado={copied}
+                aoCopiar={copyLine}
+                aoAtualizar={refresh}
+                aoComprar={() => router.push('/proxy')}
+                dicas={<BettifyTips />}
+              />
+            )}
+        </div>
+      ) : (
+
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 20px 60px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -163,6 +187,8 @@ export default function MinhasProxiesPage() {
           </div>
         )}
       </div>
+
+      )}
     </AppLayout>
   )
 }

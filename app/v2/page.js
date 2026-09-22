@@ -341,31 +341,23 @@ export default function V2Page() {
             </Revelar>
           </div>
 
-          {/* O HERÓI TEM DUAS VERSÕES, e o motivo é o mesmo que vale pra
-              página inteira: a maioria vai entrar aqui pelo telefone.
-              · No computador: o painel em perspectiva, girando. Sangra pros
-                dois lados e impressiona; a leitura fria vem logo abaixo.
-              · No telefone: a CAPTURA REAL, recortada e grande. O filme 3D
-                traz muito preto em volta do painel — espremido em 390px ele
-                vira uma miniatura, que é o oposto do que um herói precisa.
-              Só uma das duas é baixada: a que está escondida nunca entra na
-              viewport, então o navegador não busca a imagem nem o pôster. */}
-          <Revelar atraso={0.2} y={26} className="nv2-palco-filme nv2-so-desk">
+          {/* UM filme só, e ele TOCA no telefone também.
+              A versão anterior punha uma captura recortada aqui, porque o
+              arquivo de desktop tem 5 MB. Só que o recorte comia metade do
+              painel e o herói do celular virava foto quebrada. Agora o
+              telefone recebe painel-3d-mob.mp4, com 0,2 MB — mesmo
+              movimento, corpo menor.
+              O enquadramento fecha no celular (.nv2-palco-filme em 5/4, via
+              media query): o render tem muito preto em volta do painel, e
+              em 390px o corte tira o vazio sem tocar no painel. */}
+          <Revelar atraso={0.2} y={26} className="nv2-palco-filme">
             <Filme
               src="/landing/v2/painel-3d.mp4"
+              srcMob="/landing/v2/painel-3d-mob.mp4"
               poster="/landing/v2/painel-3d-poster.jpg"
-              pesado
+              proporcaoMob="5 / 4"
               alt="Painel da Nex Control em perspectiva: lucro do mês, metas fechadas, resultado da semana e movimento da operação"
               proporcao="16 / 9"
-            />
-          </Revelar>
-          <Revelar atraso={0.2} y={26} className="nv2-palco nv2-palco-bleed nv2-so-fone">
-            <Image
-              src="/landing/v2/painel.png"
-              alt="Painel da Nex Control: lucro do mês, metas fechadas, meta do dia e resultado da semana"
-              width={3200}
-              height={2000}
-              sizes="190vw"
             />
           </Revelar>
         </div>
@@ -413,7 +405,7 @@ export default function V2Page() {
               ['Equipe ativa', 'Quem está operando e quanto cada um gerou.'],
               ['Movimento da operação', 'Depositado, sacado e custos lado a lado, no mesmo cartão.'],
             ].map(([t, d], i) => (
-              <Revelar key={t} atraso={i * 0.06} as="li" className="nv2-card nv2-card-pad col3" style={{ gridColumn: 'span 3' }}>
+              <Revelar key={t} atraso={i * 0.06} as="li" className="nv2-card nv2-card-pad col3">
                 <h3 className="nv2-h3">{t}</h3>
                 <p className="nv2-corpo" style={{ marginTop: 7 }}>{d}</p>
               </Revelar>
@@ -429,8 +421,7 @@ export default function V2Page() {
       {/* ═══ 05 · PROBLEMA (editorial: só tipografia) ═════════════════ */}
       <section className="nv2-sec">
         <div className="nv2-larg">
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.1fr) minmax(0,1fr)', gap: 48, alignItems: 'start' }}
-            className="nv2-prob-grid">
+          <div className="nv2-duas nv2-duas--prob">
             <Revelar>
               <h2 className="nv2-h2">
                 Planilha não é<br />sistema operacional.
@@ -473,7 +464,7 @@ export default function V2Page() {
 
           <div className="nv2-bento" style={{ marginTop: 52 }}>
             {/* cartão principal: recorte real do "Movimento da operação" */}
-            <Revelar className="nv2-card col4" style={{ gridColumn: 'span 4' }}>
+            <Revelar className="nv2-card col4">
               <div className="nv2-card-pad">
                 <Olho ponto={false}>Financeiro em tempo real</Olho>
                 <h3 className="nv2-h2" style={{ fontSize: 'clamp(24px,2.6vw,32px)', marginTop: 16 }}>
@@ -498,7 +489,7 @@ export default function V2Page() {
               </div>
             </Revelar>
 
-            <Revelar atraso={0.06} className="nv2-card nv2-card-pad col2" style={{ gridColumn: 'span 2' }}>
+            <Revelar atraso={0.06} className="nv2-card nv2-card-pad col2">
               <span style={{ color: 'var(--lime)' }}><Ico d={I.alvo} s={20} /></span>
               <h3 className="nv2-h3" style={{ marginTop: 16 }}>Metas</h3>
               <p className="nv2-corpo" style={{ marginTop: 7 }}>
@@ -512,8 +503,7 @@ export default function V2Page() {
               [I.rede, 'Redes', 'Organize as redes da operação em um único ambiente.'],
               [I.relato, 'Relatórios', 'Entenda o que aconteceu por período sem montar planilhas manualmente.'],
             ].map(([ico, t, d], i) => (
-              <Revelar key={t} atraso={0.1 + i * 0.05} className="nv2-card nv2-card-pad col3"
-                style={{ gridColumn: i < 2 ? 'span 3' : 'span 3' }}>
+              <Revelar key={t} atraso={0.1 + i * 0.05} className="nv2-card nv2-card-pad col3">
                 <span style={{ color: 'var(--lime)' }}><Ico d={ico} s={20} /></span>
                 <h3 className="nv2-h3" style={{ marginTop: 16 }}>{t}</h3>
                 <p className="nv2-corpo" style={{ marginTop: 7 }}>{d}</p>
@@ -526,8 +516,7 @@ export default function V2Page() {
       {/* ═══ 07 · EQUIPES ═════════════════════════════════════════════ */}
       <section className="nv2-sec" id="equipes">
         <div className="nv2-larg">
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.15fr)', gap: 56, alignItems: 'center' }}
-            className="nv2-eq-grid">
+          <div className="nv2-duas nv2-duas--eq">
             <div>
               <Cabeca
                 olho="Para equipes"
@@ -551,8 +540,9 @@ export default function V2Page() {
               <Filme
                 className="nv2-palco-filme"
                 src="/landing/v2/operadores-3d.mp4"
+                srcMob="/landing/v2/operadores-3d-mob.mp4"
                 poster="/landing/v2/operadores-3d-poster.jpg"
-                pesado
+                proporcaoMob="5 / 4"
                 alt="Tela de operadores e métricas da Nex Control: destaque da equipe, lucro por operador e situação das metas"
                 proporcao="16 / 9"
               />
@@ -564,8 +554,7 @@ export default function V2Page() {
       {/* ═══ 08 · NEX INTELLIGENCE ════════════════════════════════════ */}
       <section className="nv2-sec">
         <div className="nv2-larg">
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'center' }}
-            className="nv2-eq-grid">
+          <div className="nv2-duas">
             <div>
               <Cabeca
                 olho="Nex Intelligence"
@@ -623,8 +612,7 @@ export default function V2Page() {
       {/* ═══ 10 · CELULAR ═════════════════════════════════════════════ */}
       <section className="nv2-sec">
         <div className="nv2-larg">
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 56, alignItems: 'center' }}
-            className="nv2-eq-grid">
+          <div className="nv2-duas nv2-duas--fone">
             <div>
               <Cabeca
                 olho="No celular"
@@ -672,6 +660,7 @@ export default function V2Page() {
                 <Filme
                   className="nv2-fone-tela"
                   src="/landing/v2/celular-painel.mp4"
+                  srcMob="/landing/v2/celular-painel-mob.mp4"
                   poster="/landing/v2/celular-painel-poster.jpg"
                   alt="Nex Control no celular: painel com lucro, metas fechadas, meta do dia e a barra de navegação inferior"
                   proporcao="9 / 16"
@@ -680,6 +669,7 @@ export default function V2Page() {
               <Filme
                 className="nv2-cena-atras"
                 src="/landing/v2/criar-meta.mp4"
+                srcMob="/landing/v2/criar-meta-mob.mp4"
                 poster="/landing/v2/criar-meta-poster.jpg"
                 alt="Nex Control no celular: criando uma nova operação, com os passos onde, quanto e acesso"
                 proporcao="9 / 16"
@@ -695,7 +685,7 @@ export default function V2Page() {
           <Cabeca olho="Ecossistema" titulo="Mais que um dashboard." largura={560} />
           <div className="nv2-bento" style={{ marginTop: 40 }}>
             {MODULOS.map((m, i) => (
-              <Revelar key={m.t} atraso={i * 0.06} className="nv2-card nv2-card-pad col2" style={{ gridColumn: 'span 2' }}>
+              <Revelar key={m.t} atraso={i * 0.06} className="nv2-card nv2-card-pad col2">
                 <span style={{ color: 'var(--cinza)' }}><Ico d={m.ico} s={19} /></span>
                 <h3 className="nv2-h3" style={{ marginTop: 14 }}>{m.t}</h3>
                 <p className="nv2-corpo" style={{ marginTop: 6 }}>{m.d}</p>
@@ -711,6 +701,7 @@ export default function V2Page() {
         <Filme
           className="nv2-marca-filme"
           src="/landing/v2/marca.mp4"
+          srcMob="/landing/v2/marca-mob.mp4"
           poster="/landing/v2/marca-poster.jpg"
           alt="Marca Nex Control 2.0"
           proporcao="16 / 9"

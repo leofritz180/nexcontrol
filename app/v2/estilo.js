@@ -189,7 +189,7 @@ export default function EstiloV2() {
 
       /* base de todo filme; quem precisar de outro posicionamento
          sobrescreve pela classe, nao por estilo em linha */
-      .nv2-filme { position: relative; overflow: hidden; }
+      .nv2-filme { position: relative; overflow: hidden; aspect-ratio: var(--prop, 16 / 9); }
 
       /* A MARCA EM MOVIMENTO na secao institucional. Fica ATRAS do texto,
          grande e discreta: e ambientacao, nao um video pra assistir. A
@@ -202,13 +202,17 @@ export default function EstiloV2() {
         -webkit-mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 32%, transparent 78%);
               mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 32%, transparent 78%);
       }
-      @media (max-width: 768px) { .nv2-marca-filme { opacity: 0.34; } }
-
-      /* TROCA COMPUTADOR / TELEFONE. Quem esta escondido aqui nao custa
-         banda: imagem e poster nascem em lazy e um elemento em display:none
-         nunca entra na viewport, entao o navegador nao busca nenhum dos dois. */
-      .nv2-so-fone { display: none; }
-      .nv2-so-desk { display: block; }
+      /* SO O N, NAO O LOCKUP INTEIRO. O arquivo traz o wordmark
+         "NEXCONTROL 2.0" embaixo da marca, com um selo LARANJA que nem e da
+         paleta 2.0. Atras do texto da secao isso virava borrao ilegivel:
+         duas tipografias disputando o mesmo espaco. O zoom enquadra so a
+         letra, que e o que interessa como ambientacao — e de quebra tira o
+         laranja da pagina. A origem cai no centro do N (51% x 41%). */
+      .nv2-marca-filme img, .nv2-marca-filme video {
+        transform: scale(2.6); transform-origin: 51% 41%;
+      }
+      /* sem o wordmark competindo, a marca aguenta mais presenca */
+      @media (max-width: 768px) { .nv2-marca-filme { opacity: 0.5; } }
 
       /* ── O "N" DE FUNDO ──────────────────────────────────────────────── */
       .nv2-n {
@@ -236,7 +240,12 @@ export default function EstiloV2() {
         transition: border-color .2s ease, background-color .2s ease;
       }
       .nv2-card:hover { border-color: var(--linha2); background: var(--graf2); }
-      .nv2-card-pad { padding: 26px; }
+      /* PRECISA DO .nv2 NA FRENTE: alguns cartoes sao <li>, e o reset de
+         lista (0,1,1) vencia a classe sozinha (0,1,0) zerando o padding —
+         o texto encostava na borda do cartao.
+         E nao ponha BACKTICK em comentario deste arquivo: o CSS inteiro
+         mora num template literal e um backtick solto fecha a string. */
+      .nv2 .nv2-card-pad { padding: 26px; }
       /* recorte de interface dentro de cartao: a moldura corta, a imagem nao
          precisa caber inteira. O enquadramento mora aqui e nao no next/image
          porque com width em % o navegador calcula o tamanho antes da imagem
@@ -326,6 +335,19 @@ export default function EstiloV2() {
       .nv2-preco { display: flex; align-items: baseline; gap: 10px; }
       .nv2-preco b { font-size: 52px; font-weight: 600; letter-spacing: -0.05em; color: var(--tinta); line-height: 1; }
       .nv2-preco span { font-size: 15px; color: var(--cinza); }
+
+      /* ── DUAS COLUNAS ────────────────────────────────────────────────
+         Estas quatro secoes (problema, equipes, inteligencia, celular)
+         tinham o grid em estilo INLINE, que nenhuma media query alcanca.
+         No telefone ficavam em duas colunas de ~170px, uma palavra por
+         linha. A definicao mora aqui agora, e empilha junto com o resto. */
+      .nv2-duas {
+        display: grid; gap: 56px; align-items: center;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+      .nv2-duas--prob { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+      .nv2-duas--eq   { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+      .nv2-duas--fone { grid-template-columns: minmax(0, 1fr) auto; }
 
       /* ── PLANOS ──────────────────────────────────────────────────────
          Regra de cor aqui: TODOS os cartoes sao iguais em cor. O unico que
@@ -458,7 +480,7 @@ export default function EstiloV2() {
         .nv2-num:first-child { border-top: none; padding-top: 0; }
         .nv2-bento { grid-template-columns: 1fr; gap: 12px; }
         .nv2-bento > .col6, .nv2-bento > .col4, .nv2-bento > .col3, .nv2-bento > .col2 { grid-column: span 1; }
-        .nv2-card-pad { padding: 20px; }
+        .nv2 .nv2-card-pad { padding: 20px; }
         .nv2-frases p { font-size: clamp(21px, 6.6vw, 28px); padding: 22px 0; }
         /* A captura tinha 235px de altura no telefone: a tela inteira
            reduzida a uma miniatura, que e o oposto de impressionar. Aqui ela
@@ -473,18 +495,21 @@ export default function EstiloV2() {
            alcancavel no rodape e no fim da pagina. */
         .nv2-topo .nv2-btn--fant { display: none; }
         .nv2-topo .nv2-marca-nome { font-size: 14.5px; }
-        .nv2-topo .nv2-btn--lime { height: 38px; padding: 0 16px; font-size: 13.5px; }
+        /* o logo tambem e link: 44px de area de toque, sem mexer no visual */
+        .nv2-topo .nv2-marca { padding: 8px 0; margin: -8px 0; }
+        /* 44px e o minimo pra um alvo de toque nao errar o dedo */
+        .nv2-topo .nv2-btn--lime { height: 44px; padding: 0 18px; font-size: 13.5px; }
         .nv2-fluxo-no { flex: 1 1 100%; border-radius: 14px !important; border-left: 1px solid var(--linha) !important; }
         .nv2-fluxo-seta { transform: rotate(90deg); padding: 8px 0; width: 100%; }
-        .nv2-recorte { margin-left: 20px; height: 132px; }
-        .nv2-recorte img { object-position: 30% 58%; }
+        /* O RECORTE PRECISA APROXIMAR, NAO ENCOLHER. Com cover, os 3200px
+           da captura cabiam nos 335px do cartao: a interface inteira em 10%
+           do tamanho, texto de 3px, ilegivel — parecia defeito. O zoom traz
+           uma FATIA legivel, que e o que um recorte deve fazer. */
+        .nv2-recorte { margin-left: 20px; height: 172px; }
+        .nv2-recorte img { object-position: 50% 50%; transform: scale(3.2); transform-origin: 24% 46%; }
         /* NO TELEFONE fica UM telefone. Dois viram dois selos ilegiveis. */
         .nv2-fones .nv2-cena-atras { display: none; }
         .nv2-fone { width: 244px; }
-        /* no telefone o heroi e a captura real, recortada (regra .nv2-palco
-           logo acima), e nao o filme 3D */
-        .nv2-so-fone { display: block; }
-        .nv2-so-desk { display: none; }
         /* o filme que sobra sangra menos: em 390px o corte lateral come o painel */
         .nv2-palco-filme {
           width: calc(100% + 40px); margin-left: -20px; margin-top: -8px;
@@ -494,6 +519,19 @@ export default function EstiloV2() {
             linear-gradient(90deg, #080909 0%, transparent 8%, transparent 92%, #080909 100%),
             linear-gradient(180deg, #080909 0%, transparent 8%, transparent 92%, #080909 100%);
         }
+        /* AS QUATRO SECOES DE DUAS COLUNAS EMPILHAM. Sem isto, o texto
+           fica com uma palavra por linha — era o pior defeito do mobile. */
+        .nv2-duas,
+        .nv2-duas--prob,
+        .nv2-duas--eq,
+        .nv2-duas--fone { grid-template-columns: 1fr; gap: 36px; align-items: start; }
+
+        /* ENQUADRAMENTO FECHADO NO TELEFONE. O render 3D tem ~16% de preto
+           morto de cada lado; em 5/4 o corte tira o vazio e o painel passa
+           a ocupar quase a largura toda, sem perder nenhuma borda dele.
+           Quem nao declara proporcaoMob cai no --prop de sempre. */
+        .nv2-filme { aspect-ratio: var(--prop-fone, var(--prop, 16 / 9)); }
+
         .nv2-preco b { font-size: 42px; }
 
         /* PLANOS NO TELEFONE: nada de cinco cartoes miniatura. O seletor
@@ -515,7 +553,10 @@ export default function EstiloV2() {
         .nv2-comp th, .nv2-comp td { padding: 13px 3px; }
         .nv2-comp tbody th { width: 46%; font-size: 12.8px; line-height: 1.35; padding-right: 8px; }
         .nv2-comp thead th { font-size: 9px; letter-spacing: 0.06em; }
+        /* o padding com margem negativa amplia a area de toque pra 43px
+           sem mexer no espacamento visual */
         .nv2-rod-links { margin-left: 0; gap: 16px; }
+        .nv2-rod-links a { padding: 11px 0; margin: -11px 0; }
         .nv2-esconde-mob { display: none !important; }
       }
       @media (max-width: 400px) {

@@ -13,20 +13,37 @@ export const SUAVE = [0.22, 1, 0.36, 1]
 
 // ── REVELAR ──────────────────────────────────────────────────────────────
 // Entra uma vez quando chega perto da dobra. `atraso` escalona irmãos.
+//
+// DUAS REDES DE SEGURANÇA, e elas não são preciosismo: numa landing de
+// VENDA, conteúdo que depende de observador pra existir é conteúdo que pode
+// nunca aparecer. Já aconteceu neste projeto (ver a nota sobre clip-path e
+// IntersectionObserver).
+//   1. `margin: 240px` dispara bem ANTES do elemento chegar na dobra.
+//   2. `amount: 0` basta um pixel visível — não espera o bloco inteiro.
+//   3. o temporizador abaixo: passados 2,2s do carregamento, tudo aparece
+//      de qualquer jeito. Se o observador falhar, a página continua
+//      legível; o pior caso é um fade sem scroll, não uma página em branco.
 export function Revelar({ children, atraso = 0, y = 18, className, style, as = 'div' }) {
   const parado = useReducedMotion()
+  const [destravado, setDestravado] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setDestravado(true), 2200)
+    return () => clearTimeout(t)
+  }, [])
+
   const Tag = motion[as] || motion.div
   if (parado) {
     const Plain = as
     return <Plain className={className} style={style}>{children}</Plain>
   }
+  const visivel = { opacity: 1, y: 0 }
   return (
     <Tag
       className={className} style={style}
       initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-12% 0px' }}
-      transition={{ duration: 0.62, delay: atraso, ease: SUAVE }}
+      {...(destravado ? { animate: visivel } : { whileInView: visivel })}
+      viewport={{ once: true, amount: 0, margin: '240px 0px 240px 0px' }}
+      transition={{ duration: 0.62, delay: destravado ? 0 : atraso, ease: SUAVE }}
     >{children}</Tag>
   )
 }
@@ -56,7 +73,14 @@ export function Contador({ valor, antes = '', depois = '', casas = 0 }) {
   const parado = useReducedMotion()
   const ref = useRef(null)
   const naTela = useInView(ref, { once: true, margin: '-15% 0px' })
-  const [n, setN] = useState(parado ? valor : 0)
+  // Nasce com o VALOR FINAL, não com zero. Dois motivos:
+  //  · o número certo já vai no HTML, então buscador e leitor de tela leem
+  //    "400+", não "0+";
+  //  · se o observador nunca disparar, a página mostra o dado real em vez
+  //    de um zero que parece bug.
+  // A contagem só começa quando o bloco entra em vista — e aí sim ela parte
+  // do zero, porque é isso que dá a sensação de contador.
+  const [n, setN] = useState(valor)
 
   useEffect(() => {
     if (parado || !naTela) return

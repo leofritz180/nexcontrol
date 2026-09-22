@@ -29,12 +29,13 @@ export default function OperadoresBento({ ranking = [], ativos = 0, convidar, on
         ]}
       />
 
+      {/* "Metas fechadas" e "Acerto médio" saíram: os dois já estão nos chips
+          do herói, logo acima. Com cinco itens ainda sobrava uma célula vazia
+          na grade de duas colunas do celular. */}
       <Tira itens={[
         { l: 'Na equipe', v: int(ativos) },
         { l: 'Produtivos', v: int(ranking.length), hint: 'com meta fechada' },
-        { l: 'Metas fechadas', v: int(metasF) },
         { l: 'Depositantes', v: int(deps) },
-        { l: 'Acerto médio', v: `${winAvg}%`, c: winAvg >= 50 ? 'var(--profit)' : 'var(--t1)' },
       ]} />
 
       <Lista

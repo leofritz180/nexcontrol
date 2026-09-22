@@ -2449,8 +2449,14 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   }
   .nx-bento .nx-dock-item svg,
   .nx-bento [aria-label="Refazer tour desta aba"] svg { width: 16px; height: 16px; }
-  /* a ordem da direita pra esquerda: sino, voz, avisos, tour */
-  .nx-bento [aria-label="Refazer tour desta aba"] { right: 154px !important; }
+  /* Cada um tem o SEU `right` no componente (22/76/130/184), pensado pra
+     botao de 44px. Com 38px eles se sobrepunham: o "?" caia em cima do
+     microfone. Aqui os quatro sao reposicionados de 44 em 44, da direita
+     pra esquerda: sino, voz, avisos, tour. */
+  .nx-bento [aria-label="Atualizações do sistema"] { right: 14px !important; }
+  .nx-bento [aria-label^="Comandos de voz"] { right: 58px !important; }
+  .nx-bento [aria-label="Notificacoes rapidas"] { right: 102px !important; }
+  .nx-bento [aria-label="Refazer tour desta aba"] { right: 146px !important; }
 
   /* a bolha do chat fica sozinha embaixo A ESQUERDA: e o unico canto que
      nao disputa com o botao de acao nem com a barra */
@@ -2506,16 +2512,22 @@ html, body { max-width: 100vw; overflow-x: hidden; }
      O topo abre espaco pros flutuantes e pro botao de menu; o rodape abre
      espaco pra barra de abas E pro botao flutuante. */
   .nx-bento .app-content { padding-bottom: calc(112px + env(safe-area-inset-bottom)) !important; }
-  .nx-bento .app-content > div { padding: 64px 16px 0 !important; }
+  /* .app-content ja tem 56px de topo (espaco do botao de menu), e os
+     flutuantes ocupam ate 50px. 22px aqui fecha a conta sem deixar um vao
+     de meia tela antes do titulo. */
+  .nx-bento .app-content > div { padding: 22px 16px 0 !important; }
 
   /* cabecalho de modulo: titulo de aplicativo, nao de relatorio */
   .nx-bento .app-content h1 { font-size: 27px !important; letter-spacing: -0.04em !important; }
 
   /* cards em coluna unica; a tira se acomoda sem deixar celula vazia */
   .nx-bento .bk-tira {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     border-radius: 20px; overflow: hidden;
   }
+  /* Com numero IMPAR de indicadores sobrava uma celula cinza vazia no fim —
+     parecia card quebrado. O ultimo ocupa a linha inteira. */
+  .nx-bento .bk-tira > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .nx-bento .ab-r1, .nx-bento .ab-r2, .nx-bento .bk-2,
   .nx-bento .rc-grid, .nx-bento .fc-grid, .nx-bento .afb-2 {
     grid-template-columns: 1fr !important;

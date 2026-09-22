@@ -52,6 +52,8 @@ const PUBLICAS = [
   // sem token: cai no estado "convite indisponivel", que tambem precisa
   // estar apresentavel — e a primeira tela que um operador ve
   ['/invite', 'convite'],
+  // a vitrine publica do produto: mostrava "NaNd" na atividade recente
+  ['/demo', 'demonstracao'],
 ]
 const LOGADAS = [
   ['/admin', 'admin-visao-geral'],

@@ -10,8 +10,13 @@ import Logo from '../../components/Logo'
 
 const fmt = v => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})
 const ease = [0.33, 1, 0.68, 1]
+// O `|| ''` no fim existe porque sem data valida isto devolvia "NaNd" — e
+// era EXATAMENTE o que aparecia na Atividade recente, em producao, na
+// pagina publica de demonstracao do produto.
 const relativeTime = iso => {
-  const diff = Date.now() - new Date(iso).getTime()
+  const t = new Date(iso).getTime()
+  if (!Number.isFinite(t)) return ''
+  const diff = Date.now() - t
   const m = Math.floor(diff/60000), h = Math.floor(diff/3600000), d = Math.floor(diff/86400000)
   if (m < 1) return 'agora'
   if (m < 60) return `${m}min`
@@ -491,7 +496,7 @@ function ActivityCard() {
         {DEMO_ACTIVITY.slice(0, 5).map((a, i) => (
           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 4 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
             <p style={{ fontSize: 12, color: 'var(--t2)', margin: 0, flex: 1 }}>{a.text}</p>
-            <span style={{ fontSize: 10, color: '#82828d', fontFamily: 'var(--mono)', flexShrink: 0 }}>{relativeTime(a.at)}</span>
+            <span style={{ fontSize: 10, color: '#82828d', fontFamily: 'var(--mono)', flexShrink: 0 }}>{relativeTime(a.time ?? a.at)}</span>
           </div>
         ))}
       </div>

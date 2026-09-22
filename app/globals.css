@@ -2520,6 +2520,24 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   /* cabecalho de modulo: titulo de aplicativo, nao de relatorio */
   .nx-bento .app-content h1 { font-size: 27px !important; letter-spacing: -0.04em !important; }
 
+  /* ── GRADE DE BLOCOS ────────────────────────────────────────────────────
+     Em coluna única, quatro cartões de 148px de altura comem duas telas de
+     rolagem só pra dar quatro números. A primeira linha do painel passa a
+     ser: o LUCRO ocupando a largura toda, dois blocos menores lado a lado, e
+     a meta do dia de novo na largura toda. É a leitura que cabe num
+     telefone — um número grande e dois de apoio. */
+  .nx-bento .ab-r1 { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+  .nx-bento .ab-r1 > *:nth-child(1),
+  .nx-bento .ab-r1 > *:nth-child(4) { grid-column: 1 / -1; }
+  .nx-bento .ab-r1 > *:nth-child(2) [style*="min-height"],
+  .nx-bento .ab-r1 > *:nth-child(3) [style*="min-height"] { min-height: 124px !important; }
+
+  /* ── OS CANTOS DE BAIXO TEM DONO ────────────────────────────────────────
+     Direito: o botão de ação. Esquerdo: a bolha do chat. O checklist não
+     pode disputar com nenhum dos dois — recolhido, ele subia por cima do
+     botão de ação. Sobe mais um degrau. */
+  .nx-checklist { right: 16px !important; }
+
   /* cards em coluna unica; a tira se acomoda sem deixar celula vazia */
   .nx-bento .bk-tira {
     grid-template-columns: repeat(2, 1fr) !important;
@@ -2564,8 +2582,8 @@ html, body { max-width: 100vw; overflow-x: hidden; }
      avisar que era um card. Agora ele fica limitado a metade da tela, com
      rolagem propria, e acima da barra de baixo. */
   .nx-checklist {
-    bottom: calc(84px + env(safe-area-inset-bottom)) !important;
-    max-height: 50vh;
+    bottom: calc(150px + env(safe-area-inset-bottom)) !important;
+    max-height: 46vh;
     overflow-y: auto;
     overscroll-behavior: contain;
     border-radius: 18px;

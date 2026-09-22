@@ -21,13 +21,14 @@
 // por texto escuro. Por isso TODA cor aqui vem de classe (app/v2/estilo.js),
 // nunca de style inline.
 // ─────────────────────────────────────────────────────────────────────────
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { BASE_PRICE } from '../../lib/pricing'
 import EstiloV2 from './estilo'
 import Filme from './filme'
+import MarcaN from './marca-n'
 import { Revelar, Olho, Cabeca, Contador, Botao, Ico, Pergunta, SETA } from './pecas'
 
 const moeda = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -266,6 +267,9 @@ export default function V2Page() {
   const [faqAberta, setFaqAberta] = useState(0)
   const [grupo, setGrupo] = useState('solo')
   const parado = useReducedMotion()
+  // a area que escuta o ponteiro pro N girar e a secao inteira, porque o
+  // N mora atras do texto
+  const secaoMarca = useRef(null)
 
   useEffect(() => {
     const aoRolar = () => setPreso(window.scrollY > 16)
@@ -696,16 +700,7 @@ export default function V2Page() {
       </section>
 
       {/* ═══ 12 · NEX CONTROL 2.0 (institucional) ═════════════════════ */}
-      <section className="nv2-sec" style={{ position: 'relative', overflow: 'hidden' }}>
-        {/* a marca em movimento, no momento em que a seção fala dela */}
-        <Filme
-          className="nv2-marca-filme"
-          src="/landing/v2/marca.mp4"
-          srcMob="/landing/v2/marca-mob.mp4"
-          poster="/landing/v2/marca-poster.jpg"
-          alt="Marca Nex Control 2.0"
-          proporcao="16 / 9"
-        />
+      <section ref={secaoMarca} className="nv2-sec" style={{ position: 'relative', overflow: 'hidden' }}>
         <div className="nv2-larg" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
           <Revelar><Olho ponto={false}>2025 → 2026</Olho></Revelar>
           <Revelar atraso={0.08}>
@@ -714,7 +709,19 @@ export default function V2Page() {
             </h2>
           </Revelar>
 
-          <div style={{ marginTop: 52, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* A MARCA, com lugar próprio.
+              Ela começou atrás do texto, herdando o enquadramento do vídeo
+              que substituiu. Errado por dois motivos: embaçava a leitura, e
+              uma peça com que dá pra brincar escondida atrás de uma
+              palavra não é peça com que dá pra brincar. Aqui ela é o
+              assunto da seção — que é literalmente sobre a identidade nova.
+              No computador segue o ponteiro em qualquer ponto da seção; no
+              telefone gira conforme a seção atravessa a tela. */}
+          <Revelar atraso={0.14} y={20}>
+            <MarcaN className="nv2-marca-n" alvo={secaoMarca} />
+          </Revelar>
+
+          <div style={{ marginTop: 44, display: 'flex', flexDirection: 'column', gap: 2 }}>
             {['Interface.', 'Performance.', 'Automação.', 'Inteligência.', 'Experiência.'].map((p, i) => (
               <Revelar key={p} atraso={i * 0.09} y={14}>
                 <p className="nv2-h2" style={{ fontSize: 'clamp(26px,3.6vw,44px)', color: 'var(--cinza)' }}>{p}</p>

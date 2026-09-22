@@ -191,28 +191,47 @@ export default function EstiloV2() {
          sobrescreve pela classe, nao por estilo em linha */
       .nv2-filme { position: relative; overflow: hidden; aspect-ratio: var(--prop, 16 / 9); }
 
-      /* A MARCA EM MOVIMENTO na secao institucional. Fica ATRAS do texto,
-         grande e discreta: e ambientacao, nao um video pra assistir. A
-         mascara apaga as bordas pra ela nascer do fundo em vez de virar um
-         retangulo colado no meio da pagina. */
-      .nv2-marca-filme {
-        position: absolute; top: 50%; left: 50%;
-        width: min(880px, 104vw); transform: translate(-50%, -50%);
-        opacity: 0.62; pointer-events: none; z-index: 0;
-        -webkit-mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 32%, transparent 78%);
-              mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 32%, transparent 78%);
+      /* ── O N ANIMADO ─────────────────────────────────────────────────
+         Substitui marca.mp4 (2,31 MB) por geometria. Nao intercepta
+         clique nenhum: quem escuta o ponteiro e a SECAO inteira, nao a
+         peca — assim o N vira com o mouse em qualquer ponto do bloco.
+         O marca.mp4 continua em public/landing/v2/, sem referencia: e
+         material de marca do dono, nao lixo meu pra apagar. */
+      .nxn {
+        position: relative; display: grid; place-items: center;
+        pointer-events: none; /* quem escuta o ponteiro e a secao inteira */
       }
-      /* SO O N, NAO O LOCKUP INTEIRO. O arquivo traz o wordmark
-         "NEXCONTROL 2.0" embaixo da marca, com um selo LARANJA que nem e da
-         paleta 2.0. Atras do texto da secao isso virava borrao ilegivel:
-         duas tipografias disputando o mesmo espaco. O zoom enquadra so a
-         letra, que e o que interessa como ambientacao — e de quebra tira o
-         laranja da pagina. A origem cai no centro do N (51% x 41%). */
-      .nv2-marca-filme img, .nv2-marca-filme video {
-        transform: scale(2.6); transform-origin: 51% 41%;
+      /* a perspectiva mora no palco. Sem ela o rotateY vira achatamento,
+         nao giro. */
+      .nxn-palco { position: relative; width: min(300px, 58vw); perspective: 1000px; }
+      .nxn-corpo {
+        position: relative; width: 100%; aspect-ratio: 100 / 106;
+        transform-style: preserve-3d; will-change: transform;
       }
-      /* sem o wordmark competindo, a marca aguenta mais presenca */
-      @media (max-width: 768px) { .nv2-marca-filme { opacity: 0.5; } }
+      /* cada faceta ocupa o mesmo quadro; o que as separa e o translateZ */
+      .nxn-faceta {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        overflow: visible;
+      }
+      /* o halo lime da identidade, atras da peca. E ele que amarra o N a
+         2.0 sem pintar a marca de verde. */
+      .nxn-halo {
+        position: absolute; left: 50%; top: 50%; width: 132%; height: 118%;
+        transform: translate(-50%, -50%) translateZ(-70px);
+        background: radial-gradient(ellipse at 52% 48%,
+          rgba(200,242,29,0.16) 0%, rgba(200,242,29,0.05) 34%, transparent 68%);
+        filter: blur(14px); pointer-events: none;
+      }
+      /* a sombra no chao: desliza pro lado oposto ao giro */
+      .nxn-chao {
+        position: absolute; left: 50%; bottom: -7%; width: 74%; height: 13%;
+        transform: translateX(-50%);
+        background: radial-gradient(ellipse at 50% 50%,
+          rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.3) 44%, transparent 72%);
+        filter: blur(9px); pointer-events: none;
+      }
+      /* a peca na secao institucional, no lugar do filme */
+      .nv2-marca-n { margin: 52px 0 10px; }
 
       /* ── O "N" DE FUNDO ──────────────────────────────────────────────── */
       .nv2-n {
@@ -531,6 +550,9 @@ export default function EstiloV2() {
            a ocupar quase a largura toda, sem perder nenhuma borda dele.
            Quem nao declara proporcaoMob cai no --prop de sempre. */
         .nv2-filme { aspect-ratio: var(--prop-fone, var(--prop, 16 / 9)); }
+
+        .nxn-palco { width: min(224px, 62vw); perspective: 760px; }
+        .nv2-marca-n { margin: 40px 0 6px; }
 
         .nv2-preco b { font-size: 42px; }
 

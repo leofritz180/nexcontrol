@@ -2508,6 +2508,16 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   /* o cabecalho perde o vao que o botao deixou */
   .nx-bento .nx-acao ~ *, .nx-bento .nx-acao { margin: 0 !important; }
 
+  /* Os chips do herói (ROI, taxa de acerto, metas fechadas) empilhavam um
+     embaixo do outro e faziam o cartão do número principal ficar com o dobro
+     da altura. Em 358px cabem dois lado a lado. */
+  .nx-bento .bk-heroi-extras {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    width: 100%;
+  }
+  .nx-bento .bk-heroi-extras > * { min-width: 0 !important; }
+
   /* ── FILTROS VIRAM FAIXA ────────────────────────────────────────────────
      Empilhados, os cinco campos do /faturamento ocupavam a primeira tela
      inteira: a pessoa abria o faturamento e via filtros, nao o faturamento.

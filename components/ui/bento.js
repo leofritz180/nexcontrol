@@ -144,7 +144,7 @@ export function Hero({ rotulo, valor, cor, nota, extras = [], blob, delay = 0.04
           {nota && <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '12px 0 0' }}>{nota}</p>}
         </div>
         {extras.length > 0 && (
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <div className="bk-heroi-extras" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {extras.map(e => (
               <div key={e.l} style={{ padding: '12px 16px', borderRadius: 16, background: 'var(--fill-1)', border: '1px solid var(--b1)', minWidth: 118 }}>
                 <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 6px' }}>{e.l}</p>

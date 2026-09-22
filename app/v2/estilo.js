@@ -307,6 +307,86 @@ export default function EstiloV2() {
       .nv2-preco b { font-size: 52px; font-weight: 600; letter-spacing: -0.05em; color: var(--tinta); line-height: 1; }
       .nv2-preco span { font-size: 15px; color: var(--cinza); }
 
+      /* ── PLANOS ──────────────────────────────────────────────────────
+         Regra de cor aqui: TODOS os cartoes sao iguais em cor. O unico que
+         se diferencia e o recomendado, e ele se diferencia por UMA coisa
+         so — a borda puxando pro lime e o fundo um grau mais claro. Sem
+         gradiente, sem cor por plano, sem segunda borda. */
+      .nv2-seletor {
+        display: inline-flex; gap: 4px; padding: 4px;
+        border-radius: 999px; background: var(--graf);
+        border: 1px solid var(--linha);
+      }
+      .nv2-seletor button {
+        appearance: none; border: none; cursor: pointer; font: inherit;
+        height: 44px; padding: 0 26px; border-radius: 999px;
+        background: transparent; color: var(--cinza);
+        font-size: 14px; font-weight: 550; letter-spacing: -0.01em;
+        white-space: nowrap;
+        transition: color .18s ease, background-color .22s ease;
+      }
+      .nv2-seletor button:hover { color: var(--tinta); }
+      .nv2-seletor button[data-on='1'] { background: var(--tinta); color: #080909; }
+
+      /* a frase que traduz a aba em uma linha. E ela que faz a diferenca
+         entre Solo e Solo Pro caber na cabeca de quem le. */
+      .nv2 .nv2-estagio { font-size: 15px; color: var(--cinza); margin-top: 22px; line-height: 1.55; }
+      .nv2-estagio b { color: var(--tinta); font-weight: 550; }
+
+      .nv2-planos {
+        display: grid; gap: 14px; margin-top: 30px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: stretch;
+      }
+      /* dois cartoes nao esticam pelos 1180px: ficariam largos e vazios */
+      .nv2-planos[data-n='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 760px; }
+
+      .nv2-plano { display: flex; flex-direction: column; padding: 30px 26px 26px; }
+      .nv2-plano--top { background: var(--graf2); border-color: rgba(200,242,29,0.30); }
+      .nv2-plano--top:hover { background: var(--graf2); border-color: rgba(200,242,29,0.48); }
+
+      .nv2-plano-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 23px; }
+      .nv2-plano-nome { font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em; color: var(--tinta); }
+      /* min-height alinha o preco dos cartoes na mesma linha mesmo com
+         frases de tamanhos diferentes */
+      .nv2 .nv2-plano-linha { font-size: 14.5px; line-height: 1.55; color: var(--cinza); margin-top: 14px; min-height: 68px; }
+      .nv2-plano .nv2-preco { margin-top: 18px; }
+      .nv2-plano .nv2-preco b { font-size: 40px; }
+      .nv2-plano-vagas { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--cinza); margin-top: 12px; }
+      .nv2-plano-vagas i { width: 4px; height: 4px; border-radius: 50%; background: var(--lime); display: block; flex-shrink: 0; }
+      .nv2 .nv2-plano-herda { font-size: 12.5px; font-weight: 550; color: var(--tinta); margin-top: 26px; }
+      .nv2-plano .nv2-marcas { margin-top: 10px; }
+      /* margin-top auto cola o botao no rodape: os CTAs ficam na mesma
+         linha mesmo com listas de tamanhos diferentes */
+      .nv2-plano-fim { margin-top: auto; padding-top: 26px; }
+
+      .nv2-selo {
+        display: inline-flex; align-items: center; height: 23px; padding: 0 10px;
+        border-radius: 999px; background: var(--lime); color: #080909;
+        font-size: 10px; font-weight: 650; letter-spacing: 0.09em;
+        text-transform: uppercase; white-space: nowrap;
+      }
+
+      .nv2-provas--meio { justify-content: center; margin-top: 26px; }
+
+      /* ── COMPARATIVO ─────────────────────────────────────────────────
+         Tabela de verdade (thead/th scope) porque e tabela mesmo: leitor
+         de tela anuncia a coluna junto com o valor. */
+      .nv2-comp { width: 100%; border-collapse: collapse; margin-top: 64px; }
+      .nv2-comp th, .nv2-comp td { padding: 15px 10px; text-align: center; border-top: 1px solid var(--linha); }
+      .nv2-comp thead th {
+        border-top: none; padding-bottom: 14px; color: var(--cinza);
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+      }
+      .nv2-comp tbody th {
+        text-align: left; color: var(--tinta); font-weight: 450;
+        font-size: 14px; letter-spacing: -0.01em; width: 46%;
+      }
+      .nv2-comp thead th:first-child { text-align: left; }
+      .nv2-comp .sim { color: var(--lime); display: inline-flex; }
+      .nv2-comp .nao { color: rgba(255,255,255,0.20); }
+
       /* ── FAQ ─────────────────────────────────────────────────────────── */
       .nv2-faq-item { border-top: 1px solid var(--linha); }
       .nv2-faq-item:last-child { border-bottom: 1px solid var(--linha); }
@@ -395,6 +475,26 @@ export default function EstiloV2() {
             linear-gradient(180deg, #080909 0%, transparent 8%, transparent 92%, #080909 100%);
         }
         .nv2-preco b { font-size: 42px; }
+
+        /* PLANOS NO TELEFONE: nada de cinco cartoes miniatura. O seletor
+           ocupa a largura toda e os cartoes empilham em tamanho cheio,
+           na ordem da escada — Solo, depois Solo Pro. */
+        .nv2-seletor { display: flex; width: 100%; }
+        .nv2-seletor button { flex: 1; padding: 0 10px; font-size: 13.5px; }
+        .nv2 .nv2-estagio { font-size: 14.5px; }
+        .nv2-planos, .nv2-planos[data-n='2'] { grid-template-columns: 1fr; max-width: none; }
+        .nv2-plano { padding: 26px 22px 22px; }
+        /* sem altura minima: empilhado, nao ha o que alinhar */
+        .nv2 .nv2-plano-linha { min-height: 0; }
+        .nv2-plano .nv2-preco b { font-size: 38px; }
+        .nv2-provas--meio { justify-content: flex-start; }
+
+        /* o comparativo cabe em 390px reduzindo a coluna do recurso e o
+           respiro lateral; a tabela nao vira rolagem horizontal */
+        .nv2-comp { margin-top: 48px; }
+        .nv2-comp th, .nv2-comp td { padding: 13px 3px; }
+        .nv2-comp tbody th { width: 46%; font-size: 12.8px; line-height: 1.35; padding-right: 8px; }
+        .nv2-comp thead th { font-size: 9px; letter-spacing: 0.06em; }
         .nv2-rod-links { margin-left: 0; gap: 16px; }
         .nv2-esconde-mob { display: none !important; }
       }

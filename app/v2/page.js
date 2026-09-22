@@ -22,9 +22,10 @@
 // nunca de style inline.
 // ─────────────────────────────────────────────────────────────────────────
 import { useEffect, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BASE_PRICE, OP_BASE_PRICE } from '../../lib/pricing'
+import { BASE_PRICE } from '../../lib/pricing'
 import EstiloV2 from './estilo'
 import Filme from './filme'
 import { Revelar, Olho, Cabeca, Contador, Botao, Ico, Pergunta, SETA } from './pecas'
@@ -90,18 +91,156 @@ const MODULOS = [
   { ico: I.placa, t: 'Premiações', d: 'Placas por marco de faturamento, calculadas pelo lucro real.' },
 ]
 
+/* ── PLANOS ──────────────────────────────────────────────────────────────
+   A OFERTA VENDE O ESTÁGIO DA OPERAÇÃO, não a quantidade de usuários:
+     Solo      organize a operação
+     Solo Pro  entenda e melhore a operação
+     Nex Scale gerencie a operação e a equipe
+
+   PREÇO: o Solo lê BASE_PRICE de lib/pricing.js de propósito, porque é o
+   valor que o checkout cobra hoje — assim a landing nunca descola dele.
+   Os outros quatro são pacotes comerciais desta versão.
+
+   ⚠ lib/pricing.js ainda calcula equipe como base + R$ 29,90 por operador
+   com desconto progressivo. Enquanto o checkout não conhecer os pacotes,
+   quem clicar num CTA do Scale vai ver outro valor na hora de pagar. O
+   ?plano= já vai na URL para o checkout ler quando for ligado.
+
+   CONFERIDO NO PRODUTO antes de escrever (nada aqui é promessa vazia):
+     projeção de fechamento  → app/faturamento (predictions.dailyAvg → diasRestantes)
+     comparação de períodos  → app/faturamento (liqLast vs liqPrev, pctChange)
+     tendência               → app/faturamento (predictions.trend)
+     evolução da operação    → app/performance (evolution)
+     alertas                 → lib/insights-engine (sequência negativa,
+                               prejuízo acima da média, meta parada)
+     ranking e individual    → app/operadores (ranking, weeklyRanking, teamFilter)
+     metas por operador      → metas.operator_id                              */
+const PLANOS = {
+  solo: {
+    aba: 'Trabalho sozinho',
+    estagio: <><b>Solo é controle.</b> Solo Pro é controle com leitura da operação.</>,
+    cartoes: [
+      {
+        id: 'solo',
+        nome: 'Solo',
+        preco: BASE_PRICE,
+        linha: 'Tudo que você precisa para controlar a sua operação em um lugar só.',
+        marcas: [
+          'Metas, remessas e fechamento com o lucro final calculado',
+          'Faturamento, custos e redes por período',
+          'Alertas de operação e notificação no celular',
+          'Painel instalável no telefone e captura de depósito',
+          'Network, Minhas Proxies e Premiações',
+        ],
+        cta: 'Começar com o Solo',
+      },
+      {
+        id: 'solo-pro',
+        nome: 'Solo Pro',
+        preco: 99.90,
+        selo: 'Mais recomendado',
+        destaque: true,
+        linha: 'Pare de só acompanhar os seus números. Entenda o que eles estão dizendo.',
+        herda: 'Solo',
+        marcas: [
+          'Projeção de fechamento do mês',
+          'Comparação com o período anterior e tendência de alta ou queda',
+          'Evolução da operação meta a meta',
+          'Alertas de queda de desempenho',
+          'Acompanhamento avançado de metas e insights automáticos',
+          'Histórico e análises completas',
+        ],
+        cta: 'Quero o Solo Pro',
+      },
+    ],
+  },
+  equipe: {
+    aba: 'Tenho uma equipe',
+    estagio: <><b>Sua operação cresceu.</b> O seu controle precisa crescer junto.</>,
+    cartoes: [
+      {
+        id: 'scale-3',
+        nome: 'Scale 3',
+        preco: 169.90,
+        vagas: 'Administrador + até 3 operadores',
+        linha: 'A hora de parar de acompanhar de cabeça quem está entregando o quê.',
+        herda: 'Solo Pro',
+        marcas: [
+          'Operadores com acesso próprio, separado do administrador',
+          'Metas atribuídas a cada operador',
+          'Visão consolidada da equipe',
+          'Ranking e acompanhamento de produtividade',
+          'Gestão centralizada dos acessos',
+        ],
+        cta: 'Começar com Scale 3',
+      },
+      {
+        id: 'scale-6',
+        nome: 'Scale 6',
+        preco: 259.90,
+        vagas: 'Administrador + até 6 operadores',
+        selo: 'Para operações em crescimento',
+        destaque: true,
+        linha: 'Equipe maior, e a leitura de quem puxa o resultado para cima.',
+        herda: 'Scale 3',
+        marcas: [
+          'Comparação de desempenho entre operadores',
+          'Visão gerencial da operação inteira',
+          'Métricas consolidadas por período',
+          'Acompanhamento das metas da operação',
+        ],
+        cta: 'Escolher Scale 6',
+      },
+      {
+        id: 'scale-10',
+        nome: 'Scale 10',
+        preco: 399.90,
+        vagas: 'Administrador + até 10 operadores',
+        linha: 'Visão completa da operação sem precisar controlar tudo na mão.',
+        herda: 'Scale 6',
+        marcas: [
+          'Visão geral e individual lado a lado',
+          'Análise de produtividade por operador',
+          'Relatórios gerenciais por período',
+          'Estrutura pronta para operação profissional',
+        ],
+        cta: 'Escolher Scale 10',
+      },
+    ],
+  },
+}
+
+/* Comparativo: só linhas que o produto entrega hoje — ver auditoria acima. */
+const COMPARA = [
+  ['Metas, remessas e lucro final calculado', 1, 1, 1],
+  ['Faturamento, custos e redes por período', 1, 1, 1],
+  ['Alertas de operação no celular', 1, 1, 1],
+  ['Projeção de fechamento do mês', 0, 1, 1],
+  ['Comparação de períodos e tendência', 0, 1, 1],
+  ['Insights automáticos e histórico completo', 0, 1, 1],
+  ['Operadores com acesso próprio', 0, 0, 1],
+  ['Metas por operador', 0, 0, 1],
+  ['Ranking e performance da equipe', 0, 0, 1],
+]
+
+const CHECK = <path d="M4 12.2 9 17.2 20 6.2" />
+
 const FAQ = [
   {
     q: 'Quanto custa?',
-    r: `A Nex Control custa R$ ${moeda(BASE_PRICE)} por mês, mais R$ ${moeda(OP_BASE_PRICE)} por operador que você adicionar. A partir do segundo operador entra desconto progressivo, que cresce conforme a equipe cresce.`,
+    r: `Depende do tamanho da operação. Quem trabalha sozinho começa no Solo, por R$ ${moeda(BASE_PRICE)} por mês, e pode subir para o Solo Pro, por R$ 99,90. Quem tem equipe entra no Nex Scale, em pacote fechado e com as vagas de operador já incluídas: Scale 3 por R$ 169,90, Scale 6 por R$ 259,90 e Scale 10 por R$ 399,90.`,
   },
   {
     q: 'Preciso instalar alguma coisa?',
     r: 'Não. A Nex Control roda no navegador. No celular ela pode ser instalada na tela inicial como aplicativo, mas isso é opcional — tudo funciona sem instalar nada.',
   },
   {
+    q: 'Qual a diferença entre o Solo e o Solo Pro?',
+    r: 'O Solo organiza a operação: metas, remessas, custos e o lucro final calculado. O Solo Pro acrescenta a leitura desses números — projeção de fechamento do mês, comparação com o período anterior, tendência de alta ou de queda e o histórico completo. Solo é controle. Solo Pro é controle com análise.',
+  },
+  {
     q: 'Posso adicionar operadores?',
-    r: 'Sim, quando quiser. Você gera um link de convite, o operador cria a conta por ele e já entra na sua operação. Quem paga é o administrador: o operador não paga nada.',
+    r: 'Pode. As vagas já vêm no pacote do Nex Scale: 3, 6 ou 10 operadores, conforme o plano. Você gera um link de convite, o operador cria a conta por ele e já entra na sua operação. Quem paga é o administrador: o operador não paga nada.',
   },
   {
     q: 'Funciona no celular?',
@@ -125,6 +264,8 @@ const FAQ = [
 export default function V2Page() {
   const [preso, setPreso] = useState(false)
   const [faqAberta, setFaqAberta] = useState(0)
+  const [grupo, setGrupo] = useState('solo')
+  const parado = useReducedMotion()
 
   useEffect(() => {
     const aoRolar = () => setPreso(window.scrollY > 16)
@@ -581,52 +722,132 @@ export default function V2Page() {
         </div>
       </section>
 
-      {/* ═══ 13 · PREÇOS ══════════════════════════════════════════════ */}
+      {/* ═══ 13 · PLANOS ══════════════════════════════════════════════
+          Um seletor com DUAS escolhas, e não cinco cartões lado a lado: a
+          primeira pergunta que o visitante responde é sobre ele mesmo
+          ("trabalho sozinho" / "tenho equipe"), e só depois ele compara
+          preço. Isso corta a decisão pela metade antes de começar.
+          O comparativo fica embaixo, sempre visível, porque é ele que
+          mostra a escada inteira — Solo, Solo Pro, Scale — de uma vez. */}
       <section className="nv2-sec" id="precos">
         <div className="nv2-larg">
           <Cabeca
-            olho="Preços"
-            titulo="Um plano. Cresce com a equipe."
-            lead="Você paga a plataforma e cada operador que adicionar. Quanto maior a equipe, menor o preço por operador."
-            largura={620}
+            olho="Planos"
+            titulo="Do operador solo à operação completa."
+            lead="Comece controlando os seus próprios resultados. Quando a estrutura crescer, a Nex Control cresce junto."
+            largura={640}
           />
 
-          <Revelar atraso={0.12} style={{ marginTop: 46, maxWidth: 560 }}>
-            <div className="nv2-card nv2-card-pad" style={{ padding: 34 }}>
-              <p className="nv2-mono">Nex Control</p>
-
-              <div className="nv2-preco" style={{ marginTop: 20 }}>
-                <b>R$ {moeda(BASE_PRICE)}</b>
-                <span>/mês</span>
-              </div>
-              <p className="nv2-corpo" style={{ marginTop: 10 }}>
-                + R$ {moeda(OP_BASE_PRICE)} por operador, com desconto progressivo
-                a partir do segundo.
-              </p>
-
-              <ul className="nv2-marcas" style={{ marginTop: 26 }}>
-                {[
-                  'Metas, remessas e fechamento com lucro final calculado',
-                  'Operadores com acesso separado do administrador',
-                  'Faturamento, custos, redes e relatórios por período',
-                  'Ranking da equipe e acompanhamento individual',
-                  'Alertas de operação e notificação no celular',
-                  'Captura de depósito e painel instalável no telefone',
-                ].map(t => (
-                  <li key={t}><i /><span><b style={{ fontWeight: 450 }}>{t}</b></span></li>
-                ))}
-              </ul>
-
-              <div style={{ marginTop: 28 }}>
-                <Botao href="/signup" tipo="lime" grande seta className="nv2-btn-bloco">Começar agora</Botao>
-              </div>
-
-              <div className="nv2-provas" style={{ marginTop: 20 }}>
-                <span className="nv2-prova"><i />Pagamento via PIX</span>
-                <span className="nv2-prova"><i />Ativação imediata</span>
-                <span className="nv2-prova"><i />Sem fidelidade</span>
-              </div>
+          <Revelar atraso={0.12} style={{ marginTop: 40 }}>
+            <div className="nv2-seletor" role="tablist" aria-label="Tamanho da operação">
+              {Object.entries(PLANOS).map(([k, g]) => (
+                <button
+                  key={k}
+                  type="button"
+                  role="tab"
+                  id={`aba-${k}`}
+                  aria-selected={grupo === k}
+                  aria-controls="painel-planos"
+                  data-on={grupo === k ? '1' : '0'}
+                  onClick={() => setGrupo(k)}
+                >
+                  {g.aba}
+                </button>
+              ))}
             </div>
+            <p className="nv2-estagio">{PLANOS[grupo].estagio}</p>
+          </Revelar>
+
+          <motion.div
+            key={grupo}
+            id="painel-planos"
+            role="tabpanel"
+            aria-labelledby={`aba-${grupo}`}
+            initial={parado ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: parado ? 0 : 0.34, ease: [0.16, 1, 0.3, 1] }}
+            className="nv2-planos"
+            data-n={PLANOS[grupo].cartoes.length}
+          >
+            {PLANOS[grupo].cartoes.map(p => (
+              <div
+                key={p.id}
+                className={`nv2-card nv2-plano${p.destaque ? ' nv2-plano--top' : ''}`}
+              >
+                <div className="nv2-plano-topo">
+                  <span className="nv2-plano-nome">{p.nome}</span>
+                  {p.selo && <span className="nv2-selo">{p.selo}</span>}
+                </div>
+
+                <p className="nv2-plano-linha">{p.linha}</p>
+
+                <div className="nv2-preco">
+                  <b>R$ {moeda(p.preco)}</b>
+                  <span>/mês</span>
+                </div>
+                {p.vagas && <span className="nv2-plano-vagas"><i />{p.vagas}</span>}
+
+                <p className="nv2-plano-herda">
+                  {p.herda ? `Tudo do ${p.herda}, mais:` : 'O essencial da operação:'}
+                </p>
+                <ul className="nv2-marcas">
+                  {p.marcas.map(t => (
+                    <li key={t}><i /><span><b style={{ fontWeight: 450 }}>{t}</b></span></li>
+                  ))}
+                </ul>
+
+                <div className="nv2-plano-fim">
+                  <Botao
+                    href={`/signup?plano=${p.id}`}
+                    tipo={p.destaque ? 'lime' : 'linha'}
+                    grande seta
+                    className="nv2-btn-bloco"
+                  >
+                    {p.cta}
+                  </Botao>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+
+          <Revelar atraso={0.1} className="nv2-provas nv2-provas--meio">
+            <span className="nv2-prova"><i />Pagamento via PIX</span>
+            <span className="nv2-prova"><i />Ativação imediata</span>
+            <span className="nv2-prova"><i />Sem fidelidade</span>
+          </Revelar>
+
+          {/* O comparativo é o que faz a escada aparecer inteira de uma vez.
+              Só entram linhas que o produto entrega hoje — a auditoria de
+              onde cada uma vive está no comentário de PLANOS. */}
+          <Revelar atraso={0.1}>
+            <table className="nv2-comp">
+              <thead>
+                <tr>
+                  <th scope="col">Recurso</th>
+                  <th scope="col">Solo</th>
+                  <th scope="col">Solo Pro</th>
+                  <th scope="col">Scale</th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMPARA.map(([rec, a, b, c]) => (
+                  <tr key={rec}>
+                    <th scope="row">{rec}</th>
+                    {[a, b, c].map((v, i) => (
+                      <td key={i}>
+                        {v ? (
+                          <span className="sim" role="img" aria-label="incluído">
+                            <Ico d={CHECK} s={16} traco={2} />
+                          </span>
+                        ) : (
+                          <span className="nao" role="img" aria-label="não incluído">—</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </Revelar>
         </div>
       </section>

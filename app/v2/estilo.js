@@ -170,6 +170,10 @@ export default function EstiloV2() {
       .nv2-palco img { display: block; width: 100%; height: auto; }
       .nv2-palco-bleed { margin-right: calc(-1 * max(28px, (100vw - 1180px) / 2 + 28px)); }
 
+      /* base de todo filme; quem precisar de outro posicionamento
+         sobrescreve pela classe, nao por estilo em linha */
+      .nv2-filme { position: relative; overflow: hidden; }
+
       /* A MARCA EM MOVIMENTO na secao institucional. Fica ATRAS do texto,
          grande e discreta: e ambientacao, nao um video pra assistir. A
          mascara apaga as bordas pra ela nascer do fundo em vez de virar um

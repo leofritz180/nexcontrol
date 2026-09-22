@@ -5,6 +5,7 @@ import { getOperatorLimitStatus } from '../../../../lib/operator-limit'
 import { pickEngagementSegment, fillTemplate } from '../../../../lib/engagement-segments'
 import { pickActivationSegment } from '../../../../lib/activation-segments'
 import { renderWinbackEmail, sendEmailViaResend } from '../../../../lib/email-templates'
+import { cronAutorizado } from '../../../../lib/cron-auth'
 
 // Call daily via Vercel Cron or external scheduler
 // GET /api/cron/trial-notifications?secret=YOUR_SECRET
@@ -41,10 +42,7 @@ async function sendTrialEmail(supabase, tenantId, segKey) {
 }
 
 export async function GET(req) {
-  // Simple auth
-  const { searchParams } = new URL(req.url)
-  const secret = searchParams.get('secret')
-  if (secret !== process.env.CRON_SECRET) {
+  if (!cronAutorizado(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

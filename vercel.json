@@ -1,27 +1,27 @@
 {
   "crons": [
     {
-      "path": "/api/cron/trial-notifications?secret=${CRON_SECRET}",
+      "path": "/api/cron/trial-notifications",
       "schedule": "0 12 * * *"
     },
     {
-      "path": "/api/cron/renewal?secret=${CRON_SECRET}",
+      "path": "/api/cron/renewal",
       "schedule": "30 12 * * *"
     },
     {
-      "path": "/api/cron/winback?secret=${CRON_SECRET}",
+      "path": "/api/cron/winback",
       "schedule": "0 14 * * *"
     },
     {
-      "path": "/api/cron/reconcile-payments?secret=${CRON_SECRET}",
+      "path": "/api/cron/reconcile-payments",
       "schedule": "*/10 * * * *"
     },
     {
-      "path": "/api/cron/proxy-usage?secret=${CRON_SECRET}",
+      "path": "/api/cron/proxy-usage",
       "schedule": "*/15 * * * *"
     },
     {
-      "path": "/api/cron/comeback?secret=${CRON_SECRET}",
+      "path": "/api/cron/comeback",
       "schedule": "45 13 * * *"
     }
   ]

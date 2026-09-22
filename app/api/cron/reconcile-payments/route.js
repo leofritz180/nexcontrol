@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
 import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
+import { cronAutorizado } from '../../../../lib/cron-auth'
 
 // Reconcile pagamentos: pega TODOS mp_payments com status='pending' criados
 // ha mais de 10 min, consulta o MP e:
@@ -16,9 +17,7 @@ import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
 const OWNER_EMAIL = 'leofritz180@gmail.com'
 
 export async function GET(req) {
-  const { searchParams } = new URL(req.url)
-  const secret = searchParams.get('secret')
-  if (secret !== process.env.CRON_SECRET) {
+  if (!cronAutorizado(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   if (!process.env.MP_ACCESS_TOKEN) {

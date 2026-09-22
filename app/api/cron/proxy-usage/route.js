@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
+import { cronAutorizado } from '../../../../lib/cron-auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,8 +46,7 @@ function bettifyBase() {
 }
 
 export async function GET(req) {
-  const url = new URL(req.url)
-  if (url.searchParams.get('secret') !== process.env.CRON_SECRET) {
+  if (!cronAutorizado(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   }
   const secret = process.env.BETTIFY_SSO_SECRET

@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
 import { renderWinbackEmail, sendEmailViaResend } from '../../../../lib/email-templates'
+import { cronAutorizado } from '../../../../lib/cron-auth'
 
 export const maxDuration = 60
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://nexcpa.com.br'
@@ -29,8 +30,7 @@ const COPY = {
 const fill = (t, v) => String(t || '').replace(/\{(\w+)\}/g, (_, k) => v[k] != null ? v[k] : `{${k}}`)
 
 export async function GET(req) {
-  const secret = new URL(req.url).searchParams.get('secret')
-  if (secret !== process.env.CRON_SECRET) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!cronAutorizado(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
   const now = Date.now()

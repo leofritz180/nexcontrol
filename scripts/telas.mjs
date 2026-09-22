@@ -54,6 +54,7 @@ const PUBLICAS = [
   ['/invite', 'convite'],
   // a vitrine publica do produto: mostrava "NaNd" na atividade recente
   ['/demo', 'demonstracao'],
+  ['/v2', 'v2'],
 ]
 const LOGADAS = [
   ['/admin', 'admin-visao-geral'],

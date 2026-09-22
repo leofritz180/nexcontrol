@@ -2508,6 +2508,26 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   /* o cabecalho perde o vao que o botao deixou */
   .nx-bento .nx-acao ~ *, .nx-bento .nx-acao { margin: 0 !important; }
 
+  /* ── CHAT EM TELA CHEIA E MODO IMERSIVO ─────────────────────────────────
+     No celular o /network ocupa a tela toda, estilo aplicativo de mensagem.
+     Os flutuantes globais caiam EM CIMA do cabecalho do canal e do botao de
+     membros. Dentro de uma conversa eles nao fazem sentido — nenhum
+     aplicativo de mensagem mostra outros botoes flutuantes ali. Some junto
+     a barra de abas e a bolha do proprio chat. */
+  .nx-bento:has(.nx-net-painel) .nx-dock-item,
+  .nx-bento:has(.nx-net-painel) .nx-chat-bolha,
+  .nx-bento:has(.nx-net-painel) [aria-label="Refazer tour desta aba"],
+  .nx-bento:has(.nx-net-painel) .nx-checklist { display: none !important; }
+
+  /* o campo de escrever cortava o texto no meio */
+  .nx-bento .nx-net-painel textarea,
+  .nx-bento .nx-net-painel input[type="text"] {
+    min-height: 46px !important;
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+    padding: 12px 14px !important;
+  }
+
   /* Os chips do herói (ROI, taxa de acerto, metas fechadas) empilhavam um
      embaixo do outro e faziam o cartão do número principal ficar com o dobro
      da altura. Em 358px cabem dois lado a lado. */

@@ -240,7 +240,7 @@ export default function V2Page() {
               <Image
                 src="/landing/v2/faturamento.png"
                 alt="Tela de faturamento da Nex Control: lucro final do período, retorno das remessas, evolução por dia e resumo de como o resultado se formou"
-                width={3200} height={2000}
+                width={3200} height={2000} loading="eager"
                 sizes="(max-width: 768px) 100vw, 1180px"
                 style={{ width: '100%', height: 'auto', display: 'block' }}
               />
@@ -325,14 +325,16 @@ export default function V2Page() {
                   fórmula que fecha a meta, sem conferência paralela.
                 </p>
               </div>
-              {/* recorte da própria interface, não ilustração */}
-              <div style={{ margin: '0 0 0 26px', borderRadius: '14px 0 0 0', overflow: 'hidden', border: '1px solid var(--linha)', borderRight: 'none', borderBottom: 'none' }}>
+              {/* recorte da própria interface, não ilustração. O enquadramento
+                  mora no CSS (.nv2-recorte): com width em % dentro de next/image
+                  o navegador calculava o tamanho antes da imagem existir e o
+                  bloco ficava vazio. */}
+              <div className="nv2-recorte">
                 <Image
                   src="/landing/v2/painel.png"
-                  alt="Cartão Movimento da operação, com depositado, sacado e custos"
-                  width={3200} height={2000}
-                  sizes="(max-width: 768px) 100vw, 760px"
-                  style={{ width: '215%', height: 'auto', display: 'block', marginLeft: '-104%', marginTop: '-47%' }}
+                  alt="Cartão Movimento da operação, com depositado, sacado e custos lado a lado"
+                  width={3200} height={2000} loading="eager"
+                  sizes="760px"
                 />
               </div>
             </Revelar>
@@ -389,7 +391,7 @@ export default function V2Page() {
               <Image
                 src="/landing/v2/operadores.png"
                 alt="Tela de operadores da Nex Control: lucro gerado pela equipe e ranking por operador com metas e taxa de acerto"
-                width={3200} height={2000}
+                width={3200} height={2000} loading="eager"
                 sizes="(max-width: 768px) 100vw, 640px"
                 style={{ width: '100%', height: 'auto', display: 'block' }}
               />
@@ -485,7 +487,7 @@ export default function V2Page() {
                   <Image
                     src="/landing/v2/celular.png"
                     alt="Nex Control no celular: painel com lucro do mês, metas fechadas e meta do dia, com barra de navegação inferior"
-                    width={780} height={1688}
+                    width={780} height={1688} loading="eager"
                     sizes="268px"
                     style={{ width: '100%', height: 'auto', display: 'block' }}
                   />

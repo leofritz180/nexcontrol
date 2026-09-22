@@ -54,9 +54,12 @@ export default function EstiloV2() {
       .nv2 svg { stroke: currentColor !important; color: inherit !important; }
       .nv2 .nv2-btn { border-radius: 10px !important; }
       .nv2 .nv2-btn--g { border-radius: 11px !important; }
-      .nv2 [class^='nv2-'], .nv2 [class*=' nv2-'] { border-left-width: 1px !important; }
-      .nv2 .nv2-card { border-left: 1px solid var(--linha) !important; }
-      .nv2 .nv2-card:hover { border-left-color: var(--linha2) !important; }
+      /* A camada .nx-aqua cola 3px de borda esquerda em quem tem canto 12/14
+         E borda `solid var(--b1)` INLINE. Nada aqui usa estilo inline de
+         borda, então ela não alcança a landing — o que chegava a alcançar era
+         uma tentativa anterior de blindagem, que punha `border-left-width` em
+         TODO elemento `.nv2-*` e desenhava listras brancas verticais pela
+         página inteira. Removida: o problema era a defesa, não o ataque. */
       .nv2 p, .nv2 span, .nv2 b, .nv2 em, .nv2 h1, .nv2 h2, .nv2 h3, .nv2 a, .nv2 li { color: inherit; }
 
       /* ── LARGURA E RITMO ─────────────────────────────────────────────── */
@@ -184,6 +187,14 @@ export default function EstiloV2() {
       }
       .nv2-card:hover { border-color: var(--linha2); background: var(--graf2); }
       .nv2-card-pad { padding: 26px; }
+      /* recorte de interface dentro de cartão: a moldura corta, a imagem não
+         precisa caber inteira */
+      .nv2-recorte { position: relative; overflow: hidden; border-radius: 14px 0 0 0; border: 1px solid var(--linha); border-right: none; border-bottom: none; margin-left: 26px; height: 230px; }
+      .nv2-recorte img { position: absolute; display: block; width: 214%; max-width: none; height: auto; left: -104%; top: -46%; }
+      @media (max-width: 768px) {
+        .nv2-recorte { margin-left: 20px; height: 186px; }
+        .nv2-recorte img { width: 300%; left: -150%; top: -44%; }
+      }
       .nv2-bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
       .nv2-bento > .col6 { grid-column: span 6; }
       .nv2-bento > .col4 { grid-column: span 4; }

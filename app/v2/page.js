@@ -649,25 +649,41 @@ export default function V2Page() {
                 seção fala), o outro mostra o produto EM USO, criando uma
                 operação. No telefone fica só o primeiro — dois lado a lado
                 viram dois selos ilegíveis. */}
+            {/* OS DOIS FILMES SÃO DE NATUREZA DIFERENTE, e tratá-los igual
+                era o que estragava a composição:
+
+                · celular-painel.mp4 é GRAVAÇÃO DE TELA crua, 1080x1920.
+                  Ela precisa da nossa moldura — e precisa da proporção
+                  9/16, que é a dela. Estava em 9/19.5, então o cover
+                  cortava 27px de cada lado: "Visão geral" virava "ão
+                  geral" e o "Atualizar" sumia pela direita.
+
+                · criar-meta.mp4 JÁ É um celular renderizado em 3D, com
+                  bezel, notch e barra de status próprios. Dentro da nossa
+                  moldura virava celular dentro de celular. Ele entra sem
+                  moldura nenhuma: o fundo escuro dele nasce da página. */}
             <Revelar atraso={0.1} y={24} className="nv2-fones">
+              {/* 9/16 e a proporcao REAL do arquivo, entao nada e cortado
+                  de lado. O que o arquivo tem de ruim e a ultima faixa de
+                  pixels, onde os rotulos da barra inferior vem fatiados na
+                  gravacao. Recortar por baixo nao resolve (come os icones),
+                  entao quem resolve e o veu em .nv2-fone-tela::after. */}
               <div className="nv2-fone">
                 <Filme
                   className="nv2-fone-tela"
                   src="/landing/v2/celular-painel.mp4"
                   poster="/landing/v2/celular-painel-poster.jpg"
                   alt="Nex Control no celular: painel com lucro, metas fechadas, meta do dia e a barra de navegação inferior"
-                  proporcao="9 / 19.5"
+                  proporcao="9 / 16"
                 />
               </div>
-              <div className="nv2-fone nv2-fone--atras">
-                <Filme
-                  className="nv2-fone-tela"
-                  src="/landing/v2/criar-meta.mp4"
-                  poster="/landing/v2/criar-meta-poster.jpg"
-                  alt="Nex Control no celular: criando uma nova operação, com os passos onde, quanto e acesso"
-                  proporcao="9 / 19.5"
-                />
-              </div>
+              <Filme
+                className="nv2-cena-atras"
+                src="/landing/v2/criar-meta.mp4"
+                poster="/landing/v2/criar-meta-poster.jpg"
+                alt="Nex Control no celular: criando uma nova operação, com os passos onde, quanto e acesso"
+                proporcao="9 / 16"
+              />
             </Revelar>
           </div>
         </div>

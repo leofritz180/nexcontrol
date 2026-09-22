@@ -292,7 +292,16 @@ export default function EstiloV2() {
       /* dois telefones: o de tras recuado e menor, pra ler como profundidade
          e nao como dois selos lado a lado */
       .nv2-fones { display: flex; align-items: center; justify-content: center; gap: 0; }
-      .nv2-fone--atras { margin-left: -70px; transform: scale(0.88) translateY(26px); z-index: -1; opacity: 0.92; }
+      /* o 3D ja traz o proprio celular, a propria sombra e o proprio fundo
+         escuro. A mascara apaga as quatro bordas pra ele nascer da pagina
+         em vez de virar um retangulo colado atras do outro telefone. */
+      .nv2-cena-atras {
+        width: 318px; flex-shrink: 0;
+        margin-left: -84px; transform: translateY(20px);
+        z-index: -1; opacity: 0.95;
+        -webkit-mask-image: radial-gradient(ellipse 62% 60% at 54% 50%, #000 52%, transparent 92%);
+                mask-image: radial-gradient(ellipse 62% 60% at 54% 50%, #000 52%, transparent 92%);
+      }
 
       .nv2-fone {
         width: 268px; border-radius: 34px; padding: 9px;
@@ -300,7 +309,18 @@ export default function EstiloV2() {
         box-shadow: 0 40px 100px rgba(0,0,0,0.6); flex-shrink: 0;
       }
       .nv2-fone-tela { border-radius: 26px; overflow: hidden; background: #f0f0f3; display: block; width: 100%; }
-      .nv2-fone-tela img, .nv2-fone-tela video { display: block; width: 100%; }
+      /* VEU DO RODAPE. A gravacao de tela corta os rotulos da barra inferior
+         na ultima faixa de pixels, e texto fatiado parece defeito de
+         renderizacao. A barra ja e quase preta, entao um degrade curto pro
+         preto engole a faixa quebrada e le como profundidade. Para em 34%
+         de opacidade no topo pra nao apagar o botao central. */
+      .nv2-fone-tela::after {
+        content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+        height: 4.6%; pointer-events: none; z-index: 2;
+        background: linear-gradient(to top, #0a0b0b 0%, rgba(10,11,11,0.94) 26%, rgba(10,11,11,0) 100%);
+      }
+      /* ancora no topo: quando o recorte acontece, ele sai por baixo */
+      .nv2-fone-tela img, .nv2-fone-tela video { display: block; width: 100%; object-position: 50% 0%; }
 
       /* ── PREÇO ───────────────────────────────────────────────────────── */
       .nv2-preco { display: flex; align-items: baseline; gap: 10px; }
@@ -459,7 +479,7 @@ export default function EstiloV2() {
         .nv2-recorte { margin-left: 20px; height: 132px; }
         .nv2-recorte img { object-position: 30% 58%; }
         /* NO TELEFONE fica UM telefone. Dois viram dois selos ilegiveis. */
-        .nv2-fones .nv2-fone--atras { display: none; }
+        .nv2-fones .nv2-cena-atras { display: none; }
         .nv2-fone { width: 244px; }
         /* no telefone o heroi e a captura real, recortada (regra .nv2-palco
            logo acima), e nao o filme 3D */

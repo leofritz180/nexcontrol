@@ -112,7 +112,9 @@ export function AcaoBtn({ children, onClick, icon }) {
   }
 
   return (
-    <motion.button type="button" onClick={clicou}
+    // nx-acao: no celular o CSS transforma este botao no BOTAO FLUTUANTE da
+    // tela (redondo, acima da barra de abas). Ver o bloco V2 · CELULAR.
+    <motion.button type="button" onClick={clicou} className="nx-acao"
       whileHover={{ y: -2, boxShadow: '0 14px 32px rgba(229,57,31,0.36)' }} whileTap={{ scale: 0.97 }}
       style={{ position: 'relative', overflow: 'hidden', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
       {ondas.map(w => (
@@ -122,7 +124,8 @@ export function AcaoBtn({ children, onClick, icon }) {
           style={{ position: 'absolute', left: w.x, top: w.y, width: 240, height: 240, marginLeft: -120, marginTop: -120, borderRadius: '50%', background: 'rgba(255,255,255,0.45)', pointerEvents: 'none' }} />
       ))}
       <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-        {icon && <Ico d={icon} s={16} />}{children}
+        {icon && <span className="nx-acao-ico" style={{ display: 'inline-flex' }}><Ico d={icon} s={16} /></span>}
+        <span className="nx-acao-txt">{children}</span>
       </span>
     </motion.button>
   )

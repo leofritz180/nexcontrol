@@ -2428,35 +2428,118 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   /* a pilula deslizante nao cabe numa barra de ponta a ponta */
   .nx-bento .tabs-scroll > .nx-dock-pilula { display: none !important; }
 
-  /* OS FLUTUANTES SOBEM.
-     No desktop eles ficam num canto vazio. No celular o dock desce e vira a
-     barra de navegacao — e os flutuantes ficavam EM CIMA dela, tapando duas
-     abas. Nao dava nem pra tocar em "Metas & Fechamento". Agora eles sobem
-     acima da barra e da area segura. */
+  /* ── OS FLUTUANTES VAO PRO TOPO ─────────────────────────────────────────
+     Eles ficam em `right: 22 / 76 / 130 / 184`. Isso e uma fileira de 200px:
+     num desktop fica num canto vazio, mas em 390px de tela e uma faixa
+     ATRAVESSANDO o meio do conteudo. Na captura dava pra ver o sino em cima
+     do titulo "Ranking da equipe".
+
+     Em aplicativo, aviso fica em cima. Entao aqui eles sobem pro topo
+     direito, menores, na mesma linha do botao de menu — e o meio da tela
+     fica livre pro conteudo, que e o que a pessoa veio ver. */
   .nx-bento .nx-dock-item,
   .nx-bento button[title="Refazer tour"],
   .nx-bento [aria-label="Refazer tour desta aba"] {
-    bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+    top: calc(12px + env(safe-area-inset-top)) !important;
+    bottom: auto !important;
+    width: 38px !important; height: 38px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.10) !important;
+    z-index: 240 !important;
   }
-  /* a bolha do chat sobe junto, um degrau acima */
+  .nx-bento .nx-dock-item svg,
+  .nx-bento [aria-label="Refazer tour desta aba"] svg { width: 16px; height: 16px; }
+  /* a ordem da direita pra esquerda: sino, voz, avisos, tour */
+  .nx-bento [aria-label="Refazer tour desta aba"] { right: 154px !important; }
+
+  /* a bolha do chat fica sozinha embaixo A ESQUERDA: e o unico canto que
+     nao disputa com o botao de acao nem com a barra */
   .nx-bento .nx-chat-bolha {
-    bottom: calc(134px + env(safe-area-inset-bottom)) !important;
+    left: 16px !important; right: auto !important;
+    bottom: calc(84px + env(safe-area-inset-bottom)) !important;
+  }
+  .nx-bento .nx-chat-bolha button { width: 48px !important; height: 48px !important; }
+
+  /* ── BARRA DE ABAS DE APLICATIVO ────────────────────────────────────────
+     Colada embaixo, de ponta a ponta, com a area segura do aparelho. A aba
+     ativa e uma pilula branca — o mesmo idioma do rail no desktop. */
+  .nx-bento .tabs-scroll {
+    border-radius: 26px 26px 0 0 !important;
+    padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) !important;
+    border: none !important;
+    border-top: 1px solid rgba(255,255,255,0.08) !important;
+    box-shadow: 0 -10px 34px rgba(0,0,0,0.26) !important;
+    z-index: 200 !important;
+  }
+  .nx-bento .tabs-scroll button {
+    min-height: 42px;
+    border-radius: 21px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em;
   }
   .nx-bento .tabs-scroll button[data-active="true"] {
     background: #ffffff !important; color: #15151a !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
   }
 
-  /* cards em coluna unica e tira em 2x2 */
-  .nx-bento .bk-tira { grid-template-columns: repeat(2, 1fr) !important; }
+  /* ── BOTAO DE ACAO VIRA FLUTUANTE ───────────────────────────────────────
+     No desktop a acao principal (Nova meta, Novo custo, Convidar) e um botao
+     no cabecalho. Num telefone isso rola pra fora da tela no primeiro gesto.
+     Aqui ele vira o botao redondo que todo aplicativo tem: fixo, no alcance
+     do polegar, acima da barra. O rotulo some e fica so o icone — o mesmo
+     botao, o mesmo onClick. */
+  .nx-bento .nx-acao {
+    position: fixed !important;
+    right: 16px !important;
+    bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+    z-index: 210 !important;
+    width: 58px !important; height: 58px !important;
+    padding: 0 !important; border-radius: 50% !important;
+    box-shadow: 0 10px 28px rgba(229,57,31,0.42) !important;
+  }
+  .nx-bento .nx-acao .nx-acao-txt { display: none !important; }
+  .nx-bento .nx-acao .nx-acao-ico svg { width: 24px !important; height: 24px !important; stroke-width: 2.4; }
+  /* o cabecalho perde o vao que o botao deixou */
+  .nx-bento .nx-acao ~ *, .nx-bento .nx-acao { margin: 0 !important; }
+
+  /* ── CONTEUDO ───────────────────────────────────────────────────────────
+     O topo abre espaco pros flutuantes e pro botao de menu; o rodape abre
+     espaco pra barra de abas E pro botao flutuante. */
+  .nx-bento .app-content { padding-bottom: calc(112px + env(safe-area-inset-bottom)) !important; }
+  .nx-bento .app-content > div { padding: 64px 16px 0 !important; }
+
+  /* cabecalho de modulo: titulo de aplicativo, nao de relatorio */
+  .nx-bento .app-content h1 { font-size: 27px !important; letter-spacing: -0.04em !important; }
+
+  /* cards em coluna unica; a tira se acomoda sem deixar celula vazia */
+  .nx-bento .bk-tira {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+    border-radius: 20px; overflow: hidden;
+  }
   .nx-bento .ab-r1, .nx-bento .ab-r2, .nx-bento .bk-2,
   .nx-bento .rc-grid, .nx-bento .fc-grid, .nx-bento .afb-2 {
     grid-template-columns: 1fr !important;
   }
 
+  /* cantos e respiro de aplicativo: um pouco menores que no desktop, porque
+     a tela e menor e canto grande demais come conteudo */
+  .nx-bento .app-content [style*="border-radius: 24px"] { border-radius: 20px !important; }
+
   /* numero grande do heroi nao pode estourar a tela */
+  .nx-bento [style*="font-size: 44px"] { font-size: 34px !important; }
   .nx-bento [style*="font-size: 42px"] { font-size: 32px !important; }
   .nx-bento [style*="font-size: 38px"] { font-size: 30px !important; }
   .nx-bento [style*="font-size: 34px"] { font-size: 28px !important; }
+
+  /* NADA rola na horizontal. Uma tela de aplicativo que anda pro lado
+     quando o dedo escorrega parece quebrada. */
+  .nx-bento .app-content { overflow-x: hidden; }
+  .nx-bento .app-content img,
+  .nx-bento .app-content svg:not(.sb-ico) { max-width: 100%; }
+
+  /* alvo de toque: nada abaixo de 44px */
+  .nx-bento .app-content button:not(.nx-campo-ctl),
+  .nx-bento .app-content a[role="button"] { min-height: 40px; }
 
   /* folhas (modais) ocupam a tela quase toda, coladas embaixo */
   .nx-bento div[style*="position: fixed"] > div[style*="border-radius: 26px"] {

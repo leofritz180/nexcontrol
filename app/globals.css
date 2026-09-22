@@ -2458,13 +2458,21 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .nx-bento [aria-label="Notificacoes rapidas"] { right: 102px !important; }
   .nx-bento [aria-label="Refazer tour desta aba"] { right: 146px !important; }
 
-  /* a bolha do chat fica sozinha embaixo A ESQUERDA: e o unico canto que
-     nao disputa com o botao de acao nem com a barra */
+  /* A bolha do chat sobe pra mesma fileira do topo, como quinto botao. No
+     canto de baixo a esquerda ela cobria o titulo das listas — e deixava os
+     DOIS cantos de baixo ocupados. Assim embaixo sobra so o botao de acao,
+     que e o certo num aplicativo. */
   .nx-bento .nx-chat-bolha {
-    left: 16px !important; right: auto !important;
-    bottom: calc(84px + env(safe-area-inset-bottom)) !important;
+    top: calc(12px + env(safe-area-inset-top)) !important;
+    bottom: auto !important;
+    left: auto !important; right: 190px !important;
+    z-index: 240 !important;
   }
-  .nx-bento .nx-chat-bolha button { width: 48px !important; height: 48px !important; }
+  .nx-bento .nx-chat-bolha button {
+    width: 38px !important; height: 38px !important;
+    border-radius: 12px !important;
+  }
+  .nx-bento .nx-chat-bolha button svg { width: 17px !important; height: 17px !important; }
 
   /* ── BARRA DE ABAS DE APLICATIVO ────────────────────────────────────────
      Colada embaixo, de ponta a ponta, com a area segura do aparelho. A aba
@@ -2537,6 +2545,8 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     width: 100%;
   }
   .nx-bento .bk-heroi-extras > * { min-width: 0 !important; }
+  /* com tres chips, o ultimo ficava sozinho numa linha de duas colunas */
+  .nx-bento .bk-heroi-extras > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
   /* ── FILTROS VIRAM FAIXA ────────────────────────────────────────────────
      Empilhados, os cinco campos do /faturamento ocupavam a primeira tela
@@ -2584,9 +2594,9 @@ html, body { max-width: 100vw; overflow-x: hidden; }
      Direito: o botão de ação. Esquerdo: a bolha do chat. O checklist não
      pode disputar com nenhum dos dois — recolhido, ele subia por cima do
      botão de ação. Sobe mais um degrau. */
-  /* Canto DIREITO e do botao de acao. O checklist vai pro esquerdo, acima da
-     bolha do chat, e com largura limitada: recolhido ele e uma pastilha de
-     250px que atravessava o cartao "Meta do dia". */
+  /* Com a bolha do chat no topo, o canto de baixo a esquerda ficou livre e e
+     dele que o checklist toma conta. Largura limitada: recolhido ele e uma
+     pastilha de 250px que atravessava o cartao "Meta do dia". */
   .nx-checklist {
     left: 16px !important; right: auto !important;
     max-width: min(calc(100vw - 96px), 300px) !important;

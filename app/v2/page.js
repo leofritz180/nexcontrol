@@ -202,12 +202,13 @@ export default function V2Page() {
 
           {/* o produto sangra pela direita: o corte sugere que há mais
               sistema do que cabe na tela */}
-          <Revelar atraso={0.2} y={26} className="nv2-palco nv2-palco-bleed">
-            <Image
-              src="/landing/v2/painel.png"
-              alt="Painel da Nex Control: lucro consolidado do mês, metas fechadas, resultado da semana e movimento da operação"
-              width={3200} height={2000} priority
-              sizes="(max-width: 768px) 130vw, 1180px"
+          <Revelar atraso={0.2} y={26} className="nv2-palco-filme">
+            <Filme
+              src="/landing/v2/painel-3d.mp4"
+              poster="/landing/v2/painel-3d-poster.jpg"
+              pesado
+              alt="Painel da Nex Control em perspectiva: lucro do mês, metas fechadas, resultado da semana e movimento da operação"
+              proporcao="16 / 9"
             />
           </Revelar>
         </div>
@@ -388,13 +389,15 @@ export default function V2Page() {
               </ul>
             </div>
 
-            <Revelar atraso={0.1} y={24} className="nv2-card" style={{ padding: 0 }}>
-              <Image
-                src="/landing/v2/operadores.png"
-                alt="Tela de operadores da Nex Control: lucro gerado pela equipe e ranking por operador com metas e taxa de acerto"
-                width={3200} height={2000} loading="eager"
-                sizes="(max-width: 768px) 100vw, 640px"
-                style={{ width: '100%', height: 'auto', display: 'block' }}
+            {/* operadores e métricas em perspectiva */}
+            <Revelar atraso={0.1} y={24}>
+              <Filme
+                className="nv2-palco-filme"
+                src="/landing/v2/operadores-3d.mp4"
+                poster="/landing/v2/operadores-3d-poster.jpg"
+                pesado
+                alt="Tela de operadores e métricas da Nex Control: destaque da equipe, lucro por operador e situação das metas"
+                proporcao="16 / 9"
               />
             </Revelar>
           </div>
@@ -485,12 +488,25 @@ export default function V2Page() {
             {/* O telefone mostra o produto EM USO — criar uma operação, do
                 primeiro passo ao último. Parado, ele seria só mais uma
                 captura; em movimento, ele responde "como é usar isso". */}
-            <Revelar atraso={0.1} y={24} style={{ display: 'flex', justifyContent: 'center' }}>
+            {/* DOIS telefones: um mostra a navegação nova (que é do que a
+                seção fala), o outro mostra o produto EM USO, criando uma
+                operação. No telefone fica só o primeiro — dois lado a lado
+                viram dois selos ilegíveis. */}
+            <Revelar atraso={0.1} y={24} className="nv2-fones">
               <div className="nv2-fone">
                 <Filme
                   className="nv2-fone-tela"
+                  src="/landing/v2/celular-painel.mp4"
+                  poster="/landing/v2/celular-painel-poster.jpg"
+                  alt="Nex Control no celular: painel com lucro, metas fechadas, meta do dia e a barra de navegação inferior"
+                  proporcao="9 / 19.5"
+                />
+              </div>
+              <div className="nv2-fone nv2-fone--atras">
+                <Filme
+                  className="nv2-fone-tela"
                   src="/landing/v2/criar-meta.mp4"
-                  poster="/landing/v2/criar-meta-poster.png"
+                  poster="/landing/v2/criar-meta-poster.jpg"
                   alt="Nex Control no celular: criando uma nova operação, com os passos onde, quanto e acesso"
                   proporcao="9 / 19.5"
                 />
@@ -522,7 +538,7 @@ export default function V2Page() {
         <Filme
           className="nv2-marca-filme"
           src="/landing/v2/marca.mp4"
-          poster="/landing/v2/marca-poster.png"
+          poster="/landing/v2/marca-poster.jpg"
           alt="Marca Nex Control 2.0"
           proporcao="16 / 9"
         />

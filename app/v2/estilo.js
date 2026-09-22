@@ -170,6 +170,23 @@ export default function EstiloV2() {
       .nv2-palco img { display: block; width: 100%; height: auto; }
       .nv2-palco-bleed { margin-right: calc(-1 * max(28px, (100vw - 1180px) / 2 + 28px)); }
 
+      /* palco de FILME: o 3D ja vem com o proprio fundo preto e a propria
+         sombra, entao nao leva moldura nem borda — encostar uma borda nele
+         viraria um retangulo dentro de outro. Sangra pros dois lados. */
+      .nv2-palco-filme {
+        position: relative; overflow: hidden;
+        width: calc(100% + 2 * max(28px, (100vw - 1180px) / 2 + 28px));
+        margin-left: calc(-1 * max(28px, (100vw - 1180px) / 2 + 28px));
+        margin-top: -18px;
+      }
+      /* apaga a emenda entre o preto do filme e o preto da pagina */
+      .nv2-palco-filme::after {
+        content: ''; position: absolute; inset: 0; pointer-events: none;
+        background:
+          linear-gradient(90deg, #080909 0%, transparent 14%, transparent 86%, #080909 100%),
+          linear-gradient(180deg, #080909 0%, transparent 12%, transparent 88%, #080909 100%);
+      }
+
       /* base de todo filme; quem precisar de outro posicionamento
          sobrescreve pela classe, nao por estilo em linha */
       .nv2-filme { position: relative; overflow: hidden; }
@@ -266,6 +283,11 @@ export default function EstiloV2() {
       .nv2-fluxo-seta { display: flex; align-items: center; justify-content: center; padding: 0 4px; color: var(--cinza); }
 
       /* ── TELEFONE ────────────────────────────────────────────────────── */
+      /* dois telefones: o de tras recuado e menor, pra ler como profundidade
+         e nao como dois selos lado a lado */
+      .nv2-fones { display: flex; align-items: center; justify-content: center; gap: 0; }
+      .nv2-fone--atras { margin-left: -70px; transform: scale(0.88) translateY(26px); z-index: -1; opacity: 0.92; }
+
       .nv2-fone {
         width: 268px; border-radius: 34px; padding: 9px;
         background: #1a1c1d; border: 1px solid var(--linha2);
@@ -350,7 +372,18 @@ export default function EstiloV2() {
         .nv2-fluxo-seta { transform: rotate(90deg); padding: 8px 0; width: 100%; }
         .nv2-recorte { margin-left: 20px; height: 132px; }
         .nv2-recorte img { object-position: 30% 58%; }
-        .nv2-fone { width: 232px; }
+        /* NO TELEFONE fica UM telefone. Dois viram dois selos ilegiveis. */
+        .nv2-fones .nv2-fone--atras { display: none; }
+        .nv2-fone { width: 244px; }
+        /* o filme do heroi sangra menos: em 390px o corte lateral come o painel */
+        .nv2-palco-filme {
+          width: calc(100% + 40px); margin-left: -20px; margin-top: -8px;
+        }
+        .nv2-palco-filme::after {
+          background:
+            linear-gradient(90deg, #080909 0%, transparent 8%, transparent 92%, #080909 100%),
+            linear-gradient(180deg, #080909 0%, transparent 8%, transparent 92%, #080909 100%);
+        }
         .nv2-preco b { font-size: 42px; }
         .nv2-rod-links { margin-left: 0; gap: 16px; }
         .nv2-esconde-mob { display: none !important; }

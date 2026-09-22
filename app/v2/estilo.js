@@ -204,6 +204,12 @@ export default function EstiloV2() {
       }
       @media (max-width: 768px) { .nv2-marca-filme { opacity: 0.34; } }
 
+      /* TROCA COMPUTADOR / TELEFONE. Quem esta escondido aqui nao custa
+         banda: imagem e poster nascem em lazy e um elemento em display:none
+         nunca entra na viewport, entao o navegador nao busca nenhum dos dois. */
+      .nv2-so-fone { display: none; }
+      .nv2-so-desk { display: block; }
+
       /* ── O "N" DE FUNDO ──────────────────────────────────────────────── */
       .nv2-n {
         position: absolute; pointer-events: none; user-select: none;
@@ -375,7 +381,11 @@ export default function EstiloV2() {
         /* NO TELEFONE fica UM telefone. Dois viram dois selos ilegiveis. */
         .nv2-fones .nv2-fone--atras { display: none; }
         .nv2-fone { width: 244px; }
-        /* o filme do heroi sangra menos: em 390px o corte lateral come o painel */
+        /* no telefone o heroi e a captura real, recortada (regra .nv2-palco
+           logo acima), e nao o filme 3D */
+        .nv2-so-fone { display: block; }
+        .nv2-so-desk { display: none; }
+        /* o filme que sobra sangra menos: em 390px o corte lateral come o painel */
         .nv2-palco-filme {
           width: calc(100% + 40px); margin-left: -20px; margin-top: -8px;
         }

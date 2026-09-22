@@ -200,15 +200,31 @@ export default function V2Page() {
             </Revelar>
           </div>
 
-          {/* o produto sangra pela direita: o corte sugere que há mais
-              sistema do que cabe na tela */}
-          <Revelar atraso={0.2} y={26} className="nv2-palco-filme">
+          {/* O HERÓI TEM DUAS VERSÕES, e o motivo é o mesmo que vale pra
+              página inteira: a maioria vai entrar aqui pelo telefone.
+              · No computador: o painel em perspectiva, girando. Sangra pros
+                dois lados e impressiona; a leitura fria vem logo abaixo.
+              · No telefone: a CAPTURA REAL, recortada e grande. O filme 3D
+                traz muito preto em volta do painel — espremido em 390px ele
+                vira uma miniatura, que é o oposto do que um herói precisa.
+              Só uma das duas é baixada: a que está escondida nunca entra na
+              viewport, então o navegador não busca a imagem nem o pôster. */}
+          <Revelar atraso={0.2} y={26} className="nv2-palco-filme nv2-so-desk">
             <Filme
               src="/landing/v2/painel-3d.mp4"
               poster="/landing/v2/painel-3d-poster.jpg"
               pesado
               alt="Painel da Nex Control em perspectiva: lucro do mês, metas fechadas, resultado da semana e movimento da operação"
               proporcao="16 / 9"
+            />
+          </Revelar>
+          <Revelar atraso={0.2} y={26} className="nv2-palco nv2-palco-bleed nv2-so-fone">
+            <Image
+              src="/landing/v2/painel.png"
+              alt="Painel da Nex Control: lucro do mês, metas fechadas, meta do dia e resultado da semana"
+              width={3200}
+              height={2000}
+              sizes="190vw"
             />
           </Revelar>
         </div>

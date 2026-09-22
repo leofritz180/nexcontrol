@@ -2473,6 +2473,11 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     border-radius: 12px !important;
   }
   .nx-bento .nx-chat-bolha button svg { width: 17px !important; height: 17px !important; }
+  /* o involucro tem 56px cravados: sem encolher junto, o anel de pulso
+     escalava ate 98px e virava um disco cinza gigante atras do botao */
+  .nx-bento .nx-chat-bolha > div { width: 38px !important; height: 38px !important; }
+  /* e o pulso permanente vira ruido numa barra de topo: quem avisa e o ponto */
+  .nx-bento .nx-chat-bolha span[aria-hidden] { display: none !important; }
 
   /* ── BARRA DE ABAS DE APLICATIVO ────────────────────────────────────────
      Colada embaixo, de ponta a ponta, com a area segura do aparelho. A aba

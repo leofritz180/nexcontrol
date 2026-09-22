@@ -26,6 +26,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { BASE_PRICE, OP_BASE_PRICE } from '../../lib/pricing'
 import EstiloV2 from './estilo'
+import Filme from './filme'
 import { Revelar, Olho, Cabeca, Contador, Botao, Ico, Pergunta, SETA } from './pecas'
 
 const moeda = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -481,17 +482,18 @@ export default function V2Page() {
               </ul>
             </div>
 
+            {/* O telefone mostra o produto EM USO — criar uma operação, do
+                primeiro passo ao último. Parado, ele seria só mais uma
+                captura; em movimento, ele responde "como é usar isso". */}
             <Revelar atraso={0.1} y={24} style={{ display: 'flex', justifyContent: 'center' }}>
               <div className="nv2-fone">
-                <div className="nv2-fone-tela">
-                  <Image
-                    src="/landing/v2/celular.png"
-                    alt="Nex Control no celular: painel com lucro do mês, metas fechadas e meta do dia, com barra de navegação inferior"
-                    width={780} height={1688} loading="eager"
-                    sizes="268px"
-                    style={{ width: '100%', height: 'auto', display: 'block' }}
-                  />
-                </div>
+                <Filme
+                  className="nv2-fone-tela"
+                  src="/landing/v2/criar-meta.mp4"
+                  poster="/landing/v2/criar-meta-poster.png"
+                  alt="Nex Control no celular: criando uma nova operação, com os passos onde, quanto e acesso"
+                  proporcao="9 / 19.5"
+                />
               </div>
             </Revelar>
           </div>
@@ -516,9 +518,14 @@ export default function V2Page() {
 
       {/* ═══ 12 · NEX CONTROL 2.0 (institucional) ═════════════════════ */}
       <section className="nv2-sec" style={{ position: 'relative', overflow: 'hidden' }}>
-        <div className="nv2-n" style={{ top: '50%', left: '50%', width: 760, transform: 'translate(-50%,-50%)' }} aria-hidden>
-          <Image src="/brand/nex-v2.png" alt="" width={760} height={760} />
-        </div>
+        {/* a marca em movimento, no momento em que a seção fala dela */}
+        <Filme
+          className="nv2-marca-filme"
+          src="/landing/v2/marca.mp4"
+          poster="/landing/v2/marca-poster.png"
+          alt="Marca Nex Control 2.0"
+          proporcao="16 / 9"
+        />
         <div className="nv2-larg" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
           <Revelar><Olho ponto={false}>2025 → 2026</Olho></Revelar>
           <Revelar atraso={0.08}>

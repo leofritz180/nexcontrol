@@ -170,6 +170,19 @@ export default function EstiloV2() {
       .nv2-palco img { display: block; width: 100%; height: auto; }
       .nv2-palco-bleed { margin-right: calc(-1 * max(28px, (100vw - 1180px) / 2 + 28px)); }
 
+      /* A MARCA EM MOVIMENTO na secao institucional. Fica ATRAS do texto,
+         grande e discreta: e ambientacao, nao um video pra assistir. A
+         mascara apaga as bordas pra ela nascer do fundo em vez de virar um
+         retangulo colado no meio da pagina. */
+      .nv2-marca-filme {
+        position: absolute; top: 50%; left: 50%;
+        width: min(880px, 104vw); transform: translate(-50%, -50%);
+        opacity: 0.5; pointer-events: none; z-index: 0;
+        -webkit-mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 32%, transparent 78%);
+              mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 32%, transparent 78%);
+      }
+      @media (max-width: 768px) { .nv2-marca-filme { opacity: 0.34; } }
+
       /* ── O "N" DE FUNDO ──────────────────────────────────────────────── */
       .nv2-n {
         position: absolute; pointer-events: none; user-select: none;
@@ -254,8 +267,8 @@ export default function EstiloV2() {
         background: #1a1c1d; border: 1px solid var(--linha2);
         box-shadow: 0 40px 100px rgba(0,0,0,0.6); flex-shrink: 0;
       }
-      .nv2-fone-tela { border-radius: 26px; overflow: hidden; background: #f0f0f3; display: block; }
-      .nv2-fone-tela img { display: block; width: 100%; height: auto; }
+      .nv2-fone-tela { border-radius: 26px; overflow: hidden; background: #f0f0f3; display: block; width: 100%; }
+      .nv2-fone-tela img, .nv2-fone-tela video { display: block; width: 100%; }
 
       /* ── PREÇO ───────────────────────────────────────────────────────── */
       .nv2-preco { display: flex; align-items: baseline; gap: 10px; }

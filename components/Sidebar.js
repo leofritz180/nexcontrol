@@ -56,6 +56,14 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  // A barra de abas do celular (components/v2/BarraApp.js) tem um botão
+  // "Menu" que precisa abrir esta gaveta. Ela não tem acesso ao estado
+  // daqui, então avisa por evento.
+  useEffect(() => {
+    const abrir = () => setMobileOpen(v => !v)
+    window.addEventListener('nx:menu', abrir)
+    return () => window.removeEventListener('nx:menu', abrir)
+  }, [])
   const [ownSub, setOwnSub] = useState(null)
   const [showAulas, setShowAulas] = useState(false)
   const [pushState, setPushState] = useState('loading') // loading|unsupported|default|prompt|granted|denied|error

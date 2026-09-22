@@ -1065,6 +1065,17 @@ export default function AdminPage() {
     [metas, ranking]
   )
 
+  // A barra de abas do celular, em qualquer outra tela, manda pra cá com esta
+  // instrução: chegou, abre o formulário de nova meta.
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('nx_abrir_nova_meta') === '1') {
+        sessionStorage.removeItem('nx_abrir_nova_meta')
+        setTab('myops'); setTimeout(() => setMyShowForm(true), 400)
+      }
+    } catch {}
+  }, [])
+
   const rankingRedes = useMemo(()=>{
     const fechadas = metas.filter(m=>m.status_fechamento==='fechada'&&m.rede)
     const redeMap = {}

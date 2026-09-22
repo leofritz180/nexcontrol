@@ -46,6 +46,19 @@ export default function EstiloV2() {
       .nv2 a { color: inherit; text-decoration: none; }
       .nv2 ::selection { background: var(--lime); color: #080909; }
 
+      /* BLINDAGEM CONTRA O CSS DO PAINEL.
+         A rota e publica, mas um admin LOGADO tambem abre — e ai o <html>
+         carrega .nx-bento/.nx-aqua/.nx-light, que pintam todo svg de
+         vermelho, arredondam todo botao em 14px e colam borda vermelha a
+         esquerda de quem tem canto 12/14. Aqui a landing retoma o controle. */
+      .nv2 svg { stroke: currentColor !important; color: inherit !important; }
+      .nv2 .nv2-btn { border-radius: 10px !important; }
+      .nv2 .nv2-btn--g { border-radius: 11px !important; }
+      .nv2 [class^='nv2-'], .nv2 [class*=' nv2-'] { border-left-width: 1px !important; }
+      .nv2 .nv2-card { border-left: 1px solid var(--linha) !important; }
+      .nv2 .nv2-card:hover { border-left-color: var(--linha2) !important; }
+      .nv2 p, .nv2 span, .nv2 b, .nv2 em, .nv2 h1, .nv2 h2, .nv2 h3, .nv2 a, .nv2 li { color: inherit; }
+
       /* ── LARGURA E RITMO ─────────────────────────────────────────────── */
       .nv2-larg { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 28px; }
       .nv2-sec { padding: 120px 0; position: relative; }

@@ -2659,13 +2659,15 @@ html, body { max-width: 100vw; overflow-x: hidden; }
      com os 6 passos abertos ele cobria o painel inteiro, sem overlay pra
      avisar que era um card. Agora ele fica limitado a metade da tela, com
      rolagem propria, e acima da barra de baixo. */
-  /* Em qualquer canto de baixo ele atravessava um cartao. Aqui ele vai pra
-     faixa do cabecalho — logo abaixo do botao de menu, antes do titulo —
-     onde nao ha conteudo nenhum pra cobrir. */
+  /* No cabecalho ele encostava no titulo; em cima de um cartao ele
+     atravessava o conteudo. Fica no canto de baixo a esquerda — que ficou
+     livre quando a bolha do chat subiu pro topo — logo acima da barra de
+     abas. E o lugar de uma pastilha persistente, e o conteudo rola por
+     baixo dela. */
   .nx-checklist {
-    top: calc(58px + env(safe-area-inset-top)) !important;
-    bottom: auto !important;
-    max-height: 46vh;
+    bottom: calc(84px + env(safe-area-inset-bottom)) !important;
+    top: auto !important;
+    max-height: 44vh;
     overflow-y: auto;
     overscroll-behavior: contain;
     border-radius: 18px;

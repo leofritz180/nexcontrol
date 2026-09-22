@@ -2508,6 +2508,24 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   /* o cabecalho perde o vao que o botao deixou */
   .nx-bento .nx-acao ~ *, .nx-bento .nx-acao { margin: 0 !important; }
 
+  /* ── FILTROS VIRAM FAIXA ────────────────────────────────────────────────
+     Empilhados, os cinco campos do /faturamento ocupavam a primeira tela
+     inteira: a pessoa abria o faturamento e via filtros, nao o faturamento.
+     Aqui eles viram uma faixa que anda pro lado — o padrao de todo
+     aplicativo. Nada fica escondido, so deixa de empilhar. */
+  .nx-bento .fb-filtros > * {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    align-items: center;
+  }
+  .nx-bento .fb-filtros > *::-webkit-scrollbar { display: none; }
+  .nx-bento .fb-filtros > * > * { flex: 0 0 auto; }
+  .nx-bento .fb-filtros input[type="date"] { min-width: 132px; }
+  .nx-bento .fb-filtros select { min-width: 132px; }
+
   /* ── CONTEUDO ───────────────────────────────────────────────────────────
      O topo abre espaco pros flutuantes e pro botao de menu; o rodape abre
      espaco pra barra de abas E pro botao flutuante. */

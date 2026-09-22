@@ -16,8 +16,10 @@ export default function FaturamentoBento({ stats, chartData = [], operadores = 0
       />
 
       {/* Os filtros vêm logo abaixo do título, não soltos no fim da página:
-          eles mandam em TUDO que vem depois. */}
-      {filtros}
+          eles mandam em TUDO que vem depois. No celular o CSS os transforma
+          numa faixa rolável — empilhados, os cinco campos ocupavam a tela
+          inteira e o faturamento só aparecia no segundo gesto. */}
+      {filtros && <div className="fb-filtros">{filtros}</div>}
 
       <Hero
         rotulo="Lucro final do período"

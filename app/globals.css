@@ -2410,7 +2410,7 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     overflow-x: hidden;
   }
   /* 66px de topo: a fileira de utilidades ocupa ate 50px */
-  .nx-bento .app-content > div { padding: 66px 16px 0 !important; }
+  .nx-bento .app-content > div { padding: 62px 16px 0 !important; }
   .nx-bento .app-content h1 { font-size: 27px !important; letter-spacing: -0.04em !important; }
   .nx-bento .app-content img,
   .nx-bento .app-content svg:not(.sb-ico) { max-width: 100%; }
@@ -2470,10 +2470,15 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     box-shadow: 0 8px 22px rgba(0,0,0,0.16) !important;
   }
   .nx-bento .tabs-scroll::-webkit-scrollbar { display: none; }
+  /* a camada .nx-aqua cola um risco vermelho a esquerda de todo cartao com
+     borda var(--b1); com tres atributos no seletor ela ganha de `.nx-bento
+     .tabs-scroll` — por isso o seletor abaixo repete a classe */
+  .nx-bento .tabs-scroll.tabs-scroll { border-left: none !important; padding: 4px !important; box-shadow: 0 6px 18px rgba(0,0,0,0.14) !important; }
+  .nx-bento .tabs-scroll::before { display: none !important; }
   .nx-bento .tabs-scroll button {
     flex: 0 0 auto;
-    min-height: 40px;
-    padding: 9px 14px !important;
+    min-height: 36px;
+    padding: 8px 13px !important;
     font-size: 12px !important; font-weight: 700 !important;
     border-radius: 14px !important;
     white-space: nowrap; scroll-snap-align: center;
@@ -2489,7 +2494,7 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .nx-bento.nx-noir .tabs-scroll button[data-active="true"],
   .nx-bento.nx-noir .tabs-scroll button[data-active="true"] svg { color: #15151a !important; }
   /* quem tem sub-navegacao abre espaco pra ela no topo do conteudo */
-  .nx-bento:has(.tabs-scroll) .app-content > div { padding-top: 126px !important; }
+  .nx-bento:has(.tabs-scroll) .app-content > div { padding-top: 118px !important; }
   /* sinal de que tem mais aba a direita */
   .nx-bento .tabs-scroll::after {
     content: ''; position: sticky; right: 0; flex: 0 0 22px; align-self: stretch;
@@ -2506,34 +2511,35 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .nx-bento [aria-label="Refazer tour desta aba"] {
     top: calc(12px + env(safe-area-inset-top)) !important;
     bottom: auto !important;
-    width: 38px !important; height: 38px !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.10) !important;
+    width: 34px !important; height: 34px !important;
+    border-radius: 11px !important;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.09) !important;
     z-index: 240 !important;
     opacity: 1 !important;
   }
   .nx-bento .nx-dock-item svg,
-  .nx-bento [aria-label="Refazer tour desta aba"] svg { width: 16px; height: 16px; }
+  .nx-bento [aria-label="Refazer tour desta aba"] svg { width: 15px; height: 15px; }
+  /* passo de 40px: cinco utilidades cabem em 190px e sobra ar pro contador */
   .nx-bento [aria-label="Atualizações do sistema"] { right: 14px !important; }
-  .nx-bento [aria-label^="Comandos de voz"] { right: 58px !important; }
-  .nx-bento [aria-label="Notificacoes rapidas"] { right: 102px !important; }
-  .nx-bento [aria-label="Refazer tour desta aba"] { right: 146px !important; }
+  .nx-bento [aria-label^="Comandos de voz"] { right: 54px !important; }
+  .nx-bento [aria-label="Notificacoes rapidas"] { right: 94px !important; }
+  .nx-bento [aria-label="Refazer tour desta aba"] { right: 134px !important; }
   .nx-bento .nx-chat-bolha {
     top: calc(12px + env(safe-area-inset-top)) !important;
     bottom: auto !important;
-    left: auto !important; right: 190px !important;
+    left: auto !important; right: 174px !important;
     z-index: 240 !important; opacity: 1 !important;
   }
-  .nx-bento .nx-chat-bolha > div { width: 38px !important; height: 38px !important; }
+  .nx-bento .nx-chat-bolha > div { width: 34px !important; height: 34px !important; }
   /* na fileira do topo ela e branca como as vizinhas; o ponto verde continua avisando */
   .nx-bento .nx-chat-bolha button {
-    width: 38px !important; height: 38px !important; border-radius: 12px !important;
+    width: 34px !important; height: 34px !important; border-radius: 11px !important;
     background: #ffffff !important; color: #15151a !important;
     box-shadow: 0 4px 14px rgba(0,0,0,0.10) !important;
   }
   /* o icone do chat tem stroke="#fff" como ATRIBUTO; a propriedade CSS vence
      o atributo, entao e por aqui que ele fica escuro sobre a bolha branca */
-  .nx-bento .nx-chat-bolha button svg { width: 17px !important; height: 17px !important; stroke: #15151a !important; }
+  .nx-bento .nx-chat-bolha button svg { width: 15px !important; height: 15px !important; stroke: #15151a !important; }
   .nx-bento.nx-noir .nx-chat-bolha button { background: #1d1d23 !important; color: #f4f4f6 !important; }
   .nx-bento.nx-noir .nx-chat-bolha button svg { stroke: #f4f4f6 !important; }
   /* o anel de pulso permanente e ruido numa fileira de topo: quem avisa e o ponto */
@@ -2558,6 +2564,33 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     min-height: 60px !important; font-size: 15px !important;
     line-height: 1.35 !important; padding: 11px 14px !important;
   }
+
+  /* ── CARTOES COM DENSIDADE DE APLICATIVO ────────────────────────────────
+     Os cartoes vinham com as medidas do desktop: 148px de altura minima,
+     24px de respiro, chip de 40px e o blob decorativo tomando metade do
+     bloco pequeno. Numa tela de 390px isso e "desktop encolhido". Aqui as
+     medidas passam a ser as de um tile de aplicativo: menos respiro, numero
+     maior em relacao ao bloco, decoracao so onde ha espaco pra ela. */
+  .nx-bento .app-content [style*="padding: 24px"],
+  .nx-bento .app-content [style*="padding: 22px"] { padding: 18px !important; }
+  .nx-bento .app-content [style*="padding: 28px 30px"] { padding: 20px 18px !important; }
+  .nx-bento .app-content [style*="padding: 22px 24px"] { padding: 18px !important; }
+  /* heroi do painel: mais baixo, numero mais presente */
+  .nx-bento .ab-r1 > *:nth-child(1) [style*="min-height"] { min-height: 132px !important; }
+  .nx-bento .ab-r1 > *:nth-child(1) [style*="font-size: 44px"] { font-size: 36px !important; margin-top: 12px !important; }
+  /* os dois tiles pequenos: sem blob (ele cobria metade), chip menor, numero
+     proporcional ao bloco */
+  .nx-bento .ab-r1 > *:nth-child(2) [style*="min-height"],
+  .nx-bento .ab-r1 > *:nth-child(3) [style*="min-height"] { min-height: 112px !important; }
+  .nx-bento .ab-r1 > *:nth-child(2) svg[viewBox="0 0 200 140"],
+  .nx-bento .ab-r1 > *:nth-child(3) svg[viewBox="0 0 200 140"] { display: none !important; }
+  .nx-bento .ab-r1 > *:nth-child(2) span[style*="width: 40px"],
+  .nx-bento .ab-r1 > *:nth-child(3) span[style*="width: 40px"] { width: 34px !important; height: 34px !important; border-radius: 11px !important; }
+  .nx-bento .ab-r1 > *:nth-child(2) p[style*="font-size: 27px"],
+  .nx-bento .ab-r1 > *:nth-child(3) p[style*="font-size: 27px"] { font-size: 25px !important; margin-top: 12px !important; }
+  /* legendas dos cartoes um ponto menores; o blob dos herois mais discreto */
+  .nx-bento .app-content p[style*="font-size: 12.5px"] { font-size: 12px !important; }
+  .nx-bento .app-content svg[viewBox="0 0 200 140"] { opacity: 0.75; }
 
   /* ── CONTEUDO: GRADES DE TELEFONE ───────────────────────────────────────
      Primeira linha do painel: o LUCRO na largura toda, dois blocos menores
@@ -2627,10 +2660,10 @@ html, body { max-width: 100vw; overflow-x: hidden; }
      font-size 0 no botao apaga o texto solto; o span do contador recupera o
      tamanho. Nada some do DOM. */
   .nx-checklist > button {
-    gap: 0 !important; padding: 4px !important;
-    min-height: 38px !important; border-radius: 12px !important;
+    gap: 0 !important; padding: 3px !important;
+    min-height: 34px !important; border-radius: 11px !important;
   }
-  .nx-checklist > button > span:first-child { font-size: 11px !important; width: 30px !important; height: 30px !important; }
+  .nx-checklist > button > span:first-child { font-size: 10.5px !important; width: 28px !important; height: 28px !important; }
   /* o rotulo esta num span com font-size inline, entao e ele que some */
   .nx-checklist > button > span:last-child { display: none !important; }
 }

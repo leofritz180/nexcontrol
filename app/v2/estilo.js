@@ -23,6 +23,17 @@ export default function EstiloV2() {
     <style>{`
       html, html body { background: #080909 !important; }
 
+      /* Um admin LOGADO tambem abre esta rota — e ai o painel monta os seus
+         flutuantes (voz, sino, avisos, chat, checklist) e a barra de abas do
+         celular por cima da landing. Numa pagina de venda isso e ruido que o
+         visitante nem entende. Some so aqui. */
+      body:has(.nv2) .nx-dock-item,
+      body:has(.nv2) .nx-chat-bolha,
+      body:has(.nv2) .nx-checklist,
+      body:has(.nv2) .nx-barra-app,
+      body:has(.nv2) .sidebar-mobile-toggle,
+      body:has(.nv2) [aria-label="Refazer tour desta aba"] { display: none !important; }
+
       .nv2 {
         --bg: #080909;
         --graf: #161819;

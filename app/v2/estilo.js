@@ -190,8 +190,11 @@ export default function EstiloV2() {
          precisa caber inteira. O enquadramento mora aqui e nao no next/image
          porque com width em % o navegador calcula o tamanho antes da imagem
          existir, e o bloco fica vazio. */
-      .nv2-recorte { position: relative; overflow: hidden; border-radius: 14px 0 0 0; border: 1px solid var(--linha); border-right: none; border-bottom: none; margin-left: 26px; height: 230px; }
-      .nv2-recorte img { position: absolute; display: block; width: 214%; max-width: none; height: auto; left: -104%; top: -46%; }
+      .nv2-recorte { position: relative; overflow: hidden; border-radius: 14px 0 0 0; border: 1px solid var(--linha); border-right: none; border-bottom: none; margin-left: 26px; height: 176px; }
+      /* cover + object-position enquadra por PROPORCAO, entao o recorte nao
+         quebra quando a largura do cartao muda. 58% na vertical cai na tira
+         de indicadores — depositado, sacado, resultado e custos. */
+      .nv2-recorte img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 58%; }
       .nv2-bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
       .nv2-bento > .col6 { grid-column: span 6; }
       .nv2-bento > .col4 { grid-column: span 4; }
@@ -305,8 +308,8 @@ export default function EstiloV2() {
         .nv2-palco-bleed { margin-right: -20px; }
         .nv2-fluxo-no { flex: 1 1 100%; border-radius: 14px !important; border-left: 1px solid var(--linha) !important; }
         .nv2-fluxo-seta { transform: rotate(90deg); padding: 8px 0; width: 100%; }
-        .nv2-recorte { margin-left: 20px; height: 186px; }
-        .nv2-recorte img { width: 300%; left: -150%; top: -44%; }
+        .nv2-recorte { margin-left: 20px; height: 132px; }
+        .nv2-recorte img { object-position: 30% 58%; }
         .nv2-fone { width: 232px; }
         .nv2-preco b { font-size: 42px; }
         .nv2-rod-links { margin-left: 0; gap: 16px; }

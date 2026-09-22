@@ -331,8 +331,8 @@ export default function V2Page() {
                   bloco ficava vazio. */}
               <div className="nv2-recorte">
                 <Image
-                  src="/landing/v2/painel.png"
-                  alt="Cartão Movimento da operação, com depositado, sacado e custos lado a lado"
+                  src="/landing/v2/faturamento.png"
+                  alt="Tira de indicadores da Nex Control: depositado, sacado, resultado e custos lado a lado"
                   width={3200} height={2000} loading="eager"
                   sizes="760px"
                 />

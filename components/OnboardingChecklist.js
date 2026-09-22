@@ -31,7 +31,19 @@ function StepIcon({ name, size = 16, color = 'currentColor' }) {
 export default function OnboardingChecklist({ data, userId, onActionTab }) {
   const router = useRouter()
   const [dismissed, setDismissedState] = useState(true) // start true pra evitar flash
+  // No celular ele NASCE recolhido. Aberto, um card de 340px numa tela de
+  // 390px tapa o painel inteiro — a pessoa abre o app e vê o checklist, não
+  // a operação dela. Recolhido vira uma pastilha e continua a um toque.
+  //
+  // Lido num efeito, e não no useState: o servidor não tem `window`, e
+  // decidir isso na primeira renderização faria o HTML do servidor divergir
+  // do cliente (erro de hidratação).
   const [collapsed, setCollapsed] = useState(false)
+  useEffect(() => {
+    try {
+      if (window.matchMedia('(max-width: 768px)').matches) setCollapsed(true)
+    } catch {}
+  }, [])
   const [showCelebration, setShowCelebration] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [ready, setReady] = useState(false) // só aparece depois do banner (e do tutorial começar)

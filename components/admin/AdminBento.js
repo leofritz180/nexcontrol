@@ -259,8 +259,12 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
             {atualizando ? 'Atualizando' : 'Atualizar'}
           </motion.button>
         )}
-        <motion.button type="button" onClick={onNovaMeta} whileHover={{ y: -2, boxShadow: '0 14px 32px rgba(229,57,31,0.38)' }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
-          <Ico d={<path d="M12 5v14M5 12h14" />} s={16} /> Nova meta
+        {/* nx-acao: no celular o CSS transforma em botao flutuante redondo,
+            acima da barra de abas. "Nova meta" e a acao principal do painel
+            e nao pode rolar pra fora da tela no primeiro gesto. */}
+        <motion.button type="button" onClick={onNovaMeta} className="nx-acao" whileHover={{ y: -2, boxShadow: '0 14px 32px rgba(229,57,31,0.38)' }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
+          <span className="nx-acao-ico" style={{ display: 'inline-flex' }}><Ico d={<path d="M12 5v14M5 12h14" />} s={16} /></span>
+          <span className="nx-acao-txt">Nova meta</span>
         </motion.button>
         </div>
       </div>

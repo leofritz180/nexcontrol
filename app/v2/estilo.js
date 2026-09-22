@@ -177,7 +177,7 @@ export default function EstiloV2() {
       .nv2-marca-filme {
         position: absolute; top: 50%; left: 50%;
         width: min(880px, 104vw); transform: translate(-50%, -50%);
-        opacity: 0.5; pointer-events: none; z-index: 0;
+        opacity: 0.62; pointer-events: none; z-index: 0;
         -webkit-mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 32%, transparent 78%);
               mask-image: radial-gradient(ellipse 58% 62% at 50% 50%, #000 32%, transparent 78%);
       }

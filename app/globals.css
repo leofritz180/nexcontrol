@@ -2636,6 +2636,10 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   /* no telefone o hover nao existe: o tilt so atrapalha */
   .nx-bento [style*="perspective"] > div { transform: none !important; }
 
+  /* /tutorial: o numero de ordem sai — a ordem ja esta na propria fila, e
+     sem ele o titulo do passo cabe numa linha so */
+  .nx-bento .tub-num { display: none !important; }
+
   /* ── FILTROS VIRAM FAIXA ────────────────────────────────────────────────
      Empilhados, os cinco campos do /faturamento ocupavam a primeira tela
      inteira. Viram uma faixa que anda pro lado — nada some, so nao empilha. */

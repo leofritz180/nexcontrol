@@ -217,7 +217,11 @@ export default function TutorialBento({ passos = [], marcados = {}, onAlternar, 
                         textDecoration: ok ? 'line-through' : 'none',
                       }}>{p.label}</span>
                     </span>
-                    <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 900, color: ok ? 'var(--profit)' : 'var(--t4)', flexShrink: 0 }}>
+                    {/* tub-num: no celular o CSS esconde. Sao cinco elementos
+                        em 358px (marca, icone, titulo, numero, seta) e o
+                        titulo quebrava em duas linhas — e a ordem ja esta na
+                        propria fila. */}
+                    <span className="tub-num" style={{ fontFamily: MONO, fontSize: 11, fontWeight: 900, color: ok ? 'var(--profit)' : 'var(--t4)', flexShrink: 0 }}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <motion.span animate={{ rotate: expandido ? 90 : 0 }} transition={{ duration: 0.2 }} style={{ color: 'var(--t4)', display: 'inline-flex', flexShrink: 0 }}>

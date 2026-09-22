@@ -1,437 +1,652 @@
 'use client'
 // ─────────────────────────────────────────────────────────────────────────
-// NEXCONTROL 2.0 — página de apresentação da nova versão.
+// NEX CONTROL 2.0 — página de lançamento (/v2).
 //
-// POR QUE É CLARA: o 2.0 É o bento claro. Uma página escura anunciando um
-// redesenho claro seria uma promessa que ela mesma não cumpre. Aqui a página
-// é a demonstração da coisa que ela anuncia.
+// REGRA DE CONTEÚDO, e ela vale pra cada linha daqui:
+// nada nesta página é invenção. Os números vêm dos que já estão publicados
+// na home; o preço vem de lib/pricing.js; os alertas são os três que
+// lib/insights-engine.js realmente dispara; os módulos do ecossistema são
+// os que qualquer conta alcança hoje. Aulas VIP ficou de FORA porque é
+// liberada por allowlist de tenant (lib/aulas-tenants.js) — anunciar como
+// módulo aberto seria mentira.
 //
-// ROTA PÚBLICA: `.nx-bento` (gated por conta em lib/theme-v2.js) NÃO está no
-// <html> para visitante deslogado, e os tokens globais ali são do tema
-// ESCURO. Por isso a página redefine os tokens claros no escopo `.nv2` —
-// mesmo padrão de components/v2/AuthSplitV2.js.
+// O PRODUTO APARECE COMO ELE É: capturas do painel claro de verdade, em
+// public/landing/v2/. O contraste entre a página escura e a interface clara
+// é proposital — é o que faz o software saltar da página.
+//   → os nomes da equipe nas capturas foram trocados por fictícios.
+//     Os valores são da conta do dono, não de cliente.
 //
-// REGRA DE CONTEÚDO: nada aqui é inventado. Toda função descrita existe e
-// está no ar. Não há número de clientes, depoimento, prêmio nem comparação
-// de desempenho — se não dá pra provar, não entra.
+// A rota é pública, mas um admin logado também pode abri-la: aí o <html>
+// carrega .nx-bento/.nx-light, cuja camada de tradução troca branco inline
+// por texto escuro. Por isso TODA cor aqui vem de classe (app/v2/estilo.js),
+// nunca de style inline.
 // ─────────────────────────────────────────────────────────────────────────
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { motion, useReducedMotion } from 'framer-motion'
+import { BASE_PRICE, OP_BASE_PRICE } from '../../lib/pricing'
+import EstiloV2 from './estilo'
+import { Revelar, Olho, Cabeca, Contador, Botao, Ico, Pergunta, SETA } from './pecas'
 
-const MOLA = [0.33, 1, 0.68, 1]
-const RED = '#e5391f'
-const RED2 = '#ff7a4d'
+const moeda = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-// ── tokens e responsivo, escopados em .nv2 ───────────────────────────────
-function EstiloV2() {
-  return (
-    <style>{`
-      html, html body { background: #f0f0f3 !important; }
-      .nv2 {
-        --base:#f0f0f3; --surface:#ffffff; --raised:#fafafa;
-        --t1:#15151a; --t2:#6c6c78; --t3:#82828d; --t4:#9b9ba6;
-        --b1:rgba(0,0,0,0.07); --b2:rgba(0,0,0,0.10);
-        --fill-1:rgba(0,0,0,0.025); --fill-2:rgba(0,0,0,0.045);
-        --brand:#e5391f; --brand-dim:rgba(229,57,31,0.09); --brand-border:rgba(229,57,31,0.26);
-        --profit:#3f9b1e; --profit-dim:#e3f7c6;
-        --mono:'JetBrains Mono', ui-monospace, monospace;
-        color-scheme: light;
-        background:#f0f0f3; color:var(--t1);
-        min-height:100vh; position:relative; z-index:1;
-      }
-      .nv2 *, .nv2 *::before, .nv2 *::after { box-sizing:border-box; }
-      .nv2 .nv2-branco, .nv2 .nv2-branco * { color:#ffffff; }
-
-      .nv2-larg { max-width:1080px; margin:0 auto; padding:0 24px; }
-      .nv2-cartao {
-        background:var(--surface); border:1px solid var(--b1); border-radius:24px;
-        box-shadow:0 1px 2px rgba(0,0,0,0.04), 0 8px 26px rgba(0,0,0,0.05);
-      }
-      .nv2-grade3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-      .nv2-grade2 { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
-      .nv2-heroi { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
-
-      @media (max-width: 960px) {
-        .nv2-heroi { grid-template-columns:1fr; gap:36px; }
-        .nv2-grade3 { grid-template-columns:repeat(2,1fr); }
-      }
-      @media (max-width: 640px) {
-        .nv2-larg { padding:0 16px; }
-        .nv2-grade3, .nv2-grade2 { grid-template-columns:1fr; }
-        .nv2-h1 { font-size:38px !important; }
-        .nv2-h2 { font-size:26px !important; }
-        .nv2-esconde-mob { display:none !important; }
-        .nv2-cta-col { flex-direction:column !important; align-items:stretch !important; }
-        .nv2-cta-col > * { width:100% !important; justify-content:center !important; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .nv2 *, .nv2 *::before, .nv2 *::after { animation:none !important; transition:none !important; }
-      }
-    `}</style>
-  )
+/* ═══════════════════════════════════════════════════════════════════════
+   ÍCONES — traço fino, sem preenchimento. Nada de emoji.
+   ═══════════════════════════════════════════════════════════════════════ */
+const I = {
+  alvo: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4.5" /><circle cx="12" cy="12" r="1" /></>,
+  equipe: <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></>,
+  troeu: <><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M6 4h12v7a6 6 0 0 1-12 0z" /><path d="M12 17v4M8 21h8" /></>,
+  rede: <><circle cx="12" cy="5" r="2.5" /><circle cx="5" cy="19" r="2.5" /><circle cx="19" cy="19" r="2.5" /><path d="M12 7.5v4M10 13l-3.4 3.6M14 13l3.4 3.6" /></>,
+  relato: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M8 13h8M8 17h5" /></>,
+  grafico: <><path d="M3 3v18h18" /><path d="M7 15l3.5-4.5 3.5 3.5L20 7" /></>,
+  sino: <><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></>,
+  raio: <path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z" />,
+  escudo: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></>,
+  celular: <><rect x="6" y="2" width="12" height="20" rx="3" /><path d="M11 18.5h2" /></>,
+  globo: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z" /></>,
+  balao: <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z" />,
+  placa: <><rect x="3" y="4" width="18" height="14" rx="2" /><path d="M8 20h8M12 18v2M8 9h8M8 13h5" /></>,
+  check: <path d="M20 6 9 17l-5-5" />,
 }
 
-// ── ilustração do painel ─────────────────────────────────────────────────
-// DESENHO, não captura: nenhum número, nome ou valor de cliente aparece aqui.
-function PainelIlustrado({ parado }) {
-  const entra = (i) => (parado ? {} : {
-    initial: { opacity: 0, y: 12 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, delay: 0.2 + i * 0.1, ease: MOLA },
-  })
-  const linha = 'rgba(0,0,0,0.10)'
-  const forte = 'rgba(0,0,0,0.20)'
+/* ── NÚMEROS ─────────────────────────────────────────────────────────────
+   Exatamente os três que já estão publicados na home (app/page.js). Não
+   inventei nenhum e não mexi em nenhum. */
+const NUMEROS = [
+  { valor: 400, depois: '+', rotulo: 'operadores ativos' },
+  { antes: 'R$ ', valor: 1, depois: 'M+', rotulo: 'monitorados em operações' },
+  { valor: 3000, depois: '+', rotulo: 'metas analisadas' },
+]
 
-  return (
-    <svg viewBox="0 0 380 260" width="100%" role="img"
-      aria-label="Desenho do painel do NexControl 2.0: menu lateral recolhido, cartões, gráfico e barra de abas flutuante"
-      style={{ display: 'block' }}>
-      <defs>
-        <linearGradient id="nv2Marca" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={RED2} /><stop offset="100%" stopColor={RED} />
-        </linearGradient>
-      </defs>
+/* ── ALERTAS ─────────────────────────────────────────────────────────────
+   Os TRÊS que lib/insights-engine.js emite de verdade. O motor tem
+   cooldown por tipo/meta/usuário — não é chatbot, é regra. */
+const ALERTAS = [
+  {
+    ico: I.grafico,
+    t: 'Sequência negativa',
+    d: 'Remessas seguidas no vermelho dentro da mesma meta. O aviso chega enquanto dá pra corrigir.',
+  },
+  {
+    ico: I.raio,
+    t: 'Prejuízo acima da média',
+    d: 'Uma remessa fecha muito pior que o padrão daquela operação e o sistema aponta na hora.',
+  },
+  {
+    ico: I.sino,
+    t: 'Meta parada',
+    d: 'Uma meta aberta que parou de receber remessa. Ninguém precisa lembrar de conferir.',
+  },
+]
 
-      {/* fundo da página */}
-      <rect x="0.5" y="0.5" width="379" height="259" rx="20" fill="#f0f0f3" stroke="rgba(0,0,0,0.08)" />
+/* ── ECOSSISTEMA ─────────────────────────────────────────────────────────
+   Só o que qualquer conta alcança. Aulas VIP não entra: é liberada por
+   allowlist de tenant. */
+const MODULOS = [
+  { ico: I.globo, t: 'Minhas Proxies', d: 'As proxies da operação organizadas em um lugar só.' },
+  { ico: I.balao, t: 'Network', d: 'A comunidade dos administradores da plataforma, aberta a todos.' },
+  { ico: I.placa, t: 'Premiações', d: 'Placas por marco de faturamento, calculadas pelo lucro real.' },
+]
 
-      {/* rail escuro flutuante */}
-      <motion.g {...entra(0)}>
-        <rect x="10" y="10" width="40" height="240" rx="16" fill="#131317" />
-        <rect x="22" y="24" width="16" height="16" rx="6" fill="url(#nv2Marca)" />
-        <rect x="16" y="56" width="28" height="24" rx="9" fill="#ffffff" />
-        {[90, 118, 146].map(y => (
-          <rect key={y} x="23" y={y + 6} width="14" height="12" rx="4" fill="none" stroke="rgba(255,255,255,0.28)" strokeWidth="1.4" />
-        ))}
-        <circle cx="30" cy="232" r="9" fill="rgba(255,255,255,0.10)" />
-      </motion.g>
+const FAQ = [
+  {
+    q: 'Quanto custa?',
+    r: `A Nex Control custa R$ ${moeda(BASE_PRICE)} por mês, mais R$ ${moeda(OP_BASE_PRICE)} por operador que você adicionar. A partir do segundo operador entra desconto progressivo, que cresce conforme a equipe cresce.`,
+  },
+  {
+    q: 'Preciso instalar alguma coisa?',
+    r: 'Não. A Nex Control roda no navegador. No celular ela pode ser instalada na tela inicial como aplicativo, mas isso é opcional — tudo funciona sem instalar nada.',
+  },
+  {
+    q: 'Posso adicionar operadores?',
+    r: 'Sim, quando quiser. Você gera um link de convite, o operador cria a conta por ele e já entra na sua operação. Quem paga é o administrador: o operador não paga nada.',
+  },
+  {
+    q: 'Funciona no celular?',
+    r: 'Funciona. O painel foi redesenhado para telefone na 2.0, com barra de navegação própria, e pode receber notificações de push no aparelho.',
+  },
+  {
+    q: 'Como funciona a captura automática de depósito?',
+    r: 'A Nex Control abre uma sessão de captura e lê o valor do depósito, lançando na remessa sem digitação. É um recurso de apoio ao lançamento manual, não um substituto: você continua no controle do que entra.',
+  },
+  {
+    q: 'Meus dados ficam seguros?',
+    r: 'Cada operação é isolada no banco por tenant, com as regras aplicadas no próprio servidor. Um administrador nunca alcança o dado de outro, e o operador não enxerga os campos financeiros do administrador.',
+  },
+  {
+    q: 'Posso cancelar quando quiser?',
+    r: 'Pode. A cobrança é mensal por PIX e não renova sozinha — se você não renovar, o acesso simplesmente encerra no fim do período. Não existe fidelidade nem multa.',
+  },
+]
 
-      {/* saudação */}
-      <motion.g {...entra(1)}>
-        <rect x="62" y="16" width="86" height="9" rx="4.5" fill={forte} />
-        <rect x="62" y="31" width="132" height="6" rx="3" fill={linha} />
-        <rect x="286" y="14" width="80" height="24" rx="12" fill="url(#nv2Marca)" />
-      </motion.g>
-
-      {/* cartão do lucro (largo) + dois menores */}
-      <motion.g {...entra(2)}>
-        <rect x="62" y="52" width="150" height="70" rx="14" fill="#ffffff" stroke="rgba(0,0,0,0.06)" />
-        <rect x="74" y="64" width="44" height="6" rx="3" fill={RED} opacity="0.7" />
-        <rect x="74" y="78" width="86" height="15" rx="4" fill="#3f9b1e" opacity="0.85" />
-        <path d="M62 112 C86 106, 100 116, 122 100 C146 84, 168 96, 190 88 L212 84 L212 122 L62 122 Z" fill="#3f9b1e" opacity="0.10" />
-        <path d="M62 112 C86 106, 100 116, 122 100 C146 84, 168 96, 190 88 L212 84" fill="none" stroke="#3f9b1e" strokeWidth="1.8" opacity="0.5" strokeLinecap="round" />
-      </motion.g>
-      <motion.g {...entra(3)}>
-        <rect x="220" y="52" width="70" height="70" rx="14" fill="#ffffff" stroke="rgba(0,0,0,0.06)" />
-        <rect x="231" y="63" width="20" height="20" rx="7" fill="rgba(0,0,0,0.05)" />
-        <rect x="231" y="92" width="36" height="11" rx="3" fill={forte} />
-        <rect x="298" y="52" width="70" height="70" rx="14" fill="#ffffff" stroke="rgba(0,0,0,0.06)" />
-        <circle cx="333" cy="87" r="20" fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth="8" />
-        <circle cx="333" cy="87" r="20" fill="none" stroke="url(#nv2Marca)" strokeWidth="8"
-          strokeDasharray="126" strokeDashoffset="42" strokeLinecap="round" transform="rotate(-90 333 87)" />
-      </motion.g>
-
-      {/* lista */}
-      <motion.g {...entra(4)}>
-        <rect x="62" y="130" width="306" height="80" rx="14" fill="#ffffff" stroke="rgba(0,0,0,0.06)" />
-        {[146, 168, 190].map((y, i) => (
-          <g key={y}>
-            <rect x="74" y={y - 5} width="14" height="14" rx="5" fill="rgba(0,0,0,0.05)" />
-            <rect x="96" y={y - 3} width={120 - i * 18} height="6" rx="3" fill={linha} />
-            <rect x={312 + i * 6} y={y - 3} width={44 - i * 6} height="6" rx="3" fill={i === 2 ? RED : '#3f9b1e'} opacity="0.55" />
-          </g>
-        ))}
-      </motion.g>
-
-      {/* dock flutuante */}
-      <motion.g {...entra(5)}>
-        <rect x="118" y="222" width="194" height="26" rx="13" fill="#15151a" />
-        <rect x="124" y="227" width="56" height="16" rx="8" fill="#ffffff" />
-        {[192, 232, 268].map(x => <rect key={x} x={x} y="233" width="28" height="4" rx="2" fill="rgba(255,255,255,0.34)" />)}
-      </motion.g>
-    </svg>
-  )
-}
-
-// ── peças pequenas ───────────────────────────────────────────────────────
-function Selo({ children }) {
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: 7, padding: '5px 13px', borderRadius: 99,
-      background: 'var(--brand-dim)', border: '1px solid var(--brand-border)',
-      fontSize: 10, fontWeight: 900, letterSpacing: '0.14em', color: 'var(--brand)',
-      fontFamily: 'var(--mono)',
-    }}>{children}</span>
-  )
-}
-
-function Ico({ d, c = 'var(--brand)', s = 19 }) {
-  return (
-    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c}
-      strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{d}</svg>
-  )
-}
-
-function Card({ icone, titulo, texto, atraso = 0, parado }) {
-  return (
-    <motion.div
-      className="nv2-cartao"
-      initial={parado ? false : { opacity: 0, y: 14 }}
-      whileInView={parado ? {} : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.45, delay: atraso, ease: MOLA }}
-      style={{ padding: 22 }}>
-      <span style={{
-        width: 40, height: 40, borderRadius: 13, display: 'inline-flex',
-        alignItems: 'center', justifyContent: 'center',
-        background: 'var(--brand-dim)', border: '1px solid var(--brand-border)',
-      }}><Ico d={icone} /></span>
-      <h3 style={{ fontSize: 16, fontWeight: 800, color: 'var(--t1)', margin: '16px 0 6px', letterSpacing: '-0.02em' }}>{titulo}</h3>
-      <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: 0, lineHeight: 1.55 }}>{texto}</p>
-    </motion.div>
-  )
-}
-
-function Secao({ olho, titulo, apoio, children, id }) {
-  return (
-    <section id={id} style={{ padding: '72px 0 0' }}>
-      <div className="nv2-larg">
-        <Selo>{olho}</Selo>
-        <h2 className="nv2-h2" style={{ fontSize: 33, fontWeight: 800, letterSpacing: '-0.04em', color: 'var(--t1)', margin: '16px 0 8px', lineHeight: 1.1 }}>{titulo}</h2>
-        {apoio && <p style={{ fontSize: 15, color: 'var(--t2)', margin: '0 0 28px', maxWidth: 640, lineHeight: 1.6 }}>{apoio}</p>}
-        {children}
-      </div>
-    </section>
-  )
-}
-
-// ── ícones ───────────────────────────────────────────────────────────────
-const I_JANELA = <><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M3 9h18M9 21V9" /></>
-const I_LUA = <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
-const I_MENU = <><path d="M4 6h10M4 12h16M4 18h7" /></>
-const I_TECLA = <><rect x="2" y="5" width="20" height="14" rx="3" /><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M9 13h6" /></>
-const I_GRAFICO = <><path d="M3 3v18h18" /><path d="M7 15l3-4 4 4 5-7" /></>
-const I_PASSOS = <><circle cx="5" cy="12" r="2.4" /><circle cx="12" cy="12" r="2.4" /><circle cx="19" cy="12" r="2.4" /><path d="M7.4 12h2.2M14.4 12h2.2" /></>
-const I_LUPA = <><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></>
-const I_ESCUDO = <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></>
-const I_CELULAR = <><rect x="6" y="2" width="12" height="20" rx="3" /><path d="M11 18h2" /></>
-const I_CHECK = <path d="M20 6 9 17l-5-5" />
-
+/* ═══════════════════════════════════════════════════════════════════════ */
 export default function V2Page() {
-  const parado = useReducedMotion()
+  const [preso, setPreso] = useState(false)
+  const [faqAberta, setFaqAberta] = useState(0)
+
+  useEffect(() => {
+    const aoRolar = () => setPreso(window.scrollY > 16)
+    aoRolar()
+    window.addEventListener('scroll', aoRolar, { passive: true })
+    return () => window.removeEventListener('scroll', aoRolar)
+  }, [])
 
   return (
     <main className="nv2">
       <EstiloV2 />
 
-      {/* ── cabeçalho ── */}
-      <header style={{
-        position: 'sticky', top: 0, zIndex: 20,
-        background: 'rgba(240,240,243,0.82)', backdropFilter: 'blur(14px)',
-        borderBottom: '1px solid var(--b1)',
-      }}>
-        <div className="nv2-larg" style={{ display: 'flex', alignItems: 'center', gap: 14, height: 62 }}>
-          <Link href="/" aria-label="NexControl — página inicial" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <img src="/brand/nex-mark.png" alt="" width={30} height={30} style={{ width: 30, height: 30, objectFit: 'contain', display: 'block' }} />
-            <span style={{ fontSize: 16.5, fontWeight: 900, letterSpacing: '-0.045em', color: 'var(--t1)' }}>NEXCONTROL</span>
-            <span className="nv2-branco" style={{
-              fontSize: 9, fontWeight: 900, letterSpacing: '0.04em', padding: '4px 7px', borderRadius: 30,
-              background: `linear-gradient(135deg, ${RED2}, ${RED})`,
-            }}>2.0</span>
+      {/* ═══ 01 · CABEÇALHO ═══════════════════════════════════════════ */}
+      <header className="nv2-topo" data-preso={preso ? '1' : '0'}>
+        <div className="nv2-larg nv2-topo-in">
+          <Link href="/v2" className="nv2-marca" aria-label="Nex Control 2.0">
+            <Image src="/brand/nex-v2.png" alt="" width={28} height={28} priority
+              style={{ width: 28, height: 28, objectFit: 'contain' }} />
+            <span className="nv2-marca-nome">Nex Control</span>
+            <span className="nv2-marca-v nv2-esconde-mob">2.0</span>
           </Link>
-          <span style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-            <Link href="/" className="nv2-esconde-mob" style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--t2)', textDecoration: 'none' }}>
-              Site
-            </Link>
-            <Link href="/login" style={{
-              fontSize: 13.5, fontWeight: 800, color: '#fff', textDecoration: 'none',
-              padding: '9px 18px', borderRadius: 30,
-              background: `linear-gradient(135deg, ${RED2}, ${RED})`,
-              boxShadow: '0 8px 20px rgba(229,57,31,0.26)',
-            }} className="nv2-branco">Entrar</Link>
-          </span>
+
+          <nav className="nv2-nav" aria-label="Seções">
+            <a href="#produto">Produto</a>
+            <a href="#recursos">Recursos</a>
+            <a href="#equipes">Para equipes</a>
+            <a href="#precos">Preços</a>
+          </nav>
+
+          <div className="nv2-topo-acoes">
+            <Botao href="/login" tipo="fant">Entrar</Botao>
+            <Botao href="/signup" tipo="lime">Começar agora</Botao>
+          </div>
         </div>
       </header>
 
-      {/* ── herói ── */}
-      <section style={{ padding: '58px 0 0' }}>
-        <div className="nv2-larg nv2-heroi">
-          <div>
-            <Selo>NOVA VERSÃO</Selo>
-            <h1 className="nv2-h1" style={{
-              fontSize: 52, fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 1.03,
-              color: 'var(--t1)', margin: '18px 0 16px',
-            }}>
-              O mesmo controle.<br />Outra clareza.
-            </h1>
-            <p style={{ fontSize: 16.5, color: 'var(--t2)', lineHeight: 1.6, margin: '0 0 28px', maxWidth: 480 }}>
-              O NexControl 2.0 é o painel inteiro redesenhado: fundo claro, cartões que
-              contam o que aconteceu e menos cliques entre você e o número que importa.
-              Nenhuma função saiu do lugar.
-            </p>
-            <div className="nv2-cta-col" style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <Link href="/login" className="nv2-branco" style={{
-                display: 'inline-flex', alignItems: 'center', gap: 9, padding: '14px 26px', borderRadius: 30,
-                fontSize: 14.5, fontWeight: 800, textDecoration: 'none',
-                background: `linear-gradient(135deg, ${RED2}, ${RED})`,
-                boxShadow: '0 12px 30px rgba(229,57,31,0.3)',
-              }}>
-                Entrar no painel
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-              </Link>
-              <a href="#mudou" style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 22px', borderRadius: 30,
-                fontSize: 14, fontWeight: 700, textDecoration: 'none',
-                color: 'var(--t1)', background: 'var(--surface)', border: '1px solid var(--b2)',
-              }}>Ver o que mudou</a>
-            </div>
+      {/* ═══ 02 · HERO ════════════════════════════════════════════════ */}
+      <section className="nv2-hero">
+        <div className="nv2-n nv2-esconde-mob" style={{ top: -60, right: -180, width: 620 }} aria-hidden>
+          <Image src="/brand/nex-v2.png" alt="" width={620} height={620} priority />
+        </div>
+
+        <div className="nv2-larg nv2-hero-grid" style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ maxWidth: 780 }}>
+            <Revelar y={12}><Olho>Nex Control 2.0 — disponível agora</Olho></Revelar>
+
+            <Revelar atraso={0.07}>
+              <h1 className="nv2-h1" style={{ marginTop: 22 }}>
+                Sua operação inteira.<br />Agora sob controle.
+              </h1>
+            </Revelar>
+
+            <Revelar atraso={0.14}>
+              <p className="nv2-lead" style={{ marginTop: 24 }}>
+                Operadores, metas, depósitos, saques, custos e resultados em uma única
+                plataforma criada para operações CPA.
+              </p>
+            </Revelar>
+
+            <Revelar atraso={0.21}>
+              <div className="nv2-cta-col" style={{ display: 'flex', gap: 10, marginTop: 34, flexWrap: 'wrap' }}>
+                <Botao href="/signup" tipo="lime" grande seta>Começar agora</Botao>
+                <Botao href="#produto" tipo="linha" grande>Explorar a plataforma</Botao>
+              </div>
+            </Revelar>
+
+            <Revelar atraso={0.28}>
+              <div className="nv2-provas" style={{ marginTop: 26 }}>
+                <span className="nv2-prova"><i />Dados em tempo real</span>
+                <span className="nv2-prova"><i />Ativação imediata</span>
+                <span className="nv2-prova"><i />Sem fidelidade</span>
+              </div>
+            </Revelar>
           </div>
 
-          <motion.div
-            initial={parado ? false : { opacity: 0, scale: 0.97 }}
-            animate={parado ? {} : { opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, ease: MOLA }}
-            className="nv2-cartao"
-            style={{ padding: 16, boxShadow: '0 1px 2px rgba(0,0,0,0.05), 0 30px 70px rgba(0,0,0,0.13)' }}>
-            <PainelIlustrado parado={parado} />
-          </motion.div>
+          {/* o produto sangra pela direita: o corte sugere que há mais
+              sistema do que cabe na tela */}
+          <Revelar atraso={0.2} y={26} className="nv2-palco nv2-palco-bleed">
+            <Image
+              src="/landing/v2/painel.png"
+              alt="Painel da Nex Control: lucro consolidado do mês, metas fechadas, resultado da semana e movimento da operação"
+              width={3200} height={2000} priority
+              sizes="(max-width: 768px) 130vw, 1180px"
+            />
+          </Revelar>
         </div>
       </section>
 
-      {/* ── o que mudou ── */}
-      <Secao
-        id="mudou"
-        olho="O QUE MUDOU"
-        titulo="Nove mudanças que você sente no primeiro minuto"
-        apoio="Tudo listado aqui já está no ar. Nada é plano futuro."
-      >
-        <div className="nv2-grade3">
-          <Card parado={parado} icone={I_JANELA} atraso={0}
-            titulo="O painel ficou claro"
-            texto="As 21 telas do painel foram redesenhadas em cartões: superfície branca, cantos largos e um respiro que deixa o número principal aparecer sozinho." />
-          <Card parado={parado} icone={I_LUA} atraso={0.05}
-            titulo="Nex Noir, se preferir escuro"
-            texto="O escuro deixou de ser o único jeito e virou escolha sua. Não é o tema antigo de volta: é o mesmo desenho novo, com as superfícies invertidas." />
-          <Card parado={parado} icone={I_MENU} atraso={0.1}
-            titulo="O menu sai da frente"
-            texto="A barra lateral fica recolhida em ícones e abre com os nomes quando o mouse chega perto. As abas viraram uma barra flutuante embaixo." />
-          <Card parado={parado} icone={I_TECLA} atraso={0}
-            titulo="Ctrl+K e atalhos"
-            texto="Uma busca de comandos abre em qualquer tela. G mais uma letra pula entre módulos, N cria meta, ? mostra a lista inteira." />
-          <Card parado={parado} icone={I_GRAFICO} atraso={0.05}
-            titulo="Cartões que contam a história"
-            texto="Rosca de concentração, pódio da equipe, calendário de calor dos últimos 30 dias, curva de tendência e um termômetro do que precisa de atenção." />
-          <Card parado={parado} icone={I_PASSOS} atraso={0.1}
-            titulo="Criar meta em três passos"
-            texto="A criação virou um passo a passo, e o fechamento ganhou uma tela de conclusão — o momento em que o lucro final aparece." />
-          <Card parado={parado} icone={I_LUPA} atraso={0}
-            titulo="Busca em toda lista longa"
-            texto="Qualquer lista com mais de oito linhas ganha um campo de busca. Ele ignora acento: procurar por “joao” acha “João”." />
-          <Card parado={parado} icone={I_ESCUDO} atraso={0.05}
-            titulo="Confirmações de verdade"
-            texto="As caixas cinzas do navegador saíram. No lugar, uma confirmação que diz o que vai ser apagado, e avisos com botão de desfazer." />
-          <Card parado={parado} icone={I_CELULAR} atraso={0.1}
-            titulo="No celular, barra de baixo"
-            texto="No telefone a barra de abas desce para o rodapé — o lugar onde o polegar alcança e onde todo aplicativo põe." />
-        </div>
-      </Secao>
-
-      {/* ── o que NÃO mudou ── */}
-      <Secao
-        olho="O QUE NÃO MUDOU"
-        titulo="Nada saiu do lugar"
-        apoio="A parte mais importante de um redesenho é o que ele preserva."
-      >
-        <div className="nv2-cartao" style={{ padding: '28px 26px' }}>
-          {[
-            ['Seus dados', 'Metas, remessas, operadores, custos e histórico continuam exatamente os mesmos. Nada foi migrado, convertido ou recalculado.'],
-            ['O cálculo do lucro', 'A fórmula do lucro final não foi tocada. Resultado das remessas mais salário e baú, menos custo fixo e taxa de agente.'],
-            ['Cada função', 'Convite, folha de pagamento, configurações de equipe, lixeira, planilha do dia, premiações e Aulas VIP continuam onde estavam.'],
-            ['O que o operador vê', 'Operador continua sem enxergar salário, baú e lucro final. A regra de quem vê o quê é a mesma.'],
-          ].map(([t, d], i) => (
-            <motion.div key={t}
-              initial={parado ? false : { opacity: 0, x: -10 }}
-              whileInView={parado ? {} : { opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.06, ease: MOLA }}
-              style={{
-                display: 'flex', alignItems: 'flex-start', gap: 14,
-                padding: '16px 0', borderBottom: i < 3 ? '1px solid var(--b1)' : 'none',
-              }}>
-              <span style={{
-                width: 26, height: 26, borderRadius: 9, flexShrink: 0, marginTop: 1,
-                background: 'var(--profit-dim)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              }}><Ico d={I_CHECK} c="var(--profit)" s={15} /></span>
-              <span>
-                <strong style={{ display: 'block', fontSize: 14.5, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.01em' }}>{t}</strong>
-                <span style={{ display: 'block', fontSize: 13.5, color: 'var(--t2)', lineHeight: 1.55, marginTop: 3 }}>{d}</span>
-              </span>
-            </motion.div>
-          ))}
-        </div>
-      </Secao>
-
-      {/* ── liberação ── */}
-      <Secao
-        olho="LIBERAÇÃO"
-        titulo="Está saindo aos poucos"
-        apoio="O 2.0 está sendo liberado por conta, não de uma vez. Enquanto a sua não entra, o painel continua funcionando normalmente do jeito que você conhece — nada quebra e nada some."
-      >
-        <div className="nv2-grade2">
-          <div className="nv2-cartao" style={{ padding: 22 }}>
-            <p style={{ fontFamily: 'var(--mono)', fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--brand)', margin: '0 0 10px' }}>JÁ NO AR PRA TODO MUNDO</p>
-            <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: 0, lineHeight: 1.6 }}>
-              As telas de entrada — login, cadastro, redefinir senha e aceitar convite —
-              e a central de notificações já estão no visual novo para todas as contas.
-            </p>
-          </div>
-          <div className="nv2-cartao" style={{ padding: 22 }}>
-            <p style={{ fontFamily: 'var(--mono)', fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--t3)', margin: '0 0 10px' }}>CHEGANDO POR CONTA</p>
-            <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: 0, lineHeight: 1.6 }}>
-              O painel completo está em liberação gradual. Quando chegar na sua conta,
-              você vê a mudança ao entrar — não precisa fazer nada, instalar nada
-              nem atualizar nada.
-            </p>
-          </div>
-        </div>
-      </Secao>
-
-      {/* ── fechamento ── */}
-      <section style={{ padding: '72px 0 84px' }}>
+      {/* ═══ 03 · NÚMEROS ═════════════════════════════════════════════ */}
+      <section className="nv2-sec nv2-sec--curta">
         <div className="nv2-larg">
-          <div style={{
-            borderRadius: 26, padding: '46px 34px', textAlign: 'center',
-            background: `linear-gradient(135deg, ${RED2}, ${RED})`,
-            boxShadow: '0 20px 50px rgba(229,57,31,0.28)',
-          }}>
-            <h2 className="nv2-branco nv2-h2" style={{ fontSize: 31, fontWeight: 800, letterSpacing: '-0.04em', margin: '0 0 10px', lineHeight: 1.1 }}>
-              Entre e veja onde a sua conta está
-            </h2>
-            <p className="nv2-branco" style={{ fontSize: 15, margin: '0 0 26px', opacity: 0.9, lineHeight: 1.55 }}>
-              Se o 2.0 já chegou, ele aparece na hora que você entrar.
-            </p>
-            <Link href="/login" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 9, padding: '14px 30px', borderRadius: 30,
-              fontSize: 14.5, fontWeight: 800, textDecoration: 'none',
-              color: '#15151a', background: '#ffffff',
-              boxShadow: '0 12px 30px rgba(0,0,0,0.18)',
-            }}>
-              Entrar no painel
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#15151a" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-            </Link>
+          <div className="nv2-nums nv2-regua">
+            {NUMEROS.map((n, i) => (
+              <Revelar key={n.rotulo} atraso={i * 0.08} className="nv2-num">
+                <b><Contador valor={n.valor} antes={n.antes} depois={n.depois} /></b>
+                <span>{n.rotulo}</span>
+              </Revelar>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── rodapé ── */}
-      <footer style={{ borderTop: '1px solid var(--b1)', padding: '26px 0 40px' }}>
-        <div className="nv2-larg" style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 12.5, color: 'var(--t3)' }}>NexControl · nexcpa.com.br</span>
-          <span style={{ marginLeft: 'auto', display: 'inline-flex', gap: 18 }}>
-            <Link href="/" style={{ fontSize: 12.5, color: 'var(--t3)', textDecoration: 'none' }}>Site</Link>
-            <Link href="/termos" style={{ fontSize: 12.5, color: 'var(--t3)', textDecoration: 'none' }}>Termos</Link>
-            <Link href="/privacidade" style={{ fontSize: 12.5, color: 'var(--t3)', textDecoration: 'none' }}>Privacidade</Link>
+      {/* ═══ 04 · VISÃO GERAL (produto real, grande) ══════════════════ */}
+      <section className="nv2-sec" id="produto">
+        <div className="nv2-larg">
+          <Cabeca
+            olho="Visão geral"
+            titulo={<>Veja tudo.<br />Sem perguntar para ninguém.</>}
+            lead="Abra a Nex Control e saiba exatamente o que está acontecendo na sua operação."
+          />
+
+          <Revelar atraso={0.12} y={26} style={{ marginTop: 52 }}>
+            <figure className="nv2-card" style={{ padding: 0 }}>
+              <Image
+                src="/landing/v2/faturamento.png"
+                alt="Tela de faturamento da Nex Control: lucro final do período, retorno das remessas, evolução por dia e resumo de como o resultado se formou"
+                width={3200} height={2000}
+                sizes="(max-width: 768px) 100vw, 1180px"
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+            </figure>
+          </Revelar>
+
+          <ul className="nv2-bento" style={{ marginTop: 14 }}>
+            {[
+              ['Lucro consolidado', 'O resultado do período já com salário, baú e custos descontados.'],
+              ['Metas fechadas', 'Quantas operações foram encerradas e o que cada uma trouxe.'],
+              ['Equipe ativa', 'Quem está operando e quanto cada um gerou.'],
+              ['Movimento da operação', 'Depositado, sacado e custos lado a lado, no mesmo cartão.'],
+            ].map(([t, d], i) => (
+              <Revelar key={t} atraso={i * 0.06} as="li" className="nv2-card nv2-card-pad col3" style={{ gridColumn: 'span 3' }}>
+                <h3 className="nv2-h3">{t}</h3>
+                <p className="nv2-corpo" style={{ marginTop: 7 }}>{d}</p>
+              </Revelar>
+            ))}
+          </ul>
+
+          <Revelar atraso={0.1} style={{ marginTop: 40 }}>
+            <Botao href="/signup" tipo="lime" grande seta>Começar agora</Botao>
+          </Revelar>
+        </div>
+      </section>
+
+      {/* ═══ 05 · PROBLEMA (editorial: só tipografia) ═════════════════ */}
+      <section className="nv2-sec">
+        <div className="nv2-larg">
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.1fr) minmax(0,1fr)', gap: 48, alignItems: 'start' }}
+            className="nv2-prob-grid">
+            <Revelar>
+              <h2 className="nv2-h2">
+                Planilha não é<br />sistema operacional.
+              </h2>
+            </Revelar>
+            <Revelar atraso={0.1}>
+              <p className="nv2-lead">
+                Quando a operação cresce, WhatsApp, planilha e conta manual começam
+                a esconder informação.
+              </p>
+            </Revelar>
+          </div>
+
+          <div className="nv2-frases nv2-regua" style={{ marginTop: 64 }}>
+            {[
+              'Você não deveria perguntar quanto a operação fez.',
+              'Você não deveria somar depósito no fim do dia.',
+              'Você não deveria descobrir um problema quando já aconteceu.',
+            ].map((f, i) => (
+              <Revelar key={f} atraso={i * 0.1} as="p">{f}</Revelar>
+            ))}
+          </div>
+
+          <Revelar atraso={0.1}>
+            <p className="nv2-lead" style={{ marginTop: 40 }}>
+              Foi para isso que construímos a Nex Control.
+            </p>
+          </Revelar>
+        </div>
+      </section>
+
+      {/* ═══ 06 · BENTO DE FUNCIONALIDADES ════════════════════════════ */}
+      <section className="nv2-sec" id="recursos">
+        <div className="nv2-larg">
+          <Cabeca
+            olho="Recursos"
+            titulo="O que a operação precisa, junto."
+            lead="Cada parte da operação tem o seu lugar — e todas falam a mesma língua."
+          />
+
+          <div className="nv2-bento" style={{ marginTop: 52 }}>
+            {/* cartão principal: recorte real do "Movimento da operação" */}
+            <Revelar className="nv2-card col4" style={{ gridColumn: 'span 4' }}>
+              <div className="nv2-card-pad">
+                <Olho ponto={false}>Financeiro em tempo real</Olho>
+                <h3 className="nv2-h2" style={{ fontSize: 'clamp(24px,2.6vw,32px)', marginTop: 16 }}>
+                  Depósitos. Saques. Custos. Lucro.<br />Tudo no mesmo lugar.
+                </h3>
+                <p className="nv2-corpo" style={{ marginTop: 14, maxWidth: '46ch' }}>
+                  O dinheiro que entra, o que sai e o que sobra — calculado pela mesma
+                  fórmula que fecha a meta, sem conferência paralela.
+                </p>
+              </div>
+              {/* recorte da própria interface, não ilustração */}
+              <div style={{ margin: '0 0 0 26px', borderRadius: '14px 0 0 0', overflow: 'hidden', border: '1px solid var(--linha)', borderRight: 'none', borderBottom: 'none' }}>
+                <Image
+                  src="/landing/v2/painel.png"
+                  alt="Cartão Movimento da operação, com depositado, sacado e custos"
+                  width={3200} height={2000}
+                  sizes="(max-width: 768px) 100vw, 760px"
+                  style={{ width: '215%', height: 'auto', display: 'block', marginLeft: '-104%', marginTop: '-47%' }}
+                />
+              </div>
+            </Revelar>
+
+            <Revelar atraso={0.06} className="nv2-card nv2-card-pad col2" style={{ gridColumn: 'span 2' }}>
+              <span style={{ color: 'var(--lime)' }}><Ico d={I.alvo} s={20} /></span>
+              <h3 className="nv2-h3" style={{ marginTop: 16 }}>Metas</h3>
+              <p className="nv2-corpo" style={{ marginTop: 7 }}>
+                Crie, acompanhe e finalize metas sem depender de controle manual.
+              </p>
+            </Revelar>
+
+            {[
+              [I.equipe, 'Operadores', 'Acompanhe a equipe e a operação individualmente.'],
+              [I.troeu, 'Ranking', 'Performance transformada em dado.'],
+              [I.rede, 'Redes', 'Organize as redes da operação em um único ambiente.'],
+              [I.relato, 'Relatórios', 'Entenda o que aconteceu por período sem montar planilhas manualmente.'],
+            ].map(([ico, t, d], i) => (
+              <Revelar key={t} atraso={0.1 + i * 0.05} className="nv2-card nv2-card-pad col3"
+                style={{ gridColumn: i < 2 ? 'span 3' : 'span 3' }}>
+                <span style={{ color: 'var(--lime)' }}><Ico d={ico} s={20} /></span>
+                <h3 className="nv2-h3" style={{ marginTop: 16 }}>{t}</h3>
+                <p className="nv2-corpo" style={{ marginTop: 7 }}>{d}</p>
+              </Revelar>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 07 · EQUIPES ═════════════════════════════════════════════ */}
+      <section className="nv2-sec" id="equipes">
+        <div className="nv2-larg">
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1.15fr)', gap: 56, alignItems: 'center' }}
+            className="nv2-eq-grid">
+            <div>
+              <Cabeca
+                olho="Para equipes"
+                titulo={<>De 1 a 20 operadores.<br />A mesma clareza.</>}
+              />
+              <ul className="nv2-marcas" style={{ marginTop: 34 }}>
+                {[
+                  ['Separação de acessos', 'Administrador e operador entram no mesmo sistema e veem coisas diferentes.'],
+                  ['Sem financeiro para o operador', 'Salário, baú e lucro final não aparecem para quem opera.'],
+                  ['Performance individual', 'Metas fechadas, taxa de acerto e depositantes por pessoa.'],
+                  ['Convite por link', 'O operador cria a própria conta e já entra na sua operação.'],
+                  ['Controle do administrador', 'Você decide quem entra, quem sai e o que cada um alcança.'],
+                ].map(([t, d]) => (
+                  <li key={t}><i /><span><b>{t}</b><span>{d}</span></span></li>
+                ))}
+              </ul>
+            </div>
+
+            <Revelar atraso={0.1} y={24} className="nv2-card" style={{ padding: 0 }}>
+              <Image
+                src="/landing/v2/operadores.png"
+                alt="Tela de operadores da Nex Control: lucro gerado pela equipe e ranking por operador com metas e taxa de acerto"
+                width={3200} height={2000}
+                sizes="(max-width: 768px) 100vw, 640px"
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+            </Revelar>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 08 · NEX INTELLIGENCE ════════════════════════════════════ */}
+      <section className="nv2-sec">
+        <div className="nv2-larg">
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 56, alignItems: 'center' }}
+            className="nv2-eq-grid">
+            <div>
+              <Cabeca
+                olho="Nex Intelligence"
+                titulo={<>A operação fala<br />antes do problema crescer.</>}
+                lead="Três regras rodam sobre o que está acontecendo agora e avisam sozinhas. Não é assistente para conversar: é o sistema apontando o que mudou."
+              />
+            </div>
+
+            <Revelar atraso={0.1} className="nv2-card" style={{ padding: 0 }}>
+              {ALERTAS.map((a, i) => (
+                <Revelar key={a.t} atraso={0.16 + i * 0.08} className="nv2-alerta">
+                  <span className="nv2-alerta-ico"><Ico d={a.ico} s={16} /></span>
+                  <span>
+                    <b style={{ display: 'block', fontSize: 14.5, fontWeight: 550, letterSpacing: '-0.01em' }}>{a.t}</b>
+                    <span className="nv2-corpo" style={{ display: 'block', marginTop: 4 }}>{a.d}</span>
+                  </span>
+                </Revelar>
+              ))}
+            </Revelar>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 09 · CAPTURA AUTOMÁTICA ══════════════════════════════════ */}
+      <section className="nv2-sec">
+        <div className="nv2-larg">
+          <Cabeca
+            olho="Automação"
+            titulo={<>Até o depósito<br />entra sozinho.</>}
+            lead="A Nex Control abre uma sessão de captura, lê o valor do depósito e lança na remessa. Você confere em vez de digitar."
+          />
+
+          <Revelar atraso={0.12} style={{ marginTop: 48 }}>
+            <div className="nv2-fluxo">
+              <div className="nv2-fluxo-no">
+                <p className="nv2-mono">01 · Captura</p>
+                <p className="nv2-h3" style={{ marginTop: 10 }}>PIX identificado</p>
+                <p className="nv2-corpo" style={{ marginTop: 6 }}>O valor do depósito é lido na sessão aberta pelo sistema.</p>
+              </div>
+              <span className="nv2-fluxo-seta"><Ico d={SETA} s={18} /></span>
+              <div className="nv2-fluxo-no">
+                <p className="nv2-mono">02 · Lançamento</p>
+                <p className="nv2-h3" style={{ marginTop: 10 }}>Remessa atualizada</p>
+                <p className="nv2-corpo" style={{ marginTop: 6 }}>O valor entra na remessa da meta, sem digitação manual.</p>
+              </div>
+            </div>
+            <p className="nv2-corpo" style={{ marginTop: 18, maxWidth: '62ch' }}>
+              É apoio ao lançamento, não substituição: o administrador continua
+              no controle do que entra na operação.
+            </p>
+          </Revelar>
+        </div>
+      </section>
+
+      {/* ═══ 10 · CELULAR ═════════════════════════════════════════════ */}
+      <section className="nv2-sec">
+        <div className="nv2-larg">
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 56, alignItems: 'center' }}
+            className="nv2-eq-grid">
+            <div>
+              <Cabeca
+                olho="No celular"
+                titulo={<>Sua operação não fica<br />presa no escritório.</>}
+                lead="O painel foi redesenhado para telefone na 2.0: navegação própria embaixo, ação principal no alcance do polegar e notificação no aparelho."
+              />
+              <ul className="nv2-marcas" style={{ marginTop: 32 }}>
+                {[
+                  ['Instala na tela inicial', 'Vira ícone no telefone, sem passar por loja de aplicativo.'],
+                  ['Notificação no aparelho', 'Avisos de operação chegam mesmo com o navegador fechado.'],
+                  ['A mesma operação', 'Não é uma versão reduzida: é o mesmo sistema, desenhado para a mão.'],
+                ].map(([t, d]) => (
+                  <li key={t}><i /><span><b>{t}</b><span>{d}</span></span></li>
+                ))}
+              </ul>
+            </div>
+
+            <Revelar atraso={0.1} y={24} style={{ display: 'flex', justifyContent: 'center' }}>
+              <div className="nv2-fone">
+                <div className="nv2-fone-tela">
+                  <Image
+                    src="/landing/v2/celular.png"
+                    alt="Nex Control no celular: painel com lucro do mês, metas fechadas e meta do dia, com barra de navegação inferior"
+                    width={780} height={1688}
+                    sizes="268px"
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                  />
+                </div>
+              </div>
+            </Revelar>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 11 · ECOSSISTEMA ═════════════════════════════════════════ */}
+      <section className="nv2-sec nv2-sec--curta">
+        <div className="nv2-larg">
+          <Cabeca olho="Ecossistema" titulo="Mais que um dashboard." largura={560} />
+          <div className="nv2-bento" style={{ marginTop: 40 }}>
+            {MODULOS.map((m, i) => (
+              <Revelar key={m.t} atraso={i * 0.06} className="nv2-card nv2-card-pad col2" style={{ gridColumn: 'span 2' }}>
+                <span style={{ color: 'var(--cinza)' }}><Ico d={m.ico} s={19} /></span>
+                <h3 className="nv2-h3" style={{ marginTop: 14 }}>{m.t}</h3>
+                <p className="nv2-corpo" style={{ marginTop: 6 }}>{m.d}</p>
+              </Revelar>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 12 · NEX CONTROL 2.0 (institucional) ═════════════════════ */}
+      <section className="nv2-sec" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div className="nv2-n" style={{ top: '50%', left: '50%', width: 760, transform: 'translate(-50%,-50%)' }} aria-hidden>
+          <Image src="/brand/nex-v2.png" alt="" width={760} height={760} />
+        </div>
+        <div className="nv2-larg" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          <Revelar><Olho ponto={false}>2025 → 2026</Olho></Revelar>
+          <Revelar atraso={0.08}>
+            <h2 className="nv2-h2" style={{ marginTop: 22 }}>
+              Não mudamos apenas<br />a identidade.
+            </h2>
+          </Revelar>
+
+          <div style={{ marginTop: 52, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {['Interface.', 'Performance.', 'Automação.', 'Inteligência.', 'Experiência.'].map((p, i) => (
+              <Revelar key={p} atraso={i * 0.09} y={14}>
+                <p className="nv2-h2" style={{ fontSize: 'clamp(26px,3.6vw,44px)', color: 'var(--cinza)' }}>{p}</p>
+              </Revelar>
+            ))}
+          </div>
+
+          <Revelar atraso={0.2} style={{ marginTop: 52 }}>
+            <p className="nv2-h2">Reconstruímos a Nex.</p>
+            <p className="nv2-mono" style={{ marginTop: 20 }}>Nex Control / Version 2.0</p>
+          </Revelar>
+        </div>
+      </section>
+
+      {/* ═══ 13 · PREÇOS ══════════════════════════════════════════════ */}
+      <section className="nv2-sec" id="precos">
+        <div className="nv2-larg">
+          <Cabeca
+            olho="Preços"
+            titulo="Um plano. Cresce com a equipe."
+            lead="Você paga a plataforma e cada operador que adicionar. Quanto maior a equipe, menor o preço por operador."
+            largura={620}
+          />
+
+          <Revelar atraso={0.12} style={{ marginTop: 46, maxWidth: 560 }}>
+            <div className="nv2-card nv2-card-pad" style={{ padding: 34 }}>
+              <p className="nv2-mono">Nex Control</p>
+
+              <div className="nv2-preco" style={{ marginTop: 20 }}>
+                <b>R$ {moeda(BASE_PRICE)}</b>
+                <span>/mês</span>
+              </div>
+              <p className="nv2-corpo" style={{ marginTop: 10 }}>
+                + R$ {moeda(OP_BASE_PRICE)} por operador, com desconto progressivo
+                a partir do segundo.
+              </p>
+
+              <ul className="nv2-marcas" style={{ marginTop: 26 }}>
+                {[
+                  'Metas, remessas e fechamento com lucro final calculado',
+                  'Operadores com acesso separado do administrador',
+                  'Faturamento, custos, redes e relatórios por período',
+                  'Ranking da equipe e acompanhamento individual',
+                  'Alertas de operação e notificação no celular',
+                  'Captura de depósito e painel instalável no telefone',
+                ].map(t => (
+                  <li key={t}><i /><span><b style={{ fontWeight: 450 }}>{t}</b></span></li>
+                ))}
+              </ul>
+
+              <div style={{ marginTop: 28 }}>
+                <Botao href="/signup" tipo="lime" grande seta className="nv2-btn-bloco">Começar agora</Botao>
+              </div>
+
+              <div className="nv2-provas" style={{ marginTop: 20 }}>
+                <span className="nv2-prova"><i />Pagamento via PIX</span>
+                <span className="nv2-prova"><i />Ativação imediata</span>
+                <span className="nv2-prova"><i />Sem fidelidade</span>
+              </div>
+            </div>
+          </Revelar>
+        </div>
+      </section>
+
+      {/* ═══ 14 · FAQ ═════════════════════════════════════════════════ */}
+      <section className="nv2-sec nv2-sec--curta">
+        <div className="nv2-larg">
+          <Cabeca olho="Dúvidas" titulo="Perguntas diretas." largura={560} />
+          <div style={{ marginTop: 40, maxWidth: 800 }}>
+            {FAQ.map((f, i) => (
+              <Pergunta key={f.q} q={f.q} aberta={faqAberta === i}
+                aoAbrir={() => setFaqAberta(faqAberta === i ? -1 : i)}>
+                {f.r}
+              </Pergunta>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 15 · FECHAMENTO ══════════════════════════════════════════ */}
+      <section className="nv2-sec" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div className="nv2-n" style={{ bottom: -240, left: '50%', width: 900, transform: 'translateX(-50%)' }} aria-hidden>
+          <Image src="/brand/nex-v2.png" alt="" width={900} height={900} />
+        </div>
+        <div className="nv2-larg" style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          <Revelar><Olho>Nex Control 2.0</Olho></Revelar>
+          <Revelar atraso={0.08}>
+            <h2 className="nv2-h2" style={{ marginTop: 22, fontSize: 'clamp(30px,5vw,58px)' }}>
+              Você já tem uma operação.<br />Agora tenha controle sobre ela.
+            </h2>
+          </Revelar>
+          <Revelar atraso={0.16} style={{ marginTop: 36 }}>
+            <Botao href="/signup" tipo="lime" grande seta>Começar agora</Botao>
+          </Revelar>
+          <Revelar atraso={0.22}>
+            <div className="nv2-provas" style={{ marginTop: 22, justifyContent: 'center' }}>
+              <span className="nv2-prova"><i />PIX</span>
+              <span className="nv2-prova"><i />Ativação imediata</span>
+              <span className="nv2-prova"><i />Sem fidelidade</span>
+            </div>
+          </Revelar>
+        </div>
+      </section>
+
+      {/* ═══ 16 · RODAPÉ ══════════════════════════════════════════════ */}
+      <footer className="nv2-rod">
+        <div className="nv2-larg nv2-rod-in">
+          <span className="nv2-marca">
+            <Image src="/brand/nex-v2.png" alt="" width={22} height={22}
+              style={{ width: 22, height: 22, objectFit: 'contain' }} />
+            <span className="nv2-marca-nome" style={{ fontSize: 14 }}>Nex Control</span>
           </span>
+          <nav className="nv2-rod-links" aria-label="Rodapé">
+            <a href="#produto">Produto</a>
+            <Link href="/termos">Termos</Link>
+            <Link href="/privacidade">Privacidade</Link>
+            <Link href="/login">Entrar</Link>
+          </nav>
+        </div>
+        <div className="nv2-larg" style={{ marginTop: 26 }}>
+          <p className="nv2-mono">© {new Date().getFullYear()} Nex Control · nexcpa.com.br</p>
         </div>
       </footer>
     </main>

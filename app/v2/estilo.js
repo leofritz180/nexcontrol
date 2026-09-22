@@ -304,8 +304,20 @@ export default function EstiloV2() {
         .nv2-bento > .col6, .nv2-bento > .col4, .nv2-bento > .col3, .nv2-bento > .col2 { grid-column: span 1; }
         .nv2-card-pad { padding: 20px; }
         .nv2-frases p { font-size: clamp(21px, 6.6vw, 28px); padding: 22px 0; }
-        .nv2-palco { border-radius: 12px 0 0 12px; }
+        /* A captura tinha 235px de altura no telefone: a tela inteira
+           reduzida a uma miniatura, que e o oposto de impressionar. Aqui ela
+           vira um RECORTE grande — 430px de altura, enquadrado no canto de
+           cima a esquerda, onde ficam o menu e o numero do lucro. Corta de
+           proposito: o corte sugere que tem mais sistema do que cabe. */
+        .nv2-palco { border-radius: 12px 0 0 12px; height: 430px; }
+        .nv2-palco img { height: 100%; object-fit: cover; object-position: 0% 0%; }
         .nv2-palco-bleed { margin-right: -20px; }
+
+        /* cabecalho: no telefone sobra espaco pra UMA acao. "Entrar" continua
+           alcancavel no rodape e no fim da pagina. */
+        .nv2-topo .nv2-btn--fant { display: none; }
+        .nv2-topo .nv2-marca-nome { font-size: 14.5px; }
+        .nv2-topo .nv2-btn--lime { height: 38px; padding: 0 16px; font-size: 13.5px; }
         .nv2-fluxo-no { flex: 1 1 100%; border-radius: 14px !important; border-left: 1px solid var(--linha) !important; }
         .nv2-fluxo-seta { transform: rotate(90deg); padding: 8px 0; width: 100%; }
         .nv2-recorte { margin-left: 20px; height: 132px; }

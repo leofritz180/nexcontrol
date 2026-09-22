@@ -2500,6 +2500,12 @@ html, body { max-width: 100vw; overflow-x: hidden; }
     background: #ffffff !important; color: #15151a !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
   }
+  /* No Noir a aba ativa e branca por cima da barra preta, entao o texto tem
+     que ser escuro. A regra do Noir pinta os ativos de BRANCO (la no desktop
+     a pilula e escura) e tem duas classes de especificidade — sem esta, o
+     rotulo da aba ativa sumia: branco sobre branco. */
+  .nx-bento.nx-noir .tabs-scroll button[data-active="true"],
+  .nx-bento.nx-noir .tabs-scroll button[data-active="true"] svg { color: #15151a !important; }
 
   /* ── BOTAO DE ACAO VIRA FLUTUANTE ───────────────────────────────────────
      No desktop a acao principal (Nova meta, Novo custo, Convidar) e um botao

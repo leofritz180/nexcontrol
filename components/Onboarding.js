@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { NexIcon } from './Logo'
 import { afterVoiceBanner } from '../lib/onboardingSeq'
+import { useOverlaySlot } from '../lib/overlayCoordinator'
 
 const KEY = 'nexcontrol_onboarded'
 
@@ -46,7 +47,10 @@ export default function Onboarding() {
     setStep(4)
   }
 
-  if (step === -1 || step === 4) return null
+  const querAparecer = step !== -1 && step !== 4
+  const liberado = useOverlaySlot('onboarding', 0, querAparecer)
+
+  if (!querAparecer || !liberado) return null
 
   const tips = [
     { title:'Lucro em tempo real', desc:'Acompanhe cada centavo da sua operacao. Atualiza a cada 30 segundos.' },

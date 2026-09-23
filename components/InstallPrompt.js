@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import { useOverlaySlot } from '../lib/overlayCoordinator'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const STORAGE_KEY = 'nexcontrol_install_done'
@@ -203,9 +204,11 @@ export default function InstallPrompt() {
   const isIos = device === 'ios'
   const isAndroid = device === 'android'
 
+  const liberado = useOverlaySlot('install', 6, show)
+
   return (
     <AnimatePresence>
-      {show && (
+      {show && liberado && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

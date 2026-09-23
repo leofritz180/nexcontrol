@@ -21,6 +21,11 @@ import { useOverlaySlot } from '../../lib/overlayCoordinator'
 import { SOMBRA, Ico, RED, RED2 } from '../ui/bento'
 
 const CHAVE = 'nx_bemvindo_20_'
+// Chave PROPRIA pro convite do modo escuro. Se ele fosse so mais um passo
+// do bem-vindo, quem ja tinha visto as quatro telas nunca descobriria que o
+// escuro existe — e sao justamente as contas mais antigas. Com chave
+// separada, quem ja passou por aqui recebe SO esta tela, uma vez.
+const CHAVE_NOIR = 'nx_convite_noir_'
 
 const PASSOS = [
   {
@@ -43,9 +48,89 @@ const PASSOS = [
     texto: 'Os cards mostram tendência, comparação com o período anterior e onde o lucro se concentra. E a meta agora tem um ciclo visível: criada, em operação, finalizada, fechada.',
     arte: 'cards',
   },
+  {
+    titulo: 'Prefere no escuro?',
+    texto: 'Toque numa das duas e o painel muda na hora — é o painel de verdade atrás desta janela, não um desenho. Depois você troca quando quiser, pelo menu, lá embaixo.',
+    arte: 'noir',
+  },
 ]
 
+// O passo do escuro tambem se abre SOZINHO, pra quem ja tinha visto o
+// bem-vindo antes dele existir.
+const I_NOIR = PASSOS.length - 1
+
+// ── ESCOLHA DO TEMA, ao vivo ─────────────────────────────────────────────
+// Nao e uma figura do modo escuro: clicar aqui aplica a classe no <html> e
+// o painel inteiro muda atras desta janela. Mostrar uma miniatura seria
+// mais facil e convenceria menos — a graca e ver a propria operacao mudar.
+//
+// A gravacao e a aplicacao seguem o MESMO caminho do botao do menu
+// (localStorage 'nx_noir' + a classe), pra nao existirem duas versoes da
+// verdade sobre o tema.
+function SeletorTema() {
+  const [noir, setNoir] = useState(false)
+  useEffect(() => { try { setNoir(localStorage.getItem('nx_noir') === '1') } catch {} }, [])
+
+  function escolher(escuro) {
+    setNoir(escuro)
+    try { localStorage.setItem('nx_noir', escuro ? '1' : '0') } catch {}
+    try { document.documentElement.classList.toggle('nx-noir', escuro) } catch {}
+  }
+
+  const Amostra = ({ escuro, ativo }) => {
+    const fundo = escuro ? '#0e0e11' : '#f0f0f3'
+    const carta = escuro ? '#17181c' : '#ffffff'
+    const risco = escuro ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.10)'
+    const trilho = escuro ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.06)'
+    return (
+      <button type="button" onClick={() => escolher(escuro)} aria-pressed={ativo}
+        style={{
+          flex: 1, padding: 0, cursor: 'pointer', borderRadius: 16, overflow: 'hidden',
+          background: fundo, textAlign: 'left',
+          border: ativo ? '2px solid ' + RED : '1px solid var(--b2)',
+          boxShadow: ativo ? '0 8px 24px rgba(229,57,31,0.18)' : 'none',
+          transition: 'border-color .18s ease, box-shadow .18s ease',
+        }}>
+        <span style={{ display: 'flex', gap: 5, padding: 9, height: 96 }}>
+          <span style={{ width: 15, borderRadius: 6, background: escuro ? '#1d1e23' : '#131317', display: 'flex', flexDirection: 'column', gap: 3, padding: 4 }}>
+            {[0, 1, 2].map(k => <span key={k} style={{ height: 6, borderRadius: 3, background: k === 1 ? '#fff' : 'rgba(255,255,255,0.22)' }} />)}
+          </span>
+          <span style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <span style={{ height: 34, borderRadius: 7, background: carta, border: '1px solid ' + risco, display: 'block', padding: 6 }}>
+              <span style={{ display: 'block', width: '58%', height: 8, borderRadius: 3, background: escuro ? 'rgba(255,255,255,0.72)' : 'rgba(0,0,0,0.68)' }} />
+              <span style={{ display: 'block', width: '34%', height: 5, borderRadius: 3, background: trilho, marginTop: 5 }} />
+            </span>
+            <span style={{ flex: 1, display: 'flex', gap: 5 }}>
+              <span style={{ flex: 1, borderRadius: 7, background: carta, border: '1px solid ' + risco }} />
+              <span style={{ flex: 1, borderRadius: 7, background: carta, border: '1px solid ' + risco }} />
+            </span>
+          </span>
+        </span>
+        <span style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+          padding: '8px 11px', borderTop: '1px solid ' + risco,
+          fontSize: 11.5, fontWeight: 800, color: escuro ? '#f0f0f3' : '#15151a',
+        }}>
+          {escuro ? 'Escuro' : 'Claro'}
+          <span aria-hidden style={{
+            width: 15, height: 15, borderRadius: '50%', flexShrink: 0,
+            border: ativo ? '5px solid ' + RED : '1.5px solid ' + risco,
+          }} />
+        </span>
+      </button>
+    )
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: 10, width: '100%', marginTop: 16 }}>
+      <Amostra escuro={false} ativo={!noir} />
+      <Amostra escuro ativo={noir} />
+    </div>
+  )
+}
+
 function Arte({ tipo }) {
+  if (tipo === 'noir') return <SeletorTema />
   const base = { background: 'var(--fill-1)', border: '1px solid var(--b1)', borderRadius: 16 }
   if (tipo === 'marca') {
     return (
@@ -131,11 +216,25 @@ export default function BemVindo20({ email, ativo }) {
   const [quer, setQuer] = useState(false)
   const [i, setI] = useState(0)
 
+  // Quem NUNCA viu comeca do zero. Quem ja viu as telas antigas nao repete
+  // tudo: abre direto no convite do escuro, uma vez, e pronto.
+  const [soNoir, setSoNoir] = useState(false)
+
   useEffect(() => {
     if (!ativo || !email) return
     let t
     try {
-      if (localStorage.getItem(CHAVE + String(email).toLowerCase())) return
+      const chave = String(email).toLowerCase()
+      // Quem acabou de se cadastrar nunca viu a 1.0, entao "o painel foi
+      // redesenhado" nao diz nada pra ele — seria apresentar uma mudanca que
+      // ele nao viveu. Pra esse, so o convite do escuro, que e escolha e nao
+      // historico. A bandeira e a mesma que o convite de instalar o app usa.
+      let recemCadastrado = false
+      try { recemCadastrado = !!sessionStorage.getItem('nexcontrol_just_signed_up') } catch {}
+      const viuBemVindo = recemCadastrado || !!localStorage.getItem(CHAVE + chave)
+      const viuNoir = !!localStorage.getItem(CHAVE_NOIR + chave)
+      if (viuBemVindo && viuNoir) return
+      if (viuBemVindo) { setSoNoir(true); setI(I_NOIR) }
       // espera o painel assentar; abrir junto com o carregamento é atropelo
       // 900ms: o tour usa a mesma prioridade e quem pega o slot primeiro
       // segura, entao o bem-vindo precisa chegar antes dele.
@@ -147,7 +246,14 @@ export default function BemVindo20({ email, ativo }) {
   const liberado = useOverlaySlot('bemvindo-20', 1, quer)
 
   function encerrar() {
-    try { localStorage.setItem(CHAVE + String(email).toLowerCase(), '1') } catch {}
+    try {
+      const chave = String(email).toLowerCase()
+      localStorage.setItem(CHAVE + chave, '1')
+      // O convite do escuro so se da por visto se a pessoa CHEGOU nele.
+      // Fechar no segundo passo nao e recusa do tema — e pressa. Assim ele
+      // volta na proxima entrada, em vez de sumir sem nunca ter aparecido.
+      if (soNoir || i >= I_NOIR) localStorage.setItem(CHAVE_NOIR + chave, '1')
+    } catch {}
     setQuer(false)
   }
 
@@ -208,7 +314,7 @@ export default function BemVindo20({ email, ativo }) {
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, marginTop: 26 }}>
               <div style={{ display: 'flex', gap: 6 }}>
-                {PASSOS.map((_, k) => (
+                {(soNoir ? [] : PASSOS).map((_, k) => (
                   <button key={k} type="button" onClick={() => setI(k)} aria-label={`Passo ${k + 1}`}
                     style={{
                       width: k === i ? 22 : 7, height: 7, borderRadius: 4, border: 'none', cursor: 'pointer', padding: 0,
@@ -232,7 +338,7 @@ export default function BemVindo20({ email, ativo }) {
                     border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff',
                     background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)',
                   }}>
-                  {ultimo ? 'Começar' : 'Continuar'}
+                  {soNoir ? 'Pronto' : ultimo ? 'Começar' : 'Continuar'}
                   {!ultimo && <Ico d={<path d="M5 12h14M13 6l6 6-6 6" />} s={15} c="#fff" />}
                 </motion.button>
               </div>

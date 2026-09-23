@@ -286,7 +286,7 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
               {rank.tier === 4 && 'Ouro. Você não é mais iniciante.'}
               {rank.tier === 5 && 'Platina — território de quem opera de verdade.'}
               {rank.tier === 6 && 'Esmeralda. Alto desempenho reconhecido.'}
-              {rank.tier === 7 && 'Safira. Top performer da sua operação.'}
+              {rank.tier === 7 && 'Obsidiana. Top performer da sua operação.'}
               {rank.tier === 8 && 'Rubi. Elite operacional.'}
               {rank.tier === 9 && 'Diamante. Excelência rara.'}
               {rank.tier === 10 && 'Mestre. Você define o padrão.'}

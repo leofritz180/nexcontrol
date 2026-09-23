@@ -616,7 +616,7 @@ function FocusPanel({ rank, contas, currentTier }) {
     4: 'Ouro. Não é mais iniciante — está construindo legado.',
     5: 'Platina. Território de quem opera de verdade.',
     6: 'Esmeralda. Alto desempenho reconhecido pelo time.',
-    7: 'Safira. Top performer da operação.',
+    7: 'Obsidiana. Top performer da operação.',
     8: 'Rubi. Elite operacional — referência.',
     9: 'Diamante. Excelência rara, poucos chegam aqui.',
     10: 'Mestre. Você define o padrão da casa.',

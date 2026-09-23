@@ -1653,83 +1653,7 @@ export default function AdminPage() {
         {/* ── PAGE HEADER — clean ── */}
         {/* No V2 esta faixa sai inteira: o 'Ola, ...' do bento e que abre a
             pagina. O Atualizar foi pro cabecalho do proprio bento. */}
-        {!isNex2(user?.email) && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, ease }}
-          style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom: isRedesign(user?.email)?18:32 }}>
-          <div>
-            <div style={{ display:'flex', alignItems:'center', gap:12, flexWrap:'wrap', marginBottom:4 }}>
-              {!isNex2(user?.email) && (
-                <motion.h1
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.05, ease }}
-                  style={{ fontSize:28, fontWeight:800, letterSpacing:'-0.03em', color:'var(--t1)', margin:0 }}>
-                  Ola, {getName(profile)}
-                </motion.h1>
-              )}
-              {/* Rank do admin = SOMA dos depositantes de TODOS os operadores do tenant
-                  (countTenantDeposits). Owner Darkzin recebe Apex automatico via isApexLocked. */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.92 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: 0.15, ease }}
-              >
-                {!isNex2(user?.email) && (
-                  <RankBadge
-                    contas={countTenantDeposits(metas)}
-                    forceApex={isApexLocked(user?.email || profile?.email)}
-                    size="sm"
-                  />
-                )}
-              </motion.div>
-              {/* Trial chip (Variant B): countdown ao lado do nome */}
-              {billingVariant === 'B' && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.92 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, delay: 0.2, ease }}
-                >
-                  <TrialChip tenant={tenant} sub={sub} user={user} profile={profile} />
-                </motion.div>
-              )}
-            </div>
-            {/* Subtitulo redundante com o banner vermelho do redesign — some la */}
-            {!isRedesign(user?.email) && (
-              <p style={{ fontSize:14, color:'var(--t2)', margin:'0 0 8px', fontWeight:500 }}>
-                Central de operacoes
-              </p>
-            )}
-            <div style={{ display:'flex', alignItems:'center', gap:10, marginTop: isRedesign(user?.email)?6:0 }}>
-              <motion.span
-                style={{ width:6,height:6,borderRadius:'50%',background:'var(--profit)' }}
-                animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.6)','0 0 0 5px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}
-                transition={{ duration:2, repeat:Infinity }}
-              />
-              <span style={{ fontSize:12, color:'var(--t3)' }}>Dados em tempo real</span>
-            </div>
-          </div>
-          <motion.button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="btn btn-brand btn-sm"
-            whileTap={{ scale: 0.96 }}
-            style={{ display:'flex', alignItems:'center', gap:6, opacity: refreshing ? 0.5 : 1 }}>
-            {refreshing ? (
-              <motion.div
-                style={{ width:13,height:13,borderRadius:'50%',border:'2px solid var(--t4)',borderTopColor:'var(--t1)' }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-              />
-            ) : (
-              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
-            )}
-            {refreshing ? 'Atualizando...' : 'Atualizar'}
-          </motion.button>
-        </motion.div>
-        )}
+        
 
         {/* Tour por tab — cada aba dispara seu proprio tour */}
         <TabAwareTour
@@ -2556,7 +2480,7 @@ export default function AdminPage() {
                 </AnimatePresence>
 
                 {/* ░░ MYOPS V2 — operações + insights + timeline (somente leofritz178) ░░ */}
-                {!isNex2(user?.email) && isV2 && renderMyOpsListV2()}
+                
                 {/* Lista de metas (default) */}
                 {!isV2 && (
                 <div data-tour="myops-list" style={{display:'flex',flexDirection:'column',gap:10}}>

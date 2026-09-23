@@ -815,8 +815,10 @@ export function Calor({ rotulo, dias = [], formata = money0, delay = 0.16 }) {
               {dias.map((d, i) => {
                 const v = Number(d.v) || 0
                 const f = Math.min(1, Math.abs(v) / teto)
+                // o dia positivo sobe do lime pastel ate o lime cheio da
+                // identidade 2.0 — a mesma cor da landing, agora no produto
                 const cor = v === 0 ? 'var(--fill-2)'
-                  : v > 0 ? `rgba(63,155,30,${0.18 + f * 0.7})`
+                  : v > 0 ? `color-mix(in srgb, var(--acento, #C8F21D) ${Math.round(22 + f * 78)}%, var(--fill-2))`
                     : `rgba(220,38,38,${0.18 + f * 0.7})`
                 const aceso = alvo?.i === i
                 return (

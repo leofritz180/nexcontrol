@@ -425,7 +425,14 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         />
       </div>
 
-      {/* LINHA 3 — curva + depositado/sacado */}
+      {/* LINHA 3 — O MES INTEIRO DE UMA OLHADA.
+          Largura total de proposito: sao 30 quadrados em fila, e espremido
+          em uma coluna ele virava uma tira apertada que nao encaixava com
+          o vizinho. Fica logo depois da leitura rapida porque responde a
+          pergunta seguinte: "e ao longo do mes, como foi?" */}
+      <Calor rotulo="Os últimos 30 dias" dias={dias30} delay={0.2} />
+
+      {/* LINHA 4 — curva + depositado/sacado */}
       <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '2.1fr 1fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.22 }}>
           <Card pad={24}>
@@ -487,8 +494,8 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
       {/* so aparece quando ha algo a olhar */}
       <Risco itens={alertas} delay={0.28} />
 
-      {/* LINHA 4 — quem puxou o resultado e o mes dia a dia */}
-      <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 14 }}>
+      {/* LINHA 5 — os dois cards de EQUIPE, lado a lado e do mesmo peso */}
+      <div className="ab-par" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
         {melhorOp ? (
           <Destaque
             rotulo="Destaque da equipe"
@@ -506,12 +513,11 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         ) : (
           <Destaque rotulo="Destaque da equipe" titulo="Ainda sem ranking" valor="R$ 0" nota="assim que a equipe fechar metas, o destaque aparece" delay={0.3} />
         )}
-        <Calor rotulo="Os últimos 30 dias" dias={dias30} delay={0.34} />
+        <Podio rotulo="Pódio da equipe" itens={podio} delay={0.36} onAbrir={onVerMetas} />
       </div>
 
-      {/* LINHA 4b — podio da equipe */}
-      <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 14 }}>
-        <Podio rotulo="Podio da equipe" itens={podio} delay={0.36} onAbrir={onVerMetas} />
+      {/* LINHA 6 — distribuicao por operador, largura total */}
+      <div>
         <Barras
           titulo="Lucro por operador"
           dados={[...ranking].sort((a, b) => Number(b.lucroFinal || 0) - Number(a.lucroFinal || 0)).slice(0, 6).map(o => ({
@@ -524,8 +530,8 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         />
       </div>
 
-      {/* LINHA 5 — roscas: concentracao de lucro e situacao das metas */}
-      <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+      {/* LINHA 7 — roscas: concentracao de lucro e situacao das metas */}
+      <div className="ab-par" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.3 }}>
           <Card pad={24}>
             <p style={{ fontSize: 16.5, fontWeight: 800, color: S.t1, margin: '0 0 3px', letterSpacing: '-0.02em' }}>Redes com mais lucro</p>
@@ -542,7 +548,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
         </motion.div>
       </div>
 
-      {/* LINHA 6 — metas + ranking */}
+      {/* LINHA 8 — metas + ranking */}
       <div className="ab-r2" style={{ display: 'grid', gridTemplateColumns: '2.1fr 1fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.34 }}>
           <Card pad={24}>
@@ -598,7 +604,7 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
       </div>
 
       <style>{`
-        @media (max-width: 1000px) { .ab-r1 { grid-template-columns: 1fr 1fr !important; } .ab-r2 { grid-template-columns: 1fr !important; } }
+        @media (max-width: 1000px) { .ab-r1 { grid-template-columns: 1fr 1fr !important; } .ab-r2, .ab-par { grid-template-columns: 1fr !important; } }
         @media (max-width: 600px) { .ab-r1 { grid-template-columns: 1fr !important; } }
       `}</style>
     </div>

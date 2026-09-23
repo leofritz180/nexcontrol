@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 import { networkEnabled, NETWORK_FREE_FOR_ALL, OWNER_EMAIL } from '../lib/network-access'
 
@@ -288,11 +288,24 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
 }
 
 // ── estilos/ícones ──
-const bubbleStyle = { position: 'relative', width: 56, height: 56, borderRadius: '50%', border: 'none', cursor: 'pointer', background: `linear-gradient(135deg, ${BUBBLE}, ${BUBBLE_DARK})`, boxShadow: '0 10px 28px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }
+const bubbleStyle = { position: 'relative', width: 54, height: 54, borderRadius: '50%', border: 'none', cursor: 'pointer', background: `linear-gradient(150deg, ${BUBBLE_DARK}, ${BUBBLE})`, boxShadow: '0 10px 26px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', WebkitTapHighlightColor: 'transparent' }
 const panelStyle = { width: 340, height: 460, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 120px)', borderRadius: 18, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 24px 70px rgba(0,0,0,0.6)' }
 const dockHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderBottom: '1px solid var(--b1)', background: 'rgba(229,57,31,0.06)', flexShrink: 0 }
 const iconBtn = { width: 28, height: 28, borderRadius: 8, border: 'none', background: 'var(--fill-2)', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }
-function Dot() { return <span style={{ position: 'absolute', top: 0, right: 0, width: 16, height: 16, borderRadius: '50%', background: MINT, border: '2px solid #0b0e16', boxShadow: `0 0 8px ${MINT}`, zIndex: 2 }} /> }
+// O aviso de nao lido: um ponto pequeno, com um halo que respira DE LEVE.
+// Ele e a UNICA coisa que se mexe sozinha na bolha, e so quando ha algo pra
+// avisar. Sem motivo, nada se mexe.
+function Dot() {
+  return (
+    <span aria-hidden style={{ position: 'absolute', top: 1, right: 1, width: 13, height: 13, zIndex: 3 }}>
+      <motion.span
+        style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: MINT }}
+        animate={{ scale: [1, 2.1], opacity: [0.45, 0] }}
+        transition={{ duration: 1.9, repeat: Infinity, ease: 'easeOut' }} />
+      <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: MINT, border: '2.5px solid var(--surface, #15151a)' }} />
+    </span>
+  )
+}
 function ChatIcon({ size = 24, color = '#fff' }) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg> }
 function CloseIcon() { return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg> }
 function MinIcon() { return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12" /></svg> }
@@ -300,23 +313,61 @@ function ExpandIcon() { return <svg width={13} height={13} viewBox="0 0 24 24" f
 function ChevronDown({ color = '#fff' }) { return <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.4} strokeLinecap="round"><polyline points="6 9 12 15 18 9" /></svg> }
 function LockIcon() { return <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg> }
 
-// Bolha com pulso/anel pra chamar atenção (para de pulsar quando o painel está aberto).
+// ─────────────────────────────────────────────────────────────────────────
+// A BOLHA DO NETWORK.
+//
+// O QUE ELA ERA: um anel pulsando em laco infinito MAIS o botao inteiro
+// "respirando" (scale 1 -> 1.07 -> 1) pra sempre. Duas animacoes eternas,
+// sem motivo nenhum, na frente de quem esta trabalhando. Isso nao chama
+// atencao — isso implora atencao, e e o que faz uma interface parecer
+// barata.
+//
+// O QUE ELA E AGORA: parada. Peca solida, que responde a INTENCAO em vez
+// de gritar. No hover ela sobe 2px, a sombra abre e um anel fino aparece
+// em volta; no clique ela afunda. O icone troca com uma rotacao curta em
+// vez de sumir e aparecer.
+//
+// A unica coisa que se move sozinha e o ponto verde de mensagem nova — e
+// so quando ha mensagem nova. Movimento tem que ter causa.
+// ─────────────────────────────────────────────────────────────────────────
 function Bubble({ onClick, open, unread, label }) {
+  const parado = useReducedMotion()
   return (
-    <div style={{ position: 'relative', width: 56, height: 56 }}>
-      {!open && (
-        <motion.span aria-hidden
-          style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: BUBBLE, zIndex: 0 }}
-          animate={{ scale: [1, 1.75], opacity: [0.5, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }} />
-      )}
-      <motion.button onClick={onClick} aria-label={label} style={{ ...bubbleStyle, position: 'relative', zIndex: 1 }}
-        whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.94 }}
-        animate={open ? { scale: 1 } : { scale: [1, 1.07, 1] }}
-        transition={open ? { duration: 0.2 } : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}>
-        {open ? <ChevronDown color="#fff" /> : <ChatIcon color="#fff" />}
-        {!open && unread && <Dot />}
-      </motion.button>
-    </div>
+    <motion.button
+      type="button" onClick={onClick} aria-label={label}
+      initial={false}
+      whileHover={parado ? undefined : { y: -2, boxShadow: '0 16px 38px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.16)' }}
+      whileTap={parado ? undefined : { y: 0, scale: 0.96 }}
+      transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+      style={{ ...bubbleStyle, position: 'relative', zIndex: 1 }}
+    >
+      {/* anel de contorno: nasce no hover, some no repouso */}
+      <motion.span aria-hidden
+        initial={false}
+        variants={{ repouso: { opacity: 0, scale: 0.94 }, sobre: { opacity: 1, scale: 1 } }}
+        style={{
+          position: 'absolute', inset: -5, borderRadius: '50%',
+          border: '1px solid rgba(255,255,255,0.18)', pointerEvents: 'none',
+        }} />
+
+      {/* brilho superior fixo: da volume sem se mexer */}
+      <span aria-hidden style={{
+        position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
+        background: 'radial-gradient(120% 90% at 32% 12%, rgba(255,255,255,0.16), transparent 58%)',
+      }} />
+
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span key={open ? 'fecha' : 'abre'}
+          initial={parado ? false : { opacity: 0, rotate: open ? -35 : 35, scale: 0.8 }}
+          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          exit={parado ? undefined : { opacity: 0, rotate: open ? 35 : -35, scale: 0.8 }}
+          transition={{ duration: 0.16, ease: [0.33, 1, 0.68, 1] }}
+          style={{ display: 'flex', position: 'relative', zIndex: 2 }}>
+          {open ? <ChevronDown color="#fff" /> : <ChatIcon color="#fff" />}
+        </motion.span>
+      </AnimatePresence>
+
+      {!open && unread && <Dot />}
+    </motion.button>
   )
 }

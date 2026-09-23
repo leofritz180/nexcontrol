@@ -1653,6 +1653,14 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   --brand-dim:    rgba(229,57,31,0.09);
   --brand-glow:   rgba(229,57,31,0.16);
   --brand-border: rgba(229,57,31,0.26);
+  /* ACENTO 2.0 — o mesmo lime da landing /v2. Ele nao existia no painel,
+     e por isso produto e pagina pareciam de marcas diferentes.
+     REGRA: so preenchimento. Sobre branco ele nao tem contraste pra
+     carregar texto — quem escreve continua sendo --profit. */
+  --acento:        #C8F21D;
+  --acento-forte:  #b4dc12;
+  --acento-dim:    rgba(200,242,29,0.16);
+  --acento-border: rgba(200,242,29,0.45);
   /* lucro — verde-limão da referência (fundo pastel, texto legível) */
   --profit:        #3f9b1e;
   --profit-dim:    #e3f7c6;

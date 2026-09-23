@@ -7,3 +7,9 @@ node_modules/
 
 # capturas de tela (contem sessao de login)
 .telas/
+
+# Originais dos filmes da landing, antes da re-codificacao (scripts/filmes-desktop.mjs).
+# Ficam SO na maquina: sao ~17 MB que nao servem pra nada em producao, e sem
+# eles uma segunda re-codificacao rodaria por cima da primeira e degradaria o
+# filme sem volta.
+public/landing/v2/.originais/

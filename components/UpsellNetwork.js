@@ -14,7 +14,8 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { GRUPO_PRECO, GRUPO_LINK, modeloApresentacao, formatarWhatsapp } from '../lib/network-grupo'
+import { supabase } from '../lib/supabase/client'
+import { GRUPO_PRECO, modeloApresentacao, formatarWhatsapp } from '../lib/network-grupo'
 
 const ease = [0.33, 1, 0.68, 1]
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -32,6 +33,9 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
   const [carregando, setCarregando] = useState(false)
   const [pix, setPix] = useState(null)
   const [copiado, setCopiado] = useState('')
+  // O link vem do servidor, e só depois do pagamento confirmado — nunca do
+  // bundle, senão entraria quem não pagou.
+  const [link, setLink] = useState('')
 
   const copiar = async (texto, marca) => {
     try { await navigator.clipboard.writeText(texto); setCopiado(marca); setTimeout(() => setCopiado(''), 2200) } catch {}
@@ -64,10 +68,22 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
       try {
         const r = await fetch(`/api/mercadopago/check-payment?id=${id}`)
         const d = await r.json()
-        if (d?.status === 'approved') { clearInterval(t); setEtapa('dentro') }
+        if (d?.status === 'approved') { clearInterval(t); buscarLink(); setEtapa('dentro') }
       } catch {}
     }, 4000)
     setTimeout(() => clearInterval(t), 15 * 60 * 1000)
+  }
+
+  async function buscarLink() {
+    try {
+      const { data } = await supabase.auth.getSession()
+      const token = data?.session?.access_token
+      if (!token) return
+      const r = await fetch('/api/network-grupo', { headers: { Authorization: 'Bearer ' + token } })
+      if (!r.ok) return              // 402 = ainda sem pagamento; a tela já cobre
+      const d = await r.json()
+      if (d?.link) setLink(d.link)
+    } catch {}
   }
 
   const apresentacao = modeloApresentacao({ nome: nome.trim() })
@@ -150,13 +166,13 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
             Você está dentro, {nome.split(' ')[0]}.
           </h3>
           <p style={{ fontSize: 13, color: 'var(--t2)', margin: '0 0 18px', lineHeight: 1.6 }}>
-            {GRUPO_LINK
+            {link
               ? 'Entre pelo link abaixo e cole a apresentação. É a regra da casa: todo mundo se apresenta ao chegar.'
               : `Salvamos seu contato (${formatarWhatsapp(zap)}). Você é adicionado ao grupo em até algumas horas — já deixe a apresentação copiada.`}
           </p>
 
-          {GRUPO_LINK && (
-            <a href={GRUPO_LINK} target="_blank" rel="noopener noreferrer"
+          {link && (
+            <a href={link} target="_blank" rel="noopener noreferrer"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px 18px', borderRadius: 13, textDecoration: 'none', fontSize: 14, fontWeight: 800, color: '#fff', background: '#22C55E', boxShadow: '0 6px 20px rgba(34,197,94,0.26)', marginBottom: 16 }}>
               Abrir o grupo no WhatsApp
             </a>

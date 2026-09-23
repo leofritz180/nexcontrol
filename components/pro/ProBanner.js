@@ -35,7 +35,7 @@ export default function ProBanner({ blockedCount = 3 }) {
           exit={{ opacity:0, y:20 }}
           transition={{ duration:0.4, ease:[0.33,1,0.68,1] }}
           style={{
-            position:'fixed', bottom:24, right:24, zIndex:9000,
+            position:'fixed', bottom:'calc(24px + var(--rodape-livre))', right:24, zIndex:9000,
             maxWidth:340, padding:'16px 20px', borderRadius:14,
             background:'linear-gradient(145deg, var(--surface), var(--surface))',
             border:'1px solid rgba(229,57,31,0.15)',

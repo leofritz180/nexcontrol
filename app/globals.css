@@ -2017,6 +2017,19 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 /* espaço no fim da página pro dock não cobrir conteúdo */
 .nx-bento .app-content { padding-bottom: 92px; }
 
+/* ── O RODAPÉ LIVRE ──────────────────────────────────────────────────────
+   Quanto de espaço a barra de navegação do celular ocupa embaixo. Tudo que
+   ancora no rodapé (aviso de notificação, sininho, atalho, bolha do chat,
+   caixa do tour) soma isto ao próprio afastamento.
+
+   Antes cada um tinha o número cravado — 20, 22, 24, 72, 84 — e nenhum
+   conhecia a barra: no telefone eles se empilhavam em cima dela e uns sobre
+   os outros. No desktop vale zero e nada muda. */
+:root { --rodape-livre: 0px; }
+@media (max-width: 768px) {
+  .nx-bento { --rodape-livre: calc(70px + env(safe-area-inset-bottom, 0px)); }
+}
+
 /* TRAVA: o wrapper de transição de página NUNCA pode carregar filtro nem
    transform. Qualquer um dos dois troca o bloco de contenção e o dock (que é
    position:fixed) vira absolute: vai parar no fim do conteúdo e some ao

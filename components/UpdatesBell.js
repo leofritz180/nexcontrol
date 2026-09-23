@@ -97,7 +97,7 @@ export default function UpdatesBell() {
         whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
         aria-label="Atualizações do sistema"
         style={{
-          position: 'fixed', bottom: 22, right: 76, zIndex: 200,
+          position: 'fixed', bottom: 'calc(22px + var(--rodape-livre))', right: 76, zIndex: 200,
           width: 42, height: 42, borderRadius: 12,
           background: 'var(--surface)',
           border: '1px solid var(--b1)',

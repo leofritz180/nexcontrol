@@ -16,6 +16,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 export default function ProductTour({ steps = [], tourId, open, onClose }) {
   const [index, setIndex] = useState(0)
   const [targetRect, setTargetRect] = useState(null)
+  // pra medir a caixa de verdade em vez de supor o tamanho dela
+  const caixaRef = useRef(null)
   const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0, placement: 'bottom' })
   const tooltipRef = useRef(null)
 
@@ -127,8 +129,23 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
       setTargetRect(rect)
 
       // Decide placement
-      const tooltipW = 360
-      const tooltipH = 220
+      //
+      // NO CELULAR NAO HA PLACEMENT: a caixa doca no rodapé. Perseguir o
+      // elemento só faz sentido quando sobra tela em volta dele, e num
+      // telefone não sobra — o anel continua marcando o alvo lá em cima.
+      const noFone = vw <= 640
+      if (noFone) {
+        setTooltipPos({ top: null, left: null, placement: 'doca' })
+        return
+      }
+
+      // As medidas REAIS da caixa, não as supostas. Antes eram cravadas em
+      // 360x220 e a conta posicionava como se fosse esse o tamanho: no
+      // telefone o texto quebra em mais linhas, a caixa passa de 300 de
+      // altura e aparecia cortada embaixo.
+      const cx = caixaRef.current?.getBoundingClientRect()
+      const tooltipW = Math.min(360, cx?.width || 360)
+      const tooltipH = cx?.height || 220
       const spaceBelow = vh - rect.bottom
       const spaceAbove = rect.top
       const spaceRight = vw - rect.right
@@ -294,7 +311,33 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
           }} />
         )}
 
-        {/* TOOLTIP */}
+        {/* TOOLTIP — duas camadas: ver o comentário acima de `doca`.
+            A DE FORA posiciona e nunca usa transform. A DE DENTRO anima. */}
+        <div
+          ref={caixaRef}
+          style={{
+            position: 'fixed',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            // No telefone, e sempre que não há alvo, a caixa DOCA no rodapé:
+            // ocupa a largura menos a margem e não depende de onde o
+            // elemento está. Nunca corta.
+            ...(tooltipPos.placement === 'doca' || isCenter
+              ? {
+                  left: 16, right: 16,
+                  ...(isCenter && tooltipPos.placement !== 'doca'
+                    ? { top: '50%', maxWidth: 392, marginLeft: 'auto', marginRight: 'auto' }
+                    : { bottom: 'calc(16px + var(--rodape-livre))' }),
+                }
+              : {
+                  top: tooltipPos.top,
+                  left: tooltipPos.left,
+                  width: 360,
+                  maxWidth: 'calc(100vw - 32px)',
+                }),
+          }}
+          onClick={e => e.stopPropagation()}
+        >
         <motion.div
           ref={tooltipRef}
           key={`tooltip-${index}`}
@@ -302,21 +345,15 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.28, ease: [0.33, 1, 0.68, 1] }}
           style={{
-            position: 'fixed',
-            top: isCenter ? '50%' : tooltipPos.top,
-            left: isCenter ? '50%' : tooltipPos.left,
-            transform: isCenter ? 'translate(-50%, -50%)' : 'none',
-            width: 360,
-            maxWidth: 'calc(100vw - 32px)',
+            // passo de texto longo rola DENTRO da caixa em vez de vazar
+            maxHeight: tooltipPos.placement === 'doca' ? '58vh' : 'calc(100vh - 32px)',
+            overflowY: 'auto',
             background: 'var(--surface)',
             border: '1px solid var(--b1)',
             borderRadius: 14,
             padding: '20px 22px',
             boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(229,57,31,0.04), 0 0 60px rgba(229,57,31,0.08)',
-            pointerEvents: 'auto',
-            zIndex: 9999,
           }}
-          onClick={e => e.stopPropagation()}
         >
           {/* Header: progress + close */}
           <div style={{
@@ -442,6 +479,7 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
             </button>
           </div>
         </motion.div>
+        </div>
       </motion.div>
     </AnimatePresence>
   )

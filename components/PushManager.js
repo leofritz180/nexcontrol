@@ -102,7 +102,7 @@ export default function PushManager({ userId, tenantId }) {
 
   if (state === 'denied') return (
     <div style={{
-      position:'fixed', bottom:20, left:20, right:20, zIndex:9000, maxWidth:400,
+      position:'fixed', bottom:'calc(20px + var(--rodape-livre))', left:20, right:20, zIndex:9000, maxWidth:400,
       padding:'14px 18px', borderRadius:14,
       background:'var(--surface)', border:'1px solid var(--b1)',
       boxShadow:'0 12px 40px rgba(0,0,0,0.4)',
@@ -118,7 +118,7 @@ export default function PushManager({ userId, tenantId }) {
 
   return (
     <div style={{
-      position:'fixed', bottom:20, left:20, right:20, zIndex:9000, maxWidth:420,
+      position:'fixed', bottom:'calc(20px + var(--rodape-livre))', left:20, right:20, zIndex:9000, maxWidth:420,
       padding:'16px 20px', borderRadius:16,
       background:'linear-gradient(135deg, var(--fill-3), var(--surface))',
       border:'1px solid var(--b3)',

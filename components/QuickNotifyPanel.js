@@ -127,7 +127,7 @@ export default function QuickNotifyPanel({ userEmail }) {
         aria-label="Notificacoes rapidas"
         title="Disparar notificacao"
         style={{
-          position: 'fixed', bottom: 22, right: 184, zIndex: 201,
+          position: 'fixed', bottom: 'calc(22px + var(--rodape-livre))', right: 184, zIndex: 201,
           width: 40, height: 40, borderRadius: '50%',
           cursor: 'pointer',
           background: open ? '#3f9b1e' : 'rgba(20,20,20,0.95)',
@@ -151,7 +151,7 @@ export default function QuickNotifyPanel({ userEmail }) {
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
             transition={{ duration: 0.18, ease: [0.33, 1, 0.68, 1] }}
             style={{
-              position: 'fixed', bottom: 72, right: 22, zIndex: 202,
+              position: 'fixed', bottom: 'calc(72px + var(--rodape-livre))', right: 22, zIndex: 202,
               width: 360, maxHeight: '70vh',
               background: 'var(--surface)',
               backdropFilter: 'blur(20px)',

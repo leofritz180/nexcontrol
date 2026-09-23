@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import ProductTour, { hasSeenTour } from './ProductTour'
 import { getTour } from '../lib/tour-config'
 import { afterVoiceBanner } from '../lib/onboardingSeq'
+import { useOverlaySlot } from '../lib/overlayCoordinator'
 
 /**
  * RouteTour — wrapper de tour por rota.
@@ -34,6 +35,10 @@ export default function RouteTour({ tourId, steps, autoDelay = 900, disableAuto 
     return () => { off(); clearTimeout(t) }
   }, [tourId, autoDelay, disableAuto, tourSteps?.length])
 
+  // Coordenador: o tutorial disputa a tela com anúncio, aviso e pop-up de
+  // instalação. Prioridade 1 é a mesma do TabAwareTour — tutorial primeiro.
+  const liberado = useOverlaySlot('tour', 1, open)
+
   if (!tourSteps || tourSteps.length === 0) return null
 
   return (
@@ -41,7 +46,7 @@ export default function RouteTour({ tourId, steps, autoDelay = 900, disableAuto 
       <ProductTour
         steps={tourSteps}
         tourId={tourId}
-        open={open}
+        open={open && liberado}
         onClose={() => setOpen(false)}
       />
 

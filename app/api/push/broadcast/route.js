@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToAll } from '../../../../lib/push'
+import { montarNotificacao } from '../../../../lib/notificacoes'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,12 +24,19 @@ export async function POST(req) {
   }
   if (!sbKey) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { title, body, tag } = await req.json().catch(() => ({}))
+  const { title, body, tag, tipo, url, botao, destino } = await req.json().catch(() => ({}))
   if (!title) return NextResponse.json({ error: 'Missing title' }, { status: 400 })
 
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, sbKey, {
     auth: { persistSession: false },
   })
-  const result = await sendPushToAll(sb, { title, body, tag: tag || 'nexcontrol-broadcast' })
+  const pacote = montarNotificacao(tipo || 'anuncio', {
+    titulo: title,
+    corpo: body,
+    url,
+    chave: tag || undefined,
+    botao, destino,
+  })
+  const result = await sendPushToAll(sb, pacote)
   return NextResponse.json({ ok: true, ...result })
 }

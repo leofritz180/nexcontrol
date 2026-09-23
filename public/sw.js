@@ -1,4 +1,6 @@
-// NexControl Service Worker — Push Notifications v117
+// NexControl Service Worker — Push Notifications v118
+// v118: destino externo (ex.: Instagram) abre em aba nova em vez de tentar
+// navegar uma aba do proprio site, que nao funciona pra outro dominio.
 // v117 (24/09/2026): botao da notificacao leva ao proprio destino, tag por
 // assunto, peso por tipo (vibracao, exigeAcao, renotify), hora do FATO e o
 // distintivo com silhueta propria. O pacote vem montado de lib/notificacoes.js.
@@ -88,6 +90,8 @@ self.addEventListener('notificationclick', (e) => {
   // caia no mesmo lugar, o que tornava o botao decorativo.
   const d = e.notification.data || {}
   const url = (e.action && d.destinos && d.destinos[e.action]) || d.url || '/'
+  const externo = /^https?:///i.test(url) && !url.startsWith(self.location.origin)
+  if (externo) { e.waitUntil(clients.openWindow(url)); return }
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
       for (const client of list) {

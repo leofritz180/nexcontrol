@@ -214,6 +214,24 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
         </section>
       )}
 
+      {/* ═══════════════════════════════════════════════════════════════
+          DAQUI PRA BAIXO É PÁGINA DE VENDA — e ela só faz sentido pra
+          quem AINDA NÃO PAGA.
+
+          Antes ela renderizava sempre. Um assinante abria "Assinatura"
+          vindo do e-mail de renovação e via, embaixo do próprio plano,
+          oito seções vendendo o que ele já comprou: "PARE DE CONTROLAR NO
+          ACHISMO", comparação de planos, "o que você está perdendo hoje",
+          cálculo de ROI, 48 slots com cadeado e um CTA final. 4.000px de
+          pitch pra quem já é cliente.
+
+          Isso vinha da época do trial, quando a pessoa entrava de graça e
+          precisava ser convencida em algum momento. Sem plano gratuito,
+          quem chega aqui ou já paga (e não precisa de pitch) ou está
+          bloqueado esperando pagar (e aí sim a página tem função).
+          ═══════════════════════════════════════════════════════════════ */}
+      {!subActive && (<>
+
       {/* ═══ 1 · HERO ═══ */}
       <section style={{ position: 'relative', textAlign: 'center', padding: '64px 24px 76px' }}>
         {/* partículas */}
@@ -532,6 +550,10 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
         </Reveal>
       </section>
 
+      </>)}
+
+      {/* O popup fica FORA da condição: quem já assina também usa ele pra
+          adicionar operador. */}
       {/* ═══ POPUP · MONTAR EQUIPE (quantidade de operadores) ═══ */}
       {teamOpen && (
         <div onClick={() => setTeamOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 5000, background: 'rgba(17,19,24,0.55)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>

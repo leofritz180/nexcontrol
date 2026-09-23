@@ -143,7 +143,23 @@ async function notifyTenant(sb, tid, segId, budgetLeft) {
     .select('id').eq('user_id', admin.id).eq('channel', 'email')
     .gte('sent_at', new Date(Date.now() - 24 * 3600000).toISOString()).limit(1)
 
-  const url = `${APP_URL}/billing?utm_source=lifecycle&utm_medium=email&utm_campaign=${segId}`
+  // DESTINO: /billing-mp, o checkout — e nao /billing.
+  //
+  // Os dois e-mails de ciclo apontavam pra lugares diferentes, e ao
+  // contrario do que faz sentido: o comeback (cliente que JA SAIU e
+  // precisaria de mais convencimento) ia direto pro checkout, enquanto a
+  // renovacao (cliente ATIVO, o mais propenso a pagar) caia numa pagina de
+  // venda antes de ver o QR.
+  //
+  // Renovacao e o gargalo do negocio — 43% na auditoria de 03/09. Havia um
+  // clique a mais entre o e-mail e o codigo PIX exatamente ali.
+  //
+  // O status da assinatura continua em /billing pra quem quiser conferir;
+  // quem abriu o e-mail de renovacao abriu pra pagar.
+  //
+  // O ?renewal=1 e o mesmo parametro que o comeback ja usa: faz a tela se
+  // apresentar como renovacao, nao como primeira compra.
+  const url = `${APP_URL}/billing-mp?renewal=1&utm_source=lifecycle&utm_medium=email&utm_campaign=${segId}`
   const vars = { nome: (admin.nome || '').split(' ')[0] || 'Operador' }
   const out = { segId }
 

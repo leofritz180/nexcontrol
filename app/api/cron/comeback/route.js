@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { montarNotificacao } from '../../../../lib/notificacoes'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
 import { renderWinbackEmail, sendEmailViaResend } from '../../../../lib/email-templates'
@@ -71,7 +72,7 @@ export async function GET(req) {
 
       const nome = (admin.nome || '').split(' ')[0] || 'Operador'
       const vars = { nome }
-      try { const r = await sendPushToUser(sb, admin.id, { title: fill(COPY.push.title, vars), body: fill(COPY.push.body, vars), url, tag: SEGMENT }); if (r?.sent > 0) pushSent++ } catch {}
+      try { const r = await sendPushToUser(sb, admin.id, montarNotificacao('pagamento', { titulo: fill(COPY.push.title, vars), corpo: fill(COPY.push.body, vars), url, chave: SEGMENT })); if (r?.sent > 0) pushSent++ } catch {}
       const filledEmail = {}
       for (const k of Object.keys(COPY.email)) filledEmail[k] = fill(COPY.email[k], vars)
       const { subject, html } = renderWinbackEmail({ segment: { email: filledEmail }, vars: { nome, url } })

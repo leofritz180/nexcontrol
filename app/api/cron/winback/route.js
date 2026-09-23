@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { montarNotificacao } from '../../../../lib/notificacoes'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
 import { WINBACK_SEGMENTS, pickSegment, shouldSend, fillTemplate } from '../../../../lib/winback-segments'
@@ -54,11 +55,12 @@ async function processOne(sb, profile, opts = {}) {
 
   // PUSH
   if (shouldSend({ segment, channel: 'push', recentLogs: recentLogs || [] })) {
-    const pushPayload = {
-      title: fillTemplate(segment.push.title, vars),
-      body: fillTemplate(segment.push.body, vars),
-      url, tag: `winback_${segment.id}`,
-    }
+    const pushPayload = montarNotificacao('pagamento', {
+      titulo: fillTemplate(segment.push.title, vars),
+      corpo: fillTemplate(segment.push.body, vars),
+      url,
+      chave: segment.id,
+    })
     try {
       const pushRes = await sendPushToUser(sb, profile.id, pushPayload)
       const ok = pushRes && pushRes.sent > 0

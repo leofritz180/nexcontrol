@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { montarNotificacao } from '../../../../lib/notificacoes'
 import { NextResponse } from 'next/server'
 import { sendPushToTenant } from '../../../../lib/push'
 
@@ -39,11 +40,13 @@ export async function POST(req) {
       if (meta) {
         const val = Math.abs(Number(lucro_final || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         const pos = Number(lucro_final || 0) >= 0
-        await sendPushToTenant(supabase, meta.tenant_id, {
-          title: 'Meta finalizada!',
-          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} finalizada — Resultado: ${pos?'+':'-'}R$ ${val}`,
+        await sendPushToTenant(supabase, meta.tenant_id, montarNotificacao('meta-fechada', {
+          titulo: 'Meta fechada',
+          corpo: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} finalizada — Resultado: ${pos?'+':'-'}R$ ${val}`,
           url: '/admin',
-        })
+          metaId: meta_id,
+          chave: String(meta_id),
+        }))
       }
     }
 

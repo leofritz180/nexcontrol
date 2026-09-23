@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { montarNotificacao } from '../../../../lib/notificacoes'
 import { authNetwork, buildAuthorMap, publicName } from '../../../../lib/network-server'
 import { sendPushToUser } from '../../../../lib/push'
 
@@ -82,7 +83,7 @@ export async function POST(req) {
     try {
       if (msg.author_id && msg.author_id !== user.id) {
         const preview = text.length > 80 ? text.slice(0, 80) + '…' : text
-        await sendPushToUser(sb, msg.author_id, { title: `${publicName(a.profile)} comentou seu resultado`, body: preview, url: '/network?c=resultados', tag: 'network-comment' })
+        await sendPushToUser(sb, msg.author_id, montarNotificacao('network', { titulo: `${publicName(a.profile)} comentou seu resultado`, corpo: preview, url: '/network?c=resultados', chave: 'comentario' }))
       }
     } catch {}
     return NextResponse.json({ ok: true, id: data?.id, created_at: data?.created_at })

@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { montarNotificacao } from '../../../../../lib/notificacoes'
 import { NextResponse } from 'next/server'
 import { sendPushToTenant } from '../../../../../lib/push'
 
@@ -43,12 +44,12 @@ export async function POST(req) {
     }
     for (const [tenantId, total] of byTenant.entries()) {
       try {
-        await sendPushToTenant(sb, tenantId, {
-          title: 'Comissão paga!',
-          body: `R$ ${total.toFixed(2).replace('.', ',')} enviada via PIX`,
+        await sendPushToTenant(sb, tenantId, montarNotificacao('conquista', {
+          titulo: 'Comissão paga',
+          corpo: `R$ ${total.toFixed(2).replace('.', ',')} enviada via PIX`,
           url: '/afiliados',
-          tag: 'aff-paid',
-        })
+          chave: 'afiliado',
+        }))
       } catch {}
     }
 

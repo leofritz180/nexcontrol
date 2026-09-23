@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
+import { montarNotificacao } from '../../../../lib/notificacoes'
 
 export const dynamic = 'force-dynamic'
 
@@ -210,10 +211,13 @@ export async function POST(req) {
     return NextResponse.json({ ok: true, sent: 0, silent: true, payload, userName: prof.nome || '' })
   }
 
-  const result = await sendPushToUser(sb, user.id, {
-    ...payload,
-    tag: 'self_' + type + '_' + Date.now(),
-  })
+  const positivo = Number(payload?.value || 0) >= 0
+  const result = await sendPushToUser(sb, user.id, montarNotificacao(positivo ? 'resumo' : 'aviso', {
+    titulo: payload.title,
+    corpo: payload.body,
+    url: payload.url,
+    chave: type,
+  }))
 
   return NextResponse.json({ ok: true, sent: result?.sent || 0, payload })
 }

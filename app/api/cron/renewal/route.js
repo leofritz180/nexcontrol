@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { montarNotificacao } from '../../../../lib/notificacoes'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
 import { renderWinbackEmail, sendEmailViaResend } from '../../../../lib/email-templates'
@@ -166,9 +167,12 @@ async function notifyTenant(sb, tid, segId, budgetLeft) {
   // PUSH (1x por segmento na janela)
   if (!recent?.some(r => r.channel === 'push')) {
     try {
-      const pushRes = await sendPushToUser(sb, admin.id, {
-        title: fill(seg.push.title, vars), body: fill(seg.push.body, vars), url, tag: segId,
-      })
+      const pushRes = await sendPushToUser(sb, admin.id, montarNotificacao('pagamento', {
+        titulo: fill(seg.push.title, vars),
+        corpo: fill(seg.push.body, vars),
+        url,
+        chave: segId,
+      }))
       const ok = pushRes && pushRes.sent > 0
       await sb.from('winback_log').insert({ user_id: admin.id, tenant_id: tid, segment: segId, channel: 'push', status: ok ? 'sent' : 'failed', payload: { raw: pushRes } })
       out.pushOnly = true

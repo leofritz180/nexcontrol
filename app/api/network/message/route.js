@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { montarNotificacao } from '../../../../lib/notificacoes'
 import crypto from 'crypto'
 import { authNetwork, getMembers, publicName, buildAuthorMap } from '../../../../lib/network-server'
 import { channelRule } from '../../../../lib/network-access'
@@ -127,15 +128,15 @@ export async function POST(req) {
         const wantsAll = (body.mentionAll || /(^|\s)@todos(\s|$)/i.test(text)) && a.canMentionAll
         if (wantsAll) {
           const members = await getMembers(sb)
-          await pushBatch(members.map(m => m.id), { title: `${authorName} marcou todos no Network`, body: preview, url: `/network?c=${channelKey}`, tag: 'network-all' })
+          await pushBatch(members.map(m => m.id), montarNotificacao('network', { titulo: `${authorName} marcou todos no Network`, corpo: preview, url: `/network?c=${channelKey}`, chave: 'todos' }))
         }
         // Mencoes individuais: avisa cada usuario marcado
         const mentions = Array.isArray(body.mentions) ? body.mentions.filter(id => id && id !== user.id) : []
-        await pushBatch(mentions, { title: `${authorName} te mencionou no Network`, body: preview, url: `/network?c=${channelKey}`, tag: 'network-mention' })
+        await pushBatch(mentions, montarNotificacao('network', { titulo: `${authorName} te mencionou no Network`, corpo: preview, url: `/network?c=${channelKey}`, chave: 'mencao' }))
         // Avisos: comunicado oficial -> notifica todos os membros
         if (rule?.ownerOnly) {
           const members = await getMembers(sb)
-          await pushBatch(members.map(m => m.id), { title: '📢 Novo aviso no Network', body: preview, url: '/network?c=avisos', tag: 'network-aviso' })
+          await pushBatch(members.map(m => m.id), montarNotificacao('network', { titulo: 'Novo aviso no Network', corpo: preview, url: '/network?c=avisos', chave: 'aviso' }))
         }
       } catch (e) { console.error('[network] push falhou', e?.message) }
     })()

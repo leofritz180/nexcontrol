@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { montarNotificacao } from '../../../../lib/notificacoes'
 import { NextResponse } from 'next/server'
 import { sendPushToTenant } from '../../../../lib/push'
 
@@ -41,11 +42,13 @@ export async function POST(req) {
 
         // Notify admin
         const fmt = v => Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-        await sendPushToTenant(supabase, meta.tenant_id, {
-          title: 'Meta finalizada!',
-          body: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} encerrada - ${lucroFinal >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(lucroFinal)}`,
+        await sendPushToTenant(supabase, meta.tenant_id, montarNotificacao('meta-fechada', {
+          titulo: 'Meta fechada',
+          corpo: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} encerrada - ${lucroFinal >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(lucroFinal)}`,
           url: '/admin',
-        })
+          metaId: meta_id,
+          chave: String(meta_id),
+        }))
 
         return NextResponse.json({ ok: true, autoClose: true, lucroFinal })
       } else {
@@ -57,11 +60,13 @@ export async function POST(req) {
         const opName = op?.nome || op?.email?.split('@')[0] || 'Operador'
         const fmt = v => Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
 
-        await sendPushToTenant(supabase, meta.tenant_id, {
-          title: 'Meta finalizada!',
-          body: `${opName} finalizou ${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} - ${liq >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(liq)}`,
+        await sendPushToTenant(supabase, meta.tenant_id, montarNotificacao('meta-fechada', {
+          titulo: 'Meta fechada',
+          corpo: `${opName} finalizou ${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} - ${liq >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(liq)}`,
           url: '/admin',
-        })
+          metaId: meta_id,
+          chave: String(meta_id),
+        }))
 
         return NextResponse.json({ ok: true, autoClose: false })
       }

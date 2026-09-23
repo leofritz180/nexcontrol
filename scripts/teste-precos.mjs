@@ -22,12 +22,15 @@ console.log(`  PACOTES_ATIVOS = ${PACOTES_ATIVOS}\n`)
 
 // ── 1 · desligado nao pode mudar nada ────────────────────────────────
 let falhas = 0
+if (PACOTES_ATIVOS) {
+  console.log('  1) chave LIGADA — a formula antiga nao vale mais (esperado)')
+} else
 for (let n = 0; n <= 25; n++) {
   const esperado = antigo(n)
   const obtido = calculatePrice(n).total
   if (Math.abs(esperado - obtido) > 0.001) { console.log(`   ✗ ${n} ops: esperava ${esperado}, veio ${obtido}`); falhas++ }
 }
-console.log(falhas === 0
+if (!PACOTES_ATIVOS) console.log(falhas === 0
   ? '  1) DESLIGADO devolve o preco antigo em 0..25 operadores  ✓'
   : `  1) DESLIGADO divergiu em ${falhas} casos  ✗`)
 

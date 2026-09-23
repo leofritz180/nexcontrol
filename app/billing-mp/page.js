@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import { PLANS, getPlan } from '../../lib/plans'
-import { calculatePrice as calcOpTier } from '../../lib/pricing'
+import { calculatePrice as calcOpTier, PACOTES_ATIVOS, pacotePara } from '../../lib/pricing'
 
 const ease = [0.33, 1, 0.68, 1]
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -12,6 +12,21 @@ const fmtDate = d => d ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit
 
 // Combina desconto de tier (operator-count) com desconto de periodo.
 // monthlyTier ja vem com desconto de tier aplicado.
+// Como o plano se chama na tela. Com pacote ligado, quem nomeia e o
+// pacote — e o detalhe de quantos operadores vira subtitulo, porque o
+// cliente precisa ver que as vagas dele cabem ali dentro.
+function rotuloPlano(ops, comDetalhe = false) {
+  const n = Math.max(0, Number(ops) || 0)
+  if (!PACOTES_ATIVOS) {
+    return n > 0 ? `Admin + ${n} operador${n > 1 ? 'es' : ''}` : 'Admin Solo'
+  }
+  const p = pacotePara(n)
+  if (!p) return `Scale 10 + ${n - 10} operador${n - 10 > 1 ? 'es' : ''}`
+  if (!comDetalhe) return p.nome
+  if (n === 0) return p.nome
+  return `${p.nome} · ${n} operador${n > 1 ? 'es' : ''} de ${p.ops}`
+}
+
 function combinedPrice(monthlyTier, planId) {
   const plan = getPlan(planId)
   const gross = monthlyTier * plan.months
@@ -111,7 +126,7 @@ export default function BillingMpPage() {
     if (!user || !profile) return
     setStage('loading'); setError('')
     try {
-      const planLabel = opQty > 0 ? `Admin + ${opQty} op${opQty > 1 ? 's' : ''}` : 'Admin Solo'
+      const planLabel = rotuloPlano(opQty)
       // UPGRADE: valor avulso (sem plan_period) = delta de operadores, mantem o ciclo.
       // RENOVACAO: plano cheio × periodo, estende o ciclo.
       const payload = isUpgrade
@@ -306,7 +321,7 @@ function UpgradeCard({ opQty, currentPaidOps, upgradeAmount, currentExpires, onC
 }
 
 function PeriodCard({ v2, opQty, setOpQty, realOps, opsList = [], monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
-  const planLabel = opQty > 0 ? `Admin + ${opQty} operador${opQty > 1 ? 'es' : ''}` : 'Admin Solo'
+  const planLabel = rotuloPlano(opQty, true)
   const canDec = setOpQty && opQty > 0                 // pode reduzir até Admin Solo
   // Operadores que serão REMOVIDOS ao renovar com menos (os mais recentes)
   const toRemove = opQty < (realOps || 0) ? opsList.slice(opQty) : []

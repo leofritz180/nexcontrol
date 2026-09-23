@@ -4,6 +4,9 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import AppLayout from '../../components/AppLayout'
+import { isNex2 } from '../../lib/theme-v2'
+import ProxyLojaBento from '../../components/modules/ProxyLojaBento'
+import { ModuloEsqueleto } from '../../components/ui/bento'
 
 const ease = [0.33, 1, 0.68, 1]
 
@@ -67,16 +70,33 @@ export default function ProxyPage() {
   if (loading || !profile) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--surface)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-          <div className="spinner" style={{ width: 28, height: 28 }} />
-        </motion.div>
+        {isNex2(user?.email) ? (
+          <div style={{ width: '100%', maxWidth: 1380, padding: '32px 28px' }}><ModuloEsqueleto cards={3} /></div>
+        ) : (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+            <div className="spinner" style={{ width: 28, height: 28 }} />
+          </motion.div>
+        )}
       </div>
     )
   }
 
   return (
     <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} tenant={tenant} subscription={sub} userId={user?.id} tenantId={profile?.tenant_id}>
-      {ssoEnabled ? (
+      {/* V2: moldura de bento em volta do MESMO iframe. O token SSO, o
+          sandbox, o referrerPolicy e o allow continuam vindo daqui — o
+          componente so desenha em volta. */}
+      {isNex2(user?.email) ? (
+        <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
+          <ProxyLojaBento
+            url={iframeUrl}
+            carregando={iframeLoading}
+            erro={iframeErr}
+            manutencao={!ssoEnabled}
+            aoCarregar={() => setIframeLoading(false)}
+          />
+        </div>
+      ) : ssoEnabled ? (
         /* Loja Bettify embutida — ocupa toda a area de conteudo, ja logada */
         <div style={{ position: 'relative', width: '100%', height: '100vh', minHeight: 480, background: 'var(--surface)' }}>
           {iframeErr ? (

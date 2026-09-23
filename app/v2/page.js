@@ -29,7 +29,7 @@ import { BASE_PRICE } from '../../lib/pricing'
 import EstiloV2 from './estilo'
 import Filme from './filme'
 import MarcaN from './marca-n'
-import { Revelar, Olho, Cabeca, Contador, Botao, Ico, Pergunta, SETA } from './pecas'
+import { Revelar, Olho, Cabeca, Contador, Botao, Ico, Pergunta, SETA, Deriva, LinhaDeProgresso } from './pecas'
 
 const moeda = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -303,6 +303,7 @@ export default function V2Page() {
 
   return (
     <main className="nv2">
+      <LinhaDeProgresso />
       <EstiloV2 />
 
       {/* ═══ 01 · CABEÇALHO ═══════════════════════════════════════════ */}
@@ -564,6 +565,7 @@ export default function V2Page() {
 
             {/* operadores e métricas em perspectiva */}
             <Revelar atraso={0.1} y={24}>
+              <Deriva forca={14}>
               <Filme
                 className="nv2-palco-filme"
                 src="/landing/v2/operadores-3d.mp4"
@@ -573,6 +575,7 @@ export default function V2Page() {
                 alt="Tela de operadores e métricas da Nex Control: destaque da equipe, lucro por operador e situação das metas"
                 proporcao="16 / 9"
               />
+            </Deriva>
             </Revelar>
           </div>
         </div>

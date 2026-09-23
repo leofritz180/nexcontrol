@@ -174,7 +174,7 @@ export function ProUpgradeModal({ onClose, feature }) {
         </div>
 
         <p style={{ fontSize:11, color:'var(--t4)', marginTop:20 }}>
-          3 dias gratis. Cancele quando quiser.
+          Ativacao na hora via PIX. Cancele quando quiser.
         </p>
       </motion.div>
     </motion.div>

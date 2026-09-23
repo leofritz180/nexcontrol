@@ -99,7 +99,7 @@ export default function DemoPage() {
             }}
           >
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            Criar conta grátis
+            Criar minha conta
           </motion.div>
         </Link>
       </header>
@@ -567,7 +567,7 @@ function CtaBottom() {
           }}
         >
           <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          Começar agora — 3 dias grátis
+          Começar agora — ativação na hora
         </motion.div>
       </Link>
     </motion.div>

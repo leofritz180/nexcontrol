@@ -175,15 +175,17 @@ export default function EstiloV2() {
          viraria um retangulo dentro de outro. Sangra pros dois lados. */
       .nv2-palco-filme {
         position: relative; overflow: hidden;
-        width: calc(100% + 2 * max(28px, (100vw - 1180px) / 2 + 28px));
-        margin-left: calc(-1 * max(28px, (100vw - 1180px) / 2 + 28px));
+        width: calc(100% + max(28px, (100vw - 1180px) / 2 + 28px));
         margin-top: -18px;
       }
-      /* apaga a emenda entre o preto do filme e o preto da pagina */
+      /* apaga a emenda entre o preto do filme e o preto da pagina.
+         So a direita e forte: e o lado que sangra ate a borda da janela. A
+         esquerda leva um fio de nada, senao a mascara comeria a tela do
+         painel logo no comeco do quadro. */
       .nv2-palco-filme::after {
         content: ''; position: absolute; inset: 0; pointer-events: none;
         background:
-          linear-gradient(90deg, #080909 0%, transparent 14%, transparent 86%, #080909 100%),
+          linear-gradient(90deg, #080909 0%, transparent 4%, transparent 86%, #080909 100%),
           linear-gradient(180deg, #080909 0%, transparent 12%, transparent 88%, #080909 100%);
       }
 

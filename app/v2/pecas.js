@@ -2,12 +2,13 @@
 // ─────────────────────────────────────────────────────────────────────────
 // PEÇAS DA LANDING 2.0 — só apresentação. Nenhuma busca dados.
 //
-// O movimento é sempre o mesmo par: opacity + translateY. Nada de rotação,
-// partícula ou parallax pesado. A página tem que parecer cara por causa do
-// espaço e da tipografia, não por causa de efeito.
+// O movimento é quase sempre o mesmo par: opacity + translateY. Nada de
+// rotação nem partícula. Existe uma deriva de profundidade (Deriva), mas
+// com amplitude pequena de propósito: a página tem que parecer cara por
+// causa do espaço e da tipografia, não por causa de efeito.
 // ─────────────────────────────────────────────────────────────────────────
 import { useEffect, useRef, useState } from 'react'
-import { motion, useReducedMotion, useInView, animate } from 'framer-motion'
+import { motion, useReducedMotion, useInView, animate, useScroll, useTransform, useSpring } from 'framer-motion'
 
 export const SUAVE = [0.22, 1, 0.36, 1]
 
@@ -135,5 +136,58 @@ export function Pergunta({ q, children, aberta, aoAbrir }) {
         <p className="nv2-corpo">{children}</p>
       </motion.div>
     </div>
+  )
+}
+
+/* ── PROFUNDIDADE NO SCROLL ─────────────────────────────────────────────
+   O que dá sensação de profundidade não é o elemento se mexer muito: é ele
+   se mexer MENOS que a página. A `Deriva` desloca o conteúdo numa fração da
+   rolagem, então quem passa por ele o percebe atrás do resto — como olhar
+   pela janela de um carro e ver o morro andar devagar.
+
+   A amplitude é deliberadamente pequena (36px de ponta a ponta). Parallaxe
+   forte numa landing de produto vira enjoo e, pior, tira o texto do lugar
+   onde o olho esperava encontrá-lo.
+
+   `useScroll` com offset ['start end', 'end start'] mede o elemento da hora
+   em que ele ENTRA por baixo até a hora em que SAI por cima — o trecho que
+   o visitante realmente vê.
+
+   Com movimento reduzido no sistema, não monta nada: devolve o filho puro.
+   Isto é enfeite, e enfeite é a primeira coisa que se desliga. */
+export function Deriva({ children, forca = 18, className, style }) {
+  const parado = useReducedMotion()
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  const y = useTransform(scrollYProgress, [0, 1], [forca, -forca])
+  const macio = useSpring(y, { stiffness: 80, damping: 26, mass: 0.4 })
+
+  if (parado) return <div className={className} style={style}>{children}</div>
+  return (
+    <div ref={ref} className={className} style={style}>
+      <motion.div style={{ y: macio, willChange: 'transform' }}>{children}</motion.div>
+    </div>
+  )
+}
+
+/* ── A LINHA DE PROGRESSO ───────────────────────────────────────────────
+   Dois pixels de lime no topo, presos à rolagem da página. Numa landing
+   longa ela responde a uma pergunta que o visitante faz sem falar — "quanto
+   ainda falta?" — e é o tipo de detalhe que o olho registra sem nomear.
+
+   `scaleX` com origem à esquerda: anima na GPU, sem recalcular layout a
+   cada quadro. Fazer o mesmo com `width` custaria um reflow por pixel de
+   rolagem, e numa página com cinco vídeos isso aparece como engasgo. */
+export function LinhaDeProgresso() {
+  const parado = useReducedMotion()
+  const { scrollYProgress } = useScroll()
+  const largura = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 })
+  if (parado) return null
+  return (
+    <motion.div aria-hidden style={{
+      position: 'fixed', top: 0, left: 0, right: 0, height: 2, zIndex: 90,
+      background: 'linear-gradient(90deg, #C8F21D, #9ed40e)',
+      transformOrigin: '0% 50%', scaleX: largura, pointerEvents: 'none',
+    }} />
   )
 }

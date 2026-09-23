@@ -67,13 +67,16 @@ export default function Filme({ src, srcMob, poster, alt, className, style, prop
       {/* o pôster fica SEMPRE por baixo: é ele que segura o layout enquanto
           o vídeo não carrega, e é ele que aparece quando o vídeo não vem */}
       <img src={poster} alt={alt} loading="lazy" decoding="async"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }} />
       {fonte && (
         <video
           src={fonte} poster={poster}
           autoPlay muted loop playsInline preload="none"
           aria-hidden tabIndex={-1}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          disablePictureInPicture
+          disableRemotePlayback
+          controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
         />
       )}
     </div>

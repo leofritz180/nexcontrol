@@ -903,22 +903,22 @@ function ShareKitImersive({ link, userName }) {
     whatsapp: {
       label: 'WhatsApp',
       icon: <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>,
-      text: `Mano, descobri um sistema que organiza toda operação de CPA. Metas, operadores, BAU, lucro líquido — tudo num lugar só. Testa grátis 3 dias 👇\n\n${link}`,
+      text: `Mano, descobri um sistema que organiza toda operação de CPA. Metas, operadores, BAU, lucro líquido — tudo num lugar só. Dá uma olhada 👇\n\n${link}`,
     },
     instagram: {
       label: 'Instagram',
       icon: <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>,
-      text: `🎯 Operação de CPA organizada de verdade.\n\nSistema com metas, operadores, BAU, ranking e fechamento automático.\n\n3 dias grátis 👇\n${link}`,
+      text: `🎯 Operação de CPA organizada de verdade.\n\nSistema com metas, operadores, BAU, ranking e fechamento automático.\n\nAtivação na hora via PIX 👇\n${link}`,
     },
     dm: {
       label: 'DM longo',
       icon: <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
-      text: `Cara, se tu opera com CPA isso vai te ajudar muito.\n\nÉ o NexControl — sistema feito pra essa nossa operação:\n\n✅ Metas + remessas organizadas\n✅ BAU automático\n✅ Lucro líquido na hora\n✅ Push em tempo real\n✅ Multi operador\n\nTestei e virei cliente. 3 dias grátis:\n\n${link}\n\nQualquer dúvida me chama.`,
+      text: `Cara, se tu opera com CPA isso vai te ajudar muito.\n\nÉ o NexControl — sistema feito pra essa nossa operação:\n\n✅ Metas + remessas organizadas\n✅ BAU automático\n✅ Lucro líquido na hora\n✅ Push em tempo real\n✅ Operadores com acesso próprio\n\nTestei e virei cliente. O link:\n\n${link}\n\nQualquer dúvida me chama.`,
     },
     email: {
       label: 'E-mail',
       icon: <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
-      text: `Olá!\n\nQueria te apresentar o NexControl — sistema completo pra gerenciar operação de CPA / iGaming.\n\nO sistema cobre:\n- Gestão de metas e remessas\n- Operadores ilimitados\n- BAU e lucro automático\n- Push em tempo real\n- Painel de fechamento\n\n3 dias grátis: ${link}\n\nAbraço${userName ? ',\n' + userName : ''}`,
+      text: `Olá!\n\nQueria te apresentar o NexControl — sistema completo pra gerenciar operação de CPA / iGaming.\n\nO sistema cobre:\n- Gestão de metas e remessas\n- Operadores com acesso próprio\n- BAU e lucro automático\n- Push em tempo real\n- Painel de fechamento\n\nPagamento via PIX, ativação na hora: ${link}\n\nAbraço${userName ? ',\n' + userName : ''}`,
     },
   }
 

@@ -19,8 +19,8 @@ const DesignMode = dynamic(() => import('../components/DesignMode'), { ssr: fals
 const DataCorrectionModal = dynamic(() => import('../components/DataCorrectionModal'), { ssr: false })
 
 const SITE_URL = 'https://nexcpa.com.br'
-const OG_TITLE = 'NexControl | Gestão de Operações CPA, Metas e Operadores'
-const OG_DESC = 'O sistema operacional do CPA: metas, operadores e lucro em tempo real, com insights de IA, notificações na hora, Network privilegiado e slots premium. 3 dias grátis.'
+const OG_TITLE = 'Nex Control 2.0 — Controle sua operação CPA em um só lugar'
+const OG_DESC = 'Centralize operadores, metas, remessas, faturamento e custos da sua operação CPA. O lucro final se calcula sozinho, e o painel diz o que os números estão dizendo.'
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -61,13 +61,13 @@ export const metadata = {
     url: SITE_URL,
     locale: 'pt_BR',
     type: 'website',
-    images: [{ url: '/nexcontrol-icon-256.png', width: 256, height: 256, alt: 'NexControl' }],
+    images: [{ url: '/landing/v2/og.png', width: 1200, height: 630, alt: 'Nex Control 2.0 — sua operação inteira em uma tela só' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: OG_TITLE,
     description: OG_DESC,
-    images: ['/nexcontrol-icon-256.png'],
+    images: ['/landing/v2/og.png'],
   },
 }
 
@@ -99,7 +99,7 @@ export default function RootLayout({ children }) {
                 '@type': 'Offer',
                 price: '59.90',
                 priceCurrency: 'BRL',
-                description: 'Plano mensal com 3 dias grátis. Operador adicional R$ 29,90/mês.',
+                description: 'Plano mensal a partir de R$ 59,90 (Solo). Pagamento via PIX, ativação imediata, sem fidelidade. Equipe em pacote fechado, com as vagas de operador já incluídas.',
               },
             },
           ],

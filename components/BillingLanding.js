@@ -465,7 +465,7 @@ export default function BillingLanding() {
 
       {/* Footer */}
       <div style={{ textAlign:'center', padding:'20px 0' }}>
-        <p style={{ fontSize:12, color:'var(--t4)' }}>3 dias gratis. Sem cartao. Cancele quando quiser.</p>
+        <p style={{ fontSize:12, color:'var(--t4)' }}>Pagamento via PIX. Ativacao na hora. Cancele quando quiser.</p>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginTop:12 }}>
           <div style={{ width:22, height:22, borderRadius:6, background:'#e5391f', display:'flex', alignItems:'center', justifyContent:'center' }}>
             <NexIcon size={9}/>

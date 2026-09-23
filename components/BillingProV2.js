@@ -261,8 +261,8 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
               Saiba exatamente quanto está lucrando, quais redes performam melhor e onde está perdendo dinheiro.
             </p>
             <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-              <div style={{ minWidth: 240 }}><Btn label="Começar teste grátis" onClick={() => onStart(0)} big /></div>
-              <p style={{ fontSize: 12, color: 'var(--t4)', margin: 0 }}>3 dias grátis · sem cartão</p>
+              <div style={{ minWidth: 240 }}><Btn label="Ativar minha conta" onClick={() => onStart(0)} big /></div>
+              <p style={{ fontSize: 12, color: 'var(--t4)', margin: 0 }}>PIX · ativação na hora</p>
             </div>
           </Reveal>
         </div>
@@ -539,7 +539,7 @@ export default function BillingProV2({ tenantId, basePrice = 59.9, opPrice = 29.
             <div style={{ position: 'relative', display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 14, minWidth: 260 }}>
               <Btn label="Começar teste gratuito" onClick={() => onStart(0)} big />
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-                {['3 dias grátis', 'Sem cartão', 'Cancelamento imediato'].map((t, i) => (
+                {['Pagamento via PIX', 'Ativação na hora', 'Cancelamento imediato'].map((t, i) => (
                   <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--t3)', fontWeight: 600 }}>
                     <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={PROFIT} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>{t}
                   </span>

@@ -1,3 +1,7 @@
+// Metadados da landing. Desde 24/09/2026 ela É a home: o /v2 redireciona
+// pra raiz (next.config.js) e este layout sobrou envolvendo o redirecionamento.
+// Quem manda no que o Google lê é o app/layout.js.
+//
 // Metadados da /v2. Precisa ser um layout porque a página é 'use client' e
 // componente cliente não exporta `metadata`.
 //
@@ -7,7 +11,7 @@
 // Pra refazer: node scripts/og.mjs
 const TITULO = 'Nex Control 2.0 — Controle sua operação CPA em um só lugar'
 const DESC = 'Centralize operadores, metas, faturamento, custos e resultados da sua operação CPA com a Nex Control.'
-const URL = 'https://nexcpa.com.br/v2'
+const URL = 'https://nexcpa.com.br/'
 const OG = 'https://nexcpa.com.br/landing/v2/og.png'
 
 export const metadata = {

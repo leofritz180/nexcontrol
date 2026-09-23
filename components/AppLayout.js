@@ -17,7 +17,6 @@ const Atalhos = dynamic(() => import('./v2/Atalhos'), { ssr: false })
 const RailSelo = dynamic(() => import('./v2/RailSelo'), { ssr: false })
 const VoiceBanner = dynamic(() => import('./VoiceBanner'), { ssr: false })
 const BettifyPromo = dynamic(() => import('./BettifyPromo'), { ssr: false })
-const NetworkLaunchBanner = dynamic(() => import('./NetworkLaunchBanner'), { ssr: false })
 const NetworkDock = dynamic(() => import('./NetworkDock'), { ssr: false })
 const PhoneGate = dynamic(() => import('./PhoneGate'), { ssr: false })
 
@@ -90,7 +89,9 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       <VoiceBanner userEmail={userEmail} />
       {/* Promo Bettify: PERMANENTE — 1x por sessão (todo login/abertura). Some nas telas da própria loja. */}
       {pathname !== '/proxy' && pathname !== '/minhas-proxies' && <BettifyPromo userEmail={userEmail} />}
-      {pathname !== '/network' && <NetworkLaunchBanner userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />}
+      {/* O anúncio de lançamento do Network saiu em 24/09/2026: o módulo está
+          no ar desde julho e vive no menu — seguir anunciando "chegou" era
+          ruído na primeira tela. O Network continua: dock e menu abaixo. */}
       {/* Reativado após upgrade Nano->Micro (08/07) com polling espaçado (90s) pra pegar leve no banco */}
       <NetworkDock userEmail={userEmail} isAdmin={isAdmin} subscription={subscription} tenant={tenant} />
       {/* Confirma WhatsApp de quem ainda nao tem (base existente; novos ja dao no signup) */}

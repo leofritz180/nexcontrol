@@ -1,46 +1,160 @@
 'use client'
 // ─────────────────────────────────────────────────────────────────────────
-// UPSELL DO GRUPO NEX NETWORK — aparece DEPOIS do plano ser aprovado.
+// NEX NETWORK — o convite, depois do plano aprovado.
 //
-// Três telas, nesta ordem:
-//   1. a oferta
-//   2. nome + WhatsApp (ficam salvos no perfil — é assim que o dono monta
-//      a lista de quem entra) e o PIX de R$ 97
-//   3. o link do grupo e o modelo de apresentação, pronto pra copiar
+// A REFERÊNCIA É A PRÓPRIA LANDING /v2: preto #0D0E0F, lime ácido #C8F21D
+// usado em 3–5% da área, serifada grande no título, mono nos detalhes,
+// filete fino separando os blocos. A primeira versão disto era um card
+// branco com botão verde de WhatsApp — parecia banner de plugin, não
+// convite pra sala fechada.
 //
-// POR QUE PEDIR O CONTATO ANTES DE SOLTAR O LINK: sem isso o dono não sabe
-// quem é quem no grupo, e grupo de WhatsApp sem lista vira sala de
-// desconhecidos. O link sai logo em seguida — ninguém fica esperando.
+// POR QUE ESCURO DENTRO DE UM PAINEL CLARO: é ruptura de propósito. Todo o
+// resto da tela é ferramenta; isto é um momento. Um bloco preto no meio do
+// branco diz "isto aqui é outra coisa" antes de qualquer palavra — e é o
+// único lugar do painel onde o lime da marca pode brilhar, porque sobre
+// branco ele não tem contraste pra nada.
+//
+// O QUE NÃO TEM AQUI, e é decisão e não esquecimento: nenhum número de
+// membros, nenhum nome de player, nenhum depoimento. Nada disso existe
+// ainda. Prova social inventada é a coisa mais rápida de desmascarar num
+// nicho pequeno onde todo mundo se conhece — e o dono pediu explicitamente
+// pra nunca inventar isso.
+//
+// O fluxo: convite → nome e WhatsApp → PIX → dentro, com a apresentação
+// pronta. O contato fica salvo no perfil; é o que permite montar a lista
+// de quem está no grupo.
 // ─────────────────────────────────────────────────────────────────────────
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
 import { GRUPO_PRECO, modeloApresentacao, formatarWhatsapp } from '../lib/network-grupo'
 
 const ease = [0.33, 1, 0.68, 1]
+const LIME = '#C8F21D'
+const PRETO = '#0D0E0F'
+const GRAFITE = '#17191A'
+const TINTA = '#F4F4F1'
+const CINZA = '#9A9E9F'
+const MONO = "'JetBrains Mono', ui-monospace, monospace"
+const SERIF = "var(--font-display, 'Instrument Serif', Georgia, serif)"
+
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-const cartao = {
-  borderRadius: 20, padding: 24, background: 'var(--surface)',
-  border: '1px solid var(--b1)', boxShadow: '0 18px 50px rgba(0,0,0,0.10)',
+const palco = {
+  position: 'relative', overflow: 'hidden', borderRadius: 22, marginTop: 18,
+  background: PRETO, border: '1px solid rgba(255,255,255,0.09)',
+  boxShadow: '0 26px 70px rgba(0,0,0,0.30)',
 }
 
-// `demo` serve so pra previa: finge o PIX e a aprovacao, pra dar pra
-// percorrer as quatro telas sem gerar cobranca de verdade.
+/* ── peças ─────────────────────────────────────────────────────────── */
+
+const Olho = ({ children }) => (
+  <span className="nxg-cinza" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: MONO, fontSize: 10, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
+    <span aria-hidden style={{ width: 5, height: 5, borderRadius: '50%', background: LIME, flexShrink: 0 }} />
+    {children}
+  </span>
+)
+
+const Filete = ({ m = '22px 0' }) => (
+  <div aria-hidden style={{ height: 1, margin: m, background: 'linear-gradient(90deg, rgba(255,255,255,0.13), rgba(255,255,255,0.02))' }} />
+)
+
+/* O N gigante ao fundo, cortado pela borda. Nasce do canto e some antes de
+   virar um retângulo colado — ambientação, não logotipo aplicado. */
+const MarcaFundo = () => (
+  <svg aria-hidden viewBox="0 0 100 103" style={{
+    position: 'absolute', right: -38, top: -30, width: 214, height: 214,
+    opacity: 0.055, pointerEvents: 'none',
+    WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 58% 34%, #000 18%, transparent 76%)',
+    maskImage: 'radial-gradient(ellipse 70% 70% at 58% 34%, #000 18%, transparent 76%)',
+  }}>
+    <path d="M0 9.3 31.2 41.6 31.2 100 0 67.4Z" fill={TINTA} />
+    <path d="M68.8 2.5 100 35.1 100 93.2 68.8 60.9Z" fill={TINTA} />
+    <path d="M0 9.3 0 2.5 33.6 2.5 100 73.2 100 100 85.3 100Z" fill={LIME} />
+  </svg>
+)
+
+function BotaoLime({ children, onClick, tipo = 'button', desabilitado, href }) {
+  const parado = useReducedMotion()
+  const base = {
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
+    width: '100%', padding: '15px 20px', borderRadius: 13, border: 'none',
+    cursor: desabilitado ? 'wait' : 'pointer', textDecoration: 'none',
+    fontFamily: 'inherit', fontSize: 14, fontWeight: 800, letterSpacing: '-0.01em',
+    background: LIME, opacity: desabilitado ? 0.65 : 1,
+  }
+  const mov = parado ? {} : {
+    whileHover: { y: -2, boxShadow: '0 14px 34px rgba(200,242,29,0.28)' },
+    whileTap: { y: 0, scale: 0.985 },
+  }
+  // a cor do texto vem de CLASSE: cor em estilo inline é reescrita pela
+  // camada de tradução do tema claro, e o texto some no botão
+  const dentro = <span className="nxg-tinta">{children}</span>
+  return href
+    ? <motion.a href={href} target="_blank" rel="noopener noreferrer" style={base} {...mov}>{dentro}</motion.a>
+    : <motion.button type={tipo} onClick={onClick} disabled={desabilitado} style={base} {...mov}>{dentro}</motion.button>
+}
+
+function CampoEscuro({ rotulo, valor, aoMudar, tipo = 'text', dica }) {
+  return (
+    <label style={{ display: 'block', marginBottom: 15 }}>
+      <span className="nxg-cinza" style={{ display: 'block', fontFamily: MONO, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>{rotulo}</span>
+      <input value={valor} onChange={e => aoMudar(e.target.value)} type={tipo}
+        inputMode={tipo === 'tel' ? 'numeric' : 'text'} placeholder={dica} className="nxg-campo"
+        style={{ width: '100%', padding: '13px 15px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)', background: GRAFITE, fontSize: 14.5, fontFamily: 'inherit', outline: 'none' }} />
+    </label>
+  )
+}
+
+const ESTILO = `
+  .nxg-tinta, .nxg-tinta * { color: ${PRETO} !important; }
+  .nxg-claro, .nxg-claro * { color: ${TINTA} !important; }
+  .nxg-cinza, .nxg-cinza * { color: ${CINZA} !important; }
+  .nxg-lime,  .nxg-lime  * { color: ${LIME} !important; }
+  .nxg-campo { color: ${TINTA} !important; }
+  .nxg-campo::placeholder { color: rgba(244,244,241,0.28) !important; }
+  .nxg-campo:focus { border-color: rgba(200,242,29,0.55) !important; }
+`
+
+/* ── o convite ─────────────────────────────────────────────────────── */
+
 export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userId, demo = false }) {
-  const [etapa, setEtapa] = useState('oferta')   // oferta | dados | pix | dentro
+  const [etapa, setEtapa] = useState('convite')   // convite | dados | pix | dentro | fora
   const [nome, setNome] = useState(nomeInicial)
   const [zap, setZap] = useState('')
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
   const [pix, setPix] = useState(null)
   const [copiado, setCopiado] = useState('')
-  // O link vem do servidor, e só depois do pagamento confirmado — nunca do
-  // bundle, senão entraria quem não pagou.
+  // o link vem do servidor, só depois do pagamento — nunca do bundle
   const [link, setLink] = useState('')
 
   const copiar = async (texto, marca) => {
     try { await navigator.clipboard.writeText(texto); setCopiado(marca); setTimeout(() => setCopiado(''), 2200) } catch {}
+  }
+
+  async function buscarLink() {
+    try {
+      const { data } = await supabase.auth.getSession()
+      const token = data?.session?.access_token
+      if (!token) return
+      const r = await fetch('/api/network-grupo', { headers: { Authorization: 'Bearer ' + token } })
+      if (!r.ok) return
+      const d = await r.json()
+      if (d?.link) setLink(d.link)
+    } catch {}
+  }
+
+  function conferir(id) {
+    if (!id) return
+    const t = setInterval(async () => {
+      try {
+        const r = await fetch(`/api/mercadopago/check-payment?id=${id}`)
+        const d = await r.json()
+        if (d?.status === 'approved') { clearInterval(t); buscarLink(); setEtapa('dentro') }
+      } catch {}
+    }, 4000)
+    setTimeout(() => clearInterval(t), 15 * 60 * 1000)
   }
 
   async function gerar(e) {
@@ -50,8 +164,7 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
     if (String(zap).replace(/\D/g, '').length < 10) { setErro('WhatsApp com DDD, por favor.'); return }
     setCarregando(true)
     if (demo) {
-      const QR = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
-      setPix({ id: 'demo', qr_code: '00020126360014br.gov.bcb.pix…5204000053039865802BR6009SAO PAULO', qr_code_base64: QR })
+      setPix({ id: 'demo', qr_code: '00020126360014br.gov.bcb.pix…5204000053039865802BR', qr_code_base64: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==' })
       setEtapa('pix'); setCarregando(false)
       setTimeout(() => { setLink('https://chat.whatsapp.com/EXEMPLO'); setEtapa('dentro') }, 3500)
       return
@@ -65,148 +178,139 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
       if (!r.ok) { setErro(d?.error || 'Não consegui gerar o PIX.'); setCarregando(false); return }
       setPix(d); setEtapa('pix'); setCarregando(false)
       conferir(d.id || d.payment_id)
-    } catch {
-      setErro('Erro de conexão. Tente de novo.'); setCarregando(false)
-    }
+    } catch { setErro('Erro de conexão. Tente de novo.'); setCarregando(false) }
   }
 
-  // o mesmo ritmo do checkout do plano: pergunta a cada 4s
-  function conferir(id) {
-    if (!id) return
-    const t = setInterval(async () => {
-      try {
-        const r = await fetch(`/api/mercadopago/check-payment?id=${id}`)
-        const d = await r.json()
-        if (d?.status === 'approved') { clearInterval(t); buscarLink(); setEtapa('dentro') }
-      } catch {}
-    }, 4000)
-    setTimeout(() => clearInterval(t), 15 * 60 * 1000)
-  }
-
-  async function buscarLink() {
-    try {
-      const { data } = await supabase.auth.getSession()
-      const token = data?.session?.access_token
-      if (!token) return
-      const r = await fetch('/api/network-grupo', { headers: { Authorization: 'Bearer ' + token } })
-      if (!r.ok) return              // 402 = ainda sem pagamento; a tela já cobre
-      const d = await r.json()
-      if (d?.link) setLink(d.link)
-    } catch {}
-  }
-
+  if (etapa === 'fora') return null
   const apresentacao = modeloApresentacao({ nome: nome.trim() })
 
   return (
-    <AnimatePresence mode="wait">
-      {/* O BRANCO TEM QUE VIR DE CLASSE. Cor branca em estilo INLINE e
-          reescrita pra texto escuro pela camada de traducao do .nx-light —
-          o botao verde saia com texto quase invisivel. Classe nao e
-          alcancada por aquela regra. */}
-      <style>{`.nxg-verde, .nxg-verde * { color: #fff !important; }`}</style>
-      {etapa === 'oferta' && (
-        <motion.div key="oferta" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4, ease }} style={{ ...cartao, marginTop: 16 }}>
-          <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--t3)' }}>
-            Nex Network
-          </span>
-          <h3 style={{ fontSize: 21, fontWeight: 800, color: 'var(--t1)', margin: '10px 0 8px', letterSpacing: '-0.02em' }}>
-            Entre no grupo de quem opera de verdade.
-          </h3>
-          <p style={{ fontSize: 13.5, color: 'var(--t2)', margin: '0 0 18px', lineHeight: 1.6 }}>
-            Grupo fechado no WhatsApp, só com gente que faz CPA. Rede, troca de
-            rede boa, alerta de bloqueio, o que está pagando e o que parou de
-            pagar. Pagamento único — entrou, é pra sempre.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 9, marginBottom: 18 }}>
-            <span style={{ fontFamily: 'var(--mono, monospace)', fontSize: 34, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.03em' }}>
-              R$ {fmt(GRUPO_PRECO)}
-            </span>
-            <span style={{ fontSize: 12.5, color: 'var(--t3)' }}>uma vez só · acesso vitalício</span>
-          </div>
-          <button type="button" className="nxg-verde" onClick={() => setEtapa('dados')}
-            style={{ width: '100%', padding: '14px 18px', borderRadius: 13, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, background: '#22C55E', boxShadow: '0 6px 20px rgba(34,197,94,0.26)' }}>
-            Quero entrar no grupo
-          </button>
-          <button type="button" onClick={() => setEtapa('fora')}
-            style={{ width: '100%', marginTop: 8, padding: '10px', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5, color: 'var(--t3)' }}>
-            Agora não
-          </button>
-        </motion.div>
-      )}
+    <>
+      <style>{ESTILO}</style>
+      <AnimatePresence mode="wait">
 
-      {etapa === 'dados' && (
-        <motion.form key="dados" onSubmit={gerar} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4, ease }} style={{ ...cartao, marginTop: 16 }}>
-          <h3 style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
-            Como te chamamos no grupo?
-          </h3>
-          <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 18px', lineHeight: 1.55 }}>
-            O link sai logo depois do pagamento. O WhatsApp fica salvo pra você
-            não ficar de fora se trocar de aparelho.
-          </p>
-          {[['Seu nome', nome, setNome, 'text', 'Como te chamam'],
-            ['WhatsApp', zap, setZap, 'tel', '(00) 00000-0000']].map(([rot, val, set, tipo, ph]) => (
-            <label key={rot} style={{ display: 'block', marginBottom: 14 }}>
-              <span style={{ display: 'block', fontSize: 11.5, fontWeight: 700, color: 'var(--t2)', marginBottom: 6 }}>{rot}</span>
-              <input value={val} onChange={e => set(e.target.value)} type={tipo} inputMode={tipo === 'tel' ? 'numeric' : 'text'} placeholder={ph}
-                style={{ width: '100%', padding: '12px 14px', borderRadius: 12, border: '1px solid var(--b2)', background: 'var(--fill-1)', color: 'var(--t1)', fontSize: 14, fontFamily: 'inherit', outline: 'none' }} />
-            </label>
-          ))}
-          {erro && <p style={{ fontSize: 12.5, color: 'var(--loss)', margin: '0 0 12px', fontWeight: 600 }}>{erro}</p>}
-          <button type="submit" className="nxg-verde" disabled={carregando}
-            style={{ width: '100%', padding: '14px 18px', borderRadius: 13, border: 'none', cursor: carregando ? 'wait' : 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, background: '#22C55E', opacity: carregando ? 0.7 : 1 }}>
-            {carregando ? 'Gerando PIX…' : `Gerar PIX · R$ ${fmt(GRUPO_PRECO)}`}
-          </button>
-        </motion.form>
-      )}
+        {etapa === 'convite' && (
+          <motion.section key="convite" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease }} style={palco}>
+            <MarcaFundo />
+            <div style={{ position: 'relative', padding: '28px 26px 26px' }}>
+              <Olho>Nex Network</Olho>
 
-      {etapa === 'pix' && pix && (
-        <motion.div key="pix" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4, ease }} style={{ ...cartao, marginTop: 16, textAlign: 'center' }}>
-          <h3 style={{ fontSize: 17, fontWeight: 800, color: 'var(--t1)', margin: '0 0 4px' }}>Pague e entre</h3>
-          <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '0 0 16px' }}>o link do grupo aparece aqui assim que cair</p>
-          {pix.qr_code_base64 && (
-            <img src={`data:image/png;base64,${pix.qr_code_base64}`} alt="QR do PIX" width={196} height={196}
-              style={{ borderRadius: 14, display: 'block', margin: '0 auto 14px', background: '#fff', padding: 8 }} />
-          )}
-          <button type="button" onClick={() => copiar(pix.qr_code || pix.pix_payload, 'pix')}
-            style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid var(--b2)', background: 'var(--fill-1)', color: 'var(--t1)', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
-            {copiado === 'pix' ? 'Copiado ✓' : 'Copiar código PIX'}
-          </button>
-        </motion.div>
-      )}
+              <h3 className="nxg-claro" style={{ fontFamily: SERIF, fontSize: 31, fontWeight: 400, lineHeight: 1.06, letterSpacing: '-0.02em', margin: '18px 0 0' }}>
+                Um grupo fechado.<br />Só quem opera.
+              </h3>
 
-      {etapa === 'dentro' && (
-        <motion.div key="dentro" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} style={{ ...cartao, marginTop: 16 }}>
-          <h3 style={{ fontSize: 19, fontWeight: 800, color: 'var(--t1)', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
-            Você está dentro, {nome.split(' ')[0]}.
-          </h3>
-          <p style={{ fontSize: 13, color: 'var(--t2)', margin: '0 0 18px', lineHeight: 1.6 }}>
-            {link
-              ? 'Entre pelo link abaixo e cole a apresentação. É a regra da casa: todo mundo se apresenta ao chegar.'
-              : `Salvamos seu contato: ${formatarWhatsapp(zap)}. Você é adicionado ao grupo em até algumas horas — já deixe a apresentação copiada.`}
-          </p>
+              <Filete />
 
-          {link && (
-            <a href={link} className="nxg-verde" target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px 18px', borderRadius: 13, textDecoration: 'none', fontSize: 14, fontWeight: 800, background: '#22C55E', boxShadow: '0 6px 20px rgba(34,197,94,0.26)', marginBottom: 16 }}>
-              Abrir o grupo no WhatsApp
-            </a>
-          )}
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                {[
+                  'A rede que está pagando hoje — e a que parou',
+                  'Aviso de bloqueio antes de você descobrir sozinho',
+                  'Gente que fecha meta, não que fala sobre fechar',
+                ].map(t => (
+                  <li key={t} className="nxg-claro" style={{ display: 'flex', gap: 11, fontSize: 13.5, lineHeight: 1.5, padding: '9px 0' }}>
+                    <span aria-hidden style={{ width: 4, height: 4, borderRadius: '50%', background: LIME, flexShrink: 0, marginTop: 8 }} />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
 
-          <div style={{ padding: 16, borderRadius: 14, background: 'var(--fill-1)', border: '1px solid var(--b1)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
-              <span style={{ fontSize: 11.5, fontWeight: 800, color: 'var(--t1)' }}>Sua apresentação</span>
-              <button type="button" onClick={() => copiar(apresentacao, 'texto')}
-                style={{ padding: '6px 12px', borderRadius: 9, border: '1px solid var(--b2)', background: 'var(--surface)', color: 'var(--t2)', fontFamily: 'inherit', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}>
-                {copiado === 'texto' ? 'Copiado ✓' : 'Copiar'}
+              <Filete />
+
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, marginBottom: 20 }}>
+                <span className="nxg-claro" style={{ fontFamily: MONO, fontSize: 38, fontWeight: 700, letterSpacing: '-0.045em', lineHeight: 1 }}>
+                  R$ {fmt(GRUPO_PRECO)}
+                </span>
+                <span className="nxg-cinza" style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.14em', textTransform: 'uppercase', textAlign: 'right', lineHeight: 1.8 }}>
+                  pagamento único<br />acesso vitalício
+                </span>
+              </div>
+
+              <BotaoLime onClick={() => setEtapa('dados')}>Entrar no grupo</BotaoLime>
+              <button type="button" onClick={() => setEtapa('fora')} className="nxg-cinza"
+                style={{ width: '100%', marginTop: 10, padding: 8, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5 }}>
+                agora não
               </button>
             </div>
-            <pre style={{ margin: 0, fontFamily: 'inherit', fontSize: 12.5, color: 'var(--t2)', lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>{apresentacao}</pre>
-            <p style={{ fontSize: 11, color: 'var(--t4)', margin: '12px 0 0', lineHeight: 1.5 }}>
-              Complete a idade, o estado, sua experiência e o @ do Instagram antes de enviar.
-            </p>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </motion.section>
+        )}
+
+        {etapa === 'dados' && (
+          <motion.form key="dados" onSubmit={gerar} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease }} style={palco}>
+            <div style={{ position: 'relative', padding: '28px 26px 26px' }}>
+              <Olho>Quase lá</Olho>
+              <h3 className="nxg-claro" style={{ fontFamily: SERIF, fontSize: 26, fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.02em', margin: '16px 0 9px' }}>
+                Como te chamam lá dentro?
+              </h3>
+              <p className="nxg-cinza" style={{ fontSize: 12.5, lineHeight: 1.6, margin: '0 0 22px' }}>
+                O link sai assim que o pagamento cair. O WhatsApp fica guardado
+                pra você não ficar de fora se trocar de aparelho.
+              </p>
+
+              <CampoEscuro rotulo="Seu nome" valor={nome} aoMudar={setNome} dica="Como te chamam" />
+              <CampoEscuro rotulo="WhatsApp" valor={zap} aoMudar={setZap} tipo="tel" dica="(00) 00000-0000" />
+
+              {erro && <p className="nxg-lime" style={{ fontSize: 12.5, fontWeight: 600, margin: '0 0 14px' }}>{erro}</p>}
+
+              <BotaoLime tipo="submit" desabilitado={carregando}>
+                {carregando ? 'Gerando PIX…' : `Gerar PIX · R$ ${fmt(GRUPO_PRECO)}`}
+              </BotaoLime>
+            </div>
+          </motion.form>
+        )}
+
+        {etapa === 'pix' && pix && (
+          <motion.section key="pix" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease }} style={palco}>
+            <div style={{ position: 'relative', padding: '28px 26px 26px', textAlign: 'center' }}>
+              <Olho>Aguardando o PIX</Olho>
+              {pix.qr_code_base64 && (
+                <img src={`data:image/png;base64,${pix.qr_code_base64}`} alt="QR do PIX" width={188} height={188}
+                  style={{ display: 'block', margin: '22px auto 18px', borderRadius: 14, background: '#fff', padding: 10 }} />
+              )}
+              <button type="button" onClick={() => copiar(pix.qr_code, 'pix')} className="nxg-claro"
+                style={{ width: '100%', padding: '13px 16px', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, background: GRAFITE, border: '1px solid rgba(255,255,255,0.14)' }}>
+                {copiado === 'pix' ? 'Copiado ✓' : 'Copiar código PIX'}
+              </button>
+              <p className="nxg-cinza" style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.14em', textTransform: 'uppercase', margin: '16px 0 0' }}>
+                o link aparece aqui sozinho
+              </p>
+            </div>
+          </motion.section>
+        )}
+
+        {etapa === 'dentro' && (
+          <motion.section key="dentro" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} style={palco}>
+            <MarcaFundo />
+            <div style={{ position: 'relative', padding: '28px 26px 26px' }}>
+              <Olho>Você está dentro</Olho>
+              <h3 className="nxg-claro" style={{ fontFamily: SERIF, fontSize: 28, fontWeight: 400, lineHeight: 1.08, letterSpacing: '-0.02em', margin: '18px 0 10px' }}>
+                Bem-vindo, {(nome || '').split(' ')[0]}.
+              </h3>
+              <p className="nxg-cinza" style={{ fontSize: 12.5, lineHeight: 1.6, margin: '0 0 20px' }}>
+                {link
+                  ? 'Entre pelo link e cole a apresentação. É a regra da casa: todo mundo se apresenta ao chegar.'
+                  : `Guardamos seu contato: ${formatarWhatsapp(zap)}. Você entra no grupo em algumas horas — já deixe a apresentação copiada.`}
+              </p>
+
+              {link && <BotaoLime href={link}>Abrir o grupo no WhatsApp</BotaoLime>}
+
+              <div style={{ marginTop: link ? 18 : 0, padding: 18, borderRadius: 14, background: GRAFITE, border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
+                  <Olho>Sua apresentação</Olho>
+                  <button type="button" onClick={() => copiar(apresentacao, 'texto')} className="nxg-claro"
+                    style={{ padding: '6px 13px', borderRadius: 9, cursor: 'pointer', fontFamily: 'inherit', fontSize: 11.5, fontWeight: 700, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)' }}>
+                    {copiado === 'texto' ? 'Copiado ✓' : 'Copiar'}
+                  </button>
+                </div>
+                <pre className="nxg-claro" style={{ margin: 0, fontFamily: 'inherit', fontSize: 12.5, lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{apresentacao}</pre>
+                <p className="nxg-cinza" style={{ fontSize: 11, lineHeight: 1.55, margin: '14px 0 0' }}>
+                  Complete a idade, o estado, sua experiência e o @ do Instagram antes de enviar.
+                </p>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+      </AnimatePresence>
+    </>
   )
 }

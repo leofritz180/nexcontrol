@@ -61,8 +61,62 @@ function Trancado({ precoExtra = 40 }) {
   )
 }
 
+/* As duas vitrines concretas ao lado do cartão principal.
+   O /faturamento antigo tinha TRÊS: projeção de lucro, comparativo de
+   operadores e "heatmap de performance — melhores dias e horários". As duas
+   primeiras existem no produto; a terceira NÃO existe e nunca existiu — o
+   heatmap do /redes é um tratamento de cor no ranking de redes, não um mapa
+   de dias e horários. Um cartão trancado promete que pagar destrava o que
+   está ali dentro, então ele não voltou. */
+const VITRINES = [
+  {
+    t: 'Projeção de fechamento',
+    d: 'Quanto a operação fecha no ritmo atual, a partir das metas já fechadas.',
+    amostra: (
+      <>
+        <span style={{ display: 'block', width: '58%', height: 12, borderRadius: 4, background: 'var(--fill-2)' }} />
+        <span style={{ display: 'block', width: '38%', height: 16, borderRadius: 4, background: 'var(--fill-1)', marginTop: 6 }} />
+      </>
+    ),
+  },
+  {
+    t: 'Comparativo de operadores',
+    d: 'A performance de cada um lado a lado: acerto, volume e lucro.',
+    amostra: (
+      <>
+        {[74, 58, 42].map(w => (
+          <span key={w} style={{ display: 'block', width: w + '%', height: 9, borderRadius: 4, background: 'var(--fill-2)', marginBottom: 5 }} />
+        ))}
+      </>
+    ),
+  },
+]
+
+function Vitrine({ t, d, amostra, delay }) {
+  return (
+    <BCard pad={20} delay={delay}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <Ico d={CADEADO} c="var(--t4)" s={13} />
+        <p style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.01em' }}>{t}</p>
+      </div>
+      <p style={{ fontSize: 12, color: 'var(--t3)', margin: '0 0 14px', lineHeight: 1.55 }}>{d}</p>
+      <div aria-hidden style={{ opacity: 0.55 }}>{amostra}</div>
+    </BCard>
+  )
+}
+
 export default function LeituraBento({ pro = true, insights = [], alertas = [], saude, projecao }) {
-  if (!pro) return <Trancado />
+  if (!pro) {
+    return (
+      <div className="bk-leitura" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, alignItems: 'start' }}>
+        <Trancado />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {VITRINES.map((v, k) => <Vitrine key={v.t} {...v} delay={0.28 + k * 0.04} />)}
+        </div>
+        <style>{`@media (max-width:1000px){ .bk-leitura{grid-template-columns:1fr !important} }`}</style>
+      </div>
+    )
+  }
 
   const cor = tintaSaude(saude?.level)
   const ins = Array.isArray(insights) ? insights : []
@@ -70,7 +124,8 @@ export default function LeituraBento({ pro = true, insights = [], alertas = [], 
   const proj = projecao && projecao.target > 0 && projecao.pct < 100 ? projecao : null
 
   return (
-    <div className="bk-leitura" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, alignItems: 'start' }}>
+    // data-tour: o passo "Leitura da operação" do tour aponta pra ca.
+    <div data-tour="fat-insights" className="bk-leitura" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, alignItems: 'start' }}>
 
       <BCard pad={24} delay={0.24}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>

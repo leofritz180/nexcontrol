@@ -40,9 +40,13 @@ function noRamoAntigo(txt, ancora) {
 
 const orfas = [], vivas = [], ausentes = []
 for (const a of ancoras.sort()) {
-  const onde = [...conteudo].filter(([, t]) => t.includes(`data-tour="${a}"`)).map(([f]) => f)
+  const formas = [`data-tour="${a}"`, `tour="${a}"`, `'${a}'`, `"${a}"`]
+  const onde = [...conteudo].filter(([f, t]) => formas.some(x => t.includes(x)) && !/tour-config/.test(f)).map(([f]) => f)
   if (!onde.length) { ausentes.push(a); continue }
-  if (onde.every(f => noRamoAntigo(conteudo.get(f), a) === true)) orfas.push([a, onde])
+  // so conta como orfa se TODOS os usos caem em ramo antigo E nenhum
+  // componente do v2 a menciona de alguma forma
+  const noV2 = onde.some(f => f.includes('components') && /modules|admin|v2/.test(f))
+  if (!noV2 && onde.every(f => noRamoAntigo(conteudo.get(f), a) !== false)) orfas.push([a, onde])
   else vivas.push(a)
 }
 

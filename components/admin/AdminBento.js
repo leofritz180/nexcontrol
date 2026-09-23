@@ -468,7 +468,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.28 }}>
+        <motion.div data-tour="kpis-grid" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.28 }}>
           <div style={{ height: '100%', borderRadius: 24, padding: 24, background: 'var(--profit-dim)', border: '1px solid var(--profit-border)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 18 }}>
               <Chip bg="var(--surface)"><Ico d={<path d="M3 17l6-6 4 4 8-8" />} c="var(--profit)" s={17} /></Chip>

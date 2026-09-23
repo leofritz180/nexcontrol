@@ -102,10 +102,19 @@ const MODULOS = [
    valor que o checkout cobra hoje — assim a landing nunca descola dele.
    Os outros quatro são pacotes comerciais desta versão.
 
-   ⚠ lib/pricing.js ainda calcula equipe como base + R$ 29,90 por operador
-   com desconto progressivo. Enquanto o checkout não conhecer os pacotes,
-   quem clicar num CTA do Scale vai ver outro valor na hora de pagar. O
-   ?plano= já vai na URL para o checkout ler quando for ligado.
+   Os pacotes entraram no ar em 23/09/2026 (PACOTES_ATIVOS em lib/pricing.js),
+   então o valor daqui é o que o checkout cobra. A DUPLA esteve fora desta
+   página até 24/09 porque a seção foi escrita antes dos pacotes existirem —
+   e ela é justamente onde quase toda equipe cai: 14 dos 15 clientes com
+   equipe têm um ou dois operadores. Sem ela, a porta de entrada aparecia
+   como R$ 169,90 em vez de R$ 129,90.
+
+   A ESCADA DA EQUIPE É DE VAGAS, NÃO DE RECURSOS. Dupla, Scale 3, 6 e 10
+   entregam exatamente as mesmas ferramentas — muda quantos operadores
+   cabem. A versão anterior listava "comparação de desempenho entre
+   operadores" como novidade do Scale 6, o que dava a entender que a Dupla
+   não tinha; tem, desde o primeiro operador. Por isso os cartões de
+   capacidade usam mesmas em vez de herda.
 
    CONFERIDO NO PRODUTO antes de escrever (nada aqui é promessa vazia):
      projeção de fechamento  → app/faturamento (predictions.dailyAvg → diasRestantes)
@@ -160,35 +169,47 @@ const PLANOS = {
     estagio: <><b>Sua operação cresceu.</b> O seu controle precisa crescer junto.</>,
     cartoes: [
       {
-        id: 'scale-3',
-        nome: 'Scale 3',
-        preco: 169.90,
-        vagas: 'Administrador + até 3 operadores',
+        id: 'dupla',
+        nome: 'Dupla',
+        preco: 129.90,
+        vagas: 'Administrador + até 2 operadores',
+        selo: 'Mais recomendado',
+        destaque: true,
         linha: 'A hora de parar de acompanhar de cabeça quem está entregando o quê.',
         herda: 'Solo Pro',
         marcas: [
           'Operadores com acesso próprio, separado do administrador',
           'Metas atribuídas a cada operador',
           'Visão consolidada da equipe',
-          'Ranking e acompanhamento de produtividade',
+          'Ranking e comparação de desempenho entre operadores',
           'Gestão centralizada dos acessos',
         ],
-        cta: 'Começar com Scale 3',
+        cta: 'Começar com a Dupla',
+      },
+      {
+        id: 'scale-3',
+        nome: 'Scale 3',
+        preco: 169.90,
+        vagas: 'Administrador + até 3 operadores',
+        linha: 'A mesma operação, com mais uma pessoa dentro.',
+        mesmas: 'Dupla',
+        marcas: [
+          'Até 3 operadores na mesma operação',
+          'Ranking e comparação com a equipe inteira',
+        ],
+        cta: 'Escolher Scale 3',
       },
       {
         id: 'scale-6',
         nome: 'Scale 6',
         preco: 259.90,
         vagas: 'Administrador + até 6 operadores',
-        selo: 'Para operações em crescimento',
-        destaque: true,
         linha: 'Equipe maior, e a leitura de quem puxa o resultado para cima.',
-        herda: 'Scale 3',
+        mesmas: 'Dupla',
         marcas: [
-          'Comparação de desempenho entre operadores',
+          'Até 6 operadores na mesma operação',
           'Visão gerencial da operação inteira',
           'Métricas consolidadas por período',
-          'Acompanhamento das metas da operação',
         ],
         cta: 'Escolher Scale 6',
       },
@@ -198,12 +219,11 @@ const PLANOS = {
         preco: 399.90,
         vagas: 'Administrador + até 10 operadores',
         linha: 'Visão completa da operação sem precisar controlar tudo na mão.',
-        herda: 'Scale 6',
+        mesmas: 'Dupla',
         marcas: [
+          'Até 10 operadores na mesma operação',
           'Visão geral e individual lado a lado',
-          'Análise de produtividade por operador',
           'Relatórios gerenciais por período',
-          'Estrutura pronta para operação profissional',
         ],
         cta: 'Escolher Scale 10',
       },
@@ -802,7 +822,9 @@ export default function V2Page() {
                 {p.vagas && <span className="nv2-plano-vagas"><i />{p.vagas}</span>}
 
                 <p className="nv2-plano-herda">
-                  {p.herda ? `Tudo do ${p.herda}, mais:` : 'O essencial da operação:'}
+                  {p.mesmas
+                    ? `As mesmas ferramentas da ${p.mesmas}, com mais lugares:`
+                    : p.herda ? `Tudo do ${p.herda}, mais:` : 'O essencial da operação:'}
                 </p>
                 <ul className="nv2-marcas">
                   {p.marcas.map(t => (

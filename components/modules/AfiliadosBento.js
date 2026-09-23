@@ -163,23 +163,30 @@ export default function AfiliadosBento({
   const mascarado = codigo ? codigo.slice(0, 2) + '••••' + codigo.slice(-2) : '••••••••'
   const temPix = !!pixChave
 
-  // Mesmas mensagens da tela antiga, palavra por palavra.
+  // ATENÇÃO AO EDITAR: isto não é copy nossa — é o texto que o cliente copia
+  // e manda pro contato dele, com o nome dele junto. Uma promessa errada
+  // aqui queima a palavra DELE, não a nossa.
+  //
+  // Até 24/09/2026 as quatro diziam "3 dias grátis" e o e-mail dizia
+  // "operadores ilimitados". O teste grátis acabou em 20/08 e o limite
+  // virou pacote em 23/09 — os afiliados prometiam as duas coisas sem
+  // saber. Nada aqui pode prometer o que o produto não entrega.
   const MODELOS = {
     whatsapp: {
       label: 'WhatsApp', icone: I_WHATS,
-      texto: `Mano, descobri um sistema que organiza toda operação de CPA. Metas, operadores, BAU, lucro líquido — tudo num lugar só. Testa grátis 3 dias 👇\n\n${link}`,
+      texto: `Mano, descobri um sistema que organiza toda operação de CPA. Metas, operadores, BAU, lucro líquido — tudo num lugar só. Dá uma olhada 👇\n\n${link}`,
     },
     instagram: {
       label: 'Instagram', icone: I_INSTAGRAM,
-      texto: `🎯 Operação de CPA organizada de verdade.\n\nSistema com metas, operadores, BAU, ranking e fechamento automático.\n\n3 dias grátis 👇\n${link}`,
+      texto: `🎯 Operação de CPA organizada de verdade.\n\nSistema com metas, operadores, BAU, ranking e fechamento automático.\n\nAtivação na hora via PIX 👇\n${link}`,
     },
     dm: {
       label: 'DM longo', icone: I_DM,
-      texto: `Cara, se tu opera com CPA isso vai te ajudar muito.\n\nÉ o NexControl — sistema feito pra essa nossa operação:\n\n✅ Metas + remessas organizadas\n✅ BAU automático\n✅ Lucro líquido na hora\n✅ Push em tempo real\n✅ Multi operador\n\nTestei e virei cliente. 3 dias grátis:\n\n${link}\n\nQualquer dúvida me chama.`,
+      texto: `Cara, se tu opera com CPA isso vai te ajudar muito.\n\nÉ o NexControl — sistema feito pra essa nossa operação:\n\n✅ Metas + remessas organizadas\n✅ BAU automático\n✅ Lucro líquido na hora\n✅ Push em tempo real\n✅ Operadores com acesso próprio\n\nTestei e virei cliente. O link:\n\n${link}\n\nQualquer dúvida me chama.`,
     },
     email: {
       label: 'E-mail', icone: I_EMAIL,
-      texto: `Olá!\n\nQueria te apresentar o NexControl — sistema completo pra gerenciar operação de CPA / iGaming.\n\nO sistema cobre:\n- Gestão de metas e remessas\n- Operadores ilimitados\n- BAU e lucro automático\n- Push em tempo real\n- Painel de fechamento\n\n3 dias grátis: ${link}\n\nAbraço${nome ? ',\n' + nome : ''}`,
+      texto: `Olá!\n\nQueria te apresentar o NexControl — sistema completo pra gerenciar operação de CPA / iGaming.\n\nO sistema cobre:\n- Gestão de metas e remessas\n- Operadores com acesso próprio\n- BAU e lucro automático\n- Push em tempo real\n- Painel de fechamento\n\nPagamento via PIX, ativação na hora: ${link}\n\nAbraço${nome ? ',\n' + nome : ''}`,
     },
   }
 
@@ -243,6 +250,8 @@ export default function AfiliadosBento({
       />
 
       {/* ── HERÓI: o link é o produto desta tela, então ele fica no topo ── */}
+      {/* data-tour="afil-link": o passo "Seu link único" aponta pra ca. */}
+      <div data-tour="afil-link">
       <Tilt>
         <BCard pad="28px 30px" blob={['var(--profit-dim)', 'var(--profit-border)']} delay={0.04}>
           <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 12px' }}>
@@ -302,8 +311,11 @@ export default function AfiliadosBento({
           </div>
         </BCard>
       </Tilt>
+      </div>
 
       {/* ── TIRA DE CONVERSÃO ── */}
+      {/* data-tour="afil-kpis": o passo "Comissão acumulada" aponta pra ca. */}
+      <div data-tour="afil-kpis">
       <Tira itens={[
         { l: 'Indicados', v: int(t.totalIndicados) },
         { l: 'Convertidos', v: int(convertidos), c: 'var(--profit)', hint: `${Number(t.totalIndicados) > 0 ? Math.round((convertidos / Number(t.totalIndicados)) * 100) : 0}% viraram PRO` },
@@ -312,6 +324,7 @@ export default function AfiliadosBento({
         { l: 'A receber', v: money0(t.pendente), c: RED },
         { l: 'Já pago', v: money0(t.pago), c: 'var(--profit)' },
       ]} />
+      </div>
 
       {/* ── SIMULADOR + ROSCA DA COMISSÃO ── */}
       <div className="afb-2" style={{ display: 'grid', gridTemplateColumns: '1.25fr 1fr', gap: 14 }}>

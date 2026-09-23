@@ -87,14 +87,18 @@ export default function MyOpsBento({
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
       {/* ── cabeçalho ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
+      {/* data-tour: os passos "Minha operação" e "Criar minha meta" do tour
+          apontam pra estes dois elementos (lib/tour-config.js). Eles viviam
+          só no ramo antigo; sem eles aqui, a caixa de explicação flutua no
+          meio da tela sem marcar nada. */}
+      <div data-tour="myops-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
         <div>
           <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.03em' }}>Minha operação</h2>
           <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '3px 0 0' }}>
             {ativas.length} ativa{ativas.length === 1 ? '' : 's'} · {fechadas.length} encerrada{fechadas.length === 1 ? '' : 's'} · {fmt0(contasProc)} contas
           </p>
         </div>
-        <motion.button type="button" onClick={onToggleForm}
+        <motion.button type="button" data-tour="myops-new" onClick={onToggleForm}
           whileHover={{ y: -2, boxShadow: showForm ? 'none' : '0 14px 32px rgba(229,57,31,0.36)' }} whileTap={{ scale: 0.97 }}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30,

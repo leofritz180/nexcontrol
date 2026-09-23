@@ -63,6 +63,8 @@ export default function RedesBento({ kpis, redesData = [], onAbrir }) {
             dot: Number(r.lucroFinal) >= 0 ? undefined : 'var(--loss)',
           }))}
         />
+        {/* data-tour: o passo "Ranking por rede" aponta pra esta lista. */}
+        <div data-tour="redes-ranking">
         <Lista
           titulo="Volume por rede"
           vazio="Nenhuma rede com meta fechada."
@@ -76,6 +78,7 @@ export default function RedesBento({ kpis, redesData = [], onAbrir }) {
             onClick: onAbrir ? () => onAbrir(r) : undefined,
           }))}
         />
+        </div>
       </div>
       <style>{`@media (max-width:1000px){ .bk-2{grid-template-columns:1fr!important} .bk-tira{grid-template-columns:repeat(2,1fr)!important} }`}</style>
     </div>

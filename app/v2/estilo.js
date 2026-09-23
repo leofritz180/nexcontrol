@@ -401,6 +401,7 @@ export default function EstiloV2() {
       }
       /* dois cartoes nao esticam pelos 1180px: ficariam largos e vazios */
       .nv2-planos[data-n='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 760px; }
+      .nv2-planos[data-n='4'] { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 
       .nv2-plano { display: flex; flex-direction: column; padding: 30px 26px 26px; }
       .nv2-plano--top { background: var(--graf2); border-color: rgba(200,242,29,0.30); }
@@ -472,6 +473,7 @@ export default function EstiloV2() {
 
       /* ══ TABLET ══════════════════════════════════════════════════════ */
       @media (max-width: 1024px) {
+        .nv2-planos[data-n='4'] { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
         .nv2-sec { padding: 96px 0; }
         .nv2-nav { display: none; }
         .nv2-bento > .col4, .nv2-bento > .col3, .nv2-bento > .col2 { grid-column: span 3; }
@@ -562,7 +564,7 @@ export default function EstiloV2() {
         .nv2-seletor { display: flex; width: 100%; }
         .nv2-seletor button { flex: 1; padding: 0 10px; font-size: 13.5px; }
         .nv2 .nv2-estagio { font-size: 14.5px; }
-        .nv2-planos, .nv2-planos[data-n='2'] { grid-template-columns: 1fr; max-width: none; }
+        .nv2-planos, .nv2-planos[data-n='2'], .nv2-planos[data-n='4'] { grid-template-columns: 1fr; max-width: none; }
         .nv2-plano { padding: 26px 22px 22px; }
         /* sem altura minima: empilhado, nao ha o que alinhar */
         .nv2 .nv2-plano-linha { min-height: 0; }

@@ -27,9 +27,9 @@ const PASTA = path.join(process.cwd(), '.telas', 'upsell')
 
 const CHROMES = [
   process.env.CHROME_PATH,
-  'C:\Program Files\Google\Chrome\Application\chrome.exe',
-  'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
-  'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe',
+  'C:/Program Files/Google/Chrome/Application/chrome.exe',
+  'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
+  'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
 ].filter(Boolean)
 const navegador = CHROMES.find(p => fs.existsSync(p))
 if (!navegador) { console.error('Nenhum Chrome/Edge encontrado.'); process.exit(1) }
@@ -70,4 +70,4 @@ await espera(4000)
 await foto('4-dentro')
 
 await nav.close()
-console.log('\nPronto:', path.relative(process.cwd(), PASTA))
+console.log('/nPronto:', path.relative(process.cwd(), PASTA))

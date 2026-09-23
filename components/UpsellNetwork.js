@@ -48,9 +48,12 @@ const palco = {
 
 /* ── peças ─────────────────────────────────────────────────────────── */
 
-const Olho = ({ children }) => (
+const Olho = ({ children, pulsa }) => (
   <span className="nxg-cinza" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: MONO, fontSize: 10, fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-    <span aria-hidden style={{ width: 5, height: 5, borderRadius: '50%', background: LIME, flexShrink: 0 }} />
+    <motion.span aria-hidden
+      animate={pulsa ? { opacity: [1, 0.25, 1] } : {}}
+      transition={pulsa ? { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } : {}}
+      style={{ width: 5, height: 5, borderRadius: '50%', background: LIME, flexShrink: 0 }} />
     {children}
   </span>
 )
@@ -130,7 +133,7 @@ function CampoEscuro({ rotulo, valor, aoMudar, tipo = 'text', dica }) {
       <span className="nxg-cinza" style={{ display: 'block', fontFamily: MONO, fontSize: 9.5, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 8 }}>{rotulo}</span>
       <input value={valor} onChange={e => aoMudar(e.target.value)} type={tipo}
         inputMode={tipo === 'tel' ? 'numeric' : 'text'} placeholder={dica} className="nxg-campo"
-        style={{ width: '100%', padding: '13px 15px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)', background: GRAFITE, fontSize: 14.5, fontFamily: 'inherit', outline: 'none' }} />
+        style={{ width: '100%', fontSize: 14.5, fontFamily: 'inherit', outline: 'none' }} />
     </label>
   )
 }
@@ -140,9 +143,20 @@ const ESTILO = `
   .nxg-claro, .nxg-claro * { color: ${TINTA} !important; }
   .nxg-cinza, .nxg-cinza * { color: ${CINZA} !important; }
   .nxg-lime,  .nxg-lime  * { color: ${LIME} !important; }
-  .nxg-campo { color: ${TINTA} !important; }
-  .nxg-campo::placeholder { color: rgba(244,244,241,0.28) !important; }
-  .nxg-campo:focus { border-color: rgba(200,242,29,0.55) !important; }
+  .nxg-campo:not(#_):not(#_) {
+    background: ${GRAFITE} !important;
+    border: 1px solid rgba(255,255,255,0.14) !important;
+    color: ${TINTA} !important;
+    border-radius: 12px !important;
+    padding: 13px 15px !important;
+    box-shadow: none !important;
+  }
+  .nxg-campo:not(#_):not(#_)::placeholder { color: rgba(244,244,241,0.28) !important; }
+  .nxg-campo:not(#_):not(#_):hover { border-color: rgba(255,255,255,0.22) !important; }
+  .nxg-campo:not(#_):not(#_):focus {
+    border-color: rgba(200,242,29,0.55) !important;
+    box-shadow: 0 0 0 3px rgba(200,242,29,0.12) !important;
+  }
 `
 
 /* ── o convite ─────────────────────────────────────────────────────── */
@@ -290,7 +304,10 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
         {etapa === 'pix' && pix && (
           <motion.section key="pix" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease }} style={palco}>
             <div style={{ position: 'relative', padding: '28px 26px 26px', textAlign: 'center' }}>
-              <Olho>Aguardando o PIX</Olho>
+              <Olho pulsa>Aguardando o PIX</Olho>
+              <p className="nxg-claro" style={{ fontFamily: MONO, fontSize: 26, fontWeight: 700, letterSpacing: '-0.04em', margin: '14px 0 0' }}>
+                R$ {fmt(GRUPO_PRECO)}
+              </p>
               {pix.qr_code_base64 ? (
                 <img src={`data:image/png;base64,${pix.qr_code_base64}`} alt="QR do PIX" width={188} height={188}
                   style={{ display: 'block', margin: '22px auto 18px', borderRadius: 14, background: '#fff', padding: 10 }} />

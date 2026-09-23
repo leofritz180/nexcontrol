@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import { PLANS, getPlan } from '../../lib/plans'
 import { calculatePrice as calcOpTier, PACOTES_ATIVOS, pacotePara } from '../../lib/pricing'
+import UpsellNetwork from '../../components/UpsellNetwork'
 
 const ease = [0.33, 1, 0.68, 1]
 const fmt = v => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -258,6 +259,15 @@ export default function BillingMpPage() {
           {stage === 'approved' && (
             <motion.div key="approved" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease }}>
               <ApprovedCard />
+              {/* O grupo so e oferecido DEPOIS do plano aprovado: antes,
+                  competiria com a assinatura, que e o que sustenta o
+                  negocio. Aqui a decisao ja esta tomada e a confianca alta. */}
+              <UpsellNetwork
+                nomeInicial={profile?.nome || ''}
+                email={user?.email}
+                tenantId={profile?.tenant_id}
+                userId={user?.id}
+              />
             </motion.div>
           )}
 

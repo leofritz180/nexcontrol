@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { getPlan } from '../../../../lib/plans'
 import { calculatePrice as calcOpTier } from '../../../../lib/pricing'
+import { GRUPO_PRECO, normalizarWhatsapp } from '../../../../lib/network-grupo'
 
 // Cria cobranca PIX via Mercado Pago.
 // Aceita amount variavel (plano base, upgrade de operador, etc).
@@ -24,6 +25,8 @@ export async function POST(req) {
       plan_id,
       operator_count: operatorCountIn,
       plan_period, // 'monthly' | 'quarterly' | 'semiannual' | 'annual'
+      tipo,        // 'avulso' = compra unica que NAO e assinatura
+      whatsapp,    // so no avulso do grupo: fica salvo no perfil
     } = body
 
     if (!email || !name) {
@@ -45,6 +48,93 @@ export async function POST(req) {
       if (!profile) return NextResponse.json({ error: 'Usuario nao encontrado' }, { status: 404 })
       tenantId = tenantId || profile.tenant_id
       userId = userId || profile.id
+    }
+
+    // ═════════════════════════════════════════════════════════════════════
+    // COMPRA AVULSA (hoje: o grupo Nex Network, R$ 97 vitalicio).
+    //
+    // Sai ANTES de toda a maquina de assinatura porque nao e assinatura:
+    // nao tem operador, nao tem ciclo, nao renova e nao mexe em limite. Se
+    // passasse pelo caminho normal, a validacao anti-fraude devolveria
+    // "Nada a adicionar" ou exigiria o preco cheio do plano — as duas
+    // travas existem justamente pra impedir pagamento solto, e aqui o
+    // pagamento solto e o produto.
+    //
+    // O VALOR E FIXO NO SERVIDOR. O cliente nao escolhe quanto paga.
+    // ═════════════════════════════════════════════════════════════════════
+    if (tipo === 'avulso') {
+      const valor = GRUPO_PRECO
+
+      // WhatsApp e nome ficam no proprio perfil — colunas que ja existem.
+      // E o que permite o dono montar a lista de quem entra no grupo.
+      if (whatsapp) {
+        const fone = normalizarWhatsapp(whatsapp)
+        if (!fone) return NextResponse.json({ error: 'WhatsApp inválido. Use DDD + número.' }, { status: 400 })
+        try {
+          await sb.from('profiles').update({ phone: fone, nome: name || undefined }).eq('id', userId)
+        } catch (e) { console.error('[MP avulso] nao salvou o contato', e?.message) }
+      }
+
+      // reaproveita PIX pendente do mesmo valor (mesma regra do resto)
+      try {
+        const corte = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+        const { data: existe } = await sb.from('mp_payments')
+          .select('mp_payment_id,pix_qr_code,pix_qr_code_base64')
+          .eq('user_id', userId).eq('status', 'pending').eq('amount', valor)
+          .gt('created_at', corte).order('created_at', { ascending: false }).limit(1).maybeSingle()
+        if (existe?.mp_payment_id) {
+          return NextResponse.json({
+            id: existe.mp_payment_id, payment_id: existe.mp_payment_id,
+            qr_code: existe.pix_qr_code || '', qr_code_base64: existe.pix_qr_code_base64 || '',
+            pix_payload: existe.pix_qr_code || '', pix_qr_code: existe.pix_qr_code_base64 || '',
+            reused: true,
+          })
+        }
+      } catch {}
+
+      const pagador = { email, first_name: name }
+      if (cpfCnpj) {
+        const dig = String(cpfCnpj).replace(/\D/g, '')
+        if (dig.length === 11) pagador.identification = { type: 'CPF', number: dig }
+      }
+
+      const resp = await fetch('https://api.mercadopago.com/v1/payments', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+          'X-Idempotency-Key': crypto.randomUUID(),
+        },
+        body: JSON.stringify({
+          transaction_amount: valor,
+          description: 'Nex Network - acesso vitalicio ao grupo',
+          payment_method_id: 'pix',
+          payer: pagador,
+        }),
+      })
+      const txt = await resp.text()
+      let pg = {}
+      if (txt) { try { pg = JSON.parse(txt) } catch { pg = { _raw: txt } } }
+      if (!resp.ok || !pg?.id) {
+        console.error('[MP avulso] falhou', pg?.message || pg?._raw || resp.status)
+        return NextResponse.json({ error: pg?.message || 'Falha ao gerar o PIX.' }, { status: 502 })
+      }
+
+      const tx = pg.point_of_interaction?.transaction_data || {}
+      // operator_count -1 e plan_months 0 marcam "nao e assinatura": o
+      // check-payment e o webhook nao devem criar ciclo a partir daqui.
+      await sb.from('mp_payments').insert({
+        tenant_id: tenantId, user_id: userId, mp_payment_id: String(pg.id),
+        status: 'pending', amount: valor,
+        pix_qr_code: tx.qr_code || null, pix_qr_code_base64: tx.qr_code_base64 || null,
+        operator_count: -1, plan_months: 0,
+      })
+
+      return NextResponse.json({
+        id: pg.id, payment_id: pg.id,
+        qr_code: tx.qr_code || '', qr_code_base64: tx.qr_code_base64 || '',
+        pix_payload: tx.qr_code || '', pix_qr_code: tx.qr_code_base64 || '',
+      })
     }
 
     // ─────────────────────────────────────────────────────────────────────────

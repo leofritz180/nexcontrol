@@ -104,6 +104,18 @@ export async function POST(req) {
           console.log('[MP webhook] fallback 30 dias:', expires.toISOString())
         }
 
+
+        // ═══ COMPRA AVULSA NAO VIRA ASSINATURA ═══
+        // O grupo Nex Network (R$ 97 vitalicio) e gravado com
+        // operator_count = -1 e plan_months = 0. Sem esta guarda o -1 cai no
+        // fallback logo abaixo (que trata valor invalido como "nao informado")
+        // e o comprador ganharia um mes de plano de graca, com operador e tudo.
+        if (Number(record.plan_months) === 0 && Number(record.operator_count) === -1) {
+          await sb.from('mp_payments').update({ status: 'approved', updated_at: new Date().toISOString() })
+            .eq('mp_payment_id', String(record.mp_payment_id || paymentId))
+          return NextResponse.json({ status: 'approved', avulso: true })
+        }
+
         // Resolve operator_count: prioriza valor salvo na compra, INCLUSIVE 0
         // (Admin Solo). Só cai no fallback quando o campo é NULO (pagamento antigo).
         let resolvedOpCount = Number(record.operator_count)

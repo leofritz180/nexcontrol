@@ -33,6 +33,18 @@
 // `--prop-fone` em linha e o `aspect-ratio` só no CSS, a media query
 // escolhe qual variável ler, sem disputa de especificidade.
 //
+// A TAMPA (.nv2-filme-tampa) existe por um motivo só: o navegador desenha
+// uma barra flutuante sobre todo vídeo em que o cursor passa — "abrir em
+// janela", "pular faixa". Num player isso é recurso; aqui é defeito, porque
+// não há o que pular num filme mudo de ambientação.
+//
+// pointer-events:none no vídeo não resolve sozinho: ele impede o vídeo de
+// RECEBER o mouse, mas o navegador escolhe o que mostrar pelo que está
+// embaixo do cursor no teste de acerto dele, e elemento inerte é
+// atravessado nesse teste — o vídeo continuava sendo o achado. A tampa é um
+// elemento real ocupando a área do filme: o cursor acerta ela, nunca o
+// vídeo, e não há barra para desenhar.
+//
 // E VALE REPETIR: filme aqui é AMBIENTAÇÃO, não prova. O texto miúdo
 // dentro das renderizações não é a interface de verdade — quem prova o
 // produto são as capturas reais, que continuam na página.
@@ -99,6 +111,9 @@ export default function Filme({ src, srcMob, poster, alt, className, style, prop
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
         />
       )}
+      {/* ver o comentário no topo: é isto que impede a barra flutuante do
+          navegador de aparecer sobre o filme */}
+      <span aria-hidden className="nv2-filme-tampa" />
     </div>
   )
 }

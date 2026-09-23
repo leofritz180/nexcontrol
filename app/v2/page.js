@@ -139,7 +139,7 @@ const PLANOS = {
           'Metas, remessas e fechamento com o lucro final calculado',
           'Faturamento, custos e redes por período',
           'Alertas de operação e notificação no celular',
-          'Painel instalável no telefone e captura de depósito',
+          'Painel instalável no telefone, com notificação',
           'Network, Minhas Proxies e Premiações',
         ],
         cta: 'Começar com o Solo',
@@ -159,6 +159,8 @@ const PLANOS = {
           'Alertas de queda de desempenho',
           'Acompanhamento avançado de metas e insights automáticos',
           'Histórico e análises completas',
+          'Captura automática de QR: lê o valor do PIX e soma na remessa',
+          { t: 'Transmissão de tela com a equipe', embreve: true },
         ],
         cta: 'Quero o Solo Pro',
       },
@@ -183,6 +185,7 @@ const PLANOS = {
           'Visão consolidada da equipe',
           'Ranking e comparação de desempenho entre operadores',
           'Gestão centralizada dos acessos',
+          { t: 'Transmissão de tela com a equipe', embreve: true },
         ],
         cta: 'Começar com a Dupla',
       },
@@ -197,6 +200,7 @@ const PLANOS = {
           'Até 3 operadores na mesma operação',
           'Ranking e comparação com a equipe inteira',
           'Sem cobrança por operador avulso — o pacote já cobre',
+          { t: 'Transmissão de tela com a equipe', embreve: true },
         ],
         cta: 'Escolher Scale 3',
       },
@@ -212,6 +216,7 @@ const PLANOS = {
           'Visão gerencial da operação inteira',
           'Métricas consolidadas por período',
           'Sem cobrança por operador avulso — o pacote já cobre',
+          { t: 'Transmissão de tela com a equipe', embreve: true },
         ],
         cta: 'Escolher Scale 6',
       },
@@ -227,6 +232,7 @@ const PLANOS = {
           'Visão geral e individual lado a lado',
           'Relatórios gerenciais por período',
           'Sem cobrança por operador avulso — o pacote já cobre',
+          { t: 'Transmissão de tela com a equipe', embreve: true },
         ],
         cta: 'Escolher Scale 10',
       },
@@ -852,9 +858,20 @@ export default function V2Page() {
                     : p.herda ? `Tudo do ${p.herda}, mais:` : 'O essencial da operação:'}
                 </p>
                 <ul className="nv2-marcas">
-                  {p.marcas.map(t => (
-                    <li key={t}><i /><span><b style={{ fontWeight: 450 }}>{t}</b></span></li>
-                  ))}
+                  {p.marcas.map(m => {
+                    const t = typeof m === 'string' ? m : m.t
+                    return (
+                      <li key={t} className={typeof m === 'string' ? undefined : 'nv2-marca-breve'}>
+                        <i />
+                        <span>
+                          <b style={{ fontWeight: 450 }}>
+                            {t}
+                            {typeof m !== 'string' && m.embreve && <i className="nv2-breve">em breve</i>}
+                          </b>
+                        </span>
+                      </li>
+                    )
+                  })}
                 </ul>
 
                 <div className="nv2-plano-fim">

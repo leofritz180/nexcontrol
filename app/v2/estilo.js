@@ -193,7 +193,15 @@ export default function EstiloV2() {
          sobrescreve pela classe, nao por estilo em linha */
       .nv2-filme {
         position: relative; overflow: hidden; aspect-ratio: var(--prop, 16 / 9);
-        pointer-events: none; /* filme é ambientação: nada aqui se clica */
+      }
+      /* A TAMPA. Fica por cima do vídeo e é ela que o cursor acerta, para o
+         navegador nunca desenhar a barra flutuante de mídia sobre o filme.
+         Precisa de pointer-events proprio: com 'none' ela seria atravessada
+         no teste de acerto e o vídeo voltaria a ser o achado. */
+      .nv2-filme-tampa {
+        position: absolute; inset: 0; z-index: 3;
+        display: block; background: transparent;
+        pointer-events: auto; cursor: default;
       }
 
       /* ── O N ANIMADO ─────────────────────────────────────────────────
@@ -415,6 +423,24 @@ export default function EstiloV2() {
       .nv2-planos[data-n='4'] { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 
       .nv2-plano { display: flex; flex-direction: column; padding: 30px 26px 26px; }
+
+      /* "em breve": a unica coisa da lista que ainda nao existe, e por isso
+         a unica que precisa se identificar. O lime chama o olho (era o que
+         o dono queria: destaque) e a palavra impede que o destaque vire
+         promessa. */
+      .nv2-marcas .nv2-marca-breve b { color: var(--tinta); }
+      .nv2-marcas .nv2-breve {
+        display: inline-block; margin-left: 8px; vertical-align: 1px;
+        padding: 2px 8px; border-radius: 999px;
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+        color: #C8F21D; background: rgba(200,242,29,0.12);
+        border: 1px solid rgba(200,242,29,0.38);
+        white-space: nowrap;
+        width: auto; height: auto; flex: none; align-self: auto;
+        font-style: normal; margin-top: 0;
+      }
+      .nv2-marcas .nv2-marca-breve > i { background: #C8F21D; }
       .nv2-plano--top { background: var(--graf2); border-color: rgba(200,242,29,0.30); }
       .nv2-plano--top:hover { background: var(--graf2); border-color: rgba(200,242,29,0.48); }
 

@@ -72,7 +72,7 @@ function Chip({ bg, children }) {
 // mesmos periodos do painel antigo, pra nao mudar o que o numero significa
 const PERIODOS = [['month','Mês'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d'],['all','Tudo']]
 
-export default function AdminBento({ nome, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, onSaveGoal , periodo, onPeriodo, lucroPeriodo , onAtualizar, atualizando }) {
+export default function AdminBento({ nome, patente, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, onSaveGoal , periodo, onPeriodo, lucroPeriodo , onAtualizar, atualizando }) {
   const [editGoal, setEditGoal] = useState(false)
   const [goalVal, setGoalVal] = useState('')
 
@@ -241,7 +241,10 @@ export default function AdminBento({ nome, global: g, ranking = [], metas = [], 
       {/* saudação */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: S.t1, margin: 0, letterSpacing: '-0.03em' }}>Olá, {nome || 'admin'}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 11, flexWrap: 'wrap' }}>
+            <h1 style={{ fontSize: 26, fontWeight: 800, color: S.t1, margin: 0, letterSpacing: '-0.03em' }}>Olá, {nome || 'admin'}</h1>
+            {patente}
+          </div>
           <p style={{ fontSize: 13.5, color: S.t3, margin: '3px 0 0' }}>{abertas.length} meta{abertas.length === 1 ? '' : 's'} em andamento · {equipeOn} operador{equipeOn === 1 ? '' : 'es'}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>

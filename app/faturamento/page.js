@@ -417,6 +417,11 @@ export default function FaturamentoPage() {
     return {lucroFinalTotal,target,pct,falta,diasRestantes}
   },[metas,predictions,profile])
 
+  const leitura = useMemo(()=>{
+    const { insights, alerts } = generateInsights({ stats, predictions, goalData, metas, operators, remessas:fRem })
+    return { pro, insights, alertas: alerts, saude: getHealthStatus(stats, predictions), projecao: goalData }
+  },[stats,predictions,goalData,metas,operators,fRem,pro])
+
   const medals=['#FFD700','#C0C0C0','#CD7F32']
 
   if(loading) return (
@@ -529,6 +534,7 @@ export default function FaturamentoPage() {
             redes={new Set(metas.filter(m=>m.rede).map(m=>m.rede)).size}
             acoes={acoesFaturamento}
             filtros={<Filters operators={operators} redes={redesList} filters={filters} setFilters={setFilters}/>}
+            leitura={leitura}
           />
         )}
 
@@ -809,8 +815,7 @@ export default function FaturamentoPage() {
 
           {/* ── INSIGHTS AUTOMÁTICOS ── */}
           {(()=>{
-            const { insights, alerts } = generateInsights({ stats, predictions, goalData, metas, operators, remessas:fRem })
-            const health = getHealthStatus(stats, predictions)
+            const { insights, alertas: alerts, saude: health } = leitura
             return (
             <div className="g-side" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:24}}>
               {/* Health + Insights */}

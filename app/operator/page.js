@@ -886,7 +886,9 @@ export default function OperatorPage() {
               lista de metas e a coluna da direita. Recebe os MESMOS dados
               que o ramo antigo calcula, pra nao perder nada no caminho.
               O modal de nova meta e os estilos seguem montados pros dois. */}
-          {isNex2(user?.email) ? (
+          {isNex2(user?.email) && isDemo ? (
+            <DemoOperatorDashboard onCreateMeta={() => setShowForm(true)} onExitDemo={() => { exitDemoMode(user?.id); load() }} />
+          ) : isNex2(user?.email) ? (
             <OperatorBento
               nome={getName(profile)}
               email={user?.email}

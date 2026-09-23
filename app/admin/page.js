@@ -664,6 +664,9 @@ export default function AdminPage() {
   const prevRemCount = useRef(0)
   const [myMetas,setMyMetas]=useState([])
   const [myRem,setMyRem]=useState([])
+  // entrou na aba pelo botao "Nova meta"? entao a revelacao de patente
+  // espera a proxima visita — senao ela abre por cima do formulario.
+  const viaNovaMeta = useRef(false)
   const [myShowForm,setMyShowForm]=useState(false)
   // A/B billing variant + smart trigger
   const [billingVariant,setBillingVariant]=useState('A')
@@ -700,6 +703,10 @@ export default function AdminPage() {
     return () => document.removeEventListener('mousedown', onDown)
   }, [myRedeOpen])
   const [tabLine, setTabLine] = useState({ left: 0, width: 0 })
+
+  // a bandeira vale por UMA entrada: ao sair da aba ela baixa, senao a
+  // revelacao ficaria suprimida pra sempre depois da primeira nova meta.
+  useEffect(() => { if (tab !== 'myops') viaNovaMeta.current = false }, [tab])
 
   useEffect(()=>{ checkAndLoad() },[])
   useEffect(()=>{
@@ -1061,7 +1068,7 @@ export default function AdminPage() {
   // Precisa vir DEPOIS do `ranking`: usar um const antes da declaracao dele
   // estoura "Cannot access before initialization" (zona morta temporal).
   useAlimentarPaleta(
-    { metas, operadores: ranking, aoNovaMeta: () => { setTab('myops'); setTimeout(() => setMyShowForm(true), 300) } },
+    { metas, operadores: ranking, aoNovaMeta: () => { viaNovaMeta.current = true; setTab('myops'); setTimeout(() => setMyShowForm(true), 300) } },
     [metas, ranking]
   )
 
@@ -1071,7 +1078,7 @@ export default function AdminPage() {
     try {
       if (sessionStorage.getItem('nx_abrir_nova_meta') === '1') {
         sessionStorage.removeItem('nx_abrir_nova_meta')
-        setTab('myops'); setTimeout(() => setMyShowForm(true), 400)
+        viaNovaMeta.current = true; setTab('myops'); setTimeout(() => setMyShowForm(true), 400)
       }
     } catch {}
   }, [])
@@ -2107,16 +2114,14 @@ export default function AdminPage() {
                 {/* V2: desligado por enquanto. "Nova meta" na Visao Geral troca pra
                     esta aba e abre o formulario 300ms depois; o reveal montava junto
                     e quebrava o pop-up. Fora do V2 segue igual. */}
-                {!isNex2(user?.email) && (
                 <RankReveal
                   userId={user?.id}
                   contas={myDeps}
                   name={getName(profile)}
-                  ready={!loading && !!profile}
+                  ready={!loading && !!profile && !viaNovaMeta.current}
                   mode="everyVisit"
                   forceApex={apexLocked}
                 />
-                )}
 
                 {/* ░░ MYOPS V2 — hero premium (somente leofritz178) ░░ */}
                 {isNex2(user?.email) ? (
@@ -2702,7 +2707,7 @@ export default function AdminPage() {
           {/* ── DEMO MODE FOR NEW ADMINS ── */}
           {!loading && shouldShowDemo(metas, user?.id) ? (
             <DemoAdminDashboard
-              onCreateMeta={() => { setTab('myops'); setTimeout(() => setMyShowForm(true), 300) }}
+              onCreateMeta={() => { viaNovaMeta.current = true; setTab('myops'); setTimeout(() => setMyShowForm(true), 300) }}
               userName={getName(profile)}
               onExitDemo={() => { exitDemoMode(user?.id); checkAndLoad() }}
             />
@@ -2713,11 +2718,12 @@ export default function AdminPage() {
           {isNex2(user?.email) ? (
               <AdminBento
                 nome={getName(profile)}
+                patente={<RankBadge contas={countTenantDeposits(metas)} forceApex={isApexLocked(user?.email || profile?.email)} size="sm" />}
                 global={global}
                 ranking={ranking}
                 metas={metas}
                 dailyGoal={dailyGoal}
-                onNovaMeta={() => { setTab('myops'); setTimeout(() => setMyShowForm(true), 300) }}
+                onNovaMeta={() => { viaNovaMeta.current = true; setTab('myops'); setTimeout(() => setMyShowForm(true), 300) }}
                 onVerMetas={() => setTab('myops')}
                 onAbrirMeta={(id) => router.push('/meta/' + id)}
                 onSaveGoal={saveDailyGoal}

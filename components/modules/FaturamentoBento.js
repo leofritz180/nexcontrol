@@ -1,8 +1,9 @@
 'use client'
 // FATURAMENTO — visual 2.0. Só apresentação; dados vêm do /faturamento.
 import { ModuleHeader, Hero, Tira, Barras, Lista, BCard, money0, int, RED, RED2 } from '../ui/bento'
+import LeituraBento from './LeituraBento'
 
-export default function FaturamentoBento({ stats, chartData = [], operadores = 0, redes = 0, periodo, onPeriodo, acoes, filtros }) {
+export default function FaturamentoBento({ stats, chartData = [], operadores = 0, redes = 0, periodo, onPeriodo, acoes, filtros, leitura }) {
   const s = stats || {}
   const pos = Number(s.lucroFinal) >= 0
   const serie = (chartData || []).slice(-12)
@@ -84,6 +85,8 @@ export default function FaturamentoBento({ stats, chartData = [], operadores = 0
           </div>
         </BCard>
       </div>
+
+      {leitura && <LeituraBento {...leitura} />}
 
       <style>{`@media (max-width:1000px){ .bk-2{grid-template-columns:1fr !important} .bk-tira{grid-template-columns:repeat(3,1fr) !important} }
                @media (max-width:640px){ .bk-tira{grid-template-columns:repeat(2,1fr) !important} }`}</style>

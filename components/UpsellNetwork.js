@@ -25,7 +25,9 @@ const cartao = {
   border: '1px solid var(--b1)', boxShadow: '0 18px 50px rgba(0,0,0,0.10)',
 }
 
-export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userId }) {
+// `demo` serve so pra previa: finge o PIX e a aprovacao, pra dar pra
+// percorrer as quatro telas sem gerar cobranca de verdade.
+export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userId, demo = false }) {
   const [etapa, setEtapa] = useState('oferta')   // oferta | dados | pix | dentro
   const [nome, setNome] = useState(nomeInicial)
   const [zap, setZap] = useState('')
@@ -47,6 +49,13 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
     if (!nome.trim()) { setErro('Diga seu nome.'); return }
     if (String(zap).replace(/\D/g, '').length < 10) { setErro('WhatsApp com DDD, por favor.'); return }
     setCarregando(true)
+    if (demo) {
+      const QR = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+      setPix({ id: 'demo', qr_code: '00020126360014br.gov.bcb.pix…5204000053039865802BR6009SAO PAULO', qr_code_base64: QR })
+      setEtapa('pix'); setCarregando(false)
+      setTimeout(() => { setLink('https://chat.whatsapp.com/EXEMPLO'); setEtapa('dentro') }, 3500)
+      return
+    }
     try {
       const r = await fetch('/api/mercadopago/create-payment', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -90,6 +99,11 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
 
   return (
     <AnimatePresence mode="wait">
+      {/* O BRANCO TEM QUE VIR DE CLASSE. Cor branca em estilo INLINE e
+          reescrita pra texto escuro pela camada de traducao do .nx-light —
+          o botao verde saia com texto quase invisivel. Classe nao e
+          alcancada por aquela regra. */}
+      <style>{`.nxg-verde, .nxg-verde * { color: #fff !important; }`}</style>
       {etapa === 'oferta' && (
         <motion.div key="oferta" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4, ease }} style={{ ...cartao, marginTop: 16 }}>
           <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--t3)' }}>
@@ -109,8 +123,8 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
             </span>
             <span style={{ fontSize: 12.5, color: 'var(--t3)' }}>uma vez só · acesso vitalício</span>
           </div>
-          <button type="button" onClick={() => setEtapa('dados')}
-            style={{ width: '100%', padding: '14px 18px', borderRadius: 13, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, color: '#fff', background: '#22C55E', boxShadow: '0 6px 20px rgba(34,197,94,0.26)' }}>
+          <button type="button" className="nxg-verde" onClick={() => setEtapa('dados')}
+            style={{ width: '100%', padding: '14px 18px', borderRadius: 13, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, background: '#22C55E', boxShadow: '0 6px 20px rgba(34,197,94,0.26)' }}>
             Quero entrar no grupo
           </button>
           <button type="button" onClick={() => setEtapa('fora')}
@@ -138,8 +152,8 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
             </label>
           ))}
           {erro && <p style={{ fontSize: 12.5, color: 'var(--loss)', margin: '0 0 12px', fontWeight: 600 }}>{erro}</p>}
-          <button type="submit" disabled={carregando}
-            style={{ width: '100%', padding: '14px 18px', borderRadius: 13, border: 'none', cursor: carregando ? 'wait' : 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, color: '#fff', background: '#22C55E', opacity: carregando ? 0.7 : 1 }}>
+          <button type="submit" className="nxg-verde" disabled={carregando}
+            style={{ width: '100%', padding: '14px 18px', borderRadius: 13, border: 'none', cursor: carregando ? 'wait' : 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, background: '#22C55E', opacity: carregando ? 0.7 : 1 }}>
             {carregando ? 'Gerando PIX…' : `Gerar PIX · R$ ${fmt(GRUPO_PRECO)}`}
           </button>
         </motion.form>
@@ -172,8 +186,8 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
           </p>
 
           {link && (
-            <a href={link} target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px 18px', borderRadius: 13, textDecoration: 'none', fontSize: 14, fontWeight: 800, color: '#fff', background: '#22C55E', boxShadow: '0 6px 20px rgba(34,197,94,0.26)', marginBottom: 16 }}>
+            <a href={link} className="nxg-verde" target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px 18px', borderRadius: 13, textDecoration: 'none', fontSize: 14, fontWeight: 800, background: '#22C55E', boxShadow: '0 6px 20px rgba(34,197,94,0.26)', marginBottom: 16 }}>
               Abrir o grupo no WhatsApp
             </a>
           )}

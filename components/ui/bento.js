@@ -879,7 +879,7 @@ export function Calor({ rotulo, dias = [], formata = money0, delay = 0.16 }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
               <span style={{ fontSize: 11, color: 'var(--t4)' }}>menos</span>
               {[0.18, 0.36, 0.54, 0.72, 0.88].map(o => (
-                <span key={o} style={{ width: 11, height: 11, borderRadius: 3, background: `rgba(63,155,30,${o})` }} />
+                <span key={o} style={{ width: 11, height: 11, borderRadius: 3, background: `color-mix(in srgb, var(--acento, #C8F21D) ${Math.round(o * 100)}%, var(--fill-2))` }} />
               ))}
               <span style={{ fontSize: 11, color: 'var(--t4)' }}>mais · cheio = {formata(teto)}</span>
             </div>

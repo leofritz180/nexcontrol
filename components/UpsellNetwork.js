@@ -74,6 +74,35 @@ const MarcaFundo = () => (
   </svg>
 )
 
+/* So a previa usa isto: o PIX de verdade vem com o QR do Mercado Pago em
+   base64. Um quadrado vazio faria a tela parecer quebrada na demonstracao,
+   e um QR que alguem possa ler por engano seria pior — este nao codifica
+   nada, e desenho. */
+function QrIlustrativo() {
+  const celulas = []
+  for (let y = 0; y < 21; y++) for (let x = 0; x < 21; x++) {
+    const canto = (x < 7 && y < 7) || (x > 13 && y < 7) || (x < 7 && y > 13)
+    if (canto) continue
+    // ruido deterministico: mesma cara em todo carregamento
+    if (((x * 7 + y * 13 + x * y * 3) % 5) < 2) celulas.push(<rect key={x + '-' + y} x={x} y={y} width="1" height="1" />)
+  }
+  const Olhinho = ({ x, y }) => (
+    <g>
+      <rect x={x} y={y} width="7" height="7" fill="none" stroke="#0D0E0F" strokeWidth="1" />
+      <rect x={x + 2} y={y + 2} width="3" height="3" />
+    </g>
+  )
+  return (
+    <svg viewBox="-1 -1 23 23" width={188} height={188} aria-hidden
+      style={{ display: 'block', margin: '22px auto 18px', borderRadius: 14, background: '#fff', padding: 10 }}>
+      <g fill="#0D0E0F" shapeRendering="crispEdges">
+        {celulas}
+        <Olhinho x={0} y={0} /><Olhinho x={14} y={0} /><Olhinho x={0} y={14} />
+      </g>
+    </svg>
+  )
+}
+
 function BotaoLime({ children, onClick, tipo = 'button', desabilitado, href }) {
   const parado = useReducedMotion()
   const base = {
@@ -164,7 +193,7 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
     if (String(zap).replace(/\D/g, '').length < 10) { setErro('WhatsApp com DDD, por favor.'); return }
     setCarregando(true)
     if (demo) {
-      setPix({ id: 'demo', qr_code: '00020126360014br.gov.bcb.pix…5204000053039865802BR', qr_code_base64: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==' })
+      setPix({ id: 'demo', qr_code: '00020126360014br.gov.bcb.pix…5204000053039865802BR' })
       setEtapa('pix'); setCarregando(false)
       setTimeout(() => { setLink('https://chat.whatsapp.com/EXEMPLO'); setEtapa('dentro') }, 3500)
       return
@@ -262,10 +291,10 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
           <motion.section key="pix" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease }} style={palco}>
             <div style={{ position: 'relative', padding: '28px 26px 26px', textAlign: 'center' }}>
               <Olho>Aguardando o PIX</Olho>
-              {pix.qr_code_base64 && (
+              {pix.qr_code_base64 ? (
                 <img src={`data:image/png;base64,${pix.qr_code_base64}`} alt="QR do PIX" width={188} height={188}
                   style={{ display: 'block', margin: '22px auto 18px', borderRadius: 14, background: '#fff', padding: 10 }} />
-              )}
+              ) : <QrIlustrativo />}
               <button type="button" onClick={() => copiar(pix.qr_code, 'pix')} className="nxg-claro"
                 style={{ width: '100%', padding: '13px 16px', borderRadius: 12, cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, background: GRAFITE, border: '1px solid rgba(255,255,255,0.14)' }}>
                 {copiado === 'pix' ? 'Copiado ✓' : 'Copiar código PIX'}

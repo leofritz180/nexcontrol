@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { buscarEhPro } from '../../../lib/pro'
 
 export const dynamic = 'force-dynamic'
 
@@ -79,6 +80,13 @@ export async function POST(req) {
     if (action === 'ingest') {
       const op = await resolveIngestOperator(req, sb)
       if (!op) return NextResponse.json({ error: 'Chave/sessão inválida' }, { status: 401 })
+
+      // A CAPTURA E DO SOLO PRO. Barra no SERVIDOR, nao so na tela: a
+      // extensao chama esta rota direto com a chave de captura, entao
+      // esconder o botao no painel nao protegeria nada.
+      if (!(await buscarEhPro(sb, op.tenant_id))) {
+        return NextResponse.json({ error: 'Captura automática é do Solo Pro.', pro: true }, { status: 402 })
+      }
       const orderId = String(body.order_id || '').trim()
       const valor = Number(body.valor)
       if (!orderId) return NextResponse.json({ error: 'order_id obrigatório' }, { status: 400 })

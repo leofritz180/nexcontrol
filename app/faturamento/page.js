@@ -8,6 +8,7 @@ import { isNex2 } from '../../lib/theme-v2'
 import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
+import { tenantEhPro } from '../../lib/pro'
 import { generateInsights, getHealthStatus } from '../../lib/insights'
 import { ProLockedCard } from '../../components/pro/ProGate'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_OPERATORS, DEMO_GLOBAL, DEMO_BANNER_TEXT, shouldShowDemo } from '../../lib/demo-data'
@@ -153,9 +154,40 @@ function Filters({ operators, redes, filters, setFilters }) {
 }
 
 /* ═══════════════════════════ MAIN ═══════════════════════════ */
+// O bloco de leitura quando a conta nao e Pro. Mostra O QUE ELE ENTREGA em
+// vez de sumir — quem nao assina precisa saber o que esta deixando na mesa,
+// e quem assina precisa reconhecer o que comprou.
+function BlocoPro() {
+  return (
+    <div className="card a3" style={{ position:'relative', overflow:'hidden', padding:22, display:'flex', flexDirection:'column', justifyContent:'center' }}>
+      <div style={{ display:'inline-flex', alignItems:'center', gap:7, marginBottom:12 }}>
+        <span style={{ width:22, height:22, borderRadius:7, background:'rgba(200,242,29,0.16)', border:'1px solid rgba(200,242,29,0.45)', display:'inline-flex', alignItems:'center', justifyContent:'center' }}>
+          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#7E9A0B" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/></svg>
+        </span>
+        <span style={{ fontSize:10.5, fontWeight:800, letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--t3)' }}>Solo Pro</span>
+      </div>
+      <p style={{ fontSize:15.5, fontWeight:800, color:'var(--t1)', margin:'0 0 8px', letterSpacing:'-0.01em' }}>
+        Leitura da operação
+      </p>
+      <p style={{ fontSize:12.5, color:'var(--t3)', margin:'0 0 16px', lineHeight:1.6 }}>
+        Projeção de fechamento do mês, comparação com o período anterior e
+        tendência de alta ou queda. Os números você já tem — isto diz o que
+        eles estão dizendo.
+      </p>
+      <a href="/billing-mp" style={{ alignSelf:'flex-start', display:'inline-flex', alignItems:'center', gap:6, height:38, padding:'0 16px', borderRadius:11, background:'var(--brand)', color:'#fff', fontSize:12.5, fontWeight:800, textDecoration:'none' }}>
+        Ativar por + R$ 40/mês
+      </a>
+    </div>
+  )
+}
+
 export default function FaturamentoPage() {
   const router = useRouter()
   const [user,setUser]=useState(null)
+  // PRO: a leitura da operacao (projecao, comparacao e tendencia) passou a
+  // ser do Solo Pro. Quem nao tem ve o bloco trancado, com o que ele
+  // entrega escrito — nao um espaco vazio.
+  const [pro,setPro]=useState(true)
   const [profile,setProfile]=useState(null)
   const [operators,setOperators]=useState([])
   const [metas,setMetas]=useState([])
@@ -199,13 +231,15 @@ export default function FaturamentoPage() {
   async function loadAll(tid) {
     setLoading(true)
     setDemoMode(false)
-    const [{data:ops},{data:ms},{data:rs},{data:subRow},{data:costsData}]=await Promise.all([
+    const [{data:ops},{data:ms},{data:rs},{data:subRow},{data:subsAtivas},{data:costsData}]=await Promise.all([
       supabase.from('profiles').select('*').eq('role','operator').order('created_at',{ascending:false}),
       supabase.from('metas').select('*').order('created_at',{ascending:false}),
       supabase.from('remessas').select('*').order('created_at',{ascending:false}),
       supabase.from('subscriptions').select('*').eq('tenant_id',tid||profile?.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
+      supabase.from('subscriptions').select('operator_count,total_amount,plan_months,status,expires_at').eq('tenant_id',tid||profile?.tenant_id).eq('status','active'),
       supabase.from('costs').select('amount,date').eq('tenant_id',tid||profile?.tenant_id),
     ])
+    setPro(tenantEhPro(subsAtivas))
     const activeMetas = (ms||[]).filter(m=>!m.deleted_at)
     const activeMetaIds = new Set(activeMetas.map(m=>m.id))
     setOperators(ops||[]); setMetas(activeMetas); setRemessas((rs||[]).filter(r=>activeMetaIds.has(r.meta_id)))
@@ -543,7 +577,7 @@ export default function FaturamentoPage() {
                   <CountUp value={stats.lucroFinal} prefix="R$ "/>
                 </p>
 
-                {predictions.pctChange!==0 ? (
+                {pro && predictions.pctChange!==0 ? (
                   <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'5px 11px', borderRadius:7,
                     background: predictions.pctChange>0?'rgba(209,250,229,0.1)':'rgba(239,68,68,0.1)',
                     border:`1px solid ${predictions.pctChange>0?'rgba(209,250,229,0.22)':'rgba(239,68,68,0.22)'}`,
@@ -555,7 +589,7 @@ export default function FaturamentoPage() {
                       {predictions.pctChange>0?'+':''}{predictions.pctChange}% vs semana anterior
                     </span>
                   </div>
-                ) : (
+                ) : !pro ? null : (
                   <p style={{ fontSize:11, color:'var(--t4)', margin:0, fontWeight:500, letterSpacing:'0.02em' }}>
                     Sem variacao significativa vs semana anterior
                   </p>
@@ -615,7 +649,8 @@ export default function FaturamentoPage() {
 
           {/* Predictions + Goal */}
           <div className="g-side" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginBottom:24}}>
-            {/* Predictions — executivo */}
+            {/* Predictions — executivo · SO PRO */}
+            {!pro ? <BlocoPro/> : (
             <div className="card a3" style={{
               position:'relative', overflow:'hidden', padding:22,
               background:'linear-gradient(145deg, var(--raised), var(--surface))',
@@ -686,6 +721,7 @@ export default function FaturamentoPage() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Goal — meta global premium */}
             <div className="card a4" style={{

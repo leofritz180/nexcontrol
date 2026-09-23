@@ -168,7 +168,7 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
           <p style={{ fontSize: 13, color: 'var(--t2)', margin: '0 0 18px', lineHeight: 1.6 }}>
             {link
               ? 'Entre pelo link abaixo e cole a apresentação. É a regra da casa: todo mundo se apresenta ao chegar.'
-              : `Salvamos seu contato (${formatarWhatsapp(zap)}). Você é adicionado ao grupo em até algumas horas — já deixe a apresentação copiada.`}
+              : `Salvamos seu contato: ${formatarWhatsapp(zap)}. Você é adicionado ao grupo em até algumas horas — já deixe a apresentação copiada.`}
           </p>
 
           {link && (

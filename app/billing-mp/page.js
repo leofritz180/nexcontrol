@@ -15,12 +15,12 @@ const fmtDate = d => d ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit
 // Como o plano se chama na tela. Com pacote ligado, quem nomeia e o
 // pacote — e o detalhe de quantos operadores vira subtitulo, porque o
 // cliente precisa ver que as vagas dele cabem ali dentro.
-function rotuloPlano(ops, comDetalhe = false) {
+function rotuloPlano(ops, comDetalhe = false, pro = false) {
   const n = Math.max(0, Number(ops) || 0)
   if (!PACOTES_ATIVOS) {
     return n > 0 ? `Admin + ${n} operador${n > 1 ? 'es' : ''}` : 'Admin Solo'
   }
-  const p = pacotePara(n)
+  const p = pacotePara(n, { pro })
   if (!p) return `Scale 10 + ${n - 10} operador${n - 10 > 1 ? 'es' : ''}`
   if (!comDetalhe) return p.nome
   if (n === 0) return p.nome
@@ -57,10 +57,13 @@ export default function BillingMpPage() {
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState('monthly')
+  // SOLO PRO so faz sentido escolher com ZERO operador: a Dupla e todos os
+  // Scale ja incluem a camada Pro no preco.
+  const [querPro, setQuerPro] = useState(false)
   const pollRef = useRef(null)
 
   // Preco mensal base ja com desconto de tier por quantidade de operadores
-  const monthlyTier = useMemo(() => calcOpTier(opQty).total, [opQty])
+  const monthlyTier = useMemo(() => calcOpTier(opQty, { pro: querPro }).total, [opQty, querPro])
 
   // Dias restantes da sub atual (se houver)
   const daysRemaining = useMemo(() => {
@@ -126,7 +129,7 @@ export default function BillingMpPage() {
     if (!user || !profile) return
     setStage('loading'); setError('')
     try {
-      const planLabel = rotuloPlano(opQty)
+      const planLabel = rotuloPlano(opQty, false, querPro)
       // UPGRADE: valor avulso (sem plan_period) = delta de operadores, mantem o ciclo.
       // RENOVACAO: plano cheio × periodo, estende o ciclo.
       const payload = isUpgrade
@@ -220,6 +223,8 @@ export default function BillingMpPage() {
             <motion.div key="period" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
               <PeriodCard
                 v2={isV2}
+                querPro={querPro}
+                setQuerPro={setQuerPro}
                 opQty={opQty}
                 setOpQty={setOpQty}
                 realOps={realOps}
@@ -320,8 +325,8 @@ function UpgradeCard({ opQty, currentPaidOps, upgradeAmount, currentExpires, onC
   )
 }
 
-function PeriodCard({ v2, opQty, setOpQty, realOps, opsList = [], monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
-  const planLabel = rotuloPlano(opQty, true)
+function PeriodCard({ v2, querPro, setQuerPro, opQty, setOpQty, realOps, opsList = [], monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
+  const planLabel = rotuloPlano(opQty, true, querPro)
   const canDec = setOpQty && opQty > 0                 // pode reduzir até Admin Solo
   // Operadores que serão REMOVIDOS ao renovar com menos (os mais recentes)
   const toRemove = opQty < (realOps || 0) ? opsList.slice(opQty) : []
@@ -405,7 +410,43 @@ function PeriodCard({ v2, opQty, setOpQty, realOps, opsList = [], monthlyTier, s
                 style={{ width: 34, height: 34, borderRadius: 9, border: '1px solid rgba(229,57,31,0.4)', background: 'rgba(229,57,31,0.14)', color: 'var(--loss)', fontSize: 20, fontWeight: 700, cursor: 'pointer', lineHeight: 1 }}>+</button>
             </div>
           </div>
-          {/* Aviso: reduziu abaixo do real → escolhe quais remover DEPOIS de pagar */}
+          {/* SOLO PRO — so com zero operador. Com equipe (Dupla/Scale) a camada
+          ja vem no pacote, e oferecer de novo seria cobrar duas vezes pela
+          mesma coisa. */}
+      {PACOTES_ATIVOS && setQuerPro && opQty === 0 && (
+        <button type="button" onClick={() => setQuerPro(!querPro)}
+          style={{
+            width: '100%', textAlign: 'left', cursor: 'pointer', marginBottom: 18,
+            padding: '14px 16px', borderRadius: 14, fontFamily: 'inherit',
+            background: querPro ? 'rgba(200,242,29,0.10)' : 'var(--fill-1)',
+            border: '1px solid ' + (querPro ? 'rgba(200,242,29,0.55)' : 'var(--b1)'),
+            transition: 'background .18s ease, border-color .18s ease',
+          }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <span aria-hidden style={{
+              width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              background: querPro ? '#C8F21D' : 'transparent',
+              border: '1px solid ' + (querPro ? '#C8F21D' : 'var(--b2)'),
+              color: '#15151a',
+            }}>
+              {querPro && <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>}
+            </span>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 800, color: 'var(--t1)' }}>
+                Solo Pro · + R$ 40,00/mês
+              </div>
+              <div style={{ fontSize: 11.2, color: 'var(--t3)', marginTop: 3, lineHeight: 1.5 }}>
+                Projeção de fechamento do mês, comparação com o período anterior
+                e tendência · captura automática do QR, somando na remessa sem
+                digitar · selo verificado no Network.
+              </div>
+            </div>
+          </div>
+        </button>
+      )}
+
+      {/* Aviso: reduziu abaixo do real → escolhe quais remover DEPOIS de pagar */}
           {toRemove.length > 0 && (
             <div style={{ marginTop: 12, padding: '10px 12px', borderRadius: 10, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)' }}>
               <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--loss)', marginBottom: 4 }}>

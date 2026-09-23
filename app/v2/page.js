@@ -605,17 +605,23 @@ export default function V2Page() {
         </div>
       </section>
 
-      {/* ═══ 09 · CAPTURA AUTOMÁTICA ══════════════════════════════════ */}
+      {/* ═══ 09 · CAPTURA AUTOMÁTICA ══════════════════════════════════
+           O filme é VERTICAL (9/16) e fica ao lado do texto, não embaixo:
+           deitado num bloco de largura cheia ele viraria uma tarja de 200px
+           de altura com o monitor minúsculo no meio. O fluxo de dois passos
+           continua embaixo do texto — ele explica o que o filme mostra. */}
       <section className="nv2-sec">
         <div className="nv2-larg">
-          <Cabeca
-            olho="Automação"
-            titulo={<>Até o depósito<br />entra sozinho.</>}
-            lead="A Nex Control abre uma sessão de captura, lê o valor do depósito e lança na remessa. Você confere em vez de digitar."
-          />
+          <div className="nv2-duas nv2-duas--qr">
+            <div>
+              <Cabeca
+                olho="Automação"
+                titulo={<>Até o depósito<br />entra sozinho.</>}
+                lead="A Nex Control abre uma sessão de captura, lê o valor do depósito e lança na remessa. Você confere em vez de digitar."
+              />
 
-          <Revelar atraso={0.12} style={{ marginTop: 48 }}>
-            <div className="nv2-fluxo">
+              <Revelar atraso={0.12} style={{ marginTop: 40 }}>
+                <div className="nv2-fluxo">
               <div className="nv2-fluxo-no">
                 <p className="nv2-mono">01 · Captura</p>
                 <p className="nv2-h3" style={{ marginTop: 10 }}>PIX identificado</p>
@@ -628,11 +634,24 @@ export default function V2Page() {
                 <p className="nv2-corpo" style={{ marginTop: 6 }}>O valor entra na remessa da meta, sem digitação manual.</p>
               </div>
             </div>
-            <p className="nv2-corpo" style={{ marginTop: 18, maxWidth: '62ch' }}>
-              É apoio ao lançamento, não substituição: o administrador continua
-              no controle do que entra na operação.
-            </p>
-          </Revelar>
+                <p className="nv2-corpo" style={{ marginTop: 18, maxWidth: '54ch' }}>
+                  É apoio ao lançamento, não substituição: o administrador
+                  continua no controle do que entra na operação.
+                </p>
+              </Revelar>
+            </div>
+
+            <Revelar atraso={0.18}>
+              <Filme
+                className="nv2-qr-filme"
+                src="/landing/v2/captura-qr.mp4"
+                srcMob="/landing/v2/captura-qr-mob.mp4"
+                poster="/landing/v2/captura-qr-poster.jpg"
+                alt="Vários comprovantes de PIX sendo lidos um a um pela captura automática, somando o total processado ao fim"
+                proporcao="9 / 16"
+              />
+            </Revelar>
+          </div>
         </div>
       </section>
 

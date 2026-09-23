@@ -24,7 +24,7 @@ const FFMPEG = (await import('@ffmpeg-installer/ffmpeg')).default.path
 const DIR = 'public/landing/v2'
 const COFRE = path.join(DIR, '.originais')
 
-const FILMES = ['painel-3d', 'operadores-3d', 'marca', 'celular-painel', 'criar-meta']
+const FILMES = ['painel-3d', 'operadores-3d', 'marca', 'celular-painel', 'criar-meta', 'captura-qr']
 
 // 28 é o ponto em que um render de tela (superfícies lisas, pouco grão)
 // ainda não mostra bloco. Acima disso o degradê do fundo começa a faixar.

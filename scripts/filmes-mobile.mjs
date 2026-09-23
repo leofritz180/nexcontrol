@@ -27,6 +27,7 @@ const FILMES = [
   ['marca',            640],   // ambientação, fica a 34% de opacidade
   ['celular-painel',   540],   // 9:16, gravação de tela
   ['criar-meta',       540],   // 9:16, cena 3D
+  ['captura-qr',       720],   // 9:16, mockup da captura automatica
 ]
 
 const mb = f => (fs.statSync(f).size / 1048576).toFixed(2)

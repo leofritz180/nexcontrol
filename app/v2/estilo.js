@@ -367,6 +367,12 @@ export default function EstiloV2() {
       .nv2-duas--prob { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
       .nv2-duas--eq   { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
       .nv2-duas--fone { grid-template-columns: minmax(0, 1fr) auto; }
+      .nv2-duas--qr   { grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: 48px; align-items: center; }
+      .nv2-qr-filme {
+        border-radius: 20px; overflow: hidden;
+        border: 1px solid var(--linha);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+      }
 
       /* ── PLANOS ──────────────────────────────────────────────────────
          Regra de cor aqui: TODOS os cartoes sao iguais em cor. O unico que
@@ -565,6 +571,8 @@ export default function EstiloV2() {
         .nv2-seletor button { flex: 1; padding: 0 10px; font-size: 13.5px; }
         .nv2 .nv2-estagio { font-size: 14.5px; }
         .nv2-planos, .nv2-planos[data-n='2'], .nv2-planos[data-n='4'] { grid-template-columns: 1fr; max-width: none; }
+        .nv2-duas--qr { grid-template-columns: 1fr; gap: 32px; }
+        .nv2-qr-filme { max-width: 260px; margin: 0 auto; }
         .nv2-plano { padding: 26px 22px 22px; }
         /* sem altura minima: empilhado, nao ha o que alinhar */
         .nv2 .nv2-plano-linha { min-height: 0; }

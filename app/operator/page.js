@@ -877,16 +877,32 @@ export default function OperatorPage() {
       <AppLayout userName={getName(profile)} userEmail={user?.email} isAdmin={profile?.role === 'admin'} userId={user?.id} tenantId={profile?.tenant_id}>
 
         <div style={{ maxWidth: 1380, margin: '0 auto', padding: '32px 28px' }}>
-          {/* V2: o bento troca o cabecalho e os cards de leitura. O modal de
-              nova meta, os estilos e o reveal continuam montados pra todos. */}
-          {isNex2(user?.email) ? (
-            <OperatorBento nome={getName(profile)} stats={stats} metas={metas}
-              onNovaMeta={() => setShowForm(true)}
-              onAbrirMeta={(id)=>router.push('/meta/'+id)} />
-          ) : (<>
-
-          {/* Reveal modal animado — só dispara depois do loading, com contas reais */}
+          {/* O REVEAL DE PATENTE VALE PROS DOIS VISUAIS. Ele estava so no
+              ramo antigo: quem entrava na 2.0 nunca via a propria patente
+              subir, que e o momento mais marcante do painel do operador. */}
           <RankReveal userId={user?.id} contas={stats.totalDepositantes} name={getName(profile)} ready={!loading && !!profile} forceApex={isApexLocked(user?.email || profile?.email)} />
+
+          {/* V2: o bento assume o painel inteiro — cabecalho, indicadores,
+              lista de metas e a coluna da direita. Recebe os MESMOS dados
+              que o ramo antigo calcula, pra nao perder nada no caminho.
+              O modal de nova meta e os estilos seguem montados pros dois. */}
+          {isNex2(user?.email) ? (
+            <OperatorBento
+              nome={getName(profile)}
+              email={user?.email}
+              stats={stats}
+              metas={metas}
+              remessas={remessas}
+              perfStats={perfStats}
+              alertas={alertas}
+              milestones={milestones}
+              activeMeta={activeMeta}
+              forceApex={isApexLocked(user?.email || profile?.email)}
+              onNovaMeta={() => setShowForm(true)}
+              onAbrirMeta={(id) => router.push('/meta/' + id)}
+              onAtualizar={load}
+            />
+          ) : (<>
 
           {/* ── HEADER ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>

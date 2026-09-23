@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getRank, rankBackground, rankTextColor } from '../../lib/rank-system'
+import { useOverlaySlot } from '../../lib/overlayCoordinator'
 import RankIcon from './RankIcon'
 
 /**
@@ -92,6 +93,12 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
     setShow(false)
   }
 
+  // Coordenador: tela cheia não pode subir por cima do tutorial. Prioridade
+  // 2 — atrás do tutorial, na frente de anúncio e convite. Perder a
+  // revelação não dói (ela volta na próxima entrada); perder o tutorial da
+  // primeira vez dói, porque ele só vem uma vez.
+  const liberado = useOverlaySlot('rank-reveal', 2, !!show)
+
   if (!data) return null
   const { rank, isUpgrade } = data
   const bg = rankBackground(rank)
@@ -109,7 +116,7 @@ export default function RankReveal({ userId, contas, name = 'Operador', ready = 
 
   return (
     <AnimatePresence>
-      {show && (
+      {show && liberado && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

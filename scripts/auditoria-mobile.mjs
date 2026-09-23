@@ -1,21 +1,26 @@
 /**
- * O QUE ESTOURA A TELA DO CELULAR.
+ * O QUE QUEBRA NA TELA DO CELULAR.
  *
- * Numero nao ve feiura, mas ve o que SAI da tela — e e isso que quebra no
- * telefone. Esta varredura entra em cada rota a 390x844 e mede tres coisas
- * que o olho so pega rolando a pagina inteira:
+ * A primeira versão desta varredura era inútil de tão barulhenta: acusava
+ * como defeito todo elemento abaixo da dobra — o que numa página que rola é
+ * simplesmente "o resto da página". Uma auditoria que aponta 200 coisas não
+ * aponta nenhuma.
  *
- *   · a pagina rola pra LADO? (largura maior que a janela)
- *   · algum elemento visivel passa da borda?
- *   · alguma caixa FLUTUANTE (tour, pop-up, aviso) esta cortada?
+ * Agora ela mede só o que é defeito de verdade:
  *
- * As flutuantes sao o caso mais caro: elas nascem posicionadas por conta
- * (position: fixed) e nenhuma media query as segura. Um tooltip de tour com
- * largura cravada em 360px numa tela de 390 nao cabe com margem nenhuma.
+ *   1. A página ROLA PRO LADO. Sempre errado num telefone.
+ *   2. Um elemento FIXO (barra, aviso, tutorial) sai da tela. Fixo é o que
+ *      se posiciona pela janela, então sair dela é sempre bug.
+ *   3. Um elemento do conteúdo passa da borda direita E não está dentro de
+ *      algo que rola de lado de propósito (faixa de abas, carrossel).
+ *   4. Dois pop-ups grandes ao mesmo tempo — o coordenador de overlays
+ *      deveria impedir, e já falhou antes.
+ *
+ * Rola a página até o fim antes de medir: bug de rodapé fixo só aparece
+ * depois que se rola.
  *
  *   node scripts/auditoria-mobile.mjs
  *   node scripts/auditoria-mobile.mjs --url=http://localhost:3000
- *   node scripts/auditoria-mobile.mjs --tour    (abre os tours de novo)
  */
 import fs from 'fs'
 import path from 'path'
@@ -23,7 +28,6 @@ import { chromium } from 'playwright-core'
 
 const args = process.argv.slice(2)
 const BASE = (args.find(a => a.startsWith('--url=')) || '--url=https://nexcontrol.vercel.app').slice(6)
-const COM_TOUR = args.includes('--tour')
 const SESSAO = '.telas/sessao.json'
 const OUT = '.telas/mobile'
 const CHROMES = [
@@ -34,70 +38,92 @@ const CHROMES = [
 
 const ROTAS = ['/admin', '/faturamento', '/operadores', '/operator', '/custos', '/redes',
                '/pix', '/slots', '/planejamento', '/premiacoes', '/network', '/afiliados',
-               '/performance', '/tutorial', '/billing-mp', '/', '/login', '/signup']
+               '/performance', '/tutorial', '/billing-mp', '/equipe', '/proxy',
+               '/', '/login', '/signup']
+
+const MEDIR = () => {
+  const vw = innerWidth, vh = innerHeight
+  const contido = e => {
+    let a = e
+    while (a && a !== document.body) {
+      const s = getComputedStyle(a)
+      // rola de lado de propósito (faixa de abas, carrossel)
+      if (/auto|scroll/.test(s.overflowX) && a.scrollWidth > a.clientWidth + 2) return true
+      // corta o excesso: quem passa daqui não aparece pra ninguém
+      if (/hidden|clip/.test(s.overflowX) || /hidden|clip/.test(s.overflow)) return true
+      a = a.parentElement
+    }
+    return false
+  }
+  const nomear = e => (typeof e.className === 'string' && e.className.split(' ')[0]) || e.tagName
+
+  const fixosFora = [], vazando = [], popups = []
+  for (const e of document.querySelectorAll('body *')) {
+    const s = getComputedStyle(e)
+    if (s.display === 'none' || s.visibility === 'hidden' || s.opacity === '0') continue
+    const r = e.getBoundingClientRect()
+    if (r.width < 6 || r.height < 6) continue
+
+    if (s.position === 'fixed') {
+      // enfeite (brilho, blob, gradiente) sangra pra fora de propósito e o
+      // navegador corta na janela: ninguém perde nada. Só conta como defeito
+      // o que tem texto ou o que se clica.
+      const temConteudo = (e.innerText || '').trim().length > 0
+        || !!e.querySelector('button, a, input, [role="button"]')
+      const enfeite = !temConteudo
+      if (!enfeite && (r.left < -1 || r.right > vw + 1 || r.top < -1 || r.bottom > vh + 1)) {
+        fixosFora.push({ nome: nomear(e).slice(0, 28), z: s.zIndex,
+          cx: `${Math.round(r.left)},${Math.round(r.top)} → ${Math.round(r.right)},${Math.round(r.bottom)}`,
+          estoura: [r.left < -1 && 'esq', r.right > vw + 1 && 'dir', r.top < -1 && 'topo', r.bottom > vh + 1 && 'base'].filter(Boolean).join('+') })
+      }
+      // caixa grande e opaca por cima de tudo = pop-up
+      if (r.width > 240 && r.height > 160 && Number(s.zIndex) >= 900) {
+        popups.push({ nome: nomear(e).slice(0, 26), z: s.zIndex, txt: (e.innerText || '').replace(/\s+/g, ' ').slice(0, 26) })
+      }
+      continue
+    }
+    // conteúdo passando da borda, fora de algo que rola de lado de propósito
+    if (r.right > vw + 2 && !contido(e)) {
+      vazando.push({ nome: nomear(e).slice(0, 28), dir: Math.round(r.right) })
+    }
+  }
+  // pop-ups aninhados contam uma vez só (véu + caixa são o mesmo overlay)
+  // véu escuro + caixa são o MESMO overlay: agrupa por texto, e o véu
+  // (sem texto próprio) não conta sozinho
+  const distintos = [...new Map(popups.filter(p => p.txt.trim()).map(p => [p.txt, p])).values()]
+  return { rolaPraLado: document.documentElement.scrollWidth > vw + 2, larguraDoc: document.documentElement.scrollWidth, vw,
+           fixosFora, vazando: vazando.slice(0, 4), popups: distintos }
+}
 
 if (!fs.existsSync(SESSAO)) { console.error('Sem sessao.'); process.exit(1) }
 fs.mkdirSync(OUT, { recursive: true })
 const nav = await chromium.launch({ executablePath: CHROMES.find(p => fs.existsSync(p)), headless: true })
 
-const MEDIDA = () => {
-  const vw = innerWidth, vh = innerHeight
-  const fora = []
-  const flutuantes = []
-  for (const e of document.querySelectorAll('body *')) {
-    const s = getComputedStyle(e)
-    if (s.display === 'none' || s.visibility === 'hidden' || s.opacity === '0') continue
-    const r = e.getBoundingClientRect()
-    if (r.width < 4 || r.height < 4) continue
-    const nome = (e.className && typeof e.className === 'string' ? e.className.split(' ')[0] : '') || e.tagName
-    // caixa flutuante: fixa e grande o bastante pra ser conteudo
-    if ((s.position === 'fixed' || s.position === 'absolute') && r.width > 180 && r.height > 90) {
-      const corta = r.left < -1 || r.right > vw + 1 || r.top < -1 || r.bottom > vh + 1
-      if (corta) flutuantes.push({
-        nome: nome.slice(0, 26), z: s.zIndex,
-        cx: `${Math.round(r.left)},${Math.round(r.top)} → ${Math.round(r.right)},${Math.round(r.bottom)}`,
-        estoura: [r.left < -1 && 'esq', r.right > vw + 1 && 'dir', r.top < -1 && 'topo', r.bottom > vh + 1 && 'base'].filter(Boolean).join('+'),
-      })
-      continue
-    }
-    // conteudo normal passando da borda lateral
-    if (r.width > 8 && (r.right > vw + 2 || r.left < -2) && s.position !== 'fixed') {
-      fora.push({ nome: nome.slice(0, 26), dir: Math.round(r.right), esq: Math.round(r.left) })
-    }
-  }
-  return {
-    rolaLado: document.documentElement.scrollWidth > vw + 1,
-    larguraDoc: document.documentElement.scrollWidth,
-    vw,
-    fora: fora.slice(0, 5),
-    flutuantes: flutuantes.slice(0, 5),
-  }
-}
-
-let problemas = 0
+let ruins = 0
 for (const r of ROTAS) {
-  const ctx = await nav.newContext({
-    storageState: SESSAO, locale: 'pt-BR',
-    viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
-  })
+  const ctx = await nav.newContext({ storageState: SESSAO, locale: 'pt-BR',
+    viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true })
   const pg = await ctx.newPage()
   try {
     await pg.goto(BASE + r, { waitUntil: 'networkidle', timeout: 90000 })
-    if (COM_TOUR) {
-      await pg.evaluate(() => { for (const k of Object.keys(localStorage)) if (k.startsWith('nx_tour_completed_')) localStorage.removeItem(k) })
-      await pg.reload({ waitUntil: 'networkidle', timeout: 90000 })
-    }
-    await pg.waitForTimeout(COM_TOUR ? 9000 : 6000)
-    const m = await pg.evaluate(MEDIDA)
-    const ruim = m.rolaLado || m.fora.length || m.flutuantes.length
-    if (ruim) problemas++
-    console.log(`\n${ruim ? 'X' : 'ok'} ${r}${m.rolaLado ? `   ROLA PRO LADO (${m.larguraDoc}px numa tela de ${m.vw})` : ''}`)
-    for (const f of m.flutuantes) console.log(`     flutuante cortada: ${f.nome} (z${f.z}) ${f.cx}  estoura: ${f.estoura}`)
-    for (const f of m.fora) console.log(`     passa da borda: ${f.nome}  ${f.esq}→${f.dir}`)
-    if (ruim) await pg.screenshot({ path: path.join(OUT, r.replace(/\//g, '_') + '.png'), fullPage: false })
-  } catch (e) { console.log(`\nX ${r}  ${String(e.message).slice(0, 60)}`); problemas++ }
+    try { await pg.waitForFunction(() => (document.body.innerText || '').trim().length > 120, { timeout: 12000 }) } catch {}
+    await pg.waitForTimeout(3000)
+    // bug de rodapé fixo só aparece depois de rolar
+    await pg.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+    await pg.waitForTimeout(1500)
+    const m = await pg.evaluate(MEDIR)
+    const problemas = []
+    if (m.rolaPraLado) problemas.push(`ROLA PRO LADO (${m.larguraDoc}px numa tela de ${m.vw})`)
+    for (const f of m.fixosFora) problemas.push(`fixo fora da tela: ${f.nome} (z${f.z}) ${f.cx} — estoura ${f.estoura}`)
+    for (const v of m.vazando) problemas.push(`passa da borda: ${v.nome} até ${v.dir}px`)
+    if (m.popups.length > 1) problemas.push(`${m.popups.length} pop-ups juntos: ${m.popups.map(p => p.nome + '/' + p.z).join(', ')}`)
+
+    if (problemas.length) { ruins++; console.log(`\nX ${r}`); problemas.forEach(p => console.log('   · ' + p))
+      await pg.screenshot({ path: path.join(OUT, r.replace(/\//g, '_') + '.png') }) }
+    else console.log(`ok ${r}`)
+  } catch (e) { ruins++; console.log(`\nX ${r}  ${String(e.message).slice(0, 60)}`) }
   await ctx.close()
 }
 await nav.close()
-console.log('\n' + '='.repeat(68))
-console.log(problemas ? `  ${problemas} rota(s) com problema no celular.` : '  Nenhuma rota estoura a tela.')
+console.log('\n' + '='.repeat(64))
+console.log(ruins ? `  ${ruins} de ${ROTAS.length} rotas com defeito no celular.` : `  ${ROTAS.length} rotas, nenhuma quebra no celular.`)

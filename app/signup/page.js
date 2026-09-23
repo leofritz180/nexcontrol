@@ -189,9 +189,12 @@ export default function SignupPage() {
       </p>
 
       <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+        {/* "Minha Empresa" afastava quem opera sozinho, e e a maioria:
+            dos 84 pagantes, 66 nao tem nenhum operador. Quem trabalha so
+            nao se ve como empresa — se ve como operacao. */}
         <Campo
-          rotulo="Nome da operação" valor={tenantName} aoMudar={setTenantName}
-          placeholder="Ex: Minha Empresa" obrigatorio icone={ICO_OPERACAO}
+          rotulo="Nome da sua operação" valor={tenantName} aoMudar={setTenantName}
+          placeholder="Ex.: Operação CASH HUNTER" obrigatorio icone={ICO_OPERACAO}
         />
 
         <Campo
@@ -234,8 +237,12 @@ export default function SignupPage() {
         </div>
       </form>
 
+      {/* AQUI NINGUEM ESTA PAGANDO AINDA. Falar de PIX e de cancelamento no
+          cadastro faz parecer que o botao "Criar conta" cobra — e o medo de
+          cobranca inesperada trava o clique. O fluxo e cadastro -> plano ->
+          pagamento; PIX e cancelamento sao assunto da tela de planos. */}
       <p style={{ fontSize: 12, color: 'var(--t2)', marginTop: 18, textAlign: 'center' }}>
-        Pagamento via PIX · Ativação na hora · Cancele quando quiser
+        Leva menos de 1 minuto · Sem burocracia
       </p>
     </AuthSplitV2>
   )

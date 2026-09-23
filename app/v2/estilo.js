@@ -191,7 +191,10 @@ export default function EstiloV2() {
 
       /* base de todo filme; quem precisar de outro posicionamento
          sobrescreve pela classe, nao por estilo em linha */
-      .nv2-filme { position: relative; overflow: hidden; aspect-ratio: var(--prop, 16 / 9); }
+      .nv2-filme {
+        position: relative; overflow: hidden; aspect-ratio: var(--prop, 16 / 9);
+        pointer-events: none; /* filme é ambientação: nada aqui se clica */
+      }
 
       /* ── O N ANIMADO ─────────────────────────────────────────────────
          Substitui marca.mp4 (2,31 MB) por geometria. Nao intercepta

@@ -46,6 +46,26 @@ export default function Filme({ src, srcMob, poster, alt, className, style, prop
   const perto = useInView(ref, { once: true, margin: '400px 0px' })
   const [fonte, setFonte] = useState(null)
 
+  // O botão "pular" que o Chrome desenha sobre o vídeo não vem do vídeo:
+  // vem da SESSÃO DE MÍDIA. Quando o navegador decide que a aba está
+  // tocando algo, ela entra no controle de mídia do sistema e ganha os
+  // botões de faixa — inclusive numa página que só tem filme mudo de
+  // ambientação, onde "pular faixa" não quer dizer nada.
+  //
+  // Zerar os metadados e declarar playbackState 'none' tira a aba dessa
+  // lista. É idempotente e não faz nada onde a API não existe.
+  useEffect(() => {
+    try {
+      const ms = navigator.mediaSession
+      if (!ms) return
+      ms.metadata = null
+      ms.playbackState = 'none'
+      for (const acao of ['play', 'pause', 'nexttrack', 'previoustrack', 'seekbackward', 'seekforward', 'stop']) {
+        try { ms.setActionHandler(acao, null) } catch {}
+      }
+    } catch {}
+  }, [fonte])
+
   useEffect(() => {
     if (!perto || parado) return
     try {

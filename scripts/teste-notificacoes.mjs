@@ -11,6 +11,12 @@
 import { montarNotificacao, TIPOS } from '../lib/notificacoes.js'
 
 const CASOS = [
+  ['meta-criada',     { titulo: 'Fabio abriu uma meta', corpo: '10 DEP na W1 · começa agora', metaId: 'abc-123', chave: 'abc-123' }],
+  ['remessa-nova',    { titulo: 'Fabio lucrou na remessa', corpo: '+R$ 340,00 · 12 contas · W1 · 6/10 DEP', metaId: 'abc-123', chave: 'abc-123' }],
+  ['remessa-feedback',{ titulo: 'Remessa no lucro!', corpo: '+R$ 340,00 — Show! Mantém esse ritmo.', metaId: 'abc-123', chave: 'abc-123' }],
+  ['marco-meta',      { titulo: 'Fabio bateu a meta', corpo: '10/10 DEP na W1 · pronta pra finalizar', metaId: 'abc-123', chave: 'abc-123-100' }],
+  ['meta-finalizada', { titulo: 'Fabio finalizou · falta você fechar', corpo: '10 DEP W1 · 8 remessas · +R$ 900,00 nas remessas', metaId: 'abc-123', chave: 'abc-123' }],
+  ['meta-fechada-operador', { titulo: 'Sua meta foi fechada', corpo: '10 DEP W1 · suas remessas: +R$ 900,00', metaId: 'abc-123', chave: 'abc-123' }],
   ['meta-fechada',    { titulo: 'Meta fechada', corpo: '40 DEP OKOK — Lucro: R$ 1.284,50', metaId: 'abc-123', chave: 'abc-123' }],
   ['alerta-operacao', { titulo: 'Três remessas negativas seguidas', corpo: 'Meta W1 · 18 contas · −R$ 640,00', metaId: 'def-456' }],
   ['pagamento',       { titulo: 'Seu plano vence amanhã', corpo: 'Scale 3 · R$ 169,90 · PIX na hora', chave: 'd1' }],

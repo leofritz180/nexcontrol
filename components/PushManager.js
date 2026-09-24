@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription } from '../lib/pushClient'
+import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription, dispararPush } from '../lib/pushClient'
 import { useOverlaySlot } from '../lib/overlayCoordinator'
 
 export default function PushManager({ userId, tenantId }) {
@@ -67,10 +67,7 @@ export default function PushManager({ userId, tenantId }) {
       if (saved) {
         setState('granted')
         // Send welcome push
-        fetch('/api/push/send', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ user_id: userId, title: 'NexControl', body: 'Notificações ativadas - você receberá alertas em tempo real', url: '/admin' }),
-        }).catch(() => {})
+        dispararPush('aviso', { titulo: 'Notificações ativadas', corpo: 'Remessas, metas e alertas da operação vão chegar aqui, em tempo real.', url: '/admin' }, 'eu')
       } else {
         setState('error')
       }

@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { montarNotificacao } from '../../../../lib/notificacoes'
 import { NextResponse } from 'next/server'
-import { sendPushToTenant } from '../../../../lib/push'
+import { sendPushToTenant, sendPushToUser } from '../../../../lib/push'
 
 export async function POST(req) {
   try {
@@ -40,15 +40,24 @@ export async function POST(req) {
           fechada_em: new Date().toISOString(),
         }).eq('id', meta_id)
 
-        // Notify admin
+        // Admins recebem o resultado final; o operador só sabe que fechou e o
+        // resultado das remessas dele (nunca salário/baú/lucro final).
         const fmt = v => Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        const rotulo = `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()}`
         await sendPushToTenant(supabase, meta.tenant_id, montarNotificacao('meta-fechada', {
-          titulo: 'Meta fechada',
-          corpo: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} encerrada - ${lucroFinal >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(lucroFinal)}`,
-          url: '/admin',
+          titulo: lucroFinal >= 0 ? 'Meta fechada no lucro' : 'Meta fechada no prejuízo',
+          corpo: `${rotulo} · resultado final ${lucroFinal >= 0 ? '+' : '−'}R$ ${fmt(lucroFinal)}`,
           metaId: meta_id,
           chave: String(meta_id),
         }))
+        if (meta.operator_id) {
+          await sendPushToUser(supabase, meta.operator_id, montarNotificacao('meta-fechada-operador', {
+            titulo: 'Sua meta foi fechada',
+            corpo: `${rotulo} · suas remessas: ${liq >= 0 ? '+' : '−'}R$ ${fmt(liq)}`,
+            metaId: meta_id,
+            chave: String(meta_id),
+          }))
+        }
 
         return NextResponse.json({ ok: true, autoClose: true, lucroFinal })
       } else {
@@ -59,11 +68,13 @@ export async function POST(req) {
         const { data: op } = await supabase.from('profiles').select('nome,email').eq('id', meta.operator_id).maybeSingle()
         const opName = op?.nome || op?.email?.split('@')[0] || 'Operador'
         const fmt = v => Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        const { count: nRem } = await supabase.from('remessas').select('id', { count: 'exact', head: true }).eq('meta_id', meta_id)
 
-        await sendPushToTenant(supabase, meta.tenant_id, montarNotificacao('meta-fechada', {
-          titulo: 'Meta fechada',
-          corpo: `${opName} finalizou ${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} - ${liq >= 0 ? 'Lucro' : 'Prejuízo'}: R$ ${fmt(liq)}`,
-          url: '/admin',
+        // A meta NÃO está fechada: está esperando o admin. O aviso diz isso e
+        // o botão "Fechar agora" abre a meta já com o fechamento na tela.
+        await sendPushToTenant(supabase, meta.tenant_id, montarNotificacao('meta-finalizada', {
+          titulo: `${opName} finalizou · falta você fechar`,
+          corpo: `${meta.quantidade_contas || 0} DEP ${(meta.rede || '').toUpperCase()} · ${nRem || 0} remessa${nRem === 1 ? '' : 's'} · ${liq >= 0 ? '+' : '−'}R$ ${fmt(liq)} nas remessas`,
           metaId: meta_id,
           chave: String(meta_id),
         }))

@@ -6,7 +6,8 @@ import AppLayout from '../../../components/AppLayout'
 import BettifySponsor from '../../../components/BettifySponsor'
 import DepositCaptureButton from '../../../components/DepositCaptureButton'
 import { supabase } from '../../../lib/supabase/client'
-import { notifyRemessaCreated } from '../../../lib/notify'
+import { notifyRemessaCreated, notifyMarcoMeta } from '../../../lib/notify'
+import { dispararPush } from '../../../lib/pushClient'
 import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
 import { ContaMaeView } from '../../../components/ContaMaeCard'
 import MetaStepper from '../../../components/modules/MetaStepper'
@@ -468,6 +469,20 @@ export default function MetaPage() {
 
   useEffect(()=>{ if(id) fetchData() },[id])
 
+  // Chegou pelo botão "Fechar agora" do push (/meta/ID?acao=fechar): abre a
+  // meta já com o fechamento na tela. Só pra admin, só se ainda não fechou,
+  // e o parâmetro sai da URL pra um F5 não reabrir o modal.
+  useEffect(() => {
+    if (!meta || !profile) return
+    try {
+      const q = new URLSearchParams(window.location.search)
+      if (q.get('acao') !== 'fechar') return
+      window.history.replaceState(null, '', window.location.pathname)
+      const souAdmin = profile?.role === 'admin' || leaderAllowed
+      if (souAdmin && meta.status_fechamento !== 'fechada') setShowAdminClose(true)
+    } catch {}
+  }, [meta?.id, profile?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
   async function fetchData() {
     setLoading(true)
     const { data:s } = await supabase.auth.getSession()
@@ -674,10 +689,23 @@ export default function MetaPage() {
       pushTitle = 'Resultado negativo'
       pushBody = `${perTag} — ${pick(isAdmin ? ['Resultado negativo. Procure outros caminhos.', 'Já é prejuízo, busque outra estratégia.', 'No vermelho, mude o caminho.'] : ['Resultado negativo. Procure outros caminhos.', 'Já é prejuízo, alinhe com o ADMIN.', 'No vermelho, fale com o ADMIN.'])}`
     }
-    fetch('/api/push/send', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: user?.id, title: pushTitle, body: pushBody, url: `/meta/${id}` }),
-    }).catch(() => {})
+    dispararPush('remessa-feedback', { titulo: pushTitle, corpo: pushBody, metaId: id, chave: String(id) }, 'eu')
+  }
+
+  // Marcos da meta: avisa quando a contagem de contas CRUZA a metade ou
+  // bate o alvo (nunca de novo na mesma faixa). Só remessas que contam
+  // contas — redepósito, bônus e conta mãe entram com 0.
+  function avisarMarco(feitasAntes, feitasDepois) {
+    const alvo = Number(meta?.quantidade_contas || 0)
+    if (!alvo || feitasDepois <= feitasAntes) return
+    const cruzou = feitasAntes < alvo / 2 && feitasDepois >= alvo / 2 ? 50 : null
+    const bateu = feitasAntes < alvo && feitasDepois >= alvo ? 100 : null
+    const marco = bateu || cruzou
+    if (!marco) return
+    notifyMarcoMeta({
+      tenantId: meta?.tenant_id || profile?.tenant_id, operador: getName(profile), rede: meta?.rede,
+      feitas: feitasDepois, alvo, metaId: id, marco, souAdmin: profile?.role === 'admin' || leaderAllowed,
+    })
   }
 
   async function handleAdd(e) {
@@ -742,7 +770,12 @@ export default function MetaPage() {
     }
     setRemessas(prev => [...prev, optimistic])
     // Notificacao e refresh em paralelo (nao bloqueia)
-    notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff, tipo)
+    const contasAntes = remessas.reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+    const contasDepois = contasAntes + Number(optimistic.contas_remessa || 0)
+    notifyRemessaCreated(meta?.tenant_id||profile?.tenant_id, getName(profile), meta?.rede||'', diff, tipo, {
+      metaId: id, contas: Number(optimistic.contas_remessa || 0), feitas: contasDepois, alvo: Number(meta?.quantidade_contas || 0), slot: formSlot || undefined,
+    })
+    avisarMarco(contasAntes, contasDepois)
     evaluateAfterRemessa({
       remessas: [...remessas, optimistic], meta,
       novaRemessa: { resultado: diff, contas_remessa: formContas },

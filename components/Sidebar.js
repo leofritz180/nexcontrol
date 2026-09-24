@@ -8,7 +8,7 @@ import Logo from './Logo'
 import { isNex2 } from '../lib/theme-v2'
 import { iconV2 } from '../lib/icons-v2'
 import { isRedesign } from '../lib/redesign'
-import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription } from '../lib/pushClient'
+import { isPushSupported, getPermissionState, registerSW, subscribePush, savePushSubscription, dispararPush } from '../lib/pushClient'
 import ProfileModal from './ProfileModal'
 import { loadLocalProfile } from '../lib/profileLocal'
 import { aulasEnabled } from '../lib/aulas-tenants'
@@ -149,10 +149,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
       const saved = await savePushSubscription(sub, userId, tenantId)
       if (saved) {
         setPushState('granted')
-        fetch('/api/push/send', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: userId, title: 'NexControl', body: 'Notificações ativadas — você receberá alertas em tempo real', url: isAdmin ? '/admin' : '/operator' }),
-        }).catch(() => {})
+        dispararPush('aviso', { titulo: 'Notificações ativadas', corpo: 'Remessas, metas e alertas da operação vão chegar aqui, em tempo real.', url: isAdmin ? '/admin' : '/operator' }, 'eu')
       } else { setPushState('error') }
     } catch (e) { setPushState('error') }
     setPushBusy(false)

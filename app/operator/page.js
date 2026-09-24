@@ -661,7 +661,7 @@ export default function OperatorPage() {
     setTitulo(''); setObs(''); setContas('10'); setPlataforma(''); setRede('')
     setLinkConta(''); setLoginConta(''); setSenhaConta(''); setMostrarSenha(false)
     setShowForm(false)
-    notifyMetaCreated(profile?.tenant_id, getName(profile), data.quantidade_contas, data.rede)
+    notifyMetaCreated(profile?.tenant_id, getName(profile), data.quantidade_contas, data.rede, data.id)
     router.push(`/meta/${data.id}`)
   }
 

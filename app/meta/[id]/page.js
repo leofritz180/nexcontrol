@@ -8,6 +8,7 @@ import DepositCaptureButton from '../../../components/DepositCaptureButton'
 import { supabase } from '../../../lib/supabase/client'
 import { notifyRemessaCreated, notifyMarcoMeta } from '../../../lib/notify'
 import { dispararPush } from '../../../lib/pushClient'
+import TransmitirTela from '../../../components/TransmitirTela'
 import { evaluateAfterRemessa, evaluateOnLoad } from '../../../lib/insights-engine'
 import { ContaMaeView } from '../../../components/ContaMaeCard'
 import MetaStepper from '../../../components/modules/MetaStepper'
@@ -939,6 +940,9 @@ export default function MetaPage() {
           const adminB = profile?.role === 'admin' || leaderAllowed
           return (
             <MetaHero
+              extra={meta.status !== 'finalizada' && meta.status_fechamento !== 'fechada' ? (
+                <TransmitirTela userId={user?.id} tenantId={meta?.tenant_id || profile?.tenant_id} nome={getName(profile)} metaId={meta.id} papel={profile?.role} />
+              ) : null}
               titulo={meta.titulo}
               rede={meta.rede}
               plataforma={meta.plataforma}

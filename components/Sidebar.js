@@ -30,6 +30,7 @@ const GROUP_ORDER = ['Operação', 'Financeiro', 'Recursos', 'Comunidade', 'Cont
 const ADMIN_NAV = [
   { href:'/admin', label:'Painel', icon:'M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z', group:'Operação' },
   { href:'/operadores', label:'Operadores', icon:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0', group:'Operação' },
+  { href:'/sala', label:'Sala ao vivo', icon:'M2 5h20v13H2zM8 21h8M12 18v3M10 9l5 2.5L10 14z', group:'Operação' },
   { href:'/redes', label:'Redes', icon:'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9', group:'Operação' },
   { href:'/faturamento', label:'Faturamento', icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', group:'Financeiro' },
   { href:'/custos', label:'Custos', icon:'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6', group:'Financeiro' },

@@ -9,6 +9,7 @@ import AppLayout from '../../components/AppLayout'
 import RouteTour from '../../components/RouteTour'
 import { supabase } from '../../lib/supabase/client'
 import { notifyMetaCreated } from '../../lib/notify'
+import TransmitirTela from '../../components/TransmitirTela'
 import { DEMO_METAS, DEMO_REMESSAS, DEMO_INSIGHTS, DEMO_ACTIVITY, DEMO_BANNER_TEXT, shouldShowDemo, exitDemoMode } from '../../lib/demo-data'
 import DemoModeCard from '../../components/DemoModeCard'
 import { validClosedMetas } from '../../lib/operator-stats'
@@ -890,6 +891,7 @@ export default function OperatorPage() {
             <DemoOperatorDashboard onCreateMeta={() => setShowForm(true)} onExitDemo={() => { exitDemoMode(user?.id); load() }} />
           ) : isNex2(user?.email) ? (
             <OperatorBento
+              extraAcao={<TransmitirTela userId={user?.id} tenantId={profile?.tenant_id} nome={getName(profile)} papel="operator" compacto />}
               nome={getName(profile)}
               email={user?.email}
               stats={stats}

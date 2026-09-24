@@ -15,6 +15,7 @@ import { DEMO_OPERATORS, DEMO_OPERATOR_RANKING, DEMO_METAS, DEMO_REMESSAS, DEMO_
 import { validClosedMetas } from '../../lib/operator-stats'
 import RankBadge from '../../components/rank/RankBadge'
 import TeamManager from '../../components/TeamManager'
+import { useAoVivo } from '../../lib/transmissao'
 
 // EQUIPES / OPERADOR LÍDER — feature exclusiva DS MENTORIA 2.0
 const DS_MENTORIA_TENANT = '78da0085-9308-41b1-98b1-1e4c44063c51'
@@ -904,6 +905,8 @@ export default function OperadoresPage() {
   }, [removedOperators, metas, closedMetas])
 
   // RANKING BY LUCRO FINAL
+  // quem está transmitindo a tela agora (presença do Realtime)
+  const aoVivo = useAoVivo(profile?.tenant_id)
   const ranking = useMemo(() =>
     [...operatorStats].filter(o => o.closedCount > 0).sort((a, b) => b.lucroFinal - a.lucroFinal),
     [operatorStats]
@@ -1077,6 +1080,7 @@ export default function OperadoresPage() {
         {isNex2(user?.email) && tab === 'ranking' && (
           <OperadoresBento
             ranking={ranking}
+            aoVivo={aoVivo}
             ativos={(activeOperators||[]).length}
             convidar={() => setTab('equipe')}
             onAbrir={(o)=>setSelectedOp(o)}

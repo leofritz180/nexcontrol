@@ -2,7 +2,8 @@
 // OPERADORES — visual 2.0. Apresentação; dados/handlers vêm do /operadores.
 import { ModuleHeader, AcaoBtn, Hero, Tira, Lista, BCard, money0, int, RED } from '../ui/bento'
 
-export default function OperadoresBento({ ranking = [], ativos = 0, convidar, onAbrir }) {
+export default function OperadoresBento({ ranking = [], ativos = 0, convidar, onAbrir, aoVivo = [] }) {
+  const vivos = new Set(aoVivo.map(t => t.userId))
   const lucroTime = ranking.reduce((a, o) => a + Number(o.lucroFinal || 0), 0)
   const deps = ranking.reduce((a, o) => a + Number(o.totalDepositantes || o.totalDeposit || 0), 0)
   const metasF = ranking.reduce((a, o) => a + Number(o.closedCount || 0), 0)
@@ -29,6 +30,17 @@ export default function OperadoresBento({ ranking = [], ativos = 0, convidar, on
         ]}
       />
 
+      {/* Quem está transmitindo a tela agora → Sala ao vivo */}
+      {aoVivo.length > 0 && (
+        <a href="/sala" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderRadius: 20, background: 'var(--surface)', border: '1px solid rgba(229,57,31,0.35)', boxShadow: '0 8px 26px rgba(229,57,31,0.12)', textDecoration: 'none' }}>
+          <span aria-hidden style={{ width: 10, height: 10, borderRadius: 999, background: RED, boxShadow: '0 0 0 4px rgba(229,57,31,0.18)', flexShrink: 0 }} />
+          <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, fontWeight: 800, color: 'var(--t1)' }}>
+            {aoVivo.length === 1 ? `${aoVivo[0].nome} está transmitindo a tela` : `${aoVivo.length} operadores transmitindo a tela`}
+          </span>
+          <span style={{ fontSize: 12.5, fontWeight: 800, color: RED, flexShrink: 0 }}>Abrir sala →</span>
+        </a>
+      )}
+
       {/* "Metas fechadas" e "Acerto médio" saíram: os dois já estão nos chips
           do herói, logo acima. Com cinco itens ainda sobrava uma célula vazia
           na grade de duas colunas do celular. */}
@@ -46,7 +58,7 @@ export default function OperadoresBento({ ranking = [], ativos = 0, convidar, on
           avatar: String(o.nome || o.email || '?')[0].toUpperCase(),
           avatarBg: i === 0 ? RED : 'var(--fill-2)',
           avatarFg: i === 0 ? '#fff' : 'var(--t2)',
-          t: `${i + 1}º  ${o.nome || o.email}`,
+          t: `${i + 1}º  ${o.nome || o.email}${vivos.has(o.id) ? '  ● AO VIVO' : ''}`,
           s: `${int(o.closedCount)} metas · ${int(o.winRate)}% acerto${o.activeMetas ? ` · ${o.activeMetas} ativa(s)` : ''}`,
           v: money0(o.lucroFinal),
           vc: Number(o.lucroFinal) >= 0 ? 'var(--profit)' : 'var(--loss)',

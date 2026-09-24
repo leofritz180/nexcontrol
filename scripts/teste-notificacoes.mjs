@@ -17,6 +17,7 @@ const soVoz = (process.argv.find(a => a.startsWith('--voz=')) || '').slice(6)
 // Dados de exemplo por tipo — os mesmos que o produto manda (ver lib/notify,
 // api/meta/close, insights-engine, network/*).
 const CASOS = [
+  ['transmissao',     { nome: 'Fabio', chave: 'uid-1' }],
   ['meta-criada',     { nome: 'Fabio', contas: 10, rede: 'W1', metaId: 'abc-123', chave: 'abc-123' }],
   ['remessa-nova',    { nome: 'Fabio', valor: 340, contas: 12, rede: 'W1', slot: 'Fortune Tiger', feitas: 6, alvo: 10, metaId: 'abc-123', chave: 'abc-123' }],
   ['remessa-nova',    { nome: 'Fabio', valor: -120, contas: 8, rede: 'OKOK', feitas: 9, alvo: 10, metaId: 'abc-123', chave: 'abc-123' }],

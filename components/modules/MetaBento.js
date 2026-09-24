@@ -52,6 +52,7 @@ export function MetaHero({
   titulo, rede, plataforma, contas, observacoes,
   remessas = 0, acerto = 0, liquido = 0, statusRotulo, statusCor,
   podeEditar, aoEditar, podeAlternar, rotuloAlternar, aoAlternar, aoVoltar,
+  extra,   // nó opcional na fileira de ações (ex.: Transmitir minha tela)
 }) {
   const positivo = Number(liquido) >= 0
   return (
@@ -104,8 +105,9 @@ export function MetaHero({
           <Chip rotulo="Contas" valor={int(contas)} />
         </div>
 
-        {(podeEditar || podeAlternar) && (
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 18 }}>
+        {(podeEditar || podeAlternar || extra) && (
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 18 }}>
+            {extra}
             {podeEditar && <Botao onClick={aoEditar} icone={I_EDITAR}>Editar meta</Botao>}
             {podeAlternar && (
               <Botao onClick={aoAlternar} tom="marca" icone={String(rotuloAlternar).toLowerCase().includes('reativar') ? I_VOLTA : I_BANDEIRA}>

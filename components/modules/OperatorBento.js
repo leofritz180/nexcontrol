@@ -57,6 +57,7 @@ export default function OperatorBento({
   perfStats, alertas, milestones = [], activeMeta,
   forceApex = false,
   onNovaMeta, onAbrirMeta, onAtualizar,
+  extraAcao,
 }) {
   const s = stats || {}
   const p = perfStats || {}
@@ -137,7 +138,8 @@ export default function OperatorBento({
         }
         sub={`${hoje} · ${int(s.ativas)} meta(s) em andamento · ${int(s.nRem)} remessas registradas`}
         acao={
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            {extraAcao}
             {onAtualizar && (
               <button type="button" onClick={onAtualizar}
                 style={{

@@ -163,7 +163,10 @@ export default function VozPush({ userId, isAdmin = true, ativo = true }) {
     setTimeout(() => setExemplo(''), 4000)
   }
 
-  const cartoes = useMemo(() => VOZES.map(v => ({ ...v, amostras: exemplos.map(([tipo, d]) => textoDe(tipo, d, v.id)) })), [exemplos])
+  // A engraçada sorteia a frase a cada envio; aqui, a cada toque no cartão
+  // dela a amostra troca — é a demonstração de que não repete.
+  const [semente, setSemente] = useState(0)
+  const cartoes = useMemo(() => VOZES.map(v => ({ ...v, amostras: exemplos.map(([tipo, d]) => textoDe(tipo, d, v.id)) })), [exemplos, semente]) // eslint-disable-line react-hooks/exhaustive-deps
   const dur = semMovimento ? 0 : 0.4
 
   // PORTAL, obrigatoriamente. Este componente vive dentro do <main>, que
@@ -223,7 +226,7 @@ export default function VozPush({ userId, isAdmin = true, ativo = true }) {
                     {cartoes.map(v => {
                       const ativa = prefs.voz === v.id
                       return (
-                        <button key={v.id} type="button" onClick={() => setPrefs(p => ({ ...p, voz: v.id }))} aria-pressed={ativa}
+                        <button key={v.id} type="button" onClick={() => { setPrefs(p => ({ ...p, voz: v.id })); if (v.id === 'engracado') setSemente(x => x + 1) }} aria-pressed={ativa}
                           style={{
                             display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 20, textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit',
                             background: ativa ? 'rgba(229,57,31,0.05)' : 'var(--fill-1)',
@@ -237,7 +240,7 @@ export default function VozPush({ userId, isAdmin = true, ativo = true }) {
                               {ativa && <Ico d={I_CHECK} s={12} c="#fff" />}
                             </span>
                           </span>
-                          <span style={{ fontSize: 11.5, color: 'var(--t3)', lineHeight: 1.45, minHeight: 33 }}>{v.sub}</span>
+                          <span style={{ fontSize: 11.5, color: 'var(--t3)', lineHeight: 1.45, minHeight: 33 }}>{v.sub}{v.id === 'engracado' && <> <b style={{ color: RED, fontWeight: 800 }}>Toque de novo: nunca repete.</b></>}</span>
                           {v.amostras.map((a, k) => <Amostra key={k} titulo={a.titulo} corpo={a.corpo} />)}
                         </button>
                       )

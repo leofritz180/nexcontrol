@@ -10,7 +10,7 @@
  *   node scripts/teste-notificacoes.mjs            (tudo, nas três vozes)
  *   node scripts/teste-notificacoes.mjs --voz=low  (só uma)
  */
-import { montarNotificacao, textoDe, TIPOS, VOZES, CATEGORIA, prefsPermitem } from '../lib/notificacoes.js'
+import { montarNotificacao, textoDe, textosDe, TIPOS, VOZES, CATEGORIA, prefsPermitem } from '../lib/notificacoes.js'
 
 const soVoz = (process.argv.find(a => a.startsWith('--voz=')) || '').slice(6)
 
@@ -65,8 +65,9 @@ for (const [tipo, dados] of CASOS) {
     if (!t.titulo) { console.log(`  !! ${v.id}: sem título`); problemas++ }
     textos.add(t.titulo + '|' + t.corpo)
     const botoes = n.actions.map(a => `[ ${a.title} → ${n.data.destinos[a.action] || '?'} ]`).join('  ')
-    console.log(`  ${v.id.padEnd(10)} ${n.title}`)
-    console.log(`  ${''.padEnd(10)} ${n.body}`)
+    const todos = textosDe(tipo, dados, v.id)
+    if (v.id === 'engracado' && !dados.titulo && todos.length < 3) { console.log(`  !! engraçado com só ${todos.length} variação(ões)`); problemas++ }
+    todos.forEach((x, k) => { console.log(`  ${(k === 0 ? v.id : '').padEnd(10)} ${x.titulo}`); console.log(`  ${''.padEnd(10)} ${x.corpo}`) })
     if (v === vozes[0]) console.log(`  ${''.padEnd(10)} ${botoes}   corpo→${n.data.url}  tag=${n.tag}  ${n.requireInteraction ? 'fica' : 'passa'}`)
     for (const a of n.actions) if (!n.data.destinos[a.action]) { console.log(`  !! botão "${a.title}" sem destino`); problemas++ }
   }

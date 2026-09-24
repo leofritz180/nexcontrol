@@ -1748,11 +1748,11 @@ export default function MetaPage() {
                             </p>
                             <p className="t-small">R$ {fmt(r.resultado_por_conta)} / conta</p>
                           </div>
-                          <button onClick={()=>{setEditRem(r);setEditDep(String(r.deposito||''));setEditSaq(String(r.saque||''));setEditBau(String(r.bau||''));setEditContas(String(r.contas_remessa||''))}} style={{width:28,height:28,borderRadius:7,border:'1px solid var(--b2)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',opacity:0.4,transition:'opacity 0.15s',flexShrink:0}}
+                          <button onClick={()=>{setEditRem(r);setEditDep(String(r.deposito||''));setEditSaq(String(r.saque||''));setEditBau(String(r.bau||''));setEditContas(String(r.contas_remessa||''))}} style={{width:40,height:40,borderRadius:7,border:'1px solid var(--b2)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',opacity:0.4,transition:'opacity 0.15s',flexShrink:0}}
                             onMouseEnter={e=>e.currentTarget.style.opacity='1'} onMouseLeave={e=>e.currentTarget.style.opacity='0.4'}>
                             <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="var(--t2)" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                           </button>
-                          <button onClick={()=>deleteRemessa(r.id)} style={{width:28,height:28,borderRadius:7,border:'1px solid rgba(239,68,68,0.15)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',opacity:0.4,transition:'opacity 0.15s',flexShrink:0}}
+                          <button onClick={()=>deleteRemessa(r.id)} style={{width:40,height:40,borderRadius:7,border:'1px solid rgba(239,68,68,0.15)',background:'transparent',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',opacity:0.4,transition:'opacity 0.15s',flexShrink:0}}
                             onMouseEnter={e=>{e.currentTarget.style.opacity='1';e.currentTarget.style.background='rgba(239,68,68,0.08)'}} onMouseLeave={e=>{e.currentTarget.style.opacity='0.4';e.currentTarget.style.background='transparent'}}>
                             <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="var(--loss)" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                           </button>

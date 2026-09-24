@@ -125,7 +125,12 @@ export default function PushManager({ userId, tenantId }) {
       boxShadow:'0 12px 40px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.08)',
       display:'flex', alignItems:'center', gap:14,
       animation:'fade-up 0.4s cubic-bezier(0.33,1,0.68,1) both',
-      position:'relative',
+      // ATENÇÃO: não repetir `position` aqui. Havia um `position:'relative'`
+      // depois do `fixed` acima — em objeto JS a chave de trás ganha, então o
+      // banner deixava de flutuar e entrava NO FLUXO da página: 92px de altura
+      // empurrando o conteúdo pra baixo até o coordenador fechá-lo (o "salto"
+      // de 92px em /pix e /operator, e a "barra no meio da tela" do relato do
+      // celular). O botão de fechar é absoluto e o `fixed` já o posiciona.
     }}>
       {closeBtn}
       <div style={{width:38,height:38,borderRadius:11,background:'var(--brand-dim)',border:'1px solid var(--brand-border)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>

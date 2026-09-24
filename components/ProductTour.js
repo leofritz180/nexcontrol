@@ -77,12 +77,22 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
       const vw = window.innerWidth
       const vh = window.innerHeight
 
+      // largura de telefone OU altura de telefone deitado: nos dois casos não
+      // sobra tela em volta do alvo e a caixa doca no rodapé (ver abaixo).
+      const noFone = vw <= 640 || vh <= 500
+
       // Scroll pro alvo aparecer (top do alvo perto do top da viewport)
       try {
         const elRect = el.getBoundingClientRect()
         const targetScrollTop = window.scrollY + elRect.top - 100
+        // No telefone a caixa docada cobre o terço de baixo da tela: a faixa
+        // em que o alvo é visível vai do topo até a caixa, não até 60% da
+        // altura. Antes o alvo em y=392 (de 844) "já estava na tela" e não
+        // rolava — e ficava metade debaixo da caixa.
+        const cx = caixaRef.current?.getBoundingClientRect()
+        const tetoDaCaixa = noFone && cx ? Math.min(vh * 0.6, cx.top - 24) : vh * 0.6
         // So scrolla se necessario
-        if (elRect.top < 0 || elRect.top > vh * 0.6) {
+        if (elRect.top < 0 || elRect.top > tetoDaCaixa || (noFone && elRect.bottom > tetoDaCaixa && elRect.top > 100)) {
           window.scrollTo({ top: targetScrollTop, behavior: 'smooth' })
         }
       } catch {}
@@ -133,7 +143,9 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
       // NO CELULAR NAO HA PLACEMENT: a caixa doca no rodapé. Perseguir o
       // elemento só faz sentido quando sobra tela em volta dele, e num
       // telefone não sobra — o anel continua marcando o alvo lá em cima.
-      const noFone = vw <= 640
+      // largura de telefone OU altura de telefone deitado: nos dois casos não
+      // sobra tela em volta do alvo. Em paisagem (844×390) a caixa perseguia o
+      // elemento e passava 43px do rodapé.
       if (noFone) {
         setTooltipPos({ top: null, left: null, placement: 'doca' })
         return
@@ -325,8 +337,11 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
             ...(tooltipPos.placement === 'doca' || isCenter
               ? {
                   left: 16, right: 16,
-                  ...(isCenter && tooltipPos.placement !== 'doca'
-                    ? { top: '50%', maxWidth: 392, marginLeft: 'auto', marginRight: 'auto' }
+                  // sem alvo: no telefone e na paisagem DOCA embaixo (não sobra tela
+                  // pra centralizar); no desktop centraliza — e o translateY vive
+                  // NESTA camada, que não anima, então nada o sobrescreve
+                  ...(isCenter && tooltipPos.placement !== 'doca' && typeof window !== 'undefined' && window.innerWidth > 640 && window.innerHeight > 500
+                    ? { top: '50%', transform: 'translateY(-50%)', maxWidth: 392, marginLeft: 'auto', marginRight: 'auto' }
                     : { bottom: 'calc(16px + var(--rodape-livre))' }),
                 }
               : {
@@ -378,7 +393,10 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
               onClick={skip}
               aria-label="Pular tutorial"
               style={{
-                width: 24, height: 24, borderRadius: 6,
+                // área de toque de 40px com o visual de 24: o padding é
+                // invisível, o dedo não é
+                width: 40, height: 40, borderRadius: 6, boxSizing: 'border-box', padding: 8,
+                backgroundClip: 'content-box',
                 background: 'var(--fill-2)',
                 border: '1px solid var(--b1)',
                 color: 'var(--t3)',
@@ -462,12 +480,12 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
               onClick={next}
               style={{
                 padding: '9px 18px', borderRadius: 8,
-                background: '#3f9b1e',
+                background: '#e5391f',
                 border: 'none',
-                color: 'var(--t1)',
+                color: '#fff',
                 fontSize: 12.5, fontWeight: 700, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
-                boxShadow: '0 4px 14px rgba(63,155,30,0.25)',
+                boxShadow: '0 4px 14px rgba(229,57,31,0.28)',
               }}
             >
               {current === total ? 'Concluir' : 'Próximo'}

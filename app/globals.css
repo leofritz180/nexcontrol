@@ -333,8 +333,14 @@ a { color: inherit; text-decoration: none; }
 input, button, select, textarea { font: inherit; }
 
 html, body {
-  min-height: 100vh;
-  max-width: 100vw;
+  min-height: 100vh;      /* fallback */
+  min-height: 100svh;     /* Safari: sem o pulo da barra de endereço */
+  /* overflow-x hidden é CINTO, não conserto: scripts/qa-mascara.mjs desliga
+     isto em tempo de execução e mede — em 24/09/2026, 21 rotas a 320 e 390px,
+     a largura do documento não passou de innerWidth em nenhuma. Se um dia
+     a sonda acusar vazamento, o certo é corrigir o culpado, não contar com
+     esta linha. (max-width: 100vw saiu: no iPhone 100vw não é a largura de
+     layout, e aqui não segurava nada.) */
   overflow-x: hidden;
   background: #000000 !important;
   color: var(--t1);
@@ -385,6 +391,14 @@ h1, h2, h3, .t-hero, .t-h1, .t-h2, .t-h3 {
 .t-h3     { font-size: 20px; font-weight: 500; letter-spacing: -0.015em; }
 
 @media (max-width: 768px) {
+  /* ── ZOOM DO iPHONE ──────────────────────────────────────────────────
+     Safari amplia a página ao focar um controle com fonte menor que 16px.
+     Era a causa do "zoom quebrando a tela" — e o remendo antigo (proibir
+     todo zoom no viewport) escondia o sintoma e tirava o zoom de quem
+     precisa ampliar pra ler. O !important é deliberado: há controles com
+     fonte inline no projeto, e inline vence classe. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { font-size: 16px !important; }
+
   .t-hero { font-size: 44px; }
   .t-h1   { font-size: 32px; }
   .t-h2   { font-size: 22px; }
@@ -796,7 +810,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
    GLOBAL OVERFLOW SAFETY
    Prevents horizontal scroll on all viewports
 ═══════════════════════════════════ */
-html, body { max-width: 100vw; overflow-x: hidden; }
+/* (regra duplicada removida em 24/09/2026 — ver o bloco html, body no topo) */
 
 /* Safe-area for PWA on iOS notch devices */
 @supports (padding: max(0px)) {
@@ -1140,9 +1154,10 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   body::after { display: none; }
   body::before { opacity: 0.15; }
 
-  /* ── Overflow safety ── */
-  * { max-width: 100vw; }
-  html, body { overflow-x: hidden !important; }
+  /* A regra universal `* { max-width: 100vw }` que ficava aqui saiu em
+     24/09/2026: limitava TODO elemento (inclusive os de dentro de faixas que
+     rolam de lado de propósito) e a sonda de máscara mostrou que ela não
+     segurava nada. O overflow-x do html/body já está definido acima. */
 
   /* ── Safe areas for iPhone notch/island ── */
   body {
@@ -2594,7 +2609,7 @@ html, body { max-width: 100vw; overflow-x: hidden; }
      auto-crescer por JS continua mandando acima disso. */
   .nx-bento .nx-net-painel textarea,
   .nx-bento .nx-net-painel input[type="text"] {
-    min-height: 60px !important; font-size: 15px !important;
+    min-height: 60px !important; font-size: 16px !important; /* 16, não 15: abaixo disso o iPhone amplia ao focar */
     line-height: 1.35 !important; padding: 11px 14px !important;
   }
 
@@ -2707,6 +2722,19 @@ html, body { max-width: 100vw; overflow-x: hidden; }
   .nx-checklist > button > span:first-child { font-size: 10.5px !important; width: 28px !important; height: 28px !important; }
   /* o rotulo esta num span com font-size inline, entao e ele que some */
   .nx-checklist > button > span:last-child { display: none !important; }
+}
+
+/* Telefone DEITADO (844×390 e afins): a largura passa de 768, então valem as
+   regras de desktop — canto de baixo à direita, 110px acima do rodapé — mas o
+   cartão aberto tem ~360px de altura e a tela só tem 390: saía 77px pelo
+   topo. Aqui ele desce pra 12px do rodapé e passa a rolar por dentro. O
+   `bottom` precisa de !important porque o valor de desktop está inline no
+   componente; o desktop de verdade (mais de 520px de altura) não entra aqui. */
+@media (max-height: 520px) and (min-width: 769px) {
+  .nx-checklist {
+    bottom: 12px !important;
+    max-height: calc(100vh - 24px); overflow-y: auto; overscroll-behavior: contain;
+  }
 }
 
 /* Tela sensivel ao toque: sem hover, o tilt e o brilho que seguem o cursor

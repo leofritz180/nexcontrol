@@ -54,6 +54,13 @@ export default function BillingMpPage() {
   const [profile, setProfile] = useState(null)
   const [subscription, setSubscription] = useState(null) // sub ativa atual (se houver)
   const [stage, setStage] = useState('period') // period | loading | pix | approved | error
+  // Só desenha o cartão do plano DEPOIS que perfil, assinatura e operadores
+  // chegaram. Antes ele aparecia na hora com os valores de partida — "Solo ·
+  // R$ 59,90", "0 operadores", a caixa do Solo Pro — e um segundo depois
+  // trocava pelo plano real (Scale, 14 operadores, R$ 489,62): preço errado
+  // piscando na tela e, como o cartão fica centralizado na vertical, o
+  // conteúdo dava um salto de 43px no tablet quando encolhia.
+  const [pronto, setPronto] = useState(false)
   const [payment, setPayment] = useState(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
@@ -105,6 +112,7 @@ export default function BillingMpPage() {
       const r = list.length
       setRealOps(r)
       setOpQty(r) // default = operadores reais atuais (pode reduzir no seletor)
+      setPronto(true)
     })
   }, [])
 
@@ -208,7 +216,12 @@ export default function BillingMpPage() {
 
       <div style={{ width: '100%', maxWidth: 620, position: 'relative', zIndex: 2 }}>
         <AnimatePresence mode="wait">
-          {stage === 'period' && isUpgrade && (
+          {stage === 'period' && !pronto && (
+            <motion.div key="carregando" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <LoadingCard />
+            </motion.div>
+          )}
+          {stage === 'period' && pronto && isUpgrade && (
             <motion.div key="upgrade" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
               <UpgradeCard
                 opQty={opQty}
@@ -220,7 +233,7 @@ export default function BillingMpPage() {
               />
             </motion.div>
           )}
-          {stage === 'period' && !isUpgrade && (
+          {stage === 'period' && pronto && !isUpgrade && (
             <motion.div key="period" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
               <PeriodCard
                 v2={isV2}
@@ -291,7 +304,7 @@ function UpgradeCard({ opQty, currentPaidOps, upgradeAmount, currentExpires, onC
   return (
     <div style={cardStyleV2}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-        <button type="button" onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--t3)', fontSize: 12, fontWeight: 600, padding: 0 }}>
+        <button type="button" onClick={onBack} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--t3)', fontSize: 12, fontWeight: 600, minHeight: 40, padding: '0 8px', marginLeft: -8 }}>
           <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           Voltar
         </button>
@@ -364,7 +377,7 @@ function PeriodCard({ v2, querPro, setQuerPro, opQty, setOpQty, realOps, opsList
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: 'transparent', border: 'none', cursor: 'pointer',
-            color: 'var(--t3)', fontSize: 12, fontWeight: 600, padding: 0,
+            color: 'var(--t3)', fontSize: 12, fontWeight: 600, minHeight: 40, padding: '0 8px', marginLeft: -8,
           }}
         >
           <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -716,7 +729,7 @@ function PlanRowV2({ plan, calc, isSelected, onSelect }) {
           <span style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.01em' }}>{plan.label}</span>
           {plan.badge && <span style={{ fontSize: 8.5, fontWeight: 800, padding: '2px 7px', borderRadius: 5, letterSpacing: '0.05em', background: isPop ? '#e5391f' : 'rgba(34,197,94,0.14)', color: isPop ? '#fff' : '#22C55E', border: isPop ? 'none' : '1px solid rgba(34,197,94,0.3)' }}>{plan.badge}</span>}
         </div>
-        <p style={{ fontSize: 11, color: 'var(--t3)', margin: '3px 0 0' }}>
+        <p style={{ fontSize: 11, color: 'var(--t3)', margin: '3px 0 0', overflowWrap: 'anywhere' }}>
           R$ {fmt(calc.perMonth)}/mês{calc.savings > 0 ? ` · economia R$ ${fmt(calc.savings)}` : ''}
         </p>
       </div>

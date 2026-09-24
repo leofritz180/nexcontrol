@@ -178,17 +178,19 @@ export default function TutorialBento({ passos = [], marcados = {}, onAlternar, 
                 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px' }}>
                   {/* caixinha de concluído — separada do clique que expande */}
-                  <button
-                    type="button" onClick={() => onAlternar && onAlternar(p.id)}
+                  <button type="button" onClick={() => onAlternar && onAlternar(p.id)}
                     aria-pressed={ok} aria-label={`Marcar "${p.label}" como concluído`}
-                    style={{
-                      width: 26, height: 26, borderRadius: 9, flexShrink: 0, padding: 0, cursor: 'pointer',
+                    style={{ width: 40, height: 40, flexShrink: 0, padding: 0, margin: -7, background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {/* a caixinha continua com 26px; o alvo do dedo é o botão de 40 */}
+                    <span aria-hidden style={{
+                      width: 26, height: 26, borderRadius: 9,
                       border: `2px solid ${ok ? 'var(--profit)' : 'var(--b2)'}`,
                       background: ok ? 'var(--profit)' : 'var(--surface)',
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                       color: ok ? 'var(--surface)' : 'transparent',
                     }}>
-                    <Ico d={I_CHECK} s={13} />
+                      <Ico d={I_CHECK} s={13} />
+                    </span>
                   </button>
 
                   {/* moldura do ícone do passo */}
@@ -215,6 +217,7 @@ export default function TutorialBento({ passos = [], marcados = {}, onAlternar, 
                         display: 'block', fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.01em',
                         color: ok ? 'var(--profit)' : 'var(--t1)',
                         textDecoration: ok ? 'line-through' : 'none',
+                        overflowWrap: 'anywhere',
                       }}>{p.label}</span>
                     </span>
                     {/* tub-num: no celular o CSS esconde. Sao cinco elementos

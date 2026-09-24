@@ -82,7 +82,7 @@ export default function PrivacidadePage() {
           'Revogação do consentimento, quando essa for a base legal utilizada.',
         ]} />
         <p style={{ margin: '12px 0 0' }}>
-          Basta escrever para <a href={`mailto:${CONTATO.email}`} style={{ color: 'var(--loss)', textDecoration: 'none' }}>{CONTATO.email}</a>.
+          Basta escrever para <a href={`mailto:${CONTATO.email}`} style={{ color: 'var(--loss)', textDecoration: 'none', display: 'inline-block', padding: '10px 0', margin: '-10px 0' }}>{CONTATO.email}</a>.
           Respondemos no prazo legal.
         </p>
       </Secao>

@@ -49,10 +49,14 @@ export default function BettifyTips() {
 
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 14 }}>
         {/* bolinhas de navegacao */}
-        <div style={{ display: 'flex', gap: 5 }}>
+        <div style={{ display: 'flex', gap: 5, alignItems: 'center', paddingLeft: 8 }}>
           {TIPS.map((_, k) => (
+            // a bolinha é só o desenho; o botão por trás tem 32px de alvo (6px
+            // era impossível de acertar com o dedo)
             <button key={k} type="button" onClick={() => setI(k)} aria-label={`Dica ${k + 1}`}
-              style={{ width: k === i ? 16 : 6, height: 6, borderRadius: 4, border: 'none', cursor: 'pointer', padding: 0, background: k === i ? '#FF6B00' : 'rgba(255,255,255,0.2)', transition: 'all 0.3s' }} />
+              style={{ width: 32, height: 32, margin: '-13px -8px', border: 'none', cursor: 'pointer', padding: 0, background: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span aria-hidden style={{ display: 'block', width: k === i ? 16 : 6, height: 6, borderRadius: 4, background: k === i ? '#FF6B00' : 'rgba(255,255,255,0.2)', transition: 'all 0.3s' }} />
+            </button>
           ))}
         </div>
         <button type="button" onClick={() => router.push('/proxy')}

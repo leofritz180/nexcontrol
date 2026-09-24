@@ -107,9 +107,9 @@ export default function TermosPage() {
 
       <Secao n={12} titulo="Privacidade">
         O tratamento dos seus dados pessoais está descrito na nossa{' '}
-        <a href="/privacidade" style={{ color: 'var(--loss)', textDecoration: 'none' }}>Política de Privacidade</a>,
+        <a href="/privacidade" style={{ color: 'var(--loss)', textDecoration: 'none', display: 'inline-block', padding: '10px 0', margin: '-10px 0' }}>Política de Privacidade</a>,
         que faz parte integrante destes Termos. Dúvidas podem ser enviadas para{' '}
-        <a href={`mailto:${CONTATO.email}`} style={{ color: 'var(--loss)', textDecoration: 'none' }}>{CONTATO.email}</a>.
+        <a href={`mailto:${CONTATO.email}`} style={{ color: 'var(--loss)', textDecoration: 'none', display: 'inline-block', padding: '10px 0', margin: '-10px 0' }}>{CONTATO.email}</a>.
       </Secao>
     </LegalLayout>
   )

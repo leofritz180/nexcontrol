@@ -554,7 +554,7 @@ function CtaBottom() {
       <p style={{ fontSize: 14, color: 'var(--t3)', margin: '0 0 22px' }}>
         Crie sua conta agora e tenha essa visão em tempo real da sua operação.
       </p>
-      <Link href="/signup" style={{ textDecoration: 'none' }}>
+      <Link href="/signup" style={{ textDecoration: 'none', display: 'inline-block' }}>
         <motion.div
           whileHover={{ scale: 1.03, boxShadow: '0 12px 40px rgba(229,57,31,0.5)' }}
           whileTap={{ scale: 0.97 }}

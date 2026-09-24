@@ -107,7 +107,7 @@ export default function RemessaConsole({
             <div style={{ display: 'flex', gap: 6 }}>
               {[[-280, I_ESQ], [280, I_DIR]].map(([dx, ic], i) => (
                 <button key={i} type="button" onClick={() => rolar(dx)}
-                  style={{ width: 30, height: 30, borderRadius: 10, border: '1px solid var(--b1)', background: 'var(--surface)', cursor: 'pointer', color: 'var(--t3)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  style={{ width: 40, height: 40, borderRadius: 10, border: '1px solid var(--b1)', background: 'var(--surface)', cursor: 'pointer', color: 'var(--t3)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Ico d={ic} s={14} />
                 </button>
               ))}

@@ -56,6 +56,15 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   const pathname = usePathname()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  // Com o drawer aberto, a página NÃO rola por baixo dele: o dedo que
+  // arrasta o menu não pode arrastar o painel junto. Restaura ao fechar e
+  // ao desmontar — deixar o body travado depois de navegar é o bug clássico.
+  useEffect(() => {
+    if (!mobileOpen) return
+    const antes = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = antes }
+  }, [mobileOpen])
   // A barra de abas do celular (components/v2/BarraApp.js) tem um botão
   // "Menu" que precisa abrir esta gaveta. Ela não tem acesso ao estado
   // daqui, então avisa por evento.
@@ -498,6 +507,10 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               background:'var(--sb-bg)',
               borderRight:'1px solid var(--fill-3)',
               overflowY:'auto',
+              // ao chegar no fim da lista, o dedo nao arrasta a pagina de tras
+              overscrollBehavior:'contain',
+              // respiro pra barra de gestos do iPhone
+              paddingBottom:'env(safe-area-inset-bottom, 0px)',
             }}>
             {content}
           </motion.aside>

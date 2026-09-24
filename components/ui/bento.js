@@ -146,8 +146,8 @@ export function Hero({ rotulo, valor, cor, nota, extras = [], blob, delay = 0.04
         {extras.length > 0 && (
           <div className="bk-heroi-extras" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {extras.map(e => (
-              <div key={e.l} style={{ padding: '12px 16px', borderRadius: 16, background: 'var(--fill-1)', border: '1px solid var(--b1)', minWidth: 118 }}>
-                <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 6px' }}>{e.l}</p>
+              <div key={e.l} style={{ padding: '12px 16px', borderRadius: 16, background: 'var(--fill-1)', border: '1px solid var(--b1)', minWidth: 0, flex: '1 1 118px', maxWidth: '100%' }}>
+                <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 6px', whiteSpace: 'normal', overflowWrap: 'anywhere', lineHeight: 1.35 }}>{e.l}</p>
                 <NumeroTexto delay={delay + 0.2} style={{ fontFamily: MONO, fontSize: 16, fontWeight: 800, color: e.c || 'var(--t1)', margin: 0, display: 'block' }}>{e.v}</NumeroTexto>
               </div>
             ))}
@@ -167,7 +167,7 @@ export function Tira({ itens }) {
       className="bk-tira" style={{ display: 'grid', gridTemplateColumns: `repeat(${itens.length}, 1fr)`, gap: 1, borderRadius: 18, overflow: 'hidden', border: '1px solid var(--b1)', background: 'var(--b1)' }}>
       {itens.map((c, i) => (
         <div key={i} style={{ padding: '15px 17px', background: 'var(--surface)' }}>
-          <p style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 8px' }}>{c.l}</p>
+          <p style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 8px', whiteSpace: 'normal', overflowWrap: 'anywhere', lineHeight: 1.35 }}>{c.l}</p>
           <NumeroTexto delay={0.14 + i * 0.05} style={{ fontFamily: MONO, fontSize: 18, fontWeight: 900, color: c.c || 'var(--t1)', margin: 0, letterSpacing: '-0.02em', display: 'block' }}>{c.v}</NumeroTexto>
           {c.hint && <p style={{ fontSize: 10.5, color: 'var(--t4)', margin: '6px 0 0' }}>{c.hint}</p>}
         </div>

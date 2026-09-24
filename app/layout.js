@@ -71,7 +71,10 @@ export const metadata = {
   },
 }
 
-export const viewport = { width: 'device-width', initialScale: 1, maximumScale: 1, viewportFit: 'cover', themeColor: '#060607' }
+// Sem maximumScale: bloquear o zoom era o remendo pro iPhone ampliar ao focar
+// input de 14px. A causa (fonte do input) está tratada no globals.css; o zoom
+// de quem precisa ampliar pra ler volta a funcionar.
+export const viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover', themeColor: '#060607' }
 
 export default function RootLayout({ children }) {
   return (
@@ -104,6 +107,23 @@ export default function RootLayout({ children }) {
             },
           ],
         }) }} />
+        {/* O TEMA ANTES DA PRIMEIRA PINTURA. O DesignMode aplica nx-bento/nx-light
+            depois de ler a sessão (~1s). Nesse intervalo a página pintava no
+            layout ANTIGO e depois trocava — no celular isso era um pulo de 92px
+            (a barra do topo do menu aparecia e sumia). Como a 2.0 vale pra todo
+            mundo, a classe pode entrar aqui, síncrona, antes de qualquer
+            pintura. O DesignMode continua mandando depois (é idempotente) e
+            cuida do noir/aqua. As rotas escuras de propósito ficam de fora,
+            espelhando o SEM_BENTO do components/DesignMode.js. */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){try{
+            var p=location.pathname, fora=['/','/owner','/design-v2','/admin-preview'];
+            var sem=fora.some(function(x){return x==='/'?p==='/':(p===x||p.indexOf(x+'/')===0)});
+            if(sem) return;
+            var h=document.documentElement; h.classList.add('nx-bento','nx-light');
+            if(localStorage.getItem('nx_noir')==='1') h.classList.add('nx-noir');
+          }catch(e){}})();
+        ` }} />
         <script dangerouslySetInnerHTML={{ __html: `
           if('serviceWorker' in navigator){
             navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})

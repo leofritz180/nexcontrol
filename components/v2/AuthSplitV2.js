@@ -293,7 +293,8 @@ export function OlhoSenha({ mostrando, aoAlternar }) {
       aria-label={mostrando ? 'Esconder senha' : 'Mostrar senha'}
       style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        background: 'none', border: 'none', padding: 2, margin: 0,
+        background: 'none', border: 'none', margin: -10, padding: 0,
+        width: 40, height: 40, flexShrink: 0,
         cursor: 'pointer', color: 'var(--t3)', borderRadius: 8,
       }}>
       <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
@@ -308,7 +309,7 @@ export function OlhoSenha({ mostrando, aoAlternar }) {
 // ── LINK SECUNDÁRIO ──────────────────────────────────────────────────────
 export function LinkAuth({ href, children }) {
   return (
-    <Link href={href} style={{ color: 'var(--t1)', fontWeight: 800, textDecoration: 'none', borderBottom: '1.5px solid rgba(229,57,31,0.45)' }}>
+    <Link href={href} style={{ color: 'var(--t1)', fontWeight: 800, textDecoration: 'none', borderBottom: '1.5px solid rgba(229,57,31,0.45)', display: 'inline-block', padding: '10px 2px', margin: '-10px -2px' }}>
       {children}
     </Link>
   )

@@ -312,18 +312,29 @@ export default function BemVindo20({ email, ativo }) {
               </motion.div>
             </AnimatePresence>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, marginTop: 26 }}>
+            {/* Num telefone de 390px o cartão tem ~306px por dentro; pontinhos +
+                "Pular" + "Continuar" somam mais que isso e o botão saía cortado
+                pela borda direita ("Continu"). A linha pode quebrar: os
+                pontinhos ficam em cima e os botões descem, alinhados à direita.
+                No desktop cabe numa linha só e nada muda. */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px 14px', marginTop: 26 }}>
               <div style={{ display: 'flex', gap: 6 }}>
                 {(soNoir ? [] : PASSOS).map((_, k) => (
+                  // o pontinho continua com 7px; o que cresce é a área que o dedo
+                  // acerta (28px), invisível. Alvo de 7px não se toca num telefone.
                   <button key={k} type="button" onClick={() => setI(k)} aria-label={`Passo ${k + 1}`}
-                    style={{
-                      width: k === i ? 22 : 7, height: 7, borderRadius: 4, border: 'none', cursor: 'pointer', padding: 0,
+                    // 32px de alvo, mas avançando 26px no fluxo (as áreas se sobrepõem
+                    // 6px): cinco pontinhos ocupam 136px em vez de 184px
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, minWidth: 32, height: 32, margin: '0 -3px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span aria-hidden style={{
+                      display: 'block', width: k === i ? 22 : 7, height: 7, borderRadius: 4,
                       background: k === i ? RED : 'var(--fill-3)',
                       transition: 'width .25s ease, background .25s ease',
                     }} />
+                  </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
                 {!ultimo && (
                   <button type="button" onClick={encerrar}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5, fontWeight: 700, color: 'var(--t3)', padding: 6 }}>

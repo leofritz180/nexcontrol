@@ -495,15 +495,21 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
 
       {/* Mobile drawer */}
       <AnimatePresence>
+        {/* A gaveta aberta é a superfície mais alta que NÃO é modal: fica acima
+            dos ajudantes flutuantes (dock 10001, checklist 9989, banner de
+            push 9000, barra de upgrade), que com z 240/245 apareciam POR CIMA
+            dela — o banner "Ativar notificações" tampava "Meu perfil" e a
+            pastilha do checklist sentava na logo. Tour, assistente e telas de
+            carregamento (99990+) continuam acima da gaveta. */}
         {mobileOpen && (<>
           <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
             onClick={()=>setMobileOpen(false)}
-            style={{ position:'fixed', inset:0, zIndex:240, background:'rgba(17,19,24,0.55)' }}/>
+            style={{ position:'fixed', inset:0, zIndex:10100, background:'rgba(17,19,24,0.55)' }}/>
           <motion.aside
             initial={{x:-260}} animate={{x:0}} exit={{x:-260}}
             transition={{ duration:0.25, ease:[0.33,1,0.68,1] }}
             style={{
-              position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:245,
+              position:'fixed', left:0, top:0, bottom:0, width:248, zIndex:10101,
               background:'var(--sb-bg)',
               borderRight:'1px solid var(--fill-3)',
               overflowY:'auto',

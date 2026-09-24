@@ -48,8 +48,16 @@ const medida = () => ({
 })
 const silenciar = async pg => {
   let fechou = false
-  for (const t of ['Agora não', 'Agora nao', 'Pular', 'Entendi', 'Fechar', 'Pronto', 'Começar']) {
-    try { const b = pg.getByRole('button', { name: t }); if (await b.count()) { await b.first().click({ timeout: 800 }); fechou = true } } catch {}
+  // até 3 rodadas: fechar o onboarding (3 passos) faz o coordenador soltar o
+  // próximo da fila (o Bem-vindo 2.0), que também tem 'Pular' — uma passada
+  // só deixava o segundo aberto e o teste da gaveta batia nele.
+  for (let rodada = 0; rodada < 3; rodada++) {
+    let algum = false
+    for (const t of ['Agora não', 'Agora nao', 'Pular', 'Entendi', 'Fechar', 'Pronto', 'Começar']) {
+      try { const b = pg.getByRole('button', { name: t }); if (await b.count()) { await b.first().click({ timeout: 800 }); fechou = true; algum = true } } catch {}
+    }
+    if (!algum) break
+    await pg.waitForTimeout(700)
   }
   // fechar um pop-up dispara a animação de saída dele: por ~300ms ele ainda
   // existe, com opacidade caindo e pointer-events ativo. Medir nesse instante

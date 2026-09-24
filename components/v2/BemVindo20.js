@@ -16,6 +16,7 @@
 // abertura — justamente o oposto da impressão que queremos.
 // ─────────────────────────────────────────────────────────────────────────
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { useOverlaySlot } from '../../lib/overlayCoordinator'
 import { SOMBRA, Ico, RED, RED2 } from '../ui/bento'
@@ -261,7 +262,10 @@ export default function BemVindo20({ email, ativo }) {
   const ultimo = i === PASSOS.length - 1
   const dur = semMovimento ? 0 : 0.4
 
-  return (
+  // Portal pro <body>: dentro do <main> (z 1) o dock do body (z 240) passava
+  // por cima do modal e tampava o X no celular. Ver components/v2/VozPush.
+  if (typeof document === 'undefined') return null
+  return createPortal(
     <AnimatePresence>
       {quer && liberado && (
         <motion.div
@@ -357,6 +361,7 @@ export default function BemVindo20({ email, ativo }) {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }

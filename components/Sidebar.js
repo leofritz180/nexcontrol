@@ -162,6 +162,24 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
   // Nex Noir: a escolha vive no localStorage e quem aplica a classe e o
   // DesignMode. Aqui so gravamos e avisamos, pra nao ter duas fontes da
   // verdade sobre o tema.
+  // Rótulo da voz do push no menu ("SÉRIO", "ENGRAÇADO"…): lê o cache local
+  // e ouve o salvamento do VozPush, sem consultar a rede.
+  const [vozPush, setVozPush] = useState('')
+  useEffect(() => {
+    if (!userId) return
+    const ler = (p) => {
+      try {
+        const prefs = p || JSON.parse(localStorage.getItem('nx_push_prefs_' + userId) || 'null')
+        const v = prefs?.voz
+        setVozPush(v === 'engracado' ? 'Engraçado' : v === 'low' ? 'Low profile' : v === 'serio' ? 'Sério' : '')
+      } catch { setVozPush('') }
+    }
+    ler()
+    const aoSalvar = e => ler(e.detail)
+    window.addEventListener('nx:voz-push-salva', aoSalvar)
+    return () => window.removeEventListener('nx:voz-push-salva', aoSalvar)
+  }, [userId])
+
   const [noir, setNoir] = useState(false)
   useEffect(() => {
     try { setNoir(localStorage.getItem('nx_noir') === '1') } catch {}
@@ -406,6 +424,25 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
           </div>
           <svg className="sb-label" width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--t4)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><polyline points="9 18 15 12 9 6"/></svg>
         </button>
+        {/* Voz das notificações — abre o VozPush (components/v2/VozPush) */}
+        {nex2 && (
+          <button type="button" onClick={() => { try { window.dispatchEvent(new Event('nx:voz-push')) } catch {} ; setMobileOpen(false) }}
+            title="Como o NexControl fala com você no push"
+            style={{
+              width:'100%', display:'flex', alignItems:'center', gap:8, marginBottom:8,
+              padding:'8px 12px', borderRadius:10, fontSize:11, fontWeight:600,
+              color:'var(--t3)', background:'transparent', border:'1px solid var(--fill-2)',
+              cursor:'pointer', transition:'all 0.15s',
+            }}
+            onMouseEnter={e=>{e.currentTarget.style.background='var(--fill-2)';e.currentTarget.style.color='var(--t1)'}}
+            onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'}}>
+            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span className="sb-label" style={{ flex:1, textAlign:'left' }}>Notificações</span>
+            <span className="sb-label" style={{ fontSize:9.5, fontWeight:800, letterSpacing:'0.08em', textTransform:'uppercase', color:'var(--t4)' }}>{vozPush}</span>
+          </button>
+        )}
         {/* Nex Noir — so pras contas do visual 2.0 */}
         {nex2 && (
           <button type="button" onClick={alternarNoir} aria-pressed={noir}

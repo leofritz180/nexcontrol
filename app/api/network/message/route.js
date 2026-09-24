@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
-import { montarNotificacao } from '../../../../lib/notificacoes'
+import { notificarUsuarios } from '../../../../lib/pushNotificar'
 import crypto from 'crypto'
 import { authNetwork, getMembers, publicName, buildAuthorMap } from '../../../../lib/network-server'
 import { channelRule } from '../../../../lib/network-access'
-import { sendPushToUser } from '../../../../lib/push'
 
 export const dynamic = 'force-dynamic'
 
@@ -119,24 +118,24 @@ export async function POST(req) {
         // Dispara pela flag do seletor OU detectando o texto "@todos" (digitado / dock).
         // Envia em LOTES paralelos (20 por vez) — com o Network free a comunidade
         // cresce e envio sequencial estouraria o timeout do serverless.
-        const pushBatch = async (ids, payload) => {
+        // notificarUsuarios lê a voz e a preferência de cada um e manda em
+        // lote (uma consulta de inscrições pra lista toda).
+        const pushBatch = async (ids, dados) => {
           const targets = ids.filter(id => { if (notified.has(id)) return false; notified.add(id); return true })
-          for (let i = 0; i < targets.length; i += 20) {
-            await Promise.allSettled(targets.slice(i, i + 20).map(id => sendPushToUser(sb, id, payload)))
-          }
+          if (targets.length) await notificarUsuarios(sb, targets, 'network', dados)
         }
         const wantsAll = (body.mentionAll || /(^|\s)@todos(\s|$)/i.test(text)) && a.canMentionAll
         if (wantsAll) {
           const members = await getMembers(sb)
-          await pushBatch(members.map(m => m.id), montarNotificacao('network', { titulo: `${authorName} marcou todos no Network`, corpo: preview, url: `/network?c=${channelKey}`, chave: 'todos' }))
+          await pushBatch(members.map(m => m.id), { evento: 'todos', nome: authorName, trecho: preview, url: `/network?c=${channelKey}`, chave: 'todos' })
         }
         // Mencoes individuais: avisa cada usuario marcado
         const mentions = Array.isArray(body.mentions) ? body.mentions.filter(id => id && id !== user.id) : []
-        await pushBatch(mentions, montarNotificacao('network', { titulo: `${authorName} te mencionou no Network`, corpo: preview, url: `/network?c=${channelKey}`, chave: 'mencao' }))
+        await pushBatch(mentions, { evento: 'mencao', nome: authorName, trecho: preview, url: `/network?c=${channelKey}`, chave: 'mencao' })
         // Avisos: comunicado oficial -> notifica todos os membros
         if (rule?.ownerOnly) {
           const members = await getMembers(sb)
-          await pushBatch(members.map(m => m.id), montarNotificacao('network', { titulo: 'Novo aviso no Network', corpo: preview, url: '/network?c=avisos', chave: 'aviso' }))
+          await pushBatch(members.map(m => m.id), { evento: 'aviso', trecho: preview, url: '/network?c=avisos', chave: 'aviso' })
         }
       } catch (e) { console.error('[network] push falhou', e?.message) }
     })()

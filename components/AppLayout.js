@@ -12,6 +12,7 @@ const RedesignHeader = dynamic(() => import('./RedesignHeader'), { ssr: false })
 const DockPilula = dynamic(() => import('./v2/DockPilula'), { ssr: false })
 const BarraApp = dynamic(() => import('./v2/BarraApp'), { ssr: false })
 const BemVindo20 = dynamic(() => import('./v2/BemVindo20'), { ssr: false })
+const VozPush = dynamic(() => import('./v2/VozPush'), { ssr: false })
 const PaletaComandos = dynamic(() => import('./v2/PaletaComandos'), { ssr: false })
 const Atalhos = dynamic(() => import('./v2/Atalhos'), { ssr: false })
 const RailSelo = dynamic(() => import('./v2/RailSelo'), { ssr: false })
@@ -61,6 +62,7 @@ export default function AppLayout({ children, userName, userEmail, isAdmin, tena
       <BarraApp ativo={isNex2(userEmail)} isAdmin={isAdmin} aoNovaMeta={dadosPaleta.aoNovaMeta} />
       <RailSelo ativo={isNex2(userEmail)} />
       <BemVindo20 email={userEmail} ativo={isNex2(userEmail)} />
+      <VozPush userId={userId} isAdmin={!!isAdmin} ativo={isNex2(userEmail) && !!userId} />
       <PaletaComandos ativo={isNex2(userEmail)} isAdmin={isAdmin} {...dadosPaleta} />
       <Atalhos ativo={isNex2(userEmail)} isAdmin={isAdmin} aoNovaMeta={dadosPaleta.aoNovaMeta} />
       <div style={{ marginLeft: isRedesign(userEmail) ? 76 : 248 }} className="app-content">

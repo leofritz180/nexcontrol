@@ -660,36 +660,10 @@ export default function MetaPage() {
       setFeedback(fb)
       setTimeout(() => setFeedback(null), 8000)
     }
-    // Push pro operador em toda remessa
+    // Push pra quem registrou: a leitura da própria remessa. O texto (e o
+    // humor) sai do catálogo, na voz que a pessoa escolheu — aqui só os números.
     const perConta = nContasRem > 0 ? Math.abs(diff) / nContasRem : Math.abs(diff)
-    let pushTitle, pushBody
-    const perTag = `R$ ${fmt(Math.abs(diff))} (R$ ${fmt(perConta)}/conta)`
-    const isAdmin = profile?.role === 'admin' || leaderAllowed
-    const pick = a => a[Math.floor(Math.random() * a.length)]
-    if (diff >= 0) {
-      const msgs = ['Muito bom, parabéns! Continua assim.', 'Lucro na remessa, mandou bem demais!', 'Show! Mantém esse ritmo.', 'Ai sim! Operação voando.']
-      pushTitle = 'Remessa no lucro!'
-      pushBody = `+R$ ${fmt(diff)} — ${msgs[Math.floor(Math.random() * msgs.length)]}`
-    } else if (perConta <= 2) {
-      pushTitle = 'Remessa registrada'
-      pushBody = `${perTag} — Prejuízo baixo, mandou bem! Salário compensa.`
-    } else if (perConta <= 4) {
-      pushTitle = 'Remessa registrada'
-      pushBody = `${perTag} — Leve oscilada, dentro do esperado. Segue firme.`
-    } else if (perConta <= 6) {
-      pushTitle = 'Atenção na operação'
-      pushBody = `${perTag} — ${pick(['Começando a oscilar, fique de olho!', 'Tá oscilando um pouco, fica de olho nas próximas.', 'Leve oscilação subindo, fica esperto!'])}`
-    } else if (perConta <= 8) {
-      pushTitle = 'Atenção redobrada'
-      pushBody = `${perTag} — ${pick(['Oscilada maior. Avalie trocar o slot.', 'Oscilação aumentando, pensa em trocar o slot.', 'Tá oscilando mais forte, considere outro slot.'])}`
-    } else if (perConta <= 10) {
-      pushTitle = 'Resultado ruim'
-      pushBody = `${perTag} — ${pick(isAdmin ? ['Já leva pro prejuízo. Reavalie a estratégia.', 'Tá pesado, considere pausar e revisar.', 'Prejuízo subindo, repense a operação.'] : ['Já leva pro prejuízo. Pense em consultar o ADMIN.', 'Tá pesado, vale falar com o ADMIN.', 'Prejuízo subindo, alinhe com o ADMIN.'])}`
-    } else {
-      pushTitle = 'Resultado negativo'
-      pushBody = `${perTag} — ${pick(isAdmin ? ['Resultado negativo. Procure outros caminhos.', 'Já é prejuízo, busque outra estratégia.', 'No vermelho, mude o caminho.'] : ['Resultado negativo. Procure outros caminhos.', 'Já é prejuízo, alinhe com o ADMIN.', 'No vermelho, fale com o ADMIN.'])}`
-    }
-    dispararPush('remessa-feedback', { titulo: pushTitle, corpo: pushBody, metaId: id, chave: String(id) }, 'eu')
+    dispararPush('remessa-feedback', { valor: diff, perConta, contas: nContasRem, metaId: id, chave: String(id) }, 'eu')
   }
 
   // Marcos da meta: avisa quando a contagem de contas CRUZA a metade ou

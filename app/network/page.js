@@ -965,7 +965,7 @@ function PinnedBar({ msg, isOwner, onUnpin }) {
       <p style={{ margin: 0, flex: 1, fontSize: 12, color: 'var(--t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         <strong style={{ color: 'var(--loss)', fontWeight: 700 }}>Fixado:</strong> {msg.text}
       </p>
-      {isOwner && <button onClick={onUnpin} style={{ ...iconBtn, width: 24, height: 24 }} title="Desafixar">
+      {isOwner && <button onClick={onUnpin} style={{ ...iconBtn, width: 36, height: 36 }} title="Desafixar" aria-label="Desafixar">
         <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
       </button>}
     </div>
@@ -1032,8 +1032,8 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
         {/* header (avatar + nome + selos) — só dos outros e no início do grupo */}
         {!grouped && !mine && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 5 }}>
-            <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 0 }}><Avatar name={a.name} color={a.color} src={a.avatar} size={30} /></button>
-            <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 13, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em' }}>{a.name}</button>
+            <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: 5, margin: -5, cursor: 'pointer', lineHeight: 0 }}><Avatar name={a.name} color={a.color} src={a.avatar} size={30} /></button>
+            <button onClick={() => onOpenProfile(a.id)} style={{ background: 'none', border: 'none', padding: '8px 5px', margin: '-8px -5px', cursor: 'pointer', fontSize: 13, fontWeight: 800, color: '#F1F5F9', letterSpacing: '-0.01em' }}>{a.name}</button>
             {a.verified && <VerifiedBadge size={13} />}
             {a.founder && <VeteranoBadge small />}
             {a.tag && <TagPill tag={a.tag} color={a.tagColor} />}

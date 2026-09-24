@@ -92,9 +92,9 @@ export default function PushManager({ userId, tenantId }) {
   if (!granted) return null   // coordenador: espera os outros overlays fecharem
 
   const closeBtn = (
-    <button onClick={dismiss} style={{
-      position:'absolute', top:8, right:8, background:'none', border:'none',
-      cursor:'pointer', padding:4, lineHeight:1, color:'var(--t4)',
+    <button onClick={dismiss} aria-label="Fechar" style={{
+      position:'absolute', top:0, right:0, width:40, height:40, background:'none', border:'none',
+      cursor:'pointer', padding:0, display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1, color:'var(--t4)',
     }}>
       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>

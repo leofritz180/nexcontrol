@@ -87,6 +87,19 @@ export default function BillingMpPage() {
       const u = data?.session?.user
       if (!u) { router.push('/login'); return }
       setUser(u)
+      // convite de teste ainda não resgatado (ex.: confirmou o e-mail e voltou)
+      try {
+        const tokenConvite = localStorage.getItem('nx_convite')
+        if (tokenConvite) {
+          const r = await fetch('/api/convite/resgatar', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + data.session.access_token }, body: JSON.stringify({ token: tokenConvite }) })
+          const j = await r.json().catch(() => ({}))
+          localStorage.removeItem('nx_convite')
+          if (r.ok && j.ok) { router.replace('/admin'); return }
+          try { sessionStorage.setItem('nx_convite_erro', j.error || 'Convite não pôde ser aplicado.') } catch {}
+        }
+        const erroConvite = sessionStorage.getItem('nx_convite_erro')
+        if (erroConvite) { setError(erroConvite); sessionStorage.removeItem('nx_convite_erro') }
+      } catch {}
       const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
       if (!p || p.role !== 'admin') { router.push('/operator'); return }
       setProfile(p)

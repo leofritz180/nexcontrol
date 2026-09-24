@@ -46,6 +46,11 @@ export default function SignupPage() {
     if (ref && typeof window !== 'undefined') {
       try { sessionStorage.setItem('nx_ref', ref) } catch {}
     }
+    // convite de teste (/convite/<token>): fica guardado até o resgate
+    const convite = searchParams?.get('convite')
+    if (convite && typeof window !== 'undefined') {
+      try { localStorage.setItem('nx_convite', convite) } catch {}
+    }
   }, [searchParams])
 
   async function attachRef(userEmail) {
@@ -113,6 +118,29 @@ export default function SignupPage() {
             method: 'POST',
             headers: { Authorization: 'Bearer ' + session.session.access_token },
           })
+        } catch {}
+        // CONVITE DE TESTE: se a pessoa veio de /convite/<token>, a conta
+        // nasce com a assinatura de cortesia e vai direto pro painel — sem
+        // passar pela cobrança. Se o resgate falhar (link usado/expirado),
+        // segue o fluxo normal e a tela de cobrança mostra o motivo.
+        try {
+          const tokenConvite = localStorage.getItem('nx_convite')
+          if (tokenConvite) {
+            const r = await fetch('/api/convite/resgatar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.session.access_token },
+              body: JSON.stringify({ token: tokenConvite }),
+            })
+            const j = await r.json().catch(() => ({}))
+            if (r.ok && j.ok) {
+              localStorage.removeItem('nx_convite')
+              setLoading(false)
+              router.push('/admin')
+              return
+            }
+            try { sessionStorage.setItem('nx_convite_erro', j.error || 'Convite não pôde ser aplicado.') } catch {}
+            localStorage.removeItem('nx_convite')
+          }
         } catch {}
         setLoading(false)
         // Após criar a conta, leva DIRETO pra tela de pagamento (não pro painel):

@@ -3,7 +3,7 @@ import { montarNotificacao } from '../../../../lib/notificacoes'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
 import { renderWinbackEmail, sendEmailViaResend } from '../../../../lib/email-templates'
-import { RENEWAL_SEGMENTS, expiringSegmentId, expiredSegmentId } from '../../../../lib/renewal-segments'
+import { RENEWAL_SEGMENTS, expiringSegmentId, expiredSegmentId, varsDePlano } from '../../../../lib/renewal-segments'
 
 // Cron diario. Para cada tenant decide a mensagem certa:
 //  ANTES de vencer:  3d / 2d / 1d   (assinatura ativa)
@@ -161,7 +161,10 @@ async function notifyTenant(sb, tid, segId, budgetLeft) {
   // O ?renewal=1 e o mesmo parametro que o comeback ja usa: faz a tela se
   // apresentar como renovacao, nao como primeira compra.
   const url = `${APP_URL}/billing-mp?renewal=1&utm_source=lifecycle&utm_medium=email&utm_campaign=${segId}`
-  const vars = { nome: (admin.nome || '').split(' ')[0] || 'Operador' }
+  // O plano e o preço DESSA conta (pelas vagas de operador da última
+  // assinatura), pra copy falar do Dupla/Scale dela e não de 'assinatura'.
+  const { data: ultimaSub } = await sb.from('subscriptions').select('operator_count').eq('tenant_id', tid).order('created_at', { ascending: false }).limit(1).maybeSingle()
+  const vars = { nome: (admin.nome || '').split(' ')[0] || 'Operador', ...varsDePlano(ultimaSub?.operator_count || 0) }
   const out = { segId }
 
   // PUSH (1x por segmento na janela)

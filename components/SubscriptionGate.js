@@ -291,8 +291,8 @@ export default function SubscriptionGate({ children }) {
 
           <p style={{ fontSize: 11, color: 'var(--t3)', marginTop: 14, letterSpacing: '0.01em' }}>
             {isExpired
-              ? <>PIX instantâneo · a partir de <strong style={{ color: '#e5391f', fontWeight: 700 }}>R$ 59,90/mês</strong></>
-              : <>A partir de <strong style={{ color: '#e5391f', fontWeight: 700 }}>R$ 59,90/mês</strong></>}
+              ? <>Nex Control <strong style={{ color: 'var(--t1)', fontWeight: 700 }}>2.0</strong> · painel novo, Sala ao vivo e push com voz · PIX na hora · a partir de <strong style={{ color: '#e5391f', fontWeight: 700 }}>R$ 59,90/mês</strong></>
+              : <>Nex Control <strong style={{ color: 'var(--t1)', fontWeight: 700 }}>2.0</strong> · a partir de <strong style={{ color: '#e5391f', fontWeight: 700 }}>R$ 59,90/mês</strong> · equipe a partir de R$ 129,90</>}
           </p>
 
           <button

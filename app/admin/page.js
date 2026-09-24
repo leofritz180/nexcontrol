@@ -53,6 +53,7 @@ import RankBadge from '../../components/rank/RankBadge'
 import DailyGoalCard from '../../components/DailyGoalCard'
 import PrimeirosPassos from '../../components/PrimeirosPassos'
 import AdminBento from '../../components/admin/AdminBento'
+import MetasBento from '../../components/admin/MetasBento'
 import MyOpsBento from '../../components/admin/MyOpsBento'
 import NovaOperacaoV2 from '../../components/modules/NovaOperacaoV2'
 import { isNex2 } from '../../lib/theme-v2'
@@ -2656,6 +2657,9 @@ export default function AdminPage() {
                 lucroPeriodo={heroLucro?.value}
                 onAtualizar={handleRefresh}
                 atualizando={refreshing}
+                remessas={remessas}
+                operators={operators}
+                onVerFechamento={() => { setMetaStatus('finalizada'); setTab('operations') }}
               />
           ) : (<>
           {/* ── META DO DIA (card gamificado, igual pra todos) ── */}
@@ -3198,12 +3202,6 @@ export default function AdminPage() {
         </motion.div>)}
 
         {/* ═══ OPERATIONS ═══ */}
-        {tab==='operations' && isNex2(user?.email) && (
-          <div style={{ marginBottom: 18 }}>
-            <h1 style={{ fontSize: 25, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.03em' }}>Metas & Fechamento</h1>
-            <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: '3px 0 0' }}>Acompanhe, filtre e feche as operações da equipe</p>
-          </div>
-        )}
         {tab==='operations' && (()=>{
           // Cor por rede: em vez do arco-iris antigo (dourado, azul, roxo,
           // ciano, rosa), a rede recebe um tom da familia da marca de forma
@@ -3220,180 +3218,20 @@ export default function AdminPage() {
           <motion.div key="operations" data-tour="tab-operations"
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease }}>
-            {/* Filters */}
-            <div data-tour="ops-filters" style={{display:'flex',alignItems:'center',gap:10,marginBottom:24,flexWrap:'wrap'}}>
-              <select className="input" value={selectedOp||''} onChange={e=>setSelectedOp(e.target.value||null)} style={{width:170,padding:'8px 14px',fontSize:12}}>
-                <option value="">Todos operadores</option>
-                {operators.map(op=><option key={op.id} value={op.id}>{getName(op)}</option>)}
-              </select>
-              {[['all','Todas'],['ativa','Ativas'],['finalizada','Finalizadas'],['fechada','Fechadas']].map(([k,l])=>(
-                <motion.button key={k} onClick={()=>setMetaStatus(k)} className={`btn btn-sm ${metaStatus===k?'btn-brand':'btn-ghost'}`} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>{l}</motion.button>
-              ))}
-              <div style={{display:'flex',gap:4,background:'var(--surface)',border:'1px solid var(--b1)',borderRadius:10,padding:4,marginLeft:'auto'}}>
-                {[['all','Tudo'],['today','Hoje'],['yesterday','Ontem'],['week','7 dias'],['month','30 dias']].map(([k,l])=>(
-                  <motion.button key={k} onClick={()=>setMetaPeriod(k)} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                    style={{fontFamily:'Inter,sans-serif',fontSize:11,fontWeight:600,padding:'5px 12px',borderRadius:7,cursor:'pointer',transition:'all 0.15s',border:'none',background:metaPeriod===k?'var(--raised)':'transparent',color:metaPeriod===k?'var(--t1)':'var(--t3)'}}>{l}</motion.button>
-                ))}
-              </div>
-            </div>
+            {/* Topo da aba (título, operador, filtros, progresso, grade, leitura):
+                components/admin/MetasBento. A lista de metas continua aqui embaixo. */}
+            <MetasBento
+              operators={operators} selectedOp={selectedOp} onOperador={setSelectedOp}
+              status={metaStatus} onStatus={setMetaStatus}
+              periodo={metaPeriod} onPeriodo={setMetaPeriod}
+              metas={filteredMetas} remessas={remessas} getName={getName}
+            />
 
             {/* Shimmer + breathing keyframes */}
             <style>{`
               @keyframes metaBreath { 0%,100% { transform:scale(1); box-shadow:0 0 20px rgba(239,68,68,0.06); } 50% { transform:scale(1.008); box-shadow:0 0 30px rgba(239,68,68,0.12); } }
               @keyframes progShimmer { 0% { left:-100%; } 100% { left:200%; } }
             `}</style>
-
-            {/* Leitura da operação (AI insight) */}
-            {filteredMetas.length >= 2 && (() => {
-              const aiInsights = []
-              // Analyze redes
-              const redePerf = {}
-              filteredMetas.filter(m=>m.status_fechamento!=='fechada').forEach(m => {
-                const r = m.rede || 'Outros'
-                const mRem = remessas.filter(rm=>rm.meta_id===m.id)
-                const liq = mRem.reduce((a,rm)=>a+Number(rm.lucro||0),0) - mRem.reduce((a,rm)=>a+Number(rm.prejuizo||0),0)
-                if (!redePerf[r]) redePerf[r] = { total:0, count:0 }
-                redePerf[r].total += liq; redePerf[r].count++
-              })
-              const worstRede = Object.entries(redePerf).filter(([,v])=>v.total<0).sort((a,b)=>a[1].total-b[1].total)[0]
-              if (worstRede) aiInsights.push({ text:`Maioria dos prejuizos vem da rede ${worstRede[0]}`, type:'warn' })
-              // Sequence check
-              const ativas = filteredMetas.filter(m=>m.status_fechamento!=='fechada')
-              const emSeqNeg = ativas.filter(m=>{
-                const mRem=[...remessas.filter(r=>r.meta_id===m.id)].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,2)
-                return mRem.length>=2 && mRem.every(r=>Number(r.resultado||0)<0)
-              }).length
-              if (emSeqNeg>0) aiInsights.push({ text:`${emSeqNeg} meta${emSeqNeg>1?'s':''} em sequencia negativa`, type:'critical' })
-              // Best performing contas size
-              const fechadasPos = filteredMetas.filter(m=>m.status_fechamento==='fechada'&&Number(m.lucro_final||0)>0)
-              if (fechadasPos.length >= 2) {
-                const avg = fechadasPos.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)/fechadasPos.length
-                aiInsights.push({ text:`Metas com ~${Math.round(avg)} contas estao performando melhor`, type:'profit' })
-              }
-              // Positive
-              const posCount = ativas.filter(m=>{
-                const mRem=remessas.filter(r=>r.meta_id===m.id)
-                return mRem.reduce((a,r)=>a+Number(r.lucro||0),0)-mRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)>0
-              }).length
-              if (posCount > ativas.length * 0.6 && ativas.length >= 2) aiInsights.push({ text:`${posCount} de ${ativas.length} metas ativas no positivo`, type:'profit' })
-              if (aiInsights.length === 0) return null
-              const colors = { profit:'var(--profit)', warn:'rgba(255,255,255,0.78)', critical:'var(--loss)' }
-              return (
-                <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }}
-                  style={{
-                    position:'relative', overflow:'hidden',
-                    padding:'18px 22px', borderRadius:16, marginBottom:18,
-                    background:'linear-gradient(145deg, var(--raised), var(--surface))',
-                    backdropFilter:'blur(22px) saturate(160%)', WebkitBackdropFilter:'blur(22px) saturate(160%)',
-                    border:'1px solid var(--b3)',
-                    boxShadow:'0 10px 36px rgba(0,0,0,0.45), 0 0 40px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)',
-                  }}>
-                  <div style={{ position:'absolute', top:0, left:'12%', right:'12%', height:1, background:'linear-gradient(90deg, transparent, var(--fill-3), transparent)', pointerEvents:'none' }}/>
-                  <div style={{ position:'absolute', top:-30, right:-30, width:140, height:140, borderRadius:'50%', background:'radial-gradient(circle, var(--fill-3), transparent 60%)', filter:'blur(24px)', pointerEvents:'none' }}/>
-
-                  <div style={{ position:'relative', display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
-                    <div style={{
-                      width:34, height:34, borderRadius:10,
-                      background:'var(--fill-3)', border:'1px solid var(--b3)',
-                      display:'flex', alignItems:'center', justifyContent:'center',
-                      boxShadow:'none',
-                    }}>
-                      <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="2.2" strokeLinecap="round"><path d="M12 2a7 7 0 017 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 01-2 2h-4a2 2 0 01-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 017-7z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
-                    </div>
-                    <div style={{ flex:1 }}>
-                      <p style={{ fontSize:13, fontWeight:800, color:'var(--t1)', margin:0, letterSpacing:'-0.01em' }}>Leitura da operação</p>
-                      <p style={{ fontSize:10, color:'var(--t4)', margin:'2px 0 0', fontWeight:500 }}>Analise automatica em tempo real</p>
-                    </div>
-                    <div style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'4px 10px', borderRadius:6, background:'rgba(209,250,229,0.08)', border:'1px solid rgba(209,250,229,0.18)' }}>
-                      <motion.div
-                        animate={{ boxShadow:['0 0 0 0 rgba(209,250,229,0.6)','0 0 0 5px rgba(209,250,229,0)','0 0 0 0 rgba(209,250,229,0)'] }}
-                        transition={{ duration:2, repeat:Infinity, ease:'easeInOut' }}
-                        style={{ width:5, height:5, borderRadius:'50%', background:'var(--profit)' }}
-                      />
-                      <span style={{ fontSize:9, color:'var(--profit)', fontWeight:800, letterSpacing:'0.08em' }}>AO VIVO</span>
-                    </div>
-                  </div>
-
-                  <div style={{ position:'relative', display:'flex', flexDirection:'column', gap:8 }}>
-                    {aiInsights.slice(0,4).map((ins,j) => {
-                      const c = colors[ins.type]||'rgba(255,255,255,0.78)'
-                      return (
-                        <motion.div key={j} initial={{ opacity:0, x:-10 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.35, delay:0.1+j*0.08, ease:[0.33,1,0.68,1] }}
-                          style={{
-                            display:'flex', alignItems:'center', gap:10,
-                            padding:'9px 12px', borderRadius:10,
-                            background:`${c}08`, border:`1px solid ${c}14`,
-                          }}>
-                          <div style={{ width:6, height:6, borderRadius:'50%', background:c, flexShrink:0, boxShadow:'none' }}/>
-                          <span style={{ fontSize:12, color:'var(--t1)', lineHeight:1.45, fontWeight:600 }}>{ins.text}</span>
-                        </motion.div>
-                      )
-                    })}
-                  </div>
-                </motion.div>
-              )
-            })()}
-
-            {/* Resumo inteligente */}
-            {filteredMetas.length > 0 && (() => {
-              const metaStats = filteredMetas.map(m => {
-                const mRem = remessas.filter(r => r.meta_id === m.id)
-                const liq = mRem.reduce((a,r)=>a+Number(r.lucro||0),0) - mRem.reduce((a,r)=>a+Number(r.prejuizo||0),0)
-                const val = m.status_fechamento === 'fechada' && m.lucro_final != null ? Number(m.lucro_final) : liq
-                return val
-              })
-              const emPrej = metaStats.filter(v => v < 0).length
-              const emLucro = metaStats.filter(v => v > 0).length
-              const neutras = metaStats.filter(v => v === 0).length
-              const fechadas = filteredMetas.filter(m => m.status_fechamento === 'fechada').length
-              // Total de contas das metas no filtro atual (acompanha período hoje/ontem/tudo)
-              const totalContas = filteredMetas.reduce((a,m)=>a+Number(m.quantidade_contas||0),0)
-              const items = [
-                { label:'contas no total', count:totalContas, unit:'conta', c:'#fafafa', bg:'rgba(255,255,255,0.06)', border:'var(--b3)' },
-                emLucro > 0 && { label:'em lucro', count:emLucro, c:'var(--profit)', bg:'rgba(209,250,229,0.08)', border:'rgba(209,250,229,0.22)' },
-                emPrej > 0 && { label:'em prejuizo', count:emPrej, c:'var(--loss)', bg:'rgba(239,68,68,0.08)', border:'rgba(239,68,68,0.24)', pulse:true },
-                neutras > 0 && { label:'neutras', count:neutras, c:'rgba(255,255,255,0.78)', bg:'rgba(255,255,255,0.08)', border:'var(--b3)' },
-                fechadas > 0 && { label:'concluidas', count:fechadas, c:'var(--t3)', bg:'rgba(130,130,141,0.06)', border:'rgba(130,130,141,0.16)' },
-              ].filter(Boolean)
-              return (
-                <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.35 }}
-                  style={{ display:'grid', gridTemplateColumns:`repeat(auto-fit, minmax(160px, 1fr))`, gap:10, marginBottom:20 }}>
-                  {items.map((it, idx) => (
-                    <motion.div key={it.label}
-                      initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }}
-                      transition={{ duration:0.3, delay:idx*0.06 }}
-                      whileHover={{ y:-2, transition:{ duration:0.15 } }}
-                      style={{
-                        position:'relative', overflow:'hidden',
-                        padding:'12px 16px', borderRadius:12,
-                        background: it.bg,
-                        border: `1px solid ${it.border}`,
-                        boxShadow: `0 4px 16px rgba(0,0,0,0.25), 0 0 16px ${it.c}08`,
-                        display:'flex', alignItems:'center', gap:12,
-                        animation: it.pulse ? 'metaResumoBreath 3s ease-in-out infinite' : 'none',
-                      }}>
-                      {/* Accent line */}
-                      <div style={{ position:'absolute', left:0, top:'20%', bottom:'20%', width:2, borderRadius:'0 2px 2px 0', background:it.c, boxShadow:'none' }}/>
-                      <div style={{ flex:1 }}>
-                        <div style={{ display:'flex', alignItems:'baseline', gap:4 }}>
-                          <span style={{ fontSize:22, fontWeight:900, color:it.c, fontFamily:'var(--mono)', letterSpacing:'-0.02em', lineHeight:1 }}>{it.count}</span>
-                          <span style={{ fontSize:10, color:it.c, fontWeight:700, letterSpacing:'0.04em' }}>{(it.unit||'meta')}{it.count!==1?'s':''}</span>
-                        </div>
-                        <p style={{ fontSize:10, color:'var(--t3)', margin:'4px 0 0', fontWeight:600, letterSpacing:'0.06em', textTransform:'uppercase' }}>{it.label}</p>
-                      </div>
-                      {it.pulse && (
-                        <motion.div
-                          animate={{ boxShadow:[`0 0 0 0 ${it.c}80`,`0 0 0 6px ${it.c}00`,`0 0 0 0 ${it.c}00`] }}
-                          transition={{ duration:1.8, repeat:Infinity, ease:'easeInOut' }}
-                          style={{ width:7, height:7, borderRadius:'50%', background:it.c, flexShrink:0 }}
-                        />
-                      )}
-                    </motion.div>
-                  ))}
-                  <style>{`@keyframes metaResumoBreath { 0%,100% { box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 16px rgba(239,68,68,0.08) } 50% { box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 28px rgba(239,68,68,0.18) } }`}</style>
-                </motion.div>
-              )
-            })()}
 
             {/* Grid */}
             <div data-tour="ops-list" className="g-4" style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:16}}>

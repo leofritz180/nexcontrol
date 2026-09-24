@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor, Podio, Risco, Barras } from '../ui/bento'
+import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor, Podio, Risco, Barras, Tira } from '../ui/bento'
 import { opDayISO, ultimosDiasOp } from '../../lib/opday'
 
 const RED = '#e5391f', RED2 = '#ff7a4d'
@@ -72,7 +72,7 @@ function Chip({ bg, children }) {
 // mesmos periodos do painel antigo, pra nao mudar o que o numero significa
 const PERIODOS = [['month','Mês'],['today','Hoje'],['yesterday','Ontem'],['7d','7d'],['30d','30d'],['all','Tudo']]
 
-export default function AdminBento({ nome, patente, global: g, ranking = [], metas = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, onSaveGoal , periodo, onPeriodo, lucroPeriodo , onAtualizar, atualizando }) {
+export default function AdminBento({ nome, patente, global: g, ranking = [], metas = [], remessas = [], operators = [], dailyGoal, onNovaMeta, onVerMetas, onAbrirMeta, onVerFechamento, onSaveGoal , periodo, onPeriodo, lucroPeriodo , onAtualizar, atualizando }) {
   const [editGoal, setEditGoal] = useState(false)
   const [goalVal, setGoalVal] = useState('')
 
@@ -229,11 +229,60 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
     ].filter(d => d.v > 0)
   }, [abertas, fechadas])
 
-  // metas abertas com progresso
+  // ── A OPERAÇÃO EM NÚMEROS DE CPA ─────────────────────────────────────
+  // Contas (depositantes), remessas, quem operou hoje, o que espera
+  // fechamento. É a linguagem de quem toca operação — "lucro" sozinho é
+  // linguagem de qualquer painel. Uma passada pelas remessas, por meta.
+  const porMetaRem = useMemo(() => {
+    const mapa = new Map()
+    for (const r of remessas) {
+      const e = mapa.get(r.meta_id) || { contas: 0, liq: 0, n: 0 }
+      if (r.tipo !== 'redeposito') e.contas += Number(r.contas_remessa || 0)   // redepósito não conta na progressão
+      e.liq += Number(r.lucro || 0) - Number(r.prejuizo || 0)
+      e.n++
+      mapa.set(r.meta_id, e)
+    }
+    return mapa
+  }, [remessas])
+
+  const agora = useMemo(() => {
+    const hojeOp = opDayISO(new Date())
+    const remHoje = remessas.filter(r => r.created_at && opDayISO(r.created_at) === hojeOp)
+    const contasHoje = remHoje.filter(r => r.tipo !== 'redeposito').reduce((a, r) => a + Number(r.contas_remessa || 0), 0)
+    const metaOp = new Map(metas.map(m => [m.id, m.operator_id]))
+    const opsHoje = new Set(remHoje.map(r => metaOp.get(r.meta_id)).filter(Boolean)).size
+    let alvo = 0, feitas = 0
+    for (const m of abertas) { const a = Number(m.quantidade_contas || 0); alvo += a; feitas += Math.min(a, porMetaRem.get(m.id)?.contas || 0) }
+    const aguardando = abertas.filter(m => m.status === 'finalizada').length
+    // o objeto global NÃO devolve totalContasFechadas (só o lucroPerConta): a
+    // linha 'contas processadas' do card de movimento mostrava 0 há tempos.
+    // Aqui soma direto das metas fechadas.
+    const depositantes = fechadas.reduce((a, m) => a + Number(m.quantidade_contas || 0), 0)
+    // lucro final POR CONTA: só CPA (metas fechadas), sem custos — a métrica que
+    // o nicho usa pra comparar rede, slot e operador
+    const porConta = depositantes > 0 ? Number(g?.lucroFinalTotalCpa ?? g?.lucroFinalTotal ?? 0) / depositantes : 0
+    return { remHoje: remHoje.length, contasHoje, opsHoje, alvo, feitas, pct: alvo > 0 ? Math.round((feitas / alvo) * 100) : 0, aguardando, depositantes, porConta }
+  }, [remessas, metas, abertas, fechadas, porMetaRem, g])
+
+  const nomeOp = id => { const o = operators.find(x => x.id === id); const n = (o?.nome || o?.email?.split('@')[0] || '').trim(); return n ? n.split(/\s+/)[0] : '' }
+
+  // metas abertas com progresso REAL (contas feitas / alvo, pelas remessas)
   const emAndamento = useMemo(() => abertas.slice(0, 5).map(m => {
     const alvoC = Number(m.quantidade_contas || 0)
-    return { id: m.id, rede: m.rede || '—', alvo: alvoC, lucro: Number(m.lucro_final || 0), criada: m.created_at }
-  }), [abertas])
+    const e = porMetaRem.get(m.id) || { contas: 0, liq: 0, n: 0 }
+    const feitas = Math.min(alvoC, e.contas)
+    return { id: m.id, rede: (m.rede || '—').toUpperCase(), alvo: alvoC, feitas, pct: alvoC > 0 ? Math.round((feitas / alvoC) * 100) : 0, liq: e.liq, n: e.n, porConta: feitas > 0 ? e.liq / feitas : 0, op: nomeOp(m.operator_id), finalizada: m.status === 'finalizada', criada: m.created_at }
+  }), [abertas, porMetaRem, operators])
+
+  // R$ por conta, por rede (metas fechadas): o que separa rede boa de rede ruim
+  const porContaRede = useMemo(() => {
+    const mapa = new Map()
+    for (const m of fechadas) {
+      const r = (m.rede || 'Sem rede').toUpperCase(); const e = mapa.get(r) || { lucro: 0, contas: 0 }
+      e.lucro += Number(m.lucro_final || 0); e.contas += Number(m.quantidade_contas || 0); mapa.set(r, e)
+    }
+    return [...mapa.entries()].filter(([, e]) => e.contas > 0).map(([l, e]) => ({ l, v: e.lucro / e.contas, contas: e.contas })).sort((a, b) => b.v - a.v).slice(0, 6)
+  }, [fechadas])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -338,8 +387,9 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.06 }}>
           <Card blob={[RED2, RED]} style={{ minHeight: 148 }}>
             <Chip bg={RED}><Ico d={<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /></>} c="#fff" /></Chip>
-            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}><NumeroTexto delay={0.22}>{int(fechadas.length)}</NumeroTexto></p>
-            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>metas fechadas</p>
+            <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}><NumeroTexto delay={0.22}>{int(agora.depositantes)}</NumeroTexto></p>
+            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>depositantes · {int(fechadas.length)} metas fechadas</p>
+            <p style={{ fontSize: 11.5, color: S.t3, margin: '2px 0 0', fontFamily: MONO }}>{money(agora.porConta)} por conta</p>
           </Card>
         </motion.div>
 
@@ -347,7 +397,8 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
           <Card style={{ minHeight: 148 }}>
             <Chip bg="var(--fill-2)"><Ico d={<><path d="M3 3v18h18" /><path d="M7 15l3-3 4 4 5-6" /></>} c={S.t2} /></Chip>
             <p style={{ fontSize: 27, fontWeight: 900, color: lucroHoje >= 0 ? 'var(--profit)' : 'var(--loss)', margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}><NumeroTexto delay={0.29}>{money0(lucroHoje)}</NumeroTexto></p>
-            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>lucro de hoje</p>
+            <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>hoje, desde as 5h</p>
+            <p style={{ fontSize: 11.5, color: S.t3, margin: '2px 0 0' }}>{int(agora.remHoje)} remessa{agora.remHoje === 1 ? '' : 's'} · {int(agora.contasHoje)} conta{agora.contasHoje === 1 ? '' : 's'}</p>
           </Card>
         </motion.div>
 
@@ -403,6 +454,23 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
           </div>
         </motion.div>
       </div>
+
+      {/* OPERAÇÃO AGORA — contas, remessas, quem está operando e o que espera
+          fechamento. É a primeira pergunta de quem toca operação CPA. */}
+      <Tira itens={[
+        { l: 'Metas rodando', v: int(abertas.length - agora.aguardando), hint: abertas.length ? `${int(abertas.length)} aberta${abertas.length === 1 ? '' : 's'} no total` : 'nenhuma aberta' },
+        { l: 'Contas feitas', v: `${int(agora.feitas)}/${int(agora.alvo)}`, hint: `${agora.pct}% das metas abertas` },
+        { l: 'Remessas hoje', v: int(agora.remHoje), hint: `${int(agora.opsHoje)} operador${agora.opsHoje === 1 ? '' : 'es'} operando` },
+        { l: 'Aguardando fechamento', v: int(agora.aguardando), c: agora.aguardando > 0 ? RED : undefined, hint: agora.aguardando > 0 ? 'finalizadas pelo operador' : 'nada pendente' },
+      ]} />
+      {agora.aguardando > 0 && onVerFechamento && (
+        <motion.button type="button" onClick={onVerFechamento} whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', padding: '13px 18px', borderRadius: 18, border: '1px solid rgba(229,57,31,0.35)', background: 'var(--surface)', boxShadow: '0 8px 26px rgba(229,57,31,0.10)', cursor: 'pointer', fontFamily: 'inherit' }}>
+          <span aria-hidden style={{ width: 10, height: 10, borderRadius: 999, background: RED, boxShadow: '0 0 0 4px rgba(229,57,31,0.16)', flexShrink: 0 }} />
+          <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, fontWeight: 800, color: S.t1 }}>{int(agora.aguardando)} meta{agora.aguardando === 1 ? '' : 's'} finalizada{agora.aguardando === 1 ? '' : 's'} esperando você fechar</span>
+          <span style={{ fontSize: 12.5, fontWeight: 800, color: RED, flexShrink: 0 }}>Fechar →</span>
+        </motion.button>
+      )}
 
       {/* LINHA 2 — leitura rapida: tendencia, comparacao e constancia */}
       <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
@@ -489,7 +557,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
                 </div>
               )
             })}
-            <p style={{ fontSize: 11.5, color: S.t3, margin: '16px 0 0' }}>{int(g?.totalContasFechadas || 0)} contas processadas</p>
+            <p style={{ fontSize: 11.5, color: S.t3, margin: '16px 0 0' }}>{int(agora.depositantes)} depositantes processados</p>
           </div>
         </motion.div>
       </div>
@@ -533,12 +601,23 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
         />
       </div>
 
+      {/* R$ POR CONTA, POR REDE — a comparação que decide onde operar.
+          Só metas fechadas (lucro final ÷ depositantes), sem custos. */}
+      {porContaRede.length > 0 && (
+        <Barras
+          titulo="Lucro por conta, por rede"
+          sub="lucro final das metas fechadas ÷ depositantes · onde cada conta rende mais"
+          dados={porContaRede.map(r => ({ l: `${r.l} · ${int(r.contas)} contas`, v: Math.abs(r.v), txt: money(r.v) + '/conta', dot: r.v >= 0 ? undefined : 'var(--loss)' }))}
+          delay={0.42}
+        />
+      )}
+
       {/* LINHA 7 — roscas: concentracao de lucro e situacao das metas */}
       <div className="ab-par" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.3 }}>
           <Card pad={24}>
-            <p style={{ fontSize: 16.5, fontWeight: 800, color: S.t1, margin: '0 0 3px', letterSpacing: '-0.02em' }}>Redes com mais lucro</p>
-            <p style={{ fontSize: 12.5, color: S.t3, margin: '0 0 20px' }}>soma do lucro final das metas fechadas</p>
+            <p style={{ fontSize: 16.5, fontWeight: 800, color: S.t1, margin: '0 0 3px', letterSpacing: '-0.02em' }}>De onde sai o lucro</p>
+            <p style={{ fontSize: 12.5, color: S.t3, margin: '0 0 20px' }}>lucro final por rede, metas fechadas</p>
             <Rosca dados={porRede} centro={money0(lucroRedes)} rotulo="no total" formata={money0} delay={0.34} />
           </Card>
         </motion.div>
@@ -569,16 +648,24 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
                 whileHover={{ x: 3 }} transition={{ type: 'spring', stiffness: 400, damping: 28 }}
                 style={{ cursor: onAbrirMeta ? 'pointer' : 'default', borderRadius: 10, padding: '2px 4px', margin: '0 -4px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7, gap: 10 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flexWrap: 'wrap' }}>
                         <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: S.t1 }}>{m.rede}</span>
-                        {parada && <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 800, background: 'var(--loss-dim)', color: 'var(--loss)', border: '1px solid var(--loss-border)' }}>parada há {dias}d</span>}
+                        {m.op && <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 800, letterSpacing: '0.06em', background: 'var(--fill-1)', color: S.t2, border: '1px solid var(--b1)' }}>OP: {m.op.toUpperCase()}</span>}
+                        {m.finalizada && <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 800, background: 'rgba(229,57,31,0.08)', color: RED, border: '1px solid rgba(229,57,31,0.3)' }}>falta fechar</span>}
+                        {parada && !m.finalizada && <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 800, background: 'var(--loss-dim)', color: 'var(--loss)', border: '1px solid var(--loss-border)' }}>parada há {dias}d</span>}
                       </div>
-                      <span style={{ fontFamily: MONO, fontSize: 11.5, color: S.t3 }}>{m.alvo} contas</span>
+                      <span style={{ fontFamily: MONO, fontSize: 11.5, color: S.t3, flexShrink: 0 }}>{int(m.feitas)}/{int(m.alvo)} contas</span>
                     </div>
                     <div style={{ height: 7, borderRadius: 4, background: 'var(--fill-1)', overflow: 'hidden' }}>
-                      <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, 20 + i * 15)}%` }} transition={{ duration: 0.9, ease: [0.33, 1, 0.68, 1] }}
-                        style={{ height: '100%', borderRadius: 4, background: parada ? 'var(--loss)' : `linear-gradient(90deg, ${RED2}, ${RED})` }} />
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${m.pct}%` }} transition={{ duration: 0.9, ease: [0.33, 1, 0.68, 1] }}
+                        style={{ height: '100%', borderRadius: 4, background: parada && !m.finalizada ? 'var(--loss)' : `linear-gradient(90deg, ${RED2}, ${RED})` }} />
                     </div>
+                    {m.n > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginTop: 5 }}>
+                        <span style={{ fontSize: 11, color: S.t3 }}>{int(m.n)} remessa{m.n === 1 ? '' : 's'}</span>
+                        <span style={{ fontFamily: MONO, fontSize: 11, fontWeight: 800, color: m.liq >= 0 ? 'var(--profit)' : 'var(--loss)' }}>{money0(m.liq)}{m.feitas > 0 ? ` · ${money(m.porConta)}/conta` : ''}</span>
+                      </div>
+                    )}
                   </motion.div>
                 )
               })}
@@ -599,7 +686,10 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
                   </span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: S.t1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{op.nome || op.email}</span>
                 </div>
-                <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)', flexShrink: 0 }}>{money0(op.lucroFinal)}</span>
+                <span style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <span style={{ display: 'block', fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: op.lucroFinal >= 0 ? 'var(--profit)' : 'var(--loss)' }}>{money0(op.lucroFinal)}</span>
+                  <span style={{ display: 'block', fontSize: 10.5, color: S.t3 }}>{int(op.depositantesFinalizados || 0)} dep</span>
+                </span>
               </div>
             ))}
           </Card>
@@ -607,7 +697,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
       </div>
 
       <style>{`
-        @media (max-width: 1000px) { .ab-r1 { grid-template-columns: 1fr 1fr !important; } .ab-r2, .ab-par { grid-template-columns: 1fr !important; } }
+        @media (max-width: 1000px) { .ab-r1 { grid-template-columns: 1fr 1fr !important; } .ab-r2, .ab-par { grid-template-columns: 1fr !important; } .bk-tira { grid-template-columns: repeat(2, 1fr) !important; } }
         @media (max-width: 600px) { .ab-r1 { grid-template-columns: 1fr !important; } }
       `}</style>
     </div>

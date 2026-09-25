@@ -14,6 +14,7 @@ import { loadLocalProfile } from '../lib/profileLocal'
 import { aulasEnabled } from '../lib/aulas-tenants'
 import { networkEnabled, NETWORK_GA, NETWORK_FREE_FOR_ALL, NETWORK_NEW_UNTIL } from '../lib/network-access'
 import { premiacoesEnabled } from '../lib/premiacoes'
+import { temaEscuro, definirTema } from '../lib/tema'
 import dynamic from 'next/dynamic'
 const PushManager = dynamic(() => import('./PushManager'), { ssr: false })
 
@@ -184,13 +185,15 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
 
   const [noir, setNoir] = useState(false)
   useEffect(() => {
-    try { setNoir(localStorage.getItem('nx_noir') === '1') } catch {}
+    setNoir(temaEscuro())
+    const aoTrocar = e => setNoir(!!e.detail?.escuro)
+    window.addEventListener('nx:tema', aoTrocar)
+    return () => window.removeEventListener('nx:tema', aoTrocar)
   }, [])
   function alternarNoir() {
     const novo = !noir
     setNoir(novo)
-    try { localStorage.setItem('nx_noir', novo ? '1' : '0') } catch {}
-    document.documentElement.classList.toggle('nx-noir', novo)
+    definirTema(novo)
   }
   const myRole = userEmail === OWNER_EMAIL ? 'owner' : (isAdmin ? 'admin' : 'operator')
   const baseItems = isAdmin ? ADMIN_NAV : OP_NAV
@@ -239,7 +242,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               {/* ponto no canto = versao 2.0, quando o rail esta recolhido */}
               <span aria-hidden style={{
                 position:'absolute', top:-1, right:-1, width:9, height:9, borderRadius:'50%',
-                background:'linear-gradient(135deg, #ff7a4d, #e5391f)',
+                background:'linear-gradient(135deg, var(--k-laranja2), var(--k-laranja))',
                 border:'2px solid #131317',
               }} />
             </span>
@@ -252,8 +255,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                   <span className="nx-selo-20" style={{
                     fontSize:9.5, fontWeight:900, letterSpacing:'0.06em', color:'#fff',
                     padding:'3px 7px', borderRadius:20, lineHeight:1,
-                    background:'linear-gradient(135deg, #ff7a4d, #e5391f)',
-                    boxShadow:'0 4px 12px rgba(229,57,31,0.38)',
+                    background:'linear-gradient(135deg, var(--k-laranja2), var(--k-laranja))',
+                    boxShadow:'0 4px 12px color-mix(in srgb, var(--k-laranja) 38%, transparent)',
                   }}>2.0</span>
                 </span>
                 <span style={{ fontSize:9.5, fontWeight:500, letterSpacing:'0.44em', color:'var(--t2)', marginTop:4 }}>CONTROL</span>
@@ -276,8 +279,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             {grp.items.map(item => {
           const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
           const bettify = item.bettify
-          const BETT_BG = 'linear-gradient(135deg, rgba(255,122,77,0.20), rgba(229,57,31,0.05))'
-          const BETT_BG_HOVER = 'linear-gradient(135deg, rgba(255,122,77,0.32), rgba(229,57,31,0.11))'
+          const BETT_BG = 'linear-gradient(135deg, color-mix(in srgb, var(--k-laranja2) 20%, transparent), color-mix(in srgb, var(--k-laranja) 5%, transparent))'
+          const BETT_BG_HOVER = 'linear-gradient(135deg, color-mix(in srgb, var(--k-laranja2) 32%, transparent), color-mix(in srgb, var(--k-laranja) 11%, transparent))'
           return (
             <Link key={item.href} href={item.href} onClick={()=>setMobileOpen(false)}
               data-ativo={active ? '1' : undefined}
@@ -289,16 +292,16 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
                 fontSize: redesign?13.5:13, fontWeight: bettify?700:(active?(redesign?600:500):(redesign?500:400)),
                 color: bettify ? 'var(--t1)' : (active?'var(--t1)':'var(--t3)'),
                 background: bettify ? BETT_BG : (active?'var(--raised)':'transparent'),
-                border: bettify ? '1px solid rgba(255,122,77,0.42)' : '1px solid transparent',
-                boxShadow: bettify ? '0 0 18px rgba(229,57,31,0.14)' : 'none',
+                border: bettify ? '1px solid color-mix(in srgb, var(--k-laranja2) 42%, transparent)' : '1px solid transparent',
+                boxShadow: bettify ? '0 0 18px color-mix(in srgb, var(--k-laranja) 14%, transparent)' : 'none',
                 transition:'background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease',
               }}
-              onMouseEnter={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG_HOVER; e.currentTarget.style.boxShadow='0 6px 22px rgba(229,57,31,0.26)' } else if(!active){e.currentTarget.style.background='var(--raised)';e.currentTarget.style.color='var(--t2)'} }}
-              onMouseLeave={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG; e.currentTarget.style.boxShadow='0 0 18px rgba(229,57,31,0.14)' } else if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'} }}
+              onMouseEnter={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG_HOVER; e.currentTarget.style.boxShadow='0 6px 22px color-mix(in srgb, var(--k-laranja) 26%, transparent)' } else if(!active){e.currentTarget.style.background='var(--raised)';e.currentTarget.style.color='var(--t2)'} }}
+              onMouseLeave={e=>{ if(bettify){ e.currentTarget.style.background=BETT_BG; e.currentTarget.style.boxShadow='0 0 18px color-mix(in srgb, var(--k-laranja) 14%, transparent)' } else if(!active){e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--t3)'} }}
             >
               {bettify ? (
                 <img className="sb-ico" src="/bettify-logo.png" alt="Bettify" width={redesign?22:18} height={redesign?22:18}
-                  style={{ flexShrink:0, objectFit:'contain', filter:'drop-shadow(0 0 7px rgba(255,122,77,0.60))' }} />
+                  style={{ flexShrink:0, objectFit:'contain', filter:'drop-shadow(0 0 7px color-mix(in srgb, var(--k-laranja2) 60%, transparent))' }} />
               ) : (
                 <svg className="sb-ico" width={redesign?20:15} height={redesign?20:15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={redesign?1.9:1.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0, opacity: redesign ? (active?1:0.85) : (active?0.9:0.45) }}>
                   <path d={nex2 ? iconV2(item.href, item.icon) : item.icon}/>
@@ -308,7 +311,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               {bettify && (
                 <span className="sb-label" style={{
                   marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
-                  background:'rgba(255,122,77,0.18)', color:'#ff9a78', border:'1px solid rgba(255,122,77,0.40)',
+                  background:'color-mix(in srgb, var(--k-laranja2) 18%, transparent)', color:'#ff9a78', border:'1px solid color-mix(in srgb, var(--k-laranja2) 40%, transparent)',
                   letterSpacing:'0.06em',
                 }}>PARCEIRO</span>
               )}
@@ -329,15 +332,15 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               {item.network && netUnread && (
                 <span style={{
                   marginLeft:'auto', width:8, height:8, borderRadius:'50%', flexShrink:0,
-                  background:'#e5391f', boxShadow:'0 0 9px rgba(229,57,31,0.85)',
+                  background:'var(--k-laranja)', boxShadow:'0 0 9px color-mix(in srgb, var(--k-laranja) 85%, transparent)',
                   animation:'notif-pulse 1.8s ease-in-out infinite',
                 }} title="Mensagens novas"/>
               )}
               {item.network && !netUnread && new Date() < new Date(NETWORK_NEW_UNTIL) && (
                 <span className="sb-label" style={{
                   marginLeft:'auto', fontSize:8, fontWeight:800, padding:'2px 6px', borderRadius:4,
-                  background:'linear-gradient(135deg, #ff7a4d, #e5391f)', color:'#fff', border:'1px solid rgba(255,122,77,0.45)',
-                  letterSpacing:'0.08em', boxShadow:'0 4px 14px rgba(229,57,31,0.45)',
+                  background:'linear-gradient(135deg, var(--k-laranja2), var(--k-laranja))', color:'#fff', border:'1px solid color-mix(in srgb, var(--k-laranja2) 45%, transparent)',
+                  letterSpacing:'0.08em', boxShadow:'0 4px 14px color-mix(in srgb, var(--k-laranja) 45%, transparent)',
                   animation:'notif-pulse 2s ease-in-out infinite',
                 }}>NOVO</span>
               )}
@@ -359,7 +362,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               background:'var(--fill-3)', border:'none',
               transition:'background 0.15s',
             }}
-            onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(135deg, #ff7a4d, #e5391f)';e.currentTarget.style.color='#fff'}}
+            onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(135deg, var(--k-laranja2), var(--k-laranja))';e.currentTarget.style.color='#fff'}}
             onMouseLeave={e=>{e.currentTarget.style.background='var(--fill-3)';e.currentTarget.style.color='var(--t1)'}}
           >
             <span className="sb-label">Desbloquear PRO</span>
@@ -395,13 +398,13 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
               style={{
                 width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:8,
                 padding:'10px 14px', borderRadius:8, fontSize:12.5, fontWeight:600,
-                color:'#fff', background:'linear-gradient(135deg, #ff7a4d, #e5391f)', border:'none',
+                color:'#fff', background:'linear-gradient(135deg, var(--k-laranja2), var(--k-laranja))', border:'none',
                 cursor: pushBusy ? 'default' : 'pointer', opacity: pushBusy ? 0.7 : 1,
                 transition:'background 0.15s',
                 animation: pushBusy ? 'none' : 'notif-pulse 2.2s ease-in-out infinite',
               }}
               onMouseEnter={e=>{ if(!pushBusy) e.currentTarget.style.background='linear-gradient(135deg, #ff8a5f, #cf2f18)' }}
-              onMouseLeave={e=>{ if(!pushBusy) e.currentTarget.style.background='linear-gradient(135deg, #ff7a4d, #e5391f)' }}
+              onMouseLeave={e=>{ if(!pushBusy) e.currentTarget.style.background='linear-gradient(135deg, var(--k-laranja2), var(--k-laranja))' }}
             >
               <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               <span className="sb-label">{pushBusy ? 'Ativando...' : 'Ativar notificações'}</span>
@@ -467,7 +470,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
             <span className="sb-label" style={{ flex:1, textAlign:'left' }}>{noir ? 'Modo claro' : 'Modo escuro'}</span>
             <span className="sb-label" aria-hidden style={{
               width:26, height:15, borderRadius:20, flexShrink:0, position:'relative',
-              background: noir ? '#ff5a3c' : 'var(--fill-3)', transition:'background .2s ease',
+              background: noir ? '#C8F21D' : 'var(--fill-3)', transition:'background .2s ease',
             }}>
               <span style={{
                 position:'absolute', top:2, left: noir ? 13 : 2, width:11, height:11, borderRadius:'50%',
@@ -527,7 +530,7 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
         </svg>
         {/* Lembrete: pontinho vermelho quando ainda nao ativou push */}
         {!mobileOpen && userId && tenantId && (pushState === 'default' || pushState === 'prompt') && (
-          <span style={{ position:'absolute', top:5, right:5, width:9, height:9, borderRadius:'50%', background:'#e5391f', border:'2px solid #000', animation:'notif-pulse 1.8s ease-in-out infinite' }}/>
+          <span style={{ position:'absolute', top:5, right:5, width:9, height:9, borderRadius:'50%', background:'var(--k-laranja)', border:'2px solid #000', animation:'notif-pulse 1.8s ease-in-out infinite' }}/>
         )}
       </motion.button>
 
@@ -575,8 +578,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
 
       <style jsx global>{`
         @keyframes notif-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,31,0.5); }
-          60% { box-shadow: 0 0 0 7px rgba(229,57,31,0); }
+          0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--k-laranja) 50%, transparent); }
+          60% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--k-laranja) 0%, transparent); }
         }
         .sidebar-desktop { display: block !important; }
         .sidebar-mobile-toggle { display: none !important; }

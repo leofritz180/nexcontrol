@@ -13,7 +13,7 @@ export default function PerformanceBento({ nome, resumo = {}, metasRecentes = []
         valor={int(r.depositantes)}
         cor="var(--t1)"
         nota={`${int(r.metasFechadas)} metas fechadas · ${int(r.remessas)} remessas`}
-        blob={['var(--profit-dim)', 'var(--profit-border)']}
+        blob={['var(--k-blob-pos-a)', 'var(--k-blob-pos-b)']}
         extras={[{ l: 'Taxa de acerto', v: `${int(r.taxa)}%`, c: Number(r.taxa) >= 50 ? 'var(--profit)' : 'var(--t1)' }]}
       />
 

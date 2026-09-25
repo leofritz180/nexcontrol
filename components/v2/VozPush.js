@@ -30,7 +30,7 @@ import { useOverlaySlot } from '../../lib/overlayCoordinator'
 import { supabase } from '../../lib/supabase/client'
 import { dispararPush } from '../../lib/pushClient'
 import { VOZES, CATEGORIAS, PREFS_PADRAO, normalizarPrefs, textoDe } from '../../lib/notificacoes'
-import { SOMBRA, Ico, RED, RED2 } from '../ui/bento'
+import { SOMBRA, Ico, RED, RED2, ON_RED } from '../ui/bento'
 
 const VISTO = 'nx_voz_push_visto_'
 const CACHE = 'nx_push_prefs_'
@@ -203,8 +203,8 @@ export default function VozPush({ userId, isAdmin = true, ativo = true }) {
 
             {/* cabeçalho */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18, paddingRight: 44 }}>
-              <span style={{ width: 42, height: 42, borderRadius: 14, flexShrink: 0, background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 24px rgba(229,57,31,0.28)' }}>
-                <Ico d={I_SINO} s={19} c="#fff" />
+              <span style={{ width: 42, height: 42, borderRadius: 14, flexShrink: 0, background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: ON_RED, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 24px color-mix(in srgb, var(--k-laranja) 28%, transparent)' }}>
+                <Ico d={I_SINO} s={19} c={ON_RED} />
               </span>
               <span style={{ minWidth: 0 }}>
                 <span style={{ display: 'block', fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--t3)' }}>
@@ -229,15 +229,15 @@ export default function VozPush({ userId, isAdmin = true, ativo = true }) {
                         <button key={v.id} type="button" onClick={() => { setPrefs(p => ({ ...p, voz: v.id })); if (v.id === 'engracado') setSemente(x => x + 1) }} aria-pressed={ativa}
                           style={{
                             display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 20, textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit',
-                            background: ativa ? 'rgba(229,57,31,0.05)' : 'var(--fill-1)',
+                            background: ativa ? 'color-mix(in srgb, var(--k-laranja) 5%, transparent)' : 'var(--fill-1)',
                             border: ativa ? '2px solid ' + RED : '1px solid var(--b1)',
-                            boxShadow: ativa ? '0 10px 28px rgba(229,57,31,0.16)' : 'none',
+                            boxShadow: ativa ? '0 10px 28px color-mix(in srgb, var(--k-laranja) 16%, transparent)' : 'none',
                             transition: 'border-color .18s ease, box-shadow .18s ease, background .18s ease',
                           }}>
                           <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                             <span style={{ fontSize: 14.5, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.015em' }}>{v.nome}</span>
-                            <span aria-hidden style={{ width: 22, height: 22, borderRadius: 8, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: ativa ? RED : 'var(--surface)', border: ativa ? 'none' : '1px solid var(--b2)', color: '#fff' }}>
-                              {ativa && <Ico d={I_CHECK} s={12} c="#fff" />}
+                            <span aria-hidden style={{ width: 22, height: 22, borderRadius: 8, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: ativa ? RED : 'var(--surface)', border: ativa ? 'none' : '1px solid var(--b2)', color: ON_RED }}>
+                              {ativa && <Ico d={I_CHECK} s={12} c={ON_RED} />}
                             </span>
                           </span>
                           <span style={{ fontSize: 11.5, color: 'var(--t3)', lineHeight: 1.45, minHeight: 33 }}>{v.sub}{v.id === 'engracado' && <> <b style={{ color: RED, fontWeight: 800 }}>Toque de novo: nunca repete.</b></>}</span>
@@ -278,7 +278,7 @@ export default function VozPush({ userId, isAdmin = true, ativo = true }) {
                 )}
                 <motion.button type="button" onClick={() => (passo === 0 ? setPasso(1) : salvar())} disabled={salvando}
                   whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 7, minHeight: 44, padding: '0 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: salvo ? 'var(--profit)' : `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 7, minHeight: 44, padding: '0 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: salvo ? 'var(--profit)' : `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px color-mix(in srgb, var(--k-laranja) 30%, transparent)' }}>
                   {salvo ? <><Ico d={I_CHECK} s={15} c="#fff" /> Salvo</> : passo === 0 ? <>Continuar <Ico d={<path d="M5 12h14M13 6l6 6-6 6" />} s={15} c="#fff" /></> : salvando ? 'Salvando…' : 'Salvar'}
                 </motion.button>
               </div>

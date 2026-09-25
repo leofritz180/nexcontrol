@@ -15,7 +15,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { SOMBRA, Ico, MONO, RED, RED2 } from '../ui/bento'
+import { SOMBRA, Ico, MONO, RED, RED2, ON_RED } from '../ui/bento'
 
 const DESTINOS_ADMIN = {
   a: ['/admin', 'Painel'],
@@ -137,7 +137,7 @@ export default function Atalhos({ ativo, isAdmin, aoNovaMeta }) {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 20 }}>
                 <span style={{ width: 38, height: 38, borderRadius: 13, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})` }}>
-                  <Ico d={<><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8" /></>} s={17} c="#fff" />
+                  <Ico d={<><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8" /></>} s={17} c={ON_RED} />
                 </span>
                 <div>
                   <p style={{ fontSize: 17, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>Atalhos do teclado</p>

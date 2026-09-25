@@ -15,7 +15,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Folha, Passos } from '../ui/folha'
-import { Ico, MONO, RED, RED2, int } from '../ui/bento'
+import { Ico, MONO, RED, RED2, int, ON_RED, GLOW } from '../ui/bento'
 import { Campo, Area, Pilulas, Linha } from '../ui/campo'
 
 const I_BOLT = <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
@@ -69,8 +69,8 @@ export default function NovaOperacaoV2({
       <form onSubmit={aoCriar} onKeyDown={teclou} style={{ padding: '30px 30px 26px' }}>
         {/* cabeçalho */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
-          <span style={{ width: 42, height: 42, borderRadius: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 8px 20px rgba(229,57,31,0.28)' }}>
-            <Ico d={I_BOLT} s={19} c="#fff" />
+          <span style={{ width: 42, height: 42, borderRadius: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 8px 20px ${GLOW}` }}>
+            <Ico d={I_BOLT} s={19} c={ON_RED} />
           </span>
           <div>
             <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.025em' }}>Nova operação</p>
@@ -149,8 +149,8 @@ export default function NovaOperacaoV2({
                                 background: on ? 'var(--loss-dim)' : 'var(--surface)', border: on ? '2px solid ' + RED : '1px solid var(--b1)',
                                 transition: 'background .15s ease, border-color .15s ease',
                               }}>
-                              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34, borderRadius: 12, marginBottom: 10, background: on ? RED : 'var(--fill-2)', color: on ? '#fff' : 'var(--t2)' }}>
-                                <Ico d={m.ic} s={16} c={on ? '#fff' : 'var(--t2)'} />
+                              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 34, height: 34, borderRadius: 12, marginBottom: 10, background: on ? RED : 'var(--fill-2)', color: on ? ON_RED : 'var(--t2)' }}>
+                                <Ico d={m.ic} s={16} c={on ? ON_RED : 'var(--t2)'} />
                               </span>
                               <p style={{ fontSize: 14, fontWeight: 800, color: on ? RED : 'var(--t1)', margin: 0 }}>{m.l}</p>
                               <p style={{ fontSize: 11.5, color: 'var(--t3)', margin: '3px 0 0', lineHeight: 1.45 }}>{m.d}</p>
@@ -158,7 +158,7 @@ export default function NovaOperacaoV2({
                                 {on && (
                                   <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ type: 'spring', stiffness: 320, damping: 18 }}
                                     style={{ position: 'absolute', top: 12, right: 12, width: 22, height: 22, borderRadius: '50%', background: RED, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Ico d={I_CHECK} s={12} c="#fff" />
+                                    <Ico d={I_CHECK} s={12} c={ON_RED} />
                                   </motion.span>
                                 )}
                               </AnimatePresence>
@@ -244,9 +244,9 @@ export default function NovaOperacaoV2({
               Continuar <Ico d={I_SETA} s={15} c="#fff" />
             </motion.button>
           ) : (
-            <motion.button type="submit" disabled={!podeCriar || salvando} whileHover={podeCriar ? { y: -2, boxShadow: '0 16px 36px rgba(229,57,31,0.38)' } : {}} whileTap={podeCriar ? { scale: 0.97 } : {}}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 30, border: 'none', cursor: podeCriar ? 'pointer' : 'not-allowed', fontFamily: 'inherit', fontSize: 14, fontWeight: 900, color: '#fff', background: podeCriar ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--fill-3)', boxShadow: podeCriar ? '0 12px 28px rgba(229,57,31,0.3)' : 'none', transition: 'background .2s ease' }}>
-              {salvando ? 'Criando…' : (<><Ico d={I_BOLT} s={15} c="#fff" /> Iniciar operação</>)}
+            <motion.button type="submit" disabled={!podeCriar || salvando} whileHover={podeCriar ? { y: -2, boxShadow: `0 16px 36px ${GLOW}` } : {}} whileTap={podeCriar ? { scale: 0.97 } : {}}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 30, border: 'none', cursor: podeCriar ? 'pointer' : 'not-allowed', fontFamily: 'inherit', fontSize: 14, fontWeight: 900, color: ON_RED, background: podeCriar ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--fill-3)', boxShadow: podeCriar ? `0 12px 28px ${GLOW}` : 'none', transition: 'background .2s ease' }}>
+              {salvando ? 'Criando…' : (<><Ico d={I_BOLT} s={15} c={ON_RED} /> Iniciar operação</>)}
             </motion.button>
           )}
         </div>

@@ -21,7 +21,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ModuleHeader, BCard, Ico, MONO, int, RED, RED2 } from '../ui/bento'
+import { ModuleHeader, BCard, Ico, MONO, int, RED, RED2, ON_RED, GLOW } from '../ui/bento'
 
 export const VIDEO_ID = 'LQ0P1QSUABM'
 const AULA_VIDEO = 'video_intro'
@@ -76,11 +76,11 @@ function Botao({ children, onClick, href, primario, icone, ...resto }) {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 44, padding: '0 18px', borderRadius: 30,
     border: primario ? 'none' : '1px solid var(--b2)',
     background: primario ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--surface)',
-    color: primario ? '#fff' : 'var(--t1)',
-    boxShadow: primario ? '0 10px 26px rgba(229,57,31,0.28)' : 'none',
+    color: primario ? ON_RED : 'var(--t1)',
+    boxShadow: primario ? `0 10px 26px ${GLOW}` : 'none',
     fontFamily: 'inherit', fontSize: 13, fontWeight: 800, cursor: 'pointer', textDecoration: 'none', whiteSpace: 'nowrap',
   }
-  const corpo = <>{icone && <Ico d={icone} s={15} c={primario ? '#fff' : undefined} />}{children}</>
+  const corpo = <>{icone && <Ico d={icone} s={15} c={primario ? ON_RED : undefined} />}{children}</>
   if (href) return <motion.span whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-flex' }}><Link href={href} style={estilo} {...resto}>{corpo}</Link></motion.span>
   return <motion.button type="button" onClick={onClick} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} style={estilo} {...resto}>{corpo}</motion.button>
 }
@@ -321,7 +321,7 @@ export default function TutorialBento({ passos = [], marcados = {}, video = {}, 
           <AnimatePresence>
             {tudoFeito && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.4, ease: [0.33, 1, 0.68, 1] }}>
-                <BCard pad="18px 20px" blob={['var(--profit-dim)', 'var(--profit-border)']}>
+                <BCard pad="18px 20px" blob={['var(--k-blob-pos-a)', 'var(--k-blob-pos-b)']}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                     <span style={{ width: 40, height: 40, borderRadius: 14, flexShrink: 0, background: 'var(--surface)', border: '1px solid var(--profit-border)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--profit)' }}>
                       <Ico d={I_TROFEU} s={19} />
@@ -365,7 +365,7 @@ export default function TutorialBento({ passos = [], marcados = {}, video = {}, 
               {proxima && proxima.id !== aberta?.id && (
                 <button type="button" onClick={() => abrir(proxima.id)}
                   style={{ marginTop: 14, width: '100%', display: 'flex', alignItems: 'center', gap: 10, minHeight: 48, padding: '8px 12px', borderRadius: 14, border: '1px solid var(--b1)', background: 'var(--fill-1)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}>
-                  <span style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: `linear-gradient(135deg, ${RED2}, ${RED})`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}><Ico d={I_PLAY} s={12} c="#fff" /></span>
+                  <span style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: `linear-gradient(135deg, ${RED2}, ${RED})`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: ON_RED }}><Ico d={I_PLAY} s={12} c={ON_RED} /></span>
                   <span style={{ minWidth: 0 }}>
                     <span style={{ display: 'block', fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--t4)' }}>Continuar</span>
                     <span style={{ display: 'block', fontSize: 13, fontWeight: 800, color: 'var(--t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{proxima.titulo}</span>
@@ -395,8 +395,8 @@ export default function TutorialBento({ passos = [], marcados = {}, video = {}, 
                           <button key={a.id} type="button" onClick={() => abrir(a.id)} aria-current={ativa ? 'true' : undefined}
                             style={{
                               display: 'flex', alignItems: 'center', gap: 10, width: '100%', minHeight: 48, padding: '8px 10px', borderRadius: 14, textAlign: 'left',
-                              border: `1px solid ${ativa ? 'rgba(229,57,31,0.35)' : 'transparent'}`,
-                              background: ativa ? 'rgba(229,57,31,0.06)' : 'transparent', cursor: 'pointer', fontFamily: 'inherit',
+                              border: `1px solid ${ativa ? 'color-mix(in srgb, var(--k-tinta) 35%, transparent)' : 'transparent'}`,
+                              background: ativa ? 'color-mix(in srgb, var(--k-tinta) 6%, transparent)' : 'transparent', cursor: 'pointer', fontFamily: 'inherit',
                             }}>
                             <span aria-hidden style={{
                               width: 26, height: 26, borderRadius: 9, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',

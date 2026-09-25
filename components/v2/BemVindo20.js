@@ -19,7 +19,8 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { useOverlaySlot } from '../../lib/overlayCoordinator'
-import { SOMBRA, Ico, RED, RED2 } from '../ui/bento'
+import { SOMBRA, Ico, RED, RED2, ON_RED, GLOW } from '../ui/bento'
+import { temaEscuro, definirTema } from '../../lib/tema'
 
 const CHAVE = 'nx_bemvindo_20_'
 // Chave PROPRIA pro convite do modo escuro. Se ele fosse so mais um passo
@@ -50,7 +51,7 @@ const PASSOS = [
     arte: 'cards',
   },
   {
-    titulo: 'Prefere no escuro?',
+    titulo: 'Escuro ou claro?',
     texto: 'Toque numa das duas e o painel muda na hora — é o painel de verdade atrás desta janela, não um desenho. Depois você troca quando quiser, pelo menu, lá embaixo.',
     arte: 'noir',
   },
@@ -70,17 +71,16 @@ const I_NOIR = PASSOS.length - 1
 // verdade sobre o tema.
 function SeletorTema() {
   const [noir, setNoir] = useState(false)
-  useEffect(() => { try { setNoir(localStorage.getItem('nx_noir') === '1') } catch {} }, [])
+  useEffect(() => { setNoir(temaEscuro()) }, [])
 
   function escolher(escuro) {
     setNoir(escuro)
-    try { localStorage.setItem('nx_noir', escuro ? '1' : '0') } catch {}
-    try { document.documentElement.classList.toggle('nx-noir', escuro) } catch {}
+    definirTema(escuro)
   }
 
   const Amostra = ({ escuro, ativo }) => {
-    const fundo = escuro ? '#0e0e11' : '#f0f0f3'
-    const carta = escuro ? '#17181c' : '#ffffff'
+    const fundo = escuro ? '#080909' : '#f0f0f3'
+    const carta = escuro ? '#161819' : '#ffffff'
     const risco = escuro ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.10)'
     const trilho = escuro ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.06)'
     return (
@@ -138,8 +138,8 @@ function Arte({ tipo }) {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
         <img src="/brand/nex-mark.png" alt="" width={72} height={72} style={{ width: 72, height: 72, objectFit: 'contain' }} />
         <span style={{
-          padding: '5px 14px', borderRadius: 30, fontSize: 12, fontWeight: 900, letterSpacing: '0.06em', color: '#fff',
-          background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 8px 22px rgba(229,57,31,0.32)',
+          padding: '5px 14px', borderRadius: 30, fontSize: 12, fontWeight: 900, letterSpacing: '0.06em', color: ON_RED,
+          background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 8px 22px ${GLOW}`,
         }}>VERSÃO 2.0</span>
       </div>
     )
@@ -350,11 +350,11 @@ export default function BemVindo20({ email, ativo }) {
                   whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
                   style={{
                     display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 22px', borderRadius: 30,
-                    border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff',
-                    background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)',
+                    border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: ON_RED,
+                    background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 26px ${GLOW}`,
                   }}>
                   {soNoir ? 'Pronto' : ultimo ? 'Começar' : 'Continuar'}
-                  {!ultimo && <Ico d={<path d="M5 12h14M13 6l6 6-6 6" />} s={15} c="#fff" />}
+                  {!ultimo && <Ico d={<path d="M5 12h14M13 6l6 6-6 6" />} s={15} c={ON_RED} />}
                 </motion.button>
               </div>
             </div>

@@ -10,7 +10,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { motion } from 'framer-motion'
 import { Folha } from '../ui/folha'
-import { Ico, NumeroTexto, money, MONO, RED, RED2 } from '../ui/bento'
+import { Ico, NumeroTexto, money, MONO, RED, RED2, ON_RED, GLOW } from '../ui/bento'
 import { Campo } from '../ui/campo'
 
 const I_BANDEIRA = <path d="M4 21V5a2 2 0 0 1 2-2h9l-1 3 1 3H6" />
@@ -43,8 +43,8 @@ export default function FechamentoV2({
     <Folha aberto={true} aoFechar={aoFechar} largura={620} z={9050}>
       <div style={{ padding: '30px 30px 26px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
-          <span style={{ width: 42, height: 42, borderRadius: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 8px 20px rgba(229,57,31,0.28)' }}>
-            <Ico d={I_BANDEIRA} s={18} c="#fff" />
+          <span style={{ width: 42, height: 42, borderRadius: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 8px 20px ${GLOW}` }}>
+            <Ico d={I_BANDEIRA} s={18} c={ON_RED} />
           </span>
           <div>
             <p style={{ fontSize: 18, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.025em' }}>Fechar a meta</p>
@@ -94,9 +94,9 @@ export default function FechamentoV2({
             style={{ padding: '13px 16px', borderRadius: 30, border: '1px solid var(--b1)', background: 'var(--surface)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, color: 'var(--t2)' }}>
             Cancelar
           </button>
-          <motion.button type="button" onClick={aoConfirmar} disabled={saving} whileHover={saving ? {} : { y: -2, boxShadow: '0 16px 36px rgba(229,57,31,0.38)' }} whileTap={saving ? {} : { scale: 0.97 }}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 18px', borderRadius: 30, border: 'none', cursor: saving ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 900, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 12px 28px rgba(229,57,31,0.3)', opacity: saving ? 0.7 : 1 }}>
-            <Ico d={I_CHECK} s={15} c="#fff" /> {saving ? 'Fechando…' : 'Confirmar fechamento'}
+          <motion.button type="button" onClick={aoConfirmar} disabled={saving} whileHover={saving ? {} : { y: -2, boxShadow: `0 16px 36px ${GLOW}` }} whileTap={saving ? {} : { scale: 0.97 }}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 18px', borderRadius: 30, border: 'none', cursor: saving ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 900, color: ON_RED, background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 12px 28px ${GLOW}`, opacity: saving ? 0.7 : 1 }}>
+            <Ico d={I_CHECK} s={15} c={ON_RED} /> {saving ? 'Fechando…' : 'Confirmar fechamento'}
           </motion.button>
         </div>
       </div>

@@ -18,7 +18,7 @@
 import { createContext, useCallback, useContext, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Folha } from '../ui/folha'
-import { Ico, RED, RED2 } from '../ui/bento'
+import { Ico, RED, RED2, ON_RED } from '../ui/bento'
 
 const Ctx = createContext(null)
 
@@ -86,7 +86,7 @@ export function ProvedorDeConfirmacao({ children }) {
                 whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
                 style={{
                   padding: '13px 18px', borderRadius: 30, border: 'none', cursor: 'pointer',
-                  fontFamily: 'inherit', fontSize: 13.5, fontWeight: 900, color: '#fff',
+                  fontFamily: 'inherit', fontSize: 13.5, fontWeight: 900, color: pedido.perigo ? '#fff' : ON_RED,
                   background: pedido.perigo ? 'var(--loss)' : `linear-gradient(135deg, ${RED2}, ${RED})`,
                   boxShadow: '0 10px 26px rgba(0,0,0,0.16)',
                 }}>

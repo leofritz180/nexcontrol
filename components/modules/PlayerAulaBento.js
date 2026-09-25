@@ -11,7 +11,7 @@
 // de uma aula. O que virou claro foi o ENTORNO.
 // ─────────────────────────────────────────────────────────────────────────
 import { motion } from 'framer-motion'
-import { BCard, Ico, NumeroTexto, MONO, RED, RED2, int } from '../ui/bento'
+import { BCard, Ico, NumeroTexto, MONO, RED, RED2, int, ON_RED, GLOW } from '../ui/bento'
 
 const I_CHECK = <path d="M20 6L9 17l-5-5" />
 const I_ANT = <polyline points="15 18 9 12 15 6" />
@@ -88,8 +88,8 @@ export default function PlayerAulaBento({
                 border: concluida ? '1px solid var(--profit-border)' : 'none',
                 cursor: salvando ? 'default' : 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800,
                 background: concluida ? 'var(--profit-dim)' : `linear-gradient(135deg, ${RED2}, ${RED})`,
-                color: concluida ? 'var(--profit)' : '#fff',
-                boxShadow: concluida ? 'none' : '0 10px 26px rgba(229,57,31,0.28)',
+                color: concluida ? 'var(--profit)' : ON_RED,
+                boxShadow: concluida ? 'none' : `0 10px 26px ${GLOW}`,
                 opacity: salvando ? 0.7 : 1, transition: 'background .2s ease',
               }}>
               {concluida && <Ico d={I_CHECK} s={15} c="var(--profit)" />}
@@ -159,7 +159,7 @@ export default function PlayerAulaBento({
                         transition: 'background .15s ease',
                       }}>
                       <span style={{ flexShrink: 0, width: 18, height: 18, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: feita ? 'var(--profit)' : 'transparent', border: feita ? 'none' : `2px solid ${atual ? RED : 'var(--b3)'}` }}>
-                        {feita && <Ico d={I_CHECK} s={11} c="#fff" />}
+                        {feita && <Ico d={I_CHECK} s={11} c="var(--k-on-sinal)" />}
                       </span>
                       <span style={{ minWidth: 0, flex: 1 }}>
                         <span style={{ display: 'block', fontSize: 12.5, fontWeight: atual ? 800 : 600, color: atual ? 'var(--t1)' : 'var(--t2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.title}</span>

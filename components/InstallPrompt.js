@@ -43,7 +43,7 @@ function PhoneMockup() {
       width: 200, maxWidth: '55vw', aspectRatio: '200/390', margin: '0 auto',
       background: 'var(--surface)', borderRadius: 28,
       border: '2.5px solid var(--b1)',
-      boxShadow: '0 24px 70px rgba(0,0,0,0.7), 0 0 60px rgba(229,57,31,0.03)',
+      boxShadow: '0 24px 70px rgba(0,0,0,0.7), 0 0 60px color-mix(in srgb, var(--k-laranja) 3%, transparent)',
       position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column',
     }}>
       {/* Notch */}
@@ -139,9 +139,9 @@ function TutorialStep({ number, title, desc, icon, delay = 0 }) {
     >
       <div style={{
         width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-        background: 'rgba(229,57,31,0.08)', border: '1px solid rgba(229,57,31,0.15)',
+        background: 'color-mix(in srgb, var(--k-laranja) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--k-laranja) 15%, transparent)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 14, fontWeight: 800, color: '#e5391f',
+        fontSize: 14, fontWeight: 800, color: 'var(--k-laranja)',
       }}>{number}</div>
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -239,12 +239,12 @@ export default function InstallPrompt() {
                   background: 'linear-gradient(170deg, var(--surface), var(--surface))',
                   border: '1px solid var(--b1)',
                   borderRadius: 28,
-                  boxShadow: '0 50px 120px rgba(0,0,0,0.8), 0 0 80px rgba(229,57,31,0.03)',
+                  boxShadow: '0 50px 120px rgba(0,0,0,0.8), 0 0 80px color-mix(in srgb, var(--k-laranja) 3%, transparent)',
                   position: 'relative',
                 }}
               >
                 {/* Ambient */}
-                <div style={{ position: 'absolute', top: -50, left: '50%', marginLeft: -140, width: 280, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,31,0.05), transparent 70%)', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', top: -50, left: '50%', marginLeft: -140, width: 280, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, color-mix(in srgb, var(--k-laranja) 5%, transparent), transparent 70%)', pointerEvents: 'none' }} />
 
                 <div style={{ padding: '36px 28px 28px', position: 'relative', zIndex: 1 }}>
                   {/* Header */}
@@ -280,8 +280,8 @@ export default function InstallPrompt() {
                     style={{
                       width: '100%', padding: '15px 20px', borderRadius: 14,
                       fontSize: 15, fontWeight: 700, border: 'none', cursor: 'pointer',
-                      background: 'linear-gradient(135deg, #e5391f, #b32c16)', color: '#fff',
-                      boxShadow: '0 6px 24px rgba(229,57,31,0.25)',
+                      background: 'linear-gradient(135deg, var(--k-laranja), #b32c16)', color: '#fff',
+                      boxShadow: '0 6px 24px color-mix(in srgb, var(--k-laranja) 25%, transparent)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                       marginBottom: 8,
                     }}>

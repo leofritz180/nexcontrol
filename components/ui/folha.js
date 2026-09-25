@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { SOMBRA, Ico, RED, RED2, LIME } from './bento'
+import { SOMBRA, Ico, RED, RED2, LIME, ON_RED, GLOW } from './bento'
 
 export function Folha({ aberto, aoFechar, largura = 560, children, semFechar = false, z = 9000, alinhar = 'center' }) {
   const semMovimento = useReducedMotion()
@@ -79,11 +79,11 @@ export function Passos({ itens = [], atual = 0, aoIr }) {
                   width: 30, height: 30, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   fontFamily: 'var(--mono, monospace)', fontSize: 12, fontWeight: 900,
                   background: feito || ativo ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--fill-2)',
-                  color: feito || ativo ? '#fff' : 'var(--t4)',
-                  boxShadow: ativo ? '0 8px 20px rgba(229,57,31,0.32)' : 'none',
+                  color: feito || ativo ? ON_RED : 'var(--t4)',
+                  boxShadow: ativo ? `0 8px 20px ${GLOW}` : 'none',
                   transition: 'background .25s ease, box-shadow .25s ease',
                 }}>
-                {feito ? <Ico d={<path d="M20 6L9 17l-5-5" />} s={13} c="#fff" /> : i + 1}
+                {feito ? <Ico d={<path d="M20 6L9 17l-5-5" />} s={13} c={ON_RED} /> : i + 1}
               </motion.span>
               <span style={{ fontSize: 12.5, fontWeight: ativo ? 800 : 600, color: ativo ? 'var(--t1)' : feito ? 'var(--t2)' : 'var(--t4)', whiteSpace: 'nowrap' }}>{t}</span>
             </button>

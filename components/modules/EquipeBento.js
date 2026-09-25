@@ -133,7 +133,7 @@ export default function EquipeBento({
         valor={money(lucroLiquido)}
         cor={lucroLiquido >= 0 ? 'var(--profit)' : 'var(--loss)'}
         nota={top ? `Destaque: ${nomeDe(top)} com ${money(top.lucroFinal)}` : 'Nenhuma meta fechada ainda'}
-        blob={lucroLiquido >= 0 ? ['var(--profit-dim)', 'var(--profit-border)'] : ['var(--loss-dim)', 'var(--loss-border)']}
+        blob={lucroLiquido >= 0 ? ['var(--k-blob-pos-a)', 'var(--k-blob-pos-b)'] : ['var(--k-blob-neg-a)', 'var(--k-blob-neg-b)']}
         extras={[
           { l: 'Lucro bruto', v: money(lucroBruto), c: lucroBruto >= 0 ? 'var(--profit)' : 'var(--loss)' },
           { l: 'Custos', v: money(custosTotal), c: custosTotal > 0 ? 'var(--loss)' : undefined },

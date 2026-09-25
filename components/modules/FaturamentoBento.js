@@ -27,7 +27,7 @@ export default function FaturamentoBento({ stats, chartData = [], operadores = 0
         valor={money0(s.lucroFinal)}
         cor={pos ? 'var(--profit)' : 'var(--loss)'}
         nota={`Bruto ${money0(s.lucroFinalBruto)} · custos ${money0(s.custosTotal)}`}
-        blob={pos ? ['var(--profit-dim)', 'var(--profit-border)'] : ['var(--loss-dim)', 'var(--loss-border)']}
+        blob={pos ? ['var(--k-blob-pos-a)', 'var(--k-blob-pos-b)'] : ['var(--k-blob-neg-a)', 'var(--k-blob-neg-b)']}
         extras={[
           // O calculo e liq/dep: mede SO as remessas, nao o lucro final. Ficava
           // "ROI -9%" vermelho colado num "+R$ 91.371" verde e parecia erro.

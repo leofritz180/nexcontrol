@@ -16,7 +16,8 @@ import { networkEnabled, NETWORK_FREE_FOR_ALL, OWNER_EMAIL } from '../lib/networ
 // Reaproveita as APIs /api/network/* (acesso é validado no servidor).
 // ─────────────────────────────────────────────────────────────────────────
 
-const RED = '#e5391f'
+const RED = 'var(--k-1)' // token do kit (claro = #e5391f, escuro = lime)
+const RED_HEX = '#e5391f' // avatar concatena alfa no hex ("${cor}bb"), var() nao aceita
 const MINT = '#22C55E'
 // A bolha era AZUL (#e5391f) — um "teste de destaque" que ficou. Azul está
 // fora da paleta (só preto/branco/vermelho da marca/mint) e, com o visual
@@ -43,7 +44,7 @@ function Avatar({ name, color, src, size = 30 }) {
   const initial = (name || '?')[0].toUpperCase()
   if (src) return <img src={src} alt="" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', display: 'block', flexShrink: 0 }} />
   return (
-    <div style={{ width: size, height: size, borderRadius: '50%', flexShrink: 0, background: `linear-gradient(135deg, ${color || RED}, ${color || RED}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.42, fontWeight: 800, color: '#fff' }}>{initial}</div>
+    <div style={{ width: size, height: size, borderRadius: '50%', flexShrink: 0, background: `linear-gradient(135deg, ${color || RED_HEX}, ${color || RED_HEX}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.42, fontWeight: 800, color: '#fff' }}>{initial}</div>
   )
 }
 
@@ -211,10 +212,10 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
                   ))}
                 </div>
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 24, gap: 10 }}>
-                  <div style={{ width: 46, height: 46, borderRadius: 13, background: 'rgba(229,57,31,0.14)', border: '1px solid rgba(229,57,31,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><LockIcon /></div>
+                  <div style={{ width: 46, height: 46, borderRadius: 13, background: 'color-mix(in srgb, var(--k-tinta) 14%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 30%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><LockIcon /></div>
                   <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)' }}>Comunidade exclusiva do PRO</div>
                   <div style={{ fontSize: 12, color: 'var(--t2)', lineHeight: 1.5 }}>Fale com admins que operam de verdade, em tempo real. Assine o PRO pra entrar.</div>
-                  <button onClick={() => router.push('/billing-mp?renewal=1')} style={{ marginTop: 4, padding: '10px 18px', borderRadius: 11, border: 'none', background: RED, color: 'var(--t1)', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>Assinar PRO →</button>
+                  <button onClick={() => router.push('/billing-mp?renewal=1')} style={{ marginTop: 4, padding: '10px 18px', borderRadius: 11, border: 'none', background: RED, color: 'var(--k-on)', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>Assinar PRO →</button>
                 </div>
               </div>
             </motion.div>
@@ -236,7 +237,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
             {/* header */}
             <div style={dockHeader}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                <div style={{ width: 26, height: 26, borderRadius: 8, background: 'rgba(229,57,31,0.16)', border: '1px solid rgba(229,57,31,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><ChatIcon size={14} /></div>
+                <div style={{ width: 26, height: 26, borderRadius: 8, background: 'color-mix(in srgb, var(--k-tinta) 16%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 30%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><ChatIcon size={14} /></div>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--t1)', lineHeight: 1.1 }}>Network</div>
                   <div style={{ fontSize: 10.5, color: 'var(--t2)', display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 5, height: 5, borderRadius: '50%', background: MINT, boxShadow: `0 0 6px ${MINT}` }} />{online} online</div>
@@ -260,7 +261,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
                     {!mine && <Avatar name={m.author?.name} color={m.author?.color} src={m.author?.avatar} size={28} />}
                     <div style={{ maxWidth: '74%' }}>
                       {!mine && <div style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--t2)', marginBottom: 2, paddingLeft: 2 }}>{m.author?.name}</div>}
-                      <div style={{ padding: '7px 11px', borderRadius: 13, fontSize: 12.5, lineHeight: 1.4, color: mine ? '#fff' : '#e8edf5', background: mine ? RED : 'rgba(255,255,255,0.07)', borderTopLeftRadius: mine ? 13 : 4, borderTopRightRadius: mine ? 4 : 13, wordBreak: 'break-word' }}>
+                      <div style={{ padding: '7px 11px', borderRadius: 13, fontSize: 12.5, lineHeight: 1.4, color: mine ? 'var(--k-on)' : '#e8edf5', background: mine ? RED : 'rgba(255,255,255,0.07)', borderTopLeftRadius: mine ? 13 : 4, borderTopRightRadius: mine ? 4 : 13, wordBreak: 'break-word' }}>
                         {m.image && <img src={m.image} alt="" style={{ width: '100%', borderRadius: 8, marginBottom: m.text ? 6 : 0, display: 'block' }} />}
                         {m.text}
                       </div>
@@ -275,7 +276,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
               <input value={text} onChange={e => setText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); send() } }}
                 placeholder="Mensagem..." style={{ flex: 1, padding: '9px 12px', borderRadius: 20, background: 'var(--fill-2)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 12.5, outline: 'none' }} />
               <button onClick={send} disabled={!text.trim() || sending} style={{ width: 38, height: 38, borderRadius: '50%', flexShrink: 0, border: 'none', background: text.trim() && !sending ? RED : 'rgba(255,255,255,0.08)', cursor: text.trim() && !sending ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={text.trim() && !sending ? '#fff' : 'rgba(255,255,255,0.4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={text.trim() && !sending ? 'var(--k-on)' : 'rgba(255,255,255,0.4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
               </button>
             </div>
           </motion.div>
@@ -290,7 +291,7 @@ export default function NetworkDock({ userEmail, isAdmin, subscription, tenant }
 // ── estilos/ícones ──
 const bubbleStyle = { position: 'relative', width: 54, height: 54, borderRadius: '50%', border: 'none', cursor: 'pointer', background: `linear-gradient(150deg, ${BUBBLE_DARK}, ${BUBBLE})`, boxShadow: '0 10px 26px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', WebkitTapHighlightColor: 'transparent' }
 const panelStyle = { width: 340, height: 460, maxWidth: 'calc(100vw - 40px)', maxHeight: 'calc(100vh - 120px)', borderRadius: 18, overflow: 'hidden', display: 'flex', flexDirection: 'column', background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 24px 70px rgba(0,0,0,0.6)' }
-const dockHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderBottom: '1px solid var(--b1)', background: 'rgba(229,57,31,0.06)', flexShrink: 0 }
+const dockHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 12px', borderBottom: '1px solid var(--b1)', background: 'color-mix(in srgb, var(--k-tinta) 6%, transparent)', flexShrink: 0 }
 const iconBtn = { width: 28, height: 28, borderRadius: 8, border: 'none', background: 'var(--fill-2)', color: 'var(--t2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }
 // O aviso de nao lido: um ponto pequeno, com um halo que respira DE LEVE.
 // Ele e a UNICA coisa que se mexe sozinha na bolha, e so quando ha algo pra

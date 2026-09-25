@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppLayout from '../../components/AppLayout'
-import { ModuleHeader, BCard, ModuloEsqueleto, Ico, MONO, RED, RED2, int } from '../../components/ui/bento'
+import { ModuleHeader, BCard, ModuloEsqueleto, Ico, MONO, RED, RED2, int, ON_RED, GLOW } from '../../components/ui/bento'
 import { supabase } from '../../lib/supabase/client'
 import { criarEspectador } from '../../lib/transmissao'
 
@@ -34,14 +34,14 @@ function Tela({ t, estado, stream, onAssistir, onParar, agora }) {
         {!aoVivo && (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 20, textAlign: 'center' }}>
             {estado === 'conectando' && <><span style={{ width: 34, height: 34, borderRadius: '50%', border: '3px solid rgba(255,255,255,0.15)', borderTopColor: RED, animation: 'nx-spin 0.8s linear infinite' }} /><span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)' }}>Conectando com {t.nome}…</span></>}
-            {estado === 'falhou' && <><span style={{ fontSize: 13.5, fontWeight: 800, color: '#fff' }}>Não deu pra conectar por essa rede</span><span style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', maxWidth: 300 }}>Sem servidor de retransmissão, redes muito fechadas bloqueiam. Tenta pelo 4G/hotspot, ou peça pro operador trocar de rede.</span><button type="button" onClick={onAssistir} style={{ minHeight: 40, padding: '0 16px', borderRadius: 30, border: 'none', background: RED, color: '#fff', fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>Tentar de novo</button></>}
+            {estado === 'falhou' && <><span style={{ fontSize: 13.5, fontWeight: 800, color: '#fff' }}>Não deu pra conectar por essa rede</span><span style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', maxWidth: 300 }}>Sem servidor de retransmissão, redes muito fechadas bloqueiam. Tenta pelo 4G/hotspot, ou peça pro operador trocar de rede.</span><button type="button" onClick={onAssistir} style={{ minHeight: 40, padding: '0 16px', borderRadius: 30, border: 'none', background: RED, color: ON_RED, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer' }}>Tentar de novo</button></>}
             {estado === 'fim' && <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>{t.nome} encerrou a transmissão.</span>}
-            {(!estado || estado === 'parado') && <button type="button" onClick={onAssistir} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 44, padding: '0 18px', borderRadius: 30, border: 'none', background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: '#fff', fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer', boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}><Ico d={I_PLAY} s={14} c="#fff" /> Assistir</button>}
+            {(!estado || estado === 'parado') && <button type="button" onClick={onAssistir} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 44, padding: '0 18px', borderRadius: 30, border: 'none', background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: ON_RED, fontWeight: 800, fontFamily: 'inherit', cursor: 'pointer', boxShadow: `0 10px 26px ${GLOW}` }}><Ico d={I_PLAY} s={14} c={ON_RED} /> Assistir</button>}
           </div>
         )}
         {(aoVivo || estado === 'conectando' || estado === 'instavel') && (
           <span style={{ position: 'absolute', top: 8, right: 8, display: 'inline-flex', gap: 6 }}>
-            {aoVivo && <button type="button" aria-label="Tela cheia" onClick={() => ref.current?.requestFullscreen?.()} style={{ width: 40, height: 40, borderRadius: 12, border: 'none', background: 'rgba(0,0,0,0.55)', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Ico d={I_CHEIA} s={15} c="#fff" /></button>}
+            {aoVivo && <button type="button" aria-label="Tela cheia" onClick={() => ref.current?.requestFullscreen?.()} style={{ width: 40, height: 40, borderRadius: 12, border: 'none', background: 'rgba(0,0,0,0.55)', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Ico d={I_CHEIA} s={15} c={ON_RED} /></button>}
             <button type="button" aria-label="Parar de assistir" onClick={onParar} style={{ width: 40, height: 40, borderRadius: 12, border: 'none', background: 'rgba(0,0,0,0.55)', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Ico d={I_X} s={14} c="#fff" /></button>
           </span>
         )}
@@ -100,7 +100,7 @@ function Sala({ userId, tenantId, nome, liberado, opInicial }) {
           <span style={{ display: 'block', fontSize: 16, fontWeight: 800, color: 'var(--t1)' }}>A Sala ao vivo é do Solo Pro e dos planos de equipe</span>
           <span style={{ display: 'block', fontSize: 13, color: 'var(--t3)', marginTop: 4 }}>Veja a tela dos seus operadores em tempo real, sem instalar nada.</span>
         </span>
-        <a href="/billing-mp" style={{ display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 18px', borderRadius: 30, background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: '#fff', fontWeight: 800, textDecoration: 'none' }}>Ver planos</a>
+        <a href="/billing-mp" style={{ display: 'inline-flex', alignItems: 'center', minHeight: 44, padding: '0 18px', borderRadius: 30, background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: ON_RED, fontWeight: 800, textDecoration: 'none' }}>Ver planos</a>
       </div>
     </BCard>
   )

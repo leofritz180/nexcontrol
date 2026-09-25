@@ -12,7 +12,7 @@
 // mini-herói que muda de cor conforme o resultado aparece enquanto digita.
 // ─────────────────────────────────────────────────────────────────────────
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { BCard, Ico, NumeroTexto, money, int, MONO, RED, RED2, SOMBRA } from '../ui/bento'
+import { BCard, Ico, NumeroTexto, money, int, MONO, RED, RED2, SOMBRA, ON_RED, GLOW } from '../ui/bento'
 import { Campo, CampoMoeda, Pilulas } from '../ui/campo'
 import DepositCaptureButton from '../DepositCaptureButton'
 
@@ -46,7 +46,7 @@ function Coluna({ n, titulo, children }) {
   return (
     <div style={{ minWidth: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-        <span style={{ width: 22, height: 22, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 11, fontWeight: 900, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})` }}>{n}</span>
+        <span style={{ width: 22, height: 22, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 11, fontWeight: 900, color: ON_RED, background: `linear-gradient(135deg, ${RED2}, ${RED})` }}>{n}</span>
         <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.01em' }}>{titulo}</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{children}</div>
@@ -83,8 +83,8 @@ export default function RemessaConsole({
         {/* cabeçalho */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '20px 24px 16px', borderBottom: '1px solid var(--b1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ width: 40, height: 40, borderRadius: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 8px 20px rgba(229,57,31,0.28)' }}>
-              <Ico d={I_BOLT} s={18} c="#fff" />
+            <span style={{ width: 40, height: 40, borderRadius: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 8px 20px ${GLOW}` }}>
+              <Ico d={I_BOLT} s={18} c={ON_RED} />
             </span>
             <div>
               <p style={{ fontSize: 16.5, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>Registrar remessa</p>
@@ -133,7 +133,7 @@ export default function RemessaConsole({
                       {ativo && (
                         <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ type: 'spring', stiffness: 320, damping: 18 }}
                           style={{ position: 'absolute', top: 6, right: 6, width: 22, height: 22, borderRadius: '50%', background: RED, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.25)' }}>
-                          <Ico d={I_CHECK} s={12} c="#fff" />
+                          <Ico d={I_CHECK} s={12} c={ON_RED} />
                         </motion.span>
                       )}
                     </AnimatePresence>
@@ -265,13 +265,13 @@ export default function RemessaConsole({
               style={{
                 width: '100%', padding: '15px 18px', borderRadius: 30, border: 'none', cursor: podeSalvar ? 'pointer' : 'not-allowed',
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 9,
-                fontFamily: 'inherit', fontSize: 14, fontWeight: 900, color: '#fff', letterSpacing: '-0.01em',
+                fontFamily: 'inherit', fontSize: 14, fontWeight: 900, color: ON_RED, letterSpacing: '-0.01em',
                 background: podeSalvar ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--fill-3)',
-                boxShadow: podeSalvar ? '0 12px 28px rgba(229,57,31,0.3)' : 'none',
+                boxShadow: podeSalvar ? `0 12px 28px ${GLOW}` : 'none',
                 transition: 'background .2s ease, box-shadow .2s ease',
               }}>
               {salvando
-                ? (<><motion.span animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }} style={{ display: 'inline-flex' }}><Ico d={<><path d="M21 12a9 9 0 1 1-2.64-6.36" /><path d="M21 3v6h-6" /></>} s={15} c="#fff" /></motion.span> Registrando…</>)
+                ? (<><motion.span animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }} style={{ display: 'inline-flex' }}><Ico d={<><path d="M21 12a9 9 0 1 1-2.64-6.36" /><path d="M21 3v6h-6" /></>} s={15} c={ON_RED} /></motion.span> Registrando…</>)
                 : (<><Ico d={I_BOLT} s={15} c="#fff" /> Registrar remessa</>)}
             </motion.button>
           </Coluna>

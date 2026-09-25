@@ -13,7 +13,7 @@
 // um componente visual seria o jeito mais fácil de quebrar a operação.
 // ─────────────────────────────────────────────────────────────────────────
 import { motion } from 'framer-motion'
-import { BCard, Tira, Ico, NumeroTexto, SOMBRA, MONO, RED, RED2, money, int } from '../ui/bento'
+import { BCard, Tira, Ico, NumeroTexto, SOMBRA, MONO, RED, RED2, money, int, ON_RED, GLOW } from '../ui/bento'
 
 const I_VOLTAR = <polyline points="15 18 9 12 15 6" />
 const I_EDITAR = <><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z" /></>
@@ -31,16 +31,16 @@ function Chip({ rotulo, valor, cor }) {
 
 function Botao({ children, onClick, icone, tom = 'neutro' }) {
   const fundo = tom === 'marca' ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--surface)'
-  const cor = tom === 'marca' ? '#fff' : 'var(--t2)'
+  const cor = tom === 'marca' ? ON_RED : 'var(--t2)'
   return (
     <motion.button type="button" onClick={onClick}
-      whileHover={{ y: -2, boxShadow: tom === 'marca' ? '0 14px 32px rgba(229,57,31,0.36)' : SOMBRA.hover }}
+      whileHover={{ y: -2, boxShadow: tom === 'marca' ? `0 14px 32px ${GLOW}` : SOMBRA.hover }}
       whileTap={{ scale: 0.97 }}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 18px', borderRadius: 30,
         border: tom === 'marca' ? 'none' : '1px solid var(--b1)', cursor: 'pointer', fontFamily: 'inherit',
         fontSize: 13, fontWeight: 700, color: cor, background: fundo,
-        boxShadow: tom === 'marca' ? '0 10px 26px rgba(229,57,31,0.3)' : '0 1px 2px rgba(0,0,0,0.04)',
+        boxShadow: tom === 'marca' ? `0 10px 26px ${GLOW}` : '0 1px 2px rgba(0,0,0,0.04)',
       }}>
       {icone && <Ico d={icone} s={15} c={cor} />}{children}
     </motion.button>
@@ -66,7 +66,7 @@ export function MetaHero({
         <Ico d={I_VOLTAR} s={14} c="var(--t3)" /> Voltar ao painel
       </button>
 
-      <BCard pad="26px 30px" blob={positivo ? ['var(--profit-dim)', 'var(--profit-border)'] : ['var(--loss-dim)', 'var(--loss-border)']} delay={0.02}>
+      <BCard pad="26px 30px" blob={positivo ? ['var(--k-blob-pos-a)', 'var(--k-blob-pos-b)'] : ['var(--k-blob-neg-a)', 'var(--k-blob-neg-b)']} delay={0.02}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 18, flexWrap: 'wrap' }}>
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>

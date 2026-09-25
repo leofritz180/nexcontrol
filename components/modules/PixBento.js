@@ -122,7 +122,7 @@ export default function PixBento({
         nota={Number(s.invalidas) > 0
           ? `${int(s.invalidas)} chave(s) marcada(s) como inválida(s) — dá pra limpar em Ações gerais`
           : 'Nenhuma chave inválida na sua carteira'}
-        blob={['rgba(229,57,31,0.16)', 'rgba(229,57,31,0.35)']}
+        blob={['var(--k-blob-marca-a)', 'var(--k-blob-marca-b)']}
         extras={[
           { l: 'Válidas', v: int(s.validas), c: 'var(--profit)' },
           { l: 'Inválidas', v: int(s.invalidas), c: Number(s.invalidas) > 0 ? 'var(--loss)' : 'var(--t3)' },

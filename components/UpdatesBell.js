@@ -101,11 +101,11 @@ export default function UpdatesBell() {
           width: 42, height: 42, borderRadius: 12,
           background: 'var(--surface)',
           border: '1px solid var(--b1)',
-          color: unread > 0 ? '#e5391f' : 'rgba(255,255,255,0.7)',
+          color: unread > 0 ? 'var(--k-laranja)' : 'rgba(255,255,255,0.7)',
           cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: unread > 0
-            ? '0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(229,57,31,0.15), 0 0 28px rgba(229,57,31,0.18)'
+            ? '0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px color-mix(in srgb, var(--k-laranja) 15%, transparent), 0 0 28px color-mix(in srgb, var(--k-laranja) 18%, transparent)'
             : '0 8px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)',
           transition: 'all 0.2s ease',
         }}

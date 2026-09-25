@@ -20,7 +20,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ModuleHeader, Hero, Tira, Barras, BCard, Rosca, Vazio, Ico, MONO, FATIAS, RED, RED2, money, int } from '../ui/bento'
+import { ModuleHeader, Hero, Tira, Barras, BCard, Rosca, Vazio, Ico, MONO, FATIAS, RED, RED2, money, int, ON_RED, GLOW } from '../ui/bento'
 import { Pilulas, lerMoeda } from '../ui/campo'
 
 // Cor da rede vinda da rampa da marca, estável por nome.
@@ -270,8 +270,8 @@ export default function PlanejamentoBento({
               whileTap={saveStatus === 'saving' ? undefined : { scale: 0.97 }}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30,
-                border: 'none', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff',
-                background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)',
+                border: 'none', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: ON_RED,
+                background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 26px ${GLOW}`,
                 cursor: saveStatus === 'saving' ? 'not-allowed' : 'pointer',
                 opacity: saveStatus === 'saving' ? 0.6 : 1,
               }}>

@@ -121,7 +121,8 @@ export default function RootLayout({ children }) {
             var sem=fora.some(function(x){return x==='/'?p==='/':(p===x||p.indexOf(x+'/')===0)});
             if(sem) return;
             var h=document.documentElement; h.classList.add('nx-bento','nx-light');
-            if(localStorage.getItem('nx_noir')==='1') h.classList.add('nx-noir');
+            var claro=['/login','/signup','/reset-password','/invite','/convite'].some(function(x){return p===x||p.indexOf(x+'/')===0});
+            if(!claro&&localStorage.getItem('nx_tema')!=='claro') h.classList.add('nx-noir');
           }catch(e){}})();
         ` }} />
         <script dangerouslySetInnerHTML={{ __html: `

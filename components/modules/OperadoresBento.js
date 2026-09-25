@@ -1,6 +1,6 @@
 'use client'
 // OPERADORES — visual 2.0. Apresentação; dados/handlers vêm do /operadores.
-import { ModuleHeader, AcaoBtn, Hero, Tira, Lista, BCard, money0, int, RED } from '../ui/bento'
+import { ModuleHeader, AcaoBtn, Hero, Tira, Lista, BCard, money0, int, RED, GLOW } from '../ui/bento'
 
 export default function OperadoresBento({ ranking = [], ativos = 0, convidar, onAbrir, aoVivo = [] }) {
   const vivos = new Set(aoVivo.map(t => t.userId))
@@ -23,7 +23,7 @@ export default function OperadoresBento({ ranking = [], ativos = 0, convidar, on
         valor={money0(lucroTime)}
         cor={lucroTime >= 0 ? 'var(--profit)' : 'var(--loss)'}
         nota={top ? `Destaque: ${top.nome || top.email} com ${money0(top.lucroFinal)}` : 'Sem metas fechadas ainda'}
-        blob={['var(--profit-dim)', 'var(--profit-border)']}
+        blob={['var(--k-blob-pos-a)', 'var(--k-blob-pos-b)']}
         extras={[
           { l: 'Metas fechadas', v: int(metasF) },
           { l: 'Acerto médio', v: `${winAvg}%`, c: winAvg >= 50 ? 'var(--profit)' : 'var(--t1)' },
@@ -32,7 +32,7 @@ export default function OperadoresBento({ ranking = [], ativos = 0, convidar, on
 
       {/* Quem está transmitindo a tela agora → Sala ao vivo */}
       {aoVivo.length > 0 && (
-        <a href="/sala" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderRadius: 20, background: 'var(--surface)', border: '1px solid rgba(229,57,31,0.35)', boxShadow: '0 8px 26px rgba(229,57,31,0.12)', textDecoration: 'none' }}>
+        <a href="/sala" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderRadius: 20, background: 'var(--surface)', border: '1px solid rgba(229,57,31,0.35)', boxShadow: `0 8px 26px ${GLOW}`, textDecoration: 'none' }}>
           <span aria-hidden style={{ width: 10, height: 10, borderRadius: 999, background: RED, boxShadow: '0 0 0 4px rgba(229,57,31,0.18)', flexShrink: 0 }} />
           <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, fontWeight: 800, color: 'var(--t1)' }}>
             {aoVivo.length === 1 ? `${aoVivo[0].nome} está transmitindo a tela` : `${aoVivo.length} operadores transmitindo a tela`}

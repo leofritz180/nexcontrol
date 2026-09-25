@@ -164,7 +164,7 @@ export default function OperatorBento({
           rotulo="Contas processadas"
           valor={int(p.totalDeps ?? s.totalDepositantes)}
           nota={`${int(s.fechadas)} metas concluídas de ${int(s.total)}`}
-          blob={['var(--profit-dim)', 'var(--profit-border)']}
+          blob={['var(--k-blob-pos-a)', 'var(--k-blob-pos-b)']}
           extras={[
             { l: 'Conclusão', v: `${pct}%`, c: pct >= 60 ? 'var(--profit)' : 'var(--t1)' },
             { l: 'Remessas', v: int(s.nRem) },

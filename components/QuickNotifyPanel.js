@@ -165,7 +165,7 @@ export default function QuickNotifyPanel({ userEmail }) {
             <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--b1)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Notificacao rapida</span>
-                <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,31,0.15)', color: '#e5391f', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
+                <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'color-mix(in srgb, var(--k-laranja) 15%, transparent)', color: 'var(--k-laranja)', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
               </div>
               <p style={{ fontSize: 11, color: '#82828d', margin: 0 }}>
                 Dispara push pro seu celular com dado em tempo real.
@@ -186,8 +186,8 @@ export default function QuickNotifyPanel({ userEmail }) {
             <div style={{ overflowY: 'auto', padding: '8px 0' }}>
               {/* Owner-only: disparo pra TODOS admins */}
               {isOwner && (
-                <div style={{ marginBottom: 4, paddingBottom: 8, borderBottom: '1px solid rgba(229,57,31,0.15)' }}>
-                  <div style={{ padding: '8px 16px 4px', fontSize: 9, fontWeight: 700, color: '#e5391f', textTransform: 'uppercase', letterSpacing: '0.08em' }}>OWNER · Disparo em massa</div>
+                <div style={{ marginBottom: 4, paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--k-laranja) 15%, transparent)' }}>
+                  <div style={{ padding: '8px 16px 4px', fontSize: 9, fontWeight: 700, color: 'var(--k-laranja)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>OWNER · Disparo em massa</div>
                   {[
                     { type: 'lucro_hoje',      label: 'Lucro de hoje · TODOS' },
                     { type: 'lucro_semana',    label: 'Lucro da semana · TODOS' },
@@ -197,17 +197,17 @@ export default function QuickNotifyPanel({ userEmail }) {
                     <button key={it.type} type="button" onClick={() => triggerMass(it.type, it.label)}
                       disabled={busy === 'mass_' + it.type}
                       style={{ width:'100%', textAlign:'left', padding:'10px 16px', display:'flex', alignItems:'center', gap:10, background:'transparent', border:'none', cursor:busy?'not-allowed':'pointer', fontFamily:'inherit', transition:'background 0.15s' }}
-                      onMouseEnter={e => { if (!busy) e.currentTarget.style.background = 'rgba(229,57,31,0.06)' }}
+                      onMouseEnter={e => { if (!busy) e.currentTarget.style.background = 'color-mix(in srgb, var(--k-laranja) 6%, transparent)' }}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)' }}>{it.label}</div>
                         <div style={{ fontSize: 11, color: '#82828d' }}>so admins com atividade na semana</div>
                       </div>
                       {busy === 'mass_' + it.type ? (
-                        <motion.div style={{ width: 14, height: 14, borderRadius:'50%', border:'2px solid var(--b3)', borderTopColor:'#e5391f' }}
+                        <motion.div style={{ width: 14, height: 14, borderRadius:'50%', border:'2px solid var(--b3)', borderTopColor:'var(--k-laranja)' }}
                           animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }} />
                       ) : (
-                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#e5391f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--k-laranja)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M22 2 11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" />
                         </svg>
                       )}

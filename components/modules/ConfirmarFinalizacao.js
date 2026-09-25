@@ -8,7 +8,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { motion } from 'framer-motion'
 import { Folha } from '../ui/folha'
-import { Ico, money, int, MONO, RED, RED2 } from '../ui/bento'
+import { Ico, money, int, MONO, RED, RED2, ON_RED, GLOW } from '../ui/bento'
 
 const I_BANDEIRA = <path d="M4 21V5a2 2 0 0 1 2-2h9l-1 3 1 3H6" />
 
@@ -18,8 +18,8 @@ export default function ConfirmarFinalizacao({ aberto, aoFechar, aoConfirmar, ti
   return (
     <Folha aberto={aberto} aoFechar={aoFechar} largura={460} z={9050}>
       <div style={{ padding: '30px 28px 24px', textAlign: 'center' }}>
-        <span style={{ width: 56, height: 56, borderRadius: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 24px rgba(229,57,31,0.3)', marginBottom: 16 }}>
-          <Ico d={I_BANDEIRA} s={24} c="#fff" />
+        <span style={{ width: 56, height: 56, borderRadius: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 24px ${GLOW}`, marginBottom: 16 }}>
+          <Ico d={I_BANDEIRA} s={24} c={ON_RED} />
         </span>
         <h3 style={{ fontSize: 21, fontWeight: 800, color: 'var(--t1)', margin: '0 0 6px', letterSpacing: '-0.025em' }}>Finalizar esta meta?</h3>
         <p style={{ fontSize: 13, color: 'var(--t3)', margin: '0 0 20px', lineHeight: 1.55 }}>
@@ -50,9 +50,9 @@ export default function ConfirmarFinalizacao({ aberto, aoFechar, aoConfirmar, ti
             style={{ padding: '13px 16px', borderRadius: 30, border: '1px solid var(--b1)', background: 'var(--surface)', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, color: 'var(--t2)' }}>
             Continuar operando
           </button>
-          <motion.button type="button" onClick={aoConfirmar} disabled={salvando} whileHover={salvando ? {} : { y: -2, boxShadow: '0 16px 36px rgba(229,57,31,0.38)' }} whileTap={salvando ? {} : { scale: 0.97 }}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 18px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 900, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 12px 28px rgba(229,57,31,0.3)', opacity: salvando ? 0.7 : 1 }}>
-            <Ico d={I_BANDEIRA} s={15} c="#fff" /> {salvando ? 'Finalizando…' : 'Finalizar meta'}
+          <motion.button type="button" onClick={aoConfirmar} disabled={salvando} whileHover={salvando ? {} : { y: -2, boxShadow: `0 16px 36px ${GLOW}` }} whileTap={salvando ? {} : { scale: 0.97 }}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 18px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 900, color: ON_RED, background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 12px 28px ${GLOW}`, opacity: salvando ? 0.7 : 1 }}>
+            <Ico d={I_BANDEIRA} s={15} c={ON_RED} /> {salvando ? 'Finalizando…' : 'Finalizar meta'}
           </motion.button>
         </div>
       </div>

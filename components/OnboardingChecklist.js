@@ -124,9 +124,9 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                 transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 style={{
                   width: 120, height: 120, borderRadius: 30, margin: '0 auto 24px',
-                  background: 'linear-gradient(135deg, #FFD700 0%, #e5391f 100%)',
+                  background: 'linear-gradient(135deg, #FFD700 0%, var(--k-laranja) 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 0 80px rgba(255,215,0,0.5), 0 0 160px rgba(229,57,31,0.4), inset 0 2px 0 rgba(255,255,255,0.3)',
+                  boxShadow: '0 0 80px rgba(255,215,0,0.5), 0 0 160px color-mix(in srgb, var(--k-laranja) 40%, transparent), inset 0 2px 0 rgba(255,255,255,0.3)',
                 }}
               >
                 <svg width={60} height={60} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M3 9l3 9h12l3-9-5 4-4-7-4 7z"/><circle cx="12" cy="4" r="1.5" fill="#fff"/><circle cx="3" cy="9" r="1.2" fill="#fff"/><circle cx="21" cy="9" r="1.2" fill="#fff"/></svg>
@@ -171,14 +171,14 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
             style={{
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '10px 14px', borderRadius: 12,
-              background: 'linear-gradient(135deg, rgba(229,57,31,0.18), rgba(0,0,0,0.85))',
-              border: '1px solid rgba(229,57,31,0.4)',
+              background: 'linear-gradient(135deg, color-mix(in srgb, var(--k-laranja) 18%, transparent), rgba(0,0,0,0.85))',
+              border: '1px solid color-mix(in srgb, var(--k-laranja) 40%, transparent)',
               color: 'var(--t1)', cursor: 'pointer', fontFamily: 'inherit',
-              boxShadow: '0 12px 28px rgba(0,0,0,0.5), 0 0 22px rgba(229,57,31,0.25)',
+              boxShadow: '0 12px 28px rgba(0,0,0,0.5), 0 0 22px color-mix(in srgb, var(--k-laranja) 25%, transparent)',
             }}>
             <span style={{
               width: 30, height: 30, borderRadius: 8, flexShrink: 0,
-              background: 'rgba(229,57,31,0.2)', border: '1px solid rgba(229,57,31,0.4)',
+              background: 'color-mix(in srgb, var(--k-laranja) 20%, transparent)', border: '1px solid color-mix(in srgb, var(--k-laranja) 40%, transparent)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 12, fontWeight: 900, color: 'var(--loss)', fontFamily: 'var(--mono)',
             }}>
@@ -192,8 +192,8 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
           <div style={{
             position: 'relative', overflow: 'hidden',
             borderRadius: 16, padding: 1,
-            background: 'linear-gradient(135deg, rgba(229,57,31,0.5), rgba(255,140,140,0.3), rgba(229,57,31,0.5))',
-            boxShadow: '0 24px 50px rgba(0,0,0,0.6), 0 0 40px rgba(229,57,31,0.18)',
+            background: 'linear-gradient(135deg, color-mix(in srgb, var(--k-laranja) 50%, transparent), rgba(255,140,140,0.3), color-mix(in srgb, var(--k-laranja) 50%, transparent))',
+            boxShadow: '0 24px 50px rgba(0,0,0,0.6), 0 0 40px color-mix(in srgb, var(--k-laranja) 18%, transparent)',
           }}>
             {/* Animated gradient border */}
             <motion.div
@@ -202,7 +202,7 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
               transition={{ duration: 7, repeat: Infinity, ease: 'linear' }}
               style={{
                 position: 'absolute', inset: 0, borderRadius: 16, padding: 1,
-                background: 'linear-gradient(110deg, rgba(229,57,31,0.6) 0%, rgba(255,180,180,0.4) 50%, rgba(229,57,31,0.6) 100%)',
+                background: 'linear-gradient(110deg, color-mix(in srgb, var(--k-laranja) 60%, transparent) 0%, rgba(255,180,180,0.4) 50%, color-mix(in srgb, var(--k-laranja) 60%, transparent) 100%)',
                 backgroundSize: '200% 100%',
                 mask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
                 WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
@@ -283,8 +283,8 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                       height: '100%', borderRadius: 4,
                       background: progress.isComplete
                         ? 'linear-gradient(90deg, #FFD700, #ff8a47)'
-                        : 'linear-gradient(90deg, #e5391f, #ff6b6b)',
-                      boxShadow: `0 0 12px ${progress.isComplete ? 'rgba(255,215,0,0.6)' : 'rgba(229,57,31,0.5)'}`,
+                        : 'linear-gradient(90deg, var(--k-laranja), #ff6b6b)',
+                      boxShadow: `0 0 12px ${progress.isComplete ? 'rgba(255,215,0,0.6)' : 'color-mix(in srgb, var(--k-laranja) 50%, transparent)'}`,
                       position: 'relative', overflow: 'hidden',
                     }}>
                     <motion.span
@@ -318,9 +318,9 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                         background: step.done
                           ? 'rgba(31,228,168,0.04)'
                           : isNext
-                            ? 'rgba(229,57,31,0.08)'
+                            ? 'color-mix(in srgb, var(--k-laranja) 8%, transparent)'
                             : 'rgba(255,255,255,0.02)',
-                        border: `1px solid ${step.done ? 'rgba(31,228,168,0.18)' : isNext ? 'rgba(229,57,31,0.32)' : 'rgba(255,255,255,0.06)'}`,
+                        border: `1px solid ${step.done ? 'rgba(31,228,168,0.18)' : isNext ? 'color-mix(in srgb, var(--k-laranja) 32%, transparent)' : 'rgba(255,255,255,0.06)'}`,
                         cursor: step.done ? 'default' : 'pointer',
                         textAlign: 'left',
                         fontFamily: 'inherit',
@@ -331,8 +331,8 @@ export default function OnboardingChecklist({ data, userId, onActionTab }) {
                       {/* Status */}
                       <span style={{
                         width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-                        background: step.done ? 'rgba(31,228,168,0.18)' : isNext ? 'rgba(229,57,31,0.18)' : 'rgba(255,255,255,0.04)',
-                        border: `1px solid ${step.done ? 'rgba(31,228,168,0.4)' : isNext ? 'rgba(229,57,31,0.45)' : 'rgba(255,255,255,0.1)'}`,
+                        background: step.done ? 'rgba(31,228,168,0.18)' : isNext ? 'color-mix(in srgb, var(--k-laranja) 18%, transparent)' : 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${step.done ? 'rgba(31,228,168,0.4)' : isNext ? 'color-mix(in srgb, var(--k-laranja) 45%, transparent)' : 'rgba(255,255,255,0.1)'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         color: step.done ? '#1FE4A8' : isNext ? 'var(--loss)' : 'var(--t3)',
                       }}>

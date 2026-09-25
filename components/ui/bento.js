@@ -9,7 +9,16 @@
 import { motion, AnimatePresence, animate, useReducedMotion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 
-export const RED = '#e5391f', RED2 = '#ff7a4d', LIME = '#3f9b1e'
+// CORES DO KIT = TOKENS. Eram hex cravados (#e5391f/#ff7a4d/#3f9b1e) e por
+// isso o tema escuro saia laranja em tudo, diferente da landing. Agora cada
+// tema define as suas em globals.css (--k-*): o claro guarda os valores de
+// sempre; o escuro usa a paleta da landing (lime + laranja pontual).
+// SVG: var() nao funciona em ATRIBUTO de apresentacao (stop-color, fill);
+// quem desenha com estas cores usa style={{ stopColor }} / style={{ fill }}.
+export const RED = 'var(--k-1)', RED2 = 'var(--k-2)', LIME = 'var(--k-lucro)'
+export const ON_RED = 'var(--k-on)'
+export const LARANJA = 'var(--k-laranja)', LARANJA2 = 'var(--k-laranja2)', ON_LARANJA = 'var(--k-on-laranja)'
+export const GLOW = 'var(--k-glow)', GLOW_LARANJA = 'var(--k-laranja-glow)'
 export const MONO = 'var(--mono, "JetBrains Mono", monospace)'
 export const money = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 export const money0 = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
@@ -56,9 +65,9 @@ export function Blob({ c1, c2 }) {
   const id = 'bk' + String(c1).replace(/\W/g, '')
   return (
     <svg viewBox="0 0 200 140" preserveAspectRatio="none" aria-hidden style={{ position: 'absolute', top: 0, right: 0, width: '56%', height: '100%', pointerEvents: 'none' }}>
-      <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor={c1} /><stop offset="100%" stopColor={c2 || c1} /></linearGradient></defs>
+      <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="1"><stop offset="0%" style={{ stopColor: c1 }} /><stop offset="100%" style={{ stopColor: c2 || c1 }} /></linearGradient></defs>
       <path d="M40,0 C90,18 70,58 110,78 C150,98 180,80 200,64 L200,0 Z" fill={`url(#${id})`} opacity="0.9" />
-      <path d="M78,0 C118,22 100,54 142,72 C172,85 190,78 200,70 L200,0 Z" fill={c1} opacity="0.4" />
+      <path d="M78,0 C118,22 100,54 142,72 C172,85 190,78 200,70 L200,0 Z" style={{ fill: c1 }} opacity="0.4" />
     </svg>
   )
 }
@@ -115,8 +124,8 @@ export function AcaoBtn({ children, onClick, icon }) {
     // nx-acao: no celular o CSS transforma este botao no BOTAO FLUTUANTE da
     // tela (redondo, acima da barra de abas). Ver o bloco V2 · CELULAR.
     <motion.button type="button" onClick={clicou} className="nx-acao"
-      whileHover={{ y: -2, boxShadow: '0 14px 32px rgba(229,57,31,0.36)' }} whileTap={{ scale: 0.97 }}
-      style={{ position: 'relative', overflow: 'hidden', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
+      whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
+      style={{ position: 'relative', overflow: 'hidden', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: ON_RED, background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 26px ${GLOW}` }}>
       {ondas.map(w => (
         <motion.span key={w.id} aria-hidden
           initial={{ opacity: 0.5, scale: 0 }} animate={{ opacity: 0, scale: 1 }}
@@ -325,7 +334,8 @@ export function Rosca({ dados = [], centro, rotulo, tamanho = 132, espessura = 1
 }
 
 // rampa de cores das fatias — família da marca + lima, sem azul/roxo
-export const FATIAS = ['#e5391f', '#ff7a4d', '#3f9b1e', '#ffb08a', '#b6b6c0']
+// fatias de rosca: no claro, as de sempre; no escuro, lime/laranja/cinza
+export const FATIAS = ['var(--k-1)', 'var(--k-laranja)', 'var(--k-lucro)', 'var(--k-laranja2)', 'var(--t4)']
 
 // ── NUMERO ANIMADO ───────────────────────────────────────────────────────
 // Conta de 0 até o valor na primeira vez e, depois disso, ROLA do valor
@@ -609,8 +619,8 @@ export function Sparkline({ rotulo, valor, serie = [], cor = RED, nota, delay = 
           style={{ display: 'block', width: 'calc(100% + 44px)', height: 58, marginLeft: -22, marginRight: -22, marginTop: 16, marginBottom: -22, pointerEvents: 'none' }}>
           <defs>
             <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={cor} stopOpacity="0.20" />
-              <stop offset="100%" stopColor={cor} stopOpacity="0" />
+              <stop offset="0%" style={{ stopColor: cor, stopOpacity: 0.2 }} />
+              <stop offset="100%" style={{ stopColor: cor, stopOpacity: 0 }} />
             </linearGradient>
           </defs>
           <motion.path d={`${d} L${W},${H} L0,${H} Z`} fill={`url(#${id})`}
@@ -684,7 +694,7 @@ export function Arco({ rotulo, pct = 0, centro, nota, cor = RED, delay = 0.1, ta
           <svg width={tamanho} height={tamanho / 2 + 10} viewBox={`0 0 ${tamanho} ${tamanho / 2 + 10}`}>
             <defs>
               <linearGradient id={id} x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor={RED2} /><stop offset="100%" stopColor={cor} />
+                <stop offset="0%" style={{ stopColor: RED2 }} /><stop offset="100%" style={{ stopColor: cor }} />
               </linearGradient>
             </defs>
             <path d={`M14,${tamanho / 2} A${r},${r} 0 0 1 ${tamanho - 14},${tamanho / 2}`}
@@ -726,7 +736,7 @@ export function Sequencia({ rotulo, dias = [], nota, delay = 0.12 }) {
             style={{
               width: 13, height: 13, borderRadius: '50%',
               background: ok ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--fill-2)',
-              boxShadow: ok ? '0 2px 6px rgba(229,57,31,0.28)' : 'none',
+              boxShadow: ok ? `0 2px 6px ${GLOW}` : 'none',
             }} />
         ))}
       </div>
@@ -750,9 +760,9 @@ export function Destaque({ rotulo, titulo, valor, nota, avatar, blob = [RED2, RE
             style={{
               width: 52, height: 52, borderRadius: 18, flexShrink: 0,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: '#fff',
+              background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: ON_RED,
               fontFamily: MONO, fontSize: 18, fontWeight: 900,
-              boxShadow: '0 8px 22px rgba(229,57,31,0.3)',
+              boxShadow: `0 8px 22px ${GLOW}`,
             }}>{avatar}</motion.span>
         )}
         <div style={{ minWidth: 0 }}>
@@ -855,7 +865,7 @@ export function Calor({ rotulo, dias = [], formata = money0, delay = 0.16 }) {
                     exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.1 } }}
                     transition={{ duration: 0.16, ease: [0.33, 1, 0.68, 1] }}
                     style={{
-                      background: '#15151a', color: '#ffffff',
+                      background: 'var(--k-pill-bg)', color: 'var(--k-pill-fg)',
                       borderRadius: 11, padding: '8px 12px', whiteSpace: 'nowrap',
                       boxShadow: '0 10px 28px rgba(0,0,0,0.26)',
                     }}>
@@ -923,9 +933,9 @@ export function Podio({ rotulo, itens = [], formata = money0, delay = 0.14, aoAb
                   style={{
                     width: primeiro ? 46 : 38, height: primeiro ? 46 : 38, borderRadius: '50%',
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                    fontFamily: MONO, fontSize: primeiro ? 15 : 13, fontWeight: 900, color: '#fff',
+                    fontFamily: MONO, fontSize: primeiro ? 15 : 13, fontWeight: 900, color: primeiro ? ON_RED : '#fff',
                     background: primeiro ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--t4)',
-                    boxShadow: primeiro ? '0 8px 22px rgba(229,57,31,0.3)' : 'none',
+                    boxShadow: primeiro ? `0 8px 22px ${GLOW}` : 'none',
                   }}>
                   {String(t.l || '?').slice(0, 2).toUpperCase()}
                 </motion.span>
@@ -940,7 +950,7 @@ export function Podio({ rotulo, itens = [], formata = money0, delay = 0.14, aoAb
                     background: primeiro ? `linear-gradient(180deg, ${RED2}, ${RED})` : 'var(--fill-2)',
                     display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 8,
                   }}>
-                  <span style={{ fontFamily: MONO, fontSize: 13, fontWeight: 900, color: primeiro ? '#fff' : 'var(--t3)' }}>{lugar}º</span>
+                  <span style={{ fontFamily: MONO, fontSize: 13, fontWeight: 900, color: primeiro ? ON_RED : 'var(--t3)' }}>{lugar}º</span>
                 </motion.div>
               </div>
             )
@@ -996,7 +1006,7 @@ export function BuscaLista({ valor, aoMudar, placeholder = 'Buscar…', largura 
       padding: '7px 12px', borderRadius: 30,
       background: 'var(--surface)',
       border: `1px solid ${foco ? 'var(--brand)' : 'var(--b1)'}`,
-      boxShadow: foco ? '0 0 0 3px rgba(229,57,31,0.12)' : 'none',
+      boxShadow: foco ? '0 0 0 3px var(--brand-dim)' : 'none',
       transition: 'border-color .16s ease, box-shadow .16s ease',
     }}>
       <Ico d={<><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></>} s={13} c="var(--t3)" />

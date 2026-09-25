@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import { supabase } from '../lib/supabase/client'
 import { isRedesign } from '../lib/redesign'
 import { isNex2 } from '../lib/theme-v2'
+import { temaEscuro, rotaAceitaEscuro } from '../lib/tema'
 
 // ── Interruptor do REDESIGN (gated por email — ver lib/redesign.js) ──
 // Adiciona a classe `nx-redesign` no <html> SÓ pras contas liberadas. Todo o
@@ -52,7 +53,7 @@ export default function DesignMode() {
         // (localStorage) e so vale dentro do bento — fora dele o tema
         // antigo continua mandando pelo 'nx_theme' de sempre.
         let noir = false
-        if (nex2) { try { noir = localStorage.getItem('nx_noir') === '1' } catch {} }
+        if (nex2 && rotaAceitaEscuro(pathname)) noir = temaEscuro() // escuro e o padrao desde 25/09 (lib/tema.js)
         document.documentElement.classList.toggle('nx-noir', noir)
         // Modo claro: forçado no V2; senão respeita a escolha salva
         let light = nex2

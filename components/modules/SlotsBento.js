@@ -13,7 +13,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ModuleHeader, Tira, BCard, Vazio, Osso, Ico, int, RED, RED2 } from '../ui/bento'
+import { ModuleHeader, Tira, BCard, Vazio, Osso, Ico, int, RED, RED2, ON_RED, GLOW } from '../ui/bento'
 import { Campo, Pilulas } from '../ui/campo'
 
 // Véu padrão dos selos que ficam em cima da arte.
@@ -193,9 +193,9 @@ function Capa({ slot, index, isPro, favorito, onFavoritar }) {
           {travado ? (
             <Link href="/billing" onClick={e => e.stopPropagation()} style={{
               width: '100%', padding: '10px 14px', borderRadius: 12, boxSizing: 'border-box',
-              fontSize: 11.5, fontWeight: 800, textDecoration: 'none', color: '#fff',
+              fontSize: 11.5, fontWeight: 800, textDecoration: 'none', color: ON_RED,
               background: `linear-gradient(135deg, ${RED2}, ${RED})`,
-              boxShadow: '0 8px 20px rgba(229,57,31,0.26)',
+              boxShadow: `0 8px 20px ${GLOW}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
             }}>
               <Ico d={<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />} s={12} />

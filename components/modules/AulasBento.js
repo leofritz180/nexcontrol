@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ModuleHeader, AcaoBtn, Tira, BCard, Vazio, Ico, MONO, RED, RED2, int } from '../ui/bento'
+import { ModuleHeader, AcaoBtn, Tira, BCard, Vazio, Ico, MONO, RED, RED2, int, ON_RED, GLOW } from '../ui/bento'
 import { Campo } from '../ui/campo'
 
 // Capa de curso sem imagem. Eram seis gradientes herdados da tela antiga —
@@ -111,7 +111,7 @@ function Vitrine({ curso, pct, onAssistir, onDetalhes }) {
 
       <div style={{ position: 'relative', zIndex: 2, padding: '38px 34px 32px', maxWidth: 640 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 9.5, fontWeight: 900, padding: '4px 11px', borderRadius: 999, background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: '#fff', letterSpacing: '0.14em' }}>VIP</span>
+          <span style={{ fontSize: 9.5, fontWeight: 900, padding: '4px 11px', borderRadius: 999, background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: ON_RED, letterSpacing: '0.14em' }}>VIP</span>
           {curso.category && <span style={{ fontSize: 10, fontWeight: 700, padding: '4px 11px', borderRadius: 999, ...VEU }}>{curso.category}</span>}
           {curso.lesson_count > 0 && (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10.5, fontWeight: 600, color: 'rgba(255,255,255,0.78)' }}>
@@ -134,7 +134,7 @@ function Vitrine({ curso, pct, onAssistir, onDetalhes }) {
               <motion.span initial={{ width: 0 }} animate={{ width: `${Math.min(100, pct)}%` }} transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }}
                 style={{ display: 'block', height: '100%', borderRadius: 3, background: `linear-gradient(90deg, ${RED2}, ${RED})` }} />
             </span>
-            <span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 800, color: '#fff' }}>{Math.round(pct)}%</span>
+            <span style={{ fontFamily: MONO, fontSize: 11.5, fontWeight: 800, color: ON_RED }}>{Math.round(pct)}%</span>
           </div>
         )}
 
@@ -143,8 +143,8 @@ function Vitrine({ curso, pct, onAssistir, onDetalhes }) {
             whileHover={{ y: -2, boxShadow: '0 14px 34px rgba(229,57,31,0.42)' }} whileTap={{ scale: 0.97 }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 9, padding: '13px 26px', borderRadius: 30,
-              border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, color: '#fff',
-              background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.34)',
+              border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, color: ON_RED,
+              background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 26px ${GLOW}`,
             }}>
             <svg width={15} height={15} viewBox="0 0 24 24" fill="#fff" stroke="none">{PLAY}</svg>
             {pct > 0 && pct < 100 ? 'Continuar' : 'Assistir agora'}
@@ -188,7 +188,7 @@ function CardCurso({ curso, pct = 0, index = 0, onAbrir }) {
 
           {/* Selos sobre a arte */}
           <div style={{ position: 'absolute', top: 9, left: 9, display: 'flex', gap: 5, zIndex: 3 }}>
-            {tags.includes('novo') && <span style={{ fontSize: 8.5, fontWeight: 900, padding: '3px 8px', borderRadius: 999, background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: '#fff', letterSpacing: '0.1em' }}>NOVO</span>}
+            {tags.includes('novo') && <span style={{ fontSize: 8.5, fontWeight: 900, padding: '3px 8px', borderRadius: 999, background: `linear-gradient(135deg, ${RED2}, ${RED})`, color: ON_RED, letterSpacing: '0.1em' }}>NOVO</span>}
             {tags.includes('popular') && <span style={{ fontSize: 8.5, fontWeight: 900, padding: '3px 8px', borderRadius: 999, letterSpacing: '0.1em', ...VEU }}>POPULAR</span>}
             {tags.includes('vip') && <span style={{ fontSize: 8.5, fontWeight: 900, padding: '3px 8px', borderRadius: 999, letterSpacing: '0.1em', ...VEU }}>VIP</span>}
           </div>
@@ -203,7 +203,7 @@ function CardCurso({ curso, pct = 0, index = 0, onAbrir }) {
           {/* Play no hover */}
           <div aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.34)', opacity: hover ? 1 : 0, transition: 'opacity 0.25s' }}>
             <motion.span animate={hover ? { scale: [1, 1.1, 1] } : { scale: 1 }} transition={{ duration: 1.5, repeat: hover ? Infinity : 0 }}
-              style={{ width: 46, height: 46, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 8px 24px rgba(229,57,31,0.45)' }}>
+              style={{ width: 46, height: 46, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 8px 24px ${GLOW}` }}>
               <svg width={19} height={19} viewBox="0 0 24 24" fill="#fff" stroke="none">{PLAY}</svg>
             </motion.span>
           </div>

@@ -27,7 +27,7 @@ export default function CustosBento({ kpis, chartData, custos = [], typeMap = {}
         valor={money0(k.custoMes)}
         cor="var(--loss)"
         nota={k.pctLucro != null ? `${Math.round(k.pctLucro)}% do lucro de hoje foi para custos` : 'Sem lucro registrado hoje para comparar'}
-        blob={['var(--loss-dim)', 'var(--loss-border)']}
+        blob={['var(--k-blob-neg-a)', 'var(--k-blob-neg-b)']}
         extras={[
           { l: 'Custo hoje', v: money0(k.custoHoje), c: 'var(--loss)' },
           { l: 'Lucro hoje', v: money0(k.lucroHoje), c: 'var(--profit)' },

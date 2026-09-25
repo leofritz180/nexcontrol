@@ -307,8 +307,8 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
                 top: targetRect.top, left: targetRect.left,
                 width: targetRect.width, height: targetRect.height,
                 borderRadius: 12,
-                border: '2px solid rgba(229,57,31,0.6)',
-                boxShadow: '0 0 0 4px rgba(229,57,31,0.12), 0 0 40px rgba(229,57,31,0.25)',
+                border: '2px solid color-mix(in srgb, var(--k-laranja) 60%, transparent)',
+                boxShadow: '0 0 0 4px color-mix(in srgb, var(--k-laranja) 12%, transparent), 0 0 40px color-mix(in srgb, var(--k-laranja) 25%, transparent)',
                 pointerEvents: 'none',
               }}
             />
@@ -367,7 +367,7 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
             border: '1px solid var(--b1)',
             borderRadius: 14,
             padding: '20px 22px',
-            boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(229,57,31,0.04), 0 0 60px rgba(229,57,31,0.08)',
+            boxShadow: '0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px color-mix(in srgb, var(--k-laranja) 4%, transparent), 0 0 60px color-mix(in srgb, var(--k-laranja) 8%, transparent)',
           }}
         >
           {/* Header: progress + close */}
@@ -380,13 +380,13 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
             <div style={{
               fontFamily: 'var(--mono, "JetBrains Mono", monospace)',
               fontSize: 9.5,
-              color: '#e5391f',
+              color: 'var(--k-laranja)',
               letterSpacing: '0.22em',
               textTransform: 'uppercase',
               fontWeight: 700,
               display: 'flex', alignItems: 'center', gap: 8,
             }}>
-              <span style={{ width: 18, height: 1, background: '#e5391f' }}/>
+              <span style={{ width: 18, height: 1, background: 'var(--k-laranja)' }}/>
               Passo {current} de {total}
             </div>
             <button
@@ -425,7 +425,7 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
               transition={{ duration: 0.35, ease: 'easeOut' }}
               style={{
                 height: '100%',
-                background: 'linear-gradient(90deg, #e5391f, #ff5a55)',
+                background: 'linear-gradient(90deg, var(--k-laranja), #ff5a55)',
                 borderRadius: 1,
               }}
             />
@@ -469,8 +469,8 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
                 style={{
                   padding: '8px 14px', borderRadius: 8,
                   background: 'transparent',
-                  border: '1px solid rgba(229,57,31,0.2)',
-                  color: '#e5391f',
+                  border: '1px solid color-mix(in srgb, var(--k-laranja) 20%, transparent)',
+                  color: 'var(--k-laranja)',
                   fontSize: 12, fontWeight: 600, cursor: 'pointer',
                 }}
               >Sair</button>
@@ -480,12 +480,12 @@ export default function ProductTour({ steps = [], tourId, open, onClose }) {
               onClick={next}
               style={{
                 padding: '9px 18px', borderRadius: 8,
-                background: '#e5391f',
+                background: 'var(--k-laranja)',
                 border: 'none',
                 color: '#fff',
                 fontSize: 12.5, fontWeight: 700, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
-                boxShadow: '0 4px 14px rgba(229,57,31,0.28)',
+                boxShadow: '0 4px 14px color-mix(in srgb, var(--k-laranja) 28%, transparent)',
               }}
             >
               {current === total ? 'Concluir' : 'Próximo'}

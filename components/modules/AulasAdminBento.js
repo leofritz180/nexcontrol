@@ -14,7 +14,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ModuleHeader, AcaoBtn, Tira, BCard, Vazio, Ico, MONO, RED, RED2, int } from '../ui/bento'
+import { ModuleHeader, AcaoBtn, Tira, BCard, Vazio, Ico, MONO, RED, RED2, int, ON_RED, GLOW } from '../ui/bento'
 import { Campo, Area, Alternar, Linha } from '../ui/campo'
 
 // ── PEÇAS PEQUENAS ───────────────────────────────────────────────────────
@@ -131,8 +131,8 @@ export function FormularioCurso({ inicial, onSalvar, onCancelar, salvando = fals
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30,
             border: 'none', cursor: salvando ? 'not-allowed' : 'pointer', fontFamily: 'inherit',
-            fontSize: 13.5, fontWeight: 800, color: '#fff', opacity: salvando ? 0.6 : 1,
-            background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)',
+            fontSize: 13.5, fontWeight: 800, color: ON_RED, opacity: salvando ? 0.6 : 1,
+            background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 26px ${GLOW}`,
           }}>
           <Ico d={<path d="M20 6L9 17l-5-5" />} s={16} />{salvando ? 'Salvando...' : 'Salvar'}
         </motion.button>

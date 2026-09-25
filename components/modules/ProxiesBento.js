@@ -155,7 +155,7 @@ export default function ProxiesBento({
         nota={somaTotal > 0
           ? `de ${giga(somaTotal)} contratados · ${giga(somaUsada)} já consumidos`
           : 'Sem saldo informado pela loja no momento'}
-        blob={['rgba(229,57,31,0.16)', 'rgba(229,57,31,0.35)']}
+        blob={['var(--k-blob-marca-a)', 'var(--k-blob-marca-b)']}
         extras={[
           { l: 'Proxies', v: int(lista.length) },
           { l: 'Usado', v: giga(somaUsada), c: 'var(--loss)' },

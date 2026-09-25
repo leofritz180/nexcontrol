@@ -8,9 +8,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { NX, brl, fmt0, Panel, Strip, Bar, Eyebrow, Sub, Valor, Num, Pill, rise } from '../ui/nex'
-import { NumeroTexto } from '../ui/bento'
+import { NumeroTexto, RED, RED2, LIME, ON_RED, GLOW } from '../ui/bento'
 
-const RED = '#e5391f', RED2 = '#ff7a4d', LIME = '#3f9b1e'
+// cores = tokens do kit (claro: as de sempre; escuro: paleta da landing)
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
 const money0 = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
 
@@ -74,7 +74,7 @@ export default function MyOpsBento({
       vc: (piorMeta && piorMeta.liq < 0) ? 'var(--loss)' : 'var(--t4)',
     },
     {
-      tag: 'Melhor rede', c: RED, bg: 'rgba(229,57,31,0.09)',
+      tag: 'Melhor rede', c: RED, bg: 'var(--brand-dim)',
       ic: <path d="M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6M6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6M18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />,
       title: melhorRede ? melhorRede[0] : '—',
       sub: 'Lucro acumulado na rede',
@@ -99,14 +99,14 @@ export default function MyOpsBento({
           </p>
         </div>
         <motion.button type="button" data-tour="myops-new" onClick={onToggleForm}
-          whileHover={{ y: -2, boxShadow: showForm ? 'none' : '0 14px 32px rgba(229,57,31,0.36)' }} whileTap={{ scale: 0.97 }}
+          whileHover={{ y: -2, }} whileTap={{ scale: 0.97 }}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30,
             border: showForm ? '1px solid var(--b2)' : 'none', cursor: 'pointer', fontFamily: 'inherit',
             fontSize: 13.5, fontWeight: 800,
-            color: showForm ? 'var(--t2)' : '#fff',
+            color: showForm ? 'var(--t2)' : ON_RED,
             background: showForm ? 'var(--surface)' : `linear-gradient(135deg, ${RED2}, ${RED})`,
-            boxShadow: showForm ? 'none' : '0 10px 26px rgba(229,57,31,0.3)',
+            boxShadow: showForm ? 'none' : `0 10px 26px ${GLOW}`,
           }}>
           <Ico d={showForm ? <><path d="M18 6 6 18M6 6l12 12" /></> : <path d="M12 5v14M5 12h14" />} s={16} />
           {showForm ? 'Fechar' : 'Nova meta'}
@@ -114,7 +114,7 @@ export default function MyOpsBento({
       </div>
 
       {/* ── hero: lucro da operação ── */}
-      <Card pad="28px 30px" blob={pos ? ['var(--profit-dim)', 'var(--profit-border)'] : ['var(--loss-dim)', 'var(--loss-border)']} delay={0.04}>
+      <Card pad="28px 30px" blob={pos ? ['var(--k-blob-pos-a)', 'var(--k-blob-pos-b)'] : ['var(--k-blob-neg-a)', 'var(--k-blob-neg-b)']} delay={0.04}>
         <Eyebrow>Lucro total da operação</Eyebrow>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 22, flexWrap: 'wrap' }}>
           <div>
@@ -177,7 +177,7 @@ export default function MyOpsBento({
             <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--t1)', margin: '0 0 6px' }}>Sua mesa de operações está pronta</p>
             <p style={{ fontSize: 13, color: 'var(--t3)', margin: '0 0 20px' }}>Crie a primeira meta e comece a registrar remessas.</p>
             <motion.button type="button" onClick={onToggleForm} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
-              style={{ padding: '12px 24px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
+              style={{ padding: '12px 24px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: ON_RED, background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 26px ${GLOW}` }}>
               Criar primeira meta
             </motion.button>
           </Card>
@@ -195,7 +195,7 @@ export default function MyOpsBento({
                 <Card key={m.id} delay={0.14 + i * 0.05} onClick={() => onAbrirMeta && onAbrirMeta(m.id)}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 14 }}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
-                      <span style={{ width: 34, height: 34, borderRadius: 11, background: pronta ? 'var(--profit-dim)' : parada ? 'var(--loss-dim)' : 'rgba(229,57,31,0.1)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 11, fontWeight: 900, color: pronta ? 'var(--profit)' : parada ? 'var(--loss)' : RED, flexShrink: 0 }}>
+                      <span style={{ width: 34, height: 34, borderRadius: 11, background: pronta ? 'var(--profit-dim)' : parada ? 'var(--loss-dim)' : 'var(--brand-dim)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 11, fontWeight: 900, color: pronta ? 'var(--profit)' : parada ? 'var(--loss)' : RED, flexShrink: 0 }}>
                         {String(m.rede || '—').slice(0, 3).toUpperCase()}
                       </span>
                       <span style={{ minWidth: 0 }}>

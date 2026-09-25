@@ -11,7 +11,7 @@
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Folha, Confete } from '../ui/folha'
-import { Ico, NumeroTexto, money, int, MONO, RED, RED2 } from '../ui/bento'
+import { Ico, NumeroTexto, money, int, MONO, RED, RED2, ON_RED, GLOW } from '../ui/bento'
 
 const I_CHECK = <path d="M20 6L9 17l-5-5" />
 const I_BAIXAR = <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="M7 10l5 5 5-5M12 15V3" /></>
@@ -39,9 +39,9 @@ function Anel({ pct = 100, cor, delay = 0.3 }) {
         }}>
         <span style={{
           width: 62, height: 62, borderRadius: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          background: cor, color: '#fff', boxShadow: '0 12px 30px rgba(0,0,0,0.18)',
+          background: cor, color: 'var(--k-on-sinal)', boxShadow: '0 12px 30px rgba(0,0,0,0.18)',
         }}>
-          <Ico d={I_CHECK} s={30} c="#fff" />
+          <Ico d={I_CHECK} s={30} c="var(--k-on-sinal)" />
         </span>
       </motion.span>
     </div>
@@ -184,11 +184,11 @@ export default function FinaleV2({
                 <motion.button type="button" onClick={aoCompartilhar} disabled={netShareState === 'sharing'} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
                   style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '13px 16px', borderRadius: 30, border: 'none', cursor: 'pointer',
-                    fontFamily: 'inherit', fontSize: 13, fontWeight: 800, color: '#fff',
+                    fontFamily: 'inherit', fontSize: 13, fontWeight: 800, color: ON_RED,
                     background: netShareState === 'done' ? 'var(--profit)' : `linear-gradient(135deg, ${RED2}, ${RED})`,
-                    boxShadow: '0 10px 26px rgba(229,57,31,0.28)', opacity: netShareState === 'sharing' ? 0.7 : 1,
+                    boxShadow: `0 10px 26px ${GLOW}`, opacity: netShareState === 'sharing' ? 0.7 : 1,
                   }}>
-                  <Ico d={netShareState === 'done' ? I_CHECK : I_REDE} s={15} c="#fff" />
+                  <Ico d={netShareState === 'done' ? I_CHECK : I_REDE} s={15} c={ON_RED} />
                   {netShareState === 'sharing' ? 'Postando…' : netShareState === 'done' ? 'Postado no Network' : 'Compartilhar no Network'}
                 </motion.button>
               )}

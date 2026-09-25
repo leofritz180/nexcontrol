@@ -45,7 +45,9 @@ function VerifiedBadge({ size = 14 }) {
 }
 
 const ease = [0.33, 1, 0.68, 1]
-const RED = '#e5391f'
+// cor de acao = token do kit: claro/painel escuro de sempre = #e5391f; tema
+// escuro (paleta da landing) = lime. Texto sobre ela = var(--k-on).
+const RED = 'var(--k-1)'
 const MINT = '#22C55E'
 const REACTIONS = ['🔥', '✅', '👀', '🚀', '💰']
 const getName = p => p?.nome || p?.email?.split('@')[0] || 'Admin'
@@ -96,10 +98,10 @@ function fmtMoney(n) {
 // ── Selo (mapeado pra paleta NexControl: vermelho/verde/branco/muted) ──
 function badgeStyle(tone) {
   const map = {
-    red:   { bg: 'rgba(229,57,31,0.14)', bd: 'rgba(229,57,31,0.4)',  fg: 'var(--loss)' },
+    red:   { bg: 'color-mix(in srgb, var(--k-tinta) 14%, transparent)', bd: 'color-mix(in srgb, var(--k-tinta) 40%, transparent)',  fg: 'var(--loss)' },
     green: { bg: 'rgba(34,197,94,0.12)',  bd: 'rgba(34,197,94,0.38)', fg: '#4ade80' },
     gold:  { bg: 'rgba(255,255,255,0.1)', bd: 'rgba(255,255,255,0.28)', fg: '#f5f5f5' },
-    blue:  { bg: 'rgba(229,57,31,0.12)',  bd: 'rgba(229,57,31,0.36)', fg: '#ff7a7a' },
+    blue:  { bg: 'color-mix(in srgb, var(--k-tinta) 12%, transparent)',  bd: 'color-mix(in srgb, var(--k-tinta) 36%, transparent)', fg: '#ff7a7a' },
     purple:{ bg: 'rgba(255,255,255,0.06)', bd: 'rgba(255,255,255,0.18)', fg: '#cbd5e1' },
   }
   return map[tone] || map.purple
@@ -572,7 +574,7 @@ export default function NetworkPage() {
     return (
       <Shell profile={profile} user={user} tenant={tenant} sub={sub}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 320, textAlign: 'center', padding: 30 }}>
-          <div style={{ width: 60, height: 60, borderRadius: 17, background: 'rgba(229,57,31,0.1)', border: '1px solid rgba(229,57,31,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+          <div style={{ width: 60, height: 60, borderRadius: 17, background: 'color-mix(in srgb, var(--k-tinta) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 28%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
             <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
           </div>
           <h2 style={{ margin: '0 0 8px', fontSize: 19, fontWeight: 900, color: 'var(--t1)' }}>O Network é exclusivo do PRO</h2>
@@ -602,7 +604,7 @@ export default function NetworkPage() {
     <Shell profile={profile} user={user} tenant={tenant} sub={sub} bare={isMobile}>
       {/* Upsell suave pro membro FREE (ancora: comunidade gratis -> assina o painel) */}
       {isFreeMember && !isMobile && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', marginBottom: 12, borderRadius: 12, background: 'linear-gradient(90deg, rgba(229,57,31,0.10), rgba(229,57,31,0.03))', border: '1px solid rgba(229,57,31,0.22)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', marginBottom: 12, borderRadius: 12, background: 'linear-gradient(90deg, color-mix(in srgb, var(--k-tinta) 10%, transparent), color-mix(in srgb, var(--k-tinta) 3%, transparent))', border: '1px solid color-mix(in srgb, var(--k-tinta) 22%, transparent)' }}>
           <span style={{ fontSize: 12.5, color: 'var(--t2)', lineHeight: 1.4 }}>
             Você está no <strong style={{ color: 'var(--t1)' }}>Network grátis</strong> — a comunidade é sua pra sempre. Pra ter o painel completo (metas, lucro em tempo real, equipe), assine o PRO.
           </span>
@@ -641,7 +643,7 @@ export default function NetworkPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: isMobile ? 'calc(11px + env(safe-area-inset-top)) 12px 11px 56px' : '13px 16px', borderBottom: '1px solid var(--b1)', flexShrink: 0, background: isMobile ? 'rgba(8,12,22,0.6)' : 'transparent' }}>
             <button type="button" onClick={() => { if (isMobile) setMobilePanel('channels') }} disabled={!isMobile}
               style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', padding: 0, cursor: isMobile ? 'pointer' : 'default', textAlign: 'left' }}>
-              <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(229,57,31,0.12)', border: '1px solid rgba(229,57,31,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>{channelEmoji(channel)}</div>
+              <div style={{ width: 32, height: 32, borderRadius: 9, background: 'color-mix(in srgb, var(--k-tinta) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 28%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>{channelEmoji(channel)}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontSize: 14.5, fontWeight: 800, color: 'var(--t1)', letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', gap: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {activeChan?.name || 'Network'}
@@ -711,7 +713,7 @@ export default function NetworkPage() {
               }}>
                 <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="var(--t1)" strokeWidth={2} strokeLinecap="round"><polyline points="6 9 12 15 18 9" /></svg>
                 {unseenCount > 0 && (
-                  <span style={{ position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, padding: '0 5px', borderRadius: 9, background: RED, color: 'var(--t1)', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #0d1220' }}>{unseenCount > 9 ? '9+' : unseenCount}</span>
+                  <span style={{ position: 'absolute', top: -4, right: -4, minWidth: 18, height: 18, padding: '0 5px', borderRadius: 9, background: RED, color: 'var(--k-on)', fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #0d1220' }}>{unseenCount > 9 ? '9+' : unseenCount}</span>
                 )}
               </button>
             )}
@@ -725,7 +727,7 @@ export default function NetworkPage() {
           )}
           {/* barra de resposta */}
           {replyTo && canPostHere && !data.me?.mute?.muted && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px 8px 14px', margin: '0 12px', borderLeft: `3px solid ${RED}`, background: 'rgba(229,57,31,0.06)', borderRadius: '0 8px 8px 0', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px 8px 14px', margin: '0 12px', borderLeft: `3px solid ${RED}`, background: 'color-mix(in srgb, var(--k-tinta) 6%, transparent)', borderRadius: '0 8px 8px 0', flexShrink: 0 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--loss)' }}>Respondendo a {replyTo.name}</div>
                 <div style={{ fontSize: 12, color: 'var(--t3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{replyTo.text}</div>
@@ -851,14 +853,14 @@ function Shell({ children, profile, user, tenant, sub, bare }) {
       {bare ? children : (
         <div style={{ padding: '18px 20px 20px', maxWidth: 1400, margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, rgba(229,57,31,0.2), rgba(229,57,31,0.05))', border: '1px solid rgba(229,57,31,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, color-mix(in srgb, var(--k-tinta) 20%, transparent), color-mix(in srgb, var(--k-tinta) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--k-tinta) 30%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
             </div>
             <div>
               <h1 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.03em' }}>Network</h1>
               <p style={{ margin: '1px 0 0', fontSize: 12, color: 'var(--t3)' }}>Comunidade dos admins da NexControl</p>
             </div>
-            <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--loss)', padding: '3px 8px', borderRadius: 5, background: 'rgba(229,57,31,0.12)', border: '1px solid rgba(229,57,31,0.3)' }}>BETA</span>
+            <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--loss)', padding: '3px 8px', borderRadius: 5, background: 'color-mix(in srgb, var(--k-tinta) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 30%, transparent)' }}>BETA</span>
           </div>
           {/* Grupo VIP: só pra quem ainda não é membro (components/GrupoConvite) */}
           <GrupoFaixa />
@@ -904,7 +906,7 @@ function TeaserView({ isMobile, vpH, onSubscribe }) {
                 <div style={{ width: 28, height: 28, borderRadius: '50%', background: m.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 800, color: 'var(--t1)' }}>{m.name[0]}</div>
                 <span style={{ fontSize: 12.5, fontWeight: 800, color: 'var(--t1)' }}>{m.name}</span>
               </div>}
-              <div style={{ marginLeft: m.mine ? 0 : 36, background: m.mine ? 'rgba(229,57,31,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${m.mine ? 'rgba(229,57,31,0.3)' : 'rgba(255,255,255,0.08)'}`, borderRadius: m.mine ? '15px 15px 5px 15px' : '15px 15px 15px 5px', padding: '9px 13px', fontSize: 13.5, color: 'var(--t1)' }}>{m.text}</div>
+              <div style={{ marginLeft: m.mine ? 0 : 36, background: m.mine ? 'var(--k-bolha)' : 'rgba(255,255,255,0.05)', border: `1px solid ${m.mine ? 'var(--k-bolha-borda)' : 'rgba(255,255,255,0.08)'}`, borderRadius: m.mine ? '15px 15px 5px 15px' : '15px 15px 15px 5px', padding: '9px 13px', fontSize: 13.5, color: 'var(--t1)' }}>{m.text}</div>
             </div>
           </div>
         ))}
@@ -914,7 +916,7 @@ function TeaserView({ isMobile, vpH, onSubscribe }) {
           <span style={{ width: 7, height: 7, borderRadius: '50%', background: MINT, boxShadow: `0 0 8px ${MINT}` }} />
           <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--profit)' }}>{online} admins online agora</span>
         </div>
-        <div style={{ width: 60, height: 60, borderRadius: 17, background: 'rgba(229,57,31,0.12)', border: '1px solid rgba(229,57,31,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+        <div style={{ width: 60, height: 60, borderRadius: 17, background: 'color-mix(in srgb, var(--k-tinta) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 30%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
         </div>
         <h2 style={{ margin: '0 0 8px', fontSize: 21, fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.02em' }}>A comunidade tá acontecendo 🔥</h2>
@@ -937,8 +939,8 @@ function ChannelList({ channels, active, onSelect, online = [], onlineCount, emb
           return (
             <button key={c.key} onClick={() => onSelect(c.key)} style={{
               display: 'flex', alignItems: 'center', gap: 9, padding: '9px 11px', borderRadius: 9,
-              background: on ? 'rgba(229,57,31,0.12)' : 'transparent',
-              border: on ? '1px solid rgba(229,57,31,0.28)' : '1px solid transparent',
+              background: on ? 'color-mix(in srgb, var(--k-tinta) 12%, transparent)' : 'transparent',
+              border: on ? '1px solid color-mix(in srgb, var(--k-tinta) 28%, transparent)' : '1px solid transparent',
               cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'background 0.14s',
             }}
               onMouseEnter={e => { if (!on) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
@@ -963,7 +965,7 @@ function ChannelList({ channels, active, onSelect, online = [], onlineCount, emb
 // ═══════════════ Barra fixada ═══════════════
 function PinnedBar({ msg, isOwner, onUnpin }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 16px', background: 'rgba(229,57,31,0.06)', borderBottom: '1px solid rgba(229,57,31,0.18)', flexShrink: 0 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 16px', background: 'color-mix(in srgb, var(--k-tinta) 6%, transparent)', borderBottom: '1px solid color-mix(in srgb, var(--k-tinta) 18%, transparent)', flexShrink: 0 }}>
       <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" /></svg>
       <p style={{ margin: 0, flex: 1, fontSize: 12, color: 'var(--t2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         <strong style={{ color: 'var(--loss)', fontWeight: 700 }}>Fixado:</strong> {msg.text}
@@ -1023,8 +1025,8 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
     )
   }
 
-  const bubbleBg = mine ? 'rgba(229,57,31,0.15)' : 'rgba(255,255,255,0.05)'
-  const bubbleBd = mine ? 'rgba(229,57,31,0.3)' : 'rgba(255,255,255,0.08)'
+  const bubbleBg = mine ? 'var(--k-bolha)' : 'rgba(255,255,255,0.05)'
+  const bubbleBd = mine ? 'var(--k-bolha-borda)' : 'rgba(255,255,255,0.08)'
   const radius = mine ? '15px 15px 5px 15px' : '15px 15px 15px 5px'
   const INDENT = 38 // avatar(30) + gap(8): alinha a bolha sob o nome
 
@@ -1076,8 +1078,8 @@ function MessageRow({ m, prev, meId, isOwner, onReact, onOpenProfile, onReply, o
             {m.reactions.map(r => (
               <button key={r.emoji} onClick={() => onReact(m.id, r.emoji)} style={{
                 display: 'flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 20, fontSize: 12, cursor: 'pointer',
-                background: r.mine ? 'rgba(229,57,31,0.16)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${r.mine ? 'rgba(229,57,31,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                background: r.mine ? 'color-mix(in srgb, var(--k-tinta) 16%, transparent)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${r.mine ? 'color-mix(in srgb, var(--k-tinta) 40%, transparent)' : 'rgba(255,255,255,0.08)'}`,
                 color: r.mine ? '#ff8a8a' : 'var(--t2)', fontWeight: 700,
               }}>{r.emoji} {r.count}</button>
             ))}
@@ -1179,7 +1181,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
   if (muted?.muted) {
     const untilStr = muted.permanent ? 'permanentemente' : ('até ' + new Date(muted.until).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }))
     return (
-      <div style={{ padding: '14px 16px calc(14px + env(safe-area-inset-bottom))', borderTop: '1px solid rgba(229,57,31,0.25)', flexShrink: 0, background: 'rgba(229,57,31,0.07)', display: 'flex', alignItems: 'center', gap: 10, color: 'var(--loss)', fontSize: 12.5, lineHeight: 1.4 }}>
+      <div style={{ padding: '14px 16px calc(14px + env(safe-area-inset-bottom))', borderTop: '1px solid color-mix(in srgb, var(--k-tinta) 25%, transparent)', flexShrink: 0, background: 'color-mix(in srgb, var(--k-tinta) 7%, transparent)', display: 'flex', alignItems: 'center', gap: 10, color: 'var(--loss)', fontSize: 12.5, lineHeight: 1.4 }}>
         <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{ flexShrink: 0 }}><path d="M18.36 6.64A9 9 0 0 1 20.77 15" /><path d="M6.16 6.16a9 9 0 1 0 12.68 12.68" /><line x1="2" y1="2" x2="22" y2="22" /></svg>
         <div>Você está silenciado {untilStr}.{muted.reason ? <><br /><span style={{ color: 'var(--t3)' }}>Motivo: {muted.reason}</span></> : null}</div>
       </div>
@@ -1226,8 +1228,8 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
         <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={onFile} style={{ display: 'none' }} />
         <button onClick={() => fileRef.current?.click()} disabled={imgBusy} title="Anexar foto" style={{
           width: 44, height: 44, borderRadius: 12, flexShrink: 0, cursor: 'pointer',
-          background: img ? 'rgba(229,57,31,0.14)' : 'rgba(255,255,255,0.05)',
-          border: `1px solid ${img ? 'rgba(229,57,31,0.3)' : 'rgba(255,255,255,0.1)'}`,
+          background: img ? 'color-mix(in srgb, var(--k-tinta) 14%, transparent)' : 'rgba(255,255,255,0.05)',
+          border: `1px solid ${img ? 'color-mix(in srgb, var(--k-tinta) 30%, transparent)' : 'rgba(255,255,255,0.1)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           {imgBusy
@@ -1244,7 +1246,7 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                   {m.all ? (
                     <>
-                      <span style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: 'rgba(229,57,31,0.18)', border: '1px solid rgba(229,57,31,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: 'color-mix(in srgb, var(--k-tinta) 18%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 40%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ff8a8a" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /></svg>
                       </span>
                       <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
@@ -1277,9 +1279,9 @@ function Composer({ text, setText, onSend, sending, img, setImg, rule, canPost, 
           background: canSend ? RED : 'rgba(255,255,255,0.08)',
           cursor: canSend ? 'pointer' : 'default',
           display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s',
-          boxShadow: canSend ? '0 4px 16px rgba(229,57,31,0.4)' : 'none',
+          boxShadow: canSend ? '0 4px 16px color-mix(in srgb, var(--k-tinta) 40%, transparent)' : 'none',
         }}>
-          <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke={canSend ? '#fff' : 'var(--t4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+          <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke={canSend ? 'var(--k-on)' : 'var(--t4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
         </button>
       </div>
     </div>
@@ -1294,7 +1296,7 @@ function RightPanel({ data, onOpenProfile, meId, embedded, onShowMembers, onShow
       {data.me && (
         <button onClick={() => onOpenProfile(meId)} style={{
           width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 12px', marginBottom: 16,
-          borderRadius: 12, background: 'rgba(229,57,31,0.08)', border: '1px solid rgba(229,57,31,0.22)', cursor: 'pointer', textAlign: 'left',
+          borderRadius: 12, background: 'color-mix(in srgb, var(--k-tinta) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 22%, transparent)', cursor: 'pointer', textAlign: 'left',
         }}>
           <Avatar name={data.me.name} color={data.me.color} src={data.me.avatar} size={38} />
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -1417,8 +1419,8 @@ function ResultadoPost({ m, meId, isOwner, onReact, onOpenProfile, onOpenComment
           return (
             <button key={emoji} onClick={() => onReact(m.id, emoji)} style={{
               display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 9px', borderRadius: 20, cursor: 'pointer',
-              background: mine ? 'rgba(229,57,31,0.16)' : 'rgba(255,255,255,0.05)',
-              border: `1px solid ${mine ? 'rgba(229,57,31,0.4)' : 'rgba(255,255,255,0.09)'}`,
+              background: mine ? 'color-mix(in srgb, var(--k-tinta) 16%, transparent)' : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${mine ? 'color-mix(in srgb, var(--k-tinta) 40%, transparent)' : 'rgba(255,255,255,0.09)'}`,
               fontSize: 13, color: 'var(--t2)', fontWeight: 700,
             }}>
               <span style={{ fontSize: 14 }}>{emoji}</span>
@@ -1516,7 +1518,7 @@ function CommentsSheet({ post, isMobile, api, meId, isOwner, onOpenProfile, onCl
           placeholder="Adicione um comentário…"
           style={{ flex: 1, resize: 'none', maxHeight: 110, minHeight: 42, padding: '11px 13px', borderRadius: 12, background: 'var(--fill-2)', border: '1px solid var(--b1)', color: 'var(--t1)', fontSize: 13.5, fontFamily: 'inherit', lineHeight: 1.45, outline: 'none' }} />
         <button onClick={submit} disabled={!text.trim() || busy} style={{ width: 42, height: 42, borderRadius: 12, flexShrink: 0, border: 'none', background: text.trim() && !busy ? RED : 'rgba(255,255,255,0.08)', cursor: text.trim() && !busy ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={text.trim() && !busy ? '#fff' : 'var(--t4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke={text.trim() && !busy ? 'var(--k-on)' : 'var(--t4)'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
         </button>
       </div>
     </>
@@ -1862,7 +1864,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                   <label style={lbl}>Tag do usuário (aparece no chat)</label>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <input value={tagInput} onChange={e => setTagInput(e.target.value.slice(0, 24))} placeholder="ex: MENTOR, VIP, PARCEIRO" style={inp} />
-                    <button onClick={saveTag} disabled={modBusy} style={{ padding: '0 16px', borderRadius: 9, border: 'none', background: RED, color: 'var(--t1)', fontWeight: 800, fontSize: 12.5, cursor: 'pointer', flexShrink: 0 }}>Salvar</button>
+                    <button onClick={saveTag} disabled={modBusy} style={{ padding: '0 16px', borderRadius: 9, border: 'none', background: RED, color: 'var(--k-on)', fontWeight: 800, fontSize: 12.5, cursor: 'pointer', flexShrink: 0 }}>Salvar</button>
                   </div>
                   <ColorSwatches value={tagColor} onChange={setTagColor} />
                   {tagInput.trim() && <div style={{ marginTop: 8 }}>Prévia: <TagPill tag={tagInput.trim()} color={tagColor} /></div>}
@@ -1873,7 +1875,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                 <div>
                   <label style={lbl}>Silenciar (castigo de fala)</label>
                   {p.mute?.muted ? (
-                    <div style={{ padding: '10px 12px', borderRadius: 9, background: 'rgba(229,57,31,0.08)', border: '1px solid rgba(229,57,31,0.25)' }}>
+                    <div style={{ padding: '10px 12px', borderRadius: 9, background: 'color-mix(in srgb, var(--k-tinta) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 25%, transparent)' }}>
                       <div style={{ fontSize: 12, color: 'var(--loss)', fontWeight: 700 }}>
                         Silenciado {p.mute.permanent ? 'permanentemente' : ('até ' + new Date(p.mute.until).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }))}
                       </div>
@@ -1887,7 +1889,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                         {[{ l: '1h', m: 60 }, { l: '6h', m: 360 }, { l: '24h', m: 1440 }, { l: '7 dias', m: 10080 }].map(d => (
                           <button key={d.l} onClick={() => doMute({ minutes: d.m })} disabled={modBusy} style={muteBtn}>{d.l}</button>
                         ))}
-                        <button onClick={() => doMute({ permanent: true })} disabled={modBusy} style={{ ...muteBtn, borderColor: 'rgba(229,57,31,0.4)', color: 'var(--loss)' }}>Permanente</button>
+                        <button onClick={() => doMute({ permanent: true })} disabled={modBusy} style={{ ...muteBtn, borderColor: 'color-mix(in srgb, var(--k-tinta) 40%, transparent)', color: 'var(--loss)' }}>Permanente</button>
                       </div>
                     </>
                   )}
@@ -1899,8 +1901,8 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                   {p.banned && <div style={{ fontSize: 12, color: 'var(--loss)', fontWeight: 700, marginBottom: 8 }}>Este usuário está banido do Network.</div>}
                   <button onClick={p.banned ? doUnban : doBan} disabled={modBusy} style={{
                     width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px', borderRadius: 10, cursor: 'pointer', fontWeight: 700, fontSize: 13,
-                    border: p.banned ? '1px solid rgba(34,197,94,0.4)' : '1px solid rgba(229,57,31,0.4)',
-                    background: p.banned ? 'rgba(34,197,94,0.1)' : 'rgba(229,57,31,0.1)',
+                    border: p.banned ? '1px solid rgba(34,197,94,0.4)' : '1px solid color-mix(in srgb, var(--k-tinta) 40%, transparent)',
+                    background: p.banned ? 'rgba(34,197,94,0.1)' : 'color-mix(in srgb, var(--k-tinta) 10%, transparent)',
                     color: p.banned ? '#4ade80' : 'var(--loss)',
                   }}>
                     {p.banned ? (
@@ -1927,11 +1929,11 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                 <button onClick={() => setEdit(true)} className="btn" style={{ width: '100%', justifyContent: 'center', background: 'var(--fill-2)', border: '1px solid var(--b2)', color: 'var(--t1)', fontWeight: 700, padding: '11px', borderRadius: 10, fontSize: 13 }}>Editar meu perfil</button>
               ) : isFreeMember ? (
                 /* Membro FREE: personalizar perfil e' exclusivo PRO (trava tambem no servidor) */
-                <div style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', padding: '24px 18px 18px', borderRadius: 16, background: 'var(--surface)', border: '1px solid rgba(229,57,31,0.3)', boxShadow: '0 0 0 1px rgba(229,57,31,0.06), 0 18px 50px rgba(0,0,0,0.55), 0 0 60px rgba(229,57,31,0.07)' }}>
+                <div style={{ position: 'relative', overflow: 'hidden', textAlign: 'center', padding: '24px 18px 18px', borderRadius: 16, background: 'var(--surface)', border: '1px solid color-mix(in srgb, var(--k-tinta) 30%, transparent)', boxShadow: '0 0 0 1px color-mix(in srgb, var(--k-tinta) 6%, transparent), 0 18px 50px rgba(0,0,0,0.55), 0 0 60px color-mix(in srgb, var(--k-tinta) 7%, transparent)' }}>
                   {/* linha de brilho no topo */}
-                  <div style={{ position: 'absolute', top: 0, left: '16%', right: '16%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(229,57,31,0.65), transparent)' }} />
+                  <div style={{ position: 'absolute', top: 0, left: '16%', right: '16%', height: 1, background: 'linear-gradient(90deg, transparent, color-mix(in srgb, var(--k-tinta) 65%, transparent), transparent)' }} />
                   {/* glow ambiente */}
-                  <div style={{ position: 'absolute', top: -60, left: '50%', transform: 'translateX(-50%)', width: 220, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(229,57,31,0.14), transparent 65%)', filter: 'blur(24px)', pointerEvents: 'none' }} />
+                  <div style={{ position: 'absolute', top: -60, left: '50%', transform: 'translateX(-50%)', width: 220, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, color-mix(in srgb, var(--k-tinta) 14%, transparent), transparent 65%)', filter: 'blur(24px)', pointerEvents: 'none' }} />
 
                   {/* selo verificado em destaque */}
                   <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
@@ -1958,7 +1960,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                     ))}
                   </div>
 
-                  <button type="button" onClick={() => { window.location.href = '/billing-mp' }} style={{ position: 'relative', width: '100%', padding: '13px', borderRadius: 11, border: 'none', background: `linear-gradient(180deg, ${RED}, #b32c16)`, color: '#fff', fontWeight: 800, fontSize: 13.5, cursor: 'pointer', boxShadow: '0 6px 22px rgba(229,57,31,0.4), inset 0 1px 0 rgba(255,255,255,0.15)' }}>Assinar PRO e desbloquear</button>
+                  <button type="button" onClick={() => { window.location.href = '/billing-mp' }} style={{ position: 'relative', width: '100%', padding: '13px', borderRadius: 11, border: 'none', background: `linear-gradient(180deg, ${RED}, color-mix(in srgb, ${RED} 78%, black))`, color: 'var(--k-on)', fontWeight: 800, fontSize: 13.5, cursor: 'pointer', boxShadow: '0 6px 22px color-mix(in srgb, var(--k-tinta) 40%, transparent), inset 0 1px 0 rgba(255,255,255,0.15)' }}>Assinar PRO e desbloquear</button>
                   <div style={{ position: 'relative', marginTop: 8, fontSize: 10.5, color: 'var(--t4)' }}>A partir de R$ 59,90/mês · ativação na hora via PIX</div>
                   <button type="button" onClick={() => setEdit(false)} style={{ position: 'relative', marginTop: 6, width: '100%', padding: '7px', borderRadius: 10, border: 'none', background: 'transparent', color: 'var(--t4)', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>Agora não</button>
                 </div>
@@ -1991,7 +1993,7 @@ function ProfileDrawer({ view, isMobile, onClose, onSaved, api, isOwnerUser, can
                     </div>
                   )}
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={save} disabled={saving} style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: RED, color: 'var(--t1)', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>{saving ? 'Salvando...' : 'Salvar'}</button>
+                    <button onClick={save} disabled={saving} style={{ flex: 1, padding: '10px', borderRadius: 10, border: 'none', background: RED, color: 'var(--k-on)', fontWeight: 800, fontSize: 13, cursor: 'pointer' }}>{saving ? 'Salvando...' : 'Salvar'}</button>
                     <button onClick={() => setEdit(false)} style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid var(--b2)', background: 'transparent', color: 'var(--t3)', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>Cancelar</button>
                   </div>
                 </div>
@@ -2046,7 +2048,7 @@ function CenterMsg({ title, text, spin, icon }) {
       {spin ? (
         <div style={{ width: 30, height: 30, borderRadius: '50%', border: '2.5px solid var(--b1)', borderTopColor: RED, animation: 'nx-spin 0.8s linear infinite', marginBottom: 14 }} />
       ) : icon === 'lock' ? (
-        <div style={{ width: 54, height: 54, borderRadius: 15, background: 'rgba(229,57,31,0.1)', border: '1px solid rgba(229,57,31,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
+        <div style={{ width: 54, height: 54, borderRadius: 15, background: 'color-mix(in srgb, var(--k-tinta) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 25%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}>
           <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={2} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
         </div>
       ) : null}
@@ -2059,7 +2061,7 @@ function CenterMsg({ title, text, spin, icon }) {
 function EmptyChat({ name }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 240, textAlign: 'center', padding: 30 }}>
-      <div style={{ width: 60, height: 60, borderRadius: 18, background: 'rgba(229,57,31,0.08)', border: '1px solid rgba(229,57,31,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+      <div style={{ width: 60, height: 60, borderRadius: 18, background: 'color-mix(in srgb, var(--k-tinta) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--k-tinta) 20%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
         <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth={1.8} strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
       </div>
       <p style={{ margin: '0 0 5px', fontSize: 15, fontWeight: 800, color: 'var(--t1)' }}>Comece a conversa</p>
@@ -2072,9 +2074,9 @@ function EmptyChat({ name }) {
 function UnreadDivider() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 18px', margin: '2px 0' }}>
-      <span style={{ flex: 1, height: 1, background: 'rgba(229,57,31,0.35)' }} />
+      <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--k-tinta) 35%, transparent)' }} />
       <span style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--loss)', textTransform: 'uppercase' }}>Mensagens novas</span>
-      <span style={{ flex: 1, height: 1, background: 'rgba(229,57,31,0.35)' }} />
+      <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--k-tinta) 35%, transparent)' }} />
     </div>
   )
 }

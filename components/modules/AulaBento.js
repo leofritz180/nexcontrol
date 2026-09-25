@@ -10,7 +10,7 @@
 // clara do bento.
 // ─────────────────────────────────────────────────────────────────────────
 import { motion, AnimatePresence } from 'framer-motion'
-import { ModuleHeader, AcaoBtn, Tira, BCard, Vazio, Arco, Ico, MONO, RED, RED2, int } from '../ui/bento'
+import { ModuleHeader, AcaoBtn, Tira, BCard, Vazio, Arco, Ico, MONO, RED, RED2, int, ON_RED, GLOW } from '../ui/bento'
 
 const PLAY = <path d="M8 5.14v14.72a1 1 0 001.5.86l11.24-7.36a1 1 0 000-1.72L9.5 4.28A1 1 0 008 5.14z" />
 const ARTE_PADRAO = 'linear-gradient(135deg, #1a1a2e, #16213e, #0f3460)'
@@ -71,8 +71,8 @@ function Vitrine({ curso, pct, totalAulas, concluidas, proxima, rotuloCta, onCon
             whileHover={{ y: -2, boxShadow: '0 14px 34px rgba(229,57,31,0.42)' }} whileTap={{ scale: 0.97 }}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 9, padding: '13px 26px', borderRadius: 30,
-              border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, color: '#fff',
-              background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.34)',
+              border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, color: ON_RED,
+              background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 26px ${GLOW}`,
             }}>
             <svg width={15} height={15} viewBox="0 0 24 24" fill="#fff" stroke="none">{PLAY}</svg>
             {rotuloCta}

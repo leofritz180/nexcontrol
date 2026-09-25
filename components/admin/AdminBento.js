@@ -13,11 +13,13 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor, Podio, Risco, Barras, Tira } from '../ui/bento'
+import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor, Podio, Risco, Barras, Tira, RED, RED2, ON_RED, GLOW, LARANJA, LARANJA2, ON_LARANJA, GLOW_LARANJA } from '../ui/bento'
 import { opDayISO, ultimosDiasOp } from '../../lib/opday'
 import { GrupoFaixa } from '../GrupoConvite'
 
-const RED = '#e5391f', RED2 = '#ff7a4d'
+// cores: tokens do kit (claro = as de sempre; escuro = lime da landing +
+// laranja so onde e destaque: meta do dia, depositantes e pendencias)
+const MISTURA = (cor, pct) => `color-mix(in srgb, ${cor} ${pct}%, transparent)`
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
 const money = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const money0 = v => 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 })
@@ -315,7 +317,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
         {/* nx-acao: no celular o CSS transforma em botao flutuante redondo,
             acima da barra de abas. "Nova meta" e a acao principal do painel
             e nao pode rolar pra fora da tela no primeiro gesto. */}
-        <motion.button type="button" onClick={onNovaMeta} className="nx-acao" whileHover={{ y: -2, boxShadow: '0 14px 32px rgba(229,57,31,0.38)' }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.3)' }}>
+        <motion.button type="button" onClick={onNovaMeta} className="nx-acao" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 22px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13.5, fontWeight: 800, color: ON_RED, background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 26px ${GLOW}` }}>
           <span className="nx-acao-ico" style={{ display: 'inline-flex' }}><Ico d={<path d="M12 5v14M5 12h14" />} s={16} /></span>
           <span className="nx-acao-txt">Nova meta</span>
         </motion.button>
@@ -331,7 +333,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
               return (
                 <button key={k} type="button" onClick={() => onPeriodo(k)}
                   style={{ padding: '7px 15px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 700,
-                    background: on ? '#15151a' : 'transparent', color: on ? '#fff' : 'var(--t3)', transition: 'background .18s ease, color .18s ease' }}>
+                    background: on ? 'var(--k-pill-bg)' : 'transparent', color: on ? 'var(--k-pill-fg)' : 'var(--t3)', transition: 'background .18s ease, color .18s ease' }}>
                   {l}
                 </button>
               )
@@ -349,7 +351,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
           A curva de 14 dias ao fundo são os mesmos dados da linha 2. */}
       <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: '1.9fr 1fr 1fr 1.3fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <Card blob={['var(--profit-dim)', 'var(--profit-border)']} pad={24} style={{ minHeight: 148, height: '100%' }}>
+          <Card blob={['var(--k-blob-lucro-a)', 'var(--k-blob-lucro-b)']} pad={24} style={{ minHeight: 148, height: '100%' }}>
             <Chip bg="var(--profit-dim)"><Ico d={<><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>} c="var(--profit)" /></Chip>
             <p style={{
               fontSize: 44, fontWeight: 900, margin: '16px 0 0', letterSpacing: '-0.045em', lineHeight: 1,
@@ -386,8 +388,8 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.06 }}>
-          <Card blob={[RED2, RED]} style={{ minHeight: 148 }}>
-            <Chip bg={RED}><Ico d={<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /></>} c="#fff" /></Chip>
+          <Card blob={[LARANJA2, LARANJA]} style={{ minHeight: 148 }}>
+            <Chip bg={LARANJA}><Ico d={<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /></>} c={ON_LARANJA} /></Chip>
             <p style={{ fontSize: 27, fontWeight: 900, color: S.t1, margin: '18px 0 0', letterSpacing: '-0.035em', fontFamily: MONO }}><NumeroTexto delay={0.22}>{int(agora.depositantes)}</NumeroTexto></p>
             <p style={{ fontSize: 12.5, color: S.t3, margin: '4px 0 0' }}>depositantes · {int(fechadas.length)} metas fechadas</p>
             <p style={{ fontSize: 11.5, color: S.t3, margin: '2px 0 0', fontFamily: MONO }}>{money(agora.porConta)} por conta</p>
@@ -403,9 +405,9 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
           </Card>
         </motion.div>
 
-        {/* meta do dia — card vermelho */}
+        {/* meta do dia — o card laranja (destaque pontual nos dois temas) */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.18 }}>
-          <div style={{ position: 'relative', overflow: 'hidden', minHeight: 148, height: '100%', borderRadius: 24, padding: 22, background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 14px 34px rgba(229,57,31,0.3)' }}>
+          <div style={{ position: 'relative', overflow: 'hidden', minHeight: 148, height: '100%', borderRadius: 24, padding: 22, background: `linear-gradient(135deg, ${LARANJA2}, ${LARANJA})`, boxShadow: `0 14px 34px ${GLOW_LARANJA}` }}>
             <svg viewBox="0 0 200 140" preserveAspectRatio="none" aria-hidden style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.3 }}>
               <path d="M0,96 C46,60 84,124 132,88 C164,64 182,74 200,66 L200,140 L0,140 Z" fill="#fff" opacity="0.35" />
               <path d="M0,116 C52,86 92,138 140,110 C170,92 186,98 200,92 L200,140 L0,140 Z" fill="#fff" opacity="0.4" />
@@ -413,12 +415,12 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
             <div style={{ position: 'relative' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                 <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--t1)', margin: 0, letterSpacing: '-0.02em' }}>Meta do dia</p>
-                  <p style={{ fontSize: 12, color: 'var(--t1)', margin: '3px 0 0' }}>{alvo > 0 ? `${money0(feito)} de ${money0(alvo)}` : 'ainda não definida'}</p>
+                  <p style={{ fontSize: 16, fontWeight: 800, color: '#15151a', margin: 0, letterSpacing: '-0.02em' }}>Meta do dia</p>
+                  <p style={{ fontSize: 12, color: '#15151a', margin: '3px 0 0' }}>{alvo > 0 ? `${money0(feito)} de ${money0(alvo)}` : 'ainda não definida'}</p>
                 </div>
                 {alvo > 0 && !editGoal && (
                   <button type="button" onClick={() => { setGoalVal(String(alvo)); setEditGoal(true) }} title="Alterar meta"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.18)', border: 'none', borderRadius: 20, padding: '4px 10px', cursor: 'pointer', fontFamily: MONO, fontSize: 15, fontWeight: 900, color: 'var(--t1)' }}>
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(255,255,255,0.18)', border: 'none', borderRadius: 20, padding: '4px 10px', cursor: 'pointer', fontFamily: MONO, fontSize: 15, fontWeight: 900, color: '#15151a' }}>
                     {pctDia}%
                   </button>
                 )}
@@ -427,7 +429,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
               {editGoal ? (
                 <div style={{ marginTop: 16, display: 'flex', gap: 7 }}>
                   <input autoFocus value={goalVal} inputMode="numeric"
-                    onChange={e => setGoalVal(e.target.value.replace(/D/g, '').slice(0, 7))}
+                    onChange={e => setGoalVal(e.target.value.replace(/[^0-9]/g, '').slice(0, 7))}
                     onKeyDown={e => { if (e.key === 'Enter' && onSaveGoal) { onSaveGoal(Number(goalVal) || null); setEditGoal(false) } }}
                     placeholder="ex: 5000"
                     style={{ flex: 1, minWidth: 0, padding: '9px 12px', borderRadius: 11, border: 'none', outline: 'none', fontFamily: MONO, fontSize: 14, fontWeight: 800, color: '#15151a' }} />
@@ -440,7 +442,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
                     <motion.div initial={{ width: 0 }} animate={{ width: `${pctDia}%` }} transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }} style={{ height: '100%', borderRadius: 5, background: '#fff' }} />
                   </div>
                   {alvo > 0 ? (
-                    <p style={{ fontSize: 11.5, color: 'var(--t1)', margin: '10px 0 0' }}>
+                    <p style={{ fontSize: 11.5, color: '#15151a', margin: '10px 0 0' }}>
                       {feito >= alvo ? 'meta batida hoje' : `faltam ${money0(alvo - feito)}`}{dailyGoal?.streak > 1 ? ` · ${dailyGoal.streak} dias seguidos` : ''}
                     </p>
                   ) : (
@@ -462,14 +464,14 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
         { l: 'Metas rodando', v: int(abertas.length - agora.aguardando), hint: abertas.length ? `${int(abertas.length)} aberta${abertas.length === 1 ? '' : 's'} no total` : 'nenhuma aberta' },
         { l: 'Contas feitas', v: `${int(agora.feitas)}/${int(agora.alvo)}`, hint: `${agora.pct}% das metas abertas` },
         { l: 'Remessas hoje', v: int(agora.remHoje), hint: `${int(agora.opsHoje)} operador${agora.opsHoje === 1 ? '' : 'es'} operando` },
-        { l: 'Aguardando fechamento', v: int(agora.aguardando), c: agora.aguardando > 0 ? RED : undefined, hint: agora.aguardando > 0 ? 'finalizadas pelo operador' : 'nada pendente' },
+        { l: 'Aguardando fechamento', v: int(agora.aguardando), c: agora.aguardando > 0 ? LARANJA : undefined, hint: agora.aguardando > 0 ? 'finalizadas pelo operador' : 'nada pendente' },
       ]} />
       {agora.aguardando > 0 && onVerFechamento && (
         <motion.button type="button" onClick={onVerFechamento} whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}
-          style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', padding: '13px 18px', borderRadius: 18, border: '1px solid rgba(229,57,31,0.35)', background: 'var(--surface)', boxShadow: '0 8px 26px rgba(229,57,31,0.10)', cursor: 'pointer', fontFamily: 'inherit' }}>
-          <span aria-hidden style={{ width: 10, height: 10, borderRadius: 999, background: RED, boxShadow: '0 0 0 4px rgba(229,57,31,0.16)', flexShrink: 0 }} />
+          style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', padding: '13px 18px', borderRadius: 18, border: `1px solid ${MISTURA(LARANJA, 35)}`, background: 'var(--surface)', boxShadow: `0 8px 26px ${MISTURA(LARANJA, 10)}`, cursor: 'pointer', fontFamily: 'inherit' }}>
+          <span aria-hidden style={{ width: 10, height: 10, borderRadius: 999, background: LARANJA, boxShadow: `0 0 0 4px ${MISTURA(LARANJA, 16)}`, flexShrink: 0 }} />
           <span style={{ flex: 1, minWidth: 0, fontSize: 13.5, fontWeight: 800, color: S.t1 }}>{int(agora.aguardando)} meta{agora.aguardando === 1 ? '' : 's'} finalizada{agora.aguardando === 1 ? '' : 's'} esperando você fechar</span>
-          <span style={{ fontSize: 12.5, fontWeight: 800, color: RED, flexShrink: 0 }}>Fechar →</span>
+          <span style={{ fontSize: 12.5, fontWeight: 800, color: LARANJA, flexShrink: 0 }}>Fechar →</span>
         </motion.button>
       )}
 
@@ -656,7 +658,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flexWrap: 'wrap' }}>
                         <span style={{ fontFamily: MONO, fontSize: 12.5, fontWeight: 800, color: S.t1 }}>{m.rede}</span>
                         {m.op && <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 800, letterSpacing: '0.06em', background: 'var(--fill-1)', color: S.t2, border: '1px solid var(--b1)' }}>OP: {m.op.toUpperCase()}</span>}
-                        {m.finalizada && <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 800, background: 'rgba(229,57,31,0.08)', color: RED, border: '1px solid rgba(229,57,31,0.3)' }}>falta fechar</span>}
+                        {m.finalizada && <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 800, background: MISTURA(LARANJA, 10), color: LARANJA, border: `1px solid ${MISTURA(LARANJA, 32)}` }}>falta fechar</span>}
                         {parada && !m.finalizada && <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 800, background: 'var(--loss-dim)', color: 'var(--loss)', border: '1px solid var(--loss-border)' }}>parada há {dias}d</span>}
                       </div>
                       <span style={{ fontFamily: MONO, fontSize: 11.5, color: S.t3, flexShrink: 0 }}>{int(m.feitas)}/{int(m.alvo)} contas</span>
@@ -686,7 +688,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
               <div key={op.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '11px 0', borderBottom: i < a.length - 1 ? '1px solid var(--b1)' : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                   <span style={{ fontFamily: MONO, fontSize: 10.5, fontWeight: 800, color: i === 0 ? RED : S.t3, width: 14 }}>{i + 1}º</span>
-                  <span style={{ width: 28, height: 28, borderRadius: 9, background: i === 0 ? RED : 'var(--fill-2)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 900, color: i === 0 ? '#fff' : S.t2, flexShrink: 0 }}>
+                  <span style={{ width: 28, height: 28, borderRadius: 9, background: i === 0 ? RED : 'var(--fill-2)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 900, color: i === 0 ? ON_RED : S.t2, flexShrink: 0 }}>
                     {String(op.nome || op.email || '?')[0].toUpperCase()}
                   </span>
                   <span style={{ fontSize: 13, fontWeight: 700, color: S.t1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{op.nome || op.email}</span>

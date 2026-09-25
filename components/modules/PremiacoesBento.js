@@ -16,7 +16,7 @@
 // A métrica é `lucro_final` das metas fechadas — vem pronta em `faturamento`.
 // ─────────────────────────────────────────────────────────────────────────
 import { motion } from 'framer-motion'
-import { ModuleHeader, Hero, Tira, BCard, Vazio, Ico, money0, int, RED, RED2, MONO } from '../ui/bento'
+import { ModuleHeader, Hero, Tira, BCard, Vazio, Ico, money0, int, RED, RED2, MONO, ON_RED, GLOW } from '../ui/bento'
 import { artPath, previewPath } from '../../lib/premiacoes'
 
 const EASE = [0.33, 1, 0.68, 1]
@@ -59,10 +59,10 @@ function Trilha({ items, nextIdx, roadPos }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: p.unlocked ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--surface)',
                     border: `2px solid ${p.unlocked ? 'transparent' : proximo ? RED : 'var(--b2)'}`,
-                    boxShadow: p.unlocked ? '0 6px 16px rgba(229,57,31,0.32)' : 'none',
+                    boxShadow: p.unlocked ? `0 6px 16px ${GLOW}` : 'none',
                   }}>
                     {p.unlocked
-                      ? <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={3.2} strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+                      ? <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={ON_RED} strokeWidth={3.2} strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
                       : <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={proximo ? RED : 'var(--t4)'} strokeWidth={2.4} strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>}
                   </span>
                 </span>
@@ -172,9 +172,9 @@ function btnBaixar() {
   return {
     flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
     padding: '10px', borderRadius: 12, textDecoration: 'none', boxSizing: 'border-box',
-    fontSize: 12.5, fontWeight: 800, color: '#fff',
+    fontSize: 12.5, fontWeight: 800, color: ON_RED,
     background: `linear-gradient(135deg, ${RED2}, ${RED})`,
-    boxShadow: '0 8px 20px rgba(229,57,31,0.26)',
+    boxShadow: `0 8px 20px ${GLOW}`,
   }
 }
 
@@ -217,7 +217,7 @@ export default function PremiacoesBento({
         nota={next
           ? `Próximo: ${next.label} — faltam ${money0(next.value - faturamento)}`
           : 'Lenda absoluta — você conquistou todos os quadros.'}
-        blob={['rgba(229,57,31,0.16)', 'rgba(229,57,31,0.35)']}
+        blob={['var(--k-blob-marca-a)', 'var(--k-blob-marca-b)']}
         extras={[
           { l: 'Conquistados', v: `${int(conquistados)}/${int(items.length)}`, c: conquistados > 0 ? RED : undefined },
           { l: 'Faltam', v: int(Math.max(0, items.length - conquistados)) },

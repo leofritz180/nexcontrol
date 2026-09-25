@@ -41,12 +41,12 @@ export default function MetaStepper({ criada, remessas = 0, finalizada, fechada,
         <div aria-hidden className="mt-rail" style={{ position: 'absolute', left: '12.5%', right: '12.5%', top: 19, height: 3, borderRadius: 2, background: 'var(--fill-2)' }} />
         <motion.div aria-hidden className="mt-rail" initial={{ width: 0 }} animate={{ width: `${Math.max(0, pct) * 0.75}%` }}
           transition={{ duration: 0.9, delay: 0.15, ease: [0.33, 1, 0.68, 1] }}
-          style={{ position: 'absolute', left: '12.5%', top: 19, height: 3, borderRadius: 2, background: 'linear-gradient(90deg, #ff7a4d, #e5391f)' }} />
+          style={{ position: 'absolute', left: '12.5%', top: 19, height: 3, borderRadius: 2, background: 'linear-gradient(90deg, var(--k-2), var(--k-1))' }} />
 
         <div className="mt-grid" style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
           {passos.map((p, i) => {
             const eAtual = i === atual
-            const cor = p.ok ? '#e5391f' : eAtual ? 'var(--t1)' : 'var(--t4)'
+            const cor = p.ok ? 'var(--k-1)' : eAtual ? 'var(--t1)' : 'var(--t4)'
             return (
               <div key={p.k} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 9 }}>
                 <motion.span
@@ -55,10 +55,10 @@ export default function MetaStepper({ criada, remessas = 0, finalizada, fechada,
                   style={{
                     width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    background: p.ok ? 'linear-gradient(135deg, #ff7a4d, #e5391f)' : 'var(--surface)',
+                    background: p.ok ? 'linear-gradient(135deg, var(--k-2), var(--k-1))' : 'var(--surface)',
                     border: p.ok ? 'none' : `2px solid ${eAtual ? 'var(--b3)' : 'var(--b1)'}`,
-                    boxShadow: p.ok ? '0 8px 20px rgba(229,57,31,0.28)' : 'none',
-                    color: p.ok ? '#fff' : eAtual ? 'var(--t2)' : 'var(--t4)',
+                    boxShadow: p.ok ? '0 8px 20px var(--k-glow)' : 'none',
+                    color: p.ok ? 'var(--k-on)' : eAtual ? 'var(--t2)' : 'var(--t4)',
                   }}>
                   <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{p.ico}</svg>
                 </motion.span>

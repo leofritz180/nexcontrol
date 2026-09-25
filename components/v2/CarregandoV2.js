@@ -12,7 +12,7 @@
 // ─────────────────────────────────────────────────────────────────────────
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { RED, RED2 } from '../ui/bento'
+import { RED, RED2, ON_RED, GLOW } from '../ui/bento'
 
 const TINTA = '#15151a'
 const FUNDO = '#f0f0f3'
@@ -68,9 +68,9 @@ export default function CarregandoV2() {
             </span>
             <span style={{
               fontSize: 9.5, fontWeight: 900, letterSpacing: '0.04em', lineHeight: 1,
-              color: '#fff', padding: '4px 8px', borderRadius: 30,
+              color: ON_RED, padding: '4px 8px', borderRadius: 30,
               background: `linear-gradient(135deg, ${RED2}, ${RED})`,
-              boxShadow: '0 4px 12px rgba(229,57,31,0.28)',
+              boxShadow: `0 4px 12px ${GLOW}`,
             }}>2.0</span>
           </div>
 

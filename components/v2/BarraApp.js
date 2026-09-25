@@ -130,8 +130,11 @@ function Barra({ isAdmin, aoNovaMeta }) {
         }
         .nx-barra-app .nxb-centro:active { transform: scale(0.93); }
         .nx-barra-app .nxb-centro svg { width: 28px; height: 28px; stroke-width: 2.6; }
-        .nx-bento.nx-noir .nx-barra-app { background: #0e0e11; }
-        .nx-bento.nx-noir .nx-barra-app .nxb-centro { box-shadow: 0 0 0 6px #0e0e11, 0 12px 30px rgba(229,57,31,0.45); }
+        /* escuro = paleta da landing: barra preta, botao central lime com icone preto */
+        .nx-bento.nx-noir .nx-barra-app { background: #050606; border-top: 1px solid rgba(255,255,255,0.08); }
+        .nx-bento.nx-noir .nx-barra-app .nxb-centro { background: #C8F21D; color: #080909; box-shadow: 0 0 0 6px #050606, 0 12px 30px rgba(200,242,29,0.28); }
+        .nx-bento.nx-noir .nx-barra-app .nxb-centro svg { stroke: #080909; color: #080909; }
+        .nx-bento.nx-noir .nx-barra-app .nxb-item[aria-current="page"] .nxb-ico::after { background: #C8F21D; }
         @media (prefers-reduced-motion: reduce) {
           .nx-barra-app .nxb-item, .nx-barra-app .nxb-centro { transition: none; }
         }

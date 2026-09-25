@@ -535,7 +535,7 @@ export default function VoiceCommandPanel({ userEmail }) {
 
   if (!enabled) return null
 
-  const statusColor = speaking ? 'var(--profit)' : status === 'listening' ? '#3f9b1e' : status === 'starting' ? '#ff7a4d' : status === 'error' ? 'var(--loss)' : '#82828d'
+  const statusColor = speaking ? 'var(--profit)' : status === 'listening' ? '#3f9b1e' : status === 'starting' ? 'var(--k-laranja2)' : status === 'error' ? 'var(--loss)' : '#82828d'
   const statusLabel = speaking ? 'Respondendo' : status === 'listening' ? 'Ouvindo' : status === 'starting' ? 'Iniciando...' : status === 'error' ? 'Erro' : 'Inativo'
 
   return (
@@ -556,11 +556,11 @@ export default function VoiceCommandPanel({ userEmail }) {
           position: 'fixed', bottom: 22, right: 130, zIndex: 201,
           width: 40, height: 40, borderRadius: '50%',
           cursor: 'pointer',
-          background: listening ? '#e5391f' : 'rgba(20,20,20,0.95)',
-          border: '1px solid ' + (listening ? '#e5391f' : 'rgba(255,255,255,0.1)'),
+          background: listening ? 'var(--k-laranja)' : 'rgba(20,20,20,0.95)',
+          border: '1px solid ' + (listening ? 'var(--k-laranja)' : 'rgba(255,255,255,0.1)'),
           color: 'var(--t1)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: listening ? '0 0 0 0 rgba(229,57,31,0.4), 0 6px 18px rgba(0,0,0,0.4)' : '0 6px 18px rgba(0,0,0,0.4)',
+          boxShadow: listening ? '0 0 0 0 color-mix(in srgb, var(--k-laranja) 40%, transparent), 0 6px 18px rgba(0,0,0,0.4)' : '0 6px 18px rgba(0,0,0,0.4)',
           transition: 'all 0.2s',
         }}
       >
@@ -570,7 +570,7 @@ export default function VoiceCommandPanel({ userEmail }) {
             initial={{ scale: 1, opacity: 0.6 }}
             animate={{ scale: 1.5, opacity: 0 }}
             transition={{ duration: 1.4, repeat: Infinity }}
-            style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#e5391f' }}
+            style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'var(--k-laranja)' }}
           />
         )}
         <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'relative' }}>
@@ -614,7 +614,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>Comandos de Voz</span>
                 <span style={{ fontSize: 10, color: statusColor, fontWeight: 600, marginLeft: 4 }}>· {statusLabel}</span>
-                <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'rgba(229,57,31,0.15)', color: '#e5391f', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
+                <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: 'color-mix(in srgb, var(--k-laranja) 15%, transparent)', color: 'var(--k-laranja)', letterSpacing: '0.04em', marginLeft: 'auto' }}>BETA</span>
                 <button
                   type="button"
                   onClick={() => { setOpen(false); setListening(false) }}
@@ -660,7 +660,7 @@ export default function VoiceCommandPanel({ userEmail }) {
                   </div>
                 )}
                 {lastAction && (
-                  <div style={{ fontSize: 11, color: lastAction.ok ? '#3f9b1e' : '#ff7a4d', fontWeight: 600 }}>
+                  <div style={{ fontSize: 11, color: lastAction.ok ? '#3f9b1e' : 'var(--k-laranja2)', fontWeight: 600 }}>
                     {lastAction.ok ? '✓' : '⚠'} {lastAction.msg}
                   </div>
                 )}

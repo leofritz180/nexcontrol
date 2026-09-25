@@ -22,7 +22,7 @@ export default function RedesBento({ kpis, redesData = [], onAbrir }) {
         valor={money0(k.lucroTotal)}
         cor={Number(k.lucroTotal) >= 0 ? 'var(--profit)' : 'var(--loss)'}
         nota={melhor ? `Melhor rede: ${melhor.nome} com ${money0(melhor.lucroFinal)}` : 'Sem dados'}
-        blob={[ 'rgba(229,57,31,0.16)', 'rgba(229,57,31,0.35)' ]}
+        blob={['var(--k-blob-marca-a)', 'var(--k-blob-marca-b)']}
         extras={[{ l: 'Custos', v: money0(k.custosTotal), c: 'var(--loss)' }]}
       />
 

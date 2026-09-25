@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { criarTransmissor, podeTransmitir } from '../lib/transmissao'
 import { dispararPush } from '../lib/pushClient'
-import { RED, RED2, MONO, Ico } from './ui/bento'
+import { RED, RED2, MONO, Ico, ON_RED, GLOW } from './ui/bento'
 
 const I_TELA = <><rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" /></>
 const I_PARAR = <rect x="6" y="6" width="12" height="12" rx="2" />
@@ -64,7 +64,7 @@ export default function TransmitirTela({ userId, tenantId, nome, metaId, papel =
       <AnimatePresence mode="wait" initial={false}>
         {estado.aoVivo ? (
           <motion.div key="on" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 10, minHeight: 44, padding: '0 6px 0 14px', borderRadius: 30, background: 'var(--surface)', border: '1px solid rgba(229,57,31,0.4)', boxShadow: '0 8px 22px rgba(229,57,31,0.16)' }}>
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 10, minHeight: 44, padding: '0 6px 0 14px', borderRadius: 30, background: 'var(--surface)', border: '1px solid rgba(229,57,31,0.4)', boxShadow: `0 8px 22px ${GLOW}` }}>
             <span aria-hidden style={{ width: 9, height: 9, borderRadius: 999, background: RED, boxShadow: '0 0 0 4px rgba(229,57,31,0.18)', animation: 'nx-pulso 1.4s ease-in-out infinite' }} />
             <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: '0.12em', color: RED }}>AO VIVO</span>
             <span style={{ fontFamily: MONO, fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>{fmtDur(agora - (estado.desde || agora))}</span>
@@ -79,8 +79,8 @@ export default function TransmitirTela({ userId, tenantId, nome, metaId, papel =
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
             title="Mostra sua tela ao vivo pro admin (ele escolhe o que assistir na Sala ao vivo)"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 44, padding: '0 16px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 800, color: '#fff', background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: '0 10px 26px rgba(229,57,31,0.28)' }}>
-            <Ico d={I_TELA} s={15} c="#fff" /> {compacto ? 'Transmitir' : 'Transmitir minha tela'}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minHeight: 44, padding: '0 16px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 13, fontWeight: 800, color: ON_RED, background: `linear-gradient(135deg, ${RED2}, ${RED})`, boxShadow: `0 10px 26px ${GLOW}` }}>
+            <Ico d={I_TELA} s={15} c={ON_RED} /> {compacto ? 'Transmitir' : 'Transmitir minha tela'}
           </motion.button>
         )}
       </AnimatePresence>

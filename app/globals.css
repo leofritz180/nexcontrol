@@ -309,6 +309,16 @@ html.nx-aqua:not(.nx-light) {
   --brand-dim: rgba(255,90,60,0.14); --brand-border: rgba(255,90,60,0.32);
   --profit-border: rgba(126,224,138,0.26); --loss-border: rgba(255,107,107,0.26);
 }
+.nx-bento.nx-noir .nx-net-painel {
+  --void: #050606; --base: #080909;
+  --surface: #111314; --raised: #161819; --overlay: #161819; --float: #1C1E20;
+  --t1: #F4F4F1; --t2: #B9BCBD; --t3: #999D9F; --t4: #6F7375;
+  --input: #0c0e0e;
+  --profit: #C8F21D; --loss: #FF5A52; --brand: #C8F21D; --warn: #FF7A2E;
+  --profit-dim: rgba(200,242,29,0.10); --loss-dim: rgba(255,90,82,0.12);
+  --brand-dim: rgba(200,242,29,0.12); --brand-border: rgba(200,242,29,0.32);
+  --profit-border: rgba(200,242,29,0.28); --loss-border: rgba(255,90,82,0.28);
+}
 /* a traducao de tema claro do globals nao pode alcancar o que esta dentro do
    painel: la dentro o branco e o certo */
 .nx-light .nx-net-painel [style*="color: rgb(255, 255, 255)"],
@@ -1690,6 +1700,32 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
   /* avisos sem âmbar/azul: tudo na família da marca */
   --warn: #c2410c; --warn-dim: #fdeade; --warn-border: rgba(194,65,12,0.22);
   --info: #6c6c78; --info-dim: rgba(0,0,0,0.05); --info-border: rgba(0,0,0,0.12);
+  /* CORES DO KIT (components/ui/bento.js). Antes eram hex cravados no JS, e
+     por isso o tema escuro herdava o laranja do claro em tudo. Como token,
+     cada tema escolhe a sua: aqui ficam os valores de sempre. */
+  --k-1: #e5391f;            /* acao principal: botao, barra de progresso, 1o lugar */
+  --k-2: #ff7a4d;            /* segunda ponta do gradiente da acao */
+  --k-on: #ffffff;           /* texto sobre --k-1 */
+  --k-glow: rgba(229,57,31,0.30);
+  --k-lucro: #3f9b1e;
+  --k-laranja: #e5391f;      /* o laranja "de destaque" (meta do dia, pendencias) */
+  --k-laranja2: #ff7a4d;
+  --k-on-laranja: #ffffff;
+  --k-laranja-glow: rgba(229,57,31,0.30);
+  --k-blob-pos-a: var(--profit-dim);     /* blob dos cards-heroi (resultado +/-) */
+  --k-blob-pos-b: var(--profit-border);
+  --k-blob-neg-a: var(--loss-dim);
+  --k-blob-neg-b: var(--loss-border);
+  --k-blob-lucro-a: var(--profit-dim);   /* o blob do card de lucro */
+  --k-blob-lucro-b: var(--profit-border);
+  --k-on-sinal: #ffffff;     /* texto/icone sobre var(--profit) ou var(--loss) solidos */
+  --k-blob-marca-a: rgba(229,57,31,0.16);
+  --k-blob-marca-b: rgba(229,57,31,0.35);
+  --k-tinta: #e5391f;        /* base dos fundos TRANSLUCIDOS de destaque (chip, item ativo) */
+  --k-bolha: rgba(229,57,31,0.15);        /* bolha da MINHA mensagem no Network */
+  --k-bolha-borda: rgba(229,57,31,0.30);
+  --k-pill-bg: #15151a;      /* item ativo de controle segmentado */
+  --k-pill-fg: #ffffff;
   color-scheme: light;
 }
 .nx-bento body { background: #f0f0f3 !important; color: var(--t1); }
@@ -2345,46 +2381,104 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
       a mesma cor parece mais apagada do que sobre branco.
    ═══════════════════════════════════════════════════════════════════ */
 .nx-bento.nx-noir {
-  --void: #0b0b0e;
-  --base: #0e0e11;
-  --surface: #17171c;
-  --raised: #1d1d23;
-  --overlay: #1d1d23;
-  --float: #1d1d23;
-  --sidebar: #08080a;
-  --sb-bg: #08080a;
-  --t1: #f4f4f6;
-  --t2: #a6a6b2;
-  --t3: #82828f;
-  --t4: #62626e;
-  --b1: rgba(255,255,255,0.07);
-  --b2: rgba(255,255,255,0.11);
-  --b3: rgba(255,255,255,0.16);
-  --fill-1: rgba(255,255,255,0.035);
-  --fill-2: rgba(255,255,255,0.06);
-  --fill-3: rgba(255,255,255,0.09);
+  /* PALETA DA LANDING 2.0 (app/v2/estilo.js): preto #080909, grafite
+     #161819/#1C1E20, off-white #F4F4F1, cinza #999D9F e o lime #C8F21D.
+     O painel e a pagina de venda passam a ser a mesma marca.
+     Lime = acao principal, lucro e estado ativo. Laranja = so destaque
+     pontual (meta do dia, pendencias, avisos). Vermelho = so prejuizo. */
+  --void: #050606;
+  --base: #080909;
+  --surface: #111314;
+  --raised: #161819;
+  --overlay: #161819;
+  --float: #1C1E20;
+  --sidebar: #050606;
+  --sb-bg: #050606;
+  --t1: #F4F4F1;
+  --t2: #B9BCBD;
+  --t3: #999D9F;
+  --t4: #6F7375;
+  --b1: rgba(255,255,255,0.08);
+  --b2: rgba(255,255,255,0.12);
+  --b3: rgba(255,255,255,0.18);
+  --fill-1: rgba(255,255,255,0.03);
+  --fill-2: rgba(255,255,255,0.055);
+  --fill-3: rgba(255,255,255,0.085);
   --muted: var(--fill-2);
-  --input: #101014;
+  --input: #0c0e0e;
   --border-token: var(--b1);
-  --brand:        #ff5a3c;
-  --brand-bright: #ff7a4d;
-  --brand-dim:    rgba(255,90,60,0.14);
-  --brand-glow:   rgba(255,90,60,0.22);
-  --brand-border: rgba(255,90,60,0.34);
-  --profit:        #7ee08a;
-  --profit-dim:    rgba(126,224,138,0.13);
-  --profit-border: rgba(126,224,138,0.30);
-  --profit-glow:   rgba(126,224,138,0.18);
-  --success:       #7ee08a;
-  --loss:        #ff6b6b;
-  --loss-dim:    rgba(255,107,107,0.13);
-  --loss-border: rgba(255,107,107,0.30);
-  --loss-glow:   rgba(255,107,107,0.16);
-  --warn: #ffa366; --warn-dim: rgba(255,163,102,0.13); --warn-border: rgba(255,163,102,0.30);
-  --info: #a6a6b2; --info-dim: rgba(255,255,255,0.06); --info-border: rgba(255,255,255,0.14);
+  --brand:        #C8F21D;
+  --brand-bright: #D4F93C;
+  --brand-dim:    rgba(200,242,29,0.12);
+  --brand-glow:   rgba(200,242,29,0.22);
+  --brand-border: rgba(200,242,29,0.34);
+  --on-brand:     #080909;
+  --acento:        #C8F21D;
+  --acento-forte:  #D4F93C;
+  --acento-dim:    rgba(200,242,29,0.14);
+  --acento-border: rgba(200,242,29,0.40);
+  --profit:        #C8F21D;
+  --profit-dim:    rgba(200,242,29,0.10);
+  --profit-border: rgba(200,242,29,0.28);
+  --profit-glow:   rgba(200,242,29,0.16);
+  --success:       #C8F21D;
+  --loss:        #FF5A52;
+  --loss-dim:    rgba(255,90,82,0.12);
+  --loss-border: rgba(255,90,82,0.30);
+  --loss-glow:   rgba(255,90,82,0.16);
+  --warn: #FF7A2E; --warn-dim: rgba(255,122,46,0.12); --warn-border: rgba(255,122,46,0.30);
+  --info: #999D9F; --info-dim: rgba(255,255,255,0.05); --info-border: rgba(255,255,255,0.12);
+  --k-1: #C8F21D;
+  --k-2: #DDFB5A;
+  --k-on: #080909;
+  --k-glow: rgba(200,242,29,0.22);
+  --k-lucro: #C8F21D;
+  --k-laranja: #FF6B1A;
+  --k-laranja2: #FF9150;
+  --k-on-laranja: #080909;
+  --k-laranja-glow: rgba(255,107,26,0.28);
+  /* lime translucido sobre preto vira oliva (o verde escuro que o dono nao
+     queria); o blob do lucro no escuro e lime SOLIDO, como o laranja ao lado */
+  --k-blob-lucro-a: #C8F21D;
+  /* heroi (faturamento, operadores, custos...): grafite da landing. O sinal
+     ja vem na cor do numero; o blob so da profundidade */
+  --k-blob-pos-a: #1C1E20;
+  --k-blob-pos-b: #161819;
+  --k-blob-neg-a: #1C1E20;
+  --k-blob-neg-b: #161819;
+  --k-blob-lucro-b: #9ed40e;
+  /* lime translucido sobre preto = oliva. Fundo translucido de destaque no
+     escuro e cinza neutro; o lime fica pro que e solido (botao, numero, ponto) */
+  --k-tinta: #F4F4F1;
+  --k-on-sinal: #080909;
+  --k-blob-marca-a: #1C1E20;
+  --k-blob-marca-b: #161819;
+  --k-bolha: #1C1E20;
+  --k-bolha-borda: rgba(200,242,29,0.30);
+  --k-pill-bg: #F4F4F1;
+  --k-pill-fg: #080909;
   color-scheme: dark;
 }
-.nx-bento.nx-noir body { background: #0e0e11 !important; color: var(--t1); }
+.nx-bento.nx-noir body { background: #080909 !important; color: var(--t1); }
+.nx-bento.nx-noir ::selection { background: #C8F21D; color: #080909; }
+/* a regra antiga do redesign pinta TODO icone sem cor propria de #D10000.
+   No escuro da landing o icone segue o texto em volta (minimalista); quem
+   precisa de cor passa a propria. Nao vale pro rail, que tem regra mais forte. */
+.nx-bento.nx-noir.nx-redesign svg[stroke="currentColor"] { color: inherit; }
+/* rotulos em CAIXA ALTA: no escuro sao cinza, como o "olho" da landing.
+   O lime fica pra acao e lucro; laranja em rotulo de tudo era o que fazia
+   o painel parecer outra marca. */
+.nx-bento.nx-noir.nx-aqua p[style*="text-transform: uppercase"] { color: var(--t3) !important; }
+/* botao de marca das telas antigas: lime com texto preto, igual a landing */
+.nx-bento.nx-noir .btn-brand {
+  background: #C8F21D !important; color: #080909 !important;
+  box-shadow: 0 10px 26px rgba(200,242,29,0.18) !important;
+}
+.nx-bento.nx-noir .btn-brand:hover { background: #D4F93C !important; }
+.nx-bento.nx-noir .btn-brand svg { color: #080909 !important; stroke: #080909 !important; }
+.nx-bento.nx-noir input:not(.nx-campo-ctl):focus,
+.nx-bento.nx-noir select:not(.nx-campo-ctl):focus,
+.nx-bento.nx-noir textarea:not(.nx-campo-ctl):focus { box-shadow: 0 0 0 3px rgba(200,242,29,0.14) !important; }
 
 /* sombra nao aparece sobre preto: o card se separa do fundo por uma
    borda mais clara e um leve halo interno no topo */
@@ -2404,29 +2498,33 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
 /* no escuro o rail e o dock ficam AINDA mais fundos que a pagina, pra
    nao virarem uma mancha cinza no meio de outra */
 .nx-bento.nx-noir .sidebar, .nx-bento.nx-noir aside, .nx-bento.nx-noir .sb-rd {
-  background: #08080a !important;
+  background: #050606 !important;
 }
-.nx-bento.nx-noir .tabs-scroll { background: #08080a !important; }
+.nx-bento.nx-noir .tabs-scroll { background: #050606 !important; border: 1px solid rgba(255,255,255,0.08) !important; }
 /* o selo do rail e a pilula do dock deixam de ser branco puro */
 .nx-bento.nx-noir .sb-rd nav > .nx-rail-selo,
 .nx-bento.nx-noir .sb-rd nav > .nx-rail-selo::before,
-.nx-bento.nx-noir .sb-rd nav > .nx-rail-selo::after { background: #0e0e11 !important; }
+.nx-bento.nx-noir .sb-rd nav > .nx-rail-selo::after { background: #080909 !important; }
+/* os cantos concavos do item ativo sao da cor da PAGINA; no escuro ficavam
+   #f0f0f3 e desenhavam um canto branco no topo do rail */
+.nx-bento.nx-noir .sb-rd nav a[data-ativo="1"]::before,
+.nx-bento.nx-noir .sb-rd nav a[data-ativo="1"]::after { background: #080909 !important; }
 .nx-bento.nx-noir .sb-rd nav a[data-ativo="1"] svg[stroke="currentColor"],
 .nx-bento.nx-noir .sb-rd nav a[data-ativo="1"] .sb-label { color: #f4f4f6 !important; }
-.nx-bento.nx-noir .tabs-scroll > .nx-dock-pilula { background: #2a2a33 !important; }
+.nx-bento.nx-noir .tabs-scroll > .nx-dock-pilula { background: #1C1E20 !important; }
 .nx-bento.nx-noir .tabs-scroll button[data-active="true"] { color: #ffffff !important; }
 .nx-bento.nx-noir .tabs-scroll button[data-active="true"] svg { color: #ffffff !important; }
 /* controles: a moldura do kit escurece junto */
 .nx-bento.nx-noir input:not(.nx-campo-ctl),
 .nx-bento.nx-noir select:not(.nx-campo-ctl),
 .nx-bento.nx-noir textarea:not(.nx-campo-ctl) {
-  background: #101014 !important; border-color: var(--b2) !important; color: var(--t1) !important;
+  background: #0c0e0e !important; border-color: var(--b2) !important; color: var(--t1) !important;
 }
 .nx-bento.nx-noir ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.16); }
 /* os flutuantes sao brancos por padrao — no escuro viravam tres manchas
    claras no canto, mais fortes que o conteudo */
 .nx-bento.nx-noir .nx-dock-item {
-  background: #1d1d23 !important;
+  background: #161819 !important;
   border-color: rgba(255,255,255,0.12) !important;
   box-shadow: 0 6px 20px rgba(0,0,0,0.45) !important;
 }
@@ -2588,7 +2686,7 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
   /* o icone do chat tem stroke="#fff" como ATRIBUTO; a propriedade CSS vence
      o atributo, entao e por aqui que ele fica escuro sobre a bolha branca */
   .nx-bento .nx-chat-bolha button svg { width: 15px !important; height: 15px !important; stroke: #15151a !important; }
-  .nx-bento.nx-noir .nx-chat-bolha button { background: #1d1d23 !important; color: #f4f4f6 !important; }
+  .nx-bento.nx-noir .nx-chat-bolha button { background: #161819 !important; color: #f4f4f6 !important; }
   .nx-bento.nx-noir .nx-chat-bolha button svg { stroke: #f4f4f6 !important; }
   /* o anel de pulso permanente e ruido numa fileira de topo: quem avisa e o ponto */
   .nx-bento .nx-chat-bolha span[aria-hidden] { display: none !important; }

@@ -952,7 +952,7 @@ export default function MetaPage() {
               acerto={pctAcerto}
               liquido={totais.liq}
               statusRotulo={fechadaB ? 'Fechada' : finalizadaB ? 'Finalizada' : 'Ativa'}
-              statusCor={fechadaB ? 'var(--profit)' : finalizadaB ? 'var(--t1)' : 'var(--loss)'}
+              statusCor={fechadaB ? 'var(--profit)' : finalizadaB ? 'var(--t1)' : 'var(--k-laranja)'}
               podeEditar={!fechadaB || adminB}
               aoEditar={() => setShowEdit(true)}
               podeAlternar={true}

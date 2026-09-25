@@ -253,7 +253,7 @@ export default function AfiliadosBento({
       {/* data-tour="afil-link": o passo "Seu link único" aponta pra ca. */}
       <div data-tour="afil-link">
       <Tilt>
-        <BCard pad="28px 30px" blob={['var(--profit-dim)', 'var(--profit-border)']} delay={0.04}>
+        <BCard pad="28px 30px" blob={['var(--k-blob-pos-a)', 'var(--k-blob-pos-b)']} delay={0.04}>
           <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 12px' }}>
             Seu link de indicação
           </p>

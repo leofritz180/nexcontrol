@@ -17,7 +17,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { SOMBRA, Ico, MONO, RED, RED2, money0 } from '../ui/bento'
+import { SOMBRA, Ico, MONO, RED, RED2, money0, ON_RED } from '../ui/bento'
 
 const CHAVE_RECENTES = 'nx_paleta_recentes'
 
@@ -236,9 +236,9 @@ export default function PaletaComandos({ ativo, isAdmin, metas = [], operadores 
                         width: 32, height: 32, borderRadius: 11, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                         background: it.destaque ? `linear-gradient(135deg, ${RED2}, ${RED})` : 'var(--fill-1)',
                         border: it.destaque ? 'none' : '1px solid var(--b1)',
-                        color: it.destaque ? '#fff' : 'var(--t2)',
+                        color: it.destaque ? ON_RED : 'var(--t2)',
                       }}>
-                        <Ico d={it.ico} s={15} c={it.destaque ? '#fff' : 'var(--t2)'} />
+                        <Ico d={it.ico} s={15} c={it.destaque ? ON_RED : 'var(--t2)'} />
                       </span>
                       <span style={{ minWidth: 0, flex: 1 }}>
                         <span style={{ display: 'block', fontSize: 13.5, fontWeight: 700, color: 'var(--t1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{it.titulo}</span>

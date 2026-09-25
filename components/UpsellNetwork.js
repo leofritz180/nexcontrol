@@ -162,7 +162,7 @@ const ESTILO = `
 
 /* ── o convite ─────────────────────────────────────────────────────── */
 
-export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userId, demo = false, origem = 'pos-pagamento', semSair = false }) {
+export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userId, demo = false, origem = 'pos-pagamento', semSair = false, checarMembro = false }) {
   const [etapa, setEtapa] = useState('convite')   // convite | dados | pix | dentro | fora
   const [nome, setNome] = useState(nomeInicial)
   const [zap, setZap] = useState('')
@@ -175,6 +175,28 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
 
   // funil: viu a oferta (uma vez por montagem), clicou, gerou o PIX
   useEffect(() => { if (!demo) eventoGrupo('view', origem) }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Quem JÁ COMPROU e voltou (fechou a aba antes do "aprovado", ou o link
+  // não estava configurado na hora) precisa de um lugar pra pegar o link:
+  // aqui. Com checarMembro, o componente pergunta ao servidor e, se a
+  // compra existe, abre direto no "Você está dentro" — sem oferecer de novo.
+  useEffect(() => {
+    if (!checarMembro || demo) return
+    let vivo = true
+    ;(async () => {
+      try {
+        const { data } = await supabase.auth.getSession()
+        const token = data?.session?.access_token
+        if (!token) return
+        const r = await fetch('/api/network-grupo', { headers: { Authorization: 'Bearer ' + token } })
+        if (!vivo || !r.ok) return
+        const d = await r.json()
+        setLink(d?.link || '')
+        setEtapa('dentro')
+      } catch {}
+    })()
+    return () => { vivo = false }
+  }, [checarMembro, demo])
 
   const copiar = async (texto, marca) => {
     try { await navigator.clipboard.writeText(texto); setCopiado(marca); setTimeout(() => setCopiado(''), 2200) } catch {}
@@ -344,7 +366,7 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
               <p className="nxg-cinza" style={{ fontSize: 12.5, lineHeight: 1.6, margin: '0 0 20px' }}>
                 {link
                   ? 'Entre pelo link e cole a apresentação. É a regra da casa: todo mundo se apresenta ao chegar.'
-                  : `Guardamos seu contato: ${formatarWhatsapp(zap)}. Você entra no grupo em algumas horas — já deixe a apresentação copiada.`}
+                  : (zap ? `Guardamos seu contato: ${formatarWhatsapp(zap)}. ` : 'Seu pagamento está confirmado. ') + 'O link de convite chega no seu WhatsApp em algumas horas — já deixe a apresentação copiada.'}
               </p>
 
               {link && <BotaoLime href={link}>Abrir o grupo no WhatsApp</BotaoLime>}

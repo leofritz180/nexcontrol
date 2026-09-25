@@ -47,10 +47,10 @@ export async function GET(req) {
 
     const sb = servico()
     const { data: pagos } = await sb.from('mp_payments')
-      .select('mp_payment_id,status,amount')
+      .select('mp_payment_id,status,amount,operator_count,plan_months')
       .eq('user_id', user.id)
-      .in('amount', GRUPO_PRECOS)
       .in('status', ['approved', 'paid'])
+      .or(`amount.in.(${GRUPO_PRECOS.join(',')}),and(operator_count.eq.-1,plan_months.eq.0)`)
       .limit(1)
 
     if (!pagos?.length) {
@@ -58,7 +58,7 @@ export async function GET(req) {
       return NextResponse.json({ error: 'Pagamento do grupo não encontrado.' }, { status: 402 })
     }
 
-    const link = process.env.NEX_GRUPO_URL || ''
+    const link = (process.env.NEX_GRUPO_URL || '').trim()
     if (!link) {
       // Pagou, mas o link ainda não foi configurado. Não é erro do cliente:
       // ele entra pela lista, que é o caminho manual.

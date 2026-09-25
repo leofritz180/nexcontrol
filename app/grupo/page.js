@@ -48,7 +48,7 @@ export default function GrupoPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <ModuleHeader titulo="Grupo VIP Network" sub="O grupo fechado de quem opera CPA · preço de lançamento" />
               <div style={{ maxWidth: 520 }}>
-                <UpsellNetwork nomeInicial={profile?.nome || ''} email={user?.email} tenantId={profile?.tenant_id} userId={user?.id} origem="pagina" semSair />
+                <UpsellNetwork nomeInicial={profile?.nome || ''} email={user?.email} tenantId={profile?.tenant_id} userId={user?.id} origem="pagina" semSair checarMembro />
               </div>
             </div>
           )}

@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
-import { notifyOwnerOfPayment } from '../../../../lib/notify-owner'
+import { notifyOwnerOfPayment, notifyOwnerOfGroupSale } from '../../../../lib/notify-owner'
 
 // Webhook do Mercado Pago: recebe notificacao, busca o pagamento na API,
 // atualiza status no DB e ativa PRO quando aprovado.
@@ -113,6 +113,7 @@ export async function POST(req) {
         if (Number(record.plan_months) === 0 && Number(record.operator_count) === -1) {
           await sb.from('mp_payments').update({ status: 'approved', updated_at: new Date().toISOString() })
             .eq('mp_payment_id', String(record.mp_payment_id || paymentId))
+          await notifyOwnerOfGroupSale(sb, { userId: record.user_id, paymentId: record.mp_payment_id || paymentId, amount: record.amount }).catch(() => {})
           return NextResponse.json({ status: 'approved', avulso: true })
         }
 

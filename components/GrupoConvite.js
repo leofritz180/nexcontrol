@@ -25,6 +25,15 @@ import { SOMBRA, Ico, MONO } from './ui/bento'
 const LIME = '#C8F21D'
 const fmt = v => Number(v || 0).toFixed(2).replace('.', ',')
 const VISTO = 'nx_grupo_convite_'
+// A camada de cores do tema claro reescreve `color` inline (texto branco
+// virava preto no fundo preto). Cor de texto neste componente vem de
+// classe, com o mesmo peso que o UpsellNetwork usa.
+const ESTILO = `
+  .nxgc-claro, .nxgc-claro * { color: #ffffff !important; }
+  .nxgc-cinza, .nxgc-cinza * { color: rgba(255,255,255,0.55) !important; }
+  .nxgc-lime,  .nxgc-lime  * { color: ${LIME} !important; }
+  .nxgc-tinta, .nxgc-tinta * { color: #0b0b0c !important; }
+`
 
 async function comToken() { const { data } = await supabase.auth.getSession(); return data?.session?.access_token || null }
 export async function statusGrupo() {
@@ -70,20 +79,21 @@ export default function GrupoConvite({ userId, ativo = true }) {
             <button type="button" onClick={fechar} aria-label="Fechar" style={{ position: 'absolute', top: 12, right: 12, width: 40, height: 40, borderRadius: 13, background: 'rgba(255,255,255,0.06)', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               <Ico d={<path d="M18 6L6 18M6 6l12 12" />} s={14} c="#fff" />
             </button>
-            <span style={{ display: 'inline-block', fontFamily: MONO, fontSize: 9.5, fontWeight: 800, letterSpacing: '0.16em', color: LIME }}>NEX NETWORK · GRUPO VIP</span>
-            <h2 style={{ fontSize: 26, fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.02em', margin: '14px 0 0', fontFamily: 'var(--serif, "Instrument Serif", Georgia, serif)', color: '#fff' }}>Um grupo fechado.<br />Só quem opera.</h2>
-            <ul style={{ listStyle: 'none', margin: '16px 0 0', padding: 0 }}>
-              {PROMESSAS.map(t => <li key={t} style={{ display: 'flex', gap: 10, fontSize: 13.5, lineHeight: 1.5, padding: '6px 0', color: 'rgba(255,255,255,0.85)' }}><span aria-hidden style={{ width: 4, height: 4, borderRadius: '50%', background: LIME, flexShrink: 0, marginTop: 8 }} />{t}</li>)}
+            <style>{ESTILO}</style>
+            <span className="nxgc-lime" style={{ display: 'inline-block', fontFamily: MONO, fontSize: 9.5, fontWeight: 800, letterSpacing: '0.16em' }}>NEX NETWORK · GRUPO VIP</span>
+            <h2 className="nxgc-claro" style={{ fontSize: 26, fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.02em', margin: '14px 0 0', fontFamily: 'var(--serif, "Instrument Serif", Georgia, serif)' }}>Um grupo fechado.<br />Só quem opera.</h2>
+            <ul className="nxgc-claro" style={{ listStyle: 'none', margin: '16px 0 0', padding: 0 }}>
+              {PROMESSAS.map(t => <li key={t} style={{ display: 'flex', gap: 10, fontSize: 13.5, lineHeight: 1.5, padding: '6px 0' }}><span aria-hidden style={{ width: 4, height: 4, borderRadius: '50%', background: LIME, flexShrink: 0, marginTop: 8 }} />{t}</li>)}
             </ul>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12, marginTop: 18 }}>
               <span>
-                <span style={{ display: 'block', fontFamily: MONO, fontSize: 12, color: 'rgba(255,255,255,0.45)', textDecoration: 'line-through' }}>R$ {fmt(GRUPO_PRECO_ANTERIOR)}</span>
-                <span style={{ display: 'block', fontFamily: MONO, fontSize: 36, fontWeight: 700, letterSpacing: '-0.045em', lineHeight: 1, color: '#fff' }}>R$ {fmt(GRUPO_PRECO)}</span>
+                <span className="nxgc-cinza" style={{ display: 'block', fontFamily: MONO, fontSize: 12, textDecoration: 'line-through' }}>R$ {fmt(GRUPO_PRECO_ANTERIOR)}</span>
+                <span className="nxgc-claro" style={{ display: 'block', fontFamily: MONO, fontSize: 36, fontWeight: 700, letterSpacing: '-0.045em', lineHeight: 1 }}>R$ {fmt(GRUPO_PRECO)}</span>
               </span>
-              <span style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.14em', textTransform: 'uppercase', textAlign: 'right', lineHeight: 1.8, color: 'rgba(255,255,255,0.55)' }}>preço de lançamento<br />pagamento único · vitalício</span>
+              <span className="nxgc-cinza" style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.14em', textTransform: 'uppercase', textAlign: 'right', lineHeight: 1.8 }}>preço de lançamento<br />pagamento único · vitalício</span>
             </div>
-            <button type="button" onClick={ver} style={{ width: '100%', marginTop: 18, minHeight: 48, borderRadius: 14, border: 'none', background: LIME, color: '#0b0b0c', fontFamily: 'inherit', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}>Ver o grupo</button>
-            <button type="button" onClick={fechar} style={{ width: '100%', marginTop: 6, minHeight: 40, background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontFamily: 'inherit', fontSize: 12.5, cursor: 'pointer' }}>agora não</button>
+            <button type="button" onClick={ver} className="nxgc-tinta" style={{ width: '100%', marginTop: 18, minHeight: 48, borderRadius: 14, border: 'none', background: LIME, fontFamily: 'inherit', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}>Ver o grupo</button>
+            <button type="button" onClick={fechar} className="nxgc-cinza" style={{ width: '100%', marginTop: 6, minHeight: 40, background: 'none', border: 'none', fontFamily: 'inherit', fontSize: 12.5, cursor: 'pointer' }}>agora não</button>
           </motion.div>
         </motion.div>
       )}
@@ -92,18 +102,19 @@ export default function GrupoConvite({ userId, ativo = true }) {
   )
 }
 
-/** A faixa do Network: só pra quem ainda não é membro. */
-export function GrupoFaixa() {
+/** A faixa (Network no desktop, painel principal): só pra quem ainda não é membro. */
+export function GrupoFaixa({ origem = 'faixa-network', style }) {
   const router = useRouter()
   const [mostrar, setMostrar] = useState(false)
-  useEffect(() => { let vivo = true; statusGrupo().then(st => { if (vivo && st && !st.membro) { setMostrar(true); eventoGrupo('view', 'faixa-network') } }); return () => { vivo = false } }, [])
+  useEffect(() => { let vivo = true; statusGrupo().then(st => { if (vivo && st && !st.membro) { setMostrar(true); eventoGrupo('view', origem) } }); return () => { vivo = false } }, [])
   if (!mostrar) return null
   return (
-    <button type="button" onClick={() => { eventoGrupo('click', 'faixa-network'); router.push('/grupo') }}
-      style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', marginBottom: 14, padding: '12px 16px', borderRadius: 18, border: '1px solid rgba(200,242,29,0.35)', background: '#0b0b0c', color: '#fff', cursor: 'pointer', fontFamily: 'inherit' }}>
-      <span style={{ fontFamily: MONO, fontSize: 9.5, fontWeight: 800, letterSpacing: '0.14em', color: LIME, flexShrink: 0 }}>GRUPO VIP</span>
-      <span style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Um grupo fechado, só quem opera · lançamento R$ {fmt(GRUPO_PRECO)}, vitalício</span>
-      <span style={{ fontSize: 12.5, fontWeight: 800, color: LIME, flexShrink: 0 }}>Entrar →</span>
+    <button type="button" onClick={() => { eventoGrupo('click', origem); router.push('/grupo') }}
+      style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', marginBottom: 14, padding: '12px 16px', borderRadius: 18, border: '1px solid rgba(200,242,29,0.35)', background: '#0b0b0c', cursor: 'pointer', fontFamily: 'inherit', ...style }}>
+      <style>{ESTILO}</style>
+      <span className="nxgc-lime" style={{ fontFamily: MONO, fontSize: 9.5, fontWeight: 800, letterSpacing: '0.14em', flexShrink: 0 }}>GRUPO VIP</span>
+      <span className="nxgc-claro" style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 700, lineHeight: 1.35 }}>Um grupo fechado, só quem opera · lançamento R$ {fmt(GRUPO_PRECO)}, vitalício</span>
+      <span className="nxgc-lime" style={{ fontSize: 12.5, fontWeight: 800, flexShrink: 0 }}>Entrar →</span>
     </button>
   )
 }

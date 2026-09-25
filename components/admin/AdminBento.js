@@ -15,6 +15,7 @@ import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor, Podio, Risco, Barras, Tira } from '../ui/bento'
 import { opDayISO, ultimosDiasOp } from '../../lib/opday'
+import { GrupoFaixa } from '../GrupoConvite'
 
 const RED = '#e5391f', RED2 = '#ff7a4d'
 const MONO = 'var(--mono, "JetBrains Mono", monospace)'
@@ -495,6 +496,10 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
           delay={0.26}
         />
       </div>
+
+      {/* GRUPO VIP — a porta do grupo, à vista no painel. Some sozinha pra quem
+          já é membro (a faixa consulta /api/grupo/status). */}
+      <GrupoFaixa origem="faixa-painel" style={{ marginBottom: 0 }} />
 
       {/* LINHA 3 — O MES INTEIRO DE UMA OLHADA.
           Largura total de proposito: sao 30 quadrados em fila, e espremido

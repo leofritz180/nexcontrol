@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase/client'
 // '/v2' e a pagina publica de apresentacao da versao nova: ela precisa abrir
 // pra quem nao tem conta, e tambem pra pagante vencido (que e justamente quem
 // pode voltar por causa dela).
-const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '/', '/owner', '/slots', '/proxy', '/minhas-proxies', '/performance', '/aulas', '/demo', '/reset-password', '/network', '/premiacoes', '/termos', '/privacidade', '/design-v2', '/v2', '/convite']
+const FREE_PATHS = ['/login', '/signup', '/invite', '/billing', '/billing-mp', '/', '/owner', '/slots', '/proxy', '/minhas-proxies', '/performance', '/aulas', '/demo', '/reset-password', '/network', '/premiacoes', '/termos', '/privacidade', '/design-v2', '/v2', '/convite', '/grupo']
 
 // Emails com acesso VITALICIO em qualquer rota, independente de
 // assinatura/trial/operadores (owner + admins liberados manualmente).

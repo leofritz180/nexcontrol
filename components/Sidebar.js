@@ -22,6 +22,7 @@ const OWNER_EMAIL = 'leofritz180@gmail.com'
 // group = tema pra agrupar o menu (renderizado com cabeçalho de seção)
 const AULAS_VIP_ITEM = { href:'/aulas', label:'Aulas VIP', icon:'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z', vip: true, group:'Comunidade' }
 const NETWORK_ITEM = { href:'/network', label:'Network', icon:'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z', network: true, group:'Comunidade' }
+const GRUPO_ITEM = { href:'/grupo', label:'Grupo VIP', icon:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', group:'Comunidade' }
 const PREMIACOES_ITEM = { href:'/premiacoes', label:'Premiações', icon:'M12 15a4 4 0 004-4V5H8v6a4 4 0 004 4zm0 0v4m-4 0h8M8 5H5a2 2 0 000 4h.5M16 5h3a2 2 0 010 4h-.5', group:'Comunidade' }
 
 // Ordem dos temas no menu (só aparece o cabeçalho de quem tem item)
@@ -209,6 +210,8 @@ export default function Sidebar({ userName, userEmail, isAdmin, tenant, subscrip
     ...(isAdmin && (networkEnabled(userEmail) || NETWORK_GA) ? [NETWORK_ITEM] : []),
     // Premiações — todos os admins (GA)
     ...(isAdmin && premiacoesEnabled(userEmail) ? [PREMIACOES_ITEM] : []),
+    // Grupo VIP: pra todo mundo logado (admin e operador) — a porta permanente do upsell
+    GRUPO_ITEM,
     ...(isAdmin && userEmail === OWNER_EMAIL ? [
       // Controle Op. (/planejamento) saiu do menu em 21/09/2026; a rota continua no ar
       { href:'/owner', label:'Owner', icon:'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', group:'Master' },

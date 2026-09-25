@@ -24,10 +24,11 @@
 // pronta. O contato fica salvo no perfil; é o que permite montar a lista
 // de quem está no grupo.
 // ─────────────────────────────────────────────────────────────────────────
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { supabase } from '../lib/supabase/client'
-import { GRUPO_PRECO, modeloApresentacao, formatarWhatsapp } from '../lib/network-grupo'
+import { GRUPO_PRECO, GRUPO_PRECO_ANTERIOR, modeloApresentacao, formatarWhatsapp } from '../lib/network-grupo'
+import { eventoGrupo } from './GrupoConvite'
 
 const ease = [0.33, 1, 0.68, 1]
 const LIME = '#C8F21D'
@@ -161,7 +162,7 @@ const ESTILO = `
 
 /* ── o convite ─────────────────────────────────────────────────────── */
 
-export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userId, demo = false }) {
+export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userId, demo = false, origem = 'pos-pagamento', semSair = false }) {
   const [etapa, setEtapa] = useState('convite')   // convite | dados | pix | dentro | fora
   const [nome, setNome] = useState(nomeInicial)
   const [zap, setZap] = useState('')
@@ -171,6 +172,9 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
   const [copiado, setCopiado] = useState('')
   // o link vem do servidor, só depois do pagamento — nunca do bundle
   const [link, setLink] = useState('')
+
+  // funil: viu a oferta (uma vez por montagem), clicou, gerou o PIX
+  useEffect(() => { if (!demo) eventoGrupo('view', origem) }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const copiar = async (texto, marca) => {
     try { await navigator.clipboard.writeText(texto); setCopiado(marca); setTimeout(() => setCopiado(''), 2200) } catch {}
@@ -206,6 +210,7 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
     if (!nome.trim()) { setErro('Diga seu nome.'); return }
     if (String(zap).replace(/\D/g, '').length < 10) { setErro('WhatsApp com DDD, por favor.'); return }
     setCarregando(true)
+    if (!demo) eventoGrupo('qr', origem)
     if (demo) {
       setPix({ id: 'demo', qr_code: '00020126360014br.gov.bcb.pix…5204000053039865802BR' })
       setEtapa('pix'); setCarregando(false)
@@ -260,19 +265,24 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
               <Filete />
 
               <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, marginBottom: 20 }}>
-                <span className="nxg-claro" style={{ fontFamily: MONO, fontSize: 38, fontWeight: 700, letterSpacing: '-0.045em', lineHeight: 1 }}>
-                  R$ {fmt(GRUPO_PRECO)}
+                <span>
+                  <span className="nxg-cinza" style={{ display: 'block', fontFamily: MONO, fontSize: 12, textDecoration: 'line-through', marginBottom: 4 }}>R$ {fmt(GRUPO_PRECO_ANTERIOR)}</span>
+                  <span className="nxg-claro" style={{ display: 'block', fontFamily: MONO, fontSize: 38, fontWeight: 700, letterSpacing: '-0.045em', lineHeight: 1 }}>
+                    R$ {fmt(GRUPO_PRECO)}
+                  </span>
                 </span>
                 <span className="nxg-cinza" style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.14em', textTransform: 'uppercase', textAlign: 'right', lineHeight: 1.8 }}>
-                  pagamento único<br />acesso vitalício
+                  preço de lançamento<br />pagamento único · vitalício
                 </span>
               </div>
 
-              <BotaoLime onClick={() => setEtapa('dados')}>Entrar no grupo</BotaoLime>
-              <button type="button" onClick={() => setEtapa('fora')} className="nxg-cinza"
-                style={{ width: '100%', marginTop: 10, padding: 8, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5 }}>
-                agora não
-              </button>
+              <BotaoLime onClick={() => { if (!demo) eventoGrupo('click', origem); setEtapa('dados') }}>Entrar no grupo</BotaoLime>
+              {!semSair && (
+                <button type="button" onClick={() => setEtapa('fora')} className="nxg-cinza"
+                  style={{ width: '100%', marginTop: 10, padding: 8, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12.5 }}>
+                  agora não
+                </button>
+              )}
             </div>
           </motion.section>
         )}

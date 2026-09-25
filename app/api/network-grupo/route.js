@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { GRUPO_PRECO } from '../../../lib/network-grupo'
+import { GRUPO_PRECOS } from '../../../lib/network-grupo'
 
 // ─────────────────────────────────────────────────────────────────────────
 // O LINK DO GRUPO NEX NETWORK — entregue SÓ PELO SERVIDOR, e só a quem
@@ -49,7 +49,7 @@ export async function GET(req) {
     const { data: pagos } = await sb.from('mp_payments')
       .select('mp_payment_id,status,amount')
       .eq('user_id', user.id)
-      .eq('amount', GRUPO_PRECO)
+      .in('amount', GRUPO_PRECOS)
       .in('status', ['approved', 'paid'])
       .limit(1)
 

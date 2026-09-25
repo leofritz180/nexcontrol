@@ -57,7 +57,7 @@ const ROTAS = [
   '/', '/login', '/signup', '/invite', '/reset-password',
   '/admin', '/operator', '/meta/193', '/faturamento', '/operadores', '/custos', '/redes',
   '/pix', '/slots', '/proxy', '/minhas-proxies', '/planejamento', '/premiacoes',
-  '/network', '/afiliados', '/equipe', '/performance', '/tutorial', '/sala', '/aulas',
+  '/network', '/afiliados', '/equipe', '/performance', '/tutorial', '/sala', '/grupo', '/aulas',
   '/billing', '/billing-mp', '/demo', '/termos', '/privacidade',
 ].filter(r => !SO_ROTA || r === SO_ROTA)
 

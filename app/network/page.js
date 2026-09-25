@@ -8,6 +8,7 @@ import { networkEnabled, NETWORK_CHANNELS, channelRule, VERIFIER_EMAILS, OWNER_E
 import RankProgress from '../../components/rank/RankProgress'
 import { getRank, rankColor } from '../../lib/rank-system'
 import { useConfirmar } from '../../components/v2/Confirmar'
+import { GrupoFaixa } from '../../components/GrupoConvite'
 
 const CHANNEL_KEYS = new Set(NETWORK_CHANNELS.map(c => c.key))
 
@@ -859,6 +860,8 @@ function Shell({ children, profile, user, tenant, sub, bare }) {
             </div>
             <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--loss)', padding: '3px 8px', borderRadius: 5, background: 'rgba(229,57,31,0.12)', border: '1px solid rgba(229,57,31,0.3)' }}>BETA</span>
           </div>
+          {/* Grupo VIP: só pra quem ainda não é membro (components/GrupoConvite) */}
+          <GrupoFaixa />
           {children}
         </div>
       )}

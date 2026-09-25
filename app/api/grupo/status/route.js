@@ -33,5 +33,6 @@ export async function GET(req) {
       .order('created_at', { ascending: false }).limit(1)
     if (planos?.[0]) ultimoPlano = { id: planos[0].id, em: planos[0].updated_at || planos[0].created_at }
   }
-  return NextResponse.json({ membro, ultimoPlano, preco: GRUPO_PRECO, papel: perfil?.role || null })
+  // linkConfigurado: só um booleano (nunca o link) — pra conferir a variável em produção sem expor nada
+  return NextResponse.json({ membro, ultimoPlano, preco: GRUPO_PRECO, papel: perfil?.role || null, linkConfigurado: !!(process.env.NEX_GRUPO_URL || '').trim() })
 }

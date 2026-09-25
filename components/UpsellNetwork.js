@@ -220,7 +220,11 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
       try {
         const r = await fetch(`/api/mercadopago/check-payment?id=${id}`)
         const d = await r.json()
-        if (d?.status === 'approved') { clearInterval(t); buscarLink(); setEtapa('dentro') }
+        // O check-payment devolve o status NORMALIZADO: aprovado sai como 'RECEIVED'
+        // (mp_status: 'approved'). A primeira venda do grupo ficou com o QR
+        // girando pra sempre porque aqui só se aceitava 'approved'.
+        const ok = d?.status === 'approved' || d?.status === 'RECEIVED' || d?.mp_status === 'approved'
+        if (ok) { clearInterval(t); buscarLink(); setEtapa('dentro') }
       } catch {}
     }, 4000)
     setTimeout(() => clearInterval(t), 15 * 60 * 1000)

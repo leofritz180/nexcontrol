@@ -9,8 +9,8 @@ import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CTA = process.argv[2] || "bio";
-const VOZ = process.env.VOZ || "pt-BR-AntonioNeural";
-const RATE = process.env.RATE || "+8%", PITCH = process.env.PITCH || "+0Hz";
+const VOZ = process.env.VOZ || "pt-BR-ThalitaMultilingualNeural"; // escolhida pelo dono em 27/09 (opcao 3)
+const RATE = process.env.RATE || "+6%", PITCH = process.env.PITCH || "+0Hz";
 const OUTDIR = process.env.OUTDIR || RAIZ; // pasta que recebe public/voice.mp3 e src/narracao.json
 
 import { trechos } from "./roteiro.mjs";

@@ -93,11 +93,12 @@ add(W(2, "meta") - 1 / FPS, "swoosh", { pan: 0.2, ganho: 0.45 }); add(W(2, "meta
 add(W(2, "dono"), "carimbo", { ganho: 0.8 });
 
 /* ---------- 3 · remessa ---------- */
-{ const f3 = cenas[3].from, dep = f3 + 4, saq = dep + 16;
+{ const f3 = cenas[3].from, digita = f3 + 1, salvaF = abs(3, "entra");
+  const passo = Math.max(0.6, (salvaF - 3 - digita) / 20), dep = digita + 2 * passo, saq = digita + 11 * passo;
   add(T(f3 - 2), "swoosh", { pan: 0, ganho: 0.5 });
-  const digita = (ini, txt, base) => { for (let k = 1; k <= txt.length; k++) add(T(ini + k * 1.6), "tecla", { i: base + k, espaco: txt[k - 1] === " " }); };
-  digita(dep - 10, "10", 100); digita(dep, "R$ 350,00", 120); digita(saq, "R$ 420,00", 140);
-  add(T(saq + 14), "check", { i: 1 });
+  const tecla = (ini, txt, base) => { for (let k = 1; k <= txt.length; k++) add(T(ini + k * passo), "tecla", { i: base + k, espaco: txt[k - 1] === " " }); };
+  tecla(digita, "10", 100); tecla(dep, "R$ 350,00", 120); tecla(saq, "R$ 420,00", 140);
+  add(T(saq + 9 * passo), "check", { i: 1 });
   const salva = abs(3, "entra"); add(T(salva), "clique"); add(T(salva) + 0.03, "pop", { tom: 5 }); add(T(salva + 6), "check", { i: 3 });
   /* o pulso viaja do celular ao notebook */
   add(T(salva + 4) + 0.2, "whoosh", { ganho: 0.8 });

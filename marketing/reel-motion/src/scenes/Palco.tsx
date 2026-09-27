@@ -93,7 +93,7 @@ const Mundo: React.FC<{ L: Linha }> = ({ L }) => {
           {telaFone === "app" ? (
             <>
               <AppMetas T={{ meta: q(2, "meta"), dono: q(2, "dono") }} />
-              {frame >= s(3) - 2 ? <AppRemessa T={{ abre: s(3) - 2, digita: s(3) + 4, salva: q(3, "entra") }} /> : null}
+              {frame >= s(3) - 2 ? <AppRemessa T={{ abre: s(3) - 2, digita: s(3) + 1, salva: q(3, "entra") }} /> : null}
             </>
           ) : (
             <AppBloqueio T={{ liga: s(7) - 4, n1: q(7, "parada"), n2: q(7, "vermelho"), alerta: q(7, "Alerta") }} />

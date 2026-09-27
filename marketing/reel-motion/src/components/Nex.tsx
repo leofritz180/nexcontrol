@@ -337,8 +337,10 @@ export const AppRemessa: React.FC<{ T: TempoRemessa }> = ({ T }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const kA = mola(frame, fps, T.abre, { damping: 15 });
+  const passo = Math.max(0.6, (T.salva - 3 - T.digita) / 20);
+  const dep = T.digita + 2 * passo, saq = T.digita + 11 * passo;
   const campo = (rot: string, valor: string, ini: number) => {
-    const n = clamp(Math.floor((frame - ini) / 1.6), 0, valor.length);
+    const n = clamp(Math.floor((frame - ini) / passo), 0, valor.length);
     const ativo = frame >= ini && n < valor.length;
     return (
       <div style={{ marginTop: 14 }}>
@@ -349,8 +351,9 @@ export const AppRemessa: React.FC<{ T: TempoRemessa }> = ({ T }) => {
       </div>
     );
   };
-  const dep = T.digita, saq = T.digita + 16;
-  const pronto = frame >= saq + 14;
+  /* a digitação se ajusta à voz: os 20 caracteres (10 · R$ 350,00 · R$ 420,00)
+     terminam 3 frames antes do toque em "Salvar" (tools/sfx.mjs usa a mesma conta) */
+  const pronto = frame >= saq + 9 * passo;
   const press = lin(frame, T.salva, T.salva + 3, 1, 0.93) * lin(frame, T.salva + 3, T.salva + 9, 1, 1 / 0.93);
   const salvo = frame >= T.salva + 6;
   const kS = mola(frame, fps, T.salva + 6, { damping: 11, stiffness: 220 });
@@ -358,7 +361,7 @@ export const AppRemessa: React.FC<{ T: TempoRemessa }> = ({ T }) => {
     <div style={{ position: "absolute", inset: 0, padding: "74px 26px 0", transform: `translateY(${(1 - kA) * 900}px)`, background: C.bg }}>
       <div style={{ fontSize: 32, fontWeight: 700, letterSpacing: -1 }}>Nova remessa</div>
       <div style={{ fontSize: 16, color: C.cinza, marginTop: 4 }}>W1 · 50 depositantes · Lucas</div>
-      {campo("CONTAS", "10", dep - 10)}
+      {campo("CONTAS", "10", T.digita)}
       {campo("DEPÓSITO", "R$ 350,00", dep)}
       {campo("SAQUE", "R$ 420,00", saq)}
       <div style={{ marginTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 18px", borderRadius: 18, background: pronto ? "rgba(200,242,29,0.10)" : C.graf, border: `1px solid ${pronto ? C.lime + "66" : C.linha}` }}>

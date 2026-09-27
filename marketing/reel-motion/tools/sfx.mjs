@@ -68,11 +68,19 @@ for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) add(W(0, "WhatsApp") + (
 add(W(0, "WhatsApp") - 1 / FPS, "slam", { i: 3, ganho: 0.6 });
 add(W(0, "WhatsApp") + 0.05, "notificacao", { ganho: 0.7 });
 
+/* grade da planilha se desenhando: chiado de dados (tiques leves e rápidos) */
+for (let fr = 0; fr < 26; fr += 2) add(T(fr), "tick", { agudo: true, leve: true, i: fr, ganho: 0.5 });
+/* prints de vidro caindo em 3D */
+for (let i = 0; i < 3; i++) add(W(0, "print") + (i * 3 + 8) / FPS, "pouso", { ganho: 0.35 });
+
 /* ---------- 1 · chute ---------- */
 add(S(1), "reverso", { dur: 0.35, ganho: 0.6 });
 add(S(1) + 0.1, "drone", { dur: T(P0) - S(1) - 0.1 });
 { const a = abs(1, "lucro"), b = abs(1, "chute"); for (let fr = a; fr < b; fr += 2) add(T(fr), "tick", { agudo: true, i: fr % 7, leve: true }); }
 add(W(1, "chute"), "erro"); add(W(1, "chute"), "slam", { i: 4, ganho: 0.7 });
+/* o cartão trinca (luz lime vazando) */
+add(W(1, "chute") + 2 / FPS, "risco", { i: 2, ganho: 0.8 }); add(W(1, "chute") + 3 / FPS, "brilho", { ganho: 0.35 });
+add(T(abs(1, "lucro") - 6), "reverso", { dur: 0.25, ganho: 0.5 });
 
 /* ---------- virada: a planilha racha e vira o painel ---------- */
 add(T(P0) - 0.7, "riser", { dur: 0.7 });

@@ -6,7 +6,7 @@ const BASE = [
   "Com o Nex Control, cada meta tem dono,",
   "cada remessa entra na hora,",
   "e o painel mostra lucro e prejuízo em tempo real.",
-  "Fechou a meta? Salário, baú e custos entram na conta,",
+  "E quando fecha a meta? Salário, baú e custos entram na conta,", // opção 1 do dono (27/09): "Fechou a meta?" soava estranho
   "e o lucro final sai calculado.",
   "Meta parada ou remessa no vermelho? Alerta no celular.",
   "Cada operador com acesso próprio, e um ranking da equipe.",

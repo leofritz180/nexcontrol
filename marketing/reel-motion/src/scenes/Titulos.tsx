@@ -73,8 +73,10 @@ export const Titulos: React.FC<{ L: Linha }> = ({ L }) => {
         { t: "real.", em: a(4, "real") },
       ]} />
       {/* 5 — fechou */}
-      <Bloco de={c[5].from} ate={fimDe(5)} itens={[
-        { t: "Fechou", em: a(5, "Fechou") - 1 },
+      <Bloco de={c[5].from} ate={fimDe(5)} tamanho={80} itens={[
+        { t: "E", em: a(5, "E") - 1 },
+        { t: "quando", em: a(5, "quando") - 1 },
+        { t: "fecha", em: a(5, "fecha") - 1 },
         { t: "a", em: a(5, "a") },
         { t: "meta?", em: a(5, "meta") },
         { t: "+ salário", em: a(5, "Salário"), quebra: true, mono: true, cor: C.t2 },

@@ -1,0 +1,23 @@
+{
+  "name": "nexcontrol-reel-motion",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "narrar": "node tools/narrar.mjs",
+    "final": "node tools/final.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.528",
+    "@remotion/motion-blur": "4.0.528",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "ffmpeg-static": "^5.2.0",
+    "msedge-tts": "^2.0.8",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "remotion": "4.0.528",
+    "typescript": "^5.6.0"
+  }
+}

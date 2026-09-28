@@ -1,2 +1,4 @@
-# Material de marketing (reel em Remotion etc.) nao faz parte do site
-marketing/
+# Material de marketing (reel em Remotion etc.) nao faz parte do site.
+# ANCORADO na raiz (barra inicial): sem ela a regra tambem pegava
+# components/marketing/ (Termos/Privacidade) e TODO deploy falhava (26-28/09).
+/marketing/

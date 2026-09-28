@@ -133,16 +133,57 @@ const ESTILO_FAIXA = `
     .nxgf-cta { order: 3; flex-basis: 100%; justify-content: center; padding: 12px 14px !important; font-size: 14px !important; }
   }
   .nxgf-olho { white-space: nowrap; }
+  /* versão COMPACTA (chat do Network no celular): uma linha só, botão pequeno à direita */
+  .nxgf.c { flex-wrap: nowrap !important; padding: 10px 36px 10px 12px !important; gap: 10px !important; border-radius: 14px; }
+  .nxgf.c .nxgf-texto { flex: 1 1 auto !important; }
+  .nxgf.c .nxgf-cta { order: 0; flex-basis: auto; padding: 8px 11px !important; font-size: 12.5px !important; }
   @media (prefers-reduced-motion: reduce) { .nxgf-brilho, .nxgf-anel, .nxgf-ponto, .nxgf-seta { animation: none !important; } .nxgf-anel { opacity: 0; } }
 `
 
 /** A faixa (Network no desktop, painel principal): só pra quem ainda não é membro. */
-export function GrupoFaixa({ origem = 'faixa-network', style }) {
+export function GrupoFaixa({ origem = 'faixa-network', style, compacto = false }) {
   const router = useRouter()
   const reduzir = useReducedMotion()
   const [mostrar, setMostrar] = useState(false)
-  useEffect(() => { let vivo = true; statusGrupo().then(st => { if (vivo && st && !st.membro) { setMostrar(true); eventoGrupo('view', origem) } }); return () => { vivo = false } }, [])
+  const chaveFechado = 'nx_grupo_faixa_fechada_' + origem
+  useEffect(() => {
+    let vivo = true
+    /* no compacto (chat), quem fechou não vê de novo nesta sessão */
+    if (compacto) { try { if (sessionStorage.getItem(chaveFechado)) return } catch {} }
+    statusGrupo().then(st => { if (vivo && st && !st.membro) { setMostrar(true); eventoGrupo('view', origem) } })
+    return () => { vivo = false }
+  }, [])
   if (!mostrar) return null
+  const fechar = e => { e.stopPropagation(); try { sessionStorage.setItem(chaveFechado, '1') } catch {}; setMostrar(false) }
+  if (compacto) return (
+    <div style={{ position: 'relative', ...style }}>
+      <motion.button type="button" className="nxgf c" aria-label={`Entrar no Grupo VIP Network Nex no WhatsApp, R$ ${fmt(GRUPO_PRECO)}`}
+        onClick={() => { eventoGrupo('click', origem); router.push('/grupo') }}
+        initial={reduzir ? false : { opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 190, damping: 22 }} whileTap={{ scale: 0.985 }}
+        style={{ display: 'flex', alignItems: 'center', width: '100%', textAlign: 'left', border: 'none', background: 'linear-gradient(135deg, #111314 0%, #0b0b0c 60%, #0f1206 100%)', cursor: 'pointer', fontFamily: 'inherit', paddingRight: 34 }}>
+        <style>{ESTILO + ESTILO_FAIXA}</style>
+        <span aria-hidden className="nxgf-brilho" />
+        <span aria-hidden style={{ position: 'relative', zIndex: 1, width: 34, height: 34, flexShrink: 0 }}>
+          <span className="nxgf-anel" style={{ borderRadius: 12 }} />
+          <span style={{ position: 'absolute', inset: 0, borderRadius: 11, background: 'rgba(200,242,29,0.10)', border: '1px solid rgba(200,242,29,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke={LIME} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z" /><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" /></svg>
+          </span>
+        </span>
+        <span className="nxgf-texto" style={{ position: 'relative', zIndex: 1, minWidth: 0 }}>
+          <span className="nxgc-claro" style={{ display: 'block', fontSize: 13, fontWeight: 700, lineHeight: 1.25 }}>Grupo VIP Network Nex no WhatsApp</span>
+          <span className="nxgc-cinza" style={{ display: 'block', fontSize: 11.5, lineHeight: 1.3, marginTop: 1 }}>Grandes players do CPA · R$ {fmt(GRUPO_PRECO)}, vitalício</span>
+        </span>
+        <span className="nxgf-cta nxgc-tinta" style={{ position: 'relative', zIndex: 1, display: 'inline-flex', alignItems: 'center', gap: 5, flexShrink: 0, borderRadius: 10, background: LIME, fontWeight: 800 }}>
+          Entrar<span className="nxgf-seta"><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#0b0b0c" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg></span>
+        </span>
+      </motion.button>
+      <button type="button" onClick={fechar} aria-label="Fechar o anúncio do grupo" className="nxgc-cinza"
+        style={{ position: 'absolute', top: 4, right: 4, zIndex: 2, width: 28, height: 28, borderRadius: 9, border: 'none', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth={2.6} strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+      </button>
+    </div>
+  )
   return (
     <motion.button type="button" className="nxgf" aria-label={`Entrar no Grupo VIP Network Nex no WhatsApp, R$ ${fmt(GRUPO_PRECO)}`}
       onClick={() => { eventoGrupo('click', origem); router.push('/grupo') }}

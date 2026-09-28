@@ -662,6 +662,14 @@ export default function NetworkPage() {
             )}
           </div>
 
+          {/* Grupo VIP no celular: aqui o chat é tela cheia e a faixa do topo não
+              existe, então o anúncio entra compacto logo abaixo do cabeçalho */}
+          {isMobile && (
+            <div style={{ padding: '8px 10px 2px', flexShrink: 0 }}>
+              <GrupoFaixa origem="faixa-network-mobile" compacto />
+            </div>
+          )}
+
           {/* pinned */}
           {data.pinned && dataMatchesChannel && (
             <PinnedBar msg={data.pinned} isOwner={data.isOwner} onUnpin={() => pin(data.pinned.id, false)} />

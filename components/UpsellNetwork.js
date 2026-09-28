@@ -267,10 +267,10 @@ export default function UpsellNetwork({ nomeInicial = '', email, tenantId, userI
           <motion.section key="convite" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease }} style={palco}>
             <MarcaFundo />
             <div style={{ position: 'relative', padding: '28px 26px 26px' }}>
-              <Olho>Nex Network</Olho>
+              <Olho>Grupo VIP Network Nex · WhatsApp</Olho>
 
               <h3 className="nxg-claro" style={{ fontFamily: SERIF, fontSize: 31, fontWeight: 400, lineHeight: 1.06, letterSpacing: '-0.02em', margin: '18px 0 0' }}>
-                Um grupo fechado.<br />Só quem opera.
+                Os grandes players do CPA.<br />No mesmo grupo do WhatsApp.
               </h3>
 
               <Filete />

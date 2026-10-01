@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
+import { consumirDesconto } from '../../../../lib/affiliate-credit'
 import { notifyOwnerOfPayment, notifyOwnerOfGroupSale } from '../../../../lib/notify-owner'
 
 // Webhook do Mercado Pago: recebe notificacao, busca o pagamento na API,
@@ -167,6 +168,8 @@ export async function POST(req) {
           paymentId: payment.id,
           amount: record.amount,
         })
+        // saldo de afiliado reservado pra este PIX vira 'usado como desconto' (idempotente)
+        await consumirDesconto(sb, String(payment.id))
 
         // Notifica owner via push (idempotente por payment_id)
         await notifyOwnerOfPayment(sb, {

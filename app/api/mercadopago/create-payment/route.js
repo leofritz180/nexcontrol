@@ -4,6 +4,7 @@ import crypto from 'crypto'
 import { getPlan } from '../../../../lib/plans'
 import { calculatePrice as calcOpTier } from '../../../../lib/pricing'
 import { GRUPO_PRECO, normalizarWhatsapp } from '../../../../lib/network-grupo'
+import { saldoAfiliado, descontoPara, reservarDesconto } from '../../../../lib/affiliate-credit'
 
 // Cria cobranca PIX via Mercado Pago.
 // Aceita amount variavel (plano base, upgrade de operador, etc).
@@ -181,7 +182,11 @@ export async function POST(req) {
     //                          o preco cheio de todos os operadores.
     //   nada                  → default = preco cheio mensal / 1 mes.
     let transactionAmount, planMonths, resolvedOps
+    // ehCiclo: este PIX abre/renova um ciclo (e nao um upgrade no meio dele).
+    // So ele recebe o desconto do saldo de afiliado.
+    let ehCiclo = false
     if (plan_period) {
+      ehCiclo = true
       const plan = getPlan(plan_period)
       planMonths = plan.months
       // RENOVACAO pode REDUZIR operadores: honra o desejado do cliente (>=0).
@@ -224,6 +229,7 @@ export async function POST(req) {
           }, { status: 400 })
         }
         resolvedOps = realOps
+        ehCiclo = true
       } else {
         // UPGRADE dentro do ciclo (a base ja esta paga). ALVO = MAX(desejado pelo
         // cliente, operadores reais, ja pago):
@@ -257,6 +263,20 @@ export async function POST(req) {
       transactionAmount = fullMonthly
       planMonths = 1
       resolvedOps = realOps
+      ehCiclo = true
+    }
+
+    // ── SALDO DE AFILIADO VIRA DESCONTO (lib/affiliate-credit.js) ──────────
+    // Calculado AQUI, no servidor, depois de o preco cheio ja estar validado:
+    // o cliente nunca manda o desconto. O PIX fica em pelo menos R$ 1,00 e o
+    // que sobrar do saldo continua guardado pra proxima.
+    let descontoAfiliado = 0, precoCheio = transactionAmount
+    if (ehCiclo) {
+      try {
+        const saldo = await saldoAfiliado(sb, tenantId)
+        descontoAfiliado = descontoPara(saldo, transactionAmount)
+        if (descontoAfiliado > 0) transactionAmount = Number((transactionAmount - descontoAfiliado).toFixed(2))
+      } catch (e) { descontoAfiliado = 0; transactionAmount = precoCheio; console.error('[MP create-payment] saldo de afiliado falhou', e?.message) }
     }
 
     // Safety net global: NUNCA aceitar pagamento abaixo de R$ 1,00 (alem das validacoes acima)
@@ -288,6 +308,7 @@ export async function POST(req) {
           qr_code_base64: existing.pix_qr_code_base64 || '',
           pix_payload: existing.pix_qr_code || '',
           pix_qr_code: existing.pix_qr_code_base64 || '',
+          amount: transactionAmount, preco_cheio: precoCheio, desconto_afiliado: descontoAfiliado,
           reused: true,
         })
       }
@@ -346,6 +367,14 @@ export async function POST(req) {
       plan_months: planMonths,
     })
 
+    // Amarra o saldo usado a ESTE PIX (vira 'paid' quando ele for aprovado).
+    if (descontoAfiliado > 0) {
+      const reservado = await reservarDesconto(sb, { tenantId, mpPaymentId: mpId, valor: descontoAfiliado })
+      if (Math.abs(reservado - descontoAfiliado) > 0.01) {
+        console.error('[MP create-payment] desconto de afiliado reservado diferente do abatido', { tenantId, mpId, descontoAfiliado, reservado })
+      }
+    }
+
     // Retorno com aliases compativeis com o contrato do PixPayment.js (Asaas)
     return NextResponse.json({
       id: mpId,
@@ -354,6 +383,9 @@ export async function POST(req) {
       qr_code_base64: qrBase64,
       pix_payload: qrCode,
       pix_qr_code: qrBase64,
+      amount: transactionAmount,
+      preco_cheio: precoCheio,
+      desconto_afiliado: descontoAfiliado,
     })
   } catch (err) {
     console.error('[MP create-payment] error', err?.message)

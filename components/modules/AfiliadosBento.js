@@ -196,17 +196,17 @@ export default function AfiliadosBento({
     { q: 'E se eu perder meu código?', a: 'Você consegue ver ele aqui mesmo no painel, é só clicar em "Revelar". Recomenda salvar num gerenciador de senhas.' },
     { q: 'Quanto custa pra começar?', a: 'Nada. Programa é grátis pra todo cliente PRO. Seu link e código já estão prontos pra usar.' },
     { q: 'Tenho limite de indicações?', a: 'Não. Indique quantas pessoas quiser. Cada indicado pagante gera comissão pra você.' },
-    { q: 'Tem valor mínimo pra solicitar?', a: 'Sem mínimo oficial. Mas recomenda acumular pelo menos R$ 50 antes de pedir pra valer o esforço de fazer o pagamento.' },
+    { q: 'Tem valor mínimo?', a: 'Não. Qualquer valor de saldo já entra como desconto na sua próxima renovação.' },
     { q: 'E se o cliente cancelar depois?', a: 'A comissão que você já recebeu fica com você. Não tem clawback (devolução).' },
     { q: 'Posso indicar meus próprios operadores?', a: 'Não. Cada tenant pode ter só um afiliado, e auto-indicação é bloqueada automaticamente.' },
-    { q: 'Quanto tempo demora pra cair?', a: 'Após o contato e confirmação dos dados, o pagamento sai em até 24 horas. Geralmente em poucas horas.' },
-    { q: 'Como vou receber? PIX, banco?', a: 'Você decide na hora do contato. PIX é o mais rápido (mesmo dia), mas a gente também faz transferência bancária ou outras formas.' },
+    { q: 'Como uso minha comissão?', a: 'Automaticamente: seu saldo vira desconto no PIX da sua próxima renovação. Você vê o desconto na tela de pagamento antes de gerar o PIX.' },
+    { q: 'E se o saldo for maior que o plano?', a: 'O plano sai por R$ 1,00 (o mínimo de um PIX) e o resto do saldo fica guardado pra renovação seguinte.' },
   ]
 
   const PASSOS = [
     { n: '01', t: 'Compartilhe seu link', d: 'Cola no grupo, posta no Stories, manda no DM. Sem limite, sem aprovação prévia.' },
     { n: '02', t: 'Indicado assina o plano', d: 'Quando entra pelo seu link e vira PRO, o sistema te credita automaticamente a comissão.' },
-    { n: '03', t: 'Solicite seu pagamento', d: 'Quando atingir o valor que quiser sacar, chama o suporte com seu código único de afiliado.', contato: true },
+    { n: '03', t: 'Vira desconto na renovação', d: 'Seu saldo é abatido automaticamente do PIX da sua próxima assinatura. Sem pedir, sem esperar.' },
   ]
 
   // Feed de atividade: indicados reais primeiro, depois os exemplos fixos —
@@ -299,8 +299,8 @@ export default function AfiliadosBento({
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               {[
-                { l: 'A receber', v: money(t.pendente), c: RED },
-                { l: 'Já pago', v: money(t.pago), c: 'var(--profit)' },
+                { l: 'Saldo · vira desconto', v: money(t.pendente), c: RED },
+                { l: 'Já usado', v: money(t.pago), c: 'var(--profit)' },
               ].map(e => (
                 <div key={e.l} style={{ padding: '12px 16px', borderRadius: 16, background: 'var(--fill-1)', border: '1px solid var(--b1)', minWidth: 130 }}>
                   <p style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--t3)', margin: '0 0 6px' }}>{e.l}</p>
@@ -321,8 +321,8 @@ export default function AfiliadosBento({
         { l: 'Convertidos', v: int(convertidos), c: 'var(--profit)', hint: `${Number(t.totalIndicados) > 0 ? Math.round((convertidos / Number(t.totalIndicados)) * 100) : 0}% viraram PRO` },
         { l: 'Faturamento gerado', v: money0(t.totalFaturado) },
         { l: 'Comissão acumulada', v: money0(t.totalComissao), c: 'var(--profit)' },
-        { l: 'A receber', v: money0(t.pendente), c: RED },
-        { l: 'Já pago', v: money0(t.pago), c: 'var(--profit)' },
+        { l: 'Saldo', v: money0(t.pendente), c: RED, hint: 'abatido na próxima renovação' },
+        { l: 'Já usado', v: money0(t.pago), c: 'var(--profit)' },
       ]} />
       </div>
 
@@ -370,8 +370,8 @@ export default function AfiliadosBento({
           <TituloBloco sub="Quanto já caiu e quanto ainda está na fila">Sua comissão</TituloBloco>
           <Rosca
             dados={[
-              { l: 'Já pago', v: Number(t.pago || 0), c: 'var(--profit)' },
-              { l: 'A receber', v: Number(t.pendente || 0), c: RED },
+              { l: 'Já usado', v: Number(t.pago || 0), c: 'var(--profit)' },
+              { l: 'Saldo', v: Number(t.pendente || 0), c: RED },
             ]}
             centro={money0(t.totalComissao)}
             rotulo="acumulado"
@@ -439,13 +439,13 @@ export default function AfiliadosBento({
         </BCard>
 
         <BCard pad={24} delay={0.34}>
-          <TituloBloco>Como solicitar</TituloBloco>
+          <TituloBloco>Como usar seu saldo</TituloBloco>
           <ol style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 11 }}>
             {[
-              'Chama no @nexcontrol_ofc (Instagram) ou WhatsApp',
-              'Envie seu código de recebimento',
-              'Confirme dados pra receber via PIX, banco ou outro meio',
-              'Pagamento sai em até 24 horas',
+              'Cada indicado pagante soma comissão no seu saldo',
+              'Na hora de renovar, o saldo é abatido do PIX automaticamente',
+              'O desconto aparece na tela de pagamento antes de gerar o PIX',
+              'Se sobrar saldo, ele fica guardado pra próxima renovação',
             ].map((txt, i) => (
               <li key={txt} style={{ display: 'flex', alignItems: 'flex-start', gap: 11, fontSize: 12.5, color: 'var(--t2)', lineHeight: 1.5 }}>
                 <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: 8, background: 'var(--fill-1)', border: '1px solid var(--b1)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontFamily: MONO, fontSize: 10, fontWeight: 900, color: RED }}>{i + 1}</span>
@@ -530,7 +530,7 @@ export default function AfiliadosBento({
           <TituloBloco>Como funciona o pagamento</TituloBloco>
           <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 11 }}>
             {[
-              'Comissão aparece em "A receber"',
+              'Comissão aparece em "Saldo"',
               'Pagamento manual via PIX em até 24 horas',
               'Você recebe push aqui quando for pago',
               'Chave pode ser alterada a qualquer momento',

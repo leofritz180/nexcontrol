@@ -64,7 +64,8 @@ export async function POST(req) {
     const allComms = comms || []
     const totalFaturado = allComms.reduce((s, c) => s + Number(c.payment_amount || 0), 0)
     const totalComissao = allComms.reduce((s, c) => s + Number(c.commission_amount || 0), 0)
-    const pendente = allComms.filter(c => c.status === 'pending').reduce((s, c) => s + Number(c.commission_amount || 0), 0)
+    // 'reservado' = preso a um PIX de renovação ainda não pago; continua sendo saldo dele
+    const pendente = allComms.filter(c => c.status === 'pending' || c.status === 'reservado').reduce((s, c) => s + Number(c.commission_amount || 0), 0)
     const pago     = allComms.filter(c => c.status === 'paid').reduce((s, c) => s + Number(c.commission_amount || 0), 0)
 
     // Por indicado

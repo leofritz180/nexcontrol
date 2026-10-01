@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../lib/push'
 import { maybeCreateCommission } from '../../../lib/affiliate-commission'
+import { consumirDesconto } from '../../../lib/affiliate-credit'
 import { notifyOwnerOfPayment, notifyOwnerOfGroupSale } from '../../../lib/notify-owner'
 
 // Endpoint publico de reconciliacao rapida — varre mp_payments pending dos
@@ -204,6 +205,8 @@ async function activatePro(sb, record, paymentId) {
     paymentId: paymentId,
     amount: record.amount,
   })
+  // saldo de afiliado reservado pra este PIX vira 'usado como desconto' (idempotente)
+  await consumirDesconto(sb, String(paymentId))
 
   await notifyOwnerOfPayment(sb, {
     tenantId: record.tenant_id,

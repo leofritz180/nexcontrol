@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
+import { consumirDesconto } from '../../../../lib/affiliate-credit'
 import { notifyOwnerOfPayment, notifyOwnerOfGroupSale } from '../../../../lib/notify-owner'
 
 // Usado pelo polling do frontend. Consulta DB primeiro; se ainda pendente,
@@ -174,6 +175,8 @@ async function activatePro(sb, record, paymentId) {
     paymentId: paymentId,
     amount: record.amount,
   })
+  // saldo de afiliado reservado pra este PIX vira 'usado como desconto' (idempotente)
+  await consumirDesconto(sb, String(paymentId))
 
   // Notifica owner via push (idempotente)
   await notifyOwnerOfPayment(sb, {

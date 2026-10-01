@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import { PLANS, getPlan } from '../../lib/plans'
 import { calculatePrice as calcOpTier, PACOTES_ATIVOS, pacotePara } from '../../lib/pricing'
+import { descontoPara } from '../../lib/affiliate-desconto'
 import UpsellNetwork from '../../components/UpsellNetwork'
 
 const ease = [0.33, 1, 0.68, 1]
@@ -68,6 +69,9 @@ export default function BillingMpPage() {
   // SOLO PRO so faz sentido escolher com ZERO operador: a Dupla e todos os
   // Scale ja incluem a camada Pro no preco.
   const [querPro, setQuerPro] = useState(false)
+  // Saldo de afiliado (comissões não pagas) vira desconto na renovação. Só
+  // MOSTRA aqui; quem aplica de verdade é o create-payment no servidor.
+  const [saldoAfiliado, setSaldoAfiliado] = useState(0)
   const pollRef = useRef(null)
 
   // Preco mensal base ja com desconto de tier por quantidade de operadores
@@ -103,6 +107,8 @@ export default function BillingMpPage() {
       const { data: p } = await supabase.from('profiles').select('*').eq('id', u.id).maybeSingle()
       if (!p || p.role !== 'admin') { router.push('/operator'); return }
       setProfile(p)
+      fetch('/api/affiliate/saldo', { headers: { Authorization: 'Bearer ' + data.session.access_token } })
+        .then(r => r.ok ? r.json() : null).then(j => { if (j && Number(j.saldo) > 0) setSaldoAfiliado(Number(j.saldo)) }).catch(() => {})
       // Busca sub ativa atual pra mostrar dias restantes + calcular renovacao antecipada
       const { data: sub } = await supabase.from('subscriptions')
         .select('expires_at,operator_count,status')
@@ -145,7 +151,9 @@ export default function BillingMpPage() {
     () => Number((calcOpTier(opQty).total - calcOpTier(currentPaidOps).total).toFixed(2)),
     [opQty, currentPaidOps]
   )
-  const payAmount = isUpgrade ? upgradeAmount : selectedCalc.total
+  // desconto do saldo de afiliado: só em renovação/novo ciclo (nunca no upgrade)
+  const descontoAfiliado = isUpgrade ? 0 : descontoPara(saldoAfiliado, selectedCalc.total)
+  const payAmount = isUpgrade ? upgradeAmount : Number((selectedCalc.total - descontoAfiliado).toFixed(2))
 
   async function handleStart() {
     if (!user || !profile) return
@@ -266,6 +274,7 @@ export default function BillingMpPage() {
                 isEarlyRenewal={isEarlyRenewal}
                 daysRemaining={daysRemaining}
                 currentExpires={subscription?.expires_at}
+                descontoAfiliado={descontoAfiliado}
               />
             </motion.div>
           )}
@@ -278,7 +287,7 @@ export default function BillingMpPage() {
 
           {stage === 'pix' && payment && (
             <motion.div key="pix" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4, ease }}>
-              <PixCard payment={payment} copied={copied} onCopy={copyPix} amount={payAmount} planLabel={isUpgrade ? `Upgrade p/ ${opQty} operadores` : selectedCalc.plan.label} />
+              <PixCard payment={payment} copied={copied} onCopy={copyPix} amount={payment.amount ?? payAmount} desconto={Number(payment.desconto_afiliado || 0)} planLabel={isUpgrade ? `Upgrade p/ ${opQty} operadores` : selectedCalc.plan.label} />
             </motion.div>
           )}
 
@@ -361,7 +370,8 @@ function UpgradeCard({ opQty, currentPaidOps, upgradeAmount, currentExpires, onC
   )
 }
 
-function PeriodCard({ v2, querPro, setQuerPro, opQty, setOpQty, realOps, opsList = [], monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires }) {
+function PeriodCard({ v2, querPro, setQuerPro, opQty, setOpQty, realOps, opsList = [], monthlyTier, selectedPlan, setSelectedPlan, selectedCalc, onConfirm, onBack, isRenewal, isEarlyRenewal, daysRemaining, currentExpires, descontoAfiliado = 0 }) {
+  const totalFinal = Number((selectedCalc.total - descontoAfiliado).toFixed(2))
   const planLabel = rotuloPlano(opQty, true, querPro)
   const canDec = setOpQty && opQty > 0                 // pode reduzir até Admin Solo
   // Operadores que serão REMOVIDOS ao renovar com menos (os mais recentes)
@@ -546,12 +556,32 @@ function PeriodCard({ v2, querPro, setQuerPro, opQty, setOpQty, realOps, opsList
             {selectedCalc.plan.label} ({selectedCalc.plan.months} {selectedCalc.plan.months === 1 ? 'mês' : 'meses'})
           </span>
         </div>
+        {descontoAfiliado > 0 && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <span style={{ fontSize: 12, color: 'var(--t3)' }}>Plano</span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 12, fontWeight: 700, color: 'var(--t2)' }}>R$ {fmt(selectedCalc.total)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, gap: 10 }}>
+              <span style={{ fontSize: 12, color: 'var(--profit)', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2.5" strokeLinecap="round"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                Saldo de afiliado
+              </span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 12.5, fontWeight: 800, color: 'var(--profit)' }}>− R$ {fmt(descontoAfiliado)}</span>
+            </div>
+          </>
+        )}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--b1)', paddingTop: 10 }}>
           <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--t1)' }}>Total a pagar</span>
           <span style={{ fontFamily: 'var(--mono)', fontSize: 24, fontWeight: 900, color: 'var(--profit)', letterSpacing: '-0.02em' }}>
-            R$ {fmt(selectedCalc.total)}
+            R$ {fmt(totalFinal)}
           </span>
         </div>
+        {descontoAfiliado > 0 && (
+          <p style={{ fontSize: 11, color: 'var(--t3)', margin: '8px 0 0', lineHeight: 1.45 }}>
+            Suas comissões de indicação ainda não pagas viraram desconto nesta renovação.
+          </p>
+        )}
         {isEarlyRenewal && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--b1)' }}>
             <span style={{ fontSize: 11, color: 'var(--t3)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
@@ -578,7 +608,7 @@ function PeriodCard({ v2, querPro, setQuerPro, opQty, setOpQty, realOps, opsList
         }}
       >
         <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        {isRenewal ? 'Renovar' : 'Gerar PIX'} · R$ {fmt(selectedCalc.total)}
+        {isRenewal ? 'Renovar' : 'Gerar PIX'} · R$ {fmt(totalFinal)}
       </motion.button>
 
       <p style={{ fontSize: 10.5, color: '#82828d', textAlign: 'center', margin: '12px 0 0' }}>
@@ -768,7 +798,7 @@ function LoadingCard() {
   )
 }
 
-function PixCard({ payment, copied, onCopy, amount, planLabel }) {
+function PixCard({ payment, copied, onCopy, amount, planLabel, desconto = 0 }) {
   return (
     <div style={cardStyle}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
@@ -784,6 +814,11 @@ function PixCard({ payment, copied, onCopy, amount, planLabel }) {
         <p style={{ fontSize: 12, color: 'var(--t3)', margin: 0 }}>
           {planLabel} · <strong style={{ color: 'var(--profit)' }}>R$ {fmt(amount)}</strong>
         </p>
+        {desconto > 0 && (
+          <p style={{ fontSize: 11.5, color: 'var(--profit)', margin: '4px 0 0', fontWeight: 700 }}>
+            Já com R$ {fmt(desconto)} do seu saldo de afiliado
+          </p>
+        )}
       </div>
 
       {payment.qr_code_base64 ? (

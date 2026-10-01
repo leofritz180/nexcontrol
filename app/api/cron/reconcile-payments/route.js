@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '../../../../lib/push'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
+import { consumirDesconto } from '../../../../lib/affiliate-credit'
 import { notifyOwnerOfPayment, notifyOwnerOfGroupSale } from '../../../../lib/notify-owner'
 import { cronAutorizado } from '../../../../lib/cron-auth'
 
@@ -217,6 +218,8 @@ async function activatePro(sb, record, paymentId) {
     paymentId: paymentId,
     amount: record.amount,
   })
+  // saldo de afiliado reservado pra este PIX vira 'usado como desconto' (idempotente)
+  await consumirDesconto(sb, String(paymentId))
 
   // Notifica owner via push (idempotente)
   await notifyOwnerOfPayment(sb, {

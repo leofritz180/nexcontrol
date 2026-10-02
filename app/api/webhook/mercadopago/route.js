@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
-import { consumirDesconto } from '../../../../lib/affiliate-credit'
+import { consumirDesconto, valorDoPlano } from '../../../../lib/affiliate-credit'
 import { notifyOwnerOfPayment, notifyOwnerOfGroupSale } from '../../../../lib/notify-owner'
 
 // Webhook do Mercado Pago: recebe notificacao, busca o pagamento na API,
@@ -143,7 +143,7 @@ export async function POST(req) {
           status: 'active',
           payment_method: 'pix_mp',
           external_id: String(payment.id),
-          total_amount: record.amount,
+          total_amount: await valorDoPlano(sb, payment.id, record.amount),
           operator_count: resolvedOpCount,
           plan_months: planMonths,
           starts_at: now,

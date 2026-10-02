@@ -25,7 +25,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { BASE_PRICE } from '../../lib/pricing'
+import { BASE_PRICE, pacotePorId } from '../../lib/pricing'
 import EstiloV2 from './estilo'
 import Filme from './filme'
 import MarcaN from './marca-n'
@@ -147,7 +147,7 @@ const PLANOS = {
       {
         id: 'solo-pro',
         nome: 'Solo Pro',
-        preco: 99.90,
+        preco: pacotePorId('solo-pro').preco,
         selo: 'Mais recomendado',
         destaque: true,
         linha: 'Pare de só acompanhar os seus números. Entenda o que eles estão dizendo.',
@@ -258,7 +258,7 @@ const CHECK = <path d="M4 12.2 9 17.2 20 6.2" />
 const FAQ = [
   {
     q: 'Quanto custa?',
-    r: `Depende do tamanho da operação. Quem trabalha sozinho começa no Solo, por R$ ${moeda(BASE_PRICE)} por mês, e pode subir para o Solo Pro, por R$ 99,90. Quem tem equipe entra em pacote fechado, com as vagas de operador já incluídas e sem cobrança por operador avulso: Dupla por R$ 129,90 (até 2 operadores), Scale 3 por R$ 169,90, Scale 6 por R$ 259,90 e Scale 10 por R$ 399,90. Todos os pacotes com equipe já vêm com o Solo Pro dentro.`,
+    r: `Depende do tamanho da operação. Quem trabalha sozinho começa no Solo, por R$ ${moeda(BASE_PRICE)} por mês, e pode subir para o Solo Pro, por R$ ${moeda(pacotePorId('solo-pro').preco)}. Quem tem equipe entra em pacote fechado, com as vagas de operador já incluídas e sem cobrança por operador avulso: Dupla por R$ 129,90 (até 2 operadores), Scale 3 por R$ 169,90, Scale 6 por R$ 259,90 e Scale 10 por R$ 399,90. Todos os pacotes com equipe já vêm com o Solo Pro dentro.`,
   },
   {
     q: 'Preciso instalar alguma coisa?',

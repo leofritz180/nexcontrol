@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase/client'
 import { PLANS, getPlan } from '../../lib/plans'
-import { calculatePrice as calcOpTier, PACOTES_ATIVOS, pacotePara } from '../../lib/pricing'
+import { calculatePrice as calcOpTier, PACOTES_ATIVOS, pacotePara, pacotePorId } from '../../lib/pricing'
 import { descontoPara } from '../../lib/affiliate-desconto'
 import UpsellNetwork from '../../components/UpsellNetwork'
 
@@ -480,7 +480,7 @@ function PeriodCard({ v2, querPro, setQuerPro, opQty, setOpQty, realOps, opsList
             </span>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 800, color: 'var(--t1)' }}>
-                Solo Pro · + R$ 40,00/mês
+                Solo Pro · + R$ {(pacotePorId('solo-pro').preco - pacotePorId('solo').preco).toFixed(2).replace('.', ',')}/mês
               </div>
               <div style={{ fontSize: 11.2, color: 'var(--t3)', marginTop: 3, lineHeight: 1.5 }}>
                 Projeção de fechamento do mês, comparação com o período anterior

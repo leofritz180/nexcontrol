@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { maybeCreateCommission } from '../../../../lib/affiliate-commission'
-import { consumirDesconto } from '../../../../lib/affiliate-credit'
+import { consumirDesconto, valorDoPlano } from '../../../../lib/affiliate-credit'
 import { notifyOwnerOfPayment, notifyOwnerOfGroupSale } from '../../../../lib/notify-owner'
 
 // Usado pelo polling do frontend. Consulta DB primeiro; se ainda pendente,
@@ -152,7 +152,7 @@ async function activatePro(sb, record, paymentId) {
     status: 'active',
     payment_method: 'pix_mp',
     external_id: paymentId,
-    total_amount: record.amount,
+    total_amount: await valorDoPlano(sb, paymentId, record.amount),
     operator_count: resolvedOpCount,
     plan_months: planMonths,
     starts_at: now,

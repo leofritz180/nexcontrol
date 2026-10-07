@@ -159,7 +159,12 @@ export default function AfiliadosBento({
   const pct = Math.round(Number(taxa || 0) * 100)
   const t = totais || {}
   const lista = indicados || []
-  const convertidos = lista.filter(r => r.subscription_status === 'active').length
+  // 'já pagaram' = indicado com pelo menos 1 pagamento que gerou comissão;
+  // 'ativos hoje' = com a assinatura em dia AGORA. Antes a tela mostrava só o
+  // segundo como 'já pagante' e o afiliado não entendia de onde vinha a
+  // comissão dos que pagaram e não renovaram (07/10/2026).
+  const convertidos = lista.filter(r => Number(r.payments_count || 0) > 0).length
+  const ativosHoje = lista.filter(r => r.subscription_status === 'active').length
   const mascarado = codigo ? codigo.slice(0, 2) + '••••' + codigo.slice(-2) : '••••••••'
   const temPix = !!pixChave
 
@@ -294,7 +299,7 @@ export default function AfiliadosBento({
                 {money(t.totalComissao)}
               </p>
               <p style={{ fontSize: 12.5, color: 'var(--t3)', margin: '12px 0 0' }}>
-                {int(t.totalIndicados)} indicado{Number(t.totalIndicados) === 1 ? '' : 's'} · {convertidos} já pagante{convertidos === 1 ? '' : 's'}
+                {int(t.totalIndicados)} indicado{Number(t.totalIndicados) === 1 ? '' : 's'} · {convertidos} já {convertidos === 1 ? 'pagou' : 'pagaram'} · {ativosHoje} ativo{ativosHoje === 1 ? '' : 's'} hoje
               </p>
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -318,7 +323,7 @@ export default function AfiliadosBento({
       <div data-tour="afil-kpis">
       <Tira itens={[
         { l: 'Indicados', v: int(t.totalIndicados) },
-        { l: 'Convertidos', v: int(convertidos), c: 'var(--profit)', hint: `${Number(t.totalIndicados) > 0 ? Math.round((convertidos / Number(t.totalIndicados)) * 100) : 0}% viraram PRO` },
+        { l: 'Convertidos', v: int(convertidos), c: 'var(--profit)', hint: `já pagaram · ${ativosHoje} ativo${ativosHoje === 1 ? '' : 's'} hoje` },
         { l: 'Faturamento gerado', v: money0(t.totalFaturado) },
         { l: 'Comissão acumulada', v: money0(t.totalComissao), c: 'var(--profit)' },
         { l: 'Saldo', v: money0(t.pendente), c: RED, hint: 'abatido na próxima renovação' },

@@ -2,10 +2,10 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToTenant, sendPushToUser } from '../../../../lib/push'
 import { getOperatorLimitStatus } from '../../../../lib/operator-limit'
-import { pickEngagementSegment, fillTemplate } from '../../../../lib/engagement-segments'
 import { pickActivationSegment } from '../../../../lib/activation-segments'
 import { renderWinbackEmail, sendEmailViaResend } from '../../../../lib/email-templates'
 import { cronAutorizado } from '../../../../lib/cron-auth'
+import { fillTemplate } from '../../../../lib/engagement-segments'
 
 // Call daily via Vercel Cron or external scheduler
 // GET /api/cron/trial-notifications?secret=YOUR_SECRET
@@ -157,57 +157,10 @@ export async function GET(req) {
     console.error('[trial-cron] op-limit check failed', e?.message)
   }
 
-  // ── ENGAGEMENT PUSH: clientes PAGANTES inativos ha 1, 2, 3 ou 7 dias ──
-  // Anti-spam: cada (user_id, segment) so dispara 1x — winback_log impede repeticao.
-  let engagementSent = 0
-  try {
-    // Pega tenants com sub ativa nao expirada
-    const { data: activeSubs } = await supabase.from('subscriptions')
-      .select('tenant_id, expires_at, status').eq('status', 'active')
-    const nowMs = Date.now()
-    const activeTids = new Set(
-      (activeSubs || [])
-        .filter(s => !s.expires_at || new Date(s.expires_at).getTime() > nowMs)
-        .map(s => s.tenant_id)
-    )
-    if (activeTids.size > 0) {
-      const { data: admins } = await supabase.from('profiles')
-        .select('id, nome, tenant_id, last_seen_at')
-        .eq('role', 'admin')
-        .in('tenant_id', [...activeTids])
-      for (const adm of admins || []) {
-        const lastSeen = adm.last_seen_at ? new Date(adm.last_seen_at).getTime() : null
-        if (!lastSeen) continue // se nunca acessou, ignora (cobertura tem trial-cron)
-        const daysInactive = Math.floor((nowMs - lastSeen) / 86400000)
-        const seg = pickEngagementSegment(daysInactive)
-        if (!seg) continue
-        // Anti-spam: ja enviou esse segmento pra esse user?
-        const { data: prev } = await supabase.from('winback_log')
-          .select('id').eq('user_id', adm.id).eq('segment', seg.id).limit(1).maybeSingle()
-        if (prev) continue
-        // Cooldown global 24h: nao spam se ja recebeu qualquer push hoje
-        const dayAgo = new Date(nowMs - 24 * 3600000).toISOString()
-        const { data: recent } = await supabase.from('winback_log')
-          .select('id').eq('user_id', adm.id).gte('sent_at', dayAgo).limit(1).maybeSingle()
-        if (recent) continue
-        const vars = { nome: (adm.nome || '').split(' ')[0] || 'Operador' }
-        await sendPushToUser(supabase, adm.id, {
-          title: fillTemplate(seg.push.title, vars),
-          body: fillTemplate(seg.push.body, vars),
-          url: '/admin',
-          tag: seg.id,
-        })
-        await supabase.from('winback_log').insert({
-          user_id: adm.id, tenant_id: adm.tenant_id,
-          segment: seg.id, channel: 'push',
-          sent_at: new Date().toISOString(),
-        })
-        engagementSent++
-      }
-    }
-  } catch (e) {
-    console.error('[trial-cron] engagement push failed', e?.message)
-  }
+  // O push de engajamento por LOGIN (1/2/3/7 dias sem abrir o app, uma vez
+  // na vida) saiu em 06/10/2026: o sinal que antecede o cancelamento é parar
+  // de LANÇAR, não de abrir — e isso é o cron /api/cron/inatividade.
+  const engagementSent = 0
 
   // ── ATIVACAO: cadastrou mas NUNCA criou meta (o gargalo do funil) ──
   // Alvo: trials que ainda estao no modo demo (0 metas). Mensagem de VALOR

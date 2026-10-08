@@ -24,6 +24,7 @@ export default function BillingPage() {
   const [loading,setLoading]=useState(true)
   const [opQty,setOpQty]=useState(0)
   const [showPix,setShowPix]=useState(false)
+  const [paidOps,setPaidOps]=useState(0)
 
   useEffect(()=>{ init() },[])
 
@@ -41,6 +42,10 @@ export default function BillingPage() {
       supabase.from('subscriptions').select('*').eq('tenant_id',p.tenant_id).order('created_at',{ascending:false}).limit(1).maybeSingle(),
     ])
     setTenant(t); setOperators(ops||[]); setSubscription(sub)
+    // operadores JÁ PAGOS no ciclo = MAIOR operator_count das assinaturas ativas
+    // não vencidas (a mesma conta do create-payment, que é quem valida o valor)
+    const {data:ativas}=await supabase.from('subscriptions').select('operator_count,expires_at').eq('tenant_id',p.tenant_id).eq('status','active')
+    setPaidOps(Math.max(0,...(ativas||[]).filter(x=>x.expires_at&&new Date(x.expires_at)>new Date()).map(x=>Number(x.operator_count||0))))
     setOpQty(Math.max((ops||[]).length, 0))
     setLoading(false)
   }
@@ -689,23 +694,20 @@ export default function BillingPage() {
               </div>
 
               {extraOps > 0 && (()=>{
-                const extraOnlyCost = Math.round(extraOps * newPrice.opUnitPrice * 100) / 100
+                // Com pacotes, o adicional é a DIFERENÇA entre o pacote novo e o que já
+                // está pago (ex.: Dupla 129,90 -> Scale 3 169,90 = 40,00). A conta antiga
+                // (extras × média por operador do pacote) dava 36,67 e o servidor
+                // recusava ('faltam R$ 40,00') — caso Netto, 08/10/2026.
+                const pagoPrice = calculatePrice(paidOps)
+                const extraOnlyCost = Math.max(0, Math.round((newPrice.total - pagoPrice.total) * 100) / 100)
                 return (<>
                 {/* Cost breakdown */}
                 <div style={{padding:'14px 16px',borderRadius:14,background:'var(--fill-2)',border:'1px solid var(--b1)',marginBottom:16}}>
                   <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
-                    <span style={{fontSize:12,color:'var(--t2)'}}>{extraOps} novo{extraOps>1?'s':''} operador{extraOps>1?'es':''} x R$ {fmt(newPrice.opUnitPrice)}</span>
+                    <span style={{fontSize:12,color:'var(--t2)'}}>{newPrice.pacote&&pagoPrice.pacote ? `${pagoPrice.pacote.nome} → ${newPrice.pacote.nome}` : `${extraOps} novo${extraOps>1?'s':''} operador${extraOps>1?'es':''}`}</span>
                     <span className="t-num" style={{fontSize:13,fontWeight:700,color:'var(--brand-bright)'}}>R$ {fmt(extraOnlyCost)}</span>
                   </div>
-                  {newPrice.discount > 0 && (
-                    <p style={{fontSize:11,color:'var(--t3)',margin:'4px 0 0'}}>Preco por operador com {newPrice.discount}% de desconto</p>
-                  )}
-                  {newPrice.discount > currentPrice.discount && (
-                    <div style={{display:'flex',alignItems:'center',gap:6,marginTop:6}}>
-                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--profit)" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                      <span style={{fontSize:11,color:'var(--profit)'}}>Desconto subiu para {newPrice.discount}% com {opQty} operadores</span>
-                    </div>
-                  )}
+                  <p style={{fontSize:11,color:'var(--t3)',margin:'4px 0 0'}}>Você paga só a diferença entre o pacote atual e o novo. O vencimento continua o mesmo.</p>
                 </div>
 
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'16px 0'}}>
@@ -787,7 +789,8 @@ export default function BillingPage() {
       {showPix&&(()=>{
         const extraOps = billing?.subActive ? Math.max(0, opQty - operators.length) : 0
         const isUpgrade = billing?.subActive && extraOps > 0
-        const upgradeAmount = isUpgrade ? Math.round(extraOps * price.opUnitPrice * 100) / 100 : price.total
+        // diferença entre pacotes (a mesma que o create-payment exige)
+        const upgradeAmount = isUpgrade ? Math.max(1, Math.round((price.total - calculatePrice(paidOps).total) * 100) / 100) : price.total
         return (
         <PixPayment
           tenantId={profile?.tenant_id}

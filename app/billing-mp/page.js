@@ -110,12 +110,20 @@ export default function BillingMpPage() {
       fetch('/api/affiliate/saldo', { headers: { Authorization: 'Bearer ' + data.session.access_token } })
         .then(r => r.ok ? r.json() : null).then(j => { if (j && Number(j.saldo) > 0) setSaldoAfiliado(Number(j.saldo)) }).catch(() => {})
       // Busca sub ativa atual pra mostrar dias restantes + calcular renovacao antecipada
-      const { data: sub } = await supabase.from('subscriptions')
+      // Operadores JÁ PAGOS = o MAIOR operator_count entre as assinaturas
+      // ativas e não vencidas — a mesma conta do create-payment. Antes vinha
+      // de UMA linha (a de maior vencimento) e, com duas linhas de mesmo
+      // vencimento (base 0 ops + upgrade 2 ops), podia ler 0 e cobrar o
+      // pacote inteiro como 'diferença' (caso Netto, 08/10/2026).
+      const { data: subsAtivas } = await supabase.from('subscriptions')
         .select('expires_at,operator_count,status')
         .eq('tenant_id', p.tenant_id)
         .eq('status', 'active')
-        .order('expires_at', { ascending: false })
-        .limit(1).maybeSingle()
+      const agoraMs = Date.now()
+      const vivas = (subsAtivas || []).filter(s => s.expires_at && new Date(s.expires_at).getTime() > agoraMs)
+      const sub = vivas.length
+        ? { status: 'active', expires_at: vivas.reduce((m, s) => (new Date(s.expires_at) > new Date(m) ? s.expires_at : m), vivas[0].expires_at), operator_count: Math.max(...vivas.map(s => Number(s.operator_count || 0))) }
+        : null
       setSubscription(sub)
       // Contagem REAL de operadores ativos (nao removidos): a renovacao cobre todos.
       // O opQty passa a REFLETIR essa contagem (piso) — se o admin removeu

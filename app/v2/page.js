@@ -28,6 +28,7 @@ import Link from 'next/link'
 import { BASE_PRICE, pacotePorId } from '../../lib/pricing'
 import EstiloV2 from './estilo'
 import Filme from './filme'
+import Tour from './tour'
 import MarcaN from './marca-n'
 import { Revelar, Olho, Cabeca, Contador, Botao, Ico, Pergunta, SETA, Deriva, LinhaDeProgresso } from './pecas'
 
@@ -362,7 +363,11 @@ export default function V2Page() {
             <Revelar atraso={0.21}>
               <div className="nv2-cta-col" style={{ display: 'flex', gap: 10, marginTop: 34, flexWrap: 'wrap' }}>
                 <Botao href="/signup" tipo="lime" grande seta>Começar agora</Botao>
-                <Botao href="#produto" tipo="linha" grande>Explorar a plataforma</Botao>
+                {/* leva pro tour em vídeo logo abaixo e já dá o play (app/v2/tour.js ouve o #tour) */}
+                <Botao href="#tour" tipo="linha" grande>
+                  <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden style={{ marginRight: 2 }}><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" fill="currentColor" /></svg>
+                  Assista ao tour · 1 min
+                </Botao>
               </div>
             </Revelar>
 
@@ -396,6 +401,9 @@ export default function V2Page() {
           </Revelar>
         </div>
       </section>
+
+      {/* ═══ 02b · TOUR EM VÍDEO (narrado, 1:15) ═══════════════════════ */}
+      <Tour />
 
       {/* ═══ 03 · NÚMEROS ═════════════════════════════════════════════ */}
       <section className="nv2-sec nv2-sec--curta">

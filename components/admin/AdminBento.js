@@ -16,6 +16,7 @@ import { motion } from 'framer-motion'
 import { Rosca, FATIAS, NumeroTexto, Sparkline, Comparativo, Sequencia, Destaque, Calor, Podio, Risco, Barras, Tira, RED, RED2, ON_RED, GLOW, LARANJA, LARANJA2, ON_LARANJA, GLOW_LARANJA } from '../ui/bento'
 import { opDayISO, ultimosDiasOp } from '../../lib/opday'
 import { GrupoFaixa } from '../GrupoConvite'
+import CardLucro from './CardLucro'
 
 // cores: tokens do kit (claro = as de sempre; escuro = lime da landing +
 // laranja so onde e destaque: meta do dia, depositantes e pendencias)
@@ -324,23 +325,10 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
         </div>
       </div>
 
-      {/* filtro de periodo — manda no primeiro card */}
-      {onPeriodo && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{ display: 'inline-flex', gap: 3, padding: 4, borderRadius: 30, background: 'var(--surface)', border: '1px solid var(--b1)', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
-            {PERIODOS.map(([k, l]) => {
-              const on = periodo === k
-              return (
-                <button key={k} type="button" onClick={() => onPeriodo(k)}
-                  style={{ padding: '7px 15px', borderRadius: 30, border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 12, fontWeight: 700,
-                    background: on ? 'var(--k-pill-bg)' : 'transparent', color: on ? 'var(--k-pill-fg)' : 'var(--t3)', transition: 'background .18s ease, color .18s ease' }}>
-                  {l}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      )}
+      {/* O LUCRO, como peça de vitrine (components/admin/CardLucro.js, 10/10/2026):
+          largura toda, número em relevo com odômetro, período e olho dentro
+          do card. É o MESMO lucroPeriodo de antes — só a apresentação mudou. */}
+      <CardLucro valor={lucroPeriodo != null ? lucroPeriodo : lucroTotal} periodo={periodo} onPeriodo={onPeriodo} metas={metas} curva={curva14} />
 
       {/* LINHA 1 — O LUCRO É A ÂNCORA DA TELA.
           Ele era um quarto da linha, do mesmo tamanho de "metas fechadas" —
@@ -349,44 +337,7 @@ export default function AdminBento({ nome, patente, global: g, ranking = [], met
           continua branca como a dos vizinhos (uma tentativa de card preto
           quebrou a harmonia da tela e foi revertida em 21/09).
           A curva de 14 dias ao fundo são os mesmos dados da linha 2. */}
-      <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: '1.9fr 1fr 1fr 1.3fr', gap: 14 }}>
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <Card blob={['var(--k-blob-lucro-a)', 'var(--k-blob-lucro-b)']} pad={24} style={{ minHeight: 148, height: '100%' }}>
-            <Chip bg="var(--profit-dim)"><Ico d={<><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>} c="var(--profit)" /></Chip>
-            <p style={{
-              fontSize: 44, fontWeight: 900, margin: '16px 0 0', letterSpacing: '-0.045em', lineHeight: 1,
-              fontFamily: MONO,
-              color: (lucroPeriodo != null ? lucroPeriodo : lucroTotal) >= 0 ? S.t1 : 'var(--loss)',
-            }}>
-              <NumeroTexto delay={0.15}>{money0(lucroPeriodo != null ? lucroPeriodo : lucroTotal)}</NumeroTexto>
-            </p>
-            <p style={{ fontSize: 12.5, color: S.t3, margin: '6px 0 0' }}>
-              {lucroPeriodo != null ? rotuloPeriodo : 'lucro final acumulado'}
-            </p>
-            {/* A curva vem DEPOIS do texto, no fluxo, com margem negativa pra
-                sangrar até a borda. Absoluta ela se ancoraria no fim do texto
-                e passaria por cima da legenda — foi o que aconteceu com o
-                Sparkline do kit. */}
-            {curva14?.d && (
-              <svg viewBox={`0 0 ${curva14.L} ${curva14.A}`} preserveAspectRatio="none" aria-hidden
-                style={{ display: 'block', width: 'calc(100% + 48px)', height: 46, marginLeft: -24, marginRight: -24, marginTop: 14, marginBottom: -24, pointerEvents: 'none' }}>
-                <defs>
-                  <linearGradient id="abLucroFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--profit)" stopOpacity="0.18" />
-                    <stop offset="100%" stopColor="var(--profit)" stopOpacity="0" />
-                  </linearGradient>
-                </defs>
-                <motion.path d={`${curva14.d} L${curva14.L},${curva14.A} L0,${curva14.A} Z`} fill="url(#abLucroFill)"
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, delay: 0.45 }} />
-                <motion.path d={curva14.d} fill="none" stroke="var(--profit)" strokeOpacity="0.5" strokeWidth="2"
-                  strokeLinecap="round" vectorEffect="non-scaling-stroke"
-                  initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.2, delay: 0.3, ease: [0.33, 1, 0.68, 1] }} />
-              </svg>
-            )}
-          </Card>
-        </motion.div>
-
+      <div className="ab-r1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.3fr', gap: 14 }}>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.06 }}>
           <Card blob={[LARANJA2, LARANJA]} style={{ minHeight: 148 }}>
             <Chip bg={LARANJA}><Ico d={<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /></>} c={ON_LARANJA} /></Chip>

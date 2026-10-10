@@ -2722,18 +2722,17 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
   .nx-bento .app-content [style*="padding: 28px 30px"] { padding: 20px 18px !important; }
   .nx-bento .app-content [style*="padding: 22px 24px"] { padding: 18px !important; }
   /* heroi do painel: mais baixo, numero mais presente */
-  .nx-bento .ab-r1 > *:nth-child(1) [style*="min-height"] { min-height: 132px !important; }
-  .nx-bento .ab-r1 > *:nth-child(1) [style*="font-size: 44px"] { font-size: 36px !important; margin-top: 12px !important; }
+  /* (o lucro saiu da linha 1 em 10/10/2026: agora e o CardLucro, acima dela) */
   /* os dois tiles pequenos: sem blob (ele cobria metade), chip menor, numero
      proporcional ao bloco */
-  .nx-bento .ab-r1 > *:nth-child(2) [style*="min-height"],
-  .nx-bento .ab-r1 > *:nth-child(3) [style*="min-height"] { min-height: 112px !important; }
-  .nx-bento .ab-r1 > *:nth-child(2) svg[viewBox="0 0 200 140"],
-  .nx-bento .ab-r1 > *:nth-child(3) svg[viewBox="0 0 200 140"] { display: none !important; }
-  .nx-bento .ab-r1 > *:nth-child(2) span[style*="width: 40px"],
-  .nx-bento .ab-r1 > *:nth-child(3) span[style*="width: 40px"] { width: 34px !important; height: 34px !important; border-radius: 11px !important; }
-  .nx-bento .ab-r1 > *:nth-child(2) p[style*="font-size: 27px"],
-  .nx-bento .ab-r1 > *:nth-child(3) p[style*="font-size: 27px"] { font-size: 25px !important; margin-top: 12px !important; }
+  .nx-bento .ab-r1 > *:nth-child(1) [style*="min-height"],
+  .nx-bento .ab-r1 > *:nth-child(2) [style*="min-height"] { min-height: 112px !important; }
+  .nx-bento .ab-r1 > *:nth-child(1) svg[viewBox="0 0 200 140"],
+  .nx-bento .ab-r1 > *:nth-child(2) svg[viewBox="0 0 200 140"] { display: none !important; }
+  .nx-bento .ab-r1 > *:nth-child(1) span[style*="width: 40px"],
+  .nx-bento .ab-r1 > *:nth-child(2) span[style*="width: 40px"] { width: 34px !important; height: 34px !important; border-radius: 11px !important; }
+  .nx-bento .ab-r1 > *:nth-child(1) p[style*="font-size: 27px"],
+  .nx-bento .ab-r1 > *:nth-child(2) p[style*="font-size: 27px"] { font-size: 25px !important; margin-top: 12px !important; }
   /* legendas dos cartoes um ponto menores; o blob dos herois mais discreto */
   .nx-bento .app-content p[style*="font-size: 12.5px"] { font-size: 12px !important; }
   .nx-bento .app-content svg[viewBox="0 0 200 140"] { opacity: 0.75; }
@@ -2743,10 +2742,9 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; marg
      lado a lado, a meta do dia inteira de novo. Um numero grande e dois de
      apoio — a leitura que cabe na mao. */
   .nx-bento .ab-r1 { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
-  .nx-bento .ab-r1 > *:nth-child(1),
-  .nx-bento .ab-r1 > *:nth-child(4) { grid-column: 1 / -1; }
-  .nx-bento .ab-r1 > *:nth-child(2) [style*="min-height"],
-  .nx-bento .ab-r1 > *:nth-child(3) [style*="min-height"] { min-height: 124px !important; }
+  .nx-bento .ab-r1 > *:nth-child(3) { grid-column: 1 / -1; }
+  .nx-bento .ab-r1 > *:nth-child(1) [style*="min-height"],
+  .nx-bento .ab-r1 > *:nth-child(2) [style*="min-height"] { min-height: 124px !important; }
   .nx-bento .ab-r2, .nx-bento .bk-2,
   .nx-bento .rc-grid, .nx-bento .fc-grid, .nx-bento .afb-2 { grid-template-columns: 1fr !important; }
   /* tira de indicadores: 2 colunas; com numero impar o ultimo ocupa a linha */

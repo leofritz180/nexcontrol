@@ -108,9 +108,8 @@ export default function CardLucro({ valor, periodo, onPeriodo, metas = [], curva
       className="cl-palco" onPointerMove={mover} onPointerLeave={sair}>
       <style>{CSS}</style>
       <motion.div ref={card} className="cl-card" style={parado ? undefined : { rotateX: rotX, rotateY: rotY }}>
-        {/* luz que segue o mouse + grão de grade */}
+        {/* luz que segue o mouse (fundo liso, como os outros cards — a grade e o tom verde sairam a pedido do dono, 10/10) */}
         <motion.div className="cl-luz" style={{ '--lx': luzX, '--ly': luzY }} aria-hidden />
-        <div className="cl-grade" aria-hidden />
         {curva?.d && (
           <svg className="cl-curva" viewBox={`0 0 ${curva.L} ${curva.A}`} preserveAspectRatio="none" aria-hidden>
             <defs><linearGradient id="clFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--profit)" stopOpacity="0.16" /><stop offset="100%" stopColor="var(--profit)" stopOpacity="0" /></linearGradient></defs>
@@ -164,13 +163,10 @@ export default function CardLucro({ valor, periodo, onPeriodo, metas = [], curva
 const CSS = `
 .cl-palco { perspective: 1400px; }
 .cl-card { position: relative; overflow: hidden; border-radius: 28px; padding: 26px 30px 24px; transform-style: preserve-3d; font-family: var(--font-sans);
-  background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--profit) 9%, var(--surface)) 0%, var(--surface) 55%);
+  background: var(--surface);
   border: 1px solid var(--b1); box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 18px 50px rgba(0,0,0,0.10); will-change: transform; }
 .cl-luz { position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(420px circle at var(--lx, 50%) var(--ly, 50%), color-mix(in srgb, var(--t1) 9%, transparent), transparent 60%); }
-.cl-grade { position: absolute; inset: 0; pointer-events: none; opacity: .5;
-  background-image: linear-gradient(var(--b1) 1px, transparent 1px), linear-gradient(90deg, var(--b1) 1px, transparent 1px); background-size: 34px 34px;
-  -webkit-mask-image: radial-gradient(70% 90% at 80% 20%, #000, transparent 75%); mask-image: radial-gradient(70% 90% at 80% 20%, #000, transparent 75%); }
 .cl-curva { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 42%; pointer-events: none; }
 .cl-topo { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; transform: translateZ(20px); }
 .cl-rot { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; font-size: 11px; font-weight: 800; letter-spacing: .16em; color: var(--t3); }
